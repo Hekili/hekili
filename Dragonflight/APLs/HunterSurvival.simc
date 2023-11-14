@@ -54,7 +54,7 @@ actions.cleave+=/serpent_sting,cycle_targets=1,if=refreshable&target.time_to_die
 actions.cleave+=/mongoose_bite,cycle_targets=1
 actions.cleave+=/raptor_strike,cycle_targets=1
 
-actions.st+=/kill_shot,if=buff.coordinated_assault_empower.up
+actions.st+=/kill_shot,if=buff.coordinated_assault_empower.up|coordinated_assault_kill_shot
 actions.st+=/wildfire_bomb,if=talent.spearhead&cooldown.spearhead.remains<2*gcd&full_recharge_time<gcd|talent.bombardier&(cooldown.coordinated_assault.remains<gcd&cooldown.fury_of_the_eagle.remains|buff.coordinated_assault.up&buff.coordinated_assault.remains<2*gcd)|full_recharge_time<gcd|prev.fury_of_the_eagle&set_bonus.tier31_2pc|buff.contained_explosion.remains&(next_wi_bomb.pheromone&dot.pheromone_bomb.refreshable|next_wi_bomb.volatile&dot.volatile_bomb.refreshable|next_wi_bomb.shrapnel&dot.shrapnel_bomb.refreshable)|cooldown.fury_of_the_eagle.remains<gcd&full_recharge_time<gcd&set_bonus.tier31_2pc|(cooldown.fury_of_the_eagle.remains<gcd&talent.ruthless_marauder&set_bonus.tier31_2pc)&!raid_event.adds.exists
 actions.st+=/death_chakram,if=focus+cast_regen<focus.max|talent.spearhead&!cooldown.spearhead.remains&cooldown.fury_of_the_eagle.remains|talent.bombardier&!cooldown.fury_of_the_eagle.remains
 actions.st+=/mongoose_bite,if=prev.fury_of_the_eagle
