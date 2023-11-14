@@ -552,6 +552,8 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             rtbAuraAppliedBy[ aura ] = "ambush"
         elseif IsCurrentSpell( 193315 ) then
             rtbAuraAppliedBy[ aura ] = "sinister_strike"
+        elseif IsCurrentSpell( 315341 ) then
+            rtbAuraAppliedBy[ aura ] = "between_the_eyes"
         elseif aura == "roll_the_bones" then
             lastApplicator = aura
         elseif aura == "keep_it_rolling" then
