@@ -51,17 +51,17 @@ actions.cleave+=/judgement_of_light
 actions.cleave+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
 actions.cleave+=/holy_wrath,if=(target.is_demon|target.is_undead)&mana.percent>(settings.judgement_of_wisdom_threshold/1.7)
 
-## execute
+## Execute
 actions.execute+=/seal_of_vengeance,if=buff.seal.down
 actions.execute+=/avenging_wrath,if=(!buff.seal_of_vengeance.up|dot.holy_vengeance.stack>4)
 actions.execute+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold/2.5
-actions.execute+=/hammer_of_wrath,if=set_bonus.tier10ret_2pc=0|settings.highroll=0
+actions.execute+=/hammer_of_wrath,if=set_bonus.tier10ret_2pc=0|!settings.highroll
 actions.execute+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold
 actions.execute+=/judgement_of_light
-actions.execute+=/divine_storm,if=set_bonus.tier10ret_2pc=1&settings.highroll=1
+actions.execute+=/divine_storm,if=set_bonus.tier10ret_2pc=1&settings.highroll
 actions.execute+=/crusader_strike
 actions.execute+=/divine_storm,if=set_bonus.tier10ret_2pc=1
-actions.execute+=/hammer_of_wrath,if=set_bonus.tier10ret_2pc=1&settings.highroll=1
+actions.execute+=/hammer_of_wrath,if=set_bonus.tier10ret_2pc=1&settings.highroll
 actions.execute+=/consecration,if=!buff.active_consecration.up&variable.time_to_die>4
 actions.execute+=/divine_storm
 actions.execute+=/divine_plea,if=mana.percent<(settings.divine_plea_threshold/2)
@@ -74,7 +74,8 @@ actions.single+=/seal_of_vengeance,if=buff.seal.down
 actions.single+=/avenging_wrath,if=((variable.time_to_die*0.9-20)>action.avenging_wrath.cooldown)&(!buff.seal_of_vengeance.up|dot.holy_vengeance.stack>4)
 actions.single+=/judgement_of_wisdom,if=mana.percent<settings.judgement_of_wisdom_threshold
 actions.single+=/judgement_of_light
-actions.single+=/divine_storm,if=set_bonus.tier10ret_2pc=1&settings.highroll=1
+actions.single+=/crusader_strike,if=set_bonus.libram_of_three_truths&buff.formidable.count<5
+actions.single+=/divine_storm,if=set_bonus.tier10ret_2pc=1&settings.highroll
 actions.single+=/crusader_strike
 actions.single+=/divine_storm
 actions.single+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
