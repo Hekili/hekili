@@ -19,7 +19,7 @@ actions+=/cauterizing_flame
 actions+=/hover,if=settings.use_hover&moving&buff.hover.down&buff.breath_of_eons.down
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
 actions+=/prescience,if=full_recharge_time<=gcd.max*3|active_dot.prescience=0&cooldown.ebon_might.remains<=gcd.max*4
-actions+=/ebon_might,if=(buff.ebon_might.remains-cast_time)<=buff.ebon_might.duration*0.4&(active_dot.prescience>=group_members&time<=10|active_dot.prescience>=3|buff.ebon_might.remains>=action.ebon_might.cast_time|group_members<=2)
+actions+=/ebon_might,if=(buff.ebon_might.remains-cast_time)<=buff.ebon_might.duration*0.4|buff.ebon_might.remains>=action.ebon_might.cast_time|solo
 actions+=/run_action_list,name=opener_filler,if=variable.opener_delay>0&!equipped.nymues_unraveling_spindle
 actions+=/potion,if=debuff.temporal_wound.up&buff.ebon_might.up
 actions+=/use_item,name=nymues_unraveling_spindle,if=cooldown.breath_of_eons.remains<=3
