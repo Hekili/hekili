@@ -8,12 +8,8 @@ actions+=/variable,name=te_shadow,op=set,value=buff.twilight_equilibrium_shadow_
 actions+=/variable,name=te_holy,op=set,value=buff.twilight_equilibrium_holy_amp.up|variable.te_none
 # Long Shadow covenant is enabled
 actions+=/variable,name=long_scov,op=set,value=talent.shadow_covenant
-# Harsh discipline has been stacked and is ready for shadow covenant.  Zero stacks for no shadow covenant  Full stacks for short results in one HD penance (4 total)  Full stacks + 1 extra results in two HD penances (5 total)
-actions+=/variable,name=hd_stacks_required,op=set,value=5
-actions+=/variable,name=hd_stacks_current,op=set,value=buff.harsh_discipline.stack+(buff.harsh_discipline.max_stack*buff.harsh_discipline_ready.stack)
-actions+=/variable,name=harsh_discipline_ready,op=set,value=!talent.harsh_discipline|(variable.hd_stacks_current>=variable.hd_stacks_required)
 # Ready to start shadow covenant phase
-actions+=/variable,name=can_enter_scov,op=set,value=(cooldown.shadowfiend.up&variable.harsh_discipline_ready)|buff.shadow_covenant.up
+actions+=/variable,name=can_enter_scov,op=set,value=cooldown.shadowfiend.up|buff.shadow_covenant.up
 actions+=/variable,name=shadow_spells_duration_max,op=set,value=0
 ## actions+=/variable,name=shadow_spells_duration_max,op=add,value=action.schism.execute_time,if=talent.schism
 actions+=/variable,name=shadow_spells_duration_max,op=add,value=2
@@ -54,9 +50,9 @@ actions+=/variable,name=shadow_spells_duration,op=add,value=action.divine_star.e
 actions+=/variable,name=shadow_spells_duration,op=add,value=action.halo.execute_time,if=cooldown.halo.up|(cooldown.halo.remains<buff.shadow_covenant.remains)
 # Determine if we have enough scov time remaining to weave in a twilight equilibrium activation. If we don't have TE talented, always false. Using smite's execution time to represent a worst-case scenario.
 actions+=/variable,name=should_te,op=setif,condition=talent.twilight_equilibrium,value=(buff.shadow_covenant.remains-variable.shadow_spells_duration)>action.smite.execute_time,value_else=0
-actions+=/variable,name=hd_prep_time,op=setif,condition=!variable.harsh_discipline_ready,value=action.smite.execute_time*(variable.hd_stacks_required-variable.hd_stacks_current),value_else=0
+
 # First casts should always be HD prep->covenant->schism->HD dark reprimand
-actions+=/variable,name=next_penance_time,op=set,value=cooldown.shadowfiend.remains+variable.hd_prep_time+action.shadowfiend.execute_time
+actions+=/variable,name=next_penance_time,op=set,value=cooldown.shadowfiend.remains+action.shadowfiend.execute_time
 # If we have enough scov duration, add a holy cast to proc twilight equilibrium
 actions+=/variable,name=next_penance_time,op=add,value=gcd.max,if=variable.remaining_te_holy>0
 # Reduce our counting variable
@@ -124,7 +120,7 @@ actions+=/variable,name=next_divine_star_time,op=add,value=action.mind_blast.exe
 # Mindgames is always better
 actions+=/variable,name=next_divine_star_time,op=add,value=action.mindgames.execute_time,if=talent.mindgames
 actions+=/variable,name=can_divine_star,op=set,value=cooldown.divine_star.duration<variable.next_divine_star_time
-actions+=/run_action_list,name=scov_prep,if=talent.shadow_covenant&cooldown.mindbender.up&!variable.harsh_discipline_ready
+actions+=/run_action_list,name=scov_prep,if=talent.shadow_covenant&cooldown.mindbender.up
 ## actions+=/run_action_list,name=short_scov,if=variable.short_scov&variable.can_enter_scov
 actions+=/run_action_list,name=long_scov,if=variable.long_scov&variable.can_enter_scov
 actions+=/purge_the_wicked,if=talent.purge_the_wicked&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.purge_the_wicked.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
@@ -147,9 +143,7 @@ actions+=/smite
 
 # Prepare to enter shadow covenant
 actions.scov_prep+=/purge_the_wicked,if=!ticking&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
-actions.scov_prep+=/mind_blast,if=!variable.harsh_discipline_ready&variable.can_mind_blast
-## actions.scov_prep+=/power_word_solace,if=!variable.harsh_discipline_ready
-actions.scov_prep+=/smite,if=!variable.harsh_discipline_ready
+actions.scov_prep+=/power_word_radiance,if=cooldown.shadowfiend.remains<cast_time
 actions.scov_prep+=/purge_the_wicked,if=(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 
 # Long Shadow Covenant
@@ -159,7 +153,7 @@ actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te
 actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.divine_star>=3
 actions.long_scov+=/purge_the_wicked,if=(!variable.should_te|(variable.should_te&variable.te_holy))&(!ticking|refreshable)&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 actions.long_scov+=/shadow_word_death,if=target.health.pct<20&talent.expiation&(!variable.should_te|(variable.should_te&variable.te_shadow))
-actions.long_scov+=/penance,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&buff.harsh_discipline_ready.up
+actions.long_scov+=/penance,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
 actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.halo>=2
 actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.divine_star>=2
 actions.long_scov+=/shadow_word_death,if=target.health.pct<20&(!variable.should_te|(variable.should_te&variable.te_shadow))
@@ -172,7 +166,6 @@ actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te
 actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
 actions.long_scov+=/shadow_word_death,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&(target.time_to_pct_20>buff.shadow_covenant.remains)
 ## actions.long_scov+=/lights_wrath,if=(!variable.should_te|(variable.should_te&variable.te_holy))
-## actions.long_scov+=/power_word_solace,if=(!variable.should_te|(variable.should_te&variable.te_holy))
 actions.long_scov+=/smite,if=(!variable.should_te|(variable.should_te&variable.te_holy))
 # just in case we run out of shadow spells with the above conditions
 actions.long_scov+=/penance
@@ -181,7 +174,6 @@ actions.long_scov+=/mind_blast
 actions.long_scov+=/shadow_word_death
 actions.long_scov+=/divine_star
 actions.long_scov+=/halo
-actions.long_scov+=/power_word_solace
 actions.long_scov+=/smite
 
 ## Cooldowns
