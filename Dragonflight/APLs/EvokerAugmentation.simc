@@ -1,4 +1,4 @@
-actions.precombat+=/variable,name=spam_heal,default=1,op=resetbuff.ebon_might_selfevoker.prescience_buffs
+actions.precombat+=/variable,name=spam_heal,default=1,op=reset
 actions.precombat+=/variable,name=minimum_opener_delay,op=reset,default=0
 actions.precombat+=/variable,name=opener_delay,value=variable.minimum_opener_delay,if=!talent.interwoven_threads
 actions.precombat+=/variable,name=opener_delay,value=variable.minimum_opener_delay+variable.opener_delay,if=talent.interwoven_threads
@@ -14,9 +14,9 @@ actions.precombat+=/bronze_attunement,if=buff.bronze_attunement.down&buff.black_
 actions.precombat+=/blistering_scales,if=buff.blistering_scales.stack<10&active_dot.blistering_scales=0
 
 actions+=/quell
-actions+=/unravel
+actions+=/unravel,if=settings.use_unravel
 actions+=/cauterizing_flame
-actions+=/hover,if=moving&buff.hover.down&buff.breath_of_eons.down
+actions+=/hover,if=settings.use_hover&moving&buff.hover.down&buff.breath_of_eons.down
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
 actions+=/prescience,if=full_recharge_time<=gcd.max*3|active_dot.prescience=0&cooldown.ebon_might.remains<=gcd.max*4
 actions+=/call_action_list,name=ebon_logic,if=(buff.ebon_might.remains-cast_time)<=buff.ebon_might.duration*0.4&(active_enemies>0|raid_event.adds.in<=3)&(active_dot.prescience>=2&time<=10|active_dot.prescience>=3|buff.ebon_might.remains>=action.ebon_might.cast_time|group_members<=2)
@@ -33,7 +33,7 @@ actions+=/use_item,name=belorrelos_the_suncaller,use_off_gcd=1,if=gcd.remains>0.
 actions+=/use_item,slot=trinket1,if=!debuff.temporal_wound.up&(cooldown.breath_of_eons.remains>=30|!variable.trinket_2_exclude)&!variable.trinket_1_manual
 actions+=/use_item,slot=trinket2,if=!debuff.temporal_wound.up&(cooldown.breath_of_eons.remains>=30|!variable.trinket_1_exclude)&!variable.trinket_2_manual
 actions+=/use_item,slot=main_hand,use_off_gcd=1,if=gcd.remains>=gcd.max*0.6
-actions+=/deep_breath
+actions+=/deep_breath,if=settings.use_deep_breath
 actions+=/call_action_list,name=fb,if=cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
 actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
 actions+=/breath_of_eons,if=(cooldown.ebon_might.remains<=4|buff.ebon_might.up)&target.time_to_die>15&raid_event.adds.in>15&(!equipped.nymues_unraveling_spindle|trinket.nymues_unraveling_spindle.cooldown.remains>=10|boss&fight_remains<30)|boss&fight_remains<30,line_cd=117
@@ -45,7 +45,7 @@ actions+=/emerald_blossom,if=talent.dream_of_spring&buff.essence_burst.up&(varia
 actions+=/eruption,if=buff.ebon_might.remains>execute_time|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4
 actions+=/blistering_scales,cycle_targets,if=group_members>1&!active_dot.blistering_scales&buff.ebon_might.down
 actions+=/emerald_blossom,if=!buff.ebon_might.up&talent.ancient_flame&talent.scarlet_adaptation&!talent.dream_of_spring&!buff.ancient_flame.up&active_enemies=1
-actions+=/verdant_embrace,if=!buff.ebon_might.up&talent.ancient_flame&talent.scarlet_adaptation&!buff.ancient_flame.up&(!talent.dream_of_spring|mana>=200000)&active_enemies=1
+actions+=/verdant_embrace,if=settings.use_verdant_embrace&!buff.ebon_might.up&talent.ancient_flame&talent.scarlet_adaptation&!buff.ancient_flame.up&(!talent.dream_of_spring|mana>=200000)&active_enemies=1
 actions+=/run_action_list,name=filler
 
 actions.ebon_logic+=/ebon_might,if=raid_event.adds.remains>10|raid_event.adds.in>20
