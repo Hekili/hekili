@@ -973,7 +973,7 @@ spec:RegisterAbilities( {
         talent = "blade_rush",
         startsCombat = true,
 
-        usable = function () return not settings.check_blade_rush or target.distance < ( talent.acrobatic_strikes.enabled and 9 or 6 ), "no gapcloser blade rush is on, target too far" end,
+        usable = function () return not settings.check_blade_rush_range or target.distance < ( talent.acrobatic_strikes.enabled and 9 or 6 ), "no gapcloser blade rush is on, target too far" end,
                         
         handler = function ()
             applyBuff( "blade_rush" )
