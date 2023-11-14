@@ -1,4 +1,3 @@
-actions.precombat+=/apply_poison
 # Default Roll the Bones reroll rule: reroll for any buffs that aren't Buried Treasure, excluding Grand Melee in single target
 actions+=/variable,name=rtb_reroll,value=rtb_buffs.will_lose=(rtb_buffs.will_lose.buried_treasure+rtb_buffs.will_lose.grand_melee&spell_targets.blade_flurry<2&raid_event.adds.in>10)
 # Crackshot builds without T31 should reroll for True Bearing (or Broadside without Hidden Opportunity) if we won't lose over 1 buff
@@ -10,11 +9,12 @@ actions+=/variable,name=rtb_reroll,if=!talent.crackshot&talent.hidden_opportunit
 # Additional reroll rules if all active buffs will not be rolled away and we don't already have 5+ buffs
 actions+=/variable,name=rtb_reroll,value=variable.rtb_reroll|rtb_buffs.normal=0&rtb_buffs.longer>=1&rtb_buffs<5&rtb_buffs.max_remains<=39
 # Avoid rerolls when we will not have time remaining on the fight or add wave to recoup the opportunity cost of the global
-actions.precombat+=/variable,name=rtb_reroll,op=reset,if=!(raid_event.adds.remains>12|raid_event.adds.up&(raid_event.adds.in-raid_event.adds.remains)<6|target.time_to_die>12)|boss&fight_remains<12
+actions+=/variable,name=rtb_reroll,op=reset,if=!(raid_event.adds.remains>12|raid_event.adds.up&(raid_event.adds.in-raid_event.adds.remains)<6|target.time_to_die>12)|boss&fight_remains<12
+actions.precombat+=/apply_poison
 actions.precombat+=/blade_flurry,precombat_seconds=3,if=refreshable&talent.underhanded_upper_hand&!stealthed.mantle
 actions.precombat+=/stealth
+actions.precombat+=/adrenaline_rush,precombat_seconds=3,if=talent.improved_adrenaline_rush&refreshable|settings.use_ld_opener&cooldown.roll_the_bones.remains<1&variable.rtb_reroll
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=refreshable&variable.rtb_reroll
-actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=refreshable&talent.improved_adrenaline_rush
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 
 # Restealth if possible (no vulnerable enemies in combat)
