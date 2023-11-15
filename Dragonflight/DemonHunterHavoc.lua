@@ -367,11 +367,40 @@ spec:RegisterAuras( {
     },
     -- Burning nearby enemies for $258922s1 $@spelldesc395020 damage every $t1 sec.$?a207548[    Movement speed increased by $w4%.][]$?a320331[    Armor increased by $w5%. Attackers suffer $@spelldesc395020 damage.][]
     -- https://wowhead.com/beta/spell=258920
-    immolation_aura = {
+    immolation_aura_1 = {
         id = 258920,
         duration = function() return talent.felfire_heart.enabled and 8 or 6 end,
         tick_time = 1,
         max_stack = 1
+    },
+    immolation_aura_2 = {
+        id = 427912,
+        duration = function() return talent.felfire_heart.enabled and 8 or 6 end,
+        tick_time = 1,
+        max_stack = 1
+    },
+    immolation_aura_3 = {
+        id = 427913,
+        duration = function() return talent.felfire_heart.enabled and 8 or 6 end,
+        tick_time = 1,
+        max_stack = 1
+    },
+    immolation_aura_4 = {
+        id = 427914,
+        duration = function() return talent.felfire_heart.enabled and 8 or 6 end,
+        tick_time = 1,
+        max_stack = 1
+    },
+    immolation_aura_5 = {
+        id = 427915,
+        duration = function() return talent.felfire_heart.enabled and 8 or 6 end,
+        tick_time = 1,
+        max_stack = 1
+    },
+    immolation_aura = {
+        alias = { "immolation_aura_1", "immolation_aura_2", "immolation_aura_3", "immolation_aura_4", "immolation_aura_5" },
+        aliasMode = "longest",
+        aliasType = "buff",
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=217832
@@ -1416,7 +1445,9 @@ spec:RegisterAbilities( {
         id = 258920,
         cast = 0,
         cooldown = 30,
-        charges = function() return talent.a_fire_inside.enabled and 2 or 0 end,
+        charges = function()
+            if talent.a_fire_inside.enabled then return 2 end
+        end,
         recharge = function()
             if talent.a_fire_inside.enabled then return 30 end
         end,
