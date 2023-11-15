@@ -9,6 +9,7 @@ local class, state = Hekili.Class, Hekili.State
 
 local floor = math.floor
 local strformat = string.format
+local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
 
 local spec = Hekili:NewSpecialization( 581 )
 
@@ -374,15 +375,16 @@ spec:RegisterAuras( {
     },
     -- Consume to heal for $210042s1% of your maximum health.
     -- https://wowhead.com/beta/spell=203795
-    soul_fragment = {
+    soul_fragments = {
         id = 203795,
         duration = 20,
-        max_stack = 5
-    },
-    soul_fragments = {
-        id = 203981,
-        duration = 3600,
-        max_stack = 5,
+        max_stack = 99,
+        meta = {
+            count = function()
+                return soul_fragments
+            end,
+        }
+
     },
     -- Talent: $w1 Soul Fragments consumed. At $u, the damage of your next Soul Cleave is increased by $391172s1%.
     -- https://wowhead.com/beta/spell=391166
@@ -504,10 +506,6 @@ spec:RegisterStateFunction( "create_sigil", function( sigil )
     sigils[ sigil ] = query_time + ( talent.quickened_sigils.enabled and 1 or 2 )
 end )
 
-spec:RegisterStateExpr( "soul_fragments", function ()
-    return buff.soul_fragments.stack
-end )
-
 spec:RegisterStateExpr( "last_metamorphosis", function ()
     return action.metamorphosis.lastCast
 end )
@@ -530,26 +528,33 @@ end
 spec:RegisterStateExpr( "sigil_placed", sigil_placed )
 -- Also add to infernal_strike, sigil_of_flame.
 
-spec:RegisterStateTable( "fragments", {
-    real = 0,
-    realTime = 0,
-} )
-
-spec:RegisterStateFunction( "queue_fragments", function( num, extraTime )
-    fragments.real = fragments.real + num
-    fragments.realTime = GetTime() + 1.25 + ( extraTime or 0 )
-end )
-
-spec:RegisterStateFunction( "purge_fragments", function()
-    fragments.real = 0
-    fragments.realTime = 0
-end )
-
 
 -- Variable to track the total bonus timed earned on fiery brand from immolation aura.
 local bonus_time_from_immo_aura = 0
 -- Variable to track the GUID of the initial target
 local initial_fiery_brand_guid = ""
+
+local actual_fragments = {}
+local function queue_fragments( num )
+    local lands = GetTime() + 0.85
+
+    while num > 0 do
+        tinsert( actual_fragments, lands )
+        num = num - 1
+    end
+end
+
+local function remove_fragments( num )
+    if not num then
+        twipe( actual_fragments )
+    end
+
+    while num > 0 and actual_fragments[ num ] do
+        tremove( actual_fragments, 1 )
+        num = num - 1
+    end
+end
+
 
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= GUID then return end
@@ -575,10 +580,43 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sour
 
         -- We consumed or generated a fragment for real, so let's purge the real queue.
     elseif spellID == 203981 and fragments.real > 0 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
-        fragments.real = fragments.real - 1
+        remove_fragments( 1 )
 
     end
 end, false )
+
+
+local virtual_fragments = {}
+
+-- Handlers for actual/virtual fragments.
+spec:RegisterStateExpr( "soul_fragments", function ()
+    local n = 0
+    for i, fragment in ipairs( virtual_fragments ) do
+        if fragment >= query_time then return n end
+        n = i
+    end
+    return n
+end )
+
+spec:RegisterStateFunction( "generate_fragments", function( n )
+    n = n or 1
+    while n > 0 do
+        tinsert( virtual_fragments, query_time + 0.85 )
+        n = n - 1
+    end
+end )
+
+spec:RegisterStateFunction( "purge_fragments", function( n )
+    if not n then
+        twipe( virtual_fragments )
+        return
+    end
+
+    while n > 0 and virtual_fragments[ n ] do
+        tremove( virtual_fragments, 1 )
+        n = n - 1
+    end
+end )
 
 
 local sigil_types = { "chains", "flame", "misery", "silence" }
@@ -620,12 +658,16 @@ spec:RegisterHook( "reset_precast", function ()
         setCooldown( "illidans_grasp", 0 )
     end
 
-    if buff.soul_fragments.down then
-        -- Apply the buff with zero stacks.
-        applyBuff( "soul_fragments", nil, 0 + fragments.real )
-    elseif fragments.real > 0 then
-        addStack( "soul_fragments", nil, fragments.real )
+    while( actual_fragments[1] and actual_fragments[1] < query_time ) do
+        remove_fragments( 1 )
     end
+
+    twipe( virtual_fragments )
+    for i, fragment in ipairs( actual_fragments ) do
+        tinsert( actual_fragments, fragment )
+    end
+
+    applyBuff( "soul_fragments" )
 
     fiery_brand_dot_primary_expires = nil
     fury_spent = nil
@@ -990,7 +1032,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyDebuff( "target", "fiery_brand_dot" )
+            applyDebuff( "target", "fiery_brand" )
             fiery_brand_dot_primary_expires = query_time + class.auras.fiery_brand.duration
             removeBuff( "spirit_of_the_darkness_flame" )
 
@@ -1021,7 +1063,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "fiery_brand", 6 )
                 removeBuff( "recrimination" )
             end
-            addStack( "soul_fragments", nil, buff.metamorphosis.up and 3 or 2 )
+            generate_fragments( buff.metamorphosis.up and 3 or 2 )
         end,
     },
 
@@ -1184,7 +1226,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "fiery_brand", 6 )
                 removeBuff( "recrimination" )
             end
-            addStack( "soul_fragments", nil, buff.metamorphosis.up and 2 or 1 )
+            generate_fragments( buff.metamorphosis.up and 2 or 1 )
         end,
     },
 
@@ -1307,7 +1349,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.feed_the_demon.enabled then
-                gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
+                gainChargeTime( "demon_spikes", 0.5 * soul_fragments )
             end
 
             -- TODO: Soul Fragment consumption mechanics.
@@ -1328,7 +1370,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            addStack( "soul_fragments", nil, 3 )
+            generate_fragments( 3 )
             applyBuff( "soul_carver" )
         end,
     },
@@ -1396,7 +1438,7 @@ spec:RegisterAbilities( {
 
         talent = "spirit_bomb",
         startsCombat = false,
-        buff = "soul_fragments",
+        usable = function() return soul_fragments > 0, "requires soul_fragments" end,
 
         handler = function ()
             if talent.feed_the_demon.enabled then
@@ -1414,7 +1456,8 @@ spec:RegisterAbilities( {
                     applyBuff( "soul_furnace" )
                 end
             end
-            buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 5 )
+
+            purge_fragments( 5 )
         end,
     },
 
