@@ -216,6 +216,27 @@ all:RegisterAbilities( {
                 applyBuff( "paragon_agi" )
             end
         end,
+
+        auras = {
+            paragon_str = {
+                id = 67708,
+                duration = 15,
+                max_stack = 1,
+                copy = {67708, 67773}
+            },
+            paragon_agi = {
+                id = 67703,
+                duration = 15,
+                max_stack = 1,
+                copy = {67703, 67772}
+            },
+            paragon = {
+                alias = { "paragon_agi","paragon_str" },
+                aliasType = "buff",
+                aliasMode = "first"
+            },
+        },
+        
         copy = {47303, 47464}
     },
 
