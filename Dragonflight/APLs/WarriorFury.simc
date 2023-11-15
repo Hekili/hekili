@@ -17,7 +17,7 @@ actions+=/blood_fury
 actions+=/fireblood
 actions+=/ancestral_call
 ## actions+=/bag_of_tricks,if=buff.recklessness.down&buff.enrage.up
-actions+=/avatar,if=talent.titans_torment&buff.enrage.up&raid_event.adds.in>15&!buff.avatar.up&cooldown.odyns_fury.remains|talent.berserkers_torment&buff.enrage.up&!buff.avatar.up&raid_event.adds.in>15|!talent.titans_torment&!talent.berserkers_torment&(buff.recklessness.up|target.time_to_die<20)
+actions+=/avatar,if=talent.titans_torment&buff.enrage.up&raid_event.adds.in>15&!buff.avatar.up&(!talent.odyns_fury|cooldown.odyns_fury.remains)|talent.berserkers_torment&buff.enrage.up&!buff.avatar.up&raid_event.adds.in>15|!talent.titans_torment&!talent.berserkers_torment&(buff.recklessness.up|target.time_to_die<20)
 actions+=/recklessness,if=!raid_event.adds.exists&(talent.annihilator&cooldown.spear_of_bastion.remains<1|cooldown.avatar.remains>40|!talent.avatar|target.time_to_die<12)
 actions+=/recklessness,if=!raid_event.adds.exists&!talent.annihilator|boss&fight_remains<12
 actions+=/spear_of_bastion,if=buff.enrage.up&((buff.furious_bloodthirst.up&talent.titans_torment)|!talent.titans_torment|target.time_to_die<20|active_enemies>1|!set_bonus.tier31_2pc)&raid_event.adds.in>15
