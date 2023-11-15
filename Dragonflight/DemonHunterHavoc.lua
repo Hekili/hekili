@@ -1092,7 +1092,6 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "chromatic",
 
-        talent = "consume_magic",
         startsCombat = false,
 
         toggle = "interrupts",
