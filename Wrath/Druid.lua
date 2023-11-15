@@ -550,19 +550,38 @@ spec:RegisterStateExpr("excess_e", function()
     local earliest_proc_end = 0
     if settings.optimize_trinkets and debuff.rip.up then
         for entry in pairs(trinket) do
-            local t_proc_end = 0
             if tonumber(entry) then
                 local t = trinket[entry]
-                if t.proc and t.ability and action[t.ability] and action[t.ability].aura > 0 and buff[action[t.ability].aura] then
-                    local t_cooldown = action[t.ability].cooldown
-                    local t_earliest_proc = max(0, buff[action[t.ability].aura].last_application + t_cooldown)
-                    if t_cooldown > 0 and buff[action[t.ability].aura].last_application > 0 and (earliest_proc == 0 or t_earliest_proc < earliest_proc) then
+                local t_action = action[t.ability]
+                if t.proc and t.ability and t_action and (t_action.aura > 0 or t_action.auras and type(t_action.auras) == "table") then
+                    local t_cooldown = t_action.cooldown
+                    local t_last_application = 0
+                    local t_duration = 0
+                    local t_up = false
+                    if t_action.aura > 0 then
+                        t_last_application = buff[t_action.aura].last_application
+                        t_duration = buff[t_action.aura].duration
+                        t_up = t_up or buff[t_action.aura].up
+                    else
+                        for a in pairs(t_action.auras) do
+                            if t_duration == 0 then
+                                t_duration = buff[a].duration
+                            end
+                            if buff[a] and buff[a].last_application > t_last_application then
+                                t_last_application = buff[a].last_application
+                                t_duration = buff[a].duration
+                            end
+                            t_up = t_up or buff[a].up
+                        end
+                    end
+                    
+                    local t_earliest_proc = max(0, t_last_application + t_cooldown)
+                    if t_cooldown > 0 and t_last_application > 0 and (earliest_proc == 0 or t_earliest_proc < earliest_proc) then
                         earliest_proc = t_earliest_proc
-                        earliest_proc_end = t_earliest_proc + buff[action[t.ability].aura].duration
-                        trinket_entry = t
+                        earliest_proc_end = t_earliest_proc + t_duration
                     end
 
-                    trinket_active = trinket_active or buff[action[t.ability].aura].up
+                    trinket_active = trinket_active or t_up
                 end
             end
         end
