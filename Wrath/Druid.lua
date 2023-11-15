@@ -552,36 +552,43 @@ spec:RegisterStateExpr("excess_e", function()
         for entry in pairs(trinket) do
             if tonumber(entry) then
                 local t = trinket[entry]
-                local t_action = action[t.ability]
-                if t.proc and t.ability and t_action and (t_action.aura > 0 or t_action.auras and type(t_action.auras) == "table") then
-                    local t_cooldown = t_action.cooldown
-                    local t_last_application = 0
-                    local t_duration = 0
-                    local t_up = false
-                    if t_action.aura > 0 then
-                        t_last_application = buff[t_action.aura].last_application
-                        t_duration = buff[t_action.aura].duration
-                        t_up = t_up or buff[t_action.aura].up
-                    else
-                        for a in pairs(t_action.auras) do
-                            if t_duration == 0 then
-                                t_duration = buff[a].duration
+                if t.proc and t.ability then
+                    local t_action = action[t.ability]
+                    if t_action and t_action.cooldown > 0 and (t_action.aura > 0 or type(t_action.auras) == "table") then
+                        -- Find the trinket buff to inspect
+                        local t_buff = nil
+                        if t_action.aura > 0 then
+                            t_buff = buff[t_action.aura]
+                        else
+                            for a in pairs(t_action.auras) do
+                                -- Automatically use any current buffs
+                                if buff[a].up then
+                                    t_buff = buff[a]
+                                    break
+                                end
+
+                                -- Use the first buff as a basis of comparison
+                                if t_buff == nil then
+                                    t_buff = buff[a]
+                                else
+                                    -- Otherwise use buffs with the closest known possible proc time
+                                    local possible_proc = buff[a].last_application > 0 and (buff[a].last_application + t_action.cooldown) or 0
+                                    if possible_proc > 0 and (possible_proc < t_buff.last_application + t_action.cooldown) then
+                                        t_buff = buff[a]
+                                    end
+                                end
                             end
-                            if buff[a] and buff[a].last_application > t_last_application then
-                                t_last_application = buff[a].last_application
-                                t_duration = buff[a].duration
+                        end
+
+                        if t_buff then
+                            local t_earliest_proc = t_buff.last_application > 0 and (t_buff.last_application + t_action.cooldown) or 0
+                            if t_earliest_proc > 0 and (earliest_proc == 0 or t_earliest_proc < earliest_proc) then
+                                earliest_proc = t_earliest_proc
+                                earliest_proc_end = t_earliest_proc + t_buff.duration
                             end
-                            t_up = t_up or buff[a].up
+                            trinket_active = trinket_active or t_buff.up
                         end
                     end
-                    
-                    local t_earliest_proc = max(0, t_last_application + t_cooldown)
-                    if t_cooldown > 0 and t_last_application > 0 and (earliest_proc == 0 or t_earliest_proc < earliest_proc) then
-                        earliest_proc = t_earliest_proc
-                        earliest_proc_end = t_earliest_proc + t_duration
-                    end
-
-                    trinket_active = trinket_active or t_up
                 end
             end
         end
