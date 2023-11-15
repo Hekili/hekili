@@ -1959,7 +1959,8 @@ me:RegisterAbilities( {
 
     -- Talent: Summon a Gargoyle into the area to bombard the target for $61777d.    The Gar...
     summon_gargoyle = {
-        id = 49206,
+        id = function() return IsUsableSpell( 207349 ) and 207349 or 49206 end,
+        known = 49206,
         cast = 0,
         cooldown = 180,
         gcd = "off",
@@ -2064,13 +2065,15 @@ me:RegisterAbilities( {
     any_dnd = {
         name = function () return "|T136144:0|t |cff00ccff[Any " .. ( class.abilities.death_and_decay and class.abilities.death_and_decay.name or "Death and Decay" ) .. "]|r" end,
         cast = 0,
-        cooldown = 0
+        cooldown = 0,
+        copy = "any_dnd_stub"
     },
 
     wound_spender = {
         name = "|T237530:0|t |cff00ccff[Wound Spender]|r",
         cast = 0,
-        cooldown = 0
+        cooldown = 0,
+        copy = "wound_spender_stub"
     }
 } )
 
