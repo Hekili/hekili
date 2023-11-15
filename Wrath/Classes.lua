@@ -162,6 +162,63 @@ all:RegisterAbilities( {
         }
     },
 
+    deaths_verdict = {
+        cast = 0,
+        cooldown = 45,
+        gcd = "off",
+        unlisted = true,
+
+        item = 47115,
+
+        handler = function()
+            if stat.strength >= stat.agility then 
+                applyBuff( "paragon_str" )
+            else
+                applyBuff( "paragon_agi" )
+            end
+        end,
+
+        auras = {
+            paragon_str = {
+                id = 67708,
+                duration = 15,
+                max_stack = 1,
+                copy = {67708, 67773}
+            },
+            paragon_agi = {
+                id = 67703,
+                duration = 15,
+                max_stack = 1,
+                copy = {67703, 67772}
+            },
+            paragon = {
+                alias = { "paragon_agi","paragon_str" },
+                aliasType = "buff",
+                aliasMode = "first"
+            },
+        },
+
+        copy = {47115, 47131}
+    },
+
+    deaths_choice = {
+        cast = 0,
+        cooldown = 45,
+        gcd = "off",
+        unlisted = true,
+
+        item = 47303,
+
+        handler = function()
+            if stat.strength >= stat.agility then 
+                applyBuff( "paragon_str" )
+            else
+                applyBuff( "paragon_agi" )
+            end
+        end,
+        copy = {47303, 47464}
+    },
+
     ephemeral_snowflake = {
         cast = 0,
         cooldown = 120,
