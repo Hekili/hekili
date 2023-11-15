@@ -274,7 +274,7 @@ spec:RegisterStateExpr("should_rake", function()
     end
 
     local r, s = calc_rake_dpe()
-    return r >= s or (not settings.optimize_rake)
+    return r >= s
 end)
 
 spec:RegisterStateExpr("is_training_dummy", function()
@@ -2945,15 +2945,6 @@ spec:RegisterSetting( "max_ff_energy", 15, {
     min = 0,
     softMax = 100,
     step = 1,
-} )
-
-spec:RegisterSetting( "optimize_rake", false, {
-    type = "toggle",
-    name = strformat( "Optimize %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rake.id ) ),
-    desc = strformat( "If checked, %s will only be suggested if it will do more damage than %s or if there is no active %s bleed.  " ..
-        "Recommendation: Checked, if stacking Armor Penetration\n\n" ..
-        "Default: Unchecked", Hekili:GetSpellLinkWithTexture( spec.abilities.rake.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.shred.id ), spec.abilities.rake.name ),
-    width = "full",
 } )
 
 spec:RegisterSetting( "optimize_trinkets", false, {
