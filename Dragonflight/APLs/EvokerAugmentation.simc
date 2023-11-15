@@ -41,7 +41,7 @@ actions+=/call_action_list,name=fb,if=(raid_event.adds.remains>13|!raid_event.ad
 actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&(raid_event.adds.remains>13|!raid_event.adds.exists)
 actions+=/time_skip,if=(cooldown.fire_breath.remains+cooldown.upheaval.remains+cooldown.prescience.full_recharge_time)>=35
 actions+=/emerald_blossom,if=talent.dream_of_spring&buff.essence_burst.up&(variable.spam_heal=2|variable.spam_heal=1&!buff.ancient_flame.up)&(buff.ebon_might.up|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4)
-actions+=/eruption,if=buff.ebon_might.remains>execute_time|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4
+actions+=/eruption,if=buff.ebon_might.remains>execute_time|essence.deficit=0&buff.essence_burst.down|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4
 actions+=/blistering_scales,cycle_targets,if=group_members>1&!active_dot.blistering_scales&buff.ebon_might.down
 actions+=/emerald_blossom,if=!buff.ebon_might.up&talent.ancient_flame&talent.scarlet_adaptation&!talent.dream_of_spring&!buff.ancient_flame.up&active_enemies=1
 actions+=/verdant_embrace,if=settings.use_verdant_embrace&!buff.ebon_might.up&talent.ancient_flame&talent.scarlet_adaptation&!buff.ancient_flame.up&(!talent.dream_of_spring|mana>=200000)&active_enemies=1
