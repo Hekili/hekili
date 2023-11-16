@@ -284,7 +284,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
             -- Call Dreadstalkers (use travel time to determine buffer delay for Demonic Cores).
             elseif spellID == 104316 then
                 -- TODO:  Come up with a good estimate of the time it takes.
-                dreadstalkers_travel_time = ( select( 2, RC:GetRange( "target" ) ) or 25 ) / 25
+                dreadstalkers_travel_time = ( select( 6, GetSpellInfo( 104316 ) ) or 25 ) / 25
 
             end
         end

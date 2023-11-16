@@ -843,7 +843,7 @@ do
         Cooldowns = 0.25
     }
 
-    local LRC = LibStub("LibRangeCheck-2.0")
+    local LRC = LibStub("LibRangeCheck-3.0-ElvUI")
     local LSF = SpellFlashCore
     local catchFlash, lastFramesFlashed = nil, {}
 
@@ -1236,15 +1236,8 @@ do
                                 if conf.range.type == "melee" and UnitExists( "target" ) then
                                     outOfRange = ( LRC:GetRange( "target" ) or 50 ) > 7
                                 elseif conf.range.type == "ability" and UnitExists( "target" ) and UnitCanAttack( "player", "target" ) then
-                                    if a.item then
-                                        outOfRange = IsItemInRange( a.itemCd or a.item, "target" ) == false
-                                    else
-                                        local name = a.rangeSpell or a.actualName or a.name
-
-                                        if name then
-                                            outOfRange = LSR.IsSpellInRange( a.rangeSpell or a.actualName or a.name, "target" ) == 0
-                                        end
-                                    end
+                                    local name = a.rangeSpell or a.itemSpellName or a.actualName or a.name
+                                    if name then outOfRange = LSR.IsSpellInRange( name, "target" ) == 0 end
                                 end
                             end
 

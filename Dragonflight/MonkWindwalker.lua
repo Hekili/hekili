@@ -7,10 +7,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
-local GetNamePlates = C_NamePlate.GetNamePlates
-local LRC = LibStub( "LibRangeCheck-2.0" )
-
-local pow, strformat = math.pow, string.format
+local strformat = math.pow, string.format
 
 local spec = Hekili:NewSpecialization( 269 )
 
@@ -747,29 +744,6 @@ spec:RegisterStateExpr( "combo_strike", function ()
 end )
 
 
-local application_events = {
-    SPELL_AURA_APPLIED      = true,
-    SPELL_AURA_APPLIED_DOSE = true,
-    SPELL_AURA_REFRESH      = true,
-}
-
-local removal_events = {
-    SPELL_AURA_REMOVED      = true,
-    SPELL_AURA_BROKEN       = true,
-    SPELL_AURA_BROKEN_SPELL = true,
-}
-
-local death_events = {
-    UNIT_DIED               = true,
-    UNIT_DESTROYED          = true,
-    UNIT_DISSIPATES         = true,
-    PARTY_KILL              = true,
-    SPELL_INSTAKILL         = true,
-}
-
-local bonedust_brew_applied = {}
-local bonedust_brew_expires = {}
-
 -- If a Tiger Palm missed, pretend we never cast it.
 -- Use RegisterEvent since we're looking outside the state table.
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
@@ -792,20 +766,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
         elseif subtype == "SPELL_DAMAGE" and spellID == 148187 then
             -- track the last tick.
             state.buff.rushing_jade_wind.last_tick = GetTime()
-
-        -- Track Bonedust Brew applications.
-        elseif spellID == 325216 then
-            if application_events[ subtype ] then
-                bonedust_brew_applied[ destGUID ] = GetTime()
-                bonedust_brew_expires[ destGUID ] = nil
-            elseif removal_events[ subtype ] then
-                bonedust_brew_expires[ destGUID ] = nil
-                bonedust_brew_expires[ destGUID ] = nil
-            end
         end
-    elseif death_events[ subtype ] then
-        bonedust_brew_applied[ destGUID ] = nil
-        bonedust_brew_expires[ destGUID ] = nil
     end
 end )
 
@@ -837,203 +798,6 @@ local noop = function () end
 -- local reverse_harm_target
 
 
--- New Bonedust Brew Stuff
-local checker = LRC:GetHarmMaxChecker( 8 )
-
-local valid_brews = {}
-
-local function ValidateBonedustBrews()
-    local now = state.now
-    checker = checker or LRC:GetHarmMaxChecker( 8 )
-    table.wipe( valid_brews )
-
-    for _, plate in ipairs( GetNamePlates() ) do
-        local unit = plate.namePlateUnitToken
-
-        if unit and UnitCanAttack( "player", unit ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) and checker( unit ) then
-            local guid = UnitGUID( unit )
-
-            valid_brews[ guid ] = 0
-
-            if bonedust_brew_applied[ guid ] then
-                if not bonedust_brew_expires[ guid ] then
-                    -- We haven't scraped the aura for the duration yet.
-                    local found, _, _, _, _, expires = AuraUtil.FindAuraByName( class.auras.bonedust_brew_debuff.name, unit, "HARMFUL|PLAYER" )
-
-                    if found then
-                        bonedust_brew_expires[ guid ] = expires
-                        valid_brews[ guid ] = expires
-                    end
-                else
-                    if bonedust_brew_expires[ guid ] > now then
-                        valid_brews[ guid ] = bonedust_brew_expires[ guid ]
-                    end
-                end
-            end
-        end
-    end
-end
-
-local GatherBonedustInfo = setfenv( function()
-    local targets, bonedusts, aggregate, longest = 0, 0, 0, 0
-
-    for _, expires in pairs( valid_brews ) do
-        targets = targets + 1
-        local remains = max( 0, expires - query_time )
-
-        if remains > 0 then
-            bonedusts = bonedusts + 1
-            aggregate = aggregate + remains
-            longest = max( longest, remains )
-        end
-    end
-
-    return targets, bonedusts, aggregate, longest
-end, state )
-
-local bdbActions = {}
-
-local SetAction = setfenv( function( name, damage, execution_time, net_chi, net_energy, mastery, p, capped )
-    local a = bdbActions[ name ] or {}
-
-    capped = capped or false
-
-    a.damage = damage
-    a.execution_time = execution_time
-    a.net_chi = net_chi
-    a.net_energy = ( capped and net_energy ) or ( net_energy + energy.regen * execution_time )
-    a.idps = damage / execution_time
-    a.cps = net_chi / execution_time
-    a.eps = a.net_energy / execution_time
-    a.rdps = a.idps + 0.5 * mastery * a.cps + 0.02 * mastery * ( 1 + p ) * a.eps
-
-    bdbActions[ name ] = a
-
-    return a
-end, state )
-
-
-local lastBonedustZoneTime = 0
-local lastBonedustZoneValue = 0
-
--- Returns cap_energy, tp_fill, bok, break_mastery.
--- TODO: Update for Dragonflight.
-local GetBonedustZoneInfo = setfenv( function()
-    if query_time == lastBonedustZoneTime then
-        return lastBonedustZoneValue
-    end
-
-    local targets, bonedusts, aggregate = GatherBonedustInfo()
-    lastBonedustZoneTime = query_time
-
-    if targets < 2 or bonedusts < 1 then
-        -- Orange
-        lastBonedustZoneValue = 0
-        return 0
-    end
-
-    if aggregate > 0 then
-        local length = 60
-        local blp = 0.2
-        local bb_rate = 1.5 + blp
-
-        -- Bone Marrow Hops
-        if conduit.bone_marrow_hops.rank > 0 then
-            length = length - 2.5 - ( 2.5 * bb_rate )
-        end
-
-        -- Brewmaster Keg Smash
-        if spec.brewmaster then
-            length = length - ( 60 / length * 8 ) -- 2 Keg Smashes for a hard Cast
-            length = length - bb_rate * 4         -- 1 Keg Smash per bountiful minimum (safe)
-        end
-    end
-
-    -- Math below is credit to Tostad0ra, ported to Lua/WoW by Jeremals (https://wago.io/2rN0fBudK).
-    -- https://colab.research.google.com/drive/1IlNnwzigBG_xa0VdXhiofvuy-mgJAhGa?usp=sharing
-
-    local mastery = 1 + stat.mastery_value
-    local haste = 1 + stat.haste
-
-    -- Locally defined variables that may change.
-
-    local eps = 0.2 -- Delay when chaining SCKs
-    local tiger_palm_AP = 0.41804714952
-    local sck_AP = 0.8481600000000001
-
-    local coordinated_offensive_bonus = 1
-
-    if conduit.coordinated_offensive.rank > 0 then
-        coordinated_offensive_bonus = 1 + 0.085 + ( 0.009 * ( conduit.coordinated_offensive.rank - 1 ) )
-    end
-
-    local calculated_strikes_bonus = 0.16
-    if conduit.calculated_strikes.rank > 0 then
-        calculated_strikes_bonus = 0.16 + 0.1 + ( 0.01 * ( conduit.calculated_strikes.rank - 1 ) )
-    end
-
-    local bone_marrow_hops_bonus = 0
-    if conduit.bone_marrow_hops.rank > 0 then
-        bone_marrow_hops_bonus = 0.4 + ( 0.04 * ( conduit.bone_marrow_hops.rank - 1 ) )
-    end
-
-    -- sqrt scaling
-    local N_effective_targets_above = 5 * pow( ( targets / 5 ), 0.5 )
-    local N_effective_targets_below = targets
-    local N_effective_targets = min( N_effective_targets_below, N_effective_targets_above )
-
-
-    local mark_stacks = spinning_crane_kick.count
-    local mark_bonus_per_target = 0.18 + calculated_strikes_bonus
-    local mark_bonus = mark_bonus_per_target * mark_stacks
-    local mark_multiplier = 1 + mark_bonus
-
-    local p = tiger_palm_AP / ( ( N_effective_targets * sck_AP * mark_multiplier ) - ( 1.1 / 1.676 * 0.81 / 2.5 * 1.5 ) )
-
-    local amp = 1 + stat.versatility_atk_mod
-
-    if buff.invoke_xuen.up then
-        amp = amp * 1.1
-    end
-
-    if buff.storm_earth_and_fire.up then
-        amp = amp * 1.35 * ( 2 * coordinated_offensive_bonus + 1 ) / 3
-    end
-
-    amp = amp * ( 1 + ( 0.5 * 0.4 * ( bonedusts / targets ) * ( 1 + bone_marrow_hops_bonus ) ) )
-
-    local TP_SCK = SetAction( "TP_SCK", amp * mastery * ( 1 + p ), 2, 1, -50, mastery, p )
-    local rSCK_cap = SetAction( "rSCK_cap", amp, 1.5 / haste + eps, -1, 0, mastery, p, true )
-    local rSCK_unc = SetAction( "rSCK_unc", amp, 1.5 / haste + eps, -1, 0, mastery, p )
-
-    if rSCK_unc.rdps > TP_SCK.rdps then
-        local regen = 2 * energy.regen
-        local N_oc_expr = ( 1 - 2 * regen ) / ( 1.5 + haste * eps ) / ( regen / haste )
-        local w_oc_expr = 1 / ( 1 + N_oc_expr )
-        local rdps_nocap = w_oc_expr * TP_SCK.rdps + ( 1 - w_oc_expr ) * rSCK_unc.rdps
-
-        -- Purple
-        if rSCK_cap.rdps > rdps_nocap then
-            lastBonedustZoneValue = 4
-            return 4
-        end
-
-        -- Red
-        lastBonedustZoneValue = 3
-        return 3
-    end
-
-    -- Blue
-    if rSCK_unc.idps < TP_SCK.idps then
-        lastBonedustZoneValue = 1
-        return 1
-    end
-
-    -- Green
-    lastBonedustZoneValue = 2
-    return 2
-end, state )
-
 
 
 spec:RegisterHook( "runHandler", function( key, noStart )
@@ -1047,24 +811,6 @@ spec:RegisterHook( "runHandler", function( key, noStart )
         end
         virtual_combo = key
     end
-
-    lastBonedustZoneTime = 0
-end )
-
-spec:RegisterStateExpr( "cap_energy", function()
-    return GetBonedustZoneInfo() == 4
-end )
-
-spec:RegisterStateExpr( "tp_fill", function()
-    return GetBonedustZoneInfo() < 3
-end )
-
-spec:RegisterStateExpr( "no_bok", function()
-    return GetBonedustZoneInfo() > 0
-end )
-
-spec:RegisterStateExpr( "break_mastery", function()
-    return GetBonedustZoneInfo() > 1
 end )
 
 
@@ -1105,21 +851,10 @@ spec:RegisterHook( "reset_precast", function ()
         state:QueueAuraExpiration( "weapons_of_order_ww", noop, buff.weapons_of_order_ww.expires )
     end
 
-    -- BDB Logic.
-    if talent.bonedust_brew.enabled or state:IsKnown( "bonedust_brew" ) then
-        ValidateBonedustBrews()
-        lastBonedustZoneTime = 0
-    end
-
     if talent.forbidden_technique.enabled and cooldown.touch_of_death.remains == 0 and query_time - action.touch_of_death.lastCast < 5 then
         applyBuff( "recently_touched", query_time - action.touch_of_death.lastCast )
     end
 end )
-
-spec:RegisterHook( "advance", function()
-    lastBonedustZoneTime = 0
-end )
-
 
 spec:RegisterHook( "IsUsable", function( spell )
     if spell == "touch_of_death" then return end -- rely on priority only.
