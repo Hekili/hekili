@@ -477,12 +477,22 @@ spec:RegisterStateExpr("excess_e", function()
             pending_actions.mangle_cat.refresh_cost = 0
         end
 
-        if buff.savage_roar.up then
+        if buff.savage_roar.up and combo_points.current > 0 then
             pending_actions.savage_roar.refresh_time = query_time + buff.savage_roar.remains
             pending_actions.savage_roar.refresh_cost = 25 * (berserk_expected_at(query_time, query_time + buff.savage_roar.remains) and 0.5 or 1)
         else
             pending_actions.savage_roar.refresh_time = 0
             pending_actions.savage_roar.refresh_cost = 0
+        end
+
+        if pending_actions.rip.refresh_time > 0 and pending_actions.savage_roar.refresh_time > 0 then
+            if pending_actions.rip.refresh_time < pending_actions.savage_roar.refresh_time then
+                pending_actions.savage_roar.refresh_time = 0
+                pending_actions.savage_roar.refresh_cost = 0
+            else
+                pending_actions.rip.refresh_time = 0
+                pending_actions.rip.refresh_cost = 0
+            end
         end
     else
         if buff.savage_roar.up then
@@ -554,12 +564,17 @@ spec:RegisterStateExpr("excess_e", function()
                 local t = trinket[entry]
                 if t.proc and t.ability then
                     local t_action = action[t.ability]
-                    if t_action and t_action.cooldown > 0 and (t_action.aura > 0 or type(t_action.auras) == "table") then
-                        -- Find the trinket buff to inspect
+                    if t_action and t_action.cooldown > 0 then
                         local t_buff = nil
-                        if t_action.aura > 0 then
+
+                        -- Find the trinket buff to inspect
+                        local aura_type = type(t_action.aura)
+                        local auras_type = type(t_action.auras)
+                        if aura_type == "number" and t_action.aura > 0 then
                             t_buff = buff[t_action.aura]
-                        else
+                        elseif aura_type == "string" and #t_action.aura > 0 then
+                            t_buff = buff[t_action.aura]
+                        elseif auras_type == "table" then
                             for a in pairs(t_action.auras) do
                                 -- Automatically use any current buffs
                                 if buff[a].up then
@@ -592,7 +607,7 @@ spec:RegisterStateExpr("excess_e", function()
                 end
             end
         end
-
+        
         if (not trinket_active) and earliest_proc > 0 and earliest_proc < time_to_cap and earliest_proc_end <= time_to_end then
             floating_energy = max(floating_energy, 100)
             Hekili:Debug("(excess_e) Pooling to "..tostring(floating_energy).." for trinket proc at approximately "..tostring(earliest_proc - query_time))
