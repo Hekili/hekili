@@ -1414,7 +1414,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
         nodebuff = "rooted",
 
-        -- usable = function () return target.within15 end,
         handler = function ()
             setDistance( 5 )
         end,
