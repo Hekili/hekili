@@ -1523,7 +1523,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            if talent.vengeful_bonds.enabled and target.within8 then
+            if talent.vengeful_bonds.enabled and action.chaos_strike.in_range then -- 20231116: and target.within8 then
                 applyDebuff( "target", "vengeful_retreat" )
             end
             if talent.momentum.enabled then applyBuff( "momentum" ) end
