@@ -1648,7 +1648,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         usable = function ()
-            if settings.check_sck_range and talent.strike_of_the_windlord.enabled and not action.strike_of_the_windlord.in_range then return false, "target is outside of melee range" end
+            if settings.check_sck_range and not action.fists_of_fury.in_range then return false, "target is out of range" end
             return true
         end,
 
@@ -2021,7 +2021,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         usable = function ()
-            if settings.check_wdp_range and target.outside8 then return false, "target is outside of melee range" end
+            if settings.check_wdp_range and not action.fists_of_fury.in_range then return false, "target is out of range" end
             return cooldown.fists_of_fury.remains > 0 and cooldown.rising_sun_kick.remains > 0, "requires fists_of_fury and rising_sun_kick on cooldown"
         end,
 
@@ -2107,14 +2107,14 @@ spec:RegisterSetting( "tok_damage", 1, {
 
 spec:RegisterSetting( "check_wdp_range", false, {
     name = strformat( "%s: Check Range", Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ) ),
-    desc = strformat( "If checked, %s will not be recommended if your target is out of range.", Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ) ),
+    desc = strformat( "If checked, %s will not be recommended if your target is outside your %s range.", Hekili:GetSpellLinkWithTexture( spec.abilities.whirling_dragon_punch.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fists_of_fury.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "check_sck_range", false, {
     name = strformat( "%s: Check Range", Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
-    desc = strformat( "If checked, %s will not be recommended if your target is out of range of %s (if talented).", Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.strike_of_the_windlord.id ) ),
+    desc = strformat( "If checked, %s will not be recommended if your target is outside your %s range.", Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.fists_of_fury.id ) ),
     type = "toggle",
     width = "full"
 } )
