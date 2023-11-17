@@ -1733,7 +1733,7 @@ spec:RegisterAbilities( {
         texture = 132369,
 
         usable = function ()
-            if settings.check_ww_range and target.outside7 then return false, "target is outside of whirlwind range" end
+            if action.taunt.known and action.heroic_throw.known and settings.check_ww_range and not ( action.taunt.in_range and not action.heroic_throw.in_range ) then return false, "target is outside of whirlwind range" end
             return true
         end,
 
