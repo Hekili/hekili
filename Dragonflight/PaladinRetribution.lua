@@ -1741,10 +1741,10 @@ spec:RegisterAbilities( {
         talent = "radiant_decree",
         startsCombat = true,
 
-        usable = function ()
+        --[[ usable = function ()
             if settings.check_wake_range and not ( target.exists and target.within12 ) then return false, "target is outside of 12 yards" end
             return true
-        end,
+        end, ]]
 
         handler = function ()
             removeDebuffStack( "target", "judgment" )
@@ -1969,10 +1969,10 @@ spec:RegisterAbilities( {
         notalent = "radiant_decree",
         startsCombat = true,
 
-        usable = function ()
+        --[[ usable = function ()
             if settings.check_wake_range and not ( target.exists and target.within12 ) then return false, "target is outside of 12 yards" end
             return true
-        end,
+        end, ]]
 
         handler = function ()
             if target.is_undead or target.is_demon then applyDebuff( "target", "wake_of_ashes" ) end
@@ -2030,7 +2030,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterSetting( "check_wake_range", false, {
+--[[ spec:RegisterSetting( "check_wake_range", false, {
     name = "Check |T1112939:0|t Wake of Ashes Range",
     desc = "If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended.",
     type = "toggle",
@@ -2045,7 +2045,7 @@ spec:RegisterSetting( "sov_damage", 20, {
     min = 0,
     max = 100,
     step = 1,
-} )
+} ) ]]
 
 --[[ Retired 20230426.
     spec:RegisterSetting( "desync_toll", false, {

@@ -1678,7 +1678,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.posthaste.enabled then applyBuff( "posthaste" ) end
-            if conduit.tactical_retreat.enabled and target.within8 then applyDebuff( "target", "tactical_retreat" ) end
+            if conduit.tactical_retreat.enabled then applyDebuff( "target", "tactical_retreat" ) end
         end,
     },
 

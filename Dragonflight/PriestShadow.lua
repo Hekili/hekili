@@ -1760,7 +1760,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            if target.within8 then applyDebuff( "target", "psychic_scream" ) end
+            applyDebuff( "target", "psychic_scream" )
         end,
     },
 

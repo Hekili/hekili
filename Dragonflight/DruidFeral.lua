@@ -2559,9 +2559,9 @@ spec:RegisterAbilities( {
                 buff.scent_of_blood.v1 = -3 * active_enemies
             end
 
-            if target.within8 then
+            -- if target.within8 then
                 gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1, "combo_points" )
-            end
+            -- end
 
             if talent.bloodtalons.enabled then
                 applyBuff( "bt_thrash" )

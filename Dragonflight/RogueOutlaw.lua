@@ -952,7 +952,7 @@ spec:RegisterAbilities( {
         spend = 15,
         spendType = "energy",
 
-        startsCombat = function() return target.within8 or active_enemies > 1 end,
+        startsCombat = true,
 
         -- 20231108: Deprecated; we use Blade Flurry more now.
         -- readyTime = function() return buff.blade_flurry.remains - gcd.execute end,

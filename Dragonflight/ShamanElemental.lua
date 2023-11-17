@@ -2516,7 +2516,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            if target.within10 then applyDebuff( "target", "thunderstorm" ) end
+            applyDebuff( "target", "thunderstorm" )
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },

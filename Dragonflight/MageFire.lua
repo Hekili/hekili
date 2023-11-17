@@ -1359,7 +1359,7 @@ spec:RegisterAbilities( {
         talent = "dragons_breath",
         startsCombat = true,
 
-        usable = function () return target.within12, "target must be within 12 yds" end,
+        -- usable = function () return target.within12, "target must be within 12 yds" end,
         handler = function ()
             hot_streak( talent.alexstraszas_fury.enabled )
             applyDebuff( "target", "dragons_breath" )

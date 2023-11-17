@@ -1746,15 +1746,15 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "vengeful_retreat_movement" )
             if cooldown.fel_rush.remains < 1 then setCooldown( "fel_rush", 1 ) end
-            if target.within8 then
+            -- 20231117: if target.within8 then
                 applyDebuff( "target", "vengeful_retreat" )
                 applyDebuff( "target", "vengeful_retreat_snare" )
                 -- Assume that we retreated away.
                 setDistance( 15 )
-            else
+            --[[ else
                 -- Assume that we retreated back.
                 setDistance( 5 )
-            end
+            end ]]
             if talent.tactical_retreat.enabled then applyBuff( "tactical_retreat" ) end
             if talent.momentum.enabled then applyBuff( "momentum" ) end
             if pvptalent.glimpse.enabled then applyBuff( "glimpse" ) end
