@@ -12,7 +12,7 @@ local PTR = ns.PTR
 local FindPlayerAuraByID, FindUnitBuffByID, FindUnitDebuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local abs, ceil, strformat = math.abs, math.ceil, string.format
 
-local RC = LibStub( "LibRangeCheck-3.0-ElvUI" )
+local RC = LibStub( "LibRangeCheck-2.0" )
 
 
 local spec = Hekili:NewSpecialization( 266 )
