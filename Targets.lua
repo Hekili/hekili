@@ -205,15 +205,17 @@ local enemyExclusions = {
     [204560] = true,      -- Incorporeal Being
 }
 
+local requiredForInclusion = {
+    [131825] = 260805,    -- Focusing Iris (damage on others is wasted)
+    [131823] = 260805,    -- Same
+    [131824] = 206805,    -- Same
+}
+
 if Hekili.IsDev then
     -- Add these exclusions only in development copies, until a solution is built for funnelers vs. non-funnelers.
     enemyExclusions[202971] = 404705 -- Null Glimmer
     enemyExclusions[202969] = 404705 -- Empty Recollection
 end
-
-local FindExclusionAuraByID = {
-    [410972]  = true,      -- Corruption aura on Echo of Neltharion mythic fight
-}
 
 RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( event, unit )
     local id = UnitGUID( unit )
@@ -364,7 +366,11 @@ do
                         if debugging then details = format( "%s\n - Checking %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
                         if excluded then
-                            excluded = enemyExclusions[ npcid ]
+                            if requiredForInclusion[ npcid ] then
+                                excluded = not FindExclusionAuraByID( unit, requiredForInclusion[ npcid ] )
+                            else
+                                excluded = enemyExclusions[ npcid ]
+                            end
 
                             -- If our table has a number, unit is ruled out only if the buff is present.
                             if excluded and type( excluded ) == "number" then
