@@ -736,6 +736,7 @@ do
         local T1 = GetInventoryItemID( "player", 13 )
 
         state.trinket.t1.__id = 0
+        state.trinket.t1.ilvl = 0
         state.trinket.t1.__ability = "null_cooldown"
         state.trinket.t1.__usable = false
         state.trinket.t1.__has_use_buff = false
@@ -743,6 +744,8 @@ do
 
         if T1 then
             state.trinket.t1.__id = T1
+            -- So this isn't *truly* accurate, but it's accurate relatively speaking.
+            state.trinket.t1.ilvl = GetDetailedItemLevelInfo( T1 )
 
             local isUsable = IsUsableItem( T1 )
             local name, spellID = GetItemSpell( T1 )
@@ -786,9 +789,12 @@ do
         state.trinket.t2.__usable = false
         state.trinket.t2.__has_use_buff = false
         state.trinket.t2.__use_buff_duration = nil
+        state.trinket.t2.ilvl = 0
 
         if T2 then
             state.trinket.t2.__id = T2
+             -- So this isn't *truly* accurate, but it's accurate relatively speaking.
+             state.trinket.t2.ilvl = GetDetailedItemLevelInfo( T2 )
 
             local isUsable = IsUsableItem( T2 )
             local name, spellID = GetItemSpell( T2 )
