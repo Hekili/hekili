@@ -1648,7 +1648,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         usable = function ()
-            if settings.check_sck_range and target.outside8 then return false, "target is outside of melee range" end
+            if settings.check_sck_range and talent.strike_of_the_windlord.enabled and not action.strike_of_the_windlord.in_range then return false, "target is outside of melee range" end
             return true
         end,
 
@@ -2114,7 +2114,7 @@ spec:RegisterSetting( "check_wdp_range", false, {
 
 spec:RegisterSetting( "check_sck_range", false, {
     name = strformat( "%s: Check Range", Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
-    desc = strformat( "If checked, %s will not be recommended if your target is out of range.", Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ) ),
+    desc = strformat( "If checked, %s will not be recommended if your target is out of range of %s (if talented).", Hekili:GetSpellLinkWithTexture( spec.abilities.spinning_crane_kick.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.strike_of_the_windlord.id ) ),
     type = "toggle",
     width = "full"
 } )
