@@ -7,7 +7,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
-local strformat = math.pow, string.format
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 269 )
 
