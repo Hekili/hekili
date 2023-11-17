@@ -21,7 +21,7 @@ local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
 
 local CGetItemInfo = ns.CachedGetItemInfo
-local RC = LibStub( "LibRangeCheck-3.0-ElvUI" )
+local RC = LibStub( "LibRangeCheck-2.0" )
 
 -- Abandoning AceEvent in favor of darkend's solution from:
 -- http://andydote.co.uk/2014/11/23/good-design-in-warcraft-addons.html
@@ -1252,7 +1252,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
                     local u = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
 
                     if u then
-                        local _, maxR = RC:GetRange( u )
+                        local _, maxR = RC:GetRange( u, true, InCombatLockdown() )
                         maxR = maxR or state.target.distance
                         travel = maxR / ability.velocity
                     end
@@ -1720,7 +1720,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
                                 local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
 
                                 if unit then
-                                    local _, maxR = RC:GetRange( unit )
+                                    local _, maxR = RC:GetRange( unit, true, InCombatLockdown() )
                                     maxR = maxR or state.target.distance
                                     travel = maxR / ability.velocity
                                 end
@@ -1780,7 +1780,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
                             local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
 
                             if unit then
-                                local _, maxR = RC:GetRange( unit )
+                                local _, maxR = RC:GetRange( unit, true, InCombatLockdown() )
                                 maxR = maxR or state.target.distance
                                 travel = maxR / ability.velocity
                             end

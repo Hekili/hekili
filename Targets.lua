@@ -251,7 +251,7 @@ RegisterEvent( "UNIT_FLAGS", function( event, unit )
 end )
 
 
-local RC = LibStub( "LibRangeCheck-3.0-ElvUI" )
+local RC = LibStub( "LibRangeCheck-2.0" )
 
 local lastCount = 1
 local lastStationary = 1
@@ -384,7 +384,7 @@ do
                             end
 
                             if not excluded and checkPlates and spec.nameplateRange > 0 then
-                                range = RC:GetRange( unit )
+                                range = RC:GetRange( unit, true, InCombatLockdown() )
                                 guidRanges[ guid ] = range
 
                                 excluded = range and range > spec.nameplateRange
@@ -453,7 +453,7 @@ do
                                 end
 
                                 if not excluded and checkPlates then
-                                    range = RC:GetRange( unit )
+                                    range = RC:GetRange( unit, true, InCombatLockdown() )
                                     guidRanges[ guid ] = range
 
                                     excluded = range and range > spec.nameplateRange or false
@@ -531,7 +531,7 @@ do
                         end
 
                         if not excluded and checkPlates then
-                            range = RC:GetRange( unit )
+                            range = RC:GetRange( unit, true, InCombatLockdown() )
                             guidRanges[ guid ] = range
 
                             excluded = range and range > spec.nameplateRange or false

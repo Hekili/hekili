@@ -24,7 +24,7 @@ local format = string.format
 
 local Mark, SuperMark, ClearMarks = ns.Mark, ns.SuperMark, ns.ClearMarks
 
-local RC = LibStub( "LibRangeCheck-3.0-ElvUI" )
+local RC = LibStub( "LibRangeCheck-2.0" )
 local LSR = LibStub( "SpellRange-1.0" )
 
 local class = Hekili.Class
@@ -409,7 +409,7 @@ local mt_trinket = {
                 return state.cooldown[ t.ability ]
             end
             return state.cooldown.null_cooldown
-        
+
         elseif k == "cast_time" or k == "cast_time" then
             return t.usable and t.ability and class.abilities[ t.ability ] and class.abilities[ t.ability ].cast or 0
         end
@@ -2509,7 +2509,7 @@ do
                     for i = 1, 5 do
                         present, name, start, duration, icon = GetTotemInfo( i )
                         if duration == 0 then duration = 3600 end
-    
+
                         if present and ( icon == totemIcon or class.abilities[ name ] and t.key == class.abilities[ name ].key ) then
                             t.expires = start + duration
                             return t.expires
@@ -2811,7 +2811,7 @@ do
             if k == "distance" then t[k] = UnitCanAttack( "player", "target" ) and ( ( t.minR + t.maxR ) / 2 ) or 7.5
             elseif k == "in_range" then return t.distance <= 8
             elseif k == "minR" or k == "maxR" then
-                local minR, maxR = RC:GetRange( "target" )
+                local minR, maxR = RC:GetRange( "target", true, InCombatLockdown() )
                 t.minR = minR or 5
                 t.maxR = maxR or 10
 
@@ -7144,7 +7144,7 @@ do
             end
 
             if ability.range then
-                local _, dist = RC:GetRange( "target", true )
+                local _, dist = RC:GetRange( "target", true, InCombatLockdown() )
 
                 if dist and dist > ability.range then
                     return false, "not within ability-specified range (" .. ability.range .. ")"
