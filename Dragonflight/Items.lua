@@ -2158,5 +2158,27 @@ all:RegisterAbilities( {
                 max_stack = 1
             }
         }
-    }
+    },
+
+    -- Everbloom
+    spores_of_alacrity = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 110014,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "alacritous_spores" )
+        end,
+
+        auras = {
+            alacritous_spores = {
+                id = 429276,
+                duration = 20,
+                max_stack = 10 -- Ticks down?
+            }
+        }
+    },
 } )
