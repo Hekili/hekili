@@ -3666,6 +3666,7 @@ do
                 end
 
                 if not alias and mode == "first" and child.up then return child[ k ] end
+                if mode == "latest" and ( not alias or child.last_application > alias.last_application ) then alias = child end
 
                 if child.up then
                     if mode == "shortest" and ( not alias or child.remains < alias.remains ) then alias = child
