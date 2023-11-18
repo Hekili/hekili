@@ -570,27 +570,17 @@ spec:RegisterStateExpr("excess_e", function()
                         -- Find the trinket buff to inspect
                         local aura_type = type(t_action.aura)
                         local auras_type = type(t_action.auras)
-                        if aura_type == "number" and t_action.aura > 0 then
-                            t_buff = buff[t_action.aura]
-                        elseif aura_type == "string" and #t_action.aura > 0 then
+                        if aura_type == "number" and t_action.aura > 0 
+                        or aura_type == "string" and #t_action.aura > 0 then
                             t_buff = buff[t_action.aura]
                         elseif auras_type == "table" then
                             for a in pairs(t_action.auras) do
-                                -- Automatically use any current buffs
                                 if buff[a].up then
                                     t_buff = buff[a]
                                     break
-                                end
-
-                                -- Use the first buff as a basis of comparison
-                                if t_buff == nil then
+                                elseif t_buff == nil 
+                                or buff[a].last_application > t_buff.last_application then
                                     t_buff = buff[a]
-                                else
-                                    -- Otherwise use buffs with the closest known possible proc time
-                                    local possible_proc = buff[a].last_application > 0 and (buff[a].last_application + t_action.cooldown) or 0
-                                    if possible_proc > 0 and (possible_proc < t_buff.last_application + t_action.cooldown) then
-                                        t_buff = buff[a]
-                                    end
                                 end
                             end
                         end
