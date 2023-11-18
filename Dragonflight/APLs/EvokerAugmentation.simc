@@ -33,11 +33,11 @@ actions+=/use_item,name=belorrelos_the_suncaller,use_off_gcd=1,if=gcd.remains>0.
 actions+=/use_item,slot=trinket1,if=!debuff.temporal_wound.up&(cooldown.breath_of_eons.remains>=30|!variable.trinket_2_exclude)&!variable.trinket_1_manual
 actions+=/use_item,slot=trinket2,if=!debuff.temporal_wound.up&(cooldown.breath_of_eons.remains>=30|!variable.trinket_1_exclude)&!variable.trinket_2_manual
 actions+=/use_items,use_off_gcd=1,if=gcd.remains>=gcd.max*0.6
-actions+=/call_action_list,name=fb,if=cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
+actions+=/call_action_list,name=fb,if=empowering.fire_breath|cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
 actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
 actions+=/breath_of_eons,if=(cooldown.ebon_might.remains<=4|buff.ebon_might.up)&target.time_to_die>15&raid_event.adds.in>15&(!equipped.nymues_unraveling_spindle|trinket.nymues_unraveling_spindle.cooldown.remains>=10|boss&fight_remains<30)|boss&fight_remains<30,line_cd=117
 actions+=/living_flame,if=buff.leaping_flames.up&cooldown.fire_breath.up
-actions+=/call_action_list,name=fb,if=(raid_event.adds.remains>13|!raid_event.adds.exists)
+actions+=/call_action_list,name=fb,if=empowering.fire_breath|(raid_event.adds.remains>13|!raid_event.adds.exists)
 actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&(raid_event.adds.remains>13|!raid_event.adds.exists)
 actions+=/time_skip,if=(cooldown.fire_breath.remains+cooldown.upheaval.remains+cooldown.prescience.full_recharge_time)>=35
 actions+=/emerald_blossom,if=talent.dream_of_spring&buff.essence_burst.up&(variable.spam_heal=2|variable.spam_heal=1&!buff.ancient_flame.up)&(buff.ebon_might.up|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4)
@@ -56,13 +56,14 @@ actions.opener_filler+=/living_flame,if=active_enemies=1|talent.pupil_of_alexstr
 actions.opener_filler+=/azure_strike
 
 actions.fb+=/tip_the_scales,if=cooldown.fire_breath.ready&buff.ebon_might.up
-actions.fb+=/fire_breath,empower_to=1,cycle_targets=1,if=fight_remains>16&buff.ebon_might.remains>duration&equipped.neltharions_call_to_chaos
-actions.fb+=/fire_breath,empower_to=2,cycle_targets=1,if=fight_remains>12&buff.ebon_might.remains>duration&equipped.neltharions_call_to_chaos
-actions.fb+=/fire_breath,empower_to=3,cycle_targets=1,if=fight_remains>8&buff.ebon_might.remains>duration&equipped.neltharions_call_to_chaos
-actions.fb+=/fire_breath,empower_to=4,cycle_targets=1,if=fight_remains>4&talent.font_of_magic&(buff.ebon_might.remains>duration|buff.tip_the_scales.up)
-actions.fb+=/fire_breath,empower_to=3,cycle_targets=1,if=fight_remains>8&(buff.ebon_might.remains>duration|buff.tip_the_scales.up)&!equipped.neltharions_call_to_chaos
-actions.fb+=/fire_breath,empower_to=2,cycle_targets=1,if=fight_remains>12&buff.ebon_might.remains>duration&!equipped.neltharions_call_to_chaos
-actions.fb+=/fire_breath,empower_to=1,cycle_targets=1,if=fight_remains>16&buff.ebon_might.remains>duration&!equipped.neltharions_call_to_chaos
+actions.fb+=/fire_breath,empower_to=1,cycle_targets=1,if=fight_remains>16&buff.ebon_might.remains>cast_time&equipped.neltharions_call_to_chaos
+actions.fb+=/fire_breath,empower_to=2,cycle_targets=1,if=fight_remains>12&buff.ebon_might.remains>cast_time&equipped.neltharions_call_to_chaos
+actions.fb+=/fire_breath,empower_to=3,cycle_targets=1,if=fight_remains>8&buff.ebon_might.remains>cast_time&equipped.neltharions_call_to_chaos
+actions.fb+=/fire_breath,empower_to=4,cycle_targets=1,if=fight_remains>4&talent.font_of_magic&(buff.ebon_might.remains>cast_time|buff.tip_the_scales.up)
+actions.fb+=/fire_breath,empower_to=3,cycle_targets=1,if=fight_remains>8&(buff.ebon_might.remains>cast_time|buff.tip_the_scales.up)&!equipped.neltharions_call_to_chaos
+actions.fb+=/fire_breath,empower_to=2,cycle_targets=1,if=fight_remains>12&buff.ebon_might.remains>cast_time&!equipped.neltharions_call_to_chaos
+actions.fb+=/fire_breath,empower_to=1,cycle_targets=1,if=fight_remains>16&buff.ebon_might.remains>cast_time&!equipped.neltharions_call_to_chaos
+actions.fb+=/fire_breath,empower_to=max,cycle_targets=1,if=empowering.fire_breath
 
 actions.filler+=/living_flame,if=(buff.ancient_flame.up|mana>=200000|!talent.dream_of_spring|variable.spam_heal=0)&(active_enemies=1|talent.pupil_of_alexstrasza)
 actions.filler+=/azure_strike
