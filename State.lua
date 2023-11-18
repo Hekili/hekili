@@ -3653,7 +3653,7 @@ do
 
             end
 
-            local alias
+            local alias = nil
             local mode = aura.aliasMode or "first"
 
             for i, v in ipairs( aura.alias ) do

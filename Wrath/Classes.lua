@@ -114,7 +114,29 @@ all = class.specs[ 0 ]
 
 
 all:RegisterAuras({
-    -- Phase 4 DBW only
+    -- Phase 4
+    -- Death's Verdict/Choice Buffs
+    paragon_str = {
+        id = 67708,
+        duration = 15,
+        max_stack = 1,
+        copy = {67708, 67773}
+    },
+    paragon_agi = {
+        id = 67703,
+        duration = 15,
+        max_stack = 1,
+        copy = {67703, 67772}
+    },
+    -- When you deal damage you have a chance to gain Paragon, increasing your Strength or Agility by 450/510 for 15 sec.  Your highest stat is always chosen.
+    paragon = {
+        --id = 67771,
+        alias = { "paragon_agi", "paragon_str" },
+        aliasMode = "latest",
+        aliasType = "buff",        
+    },
+    
+    -- DBW Buffs
     aim_of_the_iron_dwarves = {
         -- crit: DK, Hunter, Paladin
         id = 71491,
@@ -151,37 +173,14 @@ all:RegisterAuras({
         duration = 30,
         copy= {71484,71561},
     },
-    -- -- BDW Proc for forecasting.
-    --dwb_buff = {
-    --    id = 71519,
-    --    duration = 30,
-    --    copy= {71519,71562},
-    --},
-
     -- Your attacks have a chance to awaken the powers of the races of Northrend, temporarily transforming you and increasing your combat capabilities for 30 sec.
     deathbringers_will = {
         alias = {"aim_of_the_iron_dwarves", "agility_of_the_vrykul", "power_of_the_taunka", "precision_of_the_iron_dwarves", "speed_of_the_vrykul", "strength_of_the_taunka"},
         aliasMode = "latest",
         aliasType = "buff",
     },
-    paragon_str = {
-        id = 67708,
-        duration = 15,
-        max_stack = 1,
-        copy = {67708, 67773}
-    },
-    paragon_agi = {
-        id = 67703,
-        duration = 15,
-        max_stack = 1,
-        copy = {67703, 67772}
-    },
-    -- When you deal damage you have a chance to gain Paragon, increasing your Strength or Agility by 450/510 for 15 sec.  Your highest stat is always chosen.
-    paragon = {
-        alias = { "paragon_agi","paragon_str" },
-        aliasType = "buff",
-        aliasMode = "latest"
-    },
+
+
 })
 
 all:RegisterAbilities( {
@@ -248,7 +247,9 @@ all:RegisterAbilities( {
             applyBuff( "deathbringers_will" )
         end,
 
-        aura = buff.deathbringers_will.id
+        aura = function()
+            return buff.deathbringers_will.id
+        end,
 
     },
 
@@ -272,7 +273,9 @@ all:RegisterAbilities( {
             end
         end,
 
-        aura = buff.paragon.id
+        aura = function()
+            return buff.paragon.id
+        end,
 
     },
 
@@ -297,7 +300,9 @@ all:RegisterAbilities( {
             end
         end,
 
-        aura = buff.paragon.id
+        aura = function()
+            return buff.paragon.id
+        end,
     },
 
     ephemeral_snowflake = {
