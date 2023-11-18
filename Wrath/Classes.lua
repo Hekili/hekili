@@ -113,6 +113,76 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", ns.updateGlyphs )
 all = class.specs[ 0 ]
 
 
+all:RegisterAuras({
+    -- Phase 4
+    -- Death's Verdict/Choice Buffs
+    paragon_str = {
+        id = 67708,
+        duration = 15,
+        max_stack = 1,
+        copy = {67708, 67773}
+    },
+    paragon_agi = {
+        id = 67703,
+        duration = 15,
+        max_stack = 1,
+        copy = {67703, 67772}
+    },
+    -- When you deal damage you have a chance to gain Paragon, increasing your Strength or Agility by 450/510 for 15 sec.  Your highest stat is always chosen.
+    paragon = {
+        --id = 67771,
+        alias = { "paragon_agi", "paragon_str" },
+        aliasMode = "latest",
+        aliasType = "buff",        
+    },
+    
+    -- DBW Buffs
+    aim_of_the_iron_dwarves = {
+        -- crit: DK, Hunter, Paladin
+        id = 71491,
+        duration = 30,
+        copy= {71491,71559},
+    },
+    agility_of_the_vrykul = {
+        -- agi: Druid, Hunter, Rogue, Shaman
+        id = 71485,
+        duration = 30,
+        copy= {71485,71556},
+    },
+    power_of_the_taunka = {
+        -- ap: Hunter, Rogue, Shaman
+        id = 71486,
+        duration = 30,
+        copy= {71486,71558},
+    },
+    precision_of_the_iron_dwarves = {
+        -- arp: Rogue, Shaman, Warrior
+        id = 71487,
+        duration = 30,
+        copy= {71487,71557},
+    },
+    speed_of_the_vrykul = {
+        -- haste: DK, Druid, Paladin
+        id = 71492,
+        duration = 30,
+        copy= {71492,71560},
+    },
+    strength_of_the_taunka = {
+        -- str: DK, Paladin, Warrior
+        id = 71484,
+        duration = 30,
+        copy= {71484,71561},
+    },
+    -- Your attacks have a chance to awaken the powers of the races of Northrend, temporarily transforming you and increasing your combat capabilities for 30 sec.
+    deathbringers_will = {
+        alias = {"aim_of_the_iron_dwarves", "agility_of_the_vrykul", "power_of_the_taunka", "precision_of_the_iron_dwarves", "speed_of_the_vrykul", "strength_of_the_taunka"},
+        aliasMode = "latest",
+        aliasType = "buff",
+    },
+
+
+})
+
 all:RegisterAbilities( {
     -- Phase 4
 
@@ -161,6 +231,25 @@ all:RegisterAbilities( {
             }
         }
     },
+    deathbringers_will = {
+        cast = 0,
+        cooldown = 105,
+        gcd = "off",
+        unlisted = true,
+
+        items = {50362, 50363},
+        item = function()
+            if equipped[ 50362 ] then return 50362 end
+            return 50363
+        end,
+
+        handler = function()
+            applyBuff( "deathbringers_will" )
+        end,
+
+        aura = "deathbringers_will",
+
+    },
 
     deaths_verdict = {
         cast = 0,
@@ -168,7 +257,11 @@ all:RegisterAbilities( {
         gcd = "off",
         unlisted = true,
 
-        item = 47115,
+        items = {47115, 47131},
+        item = function()
+            if equipped[ 47115 ] then return 47115 end
+            return 47131
+        end,
 
         handler = function()
             if stat.strength >= stat.agility then 
@@ -178,27 +271,8 @@ all:RegisterAbilities( {
             end
         end,
 
-        auras = {
-            paragon_str = {
-                id = 67708,
-                duration = 15,
-                max_stack = 1,
-                copy = {67708, 67773}
-            },
-            paragon_agi = {
-                id = 67703,
-                duration = 15,
-                max_stack = 1,
-                copy = {67703, 67772}
-            },
-            paragon = {
-                alias = { "paragon_agi","paragon_str" },
-                aliasType = "buff",
-                aliasMode = "first"
-            },
-        },
+        aura = "paragon",
 
-        copy = {47115, 47131}
     },
 
     deaths_choice = {
@@ -207,7 +281,12 @@ all:RegisterAbilities( {
         gcd = "off",
         unlisted = true,
 
-        item = 47303,
+        items = {47303, 47464},
+        item = function()
+            if equipped[ 47303 ] then return 47303 end
+            return 47464
+        end,
+
 
         handler = function()
             if stat.strength >= stat.agility then 
@@ -216,7 +295,9 @@ all:RegisterAbilities( {
                 applyBuff( "paragon_agi" )
             end
         end,
-        copy = {47303, 47464}
+
+        aura = "paragon",
+
     },
 
     ephemeral_snowflake = {
