@@ -3497,6 +3497,7 @@ all:RegisterAbility( "grim_toll", {
     cast = 0,
     cooldown = 45,
     gcd = "off",
+    unlisted = true,
 
     item = 40256,
     aura = 60437
@@ -3511,6 +3512,7 @@ all:RegisterAbility( "mjolnir_runestone", {
     cast = 0,
     cooldown = 45,
     gcd = "off",
+    unlisted = true,
 
     item = 45931,
     aura = 65019
@@ -3525,6 +3527,7 @@ all:RegisterAbility( "dark_matter", {
     cast = 0,
     cooldown = 45,
     gcd = "off",
+    unlisted = true,
 
     item = 46038,
     aura = 65024
@@ -3539,6 +3542,7 @@ all:RegisterAbility( "whispering_fanged_skull", {
     cast = 0,
     cooldown = 45,
     gcd = "off",
+    unlisted = true,
 
     item = 50342,
     aura = 71401
@@ -3548,61 +3552,19 @@ all:RegisterAbility( "whispering_fanged_skull_heroic", {
     cast = 0,
     cooldown = 45,
     gcd = "off",
+    unlisted = true,
 
     item = 50343,
     aura = 71541
 })
 all:RegisterAura( "icy_rage", {
-    id = 67702,
+    id = 71401,
     duration = 15,
     max_stack = 1,
     copy = { 71401, 71541 }
 })
 
-all:RegisterAbility( "deaths_verdict", {
-    cast = 0,
-    cooldown = 45,
-    gcd = "off",
 
-    item = 47115,
-    aura = 67702
-})
-all:RegisterAbility( "deaths_verdict_heroic", {
-    suffix = strformat( "(%s)", ITEM_HEROIC ),
-    cast = 0,
-    cooldown = 45,
-    gcd = "off",
-
-    item = 47131,
-    aura = 67702
-})
-all:RegisterAbility( "deaths_choice", {
-    cast = 0,
-    cooldown = 45,
-    gcd = "off",
-
-    item = 47303,
-    aura = 67771
-})
-all:RegisterAbility( "deaths_choice_heroic", {
-    suffix = strformat( "(%s)", ITEM_HEROIC ),
-    cast = 0,
-    cooldown = 45,
-    gcd = "off",
-
-    item = 47464,
-    aura = 67702
-})
-all:RegisterAura( "deaths_verdict", {
-    id = 67702,
-    duration = 15,
-    max_stack = 1
-})
-all:RegisterAura( "deaths_verdict_heroic", {
-    id = 67771,
-    duration = 15,
-    max_stack = 1
-})
 
 -- x.x - Heirloom Trinket(s)
 all:RegisterAbility( "touch_of_the_void", {
