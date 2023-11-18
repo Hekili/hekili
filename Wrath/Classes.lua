@@ -247,9 +247,7 @@ all:RegisterAbilities( {
             applyBuff( "deathbringers_will" )
         end,
 
-        aura = function()
-            return buff.deathbringers_will.id
-        end,
+        aura = "deathbringers_will",
 
     },
 
@@ -273,9 +271,7 @@ all:RegisterAbilities( {
             end
         end,
 
-        aura = function()
-            return buff.paragon.id
-        end,
+        aura = "paragon",
 
     },
 
@@ -300,9 +296,8 @@ all:RegisterAbilities( {
             end
         end,
 
-        aura = function()
-            return buff.paragon.id
-        end,
+        aura = "paragon",
+
     },
 
     ephemeral_snowflake = {
