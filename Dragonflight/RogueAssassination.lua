@@ -770,6 +770,10 @@ spec:RegisterHook( "runHandler", function( ability )
             applyBuff( "subterfuge" )
         end
 
+        if talent.indiscriminate_carnage.enabled then
+            applyBuff( "indiscriminate_carnage", 10 )
+        end
+
         if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
             applyBuff( "master_assassins_mark", 4 )
         end
@@ -1117,7 +1121,8 @@ spec:RegisterAuras( {
     indiscriminate_carnage = {
         id = 381802,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        copy = 385747
     },
     indiscriminate_carnage_garrote = {
         duration = 3600,
