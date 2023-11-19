@@ -844,13 +844,17 @@ spec:RegisterSetting( "experimental_msg", nil, {
 } )
 
 
+spec:RegisterRanges( "lightning_bolt", "flame_shock", "wind_shear", "primal_strike" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
     nameplates = false,
-    nameplateRange = 25,
+    rangeChecker = "lightning_bolt",
+    rangeFilter = false,
 
     damage = true,
     damageDots = true,

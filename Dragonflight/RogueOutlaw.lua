@@ -1315,13 +1315,17 @@ spec:RegisterAbility( "shadowmeld", {
 } )
 
 
+spec:RegisterRanges( "pick_pocket", "kick", "blind", "shadowstep" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "pick_pocket",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 6,

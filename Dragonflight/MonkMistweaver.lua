@@ -1115,14 +1115,17 @@ spec:RegisterSetting( "roll_movement", 5, {
     end )
 
 
+spec:RegisterRanges( "blackout_kick", "rising_sun_kick", "paralysis", "provoke", "crackling_jade_lightning" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
-    cycle = true,
+    aoe = 3,
+    cycle = false,
 
-    nameplates = true,
-    nameplateRange = 8,
+    nameplates = false,
+    rangeChecker = "blackout_kick",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

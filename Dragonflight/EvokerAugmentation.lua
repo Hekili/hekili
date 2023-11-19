@@ -618,7 +618,13 @@ do
 
     empowered_cast_time = setfenv( function()
         if buff.tip_the_scales.up then return 0 end
-        return stages[ args.empower_to or max_empower ] * ( talent.font_of_magic.enabled and 0.8 or 1 ) * haste
+        local power_level = args.empower_to or max_empower
+
+        if settings.fire_breath_fixed > 0 then
+            power_level = min( settings.fire_breath_fixed, max_empower )
+        end
+
+        return stages[ power_level ] * ( talent.font_of_magic.enabled and 0.8 or 1 ) * haste
     end, state )
 end
 
@@ -996,6 +1002,21 @@ spec:RegisterSetting( "manage_source_of_magic", false, {
     width = "full",
 } ) ]]
 
+local devastation = class.specs[ 1467 ]
+
+spec:RegisterSetting( "fire_breath_fixed", 0, {
+    name = strformat( "%s: Empowerment", Hekili:GetSpellLinkWithTexture( devastation.abilities.fire_breath.id ) ),
+    type = "range",
+    desc = strformat( "If set to |cffffd1000|r, %s will be recommended at different empowerment levels based on the action priority list.\n\n"
+        .. "To force %s to be used at a specific level, set this to 1, 2, 3 or 4.\n\n"
+        .. "If the selected empowerment level exceeds your maximum, the maximum level will be used instead.", Hekili:GetSpellLinkWithTexture( devastation.abilities.fire_breath.id ),
+        devastation.abilities.fire_breath.name ),
+    min = 0,
+    max = 4,
+    step = 1,
+    width = "full"
+} )
+
 spec:RegisterSetting( "use_early_chain", false, {
     name = strformat( "%s: Chain Channel", Hekili:GetSpellLinkWithTexture( 356995 ) ),
     type = "toggle",
@@ -1012,6 +1033,8 @@ spec:RegisterSetting( "use_clipping", false, {
 } )
 
 
+spec:RegisterRanges( "azure_strike" )
+
 spec:RegisterOptions( {
     enabled = true,
 
@@ -1019,7 +1042,7 @@ spec:RegisterOptions( {
     gcdSync = false,
 
     nameplates = false,
-    nameplateRange = 35,
+    rangeCheck = "azure_strike",
 
     damage = true,
     damageDots = true,

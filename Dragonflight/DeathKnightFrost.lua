@@ -1702,13 +1702,17 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "frost_strike", "mind_freeze", "death_coil" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
+    aoe = 3,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "frost_strike",
+    rangeFilter = false,
 
     damage = true,
     damageDots = false,

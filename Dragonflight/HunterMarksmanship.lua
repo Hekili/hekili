@@ -1205,13 +1205,17 @@ spec:RegisterAbilities( {
     },
 } )
 
+spec:RegisterRanges( "aimed_shot", "scatter_shot", "wing_clip", "arcane_shot" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
     nameplates = false,
-    nameplateRange = 8,
+    rangeChecker = "aimed_shot",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 6,

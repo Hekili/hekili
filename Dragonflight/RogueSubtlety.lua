@@ -1307,16 +1307,20 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "pick_pocket", "sinister_strike", "blind", "shadowstep" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
+    aoe = 3,
+    cycle = false,
+
+    nameplates = true,
+    rangeChecker = "pick_pocket",
+    rangeFilter = false,
 
     canFunnel = true,
     funnel = false,
-    
-    nameplates = true,
-    nameplateRange = 8,
 
     damage = true,
     damageExpiration = 6,

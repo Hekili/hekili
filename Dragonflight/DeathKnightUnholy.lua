@@ -2077,13 +2077,16 @@ me:RegisterAbilities( {
 } )
 
 
+me:RegisterRanges( "festering_strike", "mind_freeze", "death_coil" )
+
 me:RegisterOptions( {
     enabled = true,
 
     aoe = 2,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "festering_strike",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

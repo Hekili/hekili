@@ -735,7 +735,13 @@ do
 
     empowered_cast_time = setfenv( function()
         if buff.tip_the_scales.up then return 0 end
-        return stages[ args.empower_to or max_empower ] * ( talent.font_of_magic.enabled and 0.8 or 1 ) * haste
+        local power_level = args.empower_to or max_empower
+
+        if settings.fire_breath_fixed > 0 then
+            power_level = min( settings.fire_breath_fixed, max_empower )
+        end
+
+        return stages[ power_level ] * ( talent.font_of_magic.enabled and 0.8 or 1 ) * haste
     end, state )
 end
 
@@ -1065,6 +1071,10 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
+        caption = function()
+            local power_level = settings.fire_breath_fixed
+            if power_level > 0 then return power_level end
+        end,
 
         spell_targets = function () return active_enemies end,
         damage = function () return 1.334 * stat.spell_power * ( 1 + 0.1 * talent.blast_furnace.rank ) * ( debuff.shattering_star.up and 1.2 or 1 ) end,
@@ -1668,6 +1678,21 @@ spec:RegisterSetting( "use_unravel", false, {
     width = "full",
 } )
 
+
+spec:RegisterSetting( "fire_breath_fixed", 0, {
+    name = strformat( "%s: Empowerment", Hekili:GetSpellLinkWithTexture( spec.abilities.fire_breath.id ) ),
+    type = "range",
+    desc = strformat( "If set to |cffffd1000|r, %s will be recommended at different empowerment levels based on the action priority list.\n\n"
+        .. "To force %s to be used at a specific level, set this to 1, 2, 3 or 4.\n\n"
+        .. "If the selected empowerment level exceeds your maximum, the maximum level will be used instead.", Hekili:GetSpellLinkWithTexture( spec.abilities.fire_breath.id ),
+        spec.abilities.fire_breath.name ),
+    min = 0,
+    max = 4,
+    step = 1,
+    width = "full"
+} )
+
+
 spec:RegisterSetting( "use_early_chain", false, {
     name = strformat( "%s: Chain Channel", Hekili:GetSpellLinkWithTexture( spec.abilities.disintegrate.id ) ),
     type = "toggle",
@@ -1691,6 +1716,8 @@ spec:RegisterSetting( "use_verdant_embrace", false, {
 } )
 
 
+spec:RegisterRanges( "azure_strike" )
+
 spec:RegisterOptions( {
     enabled = true,
 
@@ -1698,7 +1725,7 @@ spec:RegisterOptions( {
     gcdSync = false,
 
     nameplates = false,
-    nameplateRange = 35,
+    rangeCheck = "azure_strike",
 
     damage = true,
     damageDots = true,

@@ -2203,13 +2203,17 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "mind_blast", "dispel_magic" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
     nameplates = false,
-    nameplateRange = 8,
+    rangeChecker = "mind_blast",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 6,

@@ -253,12 +253,11 @@ RegisterEvent( "UNIT_FLAGS", function( event, unit )
 end )
 
 
-local RC = LibStub( "LibRangeCheck-2.0" )
+local RC = LibStub( "LibRangeCheck-3.0" )
+local LSR = LibStub( "SpellRange-1.0" )
 
 local lastCount = 1
 local lastStationary = 1
-
-local guidRanges = {}
 
 
 -- Chromie Time impacts phasing as well.
@@ -314,6 +313,19 @@ local function UnitInPhase( unit )
 end
 
 
+--[[
+
+For targeting, let's keep more of the settings static to reduce overhead with target counting.
+
+We have:
+1. Count Nameplates
+   - Spell
+   - Filter UnitAffectingCombat
+   -
+
+]]--
+
+
 do
     function ns.iterateTargets()
         return next, counted, nil
@@ -334,7 +346,7 @@ do
 
         local debugging = Hekili.ActiveDebug
         local details = nil
-        local showNPs = GetCVar( "nameplateShowEnemies" ) == "1"
+        local showNPs = GetCVar( "nameplateShowEnemies" ) == "1" and GetCVar( "nameplateShowAll" ) == "1"
 
         wipe( counted )
 
@@ -350,11 +362,23 @@ do
 
         local FriendCheck = inRaid and UnitInRaid or UnitInParty
 
-        if spec then
-            local checkPets = showNPs and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
-            local checkPlates = showNPs and spec.nameplates
+        local checkPets = showNPs and spec and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
+        local filterPlates = showNPs and spec and spec.rangeFilter and class.specs[ state.spec.id ].rangeFilter
 
-            if checkPets or checkPlates then
+        local checkPlates = not filterPlates and showNPs and spec and spec.nameplates and spec.rangeCheck
+        checkPlates = checkPlates and ( spec.rangeChecker or class.specs[ state.spec.id ].ranges[ 1 ] )
+        checkPlates = checkPlates and class.abilities[ checkPlates ].id
+
+        --[[ if rangeCheck == "Auto" then
+            rangeChecker = spec.ranges.Auto[2]
+            rangeCheck = true
+        else
+            rangeChecker = spec.ranges[ rangeCheck ][ 1 ]
+        end ]]
+
+        if spec then
+
+            if checkPets or checkPlates or filterPlates then
                 for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local excluded = not UnitIsUnit( unit, "target" )
@@ -389,18 +413,21 @@ do
                                 end
                             end
 
-                            if not excluded and checkPlates and spec.nameplateRange > 0 then
-                                range = RC:GetRange( unit, true, InCombatLockdown() )
-                                guidRanges[ guid ] = range
-
-                                excluded = range and range > spec.nameplateRange
+                            if not excluded and filterPlates then
+                                excluded = filterPlates( unit )
 
                                 if debugging and excluded then
-                                    details = format( "%s\n    - Excluded by nameplate range (%d > %d).", details, range, spec.nameplateRange )
+                                    details = format( "%s\n    - Excluded by nameplate filter (%d > %d).", details, range, spec.nameplateRange )
+                                end
+                            elseif not excluded and checkPlates then
+                                excluded = LSR.IsSpellInRange( checkPlates, unit ) ~= 1
+
+                                if debugging and excluded then
+                                    details = format( "%s\n    - Excluded by spell range (%s = %s).", details, checkPlates, tostring( LSR.IsSpellInRange( checkPlates, unit ) or "null" ) )
                                 end
                             end
 
-                            if not excluded and spec.damageOnScreen and showNPs and not npUnits[ guid ] then
+                            if not excluded and showNPs and spec.damageOnScreen and not npUnits[ guid ] then
                                 excluded = true
                                 if debugging then details = format( "%s\n    - Excluded by on-screen nameplate requirement.", details ) end
                             end
@@ -428,7 +455,7 @@ do
                     local guid = UnitGUID( unit )
 
                     if guid and counted[ guid ] == nil then
-                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitAffectingCombat( unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                             local excluded = not UnitIsUnit( unit, "target" )
 
                             local npcid = guid:match( "(%d+)-%x-$" )
@@ -458,14 +485,17 @@ do
                                     end
                                 end
 
-                                if not excluded and checkPlates then
-                                    range = RC:GetRange( unit, true, InCombatLockdown() )
-                                    guidRanges[ guid ] = range
-
-                                    excluded = range and range > spec.nameplateRange or false
+                                if not excluded and filterPlates then
+                                    excluded = filterPlates( unit )
 
                                     if debugging and excluded then
-                                        details = format( "%s\n    - Excluded by nameplate range.", details )
+                                        details = format( "%s\n    - Excluded by nameplate filter (%d > %d).", details, range, spec.nameplateRange )
+                                    end
+                                elseif not excluded and checkPlates then
+                                    excluded = LSR.IsSpellInRange( checkPlates, unit ) ~= 1
+
+                                    if debugging and excluded then
+                                        details = format( "%s\n    - Excluded by spell range (%s).", details, checkPlates )
                                     end
                                 end
 
@@ -535,17 +565,6 @@ do
                                 details = format( "%s\n    - Excluded by pet range.", details )
                             end
                         end
-
-                        if not excluded and checkPlates then
-                            range = RC:GetRange( unit, true, InCombatLockdown() )
-                            guidRanges[ guid ] = range
-
-                            excluded = range and range > spec.nameplateRange or false
-
-                            if debugging and excluded then
-                                details = format( "%s\n    - Excluded by nameplate range.", details )
-                            end
-                        end
                     end
 
                     if not excluded and spec.damageOnScreen and showNPs and not npUnits[ guid ] then
@@ -553,7 +572,7 @@ do
                         if debugging then details = format( "%s\n    - Excluded by on-screen nameplate requirement.", details ) end
                     end
 
-                    if not excluded and ( spec.damageRange == 0 or ( not guidRanges[ guid ] or guidRanges[ guid ] <= spec.damageRange ) ) then
+                    if not excluded then
                         count = count + 1
                         counted[ guid ] = true
 
@@ -563,7 +582,7 @@ do
                             stationary = stationary + 1
                         end
 
-                        if debugging then details = format("%s\n    %-12s - %2d - %s %s\n", details, "dmg", guidRanges[ guid ] or -1, guid, ( moving and "(moving)" or "" ) ) end
+                        if debugging then details = format("%s\n    %-12s - %2d - %s %s\n", details, "dmg", guid, ( moving and "(moving)" or "" ) ) end
                     else
                         counted[ guid ] = false
                     end
@@ -595,7 +614,6 @@ do
             lastCount = count
             lastStationary = stationary
             if Hekili:GetToggleState( "mode" ) == "reactive" then HekiliDisplayAOE:UpdateAlpha() end
-            -- Hekili:ForceUpdate( "TARGET_COUNT_CHANGED" )
         end
 
         Hekili.TargetDebug = details
@@ -863,8 +881,6 @@ end
 ns.eliminateUnit = function( id, force )
     ns.updateMinion(id)
     ns.updateTarget(id)
-
-    guidRanges[id] = nil
 
     if force then
         for k, v in pairs( debuffs ) do

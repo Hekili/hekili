@@ -2393,13 +2393,17 @@ spec:RegisterSetting( "sl_macro", nil, {
     set = function () end,
 } )
 
+
+spec:RegisterRanges( "corruption", "agony", "subjugate_demon", "mortal_coil" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
 
     nameplates = false,
-    nameplateRange = 8,
+    rangeChecker = "corruption",
+    rangeFilter = false,
 
     damage = true,
     damageDots = true,

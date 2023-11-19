@@ -812,13 +812,18 @@ spec:RegisterAbilities( {
 } )
 
 
+
+spec:RegisterRanges( "rake", "shred", "skull_bash", "growl", "moonfire" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
-    nameplates = false,
-    nameplateRange = 8,
+    nameplates = true,
+    rangeChecker = "rake",
+    rangeFilter = false,
 
     damage = true,
     damageDots = true,

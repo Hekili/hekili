@@ -1674,13 +1674,17 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "tiger_palm", "keg_smash", "paralysis", "provoke", "crackling_jade_lightning" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 2,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "tiger_palm",
+    rangeFilter = false,
 
     damage = true,
     damageDots = false,

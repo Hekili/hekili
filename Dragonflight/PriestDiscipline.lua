@@ -1020,14 +1020,17 @@ spec:RegisterSetting( "experimental_msg", nil, {
 } )
 
 
+spec:RegisterRanges( "penance", "smite", "dispel_magic" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
-    cycle = true,
+    aoe = 3,
+    cycle = false,
 
-    nameplates = true,
-    nameplateRange = 8,
+    nameplates = false,
+    rangeChecker = "penance",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

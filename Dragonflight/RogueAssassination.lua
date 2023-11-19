@@ -2309,6 +2309,20 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Pick the target's pocket.
+    pick_pocket = {
+        id = 921,
+        cast = 0,
+        cooldown = 0.5,
+        gcd = "off",
+
+        startsCombat = true,
+        texture = 133644,
+
+        handler = function ()
+        end,
+    },
+
     -- Finishing move that tears open the target, dealing Bleed damage over time. Lasts longer per combo point. 1 point : 1,250 over 8 sec 2 points: 1,876 over 12 sec 3 points: 2,501 over 16 sec 4 points: 3,126 over 20 sec 5 points: 3,752 over 24 sec
     rupture = {
         id = 1943,
@@ -2795,16 +2809,20 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "pick_pocket", "sinister_strike", "blind", "shadowstep" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
+
+    nameplates = true,
+    rangeChecker = "pick_pocket",
+    rangeFilter = false,
 
     canFunnel = true,
     funnel = false,
-
-    nameplates = true,
-    nameplateRange = 8,
 
     damage = true,
     damageExpiration = 6,

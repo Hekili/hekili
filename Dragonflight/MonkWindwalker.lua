@@ -2045,14 +2045,17 @@ spec:RegisterAbilities( {
     },
 } )
 
+spec:RegisterRanges( "fists_of_fury", "strike_of_the_windlord" , "tiger_palm", "touch_of_karma", "crackling_jade_lightning" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 2,
-    cycle = true,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "fists_of_fury",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

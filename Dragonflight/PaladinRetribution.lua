@@ -2013,13 +2013,17 @@ spec:RegisterAbilities( {
     },
 } )
 
+spec:RegisterRanges( "crusader_strike", "hammer_of_justice", "blade_of_justice", "hammer_of_wrath" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "crusader_strike",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

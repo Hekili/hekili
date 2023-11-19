@@ -843,7 +843,7 @@ do
         Cooldowns = 0.25
     }
 
-    local LRC = LibStub("LibRangeCheck-2.0")
+    local LRC = LibStub( "LibRangeCheck-3.0" )
     local LSF = SpellFlashCore
     local catchFlash, lastFramesFlashed = nil, {}
 
@@ -1107,7 +1107,7 @@ do
                                 b.Icon:Hide()
                             end
 
-                            if ( conf.captions.enabled or ability.caption ) and ( i == 1 or conf.captions.queued ) then
+                            if ( caption and conf.captions.enabled or ability.caption and not ability.empowered ) and ( i == 1 or conf.captions.queued ) then
                                 b.Caption:SetText( caption )
                             else
                                 b.Caption:SetText(nil)

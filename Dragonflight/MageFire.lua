@@ -1943,15 +1943,17 @@ spec:RegisterAbilities( {
     },
 } )
 
+spec:RegisterRanges( "fireball", "polymorph", "phoenix_flames" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
-    gcdSync = false,
-    -- can_dual_cast = true,
+    cycle = false,
 
     nameplates = false,
-    nameplateRange = 8,
+    rangeChecker = "fireball",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 6,

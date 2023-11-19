@@ -1249,7 +1249,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.actionName = ability.key
                                                         slot.actionID = ability.id
 
-                                                        slot.caption = ability.caption or entry.caption
+                                                        slot.caption = not ability.empowered and ( ability.caption or entry.caption )
                                                         slot.texture = ability.texture
                                                         slot.indicator = ability.indicator
 
@@ -1272,7 +1272,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         state.selection_time = state.delay
                                                         state.selected_action = rAction
 
-                                                        slot.empower_to = ability.empowered and ( state.args.empower_to or state.max_empower ) or nil
+                                                        slot.empower_to = ability.empowered and ( ability.caption or state.args.empower_to or state.max_empower ) or nil
 
                                                         if debug then
                                                             -- scripts:ImplantDebugData( slot )

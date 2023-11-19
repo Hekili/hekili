@@ -1671,13 +1671,17 @@ spec:RegisterSetting( "experimental_msg", nil, {
 } )
 
 
+spec:RegisterRanges( "judgment", "hammer_of_justice", "crusader_strike", "holy_shock" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
     nameplates = false,
-    nameplateRange = 25,
+    rangeChecker = "judgment",
+    rangeFilter = false,
 
     damage = true,
     damageDots = true,

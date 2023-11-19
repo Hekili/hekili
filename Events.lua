@@ -21,7 +21,7 @@ local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
 
 local CGetItemInfo = ns.CachedGetItemInfo
-local RC = LibStub( "LibRangeCheck-2.0" )
+local RC = LibStub( "LibRangeCheck-3.0" )
 
 -- Abandoning AceEvent in favor of darkend's solution from:
 -- http://andydote.co.uk/2014/11/23/good-design-in-warcraft-addons.html
@@ -833,6 +833,32 @@ do
 
         state.main_hand.size = 0
         state.off_hand.size = 0
+
+        local MH = GetInventoryItemID( "player", 16 )
+
+        class.abilities.main_hand = class.abilities.actual_main_hand
+
+        if MH then
+            local isUsable = IsUsableItem( MH )
+            local name, spellID = GetItemSpell( MH )
+            local tSpell = class.itemMap[ MH ]
+
+            if tSpell then
+                class.abilities.main_hand = class.abilities[ tSpell ]
+                class.specs[ 0 ].abilities.main_hand = class.abilities[ tSpell ]
+            else
+                class.abilities.main_hand = class.abilities.actual_main_hand
+                class.specs[ 0 ].abilities.main_hand = class.abilities.actual_main_hand
+            end
+
+            if not isUsable then
+                state.trinket.t2.cooldown = state.cooldown.null_cooldown
+            else
+                state.trinket.t2.cooldown = nil
+            end
+
+            state.trinket.t2.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 14, true, true )
+        end
 
         for i = 1, 19 do
             local item = GetInventoryItemID( 'player', i )

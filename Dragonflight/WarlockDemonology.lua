@@ -12,7 +12,7 @@ local PTR = ns.PTR
 local FindPlayerAuraByID, FindUnitBuffByID, FindUnitDebuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local abs, ceil, strformat = math.abs, math.ceil, string.format
 
-local RC = LibStub( "LibRangeCheck-2.0" )
+local RC = LibStub( "LibRangeCheck-3.0" )
 
 
 local spec = Hekili:NewSpecialization( 266 )
@@ -1578,6 +1578,7 @@ spec:RegisterAbilities( {
             removeBuff( "stolen_power" )
             if buff.demonic_core.up then
                 removeStack( "demonic_core" )
+                if set_bonus.tier30_2pc > 0 then reduceCooldown( "grimoire_felguard", 0.5 ) end
                 if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "doom_brand" ) end -- TODO: Determine behavior on reapplication.
             end
             removeStack( "power_siphon" )
@@ -1966,13 +1967,16 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "corruption", "subjugate_demon", "mortal_coil" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
 
     nameplates = false,
-    nameplateRange = 8,
+    rangeChecker = "corruption",
+    rangeFilter = false,
 
     cycle = true,
 

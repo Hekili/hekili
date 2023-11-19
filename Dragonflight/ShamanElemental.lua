@@ -695,7 +695,7 @@ spec:RegisterAuras( {
 
 
 -- Pets
-spec:RegisterPet( "primal_storm_elemental", 77942, "storm_elemental", 
+spec:RegisterPet( "primal_storm_elemental", 77942, "storm_elemental",
     function()
         if not talent.primal_elementalist.enabled then return 0 end
         return 30 * ( 1 + ( 0.01 * conduit.call_of_flame.mod ) )
@@ -709,7 +709,7 @@ spec:RegisterPet( "primal_fire_elemental", 61029, "fire_elemental",
     end )
 spec:RegisterTotem( "greater_fire_elemental", 135790 ) -- Texture ID
 
-spec:RegisterPet( "primal_earth_elemental", 61056, "earth_elemental", 
+spec:RegisterPet( "primal_earth_elemental", 61056, "earth_elemental",
     function()
         if not talent.primal_elementalist.enabled then return 0 end
         return 60
@@ -2711,16 +2711,20 @@ spec:RegisterSetting( "purge_icd", 12, {
 } )
 
 
+spec:RegisterRanges( "lightning_bolt", "flame_shock", "wind_shear", "primal_strike" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
+
+    nameplates = false,
+    rangeChecker = "lightning_bolt",
+    rangeFilter = false,
 
     canFunnel = true,
     funnel = false,
-
-    nameplates = false,
-    nameplateRange = 8,
 
     damage = true,
     damageDots = true,

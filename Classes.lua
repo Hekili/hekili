@@ -38,8 +38,6 @@ local specTemplate = {
     gcdSync = true,
 
     nameplates = true,
-    nameplateRange = 8,
-
     petbased = false,
 
     damage = true,
@@ -82,6 +80,8 @@ local specTemplate = {
             criteria = nil
         }
     },
+
+    ranges = {},
     settings = {},
     phases = {},
     cooldowns = {},
@@ -952,6 +952,22 @@ local HekiliSpecMixin = {
     RegisterPriority = function( self, name, version, notes, priority )
     end,
 
+    RegisterRanges = function( self, ... )
+        if type( ... ) == "table" then
+            self.ranges = ...
+            return
+        end
+
+        for i = 1, select( "#", ... ) do
+            insert( self.ranges, ( select( i, ... ) ) )
+        end
+    end,
+
+    RegisterRangeFilter = function( self, name, func )
+        self.filterName = name
+        self.filter = func
+    end,
+
     RegisterOptions = function( self, options )
         self.options = options
     end,
@@ -1202,6 +1218,7 @@ function Hekili:NewSpecialization( specID, isRanged, icon )
 
         potions = {},
 
+        ranges = {},
         settings = {},
 
         stateExprs = {}, -- expressions are returned as values and take no args.
@@ -2751,7 +2768,10 @@ all:RegisterAbilities( {
         name = "Trinket #1",
         listName = "|T136243:0|t |cff00ccff[Trinket #1]",
         cast = 0,
+        cooldown = 600,
         gcd = "off",
+
+        usable = false,
 
         copy = "actual_trinket1",
     },
@@ -2760,10 +2780,25 @@ all:RegisterAbilities( {
         name = "Trinket #2",
         listName = "|T136243:0|t |cff00ccff[Trinket #2]",
         cast = 0,
+        cooldown = 600,
         gcd = "off",
+
+        usable = false,
 
         copy = "actual_trinket2",
     },
+
+    main_hand = {
+        name = "Mainhand Weapon",
+        listName = "|T136243:0|t |cff00ccff[" .. INVTYPE_WEAPONMAINHAND .. "|r",
+        cast = 0,
+        cooldown = 600,
+        gcd = "off",
+
+        usable = false,
+
+        copy = "actual_main_hand",
+    }
 } )
 
 

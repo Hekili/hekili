@@ -6,7 +6,11 @@ if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
+
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
+
+local strformat = string.format
+
 
 local spec = Hekili:NewSpecialization( 71 )
 
@@ -1661,13 +1665,22 @@ spec:RegisterSetting( "heroic_charge", false, {
 } )
 
 
+local LSR = LibStub( "SpellRange-1.0" )
+
+spec:RegisterRanges( "hamstring", "mortal_strike", "execute", "storm_bolt", "charge", "heroic_throw", "taunt" )
+
+spec:RegisterRangeFilter( strformat( "Can %s but cannot %s (8 yards)", Hekili:GetSpellLinkWithTexture( spec.abilities.taunt.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.charge.id ) ), function()
+    return LSR.IsSpellInRange( spec.abilities.taunt.name ) == 1 and LSR.IsSpellInRange( class.abilities.charge.name ) ~= 0
+end )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 2,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "hamstring",
+    rangeFilter = true,
 
     damage = true,
     damageDots = false,

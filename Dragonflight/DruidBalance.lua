@@ -3215,13 +3215,17 @@ spec:RegisterAbilities( {
 
 
 
+spec:RegisterRanges( "moonfire", "entangling_roots", "growl", "shred" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
     nameplates = false,
-    nameplateRange = 8,
+    rangeChecker = "moonfire",
+    rangeFilter = false,
 
     damage = true,
     damageDots = true,

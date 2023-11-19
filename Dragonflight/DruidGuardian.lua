@@ -2093,13 +2093,17 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "shred", "rake", "skull_bash", "wild_charge", "growl", "entangling_roots", "moonfire" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "shred",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 6,

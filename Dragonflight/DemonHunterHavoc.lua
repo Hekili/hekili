@@ -1763,13 +1763,17 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "chaos_strike", "felblade", "fel_eruption", "torment", "throw_glaive", "the_hunt" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
+    aoe = 3,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 7,
+    rangeChecker = "chaos_strike",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

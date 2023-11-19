@@ -2358,19 +2358,22 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "arcane_shot", "kill_command", "wing_clip" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    potion = "spectral_agility",
+    aoe = 3,
+    cycle = false,
 
     nameplates = false,
-    nameplateRange = 8,
-
-    aoe = 3,
+    rangeChecker = "arcane_shot",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 3,
 
+    potion = "spectral_agility",
     package = "Beast Mastery",
 } )
 

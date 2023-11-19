@@ -582,6 +582,10 @@ end
 function Hekili:GetSpellLinkWithTexture( id, size, color )
     if not id then return "" end
 
+    if type( id ) ~= "number" and class.abilities[ id ] then
+        id = class.abilities[ id ].id
+    end
+
     local name, _, _, _, _, _, _, icon = GetSpellInfo( id )
 
     if name and icon then

@@ -1327,14 +1327,17 @@ spec:RegisterSetting( "sw_death_protection", 50, {
 } )
 
 
+spec:RegisterRanges( "smite", "dispel_magic" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
-    cycle = true,
+    aoe = 3,
+    cycle = false,
 
-    nameplates = true,
-    nameplateRange = 8,
+    nameplates = false,
+    rangeChecker = "smite",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

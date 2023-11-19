@@ -441,7 +441,13 @@ do
 
     empowered_cast_time = setfenv( function()
         if buff.tip_the_scales.up then return 0 end
-        return stages[ args.empower_to or max_empower ] * haste
+        local power_level = args.empower_to or max_empower
+
+        if settings.fire_breath_fixed > 0 then
+            power_level = min( settings.fire_breath_fixed, max_empower )
+        end
+
+        return stages[ power_level ] * ( talent.font_of_magic.enabled and 0.8 or 1 ) * haste
     end, state )
 end
 
@@ -622,6 +628,10 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
+        caption = function()
+            local power_level = settings.fire_breath_fixed
+            if power_level > 0 then return power_level end
+        end,
 
         spell_targets = function () return active_enemies end,
         damage = function () return 1.334 * stat.spell_power * ( 1 + 0.2 * talent.blast_furnace.rank ) end,
@@ -909,13 +919,40 @@ spec:RegisterSetting( "use_unravel", false, {
 } )
 
 
+local devastation = class.specs[ 1467 ]
+
+spec:RegisterSetting( "fire_breath_fixed", 0, {
+    name = strformat( "%s: Empowerment", Hekili:GetSpellLinkWithTexture( devastation.abilities.fire_breath.id ) ),
+    type = "range",
+    desc = strformat( "If set to |cffffd1000|r, %s will be recommended at different empowerment levels based on the action priority list.\n\n"
+        .. "To force %s to be used at a specific level, set this to 1, 2, 3 or 4.\n\n"
+        .. "If the selected empowerment level exceeds your maximum, the maximum level will be used instead.", Hekili:GetSpellLinkWithTexture( devastation.abilities.fire_breath.id ),
+        devastation.abilities.fire_breath.name ),
+    min = 0,
+    max = 4,
+    step = 1,
+    width = "full"
+} )
+
+spec:RegisterSetting( "spend_essence", false, {
+    name = strformat( "%s: Spend Essence", Hekili:GetSpellLinkWithTexture( devastation.abilities.disintegrate.id ) ),
+    type = "toggle",
+    desc = strformat( "If checked, %s may be recommended when you will otherwise max out on Essence and risk wasting resources.\n\n"
+        .. "Recommendation: Leave disabled in content where you are actively healing and spending Essence on healing spells.", Hekili:GetSpellLinkWithTexture( devastation.abilities.disintegrate.id ) ),
+    width = "full"
+} )
+
+
+spec:RegisterRanges( "azure_strike", "living_flame" )
+
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 3,
 
-    nameplates = true,
-    nameplateRange = 30,
+    nameplates = false,
+    rangeCheck = "living_flame",
 
     damage = true,
     damageDots = true,
@@ -929,4 +966,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Preservation", 20230205, [[Hekili:LwvtVjomq0Fl9svRAvwYhTL9q3d7PTCaTsPNDSjzcXQH4S2ou1kK)TVJDOGjb6UOkeOW438EJh)ghsi5zsAbtdK5rtIINen5UGWhcNgFhjv)wlqsBz5VWwIp0WwH)(BjOa5AMMlASl(wTGvyjrj6K5ias6IoET(PgYIJZCmjL1PRess6VGx41CsAfVOa6tau5K0NR4kd1(LzOBladvuI)p3kSHwZvAC5sH0q7zjaRgPOKxJ1qpkvqReYfRwW03843wudkfVzzMOmtxbzlKIM3bZmZSTOrm)PdQR9dKJvki5VBZRSgBa(l21izRHdWxaqlYmW0v(HBfUQ2pxfKX1WkLFWsUe2M9TWQwXRGmtlEm8wE5JL8Lv6mjSIXBu)im5MCMsNP5hwsNGHOXmm9SiiEmbrNfbjJj4OPxjwdsl2vI1yt)GElhp(0Wsj6PSiw0vwgGNPqtoQyNuPd6AV8Ql6ZCZg36o(cgj51(exZxV781s8)fd(eWEVd30kTK)cSV2V0l9cXR40c(KYo2SBGGK(kt2GyvK0NWMLudfgA0aBEGzgoE1c5K5Hj3pLK6I6gCHswxTgFCUBqUpnsQZhtsHgg66li)KOrn9bmYxpaCSp4T(8bqs8H457ha7oFy9ZbdqC)bA9XCXaqpybTpYo8E2nCxj52DfZg2ZPzO)Wqdtm0Bm0DNFiB7CN2UhQX0VQgt)mjISs89VQerFMeXwjcN8v14eSN4ypCa77jQ31VxpNZ3Lt0jZ5OZWg6Lg6vg6fg62BbOB2yOJNgpSAn0R9mKExw4QH4twdNPm71W)EdNgj)JEJBJn6wHpOZ)weKoT99zBF91Ob8J)YSdNz(4d5Vd]] )
+spec:RegisterPack( "Preservation", 20231119, [[Hekili:LAv0UnQoq0VL(suRAf3cjDVPsT9H9PT9kvTsSpBSdmeSkGzTnP7wf5V97ydnXajvB2(qIShF85md2NrMes(bjoJPbYZrxhnpmm82GW53CB4TKy9VBasCdl9f2ACqnRc))7sqbYnmnxuBx83LcwMLeLOvMIaiXRA5L6hRjRoiZxVeX2aPKNdx8fCCbpld6adQus8pk4kd1(JzO9IBOICCEQvudTKR04Y5cPH(n4fEjpaZePiNxI63Hsf0iHur1kM(Y7)NvLGsXRxNiYt0fqYkPO(nW8K5PE0iMF2cLL(bszTAqYFZUV8sS49xSTwY2adWNbqdYmW0f(HBeUS2FVkiHRHkLFWCUe639vqvJ4vqMOf3hEfp)(C(6cDIeQy8A1dHlUmLP0jA(Wu6imenLHLNebZNsq0jrWclb9ZXpMbEW2UDiXhK2cXgqA5OsSb3)SvT55bUGbzIxRNPaTgJRcSFyDXhCSWXtEnSwIxfTK42nEDaQtXSOvQ0bTnZo)SoY3U1J9jz1fB32VZa7uS4sQy)6UDRVpvWB41zj9G9th2BTy1R0s(lU0XUYgibQHkoGFz9XwY3S7YNf7Fuo(rID4pGKyCKY6NF3PI2YxzYABLqIFep5KAiZqJg5bdmprIDJCDrGCwBPgh(SRRshusSZyrIHAgAdZiFLOrD8bmXOnc8CFW9gVrqw4dXZioc2n(W6mMJq8LbA9UrDeO)1cAFKD49UyJvLKBRkMnS3vCd9bdnCHHEPHU7mdzBNDHehA1y5NvJLFKerwjU9Zkr0hjXCReHxFAAC4Ueg62Ty)(j6FeLx4uoCKY7fPZfyOZm0robxSPTt2N2DtT0hDu6pydghZNBONzOVlVTMMAKhwyg6fDapqBhd9Ubi9t9bTF8CgE9cDvX8Jwfd7l1DCVNi)gloIwCuIoXkEVg(D)CACZFXj6rtzT9jd9VqyslRd)EHHDbCuGDUke49J)Jv4EiIlk5)d]] )

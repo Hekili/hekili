@@ -1534,13 +1534,17 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "chaos_strike", "fiery_brand", "torment", "throw_glaive", "the_hunt" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
+    aoe = 3,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "chaos_strike",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

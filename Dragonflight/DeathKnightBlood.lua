@@ -1945,13 +1945,17 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "death_strike", "mind_freeze", "death_coil" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
+    aoe = 3,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "death_strike",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

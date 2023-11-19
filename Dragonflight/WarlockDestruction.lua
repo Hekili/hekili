@@ -10,6 +10,9 @@ local class, state = Hekili.Class, Hekili.State
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local PTR = ns.PTR
 
+local strformat = string.format
+
+
 local spec = Hekili:NewSpecialization( 267 )
 
 spec:RegisterResource( Enum.PowerType.SoulShards, {
@@ -1654,6 +1657,8 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "corruption", "subjugate_demon", "mortal_coil" )
+
 spec:RegisterOptions( {
     enabled = true,
 
@@ -1661,7 +1666,9 @@ spec:RegisterOptions( {
     cycle = true,
 
     nameplates = false,
-    nameplateRange = 8,
+    rangeChecker = "corruption",
+    rangeFilter = false,
+
 
     damage = true,
     damageDots = false,

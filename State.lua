@@ -24,7 +24,7 @@ local format = string.format
 
 local Mark, SuperMark, ClearMarks = ns.Mark, ns.SuperMark, ns.ClearMarks
 
-local RC = LibStub( "LibRangeCheck-2.0" )
+local RC = LibStub( "LibRangeCheck-3.0" )
 local LSR = LibStub( "SpellRange-1.0" )
 
 local class = Hekili.Class

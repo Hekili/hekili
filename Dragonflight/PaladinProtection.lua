@@ -1584,13 +1584,17 @@ spec:RegisterStateExpr( "ds_damage", function ()
 end )
 
 
+spec:RegisterRanges( "shield_of_the_righteous", "rebuke", "avengers_shield" )
+
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 2,
+    aoe = 3,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "shield_of_the_righteous",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,

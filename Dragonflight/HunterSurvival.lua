@@ -1280,13 +1280,17 @@ spec:RegisterAbilities( {
 } )
 
 
+spec:RegisterRanges( "carve", "butchery", "harpoon", "arcane_shot" )
+
 spec:RegisterOptions( {
     enabled = true,
 
     aoe = 2,
+    cycle = false,
 
     nameplates = true,
-    nameplateRange = 8,
+    rangeChecker = "carve",
+    rangeFilter = false,
 
     damage = true,
     damageExpiration = 8,
