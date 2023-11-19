@@ -390,7 +390,7 @@ do
                             end
 
                             if not excluded and checkPlates and spec.nameplateRange > 0 then
-                                range = RC:GetRange( unit, true, InCombatLockdown() )
+                                range = RC:GetRange( unit, true )
                                 guidRanges[ guid ] = range
 
                                 excluded = range and range > spec.nameplateRange
@@ -459,7 +459,7 @@ do
                                 end
 
                                 if not excluded and checkPlates then
-                                    range = RC:GetRange( unit, true, InCombatLockdown() )
+                                    range = RC:GetRange( unit, true )
                                     guidRanges[ guid ] = range
 
                                     excluded = range and range > spec.nameplateRange or false
@@ -537,7 +537,7 @@ do
                         end
 
                         if not excluded and checkPlates then
-                            range = RC:GetRange( unit, true, InCombatLockdown() )
+                            range = RC:GetRange( unit, true )
                             guidRanges[ guid ] = range
 
                             excluded = range and range > spec.nameplateRange or false

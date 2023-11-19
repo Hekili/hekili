@@ -2811,7 +2811,7 @@ do
             if k == "distance" then t[k] = UnitCanAttack( "player", "target" ) and ( ( t.minR + t.maxR ) / 2 ) or 7.5
             elseif k == "in_range" then return t.distance <= 8
             elseif k == "minR" or k == "maxR" then
-                local minR, maxR = RC:GetRange( "target", true, InCombatLockdown() )
+                local minR, maxR = RC:GetRange( "target", true )
                 t.minR = minR or 5
                 t.maxR = maxR or 10
 
@@ -7144,7 +7144,7 @@ do
             end
 
             if ability.range then
-                local _, dist = RC:GetRange( "target", true, InCombatLockdown() )
+                local _, dist = RC:GetRange( "target", true)
 
                 if dist and dist > ability.range then
                     return false, "not within ability-specified range (" .. ability.range .. ")"
