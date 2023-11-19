@@ -952,7 +952,7 @@ spec:RegisterAbilities( {
         spend = 15,
         spendType = "energy",
 
-        startsCombat = true,
+        startsCombat = false,
 
         -- 20231108: Deprecated; we use Blade Flurry more now.
         -- readyTime = function() return buff.blade_flurry.remains - gcd.execute end,
