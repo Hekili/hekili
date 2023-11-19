@@ -3683,7 +3683,8 @@ do
 
             if aura.meta and aura.meta[ k ] then return aura.meta[ k ]() end
 
-            if k == "count" or k == "stack" or k == "stacks" then
+            if k == "max_stack" then return aura.max_stack or 1
+            elseif k == "count" or k == "stack" or k == "stacks" then
                 local n = 0
 
                 if type == "any" then

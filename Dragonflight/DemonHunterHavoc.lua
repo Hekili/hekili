@@ -399,6 +399,7 @@ spec:RegisterAuras( {
         alias = { "immolation_aura_1", "immolation_aura_2", "immolation_aura_3", "immolation_aura_4", "immolation_aura_5" },
         aliasMode = "longest",
         aliasType = "buff",
+        max_stack = 5,
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=217832
