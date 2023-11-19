@@ -711,6 +711,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 if debug then self:Debug( "The recommended action (%s) is ready within the active GCD; exiting list (%s).", rAction, listName ) end
                 break
 
+            elseif rAction and state.empowering[ rAction ] then
+                if debug then self:Debug( "The recommended action (%s) is currently empowering; exiting list (%s).", rAction, listName ) end
+                break
+
             elseif stop then
                 if debug then self:Debug( "The action list reached a stopping point; exiting list (%s).", listName ) end
                 break
