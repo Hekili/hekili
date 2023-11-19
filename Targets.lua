@@ -582,7 +582,7 @@ do
                             stationary = stationary + 1
                         end
 
-                        if debugging then details = format("%s\n    %-12s - %2d - %s %s\n", details, "dmg", guid, ( moving and "(moving)" or "" ) ) end
+                        if debugging then details = format("%s\n    %-12s - %s %s\n", details, "dmg", guid, ( moving and "(moving)" or "" ) ) end
                     else
                         counted[ guid ] = false
                     end
