@@ -21,7 +21,7 @@ local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
 
 local CGetItemInfo = ns.CachedGetItemInfo
-local RC = LibStub( "LibRangeCheck-2.0" )
+local RC = LibStub( "LibRangeCheck-3.0" )
 
 -- Abandoning AceEvent in favor of darkend's solution from:
 -- http://andydote.co.uk/2014/11/23/good-design-in-warcraft-addons.html

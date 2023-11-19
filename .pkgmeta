@@ -46,6 +46,8 @@ externals:
         url: https://github.com/ascott18/LibSpellRange-1.0.git
     Libs/LibRangeCheck-2.0:
         url: https://github.com/WeakAuras/LibRangeCheck-2.0
+    Libs/LibRangeCheck-3.0:
+        url: https://github.com/WeakAuras/LibRangeCheck-3.0
     Libs/LibCompress:
         url: https://repos.wowace.com/wow/libcompress/trunk
     Libs/LibDeflate:
@@ -65,3 +67,4 @@ externals:
 
 move-folders:
     Hekili/Libs/LibRangeCheck-2.0/LibRangeCheck-2.0: Hekili/Libs/LibRangeCheck-2.0
+    Hekili/Libs/LibRangeCheck-3.0/LibRangeCheck-3.0: Hekili/Libs/LibRangeCheck-3.0

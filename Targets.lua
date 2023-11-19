@@ -253,7 +253,7 @@ RegisterEvent( "UNIT_FLAGS", function( event, unit )
 end )
 
 
-local RC = LibStub( "LibRangeCheck-2.0" )
+local RC = LibStub( "LibRangeCheck-3.0" )
 
 local lastCount = 1
 local lastStationary = 1

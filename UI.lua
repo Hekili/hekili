@@ -843,7 +843,7 @@ do
         Cooldowns = 0.25
     }
 
-    local LRC = LibStub("LibRangeCheck-2.0")
+    local LRC = LibStub("LibRangeCheck-3.0")
     local LSF = SpellFlashCore
     local catchFlash, lastFramesFlashed = nil, {}
 
