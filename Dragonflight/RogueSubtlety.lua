@@ -729,7 +729,7 @@ spec:RegisterGear( "tier19", 138332, 138338, 138371, 138326, 138329, 138335 )
 
 -- Tier 31
 -- Tier 31
-spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207238 )
+spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207239 )
 
 -- Tier 30
 spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )

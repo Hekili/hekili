@@ -659,7 +659,7 @@ end )
 
 
 -- Tier 31
-spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207238 )
+spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207239 )
 -- 422908: Rogue Outlaw 10.2 Class Set 4pc
 -- TODO: Roll the Bones additionally refreshes a random Roll the Bones combat enhancement buff you currently possess.
 

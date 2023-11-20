@@ -678,7 +678,7 @@ end, state )
 
 
 -- Tier 31
-spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207238 )
+spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207239 )
 -- 422905: Rogue Assassination 10.2 Class Set 2pc
 -- Each 10 energy you spend grants Natureblight, granting 1.0% attack speed and 1.0% Nature Damage for 6 sec. Multiple instances of Natureblight may overlap, up to 12.
 -- TODO: Each application is actually individual, so I should track this differently.
