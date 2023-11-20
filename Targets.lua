@@ -369,7 +369,7 @@ do
         checkPlates = checkPlates and ( spec.rangeChecker or class.specs[ state.spec.id ].ranges[ 1 ] )
         checkPlates = checkPlates and class.abilities[ checkPlates ].id
 
-        if not IsSpellKnown( checkPlates ) then checkPlates = false end
+        if checkPlates and not IsSpellKnown( checkPlates ) then checkPlates = false end
 
         --[[ if rangeCheck == "Auto" then
             rangeChecker = spec.ranges.Auto[2]
