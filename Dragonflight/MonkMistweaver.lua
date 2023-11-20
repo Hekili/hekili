@@ -1099,7 +1099,7 @@ spec:RegisterSetting( "save_faeline", false, {
     width = "full",
 } )
 
-spec:RegisterSetting( "roll_movement", 5, {
+--[[ spec:RegisterSetting( "roll_movement", 5, {
     type = "range",
     name = strformat( "%s: Check Distance", Hekili:GetSpellLinkWithTexture( 109132 ), Hekili:GetSpellLinkWithTexture( 115008 ) ),
     desc = strformat( "If set above zero, %s (and %s) may be recommended when your target is at least this far away.", Hekili:GetSpellLinkWithTexture( 109132 ),
@@ -1108,10 +1108,10 @@ spec:RegisterSetting( "roll_movement", 5, {
     max = 100,
     step = 1,
     width = "full"
-} )
+} ) ]]
 
     spec:RegisterStateExpr( "distance_check", function()
-        return target.minR > ( settings.roll_movement or 0 )
+        return target.minR > 0
     end )
 
 
