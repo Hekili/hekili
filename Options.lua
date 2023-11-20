@@ -5065,7 +5065,7 @@ do
                                             width = "full"
                                         },
 
-                                        rangeCheck = {
+                                        rangeChecker = {
                                             type = "select",
                                             name = "Range Filter by Spell",
                                             desc = "When |cFFFFD100Count Targets by Nameplates|r is enabled, enemies within range of this ability will be included in target counts.\n\n"
@@ -5098,23 +5098,23 @@ do
                                             end,
                                             get = function()
                                                 -- If it's blank, default to the first option.
-                                                if spec.ranges and not self.DB.profile.specs[ id ].rangeCheck then
-                                                    self.DB.profile.specs[ id ].rangeCheck = spec.ranges[ 1 ]
+                                                if spec.ranges and not self.DB.profile.specs[ id ].rangeChecker then
+                                                    self.DB.profile.specs[ id ].rangeChecker = spec.ranges[ 1 ]
                                                 else
                                                     local found = false
                                                     for k, v in pairs( spec.ranges ) do
-                                                        if v == self.DB.profile.specs[ id ].rangeCheck then
+                                                        if v == self.DB.profile.specs[ id ].rangeChecker then
                                                             found = true
                                                             break
                                                         end
                                                     end
 
                                                     if not found then
-                                                        self.DB.profile.specs[ id ].rangeCheck = spec.ranges[ 1 ]
+                                                        self.DB.profile.specs[ id ].rangeChecker = spec.ranges[ 1 ]
                                                     end
                                                 end
 
-                                                return self.DB.profile.specs[ id ].rangeCheck
+                                                return self.DB.profile.specs[ id ].rangeChecker
                                             end,
                                             disabled = function()
                                                 return self.DB.profile.specs[ id ].rangeFilter

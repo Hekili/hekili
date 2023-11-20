@@ -2013,7 +2013,7 @@ spec:RegisterAbilities( {
     },
 } )
 
-spec:RegisterRanges( "crusader_strike", "hammer_of_justice", "blade_of_justice", "hammer_of_wrath" )
+spec:RegisterRanges( "hammer_of_justice", "rebuke", "crusader_strike", "blade_of_justice", "hammer_of_wrath" )
 
 spec:RegisterOptions( {
     enabled = true,
@@ -2022,7 +2022,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "crusader_strike",
+    rangeChecker = "rebuke",
     rangeFilter = false,
 
     damage = true,

@@ -369,6 +369,8 @@ do
         checkPlates = checkPlates and ( spec.rangeChecker or class.specs[ state.spec.id ].ranges[ 1 ] )
         checkPlates = checkPlates and class.abilities[ checkPlates ].id
 
+        if not IsSpellKnown( checkPlates ) then checkPlates = false end
+
         --[[ if rangeCheck == "Auto" then
             rangeChecker = spec.ranges.Auto[2]
             rangeCheck = true
@@ -526,7 +528,7 @@ do
             end
         end
 
-        if not spec or spec.damage or ( not spec.nameplates and not spec.petbased ) or not showNPs then
+        if not spec or spec.damage or not checkPets and not checkPlates then
             local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
 
             for guid, seen in pairs(db) do
