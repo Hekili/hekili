@@ -16,7 +16,7 @@ actions+=/variable,name=holding_meta,value=(talent.demonic&talent.essence_break)
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.metamorphosis.up
 actions+=/immolation_aura,if=talent.ragefire&active_enemies>=3&(!talent.unbound_chaos|buff.unbound_chaos.down)&(cooldown.blade_dance.remains|debuff.essence_break.down)
 actions+=/immolation_aura,if=talent.a_fire_inside&talent.inertia&(!talent.unbound_chaos|buff.unbound_chaos.down)&full_recharge_time<gcd.max*2&debuff.essence_break.down
-actions+=/fel_rush,if=buff.unbound_chaos.up&(action.immolation_aura.charges=2&debuff.essence_break.down|prev_gcd.1.eye_beam&buff.inertia.up&buff.inertia.remains<3)
+actions+=/fel_rush,if=buff.unbound_chaos.up&(cooldown.immolation_aura.charges=2&debuff.essence_break.down|prev_gcd.1.eye_beam&buff.inertia.up&buff.inertia.remains<3)
 actions+=/the_hunt,if=time<10&buff.potion.up&(!talent.inertia|buff.metamorphosis.up&debuff.essence_break.down)
 actions+=/immolation_aura,if=talent.inertia&(cooldown.eye_beam.remains<gcd.max*2|buff.metamorphosis.up)&cooldown.essence_break.remains<gcd.max*3&(!talent.unbound_chaos|buff.unbound_chaos.down)&buff.inertia.down&debuff.essence_break.down
 actions+=/immolation_aura,if=talent.inertia&(!talent.unbound_chaos|buff.unbound_chaos.down)&(full_recharge_time<cooldown.essence_break.remains|!talent.essence_break)&debuff.essence_break.down&(buff.metamorphosis.down|buff.metamorphosis.remains>6)&cooldown.blade_dance.remains&(fury<75|cooldown.blade_dance.remains<gcd.max*2)
