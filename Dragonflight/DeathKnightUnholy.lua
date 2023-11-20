@@ -1959,7 +1959,7 @@ me:RegisterAbilities( {
 
     -- Talent: Summon a Gargoyle into the area to bombard the target for $61777d.    The Gar...
     summon_gargoyle = {
-        id = 49206,
+        id = function() return IsSpellKnownOrOverridesKnown( 207349 ) and 207349 or 49206 end,
         cast = 0,
         cooldown = 180,
         gcd = "off",
@@ -1974,7 +1974,7 @@ me:RegisterAbilities( {
             gain( 50, "runic_power" )
         end,
 
-        copy = { 207349 }
+        copy = { 49206, 207349 }
     },
 
     -- Talent: Strike your target dealing $s2 Shadow damage, infecting the target with $s3 F...
