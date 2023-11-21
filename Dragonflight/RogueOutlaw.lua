@@ -380,7 +380,7 @@ spec:RegisterAuras( {
     },
     subterfuge = {
         id = 115192,
-        duration = function() return ( talent.subterfuge.enabled and 3 or 0 ) + ( talent.underhanded_upper_hand.enabled and 3 or 0 ) end,
+        duration = function() return talent.underhanded_upper_hand.enabled and 6 or 3 end,
         max_stack = 1,
     },
     -- Damage taken increased by $w1%.
