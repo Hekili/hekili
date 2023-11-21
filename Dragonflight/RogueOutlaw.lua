@@ -903,7 +903,7 @@ spec:RegisterAbilities( {
     between_the_eyes = {
         id = 315341,
         cast = 0,
-        cooldown = function () return talent.crackshot.enabled and ( stealthed.rogue and 0 or 45 ) or 45 end,
+        cooldown = function () return talent.crackshot.enabled and stealthed.rogue and 0 or 45 end,
         gcd = "totem",
         school = "physical",
 
