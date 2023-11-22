@@ -1289,7 +1289,7 @@ spec:RegisterAbilities( {
         talent = "blast_wave",
         startsCombat = true,
 
-        usable = function () return target.distance < 8, "target must be in range" end,
+        usable = function () return target.maxR < 8, "target must be in range" end,
         handler = function ()
             applyDebuff( "target", "blast_wave" )
         end,

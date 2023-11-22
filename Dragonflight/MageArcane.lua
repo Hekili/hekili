@@ -1323,7 +1323,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        usable = function () return not settings.check_explosion_range or target.distance < 10, "target out of range" end,
+        usable = function () return not settings.check_explosion_range or target.maxR < 10, "target out of range" end,
         handler = function ()
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
             else
@@ -1727,7 +1727,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        usable = function () return not state.spec.frost or target.distance < 12, "target out of range" end,
+        usable = function () return not state.spec.frost or target.maxR < 12, "target out of range" end,
         handler = function ()
             applyDebuff( "target", "frost_nova" )
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end

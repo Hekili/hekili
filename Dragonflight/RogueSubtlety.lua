@@ -697,7 +697,7 @@ spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
 
 spec:RegisterGear( "shadow_satyrs_walk", 137032 )
     spec:RegisterStateExpr( "ssw_refund_offset", function()
-        return target.distance
+        return target.maxR
     end )
 
 spec:RegisterGear( "soul_of_the_shadowblade", 150936 )

@@ -1285,12 +1285,14 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
 
                     if u then
                         local _, maxR = RC:GetRange( u, true, InCombatLockdown() )
-                        maxR = maxR or state.target.distance
+                        maxR = maxR or select( 6, GetSpellInfo( ability.id ) ) or 40
                         travel = maxR / ability.velocity
                     end
                 end
 
-                if not travel then travel = state.target.distance / ability.velocity end
+                if not travel then
+                    travel = ( select( 6, GetSpellInfo( ability.id ) ) or 40 ) / ability.velocity
+                end
 
                 state:QueueEvent( ability.impactSpell or ability.key, finish / 1000, 0.05 + travel, "PROJECTILE_IMPACT", target, true )
             end
@@ -1753,12 +1755,12 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
 
                                 if unit then
                                     local _, maxR = RC:GetRange( unit, true, InCombatLockdown() )
-                                    maxR = maxR or state.target.distance
+                                    maxR = maxR or select( 6, GetSpellInfo( ability.id ) ) or 40
                                     travel = maxR / ability.velocity
                                 end
                             end
 
-                            if not travel then travel = state.target.distance / ability.velocity end
+                            if not travel then travel = ( select( 6, GetSpellInfo( ability.id ) ) or 40 ) / ability.velocity end
 
                             state:QueueEvent( ability.impactSpell or ability.key, finish / 1000, travel, "PROJECTILE_IMPACT", destGUID, true )
                         end
@@ -1813,7 +1815,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
 
                             if unit then
                                 local _, maxR = RC:GetRange( unit, true, InCombatLockdown() )
-                                maxR = maxR or state.target.distance
+                                maxR = maxR or select( 6, GetSpellInfo( ability.id ) ) or 40
                                 travel = maxR / ability.velocity
                             end
                         end

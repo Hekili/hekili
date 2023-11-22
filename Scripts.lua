@@ -970,7 +970,8 @@ do
         -- output = output:gsub( "not safebool(", "safebool(not " )
         output = output:gsub( "!safenum(%b())", "safenum(!%1)" )
         output = output:gsub( "@safebool", "@safenum" )
-        output = output:gsub( "!%((%b())%)", "!%1" )
+        output = output:gsub( "!%(%s*(%b())%s*%)", "!%1" )
+        output = output:gsub( "%(%s*(%b())%s*%)", "%1" )
 
         esDepth = esDepth - 1
         return output

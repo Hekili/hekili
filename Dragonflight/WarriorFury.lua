@@ -1033,7 +1033,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132337,
 
-        usable = function () return target.distance > 10 and ( query_time - action.charge.lastCast > gcd.execute ) end,
+        usable = function () return target.minR > 8 and ( query_time - action.charge.lastCast > gcd.execute ), "target too close" end,
         handler = function ()
             applyDebuff( "target", "charge" )
             setDistance( 5 )

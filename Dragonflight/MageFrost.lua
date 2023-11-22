@@ -927,7 +927,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        usable = function () return target.distance <= 12, "target must be nearby" end,
+        usable = function () return talent.coldest_snap.enabled or target.maxR <= 12, "target must be nearby" end,
         handler = function ()
             applyDebuff( "target", talent.freezing_cold.enabled and "freezing_cold" or "cone_of_cold" )
             active_dot.cone_of_cold = max( active_enemies, active_dot.cone_of_cold )

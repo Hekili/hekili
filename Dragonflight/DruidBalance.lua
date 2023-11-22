@@ -1956,7 +1956,7 @@ spec:RegisterAbilities( {
             -- Can we safely assume anything is going to happen?
             if state.spec.feral then
                 applyBuff( "tigers_fury" )
-                if target.distance < 8 then
+                if target.maxR < 8 then
                     gain( 5, "combo_points" )
                 end
             elseif state.spec.guardian then
@@ -3061,7 +3061,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "typhoon" )
-            if target.distance < 15 then setDistance( target.distance + 5 ) end
+            if target.maxR < 15 then setDistance( target.distance + 5 ) end
         end,
     },
 
@@ -3114,12 +3114,12 @@ spec:RegisterAbilities( {
         talent = "wild_charge",
         startsCombat = false,
 
-        usable = function () return target.exists and target.distance > 7, "target must be 8+ yards away" end,
+        usable = function () return target.exists and target.maxR > 7, "target must be 8+ yards away" end,
 
         handler = function ()
-            if buff.bear_form.up then target.distance = 5; applyDebuff( "target", "immobilized" )
-            elseif buff.cat_form.up then target.distance = 5; applyDebuff( "target", "dazed" )
-            elseif buff.moonkin_form.up then setDistance( target.distance + 10 ) end
+            if buff.bear_form.up then target.maxR = 5; applyDebuff( "target", "immobilized" )
+            elseif buff.cat_form.up then target.maxR = 5; applyDebuff( "target", "dazed" )
+            elseif buff.moonkin_form.up then setDistance( target.maxR + 10 ) end
         end,
 
         copy = { 49376, 16979, 102401, 102383 }

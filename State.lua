@@ -185,7 +185,7 @@ state.movement = {}
 setmetatable( state.movement, {
     __index = function( t, k )
         if k == "distance" then
-            if state.buff.movement.up then return state.target.distance end
+            if state.buff.movement.up then return state.target.maxR end
             return 0
         end
 
@@ -5817,7 +5817,7 @@ do
             if ability then
                 if type == "PROJECTILE_IMPACT" then
                     if ability.flightTime then time = start + 0.05 + ability.flightTime
-                    else time = start + 0.05 + ( state.target.distance / ability.velocity ) end
+                    else time = start + 0.05 + ( state.target.maxR / ability.velocity ) end
 
                 elseif type == "CHANNEL_START" then
                     time = start

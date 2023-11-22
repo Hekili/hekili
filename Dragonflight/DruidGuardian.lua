@@ -2062,7 +2062,7 @@ spec:RegisterAbilities( {
         talent = "wild_charge",
         startsCombat = true,
 
-        usable = function () return target.exists and target.distance > 7, "target must be 8+ yards away" end,
+        usable = function () return target.exists and target.minR > 7, "target must be 8+ yards away" end,
 
         handler = function ()
             if buff.bear_form.up then target.distance = 5; applyDebuff( "target", "immobilized" )

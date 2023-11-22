@@ -19,6 +19,8 @@ local formatKey = ns.formatKey
 local getSpecializationKey = ns.getSpecializationKey
 local tableCopy = ns.tableCopy
 
+local LSR = LibStub( "SpellRange-1.0" )
+
 local insert, wipe = table.insert, table.wipe
 
 local mt_resource = ns.metatables.mt_resource
@@ -1826,14 +1828,15 @@ all:RegisterAuras( {
     },
 
     out_of_range = {
-        generate = function ()
-            local oor = buff.out_of_range
+        generate = function ( oor )
+            oor.rangeSpell = oor.rangeSpell or settings.spec.rangeChecker or class.specs[ state.spec.id ].ranges[ 1 ]
 
-            if target.distance > 8 then
+            if LSR.IsSpellInRange( class.abilities[ oor.rangeSpell ].name, "target" ) ~= 1 then
                 oor.count = 1
                 oor.applied = query_time
-                oor.expires = 3600
+                oor.expires = query_time + 3600
                 oor.caster = "player"
+                oor.v1 = oor.rangeSpell
                 return
             end
 

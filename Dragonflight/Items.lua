@@ -1385,7 +1385,7 @@ all:RegisterAbilities( {
         item = 202612,
         toggle = "interrupts", -- utility.
 
-        usable = function() return target.distance > 15, "only does damage if jumping 15+ yards" end,
+        usable = function() return target.minR > 15, "only does damage if jumping 15+ yards" end,
 
         handler = function()
             setDistance( 5 )

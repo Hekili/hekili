@@ -803,8 +803,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132337,
 
-        usable = function () return target.minR > 7, "requires 8 yard range or more" end,
-
+        usable = function () return target.minR > 8 and ( query_time - action.charge.lastCast > gcd.execute ), "target too close" end,
         handler = function ()
             applyDebuff( "target", "charge" )
             if legendary.reprisal.enabled then

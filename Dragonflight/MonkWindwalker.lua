@@ -1847,7 +1847,7 @@ spec:RegisterAbilities( {
             end
 
             if ( legendary.keefers_skyreach.enabled or talent.skyreach.enabled or talent.skytouch.enabled ) and debuff.skyreach_exhaustion.down then
-                if talent.skytouch.enabled and target.distance > 10 then setDistance( 5 ) end
+                if talent.skytouch.enabled and target.minR > 10 then setDistance( 5 ) end
                 applyDebuff( "target", "skyreach" )
                 applyDebuff( "target", "skyreach_exhaustion" )
             end

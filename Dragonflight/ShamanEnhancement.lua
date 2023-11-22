@@ -1228,7 +1228,6 @@ spec:RegisterAbilities( {
         talent = "crash_lightning",
         startsCombat = true,
 
-        usable = function () return not settings.check_crash_lightning_range or target.distance < 8, "target out of range" end,
         handler = function ()
             if active_enemies > 1 then
                 applyBuff( "crash_lightning" )
@@ -2090,7 +2089,6 @@ spec:RegisterAbilities( {
         talent = "sundering",
         startsCombat = true,
 
-        usable = function () return not settings.check_sundering_range or target.distance < 11, "target out of range" end,
         handler = function ()
             applyDebuff( "target", "sundering" )
 
