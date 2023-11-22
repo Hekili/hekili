@@ -357,7 +357,8 @@ spec:RegisterAuras( {
         id = 410089,
         duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     prescience_applied = {
         duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,

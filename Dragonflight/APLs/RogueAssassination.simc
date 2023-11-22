@@ -14,7 +14,7 @@ actions+=/kick,if=!stealthed.all
 # Conditional to check if there is only one enemy
 actions+=/variable,name=single_target,value=spell_targets.fan_of_knives<2
 # Combined Energy Regen needed to saturate
-actions+=/variable,name=regen_saturated,value=energy.regen_combined>35
+actions+=/variable,name=regen_saturated,value=energy.regen_combined>settings.regen_threshold
 # Check if we should be using our energy
 actions+=/variable,name=not_pooling,op=setif,condition=set_bonus.tier31_4pc,value=(dot.deathmark.ticking|dot.kingsbane.ticking|buff.shadow_dance.up|debuff.shiv.up|cooldown.thistle_tea.full_recharge_time<20)|(buff.envenom.up&buff.envenom.remains<=2)|energy.pct>=80|fight_remains<=90,value_else=(dot.deathmark.ticking|dot.kingsbane.ticking|buff.shadow_dance.up|debuff.shiv.up|cooldown.thistle_tea.full_recharge_time<20)|energy.pct>=80,if=!set_bonus.tier31_4pc
 # Next Sepsis cooldown time based on Deathmark syncing logic and remaining fight duration

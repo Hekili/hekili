@@ -1,6 +1,6 @@
 actions.precombat+=/apply_poison
 # Default Roll the Bones reroll rule: reroll for any buffs that aren't Buried Treasure, excluding Grand Melee in single target
-actions.precombat+=/variable,name=rtb_reroll,value=rtb_buffs.will_lose=(rtb_buffs.will_lose.buried_treasure+rtb_buffs.will_lose.grand_melee&spell_targets.blade_flurry<2&raid_event.adds.in>10)
+actions.precombat+=/variable,name=rtb_reroll,value=rtb_buffs.will_lose=(rtb_buffs.will_lose.buried_treasure+(rtb_buffs.will_lose.grand_melee&spell_targets.blade_flurry<2&raid_event.adds.in>10))
 # Crackshot builds without T31 should reroll for True Bearing (or Broadside without Hidden Opportunity) if we won't lose over 1 buff
 actions.precombat+=/variable,name=rtb_reroll,if=talent.crackshot&!set_bonus.tier31_4pc,value=(!rtb_buffs.will_lose.true_bearing&talent.hidden_opportunity|!rtb_buffs.will_lose.broadside&!talent.hidden_opportunity)&rtb_buffs.will_lose<=1
 # Crackshot builds with T31 should reroll if we won't lose over 1 buff (2 with Loaded Dice), and if Broadside is not active for builds without Hidden Opportunity
@@ -13,8 +13,9 @@ actions.precombat+=/variable,name=rtb_reroll,value=variable.rtb_reroll|rtb_buffs
 actions.precombat+=/variable,name=rtb_reroll,op=reset,if=!(raid_event.adds.remains>12|raid_event.adds.up&(raid_event.adds.in-raid_event.adds.remains)<6|target.time_to_die>12)|boss&fight_remains<12
 actions.precombat+=/blade_flurry,precombat_seconds=3,if=refreshable&talent.underhanded_upper_hand&!stealthed.mantle
 actions.precombat+=/stealth
+actions.precombat+=/adrenaline_rush,precombat_seconds=2,if=settings.use_ld_opener&talent.loaded_dice&(refreshable|buff.roll_the_bones.refreshable&variable.rtb_reroll)
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=refreshable&variable.rtb_reroll
-actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=refreshable&talent.improved_adrenaline_rush
+actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=!settings.use_ld_opener&refreshable&talent.improved_adrenaline_rush
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 
 # Restealth if possible (no vulnerable enemies in combat)
