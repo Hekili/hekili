@@ -495,7 +495,20 @@ do
         { "^!?(debuff%.[a-z0-9_]+)%.ss_buffed$"     , "%1.remains"                                                     }, -- Assassination
         { "^!?(dot%.[a-z0-9_]+)%.ss_buffed$"        , "%1.remains"                                                     }, -- Assassination
         { "^dot%.([a-z0-9_]+).haste_pct_next_tick$" , "0.01+query_time+(dot.%1.last_tick+dot.%1.tick_time)-query_time" }, -- Assassination
-        { "^!?stealthed%.(.-)$"                     , "stealthed.%1_remains"                                           },
+        { "^!?stealthed.(.-)_remains<=?(.-)$"       , "stealthed.%1_remains-%2"                                        },
+        { "^!?stealthed%.(normal)$"                 , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(vanish)$"                 , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(mantle)$"                 , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(subterfuge)$"             , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(shadow_dance)$"           , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(shadowmeld)$"             , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(sepsis)$"                 , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(improved_garrote)$"       , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(basic)$"                  , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(mantle)$"                 , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(rogue)$"                  , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(ambush)$"                 , "stealthed.%1_remains"                                          },
+        { "^!?stealthed%.(all)$"                    , "stealthed.%1_remains"                                          },
 
         { "^!?time_to_hpg$"           , "time_to_hpg"          }, -- Retribution Paladin
         { "^!?time_to_hpg[<=]=?(.-)$" , "time_to_hpg-%1"       }, -- Retribution Paladin
