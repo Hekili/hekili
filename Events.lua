@@ -878,7 +878,7 @@ do
                         state.main_hand.size = 1
                     elseif equipLoc == "INVTYPE_RANGED" or equipLoc == "INVTYPE_RANGEDRIGHT" then
                         state.set_bonus.ranged = 1
-                            end
+                    end
                 elseif i == 17 then
                     if equipLoc == "INVTYPE_2HWEAPON" then
                         state.off_hand.size = 2
