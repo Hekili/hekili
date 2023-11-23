@@ -985,7 +985,7 @@ function lib:init(forced)
   local _, playerRace = UnitRace("player")
 
   local interactList = InteractLists[playerRace] or DefaultInteractList
-  self.handSlotItem = GetInventoryItemLink("player", "HANDSLOT")
+  self.handSlotItem = GetInventoryItemLink("player", "HANDSSLOT")
   local changed = false
   if updateCheckers(self.friendRC, self.friendRCInCombat, createCheckerList(FriendSpells[playerClass], FriendItems, interactList)) then
     changed = true
