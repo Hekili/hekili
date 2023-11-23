@@ -2181,4 +2181,26 @@ all:RegisterAbilities( {
             }
         }
     },
+
+    -- Throne of the Tides
+    might_of_the_ocean = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 56285,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "tidehunters_blessing" )
+        end,
+
+        auras = {
+            tidehunters_blessing = {
+                id = 91340,
+                duration = 20,
+                max_stack = 1
+            }
+        }
+    }
 } )
