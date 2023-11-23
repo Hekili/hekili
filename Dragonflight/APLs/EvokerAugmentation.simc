@@ -34,11 +34,11 @@ actions+=/use_item,slot=trinket1,if=!debuff.temporal_wound.up&(cooldown.breath_o
 actions+=/use_item,slot=trinket2,if=!debuff.temporal_wound.up&(cooldown.breath_of_eons.remains>=30|!variable.trinket_1_exclude)&!variable.trinket_2_manual
 actions+=/use_items,use_off_gcd=1,if=gcd.remains>=gcd.max*0.6
 actions+=/call_action_list,name=fb,if=empowering.fire_breath|cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
-actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
+actions+=/upheaval,cycle_targets=1,empower_to=1,if=empowering.upheaval|target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
 actions+=/breath_of_eons,if=(cooldown.ebon_might.remains<=4|buff.ebon_might.up)&target.time_to_die>15&raid_event.adds.in>15&(!equipped.nymues_unraveling_spindle|trinket.nymues_unraveling_spindle.cooldown.remains>=10|boss&fight_remains<30)|boss&fight_remains<30,line_cd=117
 actions+=/living_flame,if=buff.leaping_flames.up&cooldown.fire_breath.up
 actions+=/call_action_list,name=fb,if=empowering.fire_breath|(raid_event.adds.remains>13|!raid_event.adds.exists)
-actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&(raid_event.adds.remains>13|!raid_event.adds.exists)
+actions+=/upheaval,cycle_targets=1,empower_to=1,if=empowering.upheaval|target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&(raid_event.adds.remains>13|!raid_event.adds.exists)
 actions+=/time_skip,if=(cooldown.fire_breath.remains+cooldown.upheaval.remains+cooldown.prescience.full_recharge_time)>=35
 actions+=/emerald_blossom,if=talent.dream_of_spring&buff.essence_burst.up&(variable.spam_heal=2|variable.spam_heal=1&!buff.ancient_flame.up)&(buff.ebon_might.up|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4)
 actions+=/eruption,if=buff.ebon_might.remains>execute_time|essence.deficit=0&buff.essence_burst.down|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4
