@@ -723,7 +723,12 @@ local sigils = setmetatable( {}, {
 } )
 
 spec:RegisterStateFunction( "create_sigil", function( sigil )
-    sigils[ sigil ] = query_time + ( talent.quickened_sigils.enabled and 1 or 2 )
+    sigils[ sigil ] = query_time + activation_time
+
+    local effect = sigil == "elysian_dcreee" and "elysian_decree" or ( "sigil_of_" .. sigil )
+    applyDebuff( "target", effect )
+    debuff.effect.applied = debuff.effect.applied + 1
+    debuff.effect.expires = debuff.effect.expires + 1
 end )
 
 spec:RegisterStateExpr( "soul_fragments", function ()

@@ -6,7 +6,7 @@ actions+=/variable,name=trinket_2_exclude,value=trinket.2.is.ruby_whelp_shell|tr
 # Don't spend fury when fel dev soon to maximize fel dev uptime
 actions+=/variable,name=dont_cleave,value=(cooldown.fel_devastation.remains<=(action.soul_cleave.execute_time+gcd.remains))&fury<80
 # Check if fiery demise is active and spread
-actions+=/variable,name=fd_ready,value=talent.fiery_brand&talent.fiery_demise&active_dot.fiery_brand>0
+actions+=/variable,name=fd_ready,value=talent.fiery_brand&talent.fiery_demise&active_dot.fiery_brand_dot>0
 # Don't spend fury when fel dev soon to maximize fel dev uptime
 actions+=/variable,name=dont_cleave,value=(cooldown.fel_devastation.remains<=(action.soul_cleave.execute_time+gcd.remains))&fury<80
 # When to use Spirit Bomb with Focused Cleave
@@ -23,7 +23,7 @@ actions+=/metamorphosis,use_off_gcd=1,if=!buff.metamorphosis.up
 actions+=/potion,use_off_gcd=1
 ## actions+=/call_action_list,name=externals
 actions+=/use_items,use_off_gcd=1
-actions+=/call_action_list,name=fiery_demise,strict=1,if=talent.fiery_brand&talent.fiery_demise&active_dot.fiery_brand>0
+actions+=/call_action_list,name=fiery_demise,strict=1,if=talent.fiery_brand&talent.fiery_demise&active_dot.fiery_brand_dot>0
 actions+=/call_action_list,name=maintenance
 actions+=/run_action_list,name=single_target,strict=1,if=variable.single_target
 actions+=/run_action_list,name=small_aoe,strict=1,if=variable.small_aoe
@@ -34,7 +34,7 @@ actions+=/run_action_list,name=big_aoe,strict=1,if=variable.big_aoe
 
 # Fiery demise window
 actions.fiery_demise+=/immolation_aura
-actions.fiery_demise+=/sigil_of_flame
+actions.fiery_demise+=/sigil_of_flame,if=talent.ascending_flame&!talent.illuminated_sigils|!sigil_placed&active_dot.sigil_of_flame=0
 actions.fiery_demise+=/felblade,if=(cooldown.fel_devastation.remains<=(execute_time+gcd.remains))&fury<50
 actions.fiery_demise+=/fel_devastation
 actions.fiery_demise+=/soul_carver,if=soul_fragments<3
@@ -48,8 +48,8 @@ actions.filler+=/sigil_of_silence,if=talent.cycle_of_binding.enabled&talent.sigi
 actions.filler+=/throw_glaive
 
 # Maintenance & upkeep
-actions.maintenance+=/fiery_brand,if=talent.fiery_brand&((active_dot.fiery_brand=0&(cooldown.sigil_of_flame.remains<=(execute_time+gcd.remains)|cooldown.soul_carver.remains<=(execute_time+gcd.remains)|cooldown.fel_devastation.remains<=(execute_time+gcd.remains)))|(talent.down_in_flames&full_recharge_time<=(execute_time+gcd.remains)))
-actions.maintenance+=/sigil_of_flame,if=talent.ascending_flame|active_dot.sigil_of_flame=0
+actions.maintenance+=/fiery_brand,if=talent.fiery_brand&((active_dot.fiery_brand_dot=0&(cooldown.sigil_of_flame.remains<=(execute_time+gcd.remains)|cooldown.soul_carver.remains<=(execute_time+gcd.remains)|cooldown.fel_devastation.remains<=(execute_time+gcd.remains)))|(talent.down_in_flames&full_recharge_time<=(execute_time+gcd.remains)))
+actions.maintenance+=/sigil_of_flame,if=talent.ascending_flame&!talent.illuminated_sigils|!sigil_placed&active_dot.sigil_of_flame=0
 actions.maintenance+=/immolation_aura
 actions.maintenance+=/bulk_extraction,if=((5-soul_fragments)<=spell_targets)&soul_fragments<=2
 actions.maintenance+=/spirit_bomb,if=variable.can_spb
