@@ -88,7 +88,7 @@ local UnitClass = UnitClass
 local UnitRace = UnitRace
 local GetInventoryItemLink = GetInventoryItemLink
 local GetTime = GetTime
-local HandSlotId = GetInventorySlotInfo("HandsSlot")
+local HandSlotId = GetInventorySlotInfo("HANDSSLOT")
 local math_floor = math.floor
 local UnitIsVisible = UnitIsVisible
 
