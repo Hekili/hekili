@@ -1378,6 +1378,7 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         toggle = "defensives",
+        equipped = "shield",
         defensive = true,
 
         spend = 30,
@@ -1406,6 +1407,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         talent = "shield_charge",
+        equipped = "shield",
         startsCombat = true,
 
         handler = function ()
@@ -1442,6 +1444,7 @@ spec:RegisterAbilities( {
         end,
         spendType = "rage",
 
+        equipped = "shield",
         startsCombat = true,
         texture = 134951,
 
