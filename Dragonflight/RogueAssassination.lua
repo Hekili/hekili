@@ -755,6 +755,11 @@ spec:RegisterHook( "reset_precast", function ()
         rawset( debuff, "kingsbane", debuff.kingsbane_dot )
         kingsbaneReady = true
     end
+
+    if buff.master_assassin.up and buff.master_assassin.remains > 3 then
+        removeBuff( "master_assassin" )
+        applyBuff( "master_assassin_aura" )
+    end
 end )
 
 -- We need to break stealth when we start combat from an ability.
@@ -763,6 +768,7 @@ spec:RegisterHook( "runHandler", function( ability )
 
     if stealthed.mantle and ( not a or a.startsCombat ) then
         if talent.master_assassin.enabled then
+            removeBuff( "master_assassin_aura" )
             applyBuff( "master_assassin" )
         end
 
@@ -1205,9 +1211,12 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=256735
     master_assassin = {
         id = 256735,
-        duration = 3600,
+        duration = 3,
         max_stack = 1,
-        copy = "master_assassin_aura"
+    },
+    master_assassin_aura = {
+        duration = 3600,
+        max_stack = 1
     },
     -- Damage dealt increased by $w1%.
     -- https://wowhead.com/beta/spell=31665
