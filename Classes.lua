@@ -1829,7 +1829,7 @@ all:RegisterAuras( {
 
     out_of_range = {
         generate = function ( oor )
-            oor.rangeSpell = oor.rangeSpell or settings.spec.rangeChecker or class.specs[ state.spec.id ].ranges[ 1 ]
+            oor.rangeSpell = rawget( oor, "rangeSpell" ) or settings.spec.rangeChecker or class.specs[ state.spec.id ].ranges[ 1 ]
 
             if LSR.IsSpellInRange( class.abilities[ oor.rangeSpell ].name, "target" ) ~= 1 then
                 oor.count = 1
