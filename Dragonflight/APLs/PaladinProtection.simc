@@ -21,6 +21,7 @@ actions.cooldowns+=/moment_of_glory,if=(buff.aw_sentinel.remains<15|(time>10|coo
 actions.cooldowns+=/divine_toll,if=spell_targets.shield_of_the_righteous>=3
 actions.cooldowns+=/bastion_of_light,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains<=30
 ## actions.cooldowns+=/invoke_external_buff,name=power_infusion,if=buff.avenging_wrath.up
+actions.cooldowns+=/fireblood,if=buff.avenging_wrath.remains>8
 
 actions.mitigation=shield_of_the_righteous,if=tanking&buff.shield_of_the_righteous.down&(holy_power.deficit=0|buff.divine_purpose.up)
 actions.mitigation+=/word_of_glory,if=health.pct<wog_health&(holy_power.deficit=0|buff.divine_purpose.up|buff.shining_light_free.up)
