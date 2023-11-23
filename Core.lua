@@ -779,6 +779,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             end
                             ability = nil
                         end
+                    elseif action == "main_hand" and class.abilities[ action ].key ~= action and not Hekili:IsItemScripted( action, true ) then
+                        action = class.abilities[ action ].key
+                        state.this_action = action
+                        entryReplaced = true
                     end
 
                     rDepth = rDepth + 1

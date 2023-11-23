@@ -2793,7 +2793,7 @@ all:RegisterAbilities( {
 
     main_hand = {
         name = INVTYPE_WEAPONMAINHAND,
-        listName = "|T136243:0|t |cff00ccff[" .. INVTYPE_WEAPONMAINHAND .. "|r",
+        listName = "|T136243:0|t |cff00ccff[" .. INVTYPE_WEAPONMAINHAND .. "]|r",
         cast = 0,
         cooldown = 600,
         gcd = "off",
