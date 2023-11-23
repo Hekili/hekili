@@ -60,6 +60,3 @@ externals:
         url: https://github.com/Vardex/LibTranslit.git
     Libs/SpellFlashCore:
         url: https://github.com/Tga123/SpellFlashCore.git
-
-move-folders:
-    Hekili/Libs/LibRangeCheck-3.0/LibRangeCheck-3.0: Hekili/Libs/LibRangeCheck-3.0
