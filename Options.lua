@@ -6606,8 +6606,14 @@ do
                                                 else
                                                     if not class.abilities[ action ] then warning = true
                                                     else
-                                                        if state:IsDisabled( action, true ) then warning = true end
-                                                        action = class.abilityList[ action ] and class.abilityList[ action ]:match( "|t (.+)$" ) or class.abilities[ action ] and class.abilities[ action ].name or action
+                                                        if action == "trinket1" or action == "trinket2" or action == "main_hand" then
+                                                            local passthru = "actual_" .. action
+                                                            if state:IsDisabled( passthru, true ) then warning = true end
+                                                            action = class.abilityList[ passthru ] and class.abilityList[ passthru ] or class.abilities[ passthru ] and class.abilities[ passthru ].name or action
+                                                        else
+                                                            if state:IsDisabled( action, true ) then warning = true end
+                                                            action = class.abilityList[ action ] and class.abilityList[ action ]:match( "|t (.+)$" ) or class.abilities[ action ] and class.abilities[ action ].name or action
+                                                        end
                                                     end
                                                 end
 
@@ -6874,23 +6880,38 @@ do
                                                     type = "select",
                                                     name = "Action",
                                                     desc = "Select the action that will be recommended when this entry's criteria are met.",
-                                                    values = class.abilityList,
-                                                    sorting = function()
+                                                    values = function()
                                                         local list = {}
+                                                        local bypass = {
+                                                            trinket1 = actual_trinket1,
+                                                            trinket2 = actual_trinket2,
+                                                            main_hand = actual_main_hand
+                                                        }
 
                                                         for k, v in pairs( class.abilityList ) do
-                                                            if class.abilities[ k ] then
-                                                                insert( list, {
-                                                                    k, class.abilities[ k ].name or v or k
-                                                                } )
-                                                            end
+                                                            list[ k ] = bypass[ k ] or v
                                                         end
 
-                                                        sort( list, function( a, b ) return a[2] < b[2] end )
+                                                        return list
+                                                    end,
+                                                    sorting = function( a, b )
+                                                        local list = {}
 
-                                                        for i = 1, #list do
-                                                            list[ i ] = list[ i ][ 1 ]
+                                                        for k in pairs( class.abilityList ) do
+                                                            insert( list, k )
                                                         end
+
+                                                        sort( list, function( a, b )
+                                                            local bypass = {
+                                                                trinket1 = actual_trinket1,
+                                                                trinket2 = actual_trinket2,
+                                                                main_hand = actual_main_hand
+                                                            }
+                                                            local aName = bypass[ a ] or class.abilities[ a ].name
+                                                            local bName = bypass[ b ] or class.abilities[ b ].name
+
+                                                            return a < b
+                                                        end )
 
                                                         return list
                                                     end,

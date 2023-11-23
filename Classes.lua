@@ -2586,7 +2586,7 @@ all:RegisterAbilities( {
 
     -- INTERNAL HANDLERS
     call_action_list = {
-        name = "Call Action List",
+        name = "|cff00ccff[Call Action List]|r",
         listName = '|T136243:0|t |cff00ccff[Call Action List]|r',
         cast = 0,
         cooldown = 0,
@@ -2595,7 +2595,7 @@ all:RegisterAbilities( {
     },
 
     run_action_list = {
-        name = "Run Action List",
+        name = "|cff00ccff[Run Action List]|r",
         listName = '|T136243:0|t |cff00ccff[Run Action List]|r',
         cast = 0,
         cooldown = 0,
@@ -2604,7 +2604,7 @@ all:RegisterAbilities( {
     },
 
     wait = {
-        name = "Wait",
+        name = "|cff00ccff[Wait]|r",
         listName = '|T136243:0|t |cff00ccff[Wait]|r',
         cast = 0,
         cooldown = 0,
@@ -2613,7 +2613,7 @@ all:RegisterAbilities( {
     },
 
     pool_resource = {
-        name = "Pool Resource",
+        name = "|cff00ccff[Pool Resource]|r",
         listName = "|T136243:0|t |cff00ccff[Pool Resource]|r",
         cast = 0,
         cooldown = 0,
@@ -2621,7 +2621,7 @@ all:RegisterAbilities( {
     },
 
     cancel_action = {
-        name = "Cancel Action",
+        name = "|cff00ccff[Cancel Action]|r",
         listName = "|T136243:0|t |cff00ccff[Cancel Action]|r",
         cast = 0,
         cooldown = 0,
@@ -2639,7 +2639,7 @@ all:RegisterAbilities( {
     },
 
     variable = {
-        name = "Variable",
+        name = "|cff00ccff[Variable]|r",
         listName = '|T136243:0|t |cff00ccff[Variable]|r',
         cast = 0,
         cooldown = 0,
@@ -2716,7 +2716,7 @@ all:RegisterAbilities( {
     },
 
     cancel_buff = {
-        name = "Cancel Buff",
+        name = "|cff00ccff[Cancel Buff]|r",
         listName = '|T136243:0|t |cff00ccff[Cancel Buff]|r',
         cast = 0,
         gcd = "off",
@@ -2757,7 +2757,7 @@ all:RegisterAbilities( {
     },
 
     null_cooldown = {
-        name = "Null Cooldown",
+        name = "|cff00ccff[Null Cooldown]|r",
         listName = "|T136243:0|t |cff00ccff[Null Cooldown]|r",
         cast = 0,
         gcd = "off",
@@ -2768,8 +2768,8 @@ all:RegisterAbilities( {
     },
 
     trinket1 = {
-        name = "Trinket #1",
-        listName = "|T136243:0|t |cff00ccff[Trinket #1]",
+        name = "|cff00ccff[Trinket #1]|r",
+        listName = "|T136243:0|t |cff00ccff[Trinket #1]|r",
         cast = 0,
         cooldown = 600,
         gcd = "off",
@@ -2780,8 +2780,8 @@ all:RegisterAbilities( {
     },
 
     trinket2 = {
-        name = "Trinket #2",
-        listName = "|T136243:0|t |cff00ccff[Trinket #2]",
+        name = "|cff00ccff[Trinket #2]|r",
+        listName = "|T136243:0|t |cff00ccff[Trinket #2]|r",
         cast = 0,
         cooldown = 600,
         gcd = "off",
@@ -2792,7 +2792,7 @@ all:RegisterAbilities( {
     },
 
     main_hand = {
-        name = INVTYPE_WEAPONMAINHAND,
+        name = "|cff00ccff[" .. INVTYPE_WEAPONMAINHAND .. "]|r",
         listName = "|T136243:0|t |cff00ccff[" .. INVTYPE_WEAPONMAINHAND .. "]|r",
         cast = 0,
         cooldown = 600,
