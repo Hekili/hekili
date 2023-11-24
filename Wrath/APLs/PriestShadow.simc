@@ -1,41 +1,59 @@
-## APL v3.4.1-1.6.0
-## 20230210: Hekili put his grubby little fingers here.
+# Priest: Shadow
+# wowsims.github.io & wowhead.com/wotlk
+# November 2023
+
+## Precombat
 actions.precombat+=/shadowform,if=buff.shadowform.down
 actions.precombat+=/divine_spirit,if=buff.divine_spirit.down&buff.prayer_of_spirit.down
 actions.precombat+=/power_word_fortitude,if=buff.power_word_fortitude.down&buff.prayer_of_fortitude.down
-actions.precombat+=/inner_fire,if=buff.inner_fire.down
+actions.precombat+=/inner_fire,if=buff.inner_fire.stacks<10
 actions.precombat+=/vampiric_embrace,if=!up
 actions.precombat+=/potion
 
-actions+=/silence
-actions+=/dispel_magic
-actions+=/potion
+## Default
+actions+=/call_action_list,name=init
 actions+=/use_items
-actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2
-actions+=/run_action_list,name=st
+actions+=/potion
+# having shadowform in rotation bugs out
+#actions+=/shadowform,if=!buff.shadowform.up
+actions+=/hyperspeed_acceleration,use_off_gcd=1
+actions+=/run_action_list,name=cleave,if=active_enemies>1
+actions+=/run_action_list,name=single
 
-actions.st+=/devouring_plague,moving=1,if=active_dot.devouring_plague=0|ticking&remains<cast_time
-actions.st+=/shadow_word_death,moving=1
-actions.st+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2&(!dot.shadow_word_pain.up|dot.shadow_word_pain.remains>3),if=talent.pain_and_suffering.enabled&dot.shadow_word_pain.up&dot.shadow_word_pain.remains<3
-actions.st+=/vampiric_touch,if=!ticking|dot.vampiric_touch.remains<cast_time
-actions.st+=/devouring_plague,if=!ticking|dot.devouring_plague.remains<cast_time
-actions.st+=/shadow_word_pain,if=!ticking&buff.shadow_weaving.stack=5
-actions.st+=/hyperspeed_acceleration
-actions.st+=/mind_blast,if=!settings.optimize_mind_blast|(settings.optimize_mind_blast&!flay_over_blast)
-actions.st+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2&buff.shadow_weaving.stack=5,if=talent.shadow_weaving.enabled&buff.shadow_weaving.stack<5&active_enemies=1
-actions.st+=/mind_sear,interrupt_if=!buff.inner_focus.up&ticks>=2&buff.shadow_weaving.stack=5,if=talent.shadow_weaving.enabled&buff.shadow_weaving.stack<5&active_enemies>1
-actions.st+=/shadowfiend,if=mana.pct<=settings.min_shadowfiend_mana
-actions.st+=/inner_fire,if=buff.inner_fire.down
-actions.st+=/vampiric_embrace,if=!up
-actions.st+=/inner_focus,if=!buff.inner_focus.up&buff.shadow_weaving.stack=5
-actions.st+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2&(cooldown.mind_blast.up|dot.vampiric_touch.remains<action.vampiric_touch.cast_time|!dot.devouring_plague.up)
+## Init Parameters
+actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
+actions.init+=/variable,name=execute_phase,value=target.health.pct<20
 
-actions.aoe+=/call_action_list,name=aoe_dots,strict=1,if=settings.dots_in_aoe
-actions.aoe+=/mind_sear
+## Cleave
+actions.cleave+=/mind_sear,if=active_enemies>=8
+actions.cleave+=/devouring_plague,if=!(active_dot.devouring_plague*dot.devouring_plague.remains)
+actions.cleave+=/mind_flay,cycle_targets=1,max_cycle_targets=7,interrupt_if=!buff.inner_focus.up&ticks>=2,if=!moving&(dot.shadow_word_pain.remains<1.5&dot.shadow_word_pain.remains>=action.mind_flay.tick_time+latency)
+actions.cleave+=/shadowfiend,if=variable.time_to_die>0
+actions.cleave+=/vampiric_touch,cycle_targets=1,max_cycle_targets=7,if=dot.vampiric_touch.remains+latency<cast_time&variable.time_to_die>=3
+actions.cleave+=/shadow_word_pain,cycle_targets=1,max_cycle_targets=7,if=!ticking&((buff.shadow_weaving.stack=5&variable.time_to_die>=75)|(buff.shadow_weaving.stack>=3&variable.time_to_die<75))&variable.time_to_die>=10
+actions.cleave+=/mind_blast,if=variable.time_to_die>=cast_time&(flay_over_blast|buff.replenishment.remains<3)
+actions.cleave+=/inner_fire,if=!buff.inner_fire.up&variable.time_to_die>=10
+actions.cleave+=/vampiric_embrace,if=!up&variable.time_to_die>=10
+actions.cleave+=/mind_sear,if=variable.time_to_die>=cast_time/2&!moving&active_enemies>=3
+actions.cleave+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2,if=variable.time_to_die>=cast_time&!moving
+actions.cleave+=/shadow_word_death,if=moving
+actions.cleave+=/devouring_plague,if=moving
+actions.cleave+=/dispersion,if=mana.percent<=60
 
-actions.aoe_dots+=/devouring_plague,moving=1,if=active_dot.devouring_plague=0|ticking&remains<cast_time
-actions.aoe_dots+=/shadow_word_death,moving=1
-actions.aoe_dots+=/shadow_word_pain,moving=1,if=!ticking
-actions.aoe_dots+=/vampiric_touch,if=target.time_to_die>10&(!ticking|remains<cast_time)
-actions.aoe_dots+=/devouring_plague,if=target.time_to_die>10&(active_dot.devouring_plague=0|ticking&remains<cast_time)
-actions.aoe_dots+=/shadow_word_pain,if=target.time_to_die>10&!ticking&buff.shadow_weaving.stack=5
+## Single
+actions.single+=/devouring_plague,if=variable.time_to_die<=action.mind_flay.duration|(moving&!(active_dot.devouring_plague*dot.devouring_plague.remains))
+actions.single+=/mind_flay,if=buff.inner_focus.up|(dot.shadow_word_pain.remains<1.5&dot.shadow_word_pain.remains>=action.mind_flay.tick_time+latency)
+actions.single+=/shadowfiend,if=variable.time_to_die>0
+actions.single+=/shadow_word_pain,if=!ticking&((buff.shadow_weaving.stack=5&variable.time_to_die>=75)|(buff.shadow_weaving.stack>=3&variable.time_to_die<75))
+actions.single+=/vampiric_touch,if=dot.vampiric_touch.remains+latency<cast_time&variable.time_to_die>=3
+actions.single+=/devouring_plague,if=!(active_dot.devouring_plague*dot.devouring_plague.remains)
+actions.single+=/mind_blast,if=variable.time_to_die>=cast_time&(flay_over_blast|buff.replenishment.remains<3)
+actions.single+=/inner_focus,if=buff.shadow_weaving.stack=5
+actions.single+=/wait,if=(active_dot.devouring_plague*dot.devouring_plague.remains)<=0.2,sec=(active_dot.devouring_plague*dot.devouring_plague.remains)
+actions.single+=/wait,if=dot.vampiric_touch.ticking&action.mind_flay.channeling&dot.vampiric_touch.remains<=(action.vampiric_touch.cast_time+latency),sec=(dot.vampiric_touch.remains-action.vampiric_touch.cast_time)
+actions.single+=/inner_fire,if=!buff.inner_fire.up&variable.time_to_die>=10
+actions.single+=/vampiric_embrace,if=!up&variable.time_to_die>=10
+actions.single+=/mind_flay,interrupt_if=!buff.inner_focus.up&ticks>=2,if=!moving
+actions.single+=/shadow_word_death,if=moving
+actions.single+=/devouring_plague,if=moving
+actions.single+=/dispersion,if=mana.percent<=60

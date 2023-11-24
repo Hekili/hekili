@@ -143,6 +143,23 @@ spec:RegisterAuras( {
         tick_time = function() return 3 * ( buff.shadowform.up and spell_haste or 1 ) end,
         max_stack = 1,
 
+        generate = function ( t )
+            local applied = action.devouring_plague.lastCast
+
+            if applied and now - applied < 24 * spell_haste then
+                t.count = 1
+                t.expires = applied + 24 * spell_haste
+                t.applied = applied
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+
         copy = { 2944, 19276, 19277, 19278, 19279, 19280, 25467, 48299, 48300 },
     },
     -- Reduces all damage by $s1%, and you regenerate $49766s1% mana every $60069t1 sec for $d.  Cannot attack or cast spells. Immune to snare and movement impairing effects.
@@ -270,7 +287,7 @@ spec:RegisterAuras( {
     inner_fire = {
         id = 588,
         duration = 1800,
-        max_stack = 1,
+        max_stack = 32,
         copy = { 588, 602, 1006, 7128, 10951, 10952, 25431, 48040, 48168 },
     },
     -- The mana cost of your next spell is reduced by $s1%.
@@ -1094,7 +1111,7 @@ spec:RegisterAbilities( {
     -- Assault the target's mind with Shadow energy, causing 45 Shadow damage over 3 sec and slowing their movement speed by 50%.
     mind_flay = {
         id = 15407,
-        cast = function() return 8 * spell_haste end,
+        cast = function () return class.auras.mind_flay.duration end,
         channeled = true,
         breakable = true,
         cooldown = 0,
@@ -1538,6 +1555,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136199,
+        toggle = "cooldowns",
 
         handler = function ()
             applyBuff( "shadowfiend" )
@@ -1722,10 +1740,29 @@ end )
 spec:RegisterStateExpr( "flay_over_blast", function()
     local currentSP = GetSpellBonusDamage( 6 ) or 0
     local vttimer = select( 4, GetSpellInfo( 48160 ) ) / 1000
-    local currentHaste = ( ( 1.5 / vttimer ) - 1 ) * 100
-    local rtn = currentSP >= 39237 * ( 0.975 ^ currentHaste )
-    Hekili:Debug( "flay_over_blast()["..tostring( rtn ).."]: currentSP["..tostring( currentSP ).."] >= 39237*( 0.975^currentHaste["..tostring( currentHaste ).."] )" )
-    return rtn
+    local currHaste = ( ( 1.5 / vttimer ) - 1 ) * 100
+    
+    Hekili:Debug( "flay_over_blast()["..tostring( rtn ).."]: currentSP["..tostring( currentSP ).."], currHaste["..tostring( currHaste ).."], latency["..tostring( latency ).."] )" )
+
+    if set_bonus.tier10_4pc then
+        -- Linelo maffs for 4pc T10 with 10ms MF clip delays
+        if (currHaste > 102.68 and currentSP > 1500) or (currentSP > 5493.3 and currHaste < 50) or
+        (currentSP > 5.0219e-04*currHaste^4 - 1.7950e-01*currHaste^3 + 2.4578e+01*currHaste^2 - 1.5651e+03*currHaste^1 + 4.1580e+04) then
+            return false
+        end
+    else
+        --Linelo maffs w/o 4pc T10
+        local latency = select(4, GetNetStats()) / 1000
+        if currentSP >= (-1.0038e-02*latency^2 + 1.7241e-03*latency + 1.1564e-04)*currHaste^4 
+        +  (4.928100*latency^2 - 0.908961*latency - 0.063893)*currHaste^3
+        +  (-878.800*latency^2 + 177.068*latency + 13.641)*currHaste^2
+        +  (6.6990e+04*latency^2 - 1.5253e+04*latency - 1.3489e+03)*currHaste^1
+        +  (-1.8099e+06*latency^2 + 5.0044e+05*latency + 5.3978e+04) then
+            return false
+        end
+    end
+    
+    return true
 end )
 
 
@@ -1733,7 +1770,7 @@ end )
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 3,
+    aoe = 2,
 
     gcd = 1243,
 
@@ -1753,7 +1790,7 @@ spec:RegisterOptions( {
 
 
 -- Packs
-spec:RegisterPack( "Shadow", 20230210, [[Hekili:LJvBVnQrq4FlwNKvIQl1yFojTk2sTQFOxuv0j5(zG1Ws8QaSiyXr5Kf)27mlgyzzb7lxUtvQFj2zFzE9zM5zTJTZ)4SnGiOopUy(ILZxyp3Y(UL3nFHZwXRPuNTPe)NjpbFjHed)D7Esa)fC5xJ4Ka8658ImFylNT7kyrIpL4SZKmVD1TWztP(opUYz7EwqaT6K0C)A5w695mgnxu6LMX4zmXRLErm8)d5zLE)f9zweZzlUuoQAcN6gWLF)rPRqti7IObo)r9xDJ5hyjpHl4dYJMXiW18fSdYBAfqpaMpCc30iYtf0sV1LEZl9oES0tW8Fg2P0BAPxgnMWsYl9UV0ZNKlCfmmCGsINGorxX4S9KEbZsaXb02AxPVTvlNCzyW9fEwGBaLi2R6sGGwQ5KT(KGK9evyHMLRG7gWaxztPN9CP5FvP3efhc9oJEuP31TgZbsCklJ5dYRWFpQ(p(2v)7vmVJf2lSlqW1BZgN0v57kcdTQthucMOSYfqXG0AxzoLLc2lydc0YcjfrIgGz9Pt5vF2jRUq9ef5uxWIJZV4u)PqlnHgdfpsFckFZfqQtiHB1IoRiXT67UyjuvHKBvHnukzkdFjxnxu5ZPzuFE8oIWu5yR5QezHQ6yl4Ze9WjUrtKzyPeWG8c1nhHPcPGAZDPzKxPzU8q1TvGoQxD84BL44VastMLbJtWefb0b1y3tOM97lKXRRKcMLKaxlKLPlV2ngh5dy7Iudf204DzeF5LV5COurfgz0uBoviGcLClSPSldGmCQrKOpjkAmOyvxD9sJywsGBoLK1ZYYnI5(F3iGiAIWcBc5sWifGDOOfzD64s3aDz9EwwfPdVNQFVulzegrEfHHGfKvKkCzHaytfZY9lYbPpfdK5BwVy6vtgWaoECmTVz51JxOOpEdfw3bywNjb2FC3Ofu90Moa4C6Z0WRBUin(noE6XBvlQ2d08YaEz0aOG0NgrZiggrD3ygwtzppfCr2xaynco2frqQBy85QZDOQbWiCYLFaaoNw(An8MCz0E(1ZvfOfBuRagj2bzQvYZOptfcQ2FZy)bv86vOpzp)hStTPVtv1D990PgEArmjHyL6dP57xRGpa7W9elagfmj8y94hG7if)zyiCHJoThUR6fm70E02sgIENlJ1Tew5UsTjBl91KIUYNZJq33QTiQPJR5MK3xPC9DBAJD84eJ98ks1lzRkt6oVgMydf554Ho9gX534S9fswcIaC2(P4uGEeISxvHA5jvpem3Q8bq(fI9CaM(N0WVqGw1aZtEilc6T(Hpu697F(Vl9oS06Jw2)ST1nwZlFaxU(TO)w97iHhzwayV9mOs4PSID7Kp2uiIagaHGDagiSlfqoLpuzd5wnuC)P1)slt1zSW1My1A(EDyE2C1(uzNomnwZc2e7Yg5pi)vD1OXU1OMAlEAKVwHM57Px8G3EcuomG7iZ7p0SRYATR08Cj1f1ETYmKx5AGw5SkQORTrf3TB4MfNvaWaPwJbkvXCPg(FwfFUokWuDY65hpEAC(06kU2N42vh9ie2OeTd2uUntT5W6Vx8Xqx8SuoNoG0nVEDOyPMN1TlKe1Ck6nApSHIO9YA9e4qC5UOKe6kQICSrKAIzaYyMs0YU4s1mgZQJhVASTNorJY11VhyQr8xfqJzYmdF57xnTBjR5caKbZ)bn2n6gRcrgup1KHUF9OeH0eYxtJ48lQdSQyXy1SHcGxoO(nHH(XYzrTXomNamA9FHIMziYFAIodsm9REOlUgOPMMKs77)GefnDjJtuoE)wV9)zu3yphMJ00aTNDC9L5Ydl73AaWSIn1R2SIVKo4s6So)7p]] )
+spec:RegisterPack( "Shadow", 20231124, [[Hekili:vN12UTnoq0VLGfWWP1vXYUjUDHvEy39HT5HGcO9zjrlrfteDdsuj1ab6BFhsQ7IK2UjTffOOjrIZ9zoZH2oMo)NJDaIIDUF1YvRnnx9rdZnRmxTXXMEid7yNH8Fe9a8ljOy4)T3JcsFM94drPOaM4fPL5(WREo95csCHXde6(YDgK0kVzvEWt3Jrbg(PXx9Ckn6rh7DLKi6xsC2j10MFguzg235(RDS3tccWItIl8BmFL3xZj4cALxwojnNqpu5fry)DyAEL3)IFKerCSzpQG7HKKhIWWVDppEXjODr4aN)YX2hegNtqo2pHGFap2GsIXU0u3acUYBRvLhYNsstmIjjbUHrOdgbL5i2JQ8E5LkV5vEXPpbwGhUxWFatKNWUbPuJa8tq(bETBwe6HsqNVRYt2lmYXXissrL3LW)CSfMLf4dpNdfsykdJDLHHgKKeCUByQFzHrzwRBYSAbpb6(CAEGBgyUoRUTYZ04AEqO)G3klNqj(p6YsDvEVhkgqznX)WG4O9SSay9zwhUTYBzNQe(wibNeWu2hvQmOAWCSMIZC()4POMWdJyLoJck0Mx5brMidOWlG3V5AEbQoLQrxSdVwJY22QRlhhzDzDw4DTYWJvNEcfNrYj(GEl933vL6xfat5JkO11hTH36oFzOMzEYn6s0V(2E998Bo3wgRXrn4HS(p30NGPJDrigGbRoYlI54SiCcPyFmoHoyQy902yUWmN6t6hev3L1PWEdRmn(5rASaqcTFlYTDU2RxBcGXLgR6cJNreEgXCPIaqxZ6hArugDIEfWlpsNF)b9jWt(7rqAoQ5968fwKn)e8hfWCT5b1RAUOULRUYtYXCuATZLMlN0XaYXnK6LbGHolf3gS44D5iFH6vdvFrZMpzG8GxchlVmJ6scHZkzX0mwjR4wRvC7OgfFSr6dsgGruo2KPAyYXYldDXun2wmkbzKHboojur7Xn9YzbeGSsEb73z1Dq5HOYiQmYgnI4JIICf)HlJJIGPIRGGfjr0)WRQnsuwGDb3jUOV(AwJ2COSuXphCIXzvgnQCsM4K7rcEl17ttZJR8iaTM8uAnbNDLpaJePL0oZS)alEZW4aig8XrybziHtMgg6(GFal21U5Qg)bNGJbIC897MDMiVmrz(XpcatXY2gDksxZeKxPYYXaP0DiT1QUuZOC39WwK4DyGUjJ9QcKFMCgWptobsBbeOyGDlytGuUq8jx(7YYrhGbN0W(VUFpypr1tVsOU0NbTXNFapKsOLbyLwC4j63Unvj6zJng0JVoSM5Ps4n19qC0n9Gx3CS5dABdL2lhmPDfab(0iuVcmkxFz(NajPXfEj4Y(hGi2LIYFad3occ6ZcPgqd)M7qvyVr6sHgkx)sU1H2(WVJRymUlCstNGJSKK7XYx)q4WRbDCYnm(o85FtUw1Xz(8731kEB5oo(YgVXuhhFvGZm3EfSBT5dvPhMImW41kaJ1Wc)KCH(g)nHLR6TdNglx1B2pjwUAizFwSC5SuLSYmnJDHpA)(crwM9BrGtWVjiMNMO5WSaZ)ckJJp00gVE5YwKab6t)cexH1C56)yj7DpURuR(9yueDVrMpLpxUAzFJG)g2VKIDZ2Jke8gbn(uDQO(dU0Cd7AF5Sybqk)sCgqhchWX8e2w8PtwyuDhJ1zAiH5e)rZNI5Fw5v)XAE3FW)8spLpfv(zhYbT6o4HCTwZRT6oH5lmAP6(ERR6yMUGeAjJSQC5gqYSv0PSwNPMXQCflJizR(vsvDSzgrKvQL6a)A1)e6OBnxkx4XiCmvCb00QiM4196kY)iUty7rHdm(oGlyTBwSXQ(NQ9EF9FyJUbfFgxGdoFNkg2dCX4MGErfCyfx4BrV77zz2xGrxateAcA2mZne)(2JlQ4sBnjZVWYrEFfLdVcWU6sngSShVqjMZfc3dLybFU3AUk8Nza2ZLV8YuuNJyIbye1gzc2Y2vlBIG)MNk6uQi1aQTD1LK0K1NKiWymEE1CETKYUiX70D7Ilv5sSvDlgqi0YCXesIwBw0FBOL2LHCpvSYA2CDm)3cxpyMUdCRLWPLDTG3xtFwwK1JHpZzKrh42LsKBiz9tlTeAPMMFJpUTL2XmP(I1ALbrxs5uDNlQ5VpB(CLCTTUwHJS5AykrTCGNkvWTGCxQqLMYY0DCIvwGS6sAZhrc)LxutaF7AzDedxpCXuE2NJZRyDX5OIbWbhj8VA1SMXPXahY6B6gRpVr2JveQ9HJ0PYPZYuNYtldyt9HBjNYpwpISBTUPf11UElsJ4ITkkSL0(3PannFtWW4qDY)vG(EPeFRxDAiHL6Idy4FMGNT(1zcEosUE4v)kXIK4FJa3FZbU1209k6Du168Jh9S1E9AmhDXIXLsjcZ(wZys99Nb2AT0y1IcS)RqhACm1FHJZMmb19LnotD3ZwHFQ5RySD(tevQv1hoII0uTEv76Mo1C276Kb0DwlKMSWrkuJYfoANhvFyTlCCSrL09P5o22LWJtklk4FSbo))p]] )
 
 
 spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
@@ -1774,7 +1811,7 @@ spec:RegisterPackSelector( "holy", "none", "|T237542:0|t Holy",
     function( tab1, tab2, tab3 )
         -- If we spent the most points in Shadow, then swap to this package.
         -- We could also reference anything else we wanted; e.g., talent.shadowform.enabled or something else entirely.
-        return tab1 > max( tab2, tab3 )
+        return tab2 > max( tab1, tab3 )
     end )
 
 spec:RegisterPackSelector( "shadow", "Shadow", "|T136207:0|t Shadow",
