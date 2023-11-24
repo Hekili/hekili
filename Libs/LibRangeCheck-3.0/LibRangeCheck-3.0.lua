@@ -40,7 +40,7 @@ License: MIT
 -- @class file
 -- @name LibRangeCheck-3.0
 local MAJOR_VERSION = "LibRangeCheck-3.0"
-local MINOR_VERSION = 5
+local MINOR_VERSION = 6
 
 local lib, oldminor = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not lib then
@@ -88,7 +88,7 @@ local UnitClass = UnitClass
 local UnitRace = UnitRace
 local GetInventoryItemLink = GetInventoryItemLink
 local GetTime = GetTime
-local HandSlotId = GetInventorySlotInfo("HANDSSLOT")
+local HandSlotId = GetInventorySlotInfo("HandsSlot")
 local math_floor = math.floor
 local UnitIsVisible = UnitIsVisible
 
@@ -246,9 +246,7 @@ tinsert(ResSpells.PRIEST, 2006) -- Resurrection (40 yards, level 10)
 if isRetail then
   tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
   tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly as well for retail but on classic this is melee range and will return min 0 range 0
-end
-
-if not isRetail then
+else
   tinsert(HarmSpells.ROGUE, 2764) -- Throw (30 yards)
 end
 
@@ -281,9 +279,9 @@ end
 tinsert(ResSpells.SHAMAN, 2008) -- Ancestral Spirit (40 yards, level 13)
 
 -- Warriors
-tinsert(HarmSpells.WARRIOR, 355) -- Taunt (30 yards)
 tinsert(HarmSpells.WARRIOR, 5246) -- Intimidating Shout (Arms, Fury) (8 yards)
 tinsert(HarmSpells.WARRIOR, 100) -- Charge (Arms, Fury) (8-25 yards)
+tinsert(HarmSpells.WARRIOR, 355) -- Taunt (30 yards)
 
 if not isRetail then
   tinsert(HarmSpells.WARRIOR, 2764) -- Throw (30 yards, level 1, 5-30 range)
@@ -536,6 +534,10 @@ local lastUpdate = 0
 local checkers_Spell = setmetatable({}, {
   __index = function(t, spellIdx)
     local func = function(unit)
+      if not logOnce and type(spellIdx) == "function" then
+        logOnce = true
+        print( "here", spellIdx, spellIdx(), debugstack() )
+      end
       if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
         return true
       end
@@ -630,7 +632,7 @@ local function findMinRangeChecker(origMinRange, origRange, spellList)
     local sid = spellList[i]
     local name, minRange, range, spellIdx = getSpellData(sid)
     if range and spellIdx and origMinRange <= range and range <= origRange and minRange == 0 then
-      return checkers_Spell[findSpellIdx]
+      return checkers_Spell[findSpellIdx(name)]
     end
   end
 end
@@ -989,7 +991,7 @@ function lib:init(forced)
   local _, playerRace = UnitRace("player")
 
   local interactList = InteractLists[playerRace] or DefaultInteractList
-  self.handSlotItem = GetInventoryItemLink("player", "HANDSSLOT")
+  self.handSlotItem = GetInventoryItemLink("player", HandSlotId)
   local changed = false
   if updateCheckers(self.friendRC, self.friendRCInCombat, createCheckerList(FriendSpells[playerClass], FriendItems, interactList)) then
     changed = true
