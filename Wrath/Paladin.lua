@@ -465,7 +465,9 @@ spec:RegisterAuras( {
         duration = function() return 30 * ( 1 + 0.5 * ( buff.divine_sacrifice.up and talent.divine_guardian.rank or 0 ) ) end,
         max_stack = 1,
         no_ticks = true,
-        friendly = true
+        friendly = true,
+        dot = "buff",
+        shared = "player"
     },
     -- Absorbs damage and increases the casting paladin's chance to critically hit with Flash of Light by 50%.
     sacred_shield_absorb = {
@@ -569,6 +571,7 @@ spec:RegisterAuras( {
         id = 26017,
         duration = 10,
         max_stack = 1,
+        shared = "target",
         copy = { 67, 26017 },
     },
     -- Increases speed by $s2%.

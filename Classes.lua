@@ -1433,6 +1433,15 @@ all:RegisterAuras( {
         copy = { 14752, 14818, 14819, 16875, 25312, 27841, 39234, 48073 },
         shared = "player"
     },
+    
+    -- Increases Spirit by $s1.
+    prayer_of_spirit = {
+        id = 27681,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 27681, 32999, 48074 },
+        shared = "player"
+    },
 
     demonic_pact = {
         id = 48090,
@@ -1480,6 +1489,7 @@ all:RegisterAuras( {
         id = 64382,
         duration = 10,
         max_stack = 1,
+        shared = "target",
     },
 
     acid_spit = {
@@ -1520,6 +1530,7 @@ all:RegisterAuras( {
         id = 48560,
         duration = 30,
         max_stack = 1,
+        shared = "target",
         copy = { 99, 1735, 9490, 9747, 9898, 26998, 48559, 48560 },
     },
 
@@ -1528,10 +1539,11 @@ all:RegisterAuras( {
         id = 26017,
         duration = 10,
         max_stack = 1,
+        shared = "target",
         copy = { 67, 26017 },
     },
 
-    major_ap_reduction = {
+    ap_reduction = {
         alias = { "demoralizing_shout", "curse_of_weakness", "demoralizing_roar", "vindication" },
         aliasType = "debuff",
         aliasMode = "longest"
@@ -1543,6 +1555,7 @@ all:RegisterAuras( {
         duration = function () return 15 + ( 3 * talent.epidemic.rank ) end,
         tick_time = 3,
         max_stack = 1,
+        shared = "target",
     },
 
     -- Movement speed slowed by $s1% and attack speed slowed by $s2%.
@@ -1550,6 +1563,7 @@ all:RegisterAuras( {
         id = 58181,
         duration = 12,
         max_stack = 1,
+        shared = "target",
         copy = { 58181, 58180, 58179 },
     },
 
@@ -1558,6 +1572,7 @@ all:RegisterAuras( {
         id = 68055,
         duration = 20,
         max_stack = 1,
+        shared = "target",
         copy = { 68055 },
     },
 
@@ -1566,10 +1581,11 @@ all:RegisterAuras( {
         id = 47502,
         duration = 30,
         max_stack = 1,
+        shared = "target",
         copy = { 6343, 8198, 8204, 8205, 11580, 11581, 13532, 25264, 47501, 47502 },
     },
 
-    major_attkspeed_reduction = {
+    attack_speed_reduction = {
         alias = { "frost_fever", "infected_wounds", "judgements_of_the_just", "thunder_clap" },
         aliasType = "debuff",
         aliasMode = "longest"

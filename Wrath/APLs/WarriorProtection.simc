@@ -42,8 +42,8 @@ actions.single+=/revenge
 actions.single+=/commanding_shout,if=assigned_shout.commanding_shout&buff.shout.remains<=4&buff.commanding_shout.remains<=4
 actions.single+=/battle_shout,if=assigned_shout.battle_shout&buff.shout.remains<=4&buff.battle_shout.remains<=4
 actions.single+=/devastate,if=variable.build_sunder|variable.maintain_sunder
-actions.single+=/demoralizing_shout,if=settings.debuff_demoshout_enabled&(!debuff.major_ap_reduction.up|(debuff.demoralizing_shout.up&debuff.demoralizing_shout.remains<3))
-actions.single+=/thunder_clap,if=!debuff.major_attkspeed_reduction.up|(debuff.thunder_clap.up&debuff.major_attkspeed_reduction.remains<3)
+actions.single+=/demoralizing_shout,if=settings.debuff_demoshout_enabled&(!debuff.ap_reduction.up|(debuff.demoralizing_shout.up&debuff.demoralizing_shout.remains<3))
+actions.single+=/thunder_clap,if=!debuff.attack_speed_reduction.up|(debuff.thunder_clap.up&debuff.attack_speed_reduction.remains<3)
 actions.single+=/shockwave
 actions.single+=/devastate,if=cooldown.shield_slam.remains&!buff.revenge_usable.up&(action.shield_slam.spend<=rage.current-action.devastate.spend+rage_gain*gcd)
 

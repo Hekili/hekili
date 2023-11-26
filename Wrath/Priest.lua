@@ -388,6 +388,7 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
         copy = { 27681, 32999, 48074 },
+        shared = "player"
     },
     -- Disarmed.
     psychic_horror = {
