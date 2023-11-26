@@ -1815,10 +1815,10 @@ all:RegisterAbilities( {
         item = 207552,
         toggle = "defensives",
 		
-		usable = function() return buff.echoing_tyrstone_stored.down, "don't use when stored healing was not spent" end,
+        usable = function() return buff.echoing_tyrstone_stored.down, "don't use when stored healing was not spent" end,
 
         handler = function()
-            applyBuff( "echoing_tyrstone_stored")
+            applyBuff( "echoing_tyrstone_stored" )
         end,
 
         auras = {
