@@ -22,6 +22,7 @@ actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 actions+=/stealth
 # Interrupt on cooldown to allow simming interactions with that
 actions+=/kick
+actions+=/shiv,if=debuff.dispellable_enrage.up
 actions+=/variable,name=ambush_condition,value=(talent.hidden_opportunity|combo_points.deficit>=2+talent.improved_ambush+buff.broadside.up)&energy>=50
 # Use finishers if at -1 from max combo points, or -2 in Stealth with Crackshot
 actions+=/variable,name=finish_condition,value=effective_combo_points>=cp_max_spend-1-(stealthed.all&talent.crackshot)
