@@ -206,17 +206,17 @@ spec:RegisterAuras( {
         duration = 1800,
         max_stack = 1
     },
-	high_tide = {
+    high_tide = {
         id = 288675,
         duration = 25,
         max_stack = 2
     },
-	cloudburst_totem = {
+    cloudburst_totem = {
         id = 157504,
         duration = 18,
         max_stack = 1
     },
-	natures_swiftness = {
+    natures_swiftness = {
         id = 378081,
         duration = 3600,
         type = "Magic",
@@ -359,7 +359,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "cloudburst_totem" )
-	    applyBuff("cloudburst_totem")
+            applyBuff( "cloudburst_totem" )
         end,
     },
 
