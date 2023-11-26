@@ -1,4 +1,5 @@
-actions.precombat+=/sigil_of_flame,if=talent.ascending_flame&!talent.illuminated_sigils|!sigil_placed&active_dot.sigil_of_flame=0
+actions.precombat+=/sigil_of_flame,line_cd=5
+actions.precombat+=/immolation_aura
 
 # Check if trinkets have buff effects
 actions+=/variable,name=trinket_1_buffs,value=trinket.1.has_use_buff|(trinket.1.has_buff.strength|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit)
@@ -19,12 +20,12 @@ actions+=/variable,name=can_spb,op=setif,condition=variable.fd_ready,value=(vari
 
 actions+=/disrupt
 actions+=/consume_magic
-actions+=/infernal_strike,use_off_gcd=1
-actions+=/demon_spikes,use_off_gcd=1,if=!buff.demon_spikes.up&!cooldown.pause_action.remains
-actions+=/metamorphosis,use_off_gcd=1,if=!buff.metamorphosis.up
-actions+=/potion,use_off_gcd=1
+actions+=/infernal_strike
+actions+=/demon_spikes,use_off_gcd=1,if=!buff.demon_spikes.up&tanking
+actions+=/metamorphosis,if=!buff.metamorphosis.up
+actions+=/potion
 ## actions+=/call_action_list,name=externals
-actions+=/use_items,use_off_gcd=1
+actions+=/use_items
 actions+=/call_action_list,name=fiery_demise,strict=1,if=talent.fiery_brand&talent.fiery_demise&active_dot.fiery_brand_dot>0
 actions+=/call_action_list,name=maintenance
 actions+=/run_action_list,name=single_target,strict=1,if=variable.single_target

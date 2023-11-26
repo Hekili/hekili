@@ -7,7 +7,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
-local strformat = string.format
+local strformat, wipe = string.format, table.wipe
 
 local spec = Hekili:NewSpecialization( 577 )
 
@@ -668,6 +668,11 @@ spec:RegisterAuras( {
         copy = "vengeful_retreat_snare"
     },
 
+    hit_by_initiative = {
+        duration = 3600,
+        max_stack = 1
+    },
+
     -- Conduit
     exposed_wound = {
         id = 339229,
@@ -727,8 +732,8 @@ spec:RegisterStateFunction( "create_sigil", function( sigil )
 
     local effect = sigil == "elysian_dcreee" and "elysian_decree" or ( "sigil_of_" .. sigil )
     applyDebuff( "target", effect )
-    debuff.effect.applied = debuff.effect.applied + 1
-    debuff.effect.expires = debuff.effect.expires + 1
+    debuff[ effect ].applied = debuff[ effect ].applied + 1
+    debuff[ effect ].expires = debuff[ effect ].expires + 1
 end )
 
 spec:RegisterStateExpr( "soul_fragments", function ()
@@ -810,41 +815,57 @@ spec:RegisterStateExpr( "fury_spent", function ()
 end )
 
 local queued_frag_modifier = 0
+local initiative_actual, initiative_virtual = {}, {}
+
+local death_events = {
+    UNIT_DIED               = true,
+    UNIT_DESTROYED          = true,
+    UNIT_DISSIPATES         = true,
+    PARTY_KILL              = true,
+    SPELL_INSTAKILL         = true,
+}
 
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
         if subtype == "SPELL_CAST_SUCCESS" then
             -- Fracture:  Generate 2 frags.
             if spellID == 263642 then
-                queue_fragments( 2 ) end
+                queue_fragments( 2 )
+            end
 
             -- Shear:  Generate 1 frag.
             if spellID == 203782 then
-                queue_fragments( 1 ) end
-
-            --[[ Spirit Bomb:  Up to 5 frags.
-            if spellID == 247454 then
-                local name, _, count = FindUnitBuffByID( "player", 203981 )
-                if name then queue_fragments( -1 * count ) end
+                queue_fragments( 1 )
             end
 
-            -- Soul Cleave:  Up to 2 frags.
-            if spellID == 228477 then
-                local name, _, count = FindUnitBuffByID( "player", 203981 )
-                if name then queue_fragments( -1 * min( 2, count ) ) end
-            end ]]
+            if spellID == 198793 and talent.initiative.enabled then
+                wipe( initiative_actual )
+            end
 
-        -- We consumed or generated a fragment for real, so let's purge the real queue.
         elseif spellID == 203981 and fragments.real > 0 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
             fragments.real = fragments.real - 1
 
         elseif state.set_bonus.tier30_2pc > 0 and subtype == "SPELL_AURA_APPLIED" and spellID == 408737 then
             furySpent = max( 0, furySpent - 175 )
 
+        elseif state.talent.initiative.enabled and subtype == "SPELL_DAMAGE" then
+            initiative_actual[ destGUID ] = true
         end
+    elseif destGUID == GUID and ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) then
+        initiative_actual[ sourceGUID ] = true
+
+    elseif death_events[ subtype ] then
+        initiative_actual[ destGUID ] = nil
     end
 end, false )
 
+spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
+    wipe( initiative_actual )
+end )
+
+spec:RegisterHook( "UNIT_ELIMINATED", function( id )
+    initiative_actual[ id ] = nil
+end )
 
 -- Gear Sets
 spec:RegisterGear( "tier29", 200345, 200347, 200342, 200344, 200346 )
@@ -881,6 +902,19 @@ spec:RegisterHook( "reset_precast", function ()
     last_metamorphosis = nil
     last_infernal_strike = nil
 
+    wipe( initiative_virtual )
+    active_dot.hit_by_initiative = 0
+
+    for k, v in pairs( initiative_actual ) do
+        initiative_virtual[ k ] = v
+
+        if k == target.unit then
+            applyDebuff( "target", "hit_by_initiative" )
+        else
+            active_dot.hit_by_initiative = active_dot.hit_by_initiative + 1
+        end
+    end
+
     for i, sigil in ipairs( sigil_types ) do
         local activation = ( action[ "sigil_of_" .. sigil ].lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
         if activation > now then sigils[ sigil ] = activation
@@ -913,6 +947,16 @@ spec:RegisterHook( "reset_precast", function ()
     meta_cd_multiplier = 1 / ( 1 + rps )
 
     fury_spent = nil
+end )
+
+
+spec:RegisterHook( "runHandler", function( action )
+    local ability = class.abilities[ action ]
+
+    if ability.startsCombat and not debuff.hit_by_initiative.up then
+        applyBuff( "initiative" )
+        applyDebuff( "target", "hit_by_initiative" )
+    end
 end )
 
 
