@@ -80,7 +80,7 @@ spec:RegisterTalents( {
     ascendance                  = { 81055, 114052, 1 }, -- Transform into a Water Ascendant, duplicating all healing you deal at $s4% effectiveness for $114051d and immediately healing for $294020s1. Ascendant healing is distributed evenly among allies within $114083A1 yds.
     chain_heal                  = { 81063, 1064  , 1 }, -- Heals the friendly target for 18,562, then jumps up to 15 yards to heal the 4 most injured nearby allies. Healing is reduced by 30% with each jump.
     chain_lightning             = { 81061, 188443, 1 }, -- Hurls a lightning bolt at the enemy, dealing 15,729 Nature damage and then jumping to additional nearby enemies. Affects 3 total targets.
-    cloudburst_totem            = { 81048, 157153, 1 }, -- Summons a totem at your feet for 18 sec that collects power from all of your healing spells. When the totem expires or dies, the stored power is released, healing all injured allies within 46 yards for 36% of all healing done while it was active, divided evenly among targets. Casting this spell a second time recalls the totem and releases the healing.
+    cloudburst_totem            = { 81048, 157153, 1 }, -- Summons a totem at your feet for 18 sec that collects power from all of your healing spells. When the totem expires or dies, the stored power is released, healing all injured allies within 46 yards for 24% of all healing done while it was active, divided evenly among targets. Casting this spell a second time recalls the totem and releases the healing.
     continuous_waves            = { 81034, 382046, 1 }, -- Reduces the cooldown of Primordial Wave by 15 sec.
     current_control             = { 92675, 404015, 1 }, -- Reduces the cooldown of Healing Tide Totem by 30 sec.
     deeply_rooted_elements      = { 81051, 378270, 1 }, -- [114052] Transform into a Water Ascendant, duplicating all healing you deal at $s4% effectiveness for $114051d and immediately healing for $294020s1. Ascendant healing is distributed evenly among allies within $114083A1 yds.
@@ -206,6 +206,25 @@ spec:RegisterAuras( {
         duration = 1800,
         max_stack = 1
     },
+	high_tide = {
+        id = 288675,
+        duration = 25,
+        max_stack = 2
+    },
+	cloudburst_totem = {
+        id = 157504,
+        duration = 18,
+        max_stack = 1
+    },
+	natures_swiftness = {
+        id = 378081,
+        duration = 3600,
+        type = "Magic",
+        max_stack = 1,
+        onRemove = function( t )
+            setCooldown( "natures_swiftness", action.natures_swiftness.cooldown )
+        end
+    },
 } )
 
 
@@ -292,6 +311,7 @@ spec:RegisterAbilities( {
             removeStack( "tidal_waves" )
             removeStack( "tidebringer" )
             removeBuff( "swelling_rain" ) -- T30
+            removeStack( "natures_swiftness" )
 
             if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,
@@ -316,7 +336,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Summons a totem at your feet for 15 sec that collects power from all of your healing spells. When the totem expires or dies, the stored power is released, healing all injured allies within 40 yards for 30% of all healing done while it was active, divided evenly among targets. Casting this spell a second time recalls the totem and releases the healing.
+    -- Summons a totem at your feet for 15 sec that collects power from all of your healing spells. When the totem expires or dies, the stored power is released, healing all injured allies within 40 yards for 20% of all healing done while it was active, divided evenly among targets. Casting this spell a second time recalls the totem and releases the healing.
     cloudburst_totem = {
         id = 157153,
         cast = 0,
@@ -339,6 +359,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "cloudburst_totem" )
+	    applyBuff("cloudburst_totem")
         end,
     },
 
@@ -548,6 +569,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeStack( "tidal_waves" )
             removeBuff( "swelling_rain" ) -- T30
+            removeStack( "natures_swiftness" )
 
             if talent.earthen_harmony.enabled then
                 addStack( "earth_shield", nil, 1 )
@@ -593,6 +615,8 @@ spec:RegisterAbilities( {
         handler = function ()
             removeStack( "tidal_waves" )
             removeBuff( "swelling_rain" ) -- T30
+            removeBuff( "primordial_wave" )
+            removeStack( "natures_swiftness" )
 
             if talent.earthen_harmony.enabled then
                 addStack( "earth_shield", nil, 1 )
@@ -645,6 +669,7 @@ spec:RegisterAbilities( {
         texture = 136048,
 
         handler = function ()
+            removeBuff( "natures_swiftness" )
         end,
     },
 
@@ -766,6 +791,40 @@ spec:RegisterAbilities( {
             applyBuff( "stormkeeper" )
         end,
     },
+	
+	-- Talent: Resets the cooldown of your most recently used totem with a base cooldown shorter than 3 minutes.
+    totemic_recall = {
+        id = 108285,
+        cast = 0,
+        cooldown = function() return talent.call_of_the_elements.enabled and 120 or 180 end,
+        gcd = "spell",
+        school = "nature",
+
+        talent = "totemic_recall",
+        startsCombat = false,
+
+        handler = function ()
+        end,
+    },
+	
+	-- Talent: Your next healing or damaging Nature spell is instant cast and costs no mana.
+    natures_swiftness = {
+        id = 378081,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+        school = "nature",
+
+        talent = "natures_swiftness",
+        startsCombat = false,
+
+        toggle = "cooldowns",
+        nobuff = "natures_swiftness",
+
+        handler = function ()
+            applyBuff( "natures_swiftness" )
+        end,
+    },
 
     -- Unleash elemental forces of Life, healing a friendly target for 12,592 and increasing the effect of your next healing spell. Riptide, Healing Wave, or Healing Surge: 35% increased healing. Chain Heal: 15% increased healing and bounces to 1 additional target. Healing Rain or Downpour: 2 additional allies healed. Wellspring: 25% of overhealing done is converted to an absorb effect.
     unleash_life = {
@@ -832,6 +891,7 @@ spec:RegisterAbilities( {
         texture = 893778,
 
         handler = function ()
+            removeBuff( "natures_swiftness" )
         end,
     },
 } )
