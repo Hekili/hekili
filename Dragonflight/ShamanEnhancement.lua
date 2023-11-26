@@ -2423,11 +2423,11 @@ spec:RegisterSetting( "pwave_gcds", 4, {
     name = strformat( "%s: GCD Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ) ),
     desc = strformat( "By default, in a multi-target scenario, %s may be recommended with %s active while waiting for you to spread %s to additional targets.\n\n"
         .. "If set above 0, when %s is active and has fewer than this number of GCDs remaining, filler %s casts will be prevented and %s will be recommended despite "
-        .. "having active targets without %s active.\n\n"
+        .. "having enemies without %s active.\n\n"
         .. "Setting this |cffffd100higher|r reduces your risk of having %s fall off during a lucky string of %s procs.",
         Hekili:GetSpellLinkWithTexture( spec.abilities.chain_lightning.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.primordial_wave.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.flame_shock.id ), spec.abilities.primordial_wave.name, spec.abilities.chain_lightning.name, spec.abilities.lightning_bolt.name,
-        spec.abilities.flame_shock.name, spec.abilities.primordial_wave.name ),
+        spec.abilities.flame_shock.name, spec.abilities.primordial_wave.name, Hekili:GetSpellLinkWithTexture( spec.talents.hot_hand[2] ) ),
     type = "range",
     min = 0,
     max = 6,
