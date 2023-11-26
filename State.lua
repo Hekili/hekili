@@ -3263,7 +3263,7 @@ local mt_gcd = {
             if gcd == "off" then return 0 end
             if gcd == "totem" then return 1 end
 
-            if UnitPowerType( "player" ) == Enum.PowerType.Energy then
+            if UnitPowerType( "player" ) == Enum.PowerType.Energy or class.file == "DEMONHUNTER" then
                 return state.buff.adrenaline_rush.up and 0.8 or 1
             end
 
@@ -3276,7 +3276,7 @@ local mt_gcd = {
             return state.cooldown.global_cooldown.expires
 
         elseif k == "max" or k == "duration" then
-            if UnitPowerType( "player" ) == Enum.PowerType.Energy then
+            if UnitPowerType( "player" ) == Enum.PowerType.Energy or class.file == "DEMONHUNTER" then
                 return state.buff.adrenaline_rush.up and 0.8 or 1
             end
 
@@ -5098,7 +5098,7 @@ local mt_default_action = {
             return max( value, t.cast_time )
 
         elseif k == "charges" then
-            return ability.charges and state.cooldown[ t.action ].charges or 0
+            return ability.charges -- and state.cooldown[ t.action ].charges
 
         elseif k == "charges_fractional" then
             return state.cooldown[ t.action ].charges_fractional
