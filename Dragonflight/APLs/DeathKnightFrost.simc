@@ -16,6 +16,7 @@ actions.precombat+=/variable,name=erw_pooling_time,op=setif,value=25,value_else=
 
 actions+=/mind_freeze
 actions+=/strangulate
+actions+=/call_action_list,name=trinkets
 actions+=/antimagic_shell,if=runic_power.deficit>40
 actions+=/antimagic_zone,if=death_knight.amz_absorb_percent>0&runic_power.deficit>70&talent.assimilation&(buff.breath_of_sindragosa.up|cooldown.breath_of_sindragosa.ready|!talent.breath_of_sindragosa&!buff.pillar_of_frost.up)
 actions+=/variable,name=st_planning,value=active_enemies=1&(raid_event.adds.in>15|!raid_event.adds.exists)
@@ -41,7 +42,6 @@ actions+=/frost_strike,if=active_enemies=1&variable.rp_buffs&talent.breath_of_si
 actions+=/frost_strike,if=active_enemies=1&variable.rp_buffs&!talent.breath_of_sindragosa&talent.obliteration&!buff.pillar_of_frost.up
 actions+=/remorseless_winter,if=variable.rw_buffs|variable.adds_remain
 # Choose Action list to run
-actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=racials
 actions+=/call_action_list,name=cold_heart,if=talent.cold_heart&(!buff.killing_machine.up|talent.breath_of_sindragosa)&((debuff.razorice.stack=5|!death_knight.runeforge.razorice&!talent.glacial_advance&!talent.avalanche)|boss&fight_remains<=gcd.max)
@@ -156,6 +156,7 @@ actions.single_target+=/horn_of_winter,if=rune<4&runic_power.deficit>25&(!talent
 actions.single_target+=/arcane_torrent,if=runic_power.deficit>20
 actions.single_target+=/frost_strike,if=!variable.pooling_runic_power
 
+actions.trinkets+=/use_item,name=fyralath_the_dreamrender,if=dot.mark_of_fyralath.ticking
 actions.trinkets+=/use_item,use_off_gcd=1,name=algethar_puzzle_box,if=!buff.pillar_of_frost.up&cooldown.pillar_of_frost.remains<2&(!talent.breath_of_sindragosa|runic_power>60&(buff.breath_of_sindragosa.up|cooldown.breath_of_sindragosa.remains<2))
 # The trinket with the highest estimated value, will be used first and paired with Pillar of Frost.
 actions.trinkets+=/use_item,use_off_gcd=1,slot=trinket1,if=variable.trinket_1_buffs&!variable.trinket_1_manual&(talent.obliteration&cooldown.empower_rune_weapon.charges<1|!talent.obliteration)&(!buff.pillar_of_frost.up&trinket.1.cast_time>0|!trinket.1.cast_time>0)&(buff.breath_of_sindragosa.up|buff.pillar_of_frost.up)&(variable.trinket_2_exclude|!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|boss&trinket.1.proc.any_dps.duration>=fight_remains
