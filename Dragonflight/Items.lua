@@ -2188,7 +2188,7 @@ all:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
-        item = 56285,
+        item = 133197,
         toggle = "cooldowns",
 
         handler = function()
@@ -2202,5 +2202,31 @@ all:RegisterAbilities( {
                 max_stack = 1
             }
         }
-    }
+    },
+
+    -- Legendary
+    fyralath_the_dreamrender = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 206448,
+        toggle = "cooldowns",
+
+        handler = function()
+            removeDebuff( "target", "mark_of_fyralath" )
+            active_dot.mark_of_fyralath = 0
+            setDistance( 5 )
+        end,
+
+        auras = {
+            mark_of_fyralath = {
+                id = 414532,
+                duration = 15,
+                max_stack = 1
+            },
+        },
+
+        copy = "fyralath_the_dream_render"
+    },
 } )
