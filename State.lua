@@ -1334,6 +1334,7 @@ do
     end
 
 
+    -- Increase max forecast duration because Assassination is pooling hard this tier.
     local FORECAST_DURATION = 10.01
 
     forecastResources = function( resource )
@@ -1349,6 +1350,8 @@ do
 
         if state.class.file == "DEATHKNIGHT" and state.runes then
             timeout = max( timeout, 0.01 + 2 * state.runes.cooldown )
+        elseif state.spec.assassination then
+            timeout = 15.01
         end
 
         timeout = timeout + state.gcd.remains
