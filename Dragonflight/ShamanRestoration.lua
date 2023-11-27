@@ -216,15 +216,6 @@ spec:RegisterAuras( {
         duration = 18,
         max_stack = 1
     },
-    natures_swiftness = {
-        id = 378081,
-        duration = 3600,
-        type = "Magic",
-        max_stack = 1,
-        onRemove = function( t )
-            setCooldown( "natures_swiftness", action.natures_swiftness.cooldown )
-        end
-    },
 } )
 
 
@@ -807,25 +798,6 @@ spec:RegisterAbilities( {
         end,
     },
 	
-	-- Talent: Your next healing or damaging Nature spell is instant cast and costs no mana.
-    natures_swiftness = {
-        id = 378081,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-        school = "nature",
-
-        talent = "natures_swiftness",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-        nobuff = "natures_swiftness",
-
-        handler = function ()
-            applyBuff( "natures_swiftness" )
-        end,
-    },
-
     -- Unleash elemental forces of Life, healing a friendly target for 12,592 and increasing the effect of your next healing spell. Riptide, Healing Wave, or Healing Surge: 35% increased healing. Chain Heal: 15% increased healing and bounces to 1 additional target. Healing Rain or Downpour: 2 additional allies healed. Wellspring: 25% of overhealing done is converted to an absorb effect.
     unleash_life = {
         id = 73685,
