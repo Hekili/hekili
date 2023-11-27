@@ -236,14 +236,71 @@ spec:RegisterAuras( {
 
 spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212 )
 
+local recall_totems = {
+    capacitor_totem = 1,
+    earthbind_totem = 1,
+    earthgrab_totem = 1,
+    grounding_totem = 1,
+    healing_stream_totem = 1,
+    cloudburst_totem = 1,
+    earthen_wall_totem = 1,
+    poison_cleansing_totem = 1,
+    skyfury_totem = 1,
+    stoneskin_totem = 1,
+    tranquil_air_totem = 1,
+    tremor_totem = 1,
+    wind_rush_totem = 1,
+}
+
+local recallTotem1
+local recallTotem2
+
+spec:RegisterTotem( "tremor_totem", 136108 )
+spec:RegisterTotem( "wind_rush_totem", 538576 )
+spec:RegisterTotem( "healing_stream_totem", 135127 )
+spec:RegisterTotem( "cloudburst_totem", 971076 )
+spec:RegisterTotem( "earthen_wall_totem", 136098 )
+spec:RegisterTotem( "poison_cleansing_totem", 136070 )
+spec:RegisterTotem( "stoneskin_totem", 4667425 )
+
+spec:RegisterStateExpr( "recall_totem_1", function()
+    return recallTotem1
+end )
+
+spec:RegisterStateExpr( "recall_totem_2", function()
+    return recallTotem2
+end )
 
 spec:RegisterHook( "reset_precast", function ()
     local mh, _, _, mh_enchant = GetWeaponEnchantInfo()
 
     if mh and mh_enchant == 6498 then applyBuff( "earthliving_weapon" ) end
     if buff.earthliving_weapon.down and ( now - action.earthliving_weapon.lastCast < 1 ) then applyBuff( "earthliving_weapon" ) end
+
+    recall_totem_1 = nil
+    recall_totem_2 = nil
 end )
 
+spec:RegisterHook( "runHandler", function( action )
+    if talent.totemic_recall.enabled and recall_totems[ action ] then
+        recall_totem_2 = recall_totem_1
+        recall_totem_1 = action
+    end
+end )
+
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, school )
+    if sourceGUID == state.GUID then
+        if subtype == "SPELL_CAST_SUCCESS" then
+            local ability = class.abilities[ spellID ]
+            local key = ability and ability.key
+
+            if key and recall_totems[ key ] then
+                recallTotem2 = recallTotem1
+                recallTotem1 = key
+            end
+        end
+    end
+end )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -387,6 +444,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            summonTotem( "earthen_wall_totem" )
             applyBuff( "earthen_wall_totem" )
         end,
     },
@@ -794,7 +852,11 @@ spec:RegisterAbilities( {
         talent = "totemic_recall",
         startsCombat = false,
 
+        usable = function() return recall_totem_1 ~= nil end,
+
         handler = function ()
+            if recall_totem_1 then setCooldown( recall_totem_1, 0 ) end
+            if talent.creation_core.enabled and recall_totem_2 then setCooldown( recall_totem_2, 0 ) end
         end,
     },
 	
