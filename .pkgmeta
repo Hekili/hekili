@@ -44,6 +44,8 @@ externals:
         tag: latest
     Libs/LibSpellRange-1.0:
         url: https://github.com/ascott18/LibSpellRange-1.0.git
+    Libs/LibRangeCheck-3.0:
+        url: https://github.com/WeakAuras/LibRangeCheck-3.0
     Libs/LibCompress:
         url: https://repos.wowace.com/wow/libcompress/trunk
     Libs/LibDeflate:
@@ -60,3 +62,6 @@ externals:
         url: https://github.com/Vardex/LibTranslit.git
     Libs/SpellFlashCore:
         url: https://github.com/Tga123/SpellFlashCore.git
+
+move-folders:
+    Hekili/Libs/LibRangeCheck-3.0/LibRangeCheck-3.0: Hekili/Libs/LibRangeCheck-3.0
