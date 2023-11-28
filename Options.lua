@@ -9170,10 +9170,10 @@ function Hekili:GenerateProfile()
 
     local gear, items
     for k, v in orderedPairs( state.set_bonus ) do
-        if v > 0 then
+        if type(v) == "number" and v > 0 then
             if type(k) == 'string' then
-            if gear then gear = format( "%s\n    %s = %d", gear, k, v )
-            else gear = format( "%s = %d", k, v ) end
+                if gear then gear = format( "%s\n    %s = %d", gear, k, v )
+                else gear = format( "%s = %d", k, v ) end
             elseif type(k) == 'number' then
                 if items then items = format( "%s, %d", items, k )
                 else items = tostring(k) end
@@ -10069,7 +10069,7 @@ do
                                 hasToggle = true
                                 exToggle = setting.name
                             elseif setting.info.type == "range" then
-                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f (%s)", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), settingName )
+                                output = format( "%s\n - |cFFFFD100%s|r = |cFF00FF00%.2f|r, min: %.2f, max: %.2f", output, setting.name, prefs[ setting.name ], ( setting.info.min and format( "%.2f", setting.info.min ) or "N/A" ), ( setting.info.max and format( "%.2f", setting.info.max ) or "N/A" ), settingName )
                                 hasNumber = true
                                 exNumber = setting.name
                             end
