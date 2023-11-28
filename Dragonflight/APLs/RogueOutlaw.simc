@@ -96,7 +96,7 @@ actions.finish+=/between_the_eyes,if=!talent.crackshot&(buff.between_the_eyes.re
 # Crackshot builds use Between the Eyes outside of Stealth if Vanish or Dance will not come off cooldown within the next cast
 actions.finish+=/between_the_eyes,if=talent.crackshot&(cooldown.vanish.true_remains>45&cooldown.shadow_dance.true_remains>12)
 actions.finish+=/slice_and_dice,if=buff.slice_and_dice.remains<fight_remains&refreshable
-actions.finish+=/killing_spree,if=debuff.ghostly_strike.up|!talent.ghostly_strikea
+actions.finish+=/killing_spree,if=debuff.ghostly_strike.up|!talent.ghostly_strike
 actions.finish+=/cold_blood
 actions.finish+=/dispatch
 
