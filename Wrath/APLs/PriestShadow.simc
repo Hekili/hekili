@@ -26,7 +26,7 @@ actions.init+=/variable,name=execute_phase,value=target.health.pct<20
 
 ## Cleave
 actions.cleave+=/mind_sear,if=active_enemies>=8
-actions.cleave+=/devouring_plague,if=!(active_dot.devouring_plague*dot.devouring_plague.remains)
+actions.cleave+=/devouring_plague,if=!dot.devouring_plague.remains
 actions.cleave+=/mind_flay,cycle_targets=1,max_cycle_targets=7,interrupt_if=!buff.inner_focus.up&ticks>=2,if=!moving&(dot.shadow_word_pain.remains<1.5&dot.shadow_word_pain.remains>=action.mind_flay.tick_time+latency)
 actions.cleave+=/shadowfiend,if=variable.time_to_die>0
 actions.cleave+=/vampiric_touch,cycle_targets=1,max_cycle_targets=7,if=dot.vampiric_touch.remains+latency<cast_time&variable.time_to_die>=3
@@ -41,15 +41,15 @@ actions.cleave+=/devouring_plague,if=moving
 actions.cleave+=/dispersion,if=mana.percent<=60
 
 ## Single
-actions.single+=/devouring_plague,if=variable.time_to_die<=action.mind_flay.duration|(moving&!(active_dot.devouring_plague*dot.devouring_plague.remains))
+actions.single+=/devouring_plague,if=variable.time_to_die<=action.mind_flay.duration|(moving&!dot.devouring_plague.remains)
 actions.single+=/mind_flay,if=buff.inner_focus.up|(dot.shadow_word_pain.remains<1.5&dot.shadow_word_pain.remains>=action.mind_flay.tick_time+latency)
 actions.single+=/shadowfiend,if=variable.time_to_die>0
 actions.single+=/shadow_word_pain,if=!ticking&((buff.shadow_weaving.stack=5&variable.time_to_die>=75)|(buff.shadow_weaving.stack>=3&variable.time_to_die<75))
 actions.single+=/vampiric_touch,if=dot.vampiric_touch.remains+latency<cast_time&variable.time_to_die>=3
-actions.single+=/devouring_plague,if=!(active_dot.devouring_plague*dot.devouring_plague.remains)
+actions.single+=/devouring_plague,if=!dot.devouring_plague.remains
 actions.single+=/mind_blast,if=variable.time_to_die>=cast_time&(flay_over_blast|buff.replenishment.remains<3)
 actions.single+=/inner_focus,if=buff.shadow_weaving.stack=5
-actions.single+=/wait,if=(active_dot.devouring_plague*dot.devouring_plague.remains)<=0.2,sec=(active_dot.devouring_plague*dot.devouring_plague.remains)
+actions.single+=/wait,if=dot.devouring_plague.remains<=0.2,sec=dot.devouring_plague.remains
 actions.single+=/wait,if=dot.vampiric_touch.ticking&action.mind_flay.channeling&dot.vampiric_touch.remains<=(action.vampiric_touch.cast_time+latency),sec=(dot.vampiric_touch.remains-action.vampiric_touch.cast_time)
 actions.single+=/inner_fire,if=!buff.inner_fire.up&variable.time_to_die>=10
 actions.single+=/vampiric_embrace,if=!up&variable.time_to_die>=10
