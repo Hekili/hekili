@@ -1558,7 +1558,7 @@ spec:RegisterAbilities( {
 } )
 
 
-spec:RegisterRanges( "chaos_strike", "fiery_brand", "torment", "throw_glaive", "the_hunt" )
+spec:RegisterRanges( "disrupt", "fiery_brand", "torment", "throw_glaive", "the_hunt" )
 
 spec:RegisterOptions( {
     enabled = true,
@@ -1567,7 +1567,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "chaos_strike",
+    rangeChecker = "disrupt",
     rangeFilter = false,
 
     damage = true,
