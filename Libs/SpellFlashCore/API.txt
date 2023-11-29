@@ -1,0 +1,467 @@
+
+
+
+=== ** SpellFlashCore.FlashAction
+
+This is used to flash an action bar spell.
+
+<<code lua>>SpellFlashCore.FlashAction(SpellName, color, size, brightness, blink, NoMacros, texture, fixedSize, fixedBrightness)<</code>>
+
+===== ** Arguments:
+
+; ** SpellName
+:		(string or number or table) Spell name or global spell id number or table of global spell id numbers.
+; ** color
+:		(string or table or nil) Will accept color tables {r=1.0, g=1.0, b=1.0} or a string with the name of a color that has already been defined. May be nil for "White".
+; ** size
+:		(number or nil) Percent for the flash size or nil for default.
+; ** brightness
+:		(number or nil) Percent for the flash brightness or nil for default.
+; ** blink
+:		(boolean) If true will make the action button fade in and out.
+; ** NoMacros
+:		(boolean) If true will skip checking for macros.
+; ** texture
+:		(string or number or nil) Path to texture (like: "Interface\\Cooldown\\starburst") or FileDataID (like: 131009) or AtlasID (like: "AftLevelup-WhiteStarBurst") or nil for default. Default: "Interface\\Cooldown\\star4"
+; ** fixedSize
+:		(boolean or nil) If true will stop pulse animation. Default: false
+; ** fixedBrightness
+:		(boolean or nil) If true will stop flicker animation. Default: false
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.FlashItem
+
+This is used to flash an action bar item.
+
+<<code lua>>SpellFlashCore.FlashItem(ItemName, color, size, brightness, blink, NoMacros, texture, fixedSize, fixedBrightness)<</code>>
+
+===== ** Arguments:
+
+; ** ItemName
+:		(string or number or table) Item name or item id number or table of item id numbers.
+; ** color
+:		(string or table or nil) Will accept color tables {r=1.0, g=1.0, b=1.0} or a string with the name of a color that has already been defined. May be nil for "White".
+; ** size
+:		(number or nil) Percent for the flash size or nil for default.
+; ** brightness
+:		(number or nil) Percent for the flash brightness or nil for default.
+; ** blink
+:		(boolean) If true will make the action button fade in and out.
+; ** NoMacros
+:		(boolean) If true will skip checking for macros.
+; ** texture
+:		(string or number or nil) Path to texture (like: "Interface\\Cooldown\\starburst") or FileDataID (like: 131009) or AtlasID (like: "AftLevelup-WhiteStarBurst") or nil for default. Default: "Interface\\Cooldown\\star4"
+; ** fixedSize
+:		(boolean or nil) If true will stop pulse animation. Default: false
+; ** fixedBrightness
+:		(boolean or nil) If true will stop flicker animation. Default: false
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.FlashForm
+
+This is used to flash a stance, form, presence, aura or aspect bar spell.
+
+<<code lua>>SpellFlashCore.FlashForm(SpellName, color, size, brightness, blink, texture, fixedSize, fixedBrightness)<</code>>
+
+===== ** Arguments:
+
+; ** SpellName
+:		(string or number or table) Localized name or global id number of the spell or table of global id numbers.
+; ** color
+:		(string or table or nil) Will accept color tables {r=1.0, g=1.0, b=1.0} or a string with the name of a color that has already been defined. May be nil for "White".
+; ** size
+:		(number or nil) Percent for the flash size or nil for default.
+; ** brightness
+:		(number or nil) Percent for the flash brightness or nil for default.
+; ** blink
+:		(boolean) If true will make the action button fade in and out.
+; ** texture
+:		(string or number or nil) Path to texture (like: "Interface\\Cooldown\\starburst") or FileDataID (like: 131009) or AtlasID (like: "AftLevelup-WhiteStarBurst") or nil for default. Default: "Interface\\Cooldown\\star4"
+; ** fixedSize
+:		(boolean or nil) If true will stop pulse animation. Default: false
+; ** fixedBrightness
+:		(boolean or nil) If true will stop flicker animation. Default: false
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.FlashPet
+
+This is used to flash a pet bar spell.
+
+<<code lua>>SpellFlashCore.FlashPet(SpellName, color, size, brightness, blink, texture, fixedSize, fixedBrightness)<</code>>
+
+===== ** Arguments:
+
+; ** SpellName
+:		(string or number or table) Localized name or global id number of the spell or table of global id numbers.
+; ** color
+:		(string or table or nil) Will accept color tables {r=1.0, g=1.0, b=1.0} or a string with the name of a color that has already been defined. May be nil for "White".
+; ** size
+:		(number or nil) Percent for the flash size or nil for default.
+; ** brightness
+:		(number or nil) Percent for the flash brightness or nil for default.
+; ** blink
+:		(boolean) If true will make the action button fade in and out.
+; ** texture
+:		(string or number or nil) Path to texture (like: "Interface\\Cooldown\\starburst") or FileDataID (like: 131009) or AtlasID (like: "AftLevelup-WhiteStarBurst") or nil for default. Default: "Interface\\Cooldown\\star4"
+; ** fixedSize
+:		(boolean or nil) If true will stop pulse animation. Default: false
+; ** fixedBrightness
+:		(boolean or nil) If true will stop flicker animation. Default: false
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.FlashVehicle
+
+This is used to flash a vehicle bar spell.
+
+<<code lua>>SpellFlashCore.FlashVehicle(SpellName, color, size, brightness, blink, texture, fixedSize, fixedBrightness)<</code>>
+
+===== ** Arguments:
+
+; ** SpellName
+:		(string or number or table) Localized name or global id number of the spell or table of global id numbers.
+; ** color
+:		(string or table or nil) Will accept color tables {r=1.0, g=1.0, b=1.0} or a string with the name of a color that has already been defined. May be nil for "White".
+; ** size
+:		(number or nil) Percent for the flash size or nil for default.
+; ** brightness
+:		(number or nil) Percent for the flash brightness or nil for default.
+; ** blink
+:		(boolean) If true will make the action button fade in and out.
+; ** texture
+:		(string or number or nil) Path to texture (like: "Interface\\Cooldown\\starburst") or FileDataID (like: 131009) or AtlasID (like: "AftLevelup-WhiteStarBurst") or nil for default. Default: "Interface\\Cooldown\\star4"
+; ** fixedSize
+:		(boolean or nil) If true will stop pulse animation. Default: false
+; ** fixedBrightness
+:		(boolean or nil) If true will stop flicker animation. Default: false
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.FlashTotemCall
+
+This is used to flash the multiple totem call button.
+
+<<code lua>>SpellFlashCore.FlashTotemCall(color, size, brightness, blink, texture, fixedSize, fixedBrightness)<</code>>
+
+===== ** Arguments:
+
+; ** color
+:		(string or table or nil) Will accept color tables {r=1.0, g=1.0, b=1.0} or a string with the name of a color that has already been defined. May be nil for "White".
+; ** size
+:		(number or nil) Percent for the flash size or nil for default.
+; ** brightness
+:		(number or nil) Percent for the flash brightness or nil for default.
+; ** blink
+:		(boolean) If true will make the action button fade in and out.
+; ** texture
+:		(string or number or nil) Path to texture (like: "Interface\\Cooldown\\starburst") or FileDataID (like: 131009) or AtlasID (like: "AftLevelup-WhiteStarBurst") or nil for default. Default: "Interface\\Cooldown\\star4"
+; ** fixedSize
+:		(boolean or nil) If true will stop pulse animation. Default: false
+; ** fixedBrightness
+:		(boolean or nil) If true will stop flicker animation. Default: false
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.FlashTotemRecall
+
+This is used to flash the multiple totem recall button.
+
+<<code lua>>SpellFlashCore.FlashTotemRecall(color, size, brightness, blink, texture, fixedSize, fixedBrightness)<</code>>
+
+===== ** Arguments:
+
+; ** color
+:		(string or table or nil) Will accept color tables {r=1.0, g=1.0, b=1.0} or a string with the name of a color that has already been defined. May be nil for "White".
+; ** size
+:		(number or nil) Percent for the flash size or nil for default.
+; ** brightness
+:		(number or nil) Percent for the flash brightness or nil for default.
+; ** blink
+:		(boolean) If true will make the action button fade in and out.
+; ** texture
+:		(string or number or nil) Path to texture (like: "Interface\\Cooldown\\starburst") or FileDataID (like: 131009) or AtlasID (like: "AftLevelup-WhiteStarBurst") or nil for default. Default: "Interface\\Cooldown\\star4"
+; ** fixedSize
+:		(boolean or nil) If true will stop pulse animation. Default: false
+; ** fixedBrightness
+:		(boolean or nil) If true will stop flicker animation. Default: false
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.FlashFrame
+
+This is used to flash a frame.
+
+<<code lua>>SpellFlashCore.FlashFrame(frame, color, size, brightness, blink, texture, fixedSize, fixedBrightness)<</code>>
+
+===== ** Arguments:
+
+; ** frame
+:		(variable) The variable assigned to a frame that you want to be flashed.
+; ** color
+:		(string or table or nil) Will accept color tables {r=1.0, g=1.0, b=1.0} or a string with the name of a color that has already been defined. May be nil for "White".
+; ** size
+:		(number or nil) Percent for the flash size or nil for default.
+; ** brightness
+:		(number or nil) Percent for the flash brightness or nil for default.
+; ** blink
+:		(boolean) If true will make the action button fade in and out.
+; ** texture
+:		(string or number or nil) Path to texture (like: "Interface\\Cooldown\\starburst") or FileDataID (like: 131009) or AtlasID (like: "AftLevelup-WhiteStarBurst") or nil for default. Default: "Interface\\Cooldown\\star4"
+; ** fixedSize
+:		(boolean or nil) If true will stop pulse animation. Default: false
+; ** fixedBrightness
+:		(boolean or nil) If true will stop flicker animation. Default: false
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.Flashable
+
+Determines if a specified spell is able to be found on the action bars to be flashed.
+
+<<code lua>>found = SpellFlashCore.Flashable(SpellName, NoMacros)<</code>>
+
+===== ** Arguments:
+
+; ** SpellName
+:		(string or number or table) Spell name or global spell id number or table of global spell id numbers.
+; ** NoMacros
+:		(boolean) If true will skip checking for macros.
+
+===== ** Returns:
+
+; ** found
+:		(boolean) True if a specified spell is able to be found on the action bars to be flashed.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.ItemFlashable
+
+Determines if a specified item is able to be found on the action bars to be flashed.
+
+<<code lua>>found = SpellFlashCore.ItemFlashable(ItemName, NoMacros)<</code>>
+
+===== ** Arguments:
+
+; ** ItemName
+:		(string or number or table) Item name or item id number or table of item id numbers.
+; ** NoMacros
+:		(boolean) If true will skip checking for macros.
+
+===== ** Returns:
+
+; ** found
+:		(boolean) True if a specified item is able to be found on the action bars to be flashed.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.SpellName
+
+This returns the localized spell name.
+
+<<code lua>>name = SpellFlashCore.SpellName(SpellID, NoSubName)<</code>>
+
+===== ** Arguments:
+
+; ** SpellID
+:		(number) Global spell ID number.
+; ** NoSubName
+:		(boolean) If true will not return the spell name with the sub name attached.
+
+===== ** Returns:
+
+; ** name
+:		(string) Localized spell name.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.ItemName
+
+This returns the localized item name.
+
+<<code lua>>name = SpellFlashCore.ItemName(ItemID)<</code>>
+
+===== ** Arguments:
+
+; ** ItemID
+:		(number) Global item ID number.
+
+===== ** Returns:
+
+; ** name
+:		(string) Localized item name.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.Replace
+
+This replaces text with new text in a string.
+
+<<code lua>>REPLACED_STRING = SpellFlashCore.Replace(STRING, FIND, REPLACE, FIND, REPLACE, ...)<</code>>
+
+===== ** Arguments:
+
+; ** STRING
+:		(string) The original string.
+; ** FIND
+:		(string or number) The search text.
+; ** REPLACE
+:		(string or number or nil) The replacement text.
+
+===== ** Returns:
+
+; ** REPLACED_STRING
+:		(string) The replaced string.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.CopyTable
+
+A simple function that will copy a table.
+
+<<code lua>>CopiedTable = SpellFlashCore.CopyTable(Table)<</code>>
+
+===== ** Arguments:
+
+; ** Table
+:		(table) The original table.
+
+===== ** Returns:
+
+; ** CopiedTable
+:		(table) The copied table.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.RegisterDebugEvent
+
+This will register an event for debugging purposes.
+
+Debug slash command: ** /spellflashcore debug
+
+Debug event slash command: ** /spellflashcore register EVENT_NAME
+
+<<code lua>>SpellFlashCore.RegisterDebugEvent(event)<</code>>
+
+===== ** Arguments:
+
+; ** event
+:		(string) Event name to register.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.UnregisterDebugEvent
+
+This will unregister an event for debugging purposes.
+
+Debug slash command: ** /spellflashcore debug
+
+Debug event slash command: ** /spellflashcore unregister EVENT_NAME
+
+<<code lua>>SpellFlashCore.UnregisterDebugEvent(event)<</code>>
+
+===== ** Arguments:
+
+; ** event
+:		(string) Event name to unregister.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.RegisterAllDebugEvents
+
+This will register all events for debugging purposes.
+
+Debug slash command: ** /spellflashcore debug
+
+Debug event slash command: ** /spellflashcore register all
+
+<<code lua>>SpellFlashCore.RegisterAllDebugEvents()<</code>>
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.UnregisterAllDebugEvents
+
+This will unregister all events for debugging purposes.
+
+Debug slash command: ** /spellflashcore debug
+
+Debug event slash command: ** /spellflashcore unregister all
+
+<<code lua>>SpellFlashCore.UnregisterAllDebugEvents()<</code>>
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.debug
+
+This will dump the value of msg to the default chat window if debug mode has been enabled.
+
+Debug slash command: ** /spellflashcore debug
+
+<<code lua>>SpellFlashCore.debug(...)<</code>>
+
+===== ** Arguments:
+
+; ** ...
+:		(string or number or nil) String, number or array of strings and numbers that will be sent to the default chat window.
+
+\\
+----
+\\
+
+=== ** SpellFlashCore.RegisterBigLibTimer
+
+Use this to embed BigLibTimer into your addon. Use either the argument or the return value but not both, because that would be the same as just using the argument.\\
+BigLibTimer API: ** http://wow.curseforge.com/addons/biglibtimer/pages/api/
+
+<<code lua>>handler = SpellFlashCore.RegisterBigLibTimer(handler)<</code>>
+
+===== ** Arguments:
+
+; ** handler
+:		(frame or table or nil) Table or frame to have the BigLibTimer functions saved to.
+
+===== ** Returns:
+
+; ** handler
+:		(table) Table with the BigLibTimer functions saved to it.
+
+
+

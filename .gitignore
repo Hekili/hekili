@@ -78,7 +78,7 @@ Libs/LibSharedMedia-3.0
 Libs/LibSpellRange-1.0
 Libs/LibStub
 Libs/LibTranslit-1.0/
-Libs/SpellFlashCore
+# Libs/SpellFlashCore
 Libs/TaintLess
 CHANGES.txt
 Textures/LOGO-ORANGE.png
