@@ -3,7 +3,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_sta
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
 actions.precombat+=/arcane_torrent,if=fury.deficit>15
 actions.precombat+=/use_item,name=algethar_puzzle_box,if=cooldown.metamorphosis.remains<5
-actions.precombat+=/immolation_aura
+actions.precombat+=/immolation_aura,if=!talent.unbound_chaos&buff.immolation_aura.down|talent.unbound_chaos&buff.unbound_chaos.down
 actions.precombat+=/sigil_of_flame,if=!equipped.algethar_puzzle_box
 
 actions=disrupt
