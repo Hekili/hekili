@@ -1813,7 +1813,7 @@ spec:RegisterAbilities( {
 } )
 
 
-spec:RegisterRanges( "chaos_strike", "felblade", "fel_eruption", "torment", "throw_glaive", "the_hunt" )
+spec:RegisterRanges( "disrupt", "felblade", "fel_eruption", "torment", "throw_glaive", "the_hunt" )
 
 spec:RegisterOptions( {
     enabled = true,
@@ -1822,7 +1822,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "chaos_strike",
+    rangeChecker = "disrupt",
     rangeFilter = false,
 
     damage = true,
