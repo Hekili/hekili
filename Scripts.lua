@@ -461,6 +461,7 @@ do
 
         { "^(.-)%.deficit<=?(.-)$"         , "0.01+%1.timeTo(%1.max-(%2))" },
         { "^(.-)%.deficit>=?(.-)$"         , "0.01+%1.timeTo(%1.max-(%2))" },
+        { "^(.-)%.percent[<>=]+(.-)$"      , "0.01+%1.timeTo(%1.max*(%2/100))" },
 
         { "^cooldown%.([a-z0-9_]+)%.ready$"                      , "cooldown.%1.remains"                      },
         { "^cooldown%.([a-z0-9_]+)%.up$"                         , "cooldown.%1.remains"                      },
