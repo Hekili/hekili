@@ -11144,7 +11144,7 @@ function Hekili:TogglePause( ... )
     end
 
     self:Print( ( not self.Pause and "UN" or "" ) .. "PAUSED." )
-    self:Notify( ( not self.Pause and "UN" or "" ) .. "PAUSED" )
+    if Hekili.DB.profile.notifications.enabled then self:Notify( ( not self.Pause and "UN" or "" ) .. "PAUSED" ) end
 
 end
 
