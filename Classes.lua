@@ -1082,7 +1082,8 @@ function Hekili:RestoreDefaults()
                 data.payload.version = v.version
                 data.payload.date = v.version
                 data.payload.builtIn = true
-                if existing.version < v.version then
+
+                if not existing or not existing.version or existing.version < v.version then
                     insert( changed, k )
                 else
                     insert( reverted, k )
