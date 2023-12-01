@@ -635,7 +635,7 @@ end )
 spec:RegisterStateTable( "rtb_buffs_will_lose_buff", setmetatable( {}, {
     __index = function( t, k )
         if not buff[ k ].up or buff[ k ].remains < rtb_primary_remains then return false end
-        return false
+        return true
     end
 } ) )
 
