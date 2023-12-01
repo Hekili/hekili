@@ -1,9 +1,6 @@
 actions.precombat+=/fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet,if=!pet.alive&!buff.grimoire_of_sacrifice.up
-actions.precombat+=/variable,name=tyrant_prep_start,op=set,value=12
-actions.precombat+=/variable,name=next_tyrant,op=set,value=14+talent.grimoire_felguard+talent.summon_vilefiend
 actions.precombat+=/variable,name=shadow_timings,default=0,op=reset
-actions.precombat+=/variable,name=tyrant_timings,value=0
 ## actions.precombat+=/variable,name=shadow_timings,op=set,value=0,if=cooldown.invoke_power_infusion_0.duration!=120
 actions.precombat+=/variable,name=trinket_1_buffs,value=trinket.1.has_buff.intellect|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit|trinket.1.is.mirror_of_fractured_tomorrows|trinket.1.is.spoils_of_neltharus
 actions.precombat+=/variable,name=trinket_2_buffs,value=trinket.2.has_buff.intellect|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit|trinket.2.is.mirror_of_fractured_tomorrows|trinket.2.is.spoils_of_neltharus
@@ -24,9 +21,6 @@ actions.precombat+=/shadow_bolt,if=soul_shard<5
 actions+=/axe_toss
 actions+=/devour_magic
 ## Variables
-actions+=/variable,name=tyrant_timings,op=set,value=120+time,if=((buff.nether_portal.up&buff.nether_portal.remains<3&talent.nether_portal)|boss&fight_remains<20|pet.demonic_tyrant.active&fight_remains<100|boss&fight_remains<25|(pet.demonic_tyrant.active|!talent.summon_demonic_tyrant&buff.dreadstalkers.up))&variable.tyrant_sync<=0
-actions+=/variable,name=tyrant_sync,value=(variable.tyrant_timings-time)
-actions+=/variable,name=tyrant_cd,op=setif,value=variable.tyrant_sync,value_else=cooldown.summon_demonic_tyrant.remains,condition=((((fight_remains+time)%%120<=85&(fight_remains+time)%%120>=25)|time>=210))&variable.tyrant_sync>0&!talent.grand_warlocks_design
 actions+=/variable,name=pet_expire,op=set,value=(buff.dreadstalkers.remains>?buff.vilefiend.remains)-gcd*0.5,if=buff.vilefiend.up&buff.dreadstalkers.up
 actions+=/variable,name=pet_expire,op=set,value=(buff.dreadstalkers.remains>?buff.grimoire_felguard.remains)-gcd*0.5,if=!talent.summon_vilefiend&talent.grimoire_felguard&buff.grimoire_felguard.up&buff.dreadstalkers.up
 actions+=/variable,name=pet_expire,op=set,value=(buff.dreadstalkers.remains)-gcd,if=!talent.summon_vilefiend&!talent.grimoire_felguard&buff.dreadstalkers.up
@@ -35,7 +29,7 @@ actions+=/variable,name=np,op=set,value=(!talent.nether_portal|cooldown.nether_p
 actions+=/variable,name=impl,op=set,value=buff.tyrant.down,if=active_enemies>1+(talent.sacrificed_souls.enabled)
 actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<6,if=active_enemies>2+(talent.sacrificed_souls.enabled)&active_enemies<5+(talent.sacrificed_souls.enabled)
 actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<8,if=active_enemies>4+(talent.sacrificed_souls.enabled)
-actions+=/variable,name=pool_cores_for_tyrant,op=set,value=cooldown.summon_demonic_tyrant.remains<20&variable.tyrant_cd<20&(buff.demonic_core.stack<=2|!buff.demonic_core.up)&cooldown.summon_vilefiend.remains<gcd.max*5&cooldown.call_dreadstalkers.remains<gcd.max*5
+actions+=/variable,name=pool_cores_for_tyrant,op=set,value=cooldown.summon_demonic_tyrant.remains<20&cooldown.summon_demonic_tyrant.remains_expected<20&(buff.demonic_core.stack<=2|!buff.demonic_core.up)&cooldown.summon_vilefiend.remains<gcd.max*5&cooldown.call_dreadstalkers.remains<gcd.max*5
 ## Racials
 actions+=/berserking,use_off_gcd=1
 actions+=/blood_fury,use_off_gcd=1
@@ -54,7 +48,7 @@ actions+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(variable.damage_t
 ## actions+=/invoke_external_buff,name=power_infusion,if=(buff.nether_portal.up&buff.nether_portal.remains<3&talent.nether_portal)|fight_remains<20|pet.demonic_tyrant.active&fight_remains<100|fight_remains<25|(pet.demonic_tyrant.active|!talent.summon_demonic_tyrant&buff.dreadstalkers.up)
 actions+=/call_action_list,name=fight_end,if=boss&fight_remains<30
 actions+=/hand_of_guldan,if=time<0.5&(fight_remains%%95>40|fight_remains%%95<15)&(talent.reign_of_tyranny|active_enemies>2)
-actions+=/call_action_list,name=tyrant,if=cooldown.summon_demonic_tyrant.remains<15&cooldown.summon_vilefiend.remains<gcd.max*5&cooldown.call_dreadstalkers.remains<gcd.max*5&cooldown.grimoire_felguard.remains<10&(variable.tyrant_cd<15|boss&fight_remains<40|buff.power_infusion.up)&(!raid_event.adds.in<15-raid_event.add.duration)|talent.summon_vilefiend.enabled&cooldown.summon_demonic_tyrant.remains<15&cooldown.summon_vilefiend.remains<gcd.max*5&cooldown.call_dreadstalkers.remains<gcd.max*5&cooldown.grimoire_felguard.remains<10&(!variable.shadow_timings|variable.tyrant_cd<15|boss&fight_remains<40|buff.power_infusion.up)|cooldown.summon_demonic_tyrant.remains<15&(buff.vilefiend.up|!talent.summon_vilefiend&(buff.grimoire_felguard.up|cooldown.grimoire_felguard.up))&(variable.tyrant_cd<15|buff.grimoire_felguard.up|boss&fight_remains<40|buff.power_infusion.up)
+actions+=/call_action_list,name=tyrant,if=cooldown.summon_demonic_tyrant.remains_expected<15&cooldown.summon_vilefiend.remains<gcd.max*5&cooldown.call_dreadstalkers.remains<gcd.max*5&cooldown.grimoire_felguard.remains<10&(cooldown.summon_demonic_tyrant.remains_expected<15|boss&fight_remains<40|buff.power_infusion.up)&(!raid_event.adds.in<15-raid_event.add.duration)|talent.summon_vilefiend.enabled&cooldown.summon_demonic_tyrant.remains<15&cooldown.summon_vilefiend.remains<gcd.max*5&cooldown.call_dreadstalkers.remains<gcd.max*5&cooldown.grimoire_felguard.remains<10&(!variable.shadow_timings|cooldown.summon_demonic_tyrant.remains_expected<15|boss&fight_remains<40|buff.power_infusion.up)|cooldown.summon_demonic_tyrant.remains<15&(buff.vilefiend.up|!talent.summon_vilefiend&(buff.grimoire_felguard.up|cooldown.grimoire_felguard.up))&(cooldown.summon_demonic_tyrant.remains_expected<15|buff.grimoire_felguard.up|boss&fight_remains<40|buff.power_infusion.up)
 actions+=/summon_demonic_tyrant,if=buff.vilefiend.up|buff.grimoire_felguard.up|cooldown.grimoire_felguard.remains>90
 actions+=/summon_vilefiend,if=cooldown.summon_demonic_tyrant.remains>45
 actions+=/demonbolt,cycle_targets=1,if=(!debuff.doom_brand.up|action.hand_of_guldan.in_flight&debuff.doom_brand.remains<=3),if=buff.demonic_core.up&(((!talent.soul_strike|cooldown.soul_strike.remains>gcd.max*2)&soul_shard<4)|soul_shard<(4-(active_enemies>2)))&!prev_gcd.1.demonbolt&set_bonus.tier31_2pc
@@ -62,7 +56,7 @@ actions+=/power_siphon,if=!buff.demonic_core.up&(!debuff.doom_brand.up|(!action.
 actions+=/demonic_strength,if=buff.nether_portal.remains<gcd.max&fight_remains>63
 actions+=/bilescourge_bombers
 actions+=/guillotine,if=buff.nether_portal.remains<gcd.max&(cooldown.demonic_strength.remains|!talent.demonic_strength)
-actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains>25|variable.tyrant_cd>25|buff.nether_portal.up
+actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains>25|cooldown.summon_demonic_tyrant.remains_expected>25|buff.nether_portal.up
 # If Tyrant is not up, it Implodes naturally. On 3-4t it waits till <6s left on Tyrant. On 5t+ it waits till <8s left on Tyrant
 actions+=/implosion,if=two_cast_imps>0&variable.impl&!prev_gcd.1.implosion
 actions+=/summon_soulkeeper,if=buff.tormented_soul.stack=10&active_enemies>1
@@ -92,7 +86,6 @@ actions.fight_end+=/power_siphon,if=buff.demonic_core.stack<3&fight_remains<20
 actions.fight_end+=/implosion,if=fight_remains<2*gcd.max
 
 ## actions.tyrant+=/invoke_external_buff,name=power_infusion,if=variable.pet_expire>0&variable.pet_expire<action.summon_demonic_tyrant.execute_time+(buff.demonic_core.down*action.shadow_bolt.execute_time+buff.demonic_core.up*gcd.max)+gcd.max
-actions.tyrant+=/variable,name=tyrant_timings,op=set,value=120+time,if=variable.pet_expire>0&variable.pet_expire<action.summon_demonic_tyrant.execute_time+(buff.demonic_core.down*action.shadow_bolt.execute_time+buff.demonic_core.up*gcd.max)+gcd.max&variable.tyrant_timings<=0
 actions.tyrant+=/variable,name=dummyvar,value=variable.pet_expire<action.summon_demonic_tyrant.execute_time+(buff.demonic_core.down*action.shadow_bolt.execute_time+buff.demonic_core.up*gcd.max)+gcd.max
 actions.tyrant+=/hand_of_guldan,if=variable.pet_expire>gcd.max+action.summon_demonic_tyrant.cast_time&variable.pet_expire<gcd.max*4
 ## actions.tyrant+=/call_action_list,name=items,if=variable.pet_expire>0&variable.pet_expire<action.summon_demonic_tyrant.execute_time+(buff.demonic_core.down*action.shadow_bolt.execute_time+buff.demonic_core.up*gcd.max)+gcd.max,use_off_gcd=1
