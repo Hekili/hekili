@@ -4988,8 +4988,8 @@ do
                                     type = "toggle",
                                     name = "Count Targets by Nameplates",
                                     desc = "If checked, enemy nameplates in range of the selected spell will be counted as enemy targets.\n\n"
-                                        .. AtlasToString( "activities-icon-checkmark-small" ) .. " Recommended for melee specializations using a melee ability or short range spell.\n\n"
-                                        .. AtlasToString( "communities-icon-redx" ) .. " Discouraged for ranged specializations.",
+                                        .. AtlasToString( "common-icon-checkmark" ) .. " Recommended for melee specializations using a melee ability or short range spell.\n\n"
+                                        .. AtlasToString( "common-icon-redx" ) .. " Discouraged for ranged specializations.",
                                     width = "full",
                                     order = 1,
                                 },
@@ -5237,7 +5237,7 @@ do
                                     name = "Count Damaged Enemies",
                                     desc = "If checked, targets you've damaged will be counted as a valid target for several seconds, distinguishing them from other enemies "
                                         .. "that you have not attacked.\n\n"
-                                        .. AtlasToString( "activities-icon-checkmark-small" ) .. " Recommended for |cffffd100melee|r without a short-ranged (10 yds) ability for nameplate "
+                                        .. AtlasToString( "common-icon-checkmark" ) .. " Recommended for |cffffd100melee|r without a short-ranged (10 yds) ability for nameplate "
                                         .. "detection and |cffffd100ranged|r unable to use |cffffd100Pet-Based Target Detection|r.",
                                     width = "full",
                                     order = 4,
@@ -6244,7 +6244,8 @@ do
                                     desc = "Copy Priority",
                                     order = 0.26,
                                     width = 0.15,
-                                    image = [[Interface\AddOns\Hekili\Textures\WhiteCopy]],
+                                    image = GetAtlasFile( "communities-icon-addgroupplus" ),
+                                    imageCoords = GetAtlasCoords( "communities-icon-addgroupplus" ),
                                     imageHeight = 20,
                                     imageWidth = 20,
                                     confirm = function () return "Create a copy of this priority pack?" end,
@@ -6281,8 +6282,8 @@ do
                                     desc = "Reload Priority",
                                     order = 0.27,
                                     width = 0.15,
-                                    image = GetAtlasFile( "transmog-icon-revert" ),
-                                    imageCoords = GetAtlasCoords( "transmog-icon-revert" ),
+                                    image = GetAtlasFile( "common-icon-undo" ),
+                                    imageCoords = GetAtlasCoords( "common-icon-undo" ),
                                     imageWidth = 25,
                                     imageHeight = 24,
                                     confirm = function ()
@@ -6304,8 +6305,8 @@ do
                                     desc = "Delete Priority",
                                     order = 0.27,
                                     width = 0.15,
-                                    image = GetAtlasFile( "communities-icon-redx" ),
-                                    imageCoords = GetAtlasCoords( "communities-icon-redx" ),
+                                    image = GetAtlasFile( "common-icon-redx" ),
+                                    imageCoords = GetAtlasCoords( "common-icon-redx" ),
                                     imageHeight = 24,
                                     imageWidth = 24,
                                     confirm = function () return "Delete this priority package?" end,
@@ -6556,8 +6557,8 @@ do
                                     order = 1.2,
                                     width = 0.15,
                                     image = RedX,
-                                    -- image = GetAtlasFile( "communities-icon-redx" ),
-                                    -- imageCoords = GetAtlasCoords( "communities-icon-redx" ),
+                                    -- image = GetAtlasFile( "common-icon-redx" ),
+                                    -- imageCoords = GetAtlasCoords( "common-icon-redx" ),
                                     imageHeight = 20,
                                     imageWidth = 20,
                                     confirm = function() return "Delete this action list?" end,
@@ -6816,8 +6817,8 @@ do
                                     type = "execute",
                                     name = "",
                                     image = RedX,
-                                    -- image = GetAtlasFile( "communities-icon-redx" ),
-                                    -- imageCoords = GetAtlasCoords( "communities-icon-redx" ),
+                                    -- image = GetAtlasFile( "common-icon-redx" ),
+                                    -- imageCoords = GetAtlasCoords( "common-icon-redx" ),
                                     imageHeight = 20,
                                     imageWidth = 20,
                                     width = 0.15,

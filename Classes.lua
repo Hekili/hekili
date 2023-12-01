@@ -1068,12 +1068,13 @@ local HekiliSpecMixin = {
 
 function Hekili:RestoreDefaults()
     local p = self.DB.profile
+    local reverted = {}
     local changed = {}
 
     for k, v in pairs( class.packs ) do
         local existing = rawget( p.packs, k )
 
-        if not existing or not existing.version or existing.version < v.version then
+        if not existing or not existing.version or existing.version ~= v.version then
             local data = self.DeserializeActionPack( v.import )
 
             if data and type( data ) == "table" then
@@ -1081,7 +1082,11 @@ function Hekili:RestoreDefaults()
                 data.payload.version = v.version
                 data.payload.date = v.version
                 data.payload.builtIn = true
-                insert( changed, k )
+                if existing.version < v.version then
+                    insert( changed, k )
+                else
+                    insert( reverted, k )
+                end
 
                 local specID = data.payload.spec
 
@@ -1102,10 +1107,11 @@ function Hekili:RestoreDefaults()
         end
     end
 
-    if #changed > 0 then
+    if #changed > 0 or #reverted > 0 then
         self:LoadScripts()
-        -- self:RefreshOptions()
+    end
 
+    if #changed > 0 then
         local msg
 
         if #changed == 1 then
@@ -1122,10 +1128,37 @@ function Hekili:RestoreDefaults()
             msg = "The " .. msg .. ", and |cFFFFD100" .. changed[ #changed ] .. "|r priorities were updated."
         end
 
-        if msg then C_Timer.After( 5, function()
-            if Hekili.DB.profile.notifications.enabled then Hekili:Notify( msg, 6 ) end
-            Hekili:Print( msg )
-        end ) end
+        if msg then
+            C_Timer.After( 5, function()
+                if Hekili.DB.profile.notifications.enabled then Hekili:Notify( msg, 6 ) end
+                Hekili:Print( msg )
+            end )
+        end
+    end
+
+    if #reverted > 0 then
+        local msg
+
+        if #reverted == 1 then
+            msg = "The |cFFFFD100" .. reverted[1] .. "|r priority was reverted."
+        elseif #reverted == 2 then
+            msg = "The |cFFFFD100" .. reverted[1] .. "|r and |cFFFFD100" .. reverted[2] .. "|r priorities were reverted."
+        else
+            msg = "|cFFFFD100" .. reverted[1] .. "|r"
+
+            for i = 2, #reverted - 1 do
+                msg = msg .. ", |cFFFFD100" .. reverted[i] .. "|r"
+            end
+
+            msg = "The " .. msg .. ", and |cFFFFD100" .. reverted[ #reverted ] .. "|r priorities were reverted."
+        end
+
+        if msg then
+            C_Timer.After( 6, function()
+                if Hekili.DB.profile.notifications.enabled then Hekili:Notify( msg, 6 ) end
+                Hekili:Print( msg )
+            end )
+        end
     end
 end
 
