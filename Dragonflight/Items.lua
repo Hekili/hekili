@@ -1814,15 +1814,22 @@ all:RegisterAbilities( {
 
         item = 207552,
         toggle = "defensives",
+		
+        usable = function() return buff.echoing_tyrstone_stored.down, "don't use when stored healing was not spent" end,
 
         handler = function()
-            applyBuff( "")
+            applyBuff( "echoing_tyrstone_stored" )
         end,
 
         auras = {
             echoing_tyrstone = {
                 id = 417939,
                 duration = 10,
+                max_stack = 1
+            },
+            echoing_tyrstone_stored = {
+                id = 417967,
+                duration = 3600,
                 max_stack = 1
             }
         }
