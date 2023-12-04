@@ -2720,7 +2720,7 @@ spec:RegisterAbilities( {
         texture = 132331,
 
         disabled = function ()
-            if ( settings.solo_vanish and solo ) or group or boss then return false end
+            if ( settings.solo_vanish and solo ) or group then return false end
             return true
         end,
 
