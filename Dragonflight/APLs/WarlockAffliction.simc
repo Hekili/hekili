@@ -15,7 +15,7 @@ actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1
 actions.precombat+=/grimoire_of_sacrifice,if=talent.grimoire_of_sacrifice.enabled
 actions.precombat+=/seed_of_corruption,if=spell_targets.seed_of_corruption_aoe>3
 actions.precombat+=/haunt
-actions.precombat+=/unstable_affliction,if=!talent.soul_swap
+actions.precombat+=/unstable_affliction,if=!talent.soul_swap&active_dot.unstable_affliction=0
 actions.precombat+=/shadow_bolt
 
 actions+=/call_action_list,name=variables
@@ -26,7 +26,7 @@ actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>2
 actions+=/malefic_rapture,if=talent.dread_touch&debuff.dread_touch.remains<2&(dot.agony.ticking&dot.corruption.ticking&(!talent.siphon_life|dot.siphon_life.ticking))&(!talent.phantom_singularity|!cooldown.phantom_singularity.ready)&(!talent.vile_taint|!cooldown.vile_taint.ready)&(!talent.soul_rot|!cooldown.soul_rot.ready)
 actions+=/summon_darkglare,if=variable.ps_up&variable.vt_up&variable.sr_up|cooldown.invoke_power_infusion_0.duration>0&cooldown.invoke_power_infusion_0.up&!talent.soul_rot
 actions+=/agony,if=remains<5
-actions+=/unstable_affliction,if=remains<5
+actions+=/unstable_affliction,if=active_dot.unstable_affliction=0&remains<5
 actions+=/corruption,if=refreshable
 actions+=/siphon_life,if=refreshable
 actions+=/haunt,if=debuff.haunt.remains<3
@@ -52,7 +52,7 @@ actions+=/shadow_bolt
 actions.aoe+=/haunt,if=debuff.haunt.remains<3
 actions.aoe+=/vile_taint,if=(talent.souleaters_gluttony.rank=2&(active_dot.agony<active_enemies|cooldown.soul_rot.remains<=execute_time))|((talent.souleaters_gluttony.rank=1&cooldown.soul_rot.remains<=execute_time))|(talent.souleaters_gluttony.rank=0&(cooldown.soul_rot.remains<=execute_time|cooldown.vile_taint.remains>25))
 actions.aoe+=/phantom_singularity
-actions.aoe+=/unstable_affliction,if=remains<5
+actions.aoe+=/unstable_affliction,if=active_dot.unstable_affliction=0&remains<5
 actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<6&cooldown.summon_darkglare.up&remains<5
 actions.aoe+=/soul_rot,if=variable.vt_up&variable.ps_up
 actions.aoe+=/seed_of_corruption,if=dot.corruption.remains<5&!(action.seed_of_corruption.in_flight|dot.seed_of_corruption.remains>0)
@@ -75,7 +75,7 @@ actions.cleave+=/agony,cycle_targets=1,if=remains<5
 actions.cleave+=/soul_rot,if=(variable.vt_up&variable.ps_up)
 actions.cleave+=/vile_taint,if=(active_dot.agony=2&active_dot.corruption=2&(!talent.siphon_life|active_dot.siphon_life=2))&(!talent.soul_rot|cooldown.soul_rot.remains<=execute_time|talent.souleaters_gluttony.rank<1&cooldown.soul_rot.remains>=12)
 actions.cleave+=/phantom_singularity,if=(active_dot.agony=2&active_dot.corruption=2&(!talent.siphon_life|active_dot.siphon_life=2))&(talent.soul_rot|cooldown.soul_rot.remains<=execute_time|cooldown.soul_rot.remains>=25)
-actions.cleave+=/unstable_affliction,if=remains<5
+actions.cleave+=/unstable_affliction,if=active_dot.unstable_affliction=0&remains<5
 actions.cleave+=/seed_of_corruption,if=!talent.absolute_corruption&dot.corruption.remains<5&talent.sow_the_seeds&can_seed
 actions.cleave+=/corruption,cycle_targets=1,if=remains<5
 actions.cleave+=/siphon_life,cycle_targets=1,if=refreshable
