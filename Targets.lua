@@ -832,15 +832,15 @@ ns.Audit = function( special )
     for aura, targets in pairs( debuffs ) do
         local a = class.auras[ aura ]
         local window = a and a.duration or grace
-        local expires = a and a.no_ticks or false
-        local friendly = a and a.friendly or false
+        local friendly = a and ( a.friendly or a.dot == "buff" ) or false
+        local expires = not ( a and a.no_ticks or friendly )
 
         for unit, entry in pairs( targets ) do
             -- NYI: Check for dot vs. debuff, since debuffs won't 'tick'
             if expires and now - entry.last_seen > window then
                 ns.trackDebuff( aura, unit )
             elseif special == "combatExit" and not friendly then
-                Hekili:Error( format( "Auditor removed an aura %d from %s after exiting combat.", aura, unit ) )
+                -- Hekili:Error( format( "Auditor removed an aura %d from %s after exiting combat.", aura, unit ) )
                 ns.trackDebuff( aura, unit )
             end
         end

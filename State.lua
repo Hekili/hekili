@@ -4976,6 +4976,9 @@ local mt_default_action = {
         elseif k == "disabled" then
             return state:IsDisabled( t.action )
 
+        elseif k == "clash" then
+            return state.settings.abilities[ t.action ].clash or 0
+
         elseif k == "gcd" then
             local queued_action = state.this_action
             state.this_action = t.action
