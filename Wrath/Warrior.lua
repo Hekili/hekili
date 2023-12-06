@@ -79,7 +79,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         stop = function () return state.swings.mainhand == 0 end,
         value = function( now )
-            return rage_amount() or 0
+            return state.buff.heroic_strike.expires < now and state.buff.cleave.expires < now and rage_amount() or 0
         end,
     },
 
@@ -570,6 +570,7 @@ spec:RegisterAuras( {
         id = 47502,
         duration = 30,
         max_stack = 1,
+        shared = "target",
         copy = { 6343, 8198, 8204, 8205, 11580, 11581, 13532, 25264, 47501, 47502 },
     },
     -- Bleed effects cause an additional $s1% damage.
@@ -589,7 +590,8 @@ spec:RegisterAuras( {
         duration = 1800,
         max_stack = 1,
         no_ticks = true,
-        friendly = true
+        friendly = true,
+        dot = "buff",
     },
 
     -- Aliases / polybuffs.
@@ -649,7 +651,8 @@ spec:RegisterGlyphs( {
 
 -- Gear Sets
 spec:RegisterGear( "tier7", 40525, 40528, 40529, 40527, 40530, 43739, 43744, 43746, 43741, 43748, 39606, 39605, 39607, 39609, 39608 )
-
+-- Prot
+spec:RegisterGear( "tier10prot", 50846, 50847, 50848, 50849, 50850, 51215, 51216, 51217, 51218, 51219, 51220, 51221, 51222, 51223, 51224)
 
 local enemy_revenge_trigger = 0
 local enemy_dodged = 0
@@ -795,6 +798,11 @@ function GetNextTFB(time, lastApplied)
     return next_prediction
 end
 
+local avg_rage_amount = rage_amount()+rage_amount(true)
+spec:RegisterStateExpr("rage_gain", function()
+    return avg_rage_amount+(buff.bloodrage.up and 1 or 0)
+end)
+
 spec:RegisterStateExpr("rend_tracker", function()
     return rend_tracker
 end)
@@ -923,7 +931,11 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132333,
 
-        essential = true,
+        usable = function()
+            if talent.commanding_presence.rank < 5 then return not (buff.blessing_of_might.up or buff.greater_blessing_of_might.up) , "BoM might be skilled, can't overbuff" end
+            return (buff.blessing_of_might.remains + buff.greater_blessing_of_might.remains) <= buff.battle_shout.duration, "BoM duration currently greater battle_shout duration"
+        end,
+
 
         handler = function( rank )
             if buff.my_commanding_shout.up then
@@ -1116,7 +1128,7 @@ spec:RegisterAbilities( {
         end,
         usable = function()
             if talent.juggernaut.enabled then return target.minR > 7, "target must be outside your deadzone" end
-            return not combat and target.minR > 7, "cannot be in combat; target must be outside your deadzone"
+            return (talent.warbringer.enabled or not combat) and target.minR > 7, "cannot be in combat; target must be outside your deadzone"
         end,
 
         handler = function( rank )
@@ -1166,8 +1178,6 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 132351,
-
-        essential = true,
 
         handler = function()
             if buff.my_commanding_shout.up then
@@ -1888,14 +1898,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 236312,
 
-        debuff = function()
-            if not target.is_boss then return "casting" end
-        end,
-
-        timeToReady = function()
-            if not target.is_boss then return state.timeToInterrupt() end
-        end,
-
         handler = function ()
             applyDebuff( "target", "shockwave" )
             if not target.is_boss then interrupt() end
@@ -1941,10 +1943,15 @@ spec:RegisterAbilities( {
 
         toggle = "interrupts",
         debuff = "casting",
+        equipped = "shield",
+        readyTime = state.timeToInterrupt,
+
+        usable = function()
+            return UnitIsUnit("targettarget","player")
+        end,
 
         handler = function()
             applyBuff( "spell_reflection" )
-            applyDebuff( "target", "spell_reflection" )
         end
     },
 
@@ -2063,7 +2070,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 236318,
 
-        usable = function() return active_dot.vigilance == 0, "can only have 1 active" end,
+        --usable = function() return active_dot.vigilance == 0, "can only have 1 active" end,
+        usable = function() return FindRaidBuffByID(buff.vigilance.id) == 0, "can only have 1 active" end, -- tracking it properly is not possible without extending the function, so we just assume that there is only one Prot-Warri per Raid/Group
 
         handler = function ()
             active_dot.vigilance = 1
@@ -2380,7 +2388,7 @@ spec:RegisterSetting("weaving_footer", nil, {
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 3,
+    aoe = 2,
 
     gcd = 6673,
 
@@ -2401,9 +2409,7 @@ spec:RegisterPack( "Arms", 20230226, [[Hekili:fN1wVTTnu4Fl5fd5MunFPoPfioaBypS2h6
 
 spec:RegisterPack( "Fury", 20230416, [[Hekili:fN1tpUoUn8pl5sGZ(EBAsM38MTatYHIIIU7H3LuGEZok2ktChh7uz5j7ueKp7LuYwwswYoE6GTa7FYikr(JuKuK0Hld)hHBtiCA4pwTy1dl(2YVpF5Qhx(q4w(7NPHBptIFL8c8JCYj4)(3QyVJl(EwbjbpBzrflgieUDFvAg)xZd37KHR(fyVNPXH)yz42JPjju5oPLXsUEB3)KWyPfSB7oJ)VuoS0b8p)70xtZsbPYkoKMbYIeZtlYlNFMrJloTNW)Y6)0EkRKYELYIk5K8y6xtpSEF1HdZL)58KIl53(nxNe(XjsEsA(lrLhlQ44jjLLPVKttKRm3EltfC(07rah4z06DHIqrX(i9aaDM4q46K)4cwjAuJjzzrY)mklTK)v8UDDAEkxFxLv5jG5KWovWqy9gHLs2NrNJSndqNG(u1Y0tu2l0843RPOZRZvNorZ0xHvL3fcEVeTjmV68WmR2ezXj9vVh2KqpqZltFRdNSjiyw7nmAobE2yEKmJNEIgXlIssPF9nswfDDqcvWnoJaNaU0sat17aVM(WIfZUELtaJkFU2bhqe0FNgxXPrNpskBesntosjz8JZphZFE1IbytZLCg5uuXBGHVMV1CCs71UU8UETKY5GAuQwxWbmI((e4(SIIe(Xugy)hRO0oBenhpsY9j0lWzYUKMNmArQo54eOmcPwAkMkDfQj2WW2amnFGnbbp(Z1Eo6XPy2U4xN9tblN)4xYGSWq44SzF5HbqfM62cutQ5(jY)QOM5rmAsLGnG751RbUKp436fwp)4SbWXjigGd)RfuuwaDC6xoRF0jngfzF5ZpnnUOidZkoxZHPHClr1vRI0ezge8qLvqeLE6dpbJw5eR1Ory5AqnCHEFUwxOK3AIs7tr3063josuZMJ4hzuGzzj9ylg1PH36EnJwwMd)RIbGc1UJekHFm6sA5rd6om41RzWs1QASbwJb1TmpUIXO58NxlHjUMge7KySJEjj1EK77saeztUe7NnfS1aBBwVCrZDpEq1DElwWLbMEabreMh4(GbM4(CXfLF39GLvlMgiGI6WGGjjVlI5LpvrkHmFqPzYeUaHHIRLMY8Il2z8qc4JEn56cSriQ4xVAVQcAZ0FX1UibS0keGO(91QsAubKC9L4K1lX3WfAn8gEACkFJ(ZHoyZrkRing(Bw6R(yLYaQuU)DfTIIAxR)gkdWsqZPNsPLRx6XBo4(FasjKAt4SEvK4mr2HpnnyZF4AWDwvAGZ3m08KSEQPFH2Mxbf5aVmoDI707xV2Zlw9kE86kLtpvAEX1Vll09gdA4cAJGehtZOmcU3rWbSWT2YMnYbJgpKdrGaGwjWDoTZfHDLJdhOwx2NJBvnY2cFpVxg3wANd2QiAZ0lx(OMM)OmdFckDVSqpGg5sq3hyBDOpcnvrz1jkkUy(IGdMFpMc)24bcvHOksw6)XOFE7sSXDjiQE5PjOT75hsIM9z2j1QY8REe04nl9dJATLP00cKvvY1lu02UBoJbBE3P76oynWzbJ4nTJkbXLnkXA5Iztd87sC96KoAYm)OvucfGPjAoAJV6iBU2wreWAojdW980tNzW6ALvmNrYFDZc9lk7U9h0EgUf4wjC26bHTA13c3EHWWM8ld3(RNoxW4q)I7((TDsHCBho1HY53(TWTIFjMnh9aPkJd)8hIz1v7Vg(xAgdw4w7X5ipDKCGDy9yHCadwhoMLI3peaMoFb92UP321(gUvFmTcx)XmuopGYPHOCSp6Yf2X38IeP7r3r90YqRj0yOP2heL1JdilRHbDNcs)uOu(E)sXXGIUpbzFWq8MCRA0HU8jSeDTaXi3wr6Yq539yGrHk8tK1d5yQKguDozsn3ylYkVP7bw6s(Zds6hwA8fHtoS7fWvkKpQ9OnHo4VGwEc3gCBNVr9jG0dlwCB3SB7UE92UUd9tWWA3c9LDC1nmu6017TDpFB3Qf6cXOQDxxfdlMj6jq0zNuj9pPqDC4Rmkxzs(8HKJjk6aCA7YvsNpFy1zQJoaLApUYqnmK6FOKMVoOpC6DBUTlq8ppEB3pR8572ZJWz)Ne7eNT1UVap)jhyPGYmXkp4Yvq(ceOvpnATAIcq(6EtAXdCd86q1E0PNf69mDyR3akI6F5JGANTZoeywlaJN9uxgLaYpj2vFtl0CdDghOG8K68QgfRRBjS65gng)5rBmg59IUAc(zgP4SlQbWZYfJgq9B22Swl(13Osh06(b4IRHUkIofrB67S7Wxn2NZRvdkwd)XGMrhJck69maxlGM5A0SIT64Hkhwc7r06kziUrX974F4Ut)ZiVCOjiYwUq3ruVDfPM6VLfhGg3JaZJ)f(XG5vsmhuFH1DSVYuIYsx6m6xRKDLwdOvG)Xx6GVbe3GuB9dnvsyAtrHelGQ6gxwxNzn9dxyTEtSg5EC1sUw3swK7V07ap5KBUsC2uUKKvqM0ZCwJ5ZFt6YtBeYR0Yz90cXwTEFrJxV1UdSVrsFOifvVt1bi(7OS)o8fP5w0YpDVwUdLSx3c9VNGGXR04S67q4Yq53bOBWApJMxC5IcSD88IsawoyU6ab5rvbQ9q7n8om(CjJZ14)DnEZ)p0y53vXLQ6330otLwnDbEl4ZifNv9ugiYEUm(NeYGfelTL(Q7slk2xnOTOQTAavxjwMm1wvF0dRXh9uFhYZx9WIf2vG7k3UrHoo(EhMDa5Tl127dGKRcE97pOpSFhGyp3k9sBdODkI1VqA)yaoeXLlTIWODYovrnOf8dyP6u2ZDzQ8Bu8N0XRrXN67pOoWDzV6bjUE0DM(JATPRecte52qvzTmCOxoWeiT6iRJL2Ur62Jp4hoXk9GZpFIE8VnzH89hqQUAARxR9c2OMTU5E5oMGAZt4(sG0TWgDdTGNKk(riN62)k9qXVlwk8)c]] )
 
-spec:RegisterPack( "Protection Warrior (IV)", 20221003, [[Hekili:vAvuVnQrq4FmN0Pg1dmy3KEPsjp03sEiQsC66BaRHXHvEHfT7IrUYA)T3zal8cyOQksXMz)MzN5BM5Zehg)J4OCMbI)yBW2THbb78dEo4XGVhhzoxdXr1SSJSpXVuXkX))xkPbYmCzLn9VzkfxQSP)YB)8bc5zHKLtrulBuzi6cJPw)hB20226ZZo7Dc4vA)mz5MwPrC0ltW0AE2M6HO612hupdR6Ox9jWdpI1DsMukYLTvAp2EUGB4GooAFdxyERkE)ILHUgYI)ietgEEo0Je0zXr)OGRTP10TXnNTP0t7zAi3MsvNPaSPVLHh8tkRTPF2WZb)4ibxB0uvYKa(XhDCiRl7rsROPkhujyLvhhbvS9cip(pJnyM5ItxiZo2YobtaTZfKcobvFofYVrqUzjkdtFqXziESrztF1M(uWTGKja6Am4FyHFG1imZY66MYsqSE(YbrEcYpfRLXizlejk4GaUAzEQpKyfm1SI7rxe7fszUInd0tUGA0qcsaL6jG(9fPP9nho43fBrJ243uBt)Qnnh6SRlygcx1NjMcLS1Ng5C5HXht303x8MOHye6CAuGDFY1NxpjDHJ55S4OfSskmHblghYJtqcubL4ct30rOtpGHTR(hsO56(P7K(DDA(McE4IbFm3KdLsftW)hIDWb8gtN7B)VhPd3DNzTUIBcULN91OkHp2Bq5QKAzlO6k1DpgeytVCXMUopCBDKULrdH5Wjgf8z58t))2dlaLKNLOnk(XRRJ1ka1c3ZUTqUYOaolLb(tz8dqLMQR(JhwBxzUh5ib03EMen3Jg2SxosLNtwjyyHvYQYDhf6Q5tGsta6eQdEE7JXrOKFfIdxGFRSwQmKc8U(ogje3P36BFhJDJPqQqydQYehkpWfyZ5lFXMUWVona)b77em6Q9cd8c2zF3(E)9O9h6g)6lBMsSFJF4LPTH77PlLm41mE6((oLZg8)EuTtQJU2RG7AXrXEK5jk0UN1Ri7Azqb214GI74RBSW4TA3rO9RRjYEVKNe(OiDvi9oqivIBDNX6LJQTjkDFJ04EbL4iNhlo8AORJZv1ipMMWx11wibhB(QudfMzQwVskwxUSEcDvqY14i1fkYut71NcChWXIfr6(gktpBi3MEW0Y7Q5(3TW5662XJ)3)]] )
-
-spec:RegisterPack( "Protection Warrior (wowtbc.gg)", 20221003, [[Hekili:DA1xpkUnq8pmNeQv9UqGaD3TAHh6B3(WEvItQVLetIHyHtCKTdOTAL)S3XoHeNehG2h2fWEMFZ4538VWfH)mCxksIdFFP)YLl89d88Fjiiyv4o5hL4WDLOKtOJWxkq5W))lotItKewHk(VrCoHXvX)Yf2f5(eVJh)vTcFqzOunWcwfpbuktklf)X85TIbFtspnpHIeIVDSIKIfZlBr(BxQbEE4U9veQ87fH7D7LbGnkXjHVVamcjnfxljwKeU7NzeHkUuder(Hkw)R9ibovfRDEzgwf36qWJHJKzQyJZ4fUJsesHj4GpGQOs4RVBcwiJlc2nJGPPraIzH7WfO9uCA4Fgkbx0wSKmexh96jrGwIUt2LaEiMtqARTV6WbprvrkMhH45mUNqcuGk(vv8Av8mWZ1ik9KKCCKKfLsGhYwv8cFv8NFQIDbbhNJifcdibDoxk(mcqhIRGtT6EoLmRgsG1k9szxkA8gkUq6rYb(7monQNuxHR1I23Qn66jnQevCIuCCCaNYsoPv93Nu1JCwvPX506EghLYKENjhjuurceS2OI97WT9cnOpnjO1b1mwL08270FpskP4iZvAiE(EXXumqjik5FGNxKlehlGg3xStRYWCgjbc2C2Lbjxl8TfKJtorXcrb83qbx0xqGjjO6F0xUEj0LmxIeylsLahbV58rgC6umo0IXKD(SfZaunlvFJr5Ptvqhbg3W31Xxc0tGs1cgHl0671KoKHruzgqahijePPQzLL9QfonIJpIlW86yH20tNQ1zAhyV2cBOtNmcQ1ksnioDE2DqS7z2H4G0NMcLlik1yRPtiBkpGhBoblQ7ImDT6Ix(FceKcNC6c6SHhx6)FcfZ7To7a(5twr0ek(kKlEyi3CtiBQQeso5unYlD0Yxqr5dB5h0Vu6mUyut)LRSLPR1BpPKqbguYYYHUkTJCUr)iPUX1O2hhWfc9ZU(6rZK2J5cm)eqTMIlhZMgxb2xOPlKF42KdlNV2xHa5CabubQPlGVE8G2px7)3Mm4Am7tpwhttu)met0Y1UGr4oylKcOdm0f775LmUuV5WY6zk6fimBi4PEdmrLmJXbfUUnHMezhiuWH(YxuX3BNj1BAPcuX)irYaYbmd4eQ3uVvBlHxBoXVTz(q69RKdBgMm4wZ(8(eYCLXN4AlwSZWT0TBLQ5SVQxGCJt61TA1CQ77SztRafCJ1Ez2hpamtCSPcu)oMCVRxxpB8(wBx4)5N3ypRxdSnKDFulBnADQzpYQuUEQ6nI0a3SYKTiTl3OV3Sx0SMwI92jAJVTspkjBcIdxvX6foXIo263Nh7o3ETL(N3ULI9XdsJGtA3bP3d7AYT2j1F(6Z9E4UwaqlQzM8SPxUyw)r1Bx1d1Ub1DynqH1(o4v9a8BOXmxBbCR8UgIVzw42f9nzZi67jy9uxxsnthm2(KVd6TEG6yL24ujRXS9PEZuvNLWME4H)7d]] )
+spec:RegisterPack( "Protection", 20231124, [[Hekili:TRvBVPoow4FlvJugO0gGsP7oxbvA2DKw1(HUJwUAMVrIjXazBioJTdOUcLF77XoVGtIDc02DMRwns3EfeF858CSpVhwoE5xxUWhXXlF5Ur3nz847EWE04jtMC3Yf83IXlxeJ8EfTb(qeAh8))mLWXE8asKyP3cjiFblyKeQhS8wopM9LHdpC4G9bYHTyKVThz3WdeE4Rd3Ke4Jh6fIymmB4beLgqOdJlz5qok61BHVIeF7wpcj0NCiIDlAvqyapaZUnEpiLvjbH8NIwUsh2Hpd4jg7T8LXaGc89XzuIzElx81TbSu3yHGd4VL6k(2ked7N6sIsD5BXPU5ap1vIx7LlcdyCMundI2eIHp9I8GdhHwfI9x(3wUWdyhMgGeGB9A7vHeIFycJBNeN6AL66JLpNTfXf0fTXHVLsoyl0VLlq5NO1xEjh0T2LKpEnoIfSh7WGtppCnowF5LlsyyhY61oB88fQbiHjgLafU5T9sOuCep19X5PUmmNdWJz)Bj4eCoqXSTWnLupRTJu3mGyVftjbEaiObVITHRNiG(bPU7rGGabBlUt9Dyjr(yQJhHXLl3tHIDOGio8xorPUxxYDF8EeOF8so3Vy3W)kmJGd)aSqgHOD2uSGDWL)Su37K0FIBQ0vWVtNOv0eDhN3B84eadAZgkj194XstcofaI4G0pz3U3K2l9LhLAXDU5uZlgtyx14sUeyA69QaNtf4S2II9PcEGShujJI3JJerdQqYFXOgdE6bBIWaJ3ss4Iqb7qr(cTv(aPUK7yiw)0TcOr3FA167RgHNWxDcfO7VEUOBf48fIVmKPUhJOsLibI(bJisR7qM5Ij)avF9CVaHmgpYOqk9HZSaD8X7isS5KtUu9aJ1RknsrXouSFsMnMWguGOELll4affg8FoDdvnUNgcu9aNiT57RQk1PxQtMJ6Qavohsz5ag)WfBBGMVnpytikUgCnWJ6q(eEv5LeP3v15cC5oG2x3VzS5iVTh0YsE3iHAUhPtctACKRh9AlyMW6SAaKBnhjDqgToBajldscb6QDvDYQJlt4Gsc56Yrw6KIcdDY(IJi1AwcwNScmGyH8Y0EL7ylI2iQZenXVGu5BRr29vilgdYMIxhwuetfAN2EMqq3c8cYYRnzuX1a4o5SIeLWSHkuOJhjQNX5(ypf)Fr1auzvuntxuj(QyzqK7yNDe2YWc4Dy4mkY7T2Jl0s0qGCOobCeEhuPLujhRe5pjY4DgIG1fw7C2AEfvstNykgIFdblBValibAUvEoI9jC79bBccff4K6cw3Joj8YfAVwQQ(dZk9hAK5j3TOLSdpm6mV5n79)rsBQkEDPdnxEY7nDyffUwQoZEuLr4GB9xdXmwe8he)sHxykdtFfcRAU21AvNCItNTdK5QOlCW7gPNtv2MD8(FxSLFORGO8mN32BOHWykf88ND2uTZgVqmKzxjD53G9SKHrJnRuqwLQyo3mJAsBmrxPpxqRen3CvIm7k9o7WQsPGNFvwDV)U6H7D17wxo6M7LRLMc(iPC(S6uRL67FV5M(OTQn2CqQ3rBu7q)Bc15BKMP()WMpKnpOjzgjwEDPuvyEaAXNctWYahMJwyjsjpsESkUQ4I8OCiJ8oSdN44hizdnVIw1hRjjx3qPUDv(mXunQkZVOimzK3SShtLhQfjMZ2oIcgb2mrFTfPoakhBpvEkhchHqRdzwoYNmrvNegnLJJqxI1ZqRuzrHruv3cbcB1ZOIQuR8dnA5m5jrFvfrDSk6kg(DQhggBt7WBUeEgOr1HEQQguF6pAYn)EuIl8eUsPiQWRrxOfP9BIVG16rOU7k5eH7Cqz56NdoKb7FuP6Ak8Y1NP3Im4ci(9qdjc4w8(gG8ghqurWcODJF9h)xV80l)JVK6M6(vXRriyxmHcX3wtGJ4VhkZ(7HOz4FljGk8IzKDanOeozhGi4bq55qOuMD6ZYDVMegsoaSwqefbh1hWu45jY3vrqX7Qit1ah4aXeZxjYgMrxerk6KOku77li2hXrIx6XxsFwQ7ntlbl88ts8lK20QYrGr4qnHVLah5lsIXuOdfMi5jaU)zK6Bjk19xZEnpWr9t)sFrt(K1bIl6V77kxdoZu2XZIv(94fjLjPxi7X7wjCde3Qcfx80FUywePpNP6m7YXtmy(WYPkCtW65YbsyLxhCLHrmhsAONbLTTDJsXCZhlyNA2XzfnzODmewnR6z28hgPxI1zHquDu03fXF1kN0WB1LVm(wBkanpWm1FUE(PsKEkQ3zztjAU)uRRUm00LDq(ybECYiRRmnmad33Y29lSN)PSXYwsQGGAJH9gry35IsOQqvoBo9eLrTw5X1gTQ6AFQAjWVYXKQ(WYW7c2ACSOQ7O2GjZoaGa1sZxp12AFCCN7lBsMfN3pjogD)fevXgtC0kIDKdTSTPub3nY0vZ7zQqulOi0(hp2S8ZoerLS95cP9ImT0vG5J96n9wJPj7FDpOyYb5fs2V)GjDGk1e3fGsfOwx1r1Hhp2tFvlwgb5SP97av1kVspW0w8HzPoFQ21kI8nTdiv3cwlMUGtIc5E3fCbjR)6gs8CzDBvCW0CpMN0Qw9wx3Q5ZnNkDdYAM7fTi3NQaNz(yYyqvhNyzqz1XtA12Oj1W0psCFnSRYpuG2tZ)48wM(OvfkZpB187PyG5Flfd6zAIKxR)UQ)GE9ABkaZURFXoB0JFFT3xNMFLq57jNs3XJMc113YWKZQEym3egmdbbnAwnFsgAw5ZQUP7ZEQPbKbeOr4F0IQYfQUrFPxG6tIQAqD8OXPBRJD1h9KGVDo5mREfb)RnRStX81oLmRoNq2Sj91zFQoaxbclfVPFmbNasTFgbwTVZtWqRjA(8U76IPnxtRRKYVXO5S6zYzzwLyr3QpIWGYbXDnecRFre6)U8nlCcVq1tMcptymR3Bm6m2(5eGoJxzVsKp7WYQVmO)Oc6MPFQMLnVEYTZ0uO7K6e3iYynE0CbLq9noEVGa)6EPkgnUBFxTLm5CsIurZQMbj3A6pGKezs(3RmefEGFW45AFdiFYr1lG63ubmLtqC5)9d]] )
 
 
 
@@ -2419,7 +2425,7 @@ spec:RegisterPackSelector( "fury", "Fury", "|T132347:0|t Fury",
         return tab2 > max( tab1, tab3 )
     end )
 
-spec:RegisterPackSelector( "protection", "Protection Warrior (wowtbc.gg)", "|T134952:0|t Protection",
+spec:RegisterPackSelector( "protection", "Protection", "|T134952:0|t Protection",
     "If you have spent more points in |T134952:0|t Protection than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )

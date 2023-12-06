@@ -1433,6 +1433,15 @@ all:RegisterAuras( {
         copy = { 14752, 14818, 14819, 16875, 25312, 27841, 39234, 48073 },
         shared = "player"
     },
+    
+    -- Increases Spirit by $s1.
+    prayer_of_spirit = {
+        id = 27681,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 27681, 32999, 48074 },
+        shared = "player"
+    },
 
     demonic_pact = {
         id = 48090,
@@ -1480,6 +1489,7 @@ all:RegisterAuras( {
         id = 64382,
         duration = 10,
         max_stack = 1,
+        shared = "target",
     },
 
     acid_spit = {
@@ -1513,6 +1523,72 @@ all:RegisterAuras( {
         no_ticks = true,
         shared = "target",
         copy = { 1160, 6190, 11554, 11555, 11556, 25202, 25203, 27579, 47437 },
+    },
+
+    -- Decreases melee attack power by $s1.
+    demoralizing_roar = {
+        id = 48560,
+        duration = 30,
+        max_stack = 1,
+        shared = "target",
+        copy = { 99, 1735, 9490, 9747, 9898, 26998, 48559, 48560 },
+    },
+
+    -- Attack power reduced by $s1.
+    vindication = {
+        id = 26017,
+        duration = 10,
+        max_stack = 1,
+        shared = "target",
+        copy = { 67, 26017 },
+    },
+
+    ap_reduction = {
+        alias = { "demoralizing_shout", "curse_of_weakness", "demoralizing_roar", "vindication" },
+        aliasType = "debuff",
+        aliasMode = "longest"
+    },
+
+    -- Deals Frost damage over $d.  Reduces melee and ranged attack speed.
+    frost_fever = {
+        id = 55095,
+        duration = function () return 15 + ( 3 * talent.epidemic.rank ) end,
+        tick_time = 3,
+        max_stack = 1,
+        shared = "target",
+    },
+
+    -- Movement speed slowed by $s1% and attack speed slowed by $s2%.
+    infected_wounds = {
+        id = 58181,
+        duration = 12,
+        max_stack = 1,
+        shared = "target",
+        copy = { 58181, 58180, 58179 },
+    },
+
+    -- Reduces melee attack speed.
+    judgements_of_the_just = {
+        id = 68055,
+        duration = 20,
+        max_stack = 1,
+        shared = "target",
+        copy = { 68055 },
+    },
+
+    -- Attack speed reduced by $s2%.
+    thunder_clap = {
+        id = 47502,
+        duration = 30,
+        max_stack = 1,
+        shared = "target",
+        copy = { 6343, 8198, 8204, 8205, 11580, 11581, 13532, 25264, 47501, 47502 },
+    },
+
+    attack_speed_reduction = {
+        alias = { "frost_fever", "infected_wounds", "judgements_of_the_just", "thunder_clap" },
+        aliasType = "debuff",
+        aliasMode = "longest"
     },
 
     rampage = {

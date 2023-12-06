@@ -1,0 +1,63 @@
+## Warrior: Protection
+## https://www.wowhead.com/wotlk/guide/classes/warrior/protection/tank-rotation-cooldowns-abilities-pve
+## November 2023
+
+## Precombat
+actions.precombat+=/vigilance,if=group&active_dot.vigilance=0 
+actions.precombat+=/bloodrage,use_off_gcd=1,if=rage.current<action.commanding_shout.spend&buff.shout.remains<=60
+actions.precombat+=/commanding_shout,if=assigned_shout.commanding_shout&buff.shout.remains<=60
+actions.precombat+=/battle_shout,if=assigned_shout.battle_shout&buff.shout.remains<=60
+actions.precombat+=/berserker_stance,use_off_gcd=1,if=cooldown.recklessness.up
+actions.precombat+=/recklessness
+actions.precombat+=/defensive_stance,use_off_gcd=1,if=buff.defensive_stance.down&!cooldown.recklessness.up
+actions.precombat+=/bloodrage,use_off_gcd=1,if=rage.deficit>30&!set_bonus.tier10prot_4pc
+actions.precombat+=/charge
+
+## Default
+actions+=/call_action_list,name=init
+actions+=/charge
+actions+=/shield_bash
+actions+=/spell_reflection
+actions+=/bloodrage,use_off_gcd=1,if=rage.deficit>30&!set_bonus.tier10prot_4pc
+actions+=/use_items
+actions+=/devastate,if=variable.emergency_sunder
+actions+=/run_action_list,name=aoe,if=active_enemies>1
+actions+=/run_action_list,name=single
+
+## Init Vars
+actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
+actions.init+=/variable,name=should_sunder,value=settings.debuff_sunder_enabled&variable.time_to_die>((5-debuff.sunder_armor.stack)*(1.5+latency))+3
+actions.init+=/variable,name=build_sunder,value=should_sunder&!debuff.major_armor_reduction.up|(debuff.sunder_armor.up&debuff.sunder_armor.stack<5)
+actions.init+=/variable,name=maintain_sunder,value=should_sunder&!variable.build_sunder&debuff.sunder_armor.stack=5&debuff.sunder_armor.remains<5
+actions.init+=/variable,name=emergency_sunder,value=should_sunder&debuff.sunder_armor.up&debuff.sunder_armor.remains<2
+actions.init+=/variable,name=build_sunder_cost,op=setif,if=variable.build_sunder,value=action.devastate.spend*(5-debuff.sunder_armor.stack),value_else=0
+
+## Single
+actions.single+=/shattering_throw,if=buff.bloodlust.up&debuff.shattering_throw.down
+actions.single+=/defensive_stance,use_off_gcd=1,if=buff.defensive_stance.down
+actions.single+=/heroic_strike,use_off_gcd=1,if=rage.current>=settings.queueing_threshold&rage.current>action.heroic_strike.spend+variable.build_sunder_cost+(variable.maintain_sunder*action.devastate.spend)+((cooldown.shield_slam.remains<2)*action.shield_slam.spend)
+actions.single+=/shield_block,if=(aggro|debuff.training_dummy.up)&cooldown.shield_slam.up&rage.current>=action.shield_slam.spend
+actions.single+=/shield_slam
+actions.single+=/revenge
+actions.single+=/commanding_shout,if=assigned_shout.commanding_shout&buff.shout.remains<=4&buff.commanding_shout.remains<=4
+actions.single+=/battle_shout,if=assigned_shout.battle_shout&buff.shout.remains<=4&buff.battle_shout.remains<=4
+actions.single+=/devastate,if=variable.build_sunder|variable.maintain_sunder
+actions.single+=/demoralizing_shout,if=settings.debuff_demoshout_enabled&(!debuff.ap_reduction.up|(debuff.demoralizing_shout.up&debuff.demoralizing_shout.remains<3))
+actions.single+=/thunder_clap,if=!debuff.attack_speed_reduction.up|(debuff.thunder_clap.up&debuff.attack_speed_reduction.remains<3)
+actions.single+=/shockwave
+actions.single+=/devastate,if=cooldown.shield_slam.remains&!buff.revenge_usable.up&(action.shield_slam.spend<=rage.current-action.devastate.spend+rage_gain*gcd)
+
+## Cleave
+actions.aoe+=/shattering_throw,if=boss&buff.bloodlust.up&debuff.shattering_throw.down
+actions.aoe+=/defensive_stance,use_off_gcd=1,if=buff.defensive_stance.down
+actions.aoe+=/cleave,use_off_gcd=1,if=rage.current>=settings.queueing_threshold&rage.current>action.cleave.spend+(variable.maintain_sunder*action.devastate.spend)+((cooldown.shield_slam.remains<2)*action.shield_slam.spend)
+actions.aoe+=/thunder_clap
+actions.aoe+=/shockwave,if=active_enemies>3
+actions.aoe+=/revenge
+actions.aoe+=/shockwave
+actions.aoe+=/shield_block,use_off_gcd=1,if=(aggro|debuff.training_dummy.up)&cooldown.thunder_clap.remains&!buff.revenge_usable.up&cooldown.thunder_clap.remains&cooldown.shield_slam.up&rage>=action.shield_slam.spend
+actions.aoe+=/shield_slam
+actions.aoe+=/commanding_shout,if=assigned_shout.commanding_shout&buff.shout.remains<=4&buff.commanding_shout.remains<=4
+actions.aoe+=/battle_shout,if=assigned_shout.battle_shout&buff.shout.remains<=4&buff.battle_shout.remains<=4
+actions.aoe+=/demoralizing_shout,if=settings.debuff_demoshout_enabled&(!debuff.major_ap_reduction.up|(debuff.demoralizing_shout.up&debuff.demoralizing_shout.remains<3))
+actions.aoe+=/devastate,if=cooldown.shield_slam.remains&!buff.revenge_usable.up&(action.shield_slam.spend<=rage.current-action.devastate.spend+rage_gain*gcd)
