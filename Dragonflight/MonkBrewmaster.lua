@@ -1674,7 +1674,7 @@ spec:RegisterAbilities( {
 } )
 
 
-spec:RegisterRanges( "tiger_palm", "keg_smash", "paralysis", "provoke", "crackling_jade_lightning" )
+spec:RegisterRanges( "blackout_kick", "tiger_palm", "keg_smash", "paralysis", "provoke", "crackling_jade_lightning" )
 
 spec:RegisterOptions( {
     enabled = true,
@@ -1683,7 +1683,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "tiger_palm",
+    rangeChecker = "blackout_kick",
     rangeFilter = false,
 
     damage = true,
