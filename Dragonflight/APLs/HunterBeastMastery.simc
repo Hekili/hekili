@@ -5,7 +5,7 @@ actions.precombat+=/steel_trap,precast_time=1.5,if=!talent.wailing_arrow&talent.
 # Executed every time the actor is available.
 actions=counter_shot
 actions+=/tranquilizing_shot
-actions+=/hunters_mark,if=(active_dot.hunters_mark=0|time>0)&debuff.hunters_mark.down&target.health_pct>80&(group|target.time_to_pct_80>gcd.max*20)
+actions+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.health_pct>80&(group|target.time_to_pct_80>gcd.max*20)
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=st,strict=1,if=active_enemies<2|!talent.beast_cleave&active_enemies<3
@@ -46,12 +46,13 @@ actions.cleave+=/bag_of_tricks,if=buff.bestial_wrath.down|boss&fight_remains<5
 actions.cleave+=/arcane_torrent,if=(focus+focus.regen+30)<focus.max
 
 actions.st+=/barbed_shot,cycle_targets=1,if=pet.main.buff.frenzy.up&pet.main.buff.frenzy.remains<=gcd+0.25|talent.scent_of_blood&pet.main.buff.frenzy.stack<3&(cooldown.bestial_wrath.ready|cooldown.call_of_the_wild.ready)
-actions.st+=/call_of_the_wild
 actions.st+=/kill_command,if=full_recharge_time<gcd&talent.alpha_predator
+actions.st+=/call_of_the_wild,if=!talent.wild_instincts
 actions.st+=/stampede
-actions.st+=/bestial_wrath
 actions.st+=/bloodshed
+actions.st+=/bestial_wrath
 actions.st+=/death_chakram
+actions.st+=/call_of_the_wild
 actions.st+=/kill_command
 actions.st+=/a_murder_of_crows
 actions.st+=/steel_trap

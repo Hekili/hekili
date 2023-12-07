@@ -6,7 +6,7 @@ actions.precombat+=/variable,name=mb_rs_cost,op=setif,value=action.mongoose_bite
 
 actions+=/muzzle
 actions+=/tranquilizing_shot
-actions+=/hunters_mark,if=(active_dot.hunters_mark=0|time>0)&debuff.hunters_mark.down&target.health_pct>80&(group|target.time_to_pct_80>gcd.max*20)
+actions+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.health_pct>80&(group|target.time_to_pct_80>gcd.max*20)
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.coordinated_assault.up|buff.spearhead.up|!talent.coordinated_assault&!talent.spearhead
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
