@@ -2069,7 +2069,9 @@ all:RegisterAbilities( {
                 duration = 18,
                 max_stack = 1
             }
-        }
+        },
+
+        copy = 422956
     },
 
     smoldering_seedling = {
