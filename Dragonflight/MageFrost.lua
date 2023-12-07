@@ -839,6 +839,15 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if buff.icy_veins.up then summonPet( "water_elemental", buff.icy_veins.remains ) end
+
+    if  active_dot.glacial_spike > 0 and debuff.glacial_spike.down or
+        active_dot.winters_chill > 0 and debuff.winters_chill.down or
+        active_dot.freeze > 0 and debuff.freeze.down or
+        active_dot.frostbite > 0 and debuff.frostbite.down or
+        active_dot.frost_nova > 0 and debuff.frost_nova.down then
+        active_dot.frozen = active_dot.frozen + 1
+    end
+
 end )
 
 spec:RegisterHook( "runHandler", function( action )
@@ -1175,6 +1184,15 @@ spec:RegisterAbilities( {
         talent = "ice_lance",
         startsCombat = true,
         velocity = 47,
+
+        aura = function()
+            if buff.fingers_of_frost.up then return end
+            return "frozen"
+        end,
+        cycle_to = function()
+            if buff.fingers_of_frost.up then return end
+            return true
+        end,
 
         start = function ()
             applyDebuff( "target", "chilled" )
