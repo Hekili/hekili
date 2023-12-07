@@ -422,6 +422,11 @@ spec:RegisterAuras( {
         duration = function() return 3 * gust_of_mist.count end,
         max_stack = 1
     },
+    renewing_mist = {
+        id = 119611,
+        duration = function() return 20 + ( buff.tea_of_serenity_rm.up and 10 or 0 ) + ( buff.tea_of_plenty_rm.up and 10 or 0 ) end,
+        max_stack = 1
+    },
     song_of_chiji = {
         id = 198909,
         duration = 20,
@@ -461,6 +466,36 @@ spec:RegisterAuras( {
         id = 388686,
         duration = 30,
         max_stack = 1
+    },
+    tea_of_plenty_ef = {
+        id = 388524,
+        duration = 30,
+        max_stack = 3
+    },
+    tea_of_plenty_rm = {
+        id = 393988,
+        duration = 30,
+        max_stack = 3,
+    },
+    tea_of_plenty_rsk = {
+        id = 388525,
+        duration = 30,
+        max_stack = 3,
+    },
+    tea_of_serenity_em = {
+        id = 388519,
+        duration = 30,
+        max_stack = 3
+    },
+    tea_of_serenity_rm = {
+        id = 388520,
+        duration = 30,
+        max_stack = 3
+    },
+    tea_of_serenity_v = {
+        id = 388518,
+        duration = 30,
+        max_stack = 3,
     },
     teachings_of_the_monastery = {
         id = 202090,
@@ -585,7 +620,7 @@ spec:RegisterAbilities( {
     enveloping_mist = {
         id = 124682,
         cast = function()
-            if buff.invoke_chiji.stack == 3 or buff.thunder_focus_tea.up then return 0 end
+            if buff.invoke_chiji.stack == 3 or buff.thunder_focus_tea.up or buff.tea_of_serenity_em.up then return 0 end
             return 2 * ( 1 - 0.333 * buff.invoke_chiji.stack ) * haste
         end,
         cooldown = 0,
@@ -601,6 +636,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.thunder_focus_tea.up then removeBuff( "thunder_focus_tea" )
+            elseif buff.tea_of_serenity_em.up then removeStack( "tea_of_serenity_em" )
             else removeBuff( "invoke_chiji" ) end
             gust_of_mist.count = 0
 
@@ -616,8 +652,9 @@ spec:RegisterAbilities( {
 
     essence_font = {
         id = 191837,
-        cast = 0,
+        cast = function() return ( buff.tea_of_plenty_ef.up and 1.5 or 3 ) * haste end,
         cooldown = 12,
+        channeled = true,
         gcd = "spell",
 
         spend = function() return 0.36 * ( buff.mana_tea.up and 0.5 or 1 ) end,
@@ -628,6 +665,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "essence_font" )
+            removeStack( "tea_of_plenty_ef" )
             if talent.ancient_teachings.enabled then applyBuff( "ancient_teachings" ) end
             if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
@@ -810,6 +848,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "renewing_mist" )
+            removeStack( "tea_of_plenty_rm" )
+            removeStack( "tea_of_serenity_rm" )
             if set_bonus.tier31_2pc > 0 then applyBuff( "chi_harmony" ) end
             if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
@@ -1034,18 +1074,23 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.034 * ( buff.mana_tea.up and 0.5 or 1 ) * ( 1 - 0.15 * buff.clouded_focus.stack ) end,
+        spend = function()
+            if buff.tea_of_serenity_v.up then return 0 end
+            return 0.034 * ( buff.mana_tea.up and 0.5 or 1 ) * ( 1 - 0.15 * buff.clouded_focus.stack )
+        end,
         spendType = "mana",
 
         startsCombat = false,
         texture = 1360980,
 
         handler = function ()
+            removeStack( "tea_of_serenity_v" )
             if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_mastery" ) end
             if buff.lifecycles_vivify.up then
                 addStack( "mana_tea_stack" )
                 removeBuff( "lifecycles_vivify" )
             end
+            removeBuff( "vivacious_vivification" )
         end,
     },
 

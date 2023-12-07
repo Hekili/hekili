@@ -1466,7 +1466,7 @@ spec:RegisterAbilities( {
         id = 107428,
         cast = 0,
         cooldown = function ()
-            local x = 10 * haste
+            local x = ( buff.tea_of_plenty_rsk.up and 1 or 10 ) * haste
             if buff.serenity.up then x = max( 0, x - ( buff.serenity.remains / 2 ) ) end
             return x
         end,
@@ -1504,6 +1504,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "rising_sun_kick" )
+            removeStack( "tea_of_plenty_rsk" )
 
             if buff.kicks_of_flowing_momentum.up then
                 removeStack( "kicks_of_flowing_momentum" )
