@@ -2172,6 +2172,20 @@ spec:RegisterAbilities( {
         end,
     },
 
+    spirit_mend = {
+        id = 90361,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 237586,
+
+        handler = function ()
+            applyBuff( "spirit_mend" )
+        end,
+    },
+
     -- Talent: Summon a herd of stampeding animals from the wilds around you that deal ${$201594s1*6} Physical damage to your enemies over $d.    Enemies struck by the stampede are snared by $201594s2%, and you have $201594s3% increased critical strike chance against them for $201594d.
     stampede = {
         id = 201430,
