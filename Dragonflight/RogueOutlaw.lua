@@ -1281,7 +1281,9 @@ spec:RegisterAbilities( {
             removeStack( "snake_eyes" )
         end,
 
-        copy = 1752
+        copy = 1752,
+
+        bind = function() return buff.audacity.down and "ambush" or nil end,
     },
 
     smoke_bomb = {

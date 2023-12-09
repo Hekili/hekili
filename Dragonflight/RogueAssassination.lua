@@ -1607,6 +1607,10 @@ spec:RegisterAbilities( {
             if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
             if buff.audacity.up then removeBuff( "audacity" ) end
         end,
+
+        bind = function()
+            return buff.audacity.up and "sinister_strike" or nil
+        end,
     },
 
     -- Talent: Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 40% chance to poison the enemy, dealing 75 Nature damage and applying Amplification for 12 sec. Envenom can consume 10 stacks of Amplification to deal 35% increased damage. Max 20 stacks.
