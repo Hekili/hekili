@@ -1926,10 +1926,10 @@ spec:RegisterAbilities( {
         end,
 
         toggle = "interrupts",
-        debuff = "dispellable_magic",
+        buff = "dispellable_magic",
 
         handler = function ()
-            removeDebuff( "target", "dispellable_magic" )
+            removeBuff( "dispellable_magic" )
         end,
     },
 
