@@ -803,7 +803,7 @@ spec:RegisterAbilities( {
             reduceCooldown( "holy_word_salvation", 30 )
             removeBuff( "divine_word" )
             if buff.sacred_reverence.up then
-                gainCharges( 1, "holy_word_sanctify" )
+                gainCharges( "holy_word_sanctify", 1)
                 removeStack( "sacred_reverence" )
             end
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
@@ -833,7 +833,7 @@ spec:RegisterAbilities( {
                 removeBuff( "divine_word" )
             end
             if buff.sacred_reverence.up then
-                gainCharges( 1, "holy_word_serenity" )
+                gainCharges( "holy_word_serenity", 1 )
                 removeStack( "sacred_reverence" )
             end
             reduceCooldown( "holy_word_salvation", 30 )
