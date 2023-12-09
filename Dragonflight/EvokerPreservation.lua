@@ -200,6 +200,11 @@ spec:RegisterAuras( {
         -- TODO: damage = function () return 0.322 * stat.spell_power * action.fire_breath.spell_targets * ( talent.heat_wave.enabled and 1.2 or 1 ) * ( debuff.shattering_star.up and 1.2 or 1 ) end,
         max_stack = 1,
     },
+    flow_state = {
+        id = 390148,
+        duration = 10,
+        max_stack = 1
+    },
     fly_with_me = {
         id = 370665,
         duration = 1,
@@ -540,6 +545,7 @@ spec:RegisterAbilities( {
             applyBuff( "dream_breath_hot" )
             removeBuff( "call_of_ysera" )
             removeBuff( "temporal_compression" )
+            if talent.flow_state.enabled then applyBuff( "flow_state" ) end
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
@@ -638,7 +644,7 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "fire_breath" )
-
+            if talent.flow_state.enabled then applyBuff( "flow_state" ) end
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
@@ -786,6 +792,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if set_bonus.tier30_2pc > 0 then applyBuff( "spiritbloom" ) end
+            if talent.flow_state.enabled then applyBuff( "flow_state" ) end
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
