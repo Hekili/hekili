@@ -4,11 +4,11 @@ actions.precombat+=/variable,name=rtb_reroll,value=rtb_buffs.will_lose=(rtb_buff
 # Crackshot builds without T31 should reroll for True Bearing (or Broadside without Hidden Opportunity) if we won't lose over 1 buff
 actions.precombat+=/variable,name=rtb_reroll,if=talent.crackshot&!set_bonus.tier31_4pc,value=(!rtb_buffs.will_lose.true_bearing&talent.hidden_opportunity|!rtb_buffs.will_lose.broadside&!talent.hidden_opportunity)&rtb_buffs.will_lose<=1
 # Crackshot builds with T31 should reroll if we won't lose over 1 buff (2 with Loaded Dice)
-actions+=/variable,name=rtb_reroll,if=talent.crackshot&set_bonus.tier31_4pc,value=(rtb_buffs.will_lose<=1+buff.loaded_dice.up)
+actions.precombat+=/variable,name=rtb_reroll,if=talent.crackshot&set_bonus.tier31_4pc,value=(rtb_buffs.will_lose<=1+buff.loaded_dice.up)
 # Hidden Opportunity builds without Crackshot should reroll for Skull and Crossbones or any 2 buffs excluding Grand Melee in single target
 actions.precombat+=/variable,name=rtb_reroll,if=!talent.crackshot&talent.hidden_opportunity,value=!rtb_buffs.will_lose.skull_and_crossbones&(rtb_buffs.will_lose<2+rtb_buffs.will_lose.grand_melee&spell_targets.blade_flurry<2&raid_event.adds.in>10)
 # Additional reroll rules if all active buffs will not be rolled away and we don't already have 5+ buffs outside of stealth
-actions+=/variable,name=rtb_reroll,value=variable.rtb_reroll&rtb_buffs.longer=0|rtb_buffs.normal=0&rtb_buffs.longer>=1&rtb_buffs<5&rtb_buffs.max_remains<=39&!stealthed.all
+actions.precombat+=/variable,name=rtb_reroll,value=variable.rtb_reroll&rtb_buffs.longer=0|rtb_buffs.normal=0&rtb_buffs.longer>=1&rtb_buffs<5&rtb_buffs.max_remains<=39&!stealthed.all
 # Avoid rerolls when we will not have time remaining on the fight or add wave to recoup the opportunity cost of the global
 actions.precombat+=/variable,name=rtb_reroll,op=reset,if=!(raid_event.adds.remains>12|raid_event.adds.up&(raid_event.adds.in-raid_event.adds.remains)<6|target.time_to_die>12)|boss&fight_remains<12
 actions.precombat+=/blade_flurry,precombat_seconds=3,if=refreshable&talent.underhanded_upper_hand&!stealthed.mantle
@@ -84,10 +84,10 @@ actions.cds+=/ancestral_call
 actions.cds+=/use_item,name=manic_grieftorch,use_off_gcd=1,if=gcd.remains>gcd.max-0.1&!stealthed.all&buff.between_the_eyes.up|boss&fight_remains<=5
 actions.cds+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=!stealthed.mantle&time>0&((!trinket.1.is.dragonfire_bomb_dispenser&trinket.1.cooldown.remains>10|trinket.2.cooldown.remains>10)|cooldown.dragonfire_bomb_dispenser.charges>2|boss&fight_remains<20|!trinket.2.has_cooldown|!trinket.1.has_cooldown)
 actions.cds+=/use_item,name=beacon_to_the_beyond,use_off_gcd=1,if=gcd.remains>gcd.max-0.1&!stealthed.all&buff.between_the_eyes.up|boss&fight_remains<=5
-actions.cds+=/use_item,name=stormeaters_boon,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|boss&fight_remains<10
-actions.cds+=/use_item,name=windscar_whetstone,if=spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|boss&fight_remains<7
-actions.cds+=/use_items,slots=trinket1,if=buff.between_the_eyes.up|trinket.1.has_stat.any_dps|boss&fight_remains<=20
-actions.cds+=/use_items,slots=trinket2,if=buff.between_the_eyes.up|trinket.2.has_stat.any_dps|boss&fight_remains<=20
+actions.cds+=/use_item,name=stormeaters_boon,if=!stealthed.mantle&(spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|boss&fight_remains<10)
+actions.cds+=/use_item,name=windscar_whetstone,if=!stealthed.mantle&(spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|boss&fight_remains<7)
+actions.cds+=/use_items,slots=trinket1,if=!stealthed.mantle&(buff.between_the_eyes.up|trinket.1.has_stat.any_dps|boss&fight_remains<=20)
+actions.cds+=/use_items,slots=trinket2,if=!stealthed.mantle&(buff.between_the_eyes.up|trinket.2.has_stat.any_dps|boss&fight_remains<=20)
 
 ## Finishers
 # Use Between the Eyes to keep the crit buff up, but on cooldown if Improved/Greenskins/T30, and avoid overriding Greenskins
