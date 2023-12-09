@@ -1232,10 +1232,10 @@ do
                         if a and a.id then
                             local outOfRange = false
 
-                            if conf.range.enabled then
-                                if conf.range.type == "melee" and UnitExists( "target" ) then
-                                    outOfRange = ( LRC:GetRange( "target", true, InCombatLockdown() ) or 50 ) > 7
-                                elseif conf.range.type == "ability" and UnitExists( "target" ) and UnitCanAttack( "player", "target" ) then
+                            if conf.range.enabled and UnitCanAttack( "player", "target" ) then
+                                if conf.range.type == "melee" then
+                                    outOfRange = ( LRC:GetRange( "target" ) or 10 ) > 7
+                                elseif conf.range.type == "ability" then
                                     local name = a.rangeSpell or a.itemSpellName or a.actualName or a.name
                                     if name then outOfRange = LSR.IsSpellInRange( name, "target" ) == 0 end
                                 end

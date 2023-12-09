@@ -1284,7 +1284,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
                     local u = Hekili:GetUnitByGUID( target ) or Hekili:GetNameplateUnitForGUID( target ) or "target"
 
                     if u then
-                        local _, maxR = RC:GetRange( u, true, InCombatLockdown() )
+                        local _, maxR = RC:GetRange( u )
                         maxR = maxR or select( 6, GetSpellInfo( ability.id ) ) or 40
                         travel = maxR / ability.velocity
                     end
@@ -1754,7 +1754,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
                                 local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
 
                                 if unit then
-                                    local _, maxR = RC:GetRange( unit, true, InCombatLockdown() )
+                                    local _, maxR = RC:GetRange( unit )
                                     maxR = maxR or select( 6, GetSpellInfo( ability.id ) ) or 40
                                     travel = maxR / ability.velocity
                                 end
@@ -1814,7 +1814,7 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
                             local unit = Hekili:GetUnitByGUID( destGUID ) or Hekili:GetNameplateUnitForGUID( destGUID ) or "target"
 
                             if unit then
-                                local _, maxR = RC:GetRange( unit, true, InCombatLockdown() )
+                                local _, maxR = RC:GetRange( unit )
                                 maxR = maxR or select( 6, GetSpellInfo( ability.id ) ) or 40
                                 travel = maxR / ability.velocity
                             end
