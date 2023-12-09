@@ -4665,6 +4665,7 @@ all:RegisterAbility( "balefire_branch", {
 
     item = 159630,
     toggle = "cooldowns",
+    buff = "kindled_soul",
 
     handler = function ()
         applyBuff( "kindled_soul" )
