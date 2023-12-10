@@ -3301,7 +3301,6 @@ local mt_prev_lookup = {
     __index = function( t, k )
         local idx = t.index
         local preds, prev
-        local action
 
         if     t.meta == "castsAll" then preds, prev = state.predictions   , state.prev
         elseif t.meta == "castsOn"  then preds, prev = state.predictionsOn , state.prev_gcd
@@ -3326,15 +3325,15 @@ local mt_prev_lookup = {
         if preds[ idx ] then return preds[ idx ] == k end
 
         if state.player.queued_ability then
-            if idx == #preds + 1 then return state.player.queued_ability == k end
+            if idx == #preds + 1 then
+                return state.player.queued_ability == k
+            end
             return prev.history[ idx - #preds + 1 ] == k
         end
 
         if idx == 1 and prev.override then
             return prev.override == k
         end
-
-        if state.time == 0 then return false end
 
         return prev.history[ idx - #preds ] == k
     end,
@@ -3364,7 +3363,7 @@ do
                 if t.meta == "castAll" then t.last = state.player.lastcast
                 elseif t.meta == "castsOn" then t.last = state.player.lastgcd
                 elseif t.meta == "castsOff" then t.last = state.player.lastoffgcd end
-                return rawget( t, "last" )
+                return rawget( t, "last" ) or "none"
             end
 
             if k == t.last then
