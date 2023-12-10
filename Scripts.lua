@@ -1223,7 +1223,7 @@ this_action = prev_action
 return format( "%s", %s )]]
 
 local function generateDebugPrint( node, condition, header, isRecheck )
-    local cleanPrint = SimcWithResources( condition:trim() ):gsub( "%%", "%%%%" )
+    local cleanPrint = SimcWithResources( condition:trim() ):gsub( "%%", "%%%%" ):gsub( "\"", "'" )
 
     local seen = {}
     local argn = 0
