@@ -135,12 +135,19 @@ local firestorm_last = 0
 local firestorm_cast = 368847
 local firestorm_tick = 369374
 
+local eb_col_casts = 0
+
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == state.GUID then
-        if subtype == "SPELL_CAST_SUCCESS" and spellID == firestorm_cast then
-            wipe( firestorm_enemies )
-            firestorm_last = GetTime()
-            return
+        if subtype == "SPELL_CAST_SUCCESS" then
+            if spellID == firestorm_cast then
+                wipe( firestorm_enemies )
+                firestorm_last = GetTime()
+                return
+            elseif spellID == spec.abilities.emerald_blossom.id then
+                eb_col_casts = ( eb_col_casts + 1 ) % 3
+                return
+            end
         end
 
         if subtype == "SPELL_DAMAGE" and spellID == firestorm_tick then
@@ -155,6 +162,10 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             return
         end
     end
+end )
+
+spec:RegisterStateExpr( "cycle_of_life_count", function()
+    return eb_col_cast
 end )
 
 
@@ -699,6 +710,8 @@ end, state )
 
 
 spec:RegisterHook( "reset_precast", function()
+    cycle_of_life_count = nil
+
     max_empower = talent.font_of_magic.enabled and 4 or 3
 
     if essence.current < essence.max and lastEssenceTick > 0 then
@@ -980,13 +993,9 @@ spec:RegisterAbilities( {
 
             removeBuff( "nourishing_sands" )
 
-            if talent.dream_of_spring.enabled then
-                if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
-            end
-
             if talent.ancient_flame.enabled then applyBuff( "ancient_flame" ) end
             if talent.cycle_of_life.enabled then
-                if cycle_of_life_count == 2 then
+                if cycle_of_life_count > 1 then
                     cycle_of_life_count = 0
                     applyBuff( "cycle_of_life" )
                 else
@@ -994,6 +1003,7 @@ spec:RegisterAbilities( {
                 end
             end
             if talent.causality.enabled then reduceCooldown( "essence_burst", 1 ) end
+            if talent.dream_of_spring.enabled and buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
         end,
     },
 
