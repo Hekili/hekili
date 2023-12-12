@@ -1083,7 +1083,7 @@ local virtualSparkPhase = false
 local SetSparkPhase = setfenv( function()
     if realSparkPhase[ display ] == nil then realSparkPhase[ display ] = false end
 
-    if not realSparkPhase[ display ] and buff.arcane_charge.stack > 3 and active_enemies < variable.aoe_target_count and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= ( gcd.max * ( 7 - ( 3 * equipped.balefire_branch ) ) ) and ( cooldown.arcane_surge.remains <= ( gcd.max * 5 ) or cooldown.arcane_surge.remains > 40 ) then
+    if not realSparkPhase[ display ] and buff.arcane_charge.stack > 3 and active_enemies < variable.aoe_target_count and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= ( gcd.max * ( 7 - ( 3 * ( equipped.balefire_branch and 1 or 0 ) ) ) ) and ( cooldown.arcane_surge.remains <= ( gcd.max * 5 ) or cooldown.arcane_surge.remains > 40 ) then
         realSparkPhase[ display ] = true
     end
 
@@ -1095,7 +1095,7 @@ local SetSparkPhase = setfenv( function()
 end, state )
 
 local UpdateSparkPhase = setfenv( function()
-    if not realSparkPhase[ display ] and buff.arcane_charge.stack > 3 and active_enemies < variable.aoe_target_count and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= ( gcd.max * ( 7 - ( 3 * equipped.balefire_branch ) ) ) and ( cooldown.arcane_surge.remains <= ( gcd.max * 5 ) or cooldown.arcane_surge.remains > 40 ) then
+    if not realSparkPhase[ display ] and buff.arcane_charge.stack > 3 and active_enemies < variable.aoe_target_count and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= ( gcd.max * ( 7 - ( 3 * ( equipped.balefire_branch and 1 or 0 ) ) ) ) and ( cooldown.arcane_surge.remains <= ( gcd.max * 5 ) or cooldown.arcane_surge.remains > 40 ) then
         virtualSparkPhase = true
     end
 
