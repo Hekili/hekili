@@ -768,15 +768,17 @@ do
                     state.trinket.t1.__has_use_buff = true
                     state.trinket.t1.__use_buff_duration = aura and aura.duration > 0 and aura.duration or 0.01
                 end
+
+                if not isUsable then
+                    state.trinket.t1.cooldown = state.cooldown.null_cooldown
+                else
+                    state.cooldown.trinket1 = state.cooldown[ ability.key ]
+                    state.trinket.t1.cooldown = state.cooldown.trinket1
+                end
             else
                 class.abilities.trinket1 = class.abilities.actual_trinket1
                 class.specs[ 0 ].abilities.trinket1 = class.abilities.actual_trinket1
-            end
-
-            if not isUsable then
                 state.trinket.t1.cooldown = state.cooldown.null_cooldown
-            else
-                state.trinket.t1.cooldown = nil
             end
 
             state.trinket.t1.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 13, true, true )
@@ -817,15 +819,17 @@ do
                     state.trinket.t2.__has_use_buff = true
                     state.trinket.t2.__use_buff_duration = aura and aura.duration > 0 and aura.duration or 0.01
                 end
+
+                if not isUsable then
+                    state.trinket.t2.cooldown = state.cooldown.null_cooldown
+                else
+                    state.cooldown.trinket2 = state.cooldown[ ability.key ]
+                    state.trinket.t2.cooldown = state.cooldown.trinket2
+                end
             else
                 class.abilities.trinket2 = class.abilities.actual_trinket2
                 class.specs[ 0 ].abilities.trinket2 = class.abilities.actual_trinket2
-            end
-
-            if not isUsable then
                 state.trinket.t2.cooldown = state.cooldown.null_cooldown
-            else
-                state.trinket.t2.cooldown = nil
             end
 
             state.trinket.t2.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 14, true, true )
@@ -846,22 +850,24 @@ do
             if tSpell then
                 class.abilities.main_hand = class.abilities[ tSpell ]
                 class.specs[ 0 ].abilities.main_hand = class.abilities[ tSpell ]
+
+                if not isUsable then
+                    state.trinket.main_hand.cooldown = state.cooldown.null_cooldown
+                else
+                    state.cooldown.main_hand = state.cooldown[ ability.key ]
+                    state.trinket.main_hand.cooldown = state.cooldown.main_hand
+                end
             else
                 class.abilities.main_hand = class.abilities.actual_main_hand
                 class.specs[ 0 ].abilities.main_hand = class.abilities.actual_main_hand
+                state.trinket.main_hand.cooldown = state.cooldown.null_cooldown
             end
 
-            if not isUsable then
-                state.trinket.t2.cooldown = state.cooldown.null_cooldown
-            else
-                state.trinket.t2.cooldown = nil
-            end
-
-            state.trinket.t2.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 14, true, true )
+            state.trinket.main_hand.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 16, true, true )
         end
 
         for i = 1, 19 do
-            local item = GetInventoryItemID( 'player', i )
+            local item = GetInventoryItemID( "player", i )
 
             if item then
                 state.set_bonus[ item ] = 1

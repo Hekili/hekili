@@ -251,6 +251,31 @@ state.trinket = {
         },
     },
 
+    main_hand = {
+        slot = "main_hand",
+
+        --[[ has_cooldown = {
+            slot = "main_hand",
+        }, ]]
+
+        stacking_stat = {
+            slot = "main_hand"
+        },
+        has_stacking_stat = {
+            slot = "main_hand"
+        },
+
+        stat = {
+            slot = "main_hand"
+        },
+        has_stat = {
+            slot = "main_hand",
+        },
+
+        is = {
+            slot = "main_hand",
+        },
+    },
     any = {},
 
     cooldown = {
@@ -420,6 +445,7 @@ local mt_trinket = {
 
 setmetatable( state.trinket.t1, mt_trinket )
 setmetatable( state.trinket.t2, mt_trinket )
+setmetatable( state.trinket.main_hand, mt_trinket )
 
 
 local mt_trinket_is = {
@@ -434,6 +460,7 @@ local mt_trinket_is = {
 
 setmetatable( state.trinket.t1.is, mt_trinket_is )
 setmetatable( state.trinket.t2.is, mt_trinket_is )
+setmetatable( state.trinket.main_hand.is, mt_trinket_is )
 
 
 --[[ local mt_trinket_cooldown = {
@@ -482,6 +509,7 @@ local mt_trinket_has_stacking_stat = {
 
 setmetatable( state.trinket.t1.has_stacking_stat, mt_trinket_has_stacking_stat )
 setmetatable( state.trinket.t2.has_stacking_stat, mt_trinket_has_stacking_stat )
+setmetatable( state.trinket.main_hand.has_stacking_stat, mt_trinket_has_stacking_stat )
 
 
 local mt_trinket_has_stat = {
@@ -499,6 +527,7 @@ local mt_trinket_has_stat = {
 
 setmetatable( state.trinket.t1.has_stat, mt_trinket_has_stat )
 setmetatable( state.trinket.t2.has_stat, mt_trinket_has_stat )
+setmetatable( state.trinket.main_hand.has_stat, mt_trinket_has_stat )
 
 
 local mt_trinkets_has_stat = {
