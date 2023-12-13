@@ -896,7 +896,13 @@ spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266 )
 -- (4) Throw Glaive reduces the remaining cooldown of The Hunt by ${$s1/1000}.1 sec, and The Hunt's damage over time effect lasts ${$s2/1000} sec longer.
 
 
-local sigil_types = { "chains", "flame", "misery", "silence" }
+local sigil_types = {
+    chains         = "sigil_of_chains" ,
+    flame          = "sigil_of_flame"  ,
+    misery         = "sigil_of_misery" ,
+    silence        = "sigil_of_silence",
+    elysian_decree = "elysian_decree"
+}
 
 spec:RegisterHook( "reset_precast", function ()
     last_metamorphosis = nil
@@ -920,10 +926,10 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "unbound_chaos" )
     end
 
-    for i, sigil in ipairs( sigil_types ) do
-        local activation = ( action[ "sigil_of_" .. sigil ].lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
-        if activation > now then sigils[ sigil ] = activation
-        else sigils[ sigil ] = 0 end
+    for s, a in ipairs( sigil_types ) do
+        local activation = ( action[ a ].lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
+        if activation > now then sigils[ s ] = activation
+        else sigils[ s ] = 0 end
     end
 
     last_darkness = 0
