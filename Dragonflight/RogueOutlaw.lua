@@ -839,6 +839,20 @@ spec:RegisterHook( "reset_precast", function()
         removeStack( "opportunity", numShots )
     end
 
+    if talent.underhanded_upper_hand.enabled then
+        if buff.adrenaline_rush.up and buff.subterfuge.up then
+            buff.adrenaline_rush.expires = buff.adrenaline_rush.expires + buff.subterfuge.remains
+        end
+
+        if buff.blade_flurry.up and buff.adrenaline_rush.up then
+            buff.blade_flurry.expires = buff.blade_flurry.expires + buff.adrenaline_rush.remains
+        end
+
+        if buff.slice_and_dice.up and buff.blade_flurry.up then
+            buff.slice_and_dice.expires = buff.slice_and_dice.expires + buff.blade_flurry.remains
+        end
+    end
+
     if Hekili.ActiveDebug and buff.roll_the_bones.up then
         Hekili:Debug( "\nRoll the Bones Buffs:" )
         for i = 1, 6 do
@@ -893,7 +907,11 @@ spec:RegisterAbilities( {
 
             if talent.loaded_dice.enabled then
                 applyBuff( "loaded_dice" )
-            elseif azerite.brigands_blitz.enabled then
+            end
+            if talent.underhanded_upper_hand.enabled and buff.subterfuge.up then
+                buff.adrenaline_rush.expires = buff.adrenaline_rush.expires + buff.subterfuge.remains
+            end
+            if azerite.brigands_blitz.enabled then
                 applyBuff( "brigands_blitz" )
             end
         end,
@@ -959,8 +977,12 @@ spec:RegisterAbilities( {
 
         cp_gain = function() return talent.deft_maneuvers.enabled and true_active_enemies or 0 end,
         handler = function ()
-            if talent.deft_maneuvers.enabled then gain( action.blade_flurry.cp_gain, "combo_points" ) end
             applyBuff( "blade_flurry" )
+            if talent.deft_maneuvers.enabled then gain( action.blade_flurry.cp_gain, "combo_points" ) end
+            if talent.underhanded_upper_hand.enabled then
+                if buff.adrenaline_rush.up then buff.blade_flurry.expires = buff.blade_flurry.expires + buff.adrenaline_rush.remains end
+                if buff.slice_and_dice.up then buff.slice_and_dice.expires = buff.slice_and_dice.expires + buff.blade_flurry.remains end
+            end
         end,
     },
 

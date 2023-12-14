@@ -2614,6 +2614,10 @@ spec:RegisterAbilities( {
             end
             applyBuff( "slice_and_dice" )
             spend( combo_points.current, "combo_points" )
+
+            if talent.underhanded_upper_hand.enabled then
+                if buff.blade_flurry.up then buff.slice_and_dice.expires = buff.slice_and_dice.expires + buff.blade_flurry.remains end
+            end
         end,
     },
 
