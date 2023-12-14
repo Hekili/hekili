@@ -19,6 +19,7 @@ actions.precombat+=/demonbolt,if=soul_shard<5&(boss|cast_time=0)
 actions.precombat+=/shadow_bolt,if=soul_shard<5
 
 actions+=/axe_toss
+actions+=/spell_lock
 actions+=/devour_magic
 ## Variables
 actions+=/variable,name=pet_expire,op=set,value=(buff.dreadstalkers.remains>?buff.vilefiend.remains)-gcd*0.5,if=buff.vilefiend.up&buff.dreadstalkers.up

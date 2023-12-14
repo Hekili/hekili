@@ -17,6 +17,7 @@ actions.precombat+=/soul_fire
 actions.precombat+=/cataclysm,if=raid_event.adds.in>15
 actions.precombat+=/incinerate
 
+actions+=/spell_lock
 ## actions+=/variable,name=havoc_immo_time,op=reset
 ## actions+=/cycling_variable,name=havoc_immo_time,op=add,value=dot.immolate.remains*debuff.havoc.up
 actions+=/variable,name=infernal_active,op=set,value=pet.infernal.active|(cooldown.summon_infernal.duration-cooldown.summon_infernal.remains)<20

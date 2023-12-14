@@ -2055,7 +2055,7 @@ spec:RegisterAbilities( {
             interrupt()
         end,
 
-        bind = { 119910, 132409, 119898 }
+        bind = { 19647, 119910, 132409, 119898 }
     },
 
     -- Subjugates the target demon up to level 61, forcing it to do your bidding for 5 min.

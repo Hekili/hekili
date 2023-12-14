@@ -18,6 +18,7 @@ actions.precombat+=/haunt
 actions.precombat+=/unstable_affliction,if=!talent.soul_swap&active_dot.unstable_affliction=0
 actions.precombat+=/shadow_bolt
 
+actions+=/spell_lock
 actions+=/call_action_list,name=variables
 actions+=/call_action_list,name=ogcd
 actions+=/call_action_list,name=items
