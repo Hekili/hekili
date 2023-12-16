@@ -1048,7 +1048,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.mind_devourer.up then return 0 end
-            return 50 + ( talent.distorted_reality.enabled and 10 or 0 ) + ( talent.minds_eye.enabled and -5 or 0 )
+            return 50 + ( talent.distorted_reality.enabled and 5 or 0 ) + ( talent.minds_eye.enabled and -5 or 0 )
         end,
         spendType = "insanity",
 
