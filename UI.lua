@@ -648,19 +648,17 @@ do
                                         tooltipTitle = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
                                         tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
                                         tooltipOnButton = true,
-                                        keepShownOnClick = true,
                                         notCheckable = true,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
+                                        hasArrow = true,
+                                        menuList = {}
                                     }
 
-                                    insert( menuData, submenu )
-
-                                    submenu = {
+                                    local slider = {
                                         text = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
                                         tooltipTitle = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name,
                                         tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
                                         tooltipOnButton = true,
-                                        keepShownOnClick = true,
                                         notCheckable = true,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
                                     }
@@ -681,7 +679,21 @@ do
                                     cf.Slider:SetValueStep( setting.info.step or 1 )
                                     cf.Slider:SetObeyStepOnDrag( true )
 
-                                    submenu.customFrame = cf
+                                    cf.Slider:SetScript( "OnEnter", function( self )
+                                        local tooltip = GetAppropriateTooltip()
+                                        tooltip:SetOwner( cf.Slider, "ANCHOR_RIGHT", 0, 2 )
+                                        GameTooltip_SetTitle( tooltip, slider.tooltipTitle )
+                                        GameTooltip_AddNormalLine( tooltip, slider.tooltipText, true )
+                                        tooltip:Show()
+                                    end )
+
+                                    cf.Slider:SetScript( "OnLeave", function( self )
+                                        GameTooltip:Hide()
+                                    end )
+
+                                    slider.customFrame = cf
+
+                                    insert( submenu.menuList, slider )
 
                                     --[[ local low, high, step = setting.info.min, setting.info.max, setting.info.step
                                     local fractional, factor = step < 1, 1 / step
