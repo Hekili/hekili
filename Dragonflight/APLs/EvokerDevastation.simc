@@ -47,7 +47,7 @@ actions.aoe+=/dragonrage,if=target.time_to_die>=32|boss&fight_remains<30
 # Use tip to get that sweet aggro
 actions.aoe+=/tip_the_scales,if=buff.dragonrage.up&(active_enemies<=3+3*talent.eternitys_span|!cooldown.fire_breath.up)
 # Cast Fire Breath - stagger for swell/blazing shards outside DR  DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
-+actions.aoe+=/call_action_list,name=fb,if=empowering.fire_breath|(!talent.dragonrage|variable.next_dragonrage>variable.dr_prep_time_aoe|!talent.animosity)&((buff.power_swell.remains<variable.r1_cast_time|(!talent.volatility&active_enemies=3))&buff.blazing_shards.remains<variable.r1_cast_time|buff.dragonrage.up)&(target.time_to_die>=8|boss&fight_remains<30)
+actions.aoe+=/call_action_list,name=fb,if=empowering.fire_breath|(!talent.dragonrage|variable.next_dragonrage>variable.dr_prep_time_aoe|!talent.animosity)&((buff.power_swell.remains<variable.r1_cast_time|(!talent.volatility&active_enemies=3))&buff.blazing_shards.remains<variable.r1_cast_time|buff.dragonrage.up)&(target.time_to_die>=8|boss&fight_remains<30)
 # Cast Eternity Surge - stagger for swell/blazing shards outside DR  DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
 actions.aoe+=/call_action_list,name=es,if=empowering.eternity_surge|buff.dragonrage.up|!talent.dragonrage|(cooldown.dragonrage.remains>variable.dr_prep_time_aoe&(buff.power_swell.remains<variable.r1_cast_time|(!talent.volatility&active_enemies=3))&buff.blazing_shards.remains<variable.r1_cast_time)&(target.time_to_die>=8|boss&fight_remains<30)
 # Cast DB if not in DR and not going to overflow essence.

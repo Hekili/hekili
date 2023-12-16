@@ -1,7 +1,7 @@
 actions.precombat+=/arcane_intellect
 actions.precombat+=/arcane_familiar
 actions.precombat+=/conjure_mana_gem
-## actions.precombat+=/variable,name=aoe_target_count,op=reset,default=3
+actions.precombat+=/variable,name=aoe_target_count,op=reset,value=3
 ## actions.precombat+=/variable,name=conserve_mana,op=set,value=0
 actions.precombat+=/variable,name=opener_min_mana,op=set,value=225000-(25000*!talent.arcane_harmony)
 # Variable indicates use of a trinket that boosts stats during burst
