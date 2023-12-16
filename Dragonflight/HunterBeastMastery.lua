@@ -734,7 +734,8 @@ spec:RegisterAuras( {
         duration = 3600,
         tick_time = 0.5,
         type = "Magic",
-        max_stack = 1
+        max_stack = 1,
+        shared = "target"
     },
     -- Talent: Your next Kill Shot is usable on any target, regardless of your target's current health.
     -- https://wowhead.com/beta/spell=378215
