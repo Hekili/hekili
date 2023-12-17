@@ -851,6 +851,17 @@ do
                 class.abilities.main_hand = class.abilities[ tSpell ]
                 class.specs[ 0 ].abilities.main_hand = class.abilities[ tSpell ]
 
+                local ability = class.abilities[ tSpell ]
+                local aura = class.auras[ ability.self_buff or spellID ]
+
+                if spellID and SpellIsSelfBuff( spellID ) and aura then
+                    state.trinket.main_hand.__has_use_buff = not aura.ignore_buff and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
+                    state.trinket.main_hand.__use_buff_duration = aura.duration > 0 and aura.duration or 0.01
+                elseif ability.self_buff then
+                    state.trinket.main_hand.__has_use_buff = true
+                    state.trinket.main_hand.__use_buff_duration = aura and aura.duration > 0 and aura.duration or 0.01
+                end
+
                 if not isUsable then
                     state.trinket.main_hand.cooldown = state.cooldown.null_cooldown
                 else
