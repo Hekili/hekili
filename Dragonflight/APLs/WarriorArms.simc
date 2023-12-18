@@ -24,7 +24,7 @@ actions+=/berserking,if=target.time_to_die>180&buff.avatar.up|target.time_to_die
 actions+=/blood_fury,if=debuff.colossus_smash.up
 actions+=/fireblood,if=debuff.colossus_smash.up
 actions+=/ancestral_call,if=debuff.colossus_smash.up
-actions+=/run_action_list,name=aoe,strict=1,if=raid_event.adds.up&active_enemies>2|!raid_event.adds.up&active_enemies>2|talent.fervor_of_battle.enabled&(talent.massacre.enabled&target.health.pct>35|target.health.pct>20)&!raid_event.adds.up&active_enemies>1
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2|!active_enemies>2|talent.fervor_of_battle.enabled&(talent.massacre.enabled&target.health.pct>35|target.health.pct>20)&active_enemies>1
 actions+=/run_action_list,name=execute,cycle_targets=1,strict=1,if=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20
 actions+=/run_action_list,name=single_target
 
