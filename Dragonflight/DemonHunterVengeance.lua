@@ -1012,6 +1012,11 @@ spec:RegisterAbilities( {
         talent = "fiery_brand",
         startsCombat = true,
 
+        readyTime = function ()
+            if ( settings.brand_charges or 1 ) == 0 then return end
+            return ( ( 1 + ( settings.brand_charges or 1 ) ) - cooldown.fiery_brand.charges_fractional ) * cooldown.fiery_brand.recharge
+        end,
+
         handler = function ()
             applyDebuff( "target", "fiery_brand_dot" )
             fiery_brand_dot_primary_expires = query_time + class.auras.fiery_brand.duration
@@ -1582,6 +1587,17 @@ spec:RegisterOptions( {
 spec:RegisterSetting( "infernal_charges", 1, {
     name = strformat( "Reserve %s Charges", Hekili:GetSpellLinkWithTexture( 189110 ) ),
     desc = strformat( "If set above zero, %s will not be recommended if it would leave you with fewer charges.", Hekili:GetSpellLinkWithTexture( 189110 ) ),
+    type = "range",
+    min = 0,
+    max = 2,
+    step = 0.1,
+    width = "full"
+} )
+
+
+spec:RegisterSetting( "brand_charges", 0, {
+    name = strformat( "Reserve %s Charges", Hekili:GetSpellLinkWithTexture( spec.abilities.fiery_brand.id ) ),
+    desc = strformat( "If set above zero, %s will not be recommended if it would leave you with fewer charges.", Hekili:GetSpellLinkWithTexture( spec.abilities.fiery_brand.id ) ),
     type = "range",
     min = 0,
     max = 2,
