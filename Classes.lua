@@ -4826,7 +4826,7 @@ do
         { "obsidian_aspirants_badge_of_ferocity", 205778 },
         { "obsidian_gladiator_badge_of_ferocity", 205708 },
         { "verdant_aspirants_badge_of_ferocity", 209763 },
-        { "verdant_gladiators_badget_of_ferocity", 209343 }
+        { "verdant_gladiators_badge_of_ferocity", 209343 }
     }
 
     local pvp_badges_copy = {}
