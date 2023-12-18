@@ -846,13 +846,13 @@ do
             local isUsable = IsUsableItem( MH )
             local name, spellID = GetItemSpell( MH )
             local tSpell = class.itemMap[ MH ]
+            local ability = class.abilities[ tSpell ]
 
-            if tSpell then
+            if ability and tSpell then
                 class.abilities.main_hand = class.abilities[ tSpell ]
                 class.specs[ 0 ].abilities.main_hand = class.abilities[ tSpell ]
 
-                local ability = class.abilities[ tSpell ]
-                local aura = class.auras[ ability.self_buff or spellID ]
+                local aura = ability and class.auras[ ability.self_buff or spellID ]
 
                 if spellID and SpellIsSelfBuff( spellID ) and aura then
                     state.trinket.main_hand.__has_use_buff = not aura.ignore_buff and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
