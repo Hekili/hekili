@@ -1939,9 +1939,10 @@ all:RegisterAbilities( {
         item = 207167,
         toggle = "cooldowns",
 
+        proc = "primary",
+
         handler = function()
             applyBuff( "soul_ignition" )
-            state:QueueAuraExpiration( )
         end,
 
         auras = {
@@ -2015,6 +2016,8 @@ all:RegisterAbilities( {
 
         item = 207169,
         toggle = "cooldowns",
+
+        proc = "damage",
 
         handler = function()
             applyBuff( "roots_of_the_tormented_ancient", nil, 4 )
@@ -2107,6 +2110,8 @@ all:RegisterAbilities( {
 
         item = 109999,
         toggle = "cooldowns",
+
+        proc = "mastery",
 
         handler = function()
             -- Do nothing; it's up to the player to collect orbs.
