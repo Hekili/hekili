@@ -229,6 +229,12 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    blessing_of_sanctuary = {
+        id = 210256,
+        duration = 5,
+        type = "Magic",
+        max_stack = 1
+    },
     -- Immune to magical damage and harmful effects.
     -- https://wowhead.com/beta/spell=204018
     blessing_of_spellwarding = {
@@ -1082,6 +1088,21 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "blessing_of_sacrifice" )
+        end,
+    },
+
+    blessing_of_sanctuary = {
+        id = 210256,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+        school = "holy",
+
+        pvptalent = "blessing_of_sanctuary",
+        startsCombat = false,
+
+        handler = function ()
+            applyBuff( "blessing_of_sanctuary" )
         end,
     },
 
