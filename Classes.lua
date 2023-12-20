@@ -1722,6 +1722,9 @@ all:RegisterAuras( {
                     t.v3 = 1 -- channeled.
                     t.caster = unit
 
+                    if class.abilities[ spellID ] and class.abilities[ spellID ].dontChannel then
+                        removeBuff( "casting" )
+                    end
                     return
                 end
             end

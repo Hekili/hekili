@@ -3282,6 +3282,12 @@ local mt_dot = {
 ns.metatables.mt_dot = mt_dot
 
 
+local one_sec_gcd = {
+    DEMONHUNTER = true,
+    MONK = true,
+    ROGUE = true,
+}
+
 local mt_gcd = {
     __index = function( t, k )
         if k == "execute" then
@@ -3295,7 +3301,7 @@ local mt_gcd = {
             if gcd == "off" then return 0 end
             if gcd == "totem" then return 1 end
 
-            if UnitPowerType( "player" ) == Enum.PowerType.Energy or class.file == "DEMONHUNTER" then
+            if one_sec_gcd[ class.file ] or class.file == "DRUID" and UnitPowerType( "player" ) == Enum.PowerType.Energy then
                 return state.buff.adrenaline_rush.up and 0.8 or 1
             end
 
@@ -3308,7 +3314,7 @@ local mt_gcd = {
             return state.cooldown.global_cooldown.expires
 
         elseif k == "max" or k == "duration" then
-            if UnitPowerType( "player" ) == Enum.PowerType.Energy or class.file == "DEMONHUNTER" then
+            if one_sec_gcd[ class.file ] or class.file == "DRUID" and UnitPowerType( "player" ) == Enum.PowerType.Energy then
                 return state.buff.adrenaline_rush.up and 0.8 or 1
             end
 

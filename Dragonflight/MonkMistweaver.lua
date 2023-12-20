@@ -594,6 +594,18 @@ spec:RegisterHook( "reset_precast", function()
     gust_of_mist.count = nil
 end )
 
+local sm_spells = {
+    enveloping_mist = 1,
+    zen_pulse = 1,
+    vivify = 1
+}
+
+spec:RegisterHook( "runHandler", function( action )
+    if buff.soothing_mist.up and not sm_spells[ action ] then
+        removeBuff( "soothing_mist" )
+    end
+end )
+
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -995,13 +1007,18 @@ spec:RegisterAbilities( {
 
     soothing_mist = {
         id = 115175,
-        cast = 8,
-        channeled = true,
+        cast = 0,
+        -- channeled = true,
+        dontChannel = function()
+            applyBuff( "soothing_mist", buff.casting.remains )
+            return true
+        end,
         cooldown = 0,
         gcd = "totem",
 
         spend = function() return 0.16 * ( buff.mana_tea.up and 0.5 or 1 ) end,
         spendType = "mana",
+        nobuff = "soothing_mist",
 
         startsCombat = false,
         texture = 606550,
@@ -1072,7 +1089,9 @@ spec:RegisterAbilities( {
         id = 116670,
         cast = 1.5,
         cooldown = 0,
-        gcd = "spell",
+        gcd = function()
+            return buff.soothing_mist.up and "totem" or "spell"
+        end,
 
         spend = function()
             if buff.tea_of_serenity_v.up then return 0 end
