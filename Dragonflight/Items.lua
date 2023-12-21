@@ -29,6 +29,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "mastery",
+        self_buff = "algethar_puzzle",
 
         auras = {
             algethar_puzzle = {
@@ -53,6 +54,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "mastery",
+        self_buff = "biscuit_giver",
 
         auras = {
             biscuit_giver = {
@@ -75,6 +77,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "strength",
+        self_buff = "bound_by_fire_and_blaze",
 
         auras = {
             bound_by_fire_and_blaze = {
@@ -120,6 +123,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "versatility",
+        self_buff = "broodkeepers_promise",
 
         auras = {
             broodkeepers_promise = {
@@ -144,6 +148,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "versatility",
+        self_buff = "supernatural",
 
         auras = {
             brimming_lifepod = {
@@ -173,6 +178,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "healing",
+        self_buff = "caregivers_watch",
 
         auras = {
             caregivers_watch = {
@@ -196,6 +202,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "absorb",
+        self_buff = "choker_of_shielding",
 
         auras = {
             choker_of_shielding = {
@@ -274,6 +281,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "versatility",
+        self_buff = "watchers_blessing",
 
         auras = {
             watchers_blessing = {
@@ -518,6 +526,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "damage",
+        self_buff = "decoration_of_flame",
 
         auras = {
             decoration_of_flame = {
@@ -596,6 +605,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "crit",
+        self_buff = "erupting_spear_fragment",
 
         auras = {
             erupting_spear_fragment = {
@@ -714,6 +724,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "primary",
+        self_buff = "crumbling_power",
 
         auras = {
             crumbling_power = {
@@ -768,7 +779,7 @@ all:RegisterAbilities( {
 
         -- TODO: May require an ally?
         handler = function()
-            applyBuff( "erupting_spear_fragment", nil, min( 5, active_enemies ) )
+            applyBuff( "miniature_singing_stone" )
         end,
 
         proc = "absorb",
@@ -888,6 +899,7 @@ all:RegisterAbilities( {
             elseif buff.spoils_of_neltharus_vers.up    then return "versatility"     end
             return "random"
         end,
+        self_buff = "spoils_of_neltharus_crit",
 
         handler = function()
             if     buff.spoils_of_neltharus_crit.up    then applyBuff( "spoils_of_neltharus_crit"    )
@@ -951,6 +963,7 @@ all:RegisterAbilities( {
         toggle = "cooldowns",
 
         proc = "primary",
+        self_buff = "power_theft",
 
         handler = function()
             applyBuff( "power_theft" )
@@ -982,6 +995,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "primary",
+        self_buff = "tome_of_unstable_power",
 
         auras = {
             tome_of_unstable_power = {
@@ -1006,7 +1020,7 @@ all:RegisterAbilities( {
         gcd = "off",
 
         item = 193652,
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function()
             applyBuff( "treemouths_festering_splinter" )
@@ -1035,6 +1049,7 @@ all:RegisterAbilities( {
         end,
 
         proc = "speed",
+        self_buff = "pocketwatch_acceleration",
 
         auras = {
             pocketwatch_acceleration = {
@@ -1082,6 +1097,9 @@ all:RegisterAbilities( {
             applyBuff( "bonemaws_big_toe" )
         end,
 
+        proc = "crit",
+        self_buff = "bonemaws_big_toe",
+
         auras = {
             bonemaws_big_toe = {
                 id = 397400,
@@ -1101,6 +1119,9 @@ all:RegisterAbilities( {
         handler = function()
             applyBuff( "voidmenders_shadowgem" )
         end,
+
+        proc = "crit",
+        self_buff = "voidmenders_shadowgem",
 
         auras = {
             voidmenders_shadowgem = {
@@ -2112,6 +2133,7 @@ all:RegisterAbilities( {
         toggle = "cooldowns",
 
         proc = "mastery",
+        self_buff = "aqueous_enrichment",
 
         handler = function()
             -- Do nothing; it's up to the player to collect orbs.
@@ -2160,6 +2182,9 @@ all:RegisterAbilities( {
             applyBuff( "ancient_protection" )
         end,
 
+        proc = "absorb",
+        self_buff = "ancient_protection",
+
         auras = {
             ancient_protection = {
                 id = 429271,
@@ -2187,6 +2212,9 @@ all:RegisterAbilities( {
             applyBuff( "alacritous_spores" )
         end,
 
+        proc = "haste",
+        self_buff = "alacritous_spores",
+
         auras = {
             alacritous_spores = {
                 id = 429276,
@@ -2208,6 +2236,9 @@ all:RegisterAbilities( {
         handler = function()
             applyBuff( "tidehunters_blessing" )
         end,
+
+        proc = "primary",
+        self_buff = "tidehunters_blessing",
 
         auras = {
             tidehunters_blessing = {
