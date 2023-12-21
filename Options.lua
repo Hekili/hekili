@@ -129,7 +129,7 @@ function Hekili:RunOneTimeFixes()
             profile.runOnce[k] = true
             local ok, err = pcall( v, profile )
             if err then
-                Hekili:Error( "One-Time update failed: " .. k .. ": " .. err )
+                Hekili:Error( "One-time update failed: " .. k .. ": " .. err )
                 profile.runOnce[ k ] = nil
             end
         end
@@ -4981,9 +4981,85 @@ do
                         targets = {
                             type = "group",
                             name = "Targeting",
-                            desc = "Settings related to how enemies are identified and counted by the addon.",
+                            desc = "Settings related to how enemies are identified and counted.",
                             order = 3,
                             args = {
+                                yourTarget = {
+                                    type = "toggle",
+                                    name = "Your Target",
+                                    desc = "Your actual target is always counted as an enemy, even if you do not have a target.\n\n"
+                                        .. "This setting cannot be disabled.",
+                                    width = "full",
+                                    get = function() return true end,
+                                    set = function() end,
+                                    order = 0.01,
+                                },
+
+                                -- Damage Detection Quasi-Group
+                                damage = {
+                                    type = "toggle",
+                                    name = "Count Damaged Enemies",
+                                    desc = "If checked, targets you've damaged will be counted as a valid enemy for several seconds, distinguishing them from other enemies "
+                                        .. "that you have not attacked.\n\n"
+                                        .. CreateAtlasMarkup( "services-checkmark" ) .. " Auto-enabled when nameplates are disabled\n\n"
+                                        .. CreateAtlasMarkup( "services-checkmark" ) .. " Recommended for |cffffd100ranged|r unable to use |cffffd100Pet-Based Target Detection|r",
+                                    width = "full",
+                                    order = 0.02,
+                                },
+
+                                dmgGroup = {
+                                    type = "group",
+                                    inline = true,
+                                    name = " ",
+                                    order = 0.03,
+                                    hidden = function () return self.DB.profile.specs[ id ].damage == false end,
+                                    args = {
+                                        damageExpiration = {
+                                            type = "range",
+                                            name = "Timeout",
+                                            desc = "When |cFFFFD100Count Damaged Enemies|r is checked, enemies will be counted until they have been ignored/undamaged for this period of time (or they die).\n\n"
+                                                .. "Ideally, this period should reflect enough time that you will continue to do AOE/cleave damage to enemies in this period, but not so long that enemies "
+                                                .. "could have wandered a great distance away in the interim.",
+                                            softMin = 3,
+                                            min = 1,
+                                            max = 10,
+                                            step = 0.1,
+                                            order = 1,
+                                            width = "full",
+                                        },
+
+                                        damagePets = {
+                                            type = "toggle",
+                                            name = "Detect Enemies Damaged by Pets",
+                                            desc = "If checked, the addon will count enemies that your pets or minions have hit (or hit you) within the past several seconds.  "
+                                                .. "This may give misleading target counts if your pet/minions are spread out over the battlefield.",
+                                            order = 2,
+                                            width = "full",
+                                        },
+
+                                        damageDots = {
+                                            type = "toggle",
+                                            name = "Count Debuffed/Dotted Enemies",
+                                            desc = "When checked, enemies that have your debuffs or damage-over-time effects will be counted as targets, regardless of their location on the battlefield.\n\n"
+                                                .. "This may not be ideal for melee specializations, as enemies may wander away after you've applied your dots/bleeds.  If used with |cFFFFD100Use Nameplate Detection|r, "
+                                                .. "dotted enemies that are no longer in melee range will be filtered.\n\n"
+                                                .. "Recommended for ranged specializations that will DoT multiple enemies and do not rely on the enemy being stacked for AOE damage.",
+                                            width = "full",
+                                            order = 3,
+                                        },
+
+                                        damageOnScreen = {
+                                            type = "toggle",
+                                            name = "Count On-Screen (Nameplates) |cffff0000Only|r",
+                                            desc = function()
+                                                return "If checked, the damage-based target system will only count enemies that are on screen.  If unchecked, offscreen targets can be included in target counts.\n\n"
+                                                    .. ( GetCVar( "nameplateShowEnemies" ) == "0" and "|cFFFF0000Requires Enemy Nameplates|r" or "|cFF00FF00Requires Enemy Nameplates|r" )
+                                            end,
+                                            width = "full",
+                                            order = 4,
+                                        },
+                                    },
+                                },
                                 nameplates = {
                                     type = "toggle",
                                     name = "Count Targets by Nameplates",
@@ -5217,7 +5293,7 @@ do
                                     }
                                 },
 
-                                --[[ nameplateRange = {
+                                nameplateRange = {
                                     type = "range",
                                     name = "Nameplate Detection Range",
                                     desc = "When |cFFFFD100Use Nameplate Detection|r is checked, the addon will count any enemies with visible nameplates within this radius of your character.",
@@ -5229,72 +5305,6 @@ do
                                     max = 100,
                                     step = 1,
                                     order = 2,
-                                }, ]]
-
-                                -- Damage Detection Quasi-Group
-                                damage = {
-                                    type = "toggle",
-                                    name = "Count Damaged Enemies",
-                                    desc = "If checked, targets you've damaged will be counted as a valid target for several seconds, distinguishing them from other enemies "
-                                        .. "that you have not attacked.\n\n"
-                                        .. AtlasToString( "common-icon-checkmark" ) .. " Recommended for |cffffd100melee|r without a short-ranged (10 yds) ability for nameplate "
-                                        .. "detection and |cffffd100ranged|r unable to use |cffffd100Pet-Based Target Detection|r.",
-                                    width = "full",
-                                    order = 4,
-                                },
-
-                                dmgGroup = {
-                                    type = "group",
-                                    inline = true,
-                                    name = "Damage",
-                                    order = 5,
-                                    hidden = function () return self.DB.profile.specs[ id ].damage == false end,
-                                    args = {
-                                        damageExpiration = {
-                                            type = "range",
-                                            name = "Timeout",
-                                            desc = "When |cFFFFD100Count Damaged Enemies|r is checked, enemies will be counted until they have been ignored/undamaged for this period of time (or they die).\n\n"
-                                                .. "Ideally, this period should reflect enough time that you will continue to do AOE/cleave damage to enemies in this period, but not so long that enemies "
-                                                .. "could have wandered a great distance away in the interim.",
-                                            softMin = 3,
-                                            min = 1,
-                                            max = 10,
-                                            step = 0.1,
-                                            order = 1,
-                                            width = "full",
-                                        },
-
-                                        damagePets = {
-                                            type = "toggle",
-                                            name = "Detect Enemies Damaged by Pets",
-                                            desc = "If checked, the addon will count enemies that your pets or minions have hit (or hit you) within the past several seconds.  "
-                                                .. "This may give misleading target counts if your pet/minions are spread out over the battlefield.",
-                                            order = 2,
-                                            width = "full",
-                                        },
-
-                                        damageDots = {
-                                            type = "toggle",
-                                            name = "Count Debuffed/Dotted Enemies",
-                                            desc = "When checked, enemies that have your debuffs or damage-over-time effects will be counted as targets, regardless of their location on the battlefield.\n\n"
-                                                .. "This may not be ideal for melee specializations, as enemies may wander away after you've applied your dots/bleeds.  If used with |cFFFFD100Use Nameplate Detection|r, "
-                                                .. "dotted enemies that are no longer in melee range will be filtered.\n\n"
-                                                .. "Recommended for ranged specializations that will DoT multiple enemies and do not rely on the enemy being stacked for AOE damage.",
-                                            width = "full",
-                                            order = 3,
-                                        },
-
-                                        damageOnScreen = {
-                                            type = "toggle",
-                                            name = "Count On-Screen (Nameplates) |cffff0000Only|r",
-                                            desc = function()
-                                                return "If checked, the damage-based target system will only count enemies that are on screen.  If unchecked, offscreen targets can be included in target counts.\n\n"
-                                                    .. ( GetCVar( "nameplateShowEnemies" ) == "0" and "|cFFFF0000Requires Enemy Nameplates|r" or "|cFF00FF00Requires Enemy Nameplates|r" )
-                                            end,
-                                            width = "full",
-                                            order = 4,
-                                        },
-                                    },
                                 },
 
                                 cycle = {

@@ -1280,7 +1280,7 @@ spec:RegisterAbilities( {
 } )
 
 
-spec:RegisterRanges( "carve", "butchery", "harpoon", "arcane_shot" )
+spec:RegisterRanges( "raptor_strike", "muzzle", "arcane_shot" )
 
 spec:RegisterOptions( {
     enabled = true,
@@ -1289,7 +1289,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "carve",
+    rangeChecker = "raptor_strike",
     rangeFilter = false,
 
     damage = true,
