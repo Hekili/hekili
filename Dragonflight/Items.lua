@@ -1819,6 +1819,9 @@ all:RegisterAbilities( {
             applyBuff( "mirror_of_fractured_tomorrows" )
         end,
 
+        proc = "primary",
+        self_buff = "mirror_of_fractured_tomorrows",
+
         auras = {
             mirror_of_fractured_tomorrows = {
                 id = 418527,
@@ -1909,6 +1912,9 @@ all:RegisterAbilities( {
             applyDebuff( "player", "paradox" )
         end,
 
+        proc = "haste",
+        self_buff = "timethiefs_gambit",
+
         auras = {
             timethiefs_gambit = {
                 id = 417534,
@@ -1961,6 +1967,7 @@ all:RegisterAbilities( {
         toggle = "cooldowns",
 
         proc = "primary",
+        self_buff = "soul_ignition",
 
         handler = function()
             applyBuff( "soul_ignition" )
@@ -2020,6 +2027,8 @@ all:RegisterAbilities( {
             applyBuff( "solar_maelstrom" )
         end,
 
+        proc = "damage",
+
         auras = {
             solar_maelstrom = {
                 id = 425417,
@@ -2065,6 +2074,9 @@ all:RegisterAbilities( {
             applyBuff( "shadowflame_rage" )
         end,
 
+        proc = "absorb",
+        self_buff = "shadowflame_rage",
+
         auras = {
             shadowflame_rage = {
                 id = 422750,
@@ -2086,6 +2098,9 @@ all:RegisterAbilities( {
         start = function()
             applyBuff( "nymues_vengeful_spindle" )
         end,
+
+        proc = "mastery",
+        self_buff = "nymues_vengeful_spindle",
 
         auras = {
             nymues_vengeful_spindle = {
@@ -2109,6 +2124,9 @@ all:RegisterAbilities( {
         handler = function()
             applyBuff( "smoldering_seedling" )
         end,
+
+        proc = "mastery",
+        self_buff = "smoldering_seedling",
 
         auras = {
             smoldering_seedling = {
