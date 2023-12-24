@@ -2469,7 +2469,7 @@ spec:RegisterSetting( "project_windfury", 0, {
 
 spec:RegisterStateExpr( "project_windfury_totem", function ()
     if not settings.project_windfury or settings.project_windfury == 0 then return false end
-    return totem.windfury_totem.remains >= settings.project_windfury and buff.windfury_totem.down
+    return talent.windfury_totem.enabled and totem.windfury_totem.remains >= settings.project_windfury and buff.windfury_totem.down
 end )
 
 spec:RegisterSetting( "tp_macro", nil, {
