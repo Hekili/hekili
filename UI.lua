@@ -556,7 +556,8 @@ do
                             if setting.info and ( not setting.info.arg or setting.info.arg() ) then
                                 if setting.info.type == "toggle" then
                                     local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
-                                    insert( menuData, {
+                                    local submenu
+                                    submenu = {
                                         text = name,
                                         tooltipTitle = name,
                                         tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
@@ -565,24 +566,30 @@ do
                                             menu.args[1] = setting.name
                                             setting.info.set( menu.args, not setting.info.get( menu.args ) )
 
-                                            local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
+                                            local nm = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
 
                                             if Hekili.DB.profile.notifications.enabled then
-                                                Hekili:Notify( name .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
+                                                Hekili:Notify( nm .. ": " .. ( setting.info.get( menu.args ) and "ON" or "OFF" ) )
                                             else
-                                                Hekili:Print( name .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
+                                                Hekili:Print( nm .. ": " .. ( setting.info.get( menu.args ) and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
                                             end
+
+                                            submenu.text = nm
+                                            submenu.tooltipTitle = nm
+                                            submenu.tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc
                                         end,
                                         checked = function ()
                                             menu.args[1] = setting.name
                                             return setting.info.get( menu.args )
                                         end,
                                         hidden = function () return Hekili.State.spec.id ~= i end,
-                                    } )
+                                    }
+                                    insert( menuData, submenu )
 
                                 elseif setting.info.type == "select" then
                                     local name = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
-                                    local submenu = {
+                                    local submenu
+                                    submenu = {
                                         text = name,
                                         tooltipTitle = name,
                                         tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc,
@@ -606,6 +613,11 @@ do
                                                         menu.args[1] = setting.name
                                                         setting.info.set( menu.args, k )
 
+                                                        local nm = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
+                                                        submenu.text = nm
+                                                        submenu.tooltipTitle = nm
+                                                        submenu.tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc
+
                                                         for k, v in pairs( Hekili.DisplayPool ) do
                                                             v:OnEvent( "HEKILI_MENU" )
                                                         end
@@ -624,6 +636,11 @@ do
                                                     func = function ()
                                                         menu.args[1] = setting.name
                                                         setting.info.set( menu.args, k )
+
+                                                        local nm = type( setting.info.name ) == "function" and setting.info.name() or setting.info.name
+                                                        submenu.text = nm
+                                                        submenu.tooltipTitle = nm
+                                                        submenu.tooltipText = type( setting.info.desc ) == "function" and setting.info.desc() or setting.info.desc
 
                                                         for k, v in pairs( Hekili.DisplayPool ) do
                                                             v:OnEvent( "HEKILI_MENU" )
