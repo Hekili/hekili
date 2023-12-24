@@ -2384,11 +2384,16 @@ do
                                 order = 3.1,
                                 width = 1.19,
                                 values = {
-                                    ["Interface\\Cooldown\\star4"] = "Star (Default)",
-                                    ["Interface\\Cooldown\\ping4"] = "Circle",
-                                    ["Interface\\Cooldown\\starburst"] = "Starburst",
                                     ["Interface\\AddOns\\Hekili\\Textures\\MonoCircle2"] = "Monochrome Circle Thin",
                                     ["Interface\\AddOns\\Hekili\\Textures\\MonoCircle5"] = "Monochrome Circle Thick",
+                                    ["Interface\\Cooldown\\ping4"] = "Circle",
+                                    ["Interface\\Cooldown\\star4"] = "Star (Default)",
+                                    ["Interface\\Cooldown\\starburst"] = "Starburst",
+                                    ["Interface\\Masks\\CircleMaskScalable"] = "Filled Circle",
+                                    ["Interface\\Masks\\SquareMask"] = "Filled Square",
+                                    ["Interface\\Soulbinds\\SoulbindsConduitCollectionsIconMask"] = "Filled Octagon",
+                                    ["Interface\\Soulbinds\\SoulbindsConduitPendingAnimationMask"] = "Octagon Outline",
+                                    ["Interface\\Soulbinds\\SoulbindsEnhancedConduitMask"] = "Octagon Thick",
                                 },
                                 get = function()
                                     return Hekili.DB.profile.flashTexture
