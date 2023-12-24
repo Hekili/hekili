@@ -2851,7 +2851,7 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "priority_rotation", false, {
-    name = "Funnel AOE -> Target",
+    name = "Funnel AOE -> Current Target",
     desc = "If checked, the addon's default priority list will focus on funneling damage into your primary target when multiple enemies are present.",
     type = "toggle",
     width = 1.5
@@ -2870,6 +2870,16 @@ spec:RegisterSetting( "envenom_pool_pct", 50, {
 spec:RegisterStateExpr( "envenom_pool_deficit", function ()
     return energy.max * ( ( 100 - ( settings.envenom_pool_pct or 100 ) ) / 100 )
 end )
+
+spec:RegisterSetting( "dot_threshold", 7, {
+    name = "Remaining Time DoT Threshold",
+    desc = "If set above 0, the DoT priority will not be used if your enemy or enemies will not survive longer than the specified time.",
+    type = "range",
+    min = 0,
+    max = 10,
+    step = 0.1,
+    width = "full"
+} )
 
 spec:RegisterSetting( "mfd_points", 3, {
     name = "|T236340:0|t Marked for Death Combo Points",
