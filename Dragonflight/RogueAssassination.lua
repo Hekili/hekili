@@ -1581,6 +1581,7 @@ spec:RegisterAbilities( {
     -- Ambush the target, causing $s1 Physical damage.$?s383281[    Has a $193315s3% chance to hit an additional time, making your next Pistol Shot half cost and double damage.][]    |cFFFFFFFFAwards $s2 combo $lpoint:points;$?s383281[ each time it strikes][].|r
     ambush = {
         id = 8676,
+        flash = { 8676, 430023 },
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1611,6 +1612,8 @@ spec:RegisterAbilities( {
         bind = function()
             return buff.audacity.up and "sinister_strike" or nil
         end,
+
+        copy = 430023
     },
 
     -- Talent: Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 40% chance to poison the enemy, dealing 75 Nature damage and applying Amplification for 12 sec. Envenom can consume 10 stacks of Amplification to deal 35% increased damage. Max 20 stacks.
@@ -2719,9 +2722,13 @@ spec:RegisterAbilities( {
     vanish = {
         id = 1856,
         cast = 0,
-        charges = 1,
+        charges = function()
+            if talent.without_a_trace.enabled then return 2 end
+        end,
         cooldown = function() return 120 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
-        recharge = function() return 120 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
+        recharge = function()
+            if talent.without_a_trace.enabled then return 120 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end
+        end,
         gcd = "off",
 
         startsCombat = false,
