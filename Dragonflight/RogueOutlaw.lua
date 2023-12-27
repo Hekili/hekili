@@ -841,15 +841,15 @@ spec:RegisterHook( "reset_precast", function()
 
     if talent.underhanded_upper_hand.enabled then
         if buff.adrenaline_rush.up and buff.subterfuge.up then
-            buff.adrenaline_rush.expires = buff.adrenaline_rush.expires + buff.subterfuge.remains
+            buff.adrenaline_rush.expires = buff.adrenaline_rush.remains + buff.subterfuge.remains
         end
 
         if buff.blade_flurry.up and buff.adrenaline_rush.up then
-            buff.blade_flurry.expires = buff.blade_flurry.expires + buff.adrenaline_rush.remains
+            buff.blade_flurry.expires = buff.blade_flurry.remains + buff.adrenaline_rush.remains
         end
 
         if buff.slice_and_dice.up and buff.blade_flurry.up then
-            buff.slice_and_dice.expires = buff.slice_and_dice.expires + buff.blade_flurry.remains
+            buff.slice_and_dice.expires = buff.slice_and_dice.remains + buff.blade_flurry.remains
         end
     end
 
@@ -909,7 +909,7 @@ spec:RegisterAbilities( {
                 applyBuff( "loaded_dice" )
             end
             if talent.underhanded_upper_hand.enabled and buff.subterfuge.up then
-                buff.adrenaline_rush.expires = buff.adrenaline_rush.expires + buff.subterfuge.remains
+                buff.adrenaline_rush.expires = buff.adrenaline_rush.remains + buff.subterfuge.remains
             end
             if azerite.brigands_blitz.enabled then
                 applyBuff( "brigands_blitz" )
@@ -983,8 +983,8 @@ spec:RegisterAbilities( {
             applyBuff( "blade_flurry" )
             if talent.deft_maneuvers.enabled then gain( action.blade_flurry.cp_gain, "combo_points" ) end
             if talent.underhanded_upper_hand.enabled then
-                if buff.adrenaline_rush.up then buff.blade_flurry.expires = buff.blade_flurry.expires + buff.adrenaline_rush.remains end
-                if buff.slice_and_dice.up then buff.slice_and_dice.expires = buff.slice_and_dice.expires + buff.blade_flurry.remains end
+                if buff.adrenaline_rush.up then buff.blade_flurry.expires = buff.blade_flurry.remains + buff.adrenaline_rush.remains end
+                if buff.slice_and_dice.up then buff.slice_and_dice.expires = buff.slice_and_dice.remains + buff.blade_flurry.remains end
             end
         end,
     },
