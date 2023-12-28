@@ -51,8 +51,8 @@ actions.default_aoe+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>
 actions.default_aoe+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&!talent.hit_combo&spinning_crane_kick.max&buff.bonedust_brew.up
 actions.default_aoe+=/strike_of_the_windlord,cycle_targets=1,if=talent.thunderfist
 actions.default_aoe+=/whirling_dragon_punch,if=active_enemies>8
+actions.default_aoe+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&buff.bonedust_brew.up&combo_strike&spinning_crane_kick.max
 actions.default_aoe+=/fists_of_fury,cycle_targets=1
-actions.default_aoe+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&buff.bonedust_brew.up&combo_strike&spinning_crane_kick.max&!buff.blackout_reinforcement.up
 actions.default_aoe+=/rising_sun_kick,cycle_targets=1,if=buff.bonedust_brew.up&buff.pressure_point.up&set_bonus.tier30_2pc
 actions.default_aoe+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3&talent.shadowboxing_treads
 actions.default_aoe+=/blackout_kick,cycle_targets=1,if=talent.shadowboxing_treads&combo_strike&buff.blackout_reinforcement.up
