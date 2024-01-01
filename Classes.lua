@@ -1703,6 +1703,16 @@ all:RegisterAuras( {
                     t.v3 = 0
                     t.caster = unit
 
+                    if unit == "target" and Hekili.DB.profile.filterCasts then
+                        local filters = Hekili.DB.profile.castFilters
+                        local npcid = state.target.npcid
+
+                        if npcid and filters[ npcid ] and not filters[ npcid ][ spellID ] then
+                            if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' ignored per user preference.", spell ) end
+                            removeDebuff( "casting" )
+                        end
+                    end
+
                     return
                 end
 
@@ -1724,7 +1734,16 @@ all:RegisterAuras( {
 
                     if class.abilities[ spellID ] and class.abilities[ spellID ].dontChannel then
                         removeBuff( "casting" )
+                    elseif unit == "target" and Hekili.DB.profile.filterCasts then
+                        local filters = Hekili.DB.profile.castFilters
+                        local npcid = state.target.npcid
+
+                        if npcid and filters[ npcid ] and not filters[ npcid ][ spellID ] then
+                            if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' ignored per user preference.", spell ) end
+                            removeDebuff( "casting" )
+                        end
                     end
+
                     return
                 end
             end

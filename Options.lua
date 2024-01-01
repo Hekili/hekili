@@ -681,6 +681,171 @@ do
                     encounters = {},
                 },
 
+                filterCasts = true,
+                castFilters = {
+                    [122973] = {
+                        [253517] = "Mending Word",
+                        [258653] = "Bulwark of Juju",
+                        desc = "Atal'Dazar - Dazar'ai Confessor",
+                    },
+                    [127879] = {
+                        [258653] = "Bulwark of Juju",
+                        desc = "Atal'Dazar - Shieldbearer of Zul",
+                    },
+                    [135989] = {
+                        [258653] = "Bulwark of Juju",
+                        desc = "Atal'Dazar - Shieldbearer of Zul",
+                    },
+                    [122969] = {
+                        [252781] = "Unstable Hex",
+                        desc = "Atal'Dazar - Zanchuli Witch-Doctor",
+                    },
+                    [128434] = {
+                        [255041] = "Terrifying Screech",
+                        desc = "Atal'Dazar - Feasting Skyscreamer",
+                    },
+                    [122965] = {
+                        [259572] = "Noxious Stench",
+                        desc = "Atal'Dazar - Vol'kaal (Boss)",
+                    },
+                    [95769] = {
+                        [200630] = "Unnerving Screech",
+                        [200631] = "Unnerving Screech",
+                        desc = "Darkheart Thicket - Mindshattered Screecher",
+                    },
+                    [101991] = {
+                        [204243] = "Tormenting Eye",
+                        desc = "Darkheart Thicket - Nightmare Dweller",
+                    },
+                    [113398] = {
+                        [225562] = "Blood Metamorphosis",
+                        desc = "Darkheart Thicket - Bloodtainted Fury (small ones)",
+                    },
+                    [100527] = {
+                        [201399] = "Dread Inferno",
+                        [201400] = "Dread Inferno",
+                        desc = "Darkheart Thicket - Dreadfire Imp",
+                    },
+                    [131685] = {
+                        [264390] = "Spellbind",
+                        desc = "Waycrest Manor - Runic Disciple",
+                    },
+                    [135049] = {
+                        [265346] = "Pallid Glare",
+                        desc = "Waycrest Manor - Dreadwing Raven",
+                    },
+                    [131812] = {
+                        [263959] = "Soul Volley",
+                        desc = "Waycrest Manor - Heartsbane Soulcharmer",
+                    },
+                    [137830] = {
+                        [271174] = "Retch",
+                        desc = "Waycrest Manor - Palid Gorger",
+                    },
+                    [134024] = {
+                        [278444] = "Infest",
+                        [278456] = "Infest",
+                        desc = "Waycrest Manor - Devouring Maggot",
+                    },
+                    [142587] = {
+                        [278444] = "Infest",
+                        [278456] = "Infest",
+                        desc = "Waycrest Manor - Devouring Maggot",
+                    },
+                    [135365] = {
+                        [265876] = "Ruinous Volley",
+                        desc = "Waycrest Manor - Alma",
+                    },
+                    [131821] = {
+                        [264407] = "Horrific Visage",
+                        desc = "Waycrest Manor - Faceless Maiden",
+                    },
+                    [131864] = {
+                        [266225] = "Darkened Lightning",
+                        desc = "Waycrest Manor - Gorak Tul",
+                    },
+                    [206140] = {
+                        [415770] = "Infinite Bolt Volley",
+                        desc = "Galakrond's Fall - Coalesced Time",
+                    },
+                    [206066] = {
+                        [415437] = "Enervate",
+                        [415439] = "Enervate",
+                        desc = "Galakrond's Fall - Timestream Leech",
+                    },
+                    [199748] = {
+                        [417481] = "Displace Chronosequence",
+                        desc = "Murozond's Rise - Timeline Marauder",
+                    },
+                    [208698] = {
+                        [418200] = "Infinite Burn",
+                        desc = "Murozond's Rise - Infinite Riftmage",
+                    },
+                    [201223] = {
+                        [413606] = "Corroding Volley",
+                        [413607] = "Corroding Volley",
+                        [400180] = "Corroding Volley",
+                        desc = "Murozond's Rise - Infinite Twilight Magus",
+                    },
+                    [205363] = {
+                        [411300] = "Fish Bolt Volley",
+                        desc = "Murozond's Rise - Waveshaper",
+                    },
+                    [205337] = {
+                        [412378] = "Dizzying Sands",
+                        desc = "Murozond's Rise - Infinite Timebender",
+                    },
+                    [205727] = {
+                        [412233] = "Rocket Bolt Volley",
+                        desc = "Murozond's Rise - Time-Lost Rocketeer",
+                    },
+                    [204206] = {
+                        [407891] = "Healing Wave",
+                        desc = "Murozond's Rise - Horde Farseer",
+                    },
+                    [98280] = {
+                        [200248] = "Arcane Blitz",
+                        desc = "Black Rook Hold - Risen Arcanist",
+                    },
+                    [102788] = {
+                        [227913] = "Felfrenzy",
+                        desc = "Black Rook Hold - Felspite Dominator",
+                    },
+                    [81819] = {
+                        [164965] = "Choking Vines",
+                        desc = "Everbloom - Everbloom Mender",
+                    },
+                    [81820] = {
+                        [164965] = "Choking Vines",
+                        desc = "Everbloom - Everbloom Mender",
+                    },
+                    [81985] = {
+                        [165213] = "Enraged Growth",
+                        desc = "Everbloom - Everbloom Cultivator",
+                    },
+                    [84957] = {
+                        [169839] = "Pyroblast",
+                        desc = "Everbloom - Putrid Pyromancer",
+                    },
+                    [83892] = {
+                        [168082] = "Revitalize",
+                        desc = "Everbloom - Gola (Boss)",
+                    },
+                    [83893] = {
+                        [427459] = "Toxic Bloom",
+                        desc = "Everbloom - Telu (Boss)",
+                    },
+                    [41096] = {
+                        [76813] = "Healing Wave",
+                        desc = "Throne of the Tides - Naz'jar Oracle",
+                    },
+                    -- TEST
+                    [195064] = {
+                        [3722351] = "Healing Wave",
+                        desc = "Test Mob - Please Ignore"
+                    }
+                },
+
                 iconStore = {
                     hide = false,
                 },
@@ -1341,8 +1506,8 @@ do
                     },
                     main = {
                         type = 'group',
-                        name = "Main",
-                        desc = "Includes display position, icons, primary icon size/shape, etc.",
+                        name = "Icons",
+                        desc = "Includes display position, icon size/shape, etc.",
                         order = 1,
 
                         args = {
@@ -1356,10 +1521,10 @@ do
 
                             elvuiCooldown = {
                                 type = "toggle",
-                                name = "Apply ElvUI Cooldown Style",
+                                name = "Apply ElvUI Cooldown Style to Primary Icon",
                                 desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
                                 width = "full",
-                                order = 0.51,
+                                order = 16,
                                 hidden = function () return _G["ElvUI"] == nil end,
                             },
 
@@ -1370,6 +1535,7 @@ do
                                 min = 1,
                                 max = 10,
                                 step = 1,
+                                bigStep = 1,
                                 width = "full",
                                 order = 1,
                                 disabled = function()
@@ -1403,7 +1569,7 @@ do
                                 disabled = function()
                                     return name == "Multi"
                                 end,
-                                hidden = function( info, val )
+                                hidden = true --[[ function( info, val )
                                     local n = #info
                                     local display = info[2]
 
@@ -1412,7 +1578,7 @@ do
                                     end
 
                                     return false
-                                end,
+                                end, ]]
                             },
 
                             pos = {
@@ -1563,9 +1729,9 @@ do
 
                             advancedFrame = {
                                 type = "group",
-                                name = "Frame Layer",
+                                name = "Display Frame Layer",
                                 inline = true,
-                                order = 16,
+                                order = 99,
                                 args = {
                                     frameStrata = {
                                         type = "select",
@@ -1582,58 +1748,33 @@ do
                                             "FULLSCREEN_DIALOG",
                                             "TOOLTIP"
                                         },
-                                        width = 1.49,
+                                        dialogControl = "DropDownLeftAligned",
+                                        width = "full",
                                         order = 1,
                                     },
-
-                                    frameLevel = {
-                                        type = "range",
-                                        name = "Level",
-                                        desc = "Frame Level determines the display's position within its current layer.\n\n" ..
-                                                "Default value is |cFFFFD10010|r.",
-                                        min = 1,
-                                        max = 10000,
-                                        step = 1,
-                                        width = 1.49,
-                                        order = 2,
-                                    }
-                                }
+                                },
                             },
 
-                            hideOmniCC = {
+                            queuedElvuiCooldown = {
                                 type = "toggle",
-                                name = "Hide OmniCC",
-                                desc = "If enabled, OmniCC will be hidden from each icon oh this display.",
-                                width = "full",
-                                order = 18,
-                            },
-                        },
-                    },
-
-                    queue = {
-                        type = "group",
-                        name = "Queue",
-                        desc = "Includes anchoring, size, shape, and position settings when a display can show more than one icon.",
-                        order = 2,
-                        disabled = function ()
-                            return data.numIcons == 1
-                        end,
-
-                        args = {
-                            elvuiCooldown = {
-                                type = "toggle",
-                                name = "Apply ElvUI Cooldown Style",
+                                name = "Apply ElvUI Cooldown Style to Queued Icons",
                                 desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
                                 width = "full",
-                                order = 1,
+                                order = 23,
+                                get = function( info )
+                                    return Hekili.DB.profile.displays[ name ].queue.elvuiCooldown
+                                end,
+                                set = function( info, val )
+                                    Hekili.DB.profile.displays[ name ].queue.elvuiCooldown = val
+                                end,
                                 hidden = function () return _G["ElvUI"] == nil end,
                             },
 
                             iconSizeGroup = {
                                 type = "group",
                                 inline = true,
-                                name = "Icon Size",
-                                order = 2,
+                                name = "Queued Icon Size",
+                                order = 21,
                                 args = {
                                     width = {
                                         type = 'range',
@@ -1644,7 +1785,13 @@ do
                                         step = 1,
                                         bigStep = 1,
                                         order = 10,
-                                        width = 1.49
+                                        width = 1.49,
+                                        get = function( info )
+                                            return Hekili.DB.profile.displays[ name ].queue.width
+                                        end,
+                                        set = function( info, val )
+                                            Hekili.DB.profile.displays[ name ].queue.width = val
+                                        end,
                                     },
 
                                     height = {
@@ -1656,7 +1803,13 @@ do
                                         step = 1,
                                         bigStep = 1,
                                         order = 11,
-                                        width = 1.49
+                                        width = 1.49,
+                                        get = function( info )
+                                            return Hekili.DB.profile.displays[ name ].queue.height
+                                        end,
+                                        set = function( info, val )
+                                            Hekili.DB.profile.displays[ name ].queue.height = val
+                                        end,
                                     },
                                 }
                             },
@@ -1664,8 +1817,8 @@ do
                             anchorGroup = {
                                 type = "group",
                                 inline = true,
-                                name = "Positioning",
-                                order = 3,
+                                name = "Queued Icon Positioning",
+                                order = 22,
                                 args = {
                                     anchor = {
                                         type = 'select',
@@ -1674,12 +1827,19 @@ do
                                         values = anchorPositions,
                                         width = 1.49,
                                         order = 1,
+                                        get = function( info )
+                                            return Hekili.DB.profile.displays[ name ].queue.anchor
+                                        end,
+                                        set = function( info, val )
+                                            Hekili.DB.profile.displays[ name ].queue.anchor = val
+                                        end,
                                     },
 
                                     direction = {
                                         type = 'select',
                                         name = 'Grow Direction',
-                                        desc = "Select the direction for the icon queue.",
+                                        desc = "Select the direction for the icon queue.\n\n"
+                                            .. "This option generally matches Anchor To selection, but you can specify another direction to make a creative layout.",
                                         values = {
                                             TOP = 'Up',
                                             BOTTOM = 'Down',
@@ -1688,6 +1848,12 @@ do
                                         },
                                         width = 1.49,
                                         order = 1.1,
+                                        get = function( info )
+                                            return Hekili.DB.profile.displays[ name ].queue.direction
+                                        end,
+                                        set = function( info, val )
+                                            Hekili.DB.profile.displays[ name ].queue.direction = val
+                                        end,
                                     },
 
                                     spacer01 = {
@@ -1700,23 +1866,37 @@ do
                                     offsetX = {
                                         type = 'range',
                                         name = 'X Offset',
-                                        desc = 'Specify the horizontal offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.  Positive numbers move the queue to the right, negative numbers move it to the left.',
+                                        desc = "Specify the horizontal offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.\n\n"
+                                            .. "Positive numbers move the queue to the right, negative numbers move it to the left.",
                                         min = -100,
                                         max = 500,
                                         step = 1,
                                         width = 1.49,
                                         order = 2,
+                                        get = function( info )
+                                            return Hekili.DB.profile.displays[ name ].queue.offsetX
+                                        end,
+                                        set = function( info, val )
+                                            Hekili.DB.profile.displays[ name ].queue.offsetX = val
+                                        end,
                                     },
 
                                     offsetY = {
                                         type = 'range',
                                         name = 'Y Offset',
-                                        desc = 'Specify the vertical offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.  Positive numbers move the queue up, negative numbers move it down.',
+                                        desc = "Specify the vertical offset (in pixels) for the queue, in relation to the anchor point on the primary icon for this display.\n\n"
+                                            .. "Positive numbers move the queue up, negative numbers move it down.",
                                         min = -100,
                                         max = 500,
                                         step = 1,
                                         width = 1.49,
                                         order = 2.1,
+                                        get = function( info )
+                                            return Hekili.DB.profile.displays[ name ].queue.offsetY
+                                        end,
+                                        set = function( info, val )
+                                            Hekili.DB.profile.displays[ name ].queue.offsetY = val
+                                        end,
                                     },
 
                                     spacer02 = {
@@ -1736,7 +1916,13 @@ do
                                         max = 500,
                                         step = 1,
                                         order = 3,
-                                        width = 2.98
+                                        width = 2.98,
+                                        get = function( info )
+                                            return Hekili.DB.profile.displays[ name ].queue.spacing
+                                        end,
+                                        set = function( info, val )
+                                            Hekili.DB.profile.displays[ name ].queue.spacing = val
+                                        end,
                                     },
                                 }
                             },
@@ -2600,7 +2786,7 @@ do
 
                     empowerment = {
                         type = "group",
-                        name = NewFeature .. "Empowerment",
+                        name =  "Empowerment",
                         desc = "Empowerment stages are shown with additional text placed on the recommendation icon and can glow upon reaching the desired stage.",
                         order = 9.1,
                         hidden = function()
@@ -8034,11 +8220,36 @@ do
                             order = 3,
                         },
 
+                        lb2 = {
+                            type = "description",
+                            name = "",
+                            width = "full",
+                            order = 3.1
+                        },
+
+
+                        indent2 = {
+                            type = "description",
+                            name = "",
+                            width = 1,
+                            order = 3.2,
+                        },
+
+                        filterCasts  ={
+                            type = "toggle",
+                            name = format( "%s Filter M+ Interrupts (DF Season 3)", NewFeature ),
+                            desc = format( "If checked, low-priority enemy casts will be ignored when your target may use an ability that should be interrupted.\n\n"
+                                .. "Example:  In Everbloom, Earthshaper Telu's |W%s|w will be ignored and |W%s|w will be interrupted.", ( GetSpellInfo( 168040 ) or "Nature's Wrath" ),
+                                ( GetSpellInfo( 427459 ) or "Toxic Bloom" ) ),
+                            width = 2,
+                            order = 4
+                        },
+
                         defensives = {
                             type = "group",
                             name = "",
                             inline = true,
-                            order = 4,
+                            order = 5,
                             args = {
                                 key = {
                                     type = "keybinding",
@@ -9310,6 +9521,7 @@ do
             general = {
                 type = "group",
                 name = "General",
+                desc = "Welcome to Hekili; includes general information and essential links.",
                 order = 10,
                 childGroups = "tab",
                 args = {
@@ -9352,7 +9564,7 @@ do
                         type = "description",
                         name = function ()
                             return "|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n" .. ns.Patrons .. ".\n\n" ..
-                                "Please see the |cFFFFD100Issue Reporting|r tab for information about reporting bugs.\n\n"
+                                "Please see the |cFFFFD100Issue Reports|r link for information about reporting bugs.\n\n"
                         end,
                         fontSize = "medium",
                         order = 6,
@@ -9379,10 +9591,20 @@ do
                         dialogControl = "SFX-Info-URL",
                     },
 
+                    link = {
+                        type = "input",
+                        name = "Issue Reports",
+                        order = 12,
+                        width = "full",
+                        get = function() return "http://github.com/Hekili/hekili/issues" end,
+                        set = function() end,
+                        dialogControl = "SFX-Info-URL"
+                    },
+
                     simulationcraft = {
                         type = "input",
                         name = "SimC",
-                        order = 12,
+                        order = 13,
                         get = function () return "https://github.com/simulationcraft/simc/wiki" end,
                         set = function () end,
                         width = "full",
@@ -9510,44 +9732,9 @@ do
                 }
             },
 
-            issues = {
-                type = "group",
-                name = "Issue Reporting",
-                order = 85,
-                args = {
-                    header = {
-                        type = "description",
-                        name = "If you are having a technical issue with the addon, please submit an issue report via the link below.  When submitting your report, please include the information " ..
-                            "below (specialization, talents, traits, gear), which can be copied and pasted for your convenience.  If you have a concern about the addon's recommendations, it is preferred " ..
-                            "that you provide a Snapshot (which will include this information) instead.",
-                        order = 10,
-                        fontSize = "medium",
-                        width = "full",
-                    },
-                    profile = {
-                        type = "input",
-                        name = "Character Data",
-                        order = 20,
-                        width = "full",
-                        multiline = 10,
-                        get = 'GenerateProfile',
-                        set = function () end,
-                    },
-                    link = {
-                        type = "input",
-                        name = "Link",
-                        order = 30,
-                        width = "full",
-                        get = function() return "http://github.com/Hekili/hekili/issues" end,
-                        set = function() end,
-                        dialogControl = "SFX-Info-URL"
-                    },
-                }
-            },
-
             snapshots = {
                 type = "group",
-                name = "Snapshots",
+                name = "Issues and Snapshots",
                 order = 86,
                 args = {
                     autoSnapshot = {
