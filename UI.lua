@@ -40,15 +40,13 @@ end
 local movementData = {}
 
 local function startScreenMovement(frame)
-    _, _, _, movementData.origX, movementData.origY = frame:GetPoint()
+    movementData.origX, movementData.origY = select( 4, frame:GetPoint() )
     frame:StartMoving()
-    _, _, _, movementData.fromX, movementData.fromY = frame:GetPoint()
+    movementData.fromX, movementData.fromY = select( 4, frame:GetPoint() )
     frame.Moving = true
 end
 
 local function stopScreenMovement(frame)
-    local monitor = (tonumber(GetCVar("gxMonitor")) or 0) + 1
-    --local resolutions = {GetScreenResolutions()}
     local resolution = C_VideoOptions.GetCurrentGameWindowSize()
     local scrW, scrH = resolution.x, resolution.y
 
@@ -60,7 +58,7 @@ local function stopScreenMovement(frame)
     local limitX = (scrW - frame:GetWidth() ) / 2
     local limitY = (scrH - frame:GetHeight()) / 2
 
-    _, _, _, movementData.toX, movementData.toY = frame:GetPoint()
+    movementData.toX, movementData.toY = select( 4, frame:GetPoint() )
     frame:StopMovingOrSizing()
     frame.Moving = false
     frame:ClearAllPoints()
@@ -302,7 +300,7 @@ function ns.StartConfiguration( external )
         ACD:Open( "Hekili" )
 
         local oFrame = ACD.OpenFrames["Hekili"].frame
-        oFrame:SetResizeBounds( 800, 400 )
+        oFrame:SetResizeBounds( 800, 120 )
 
         ns.OnHideFrame = ns.OnHideFrame or CreateFrame( "Frame" )
         ns.OnHideFrame:SetParent( oFrame )
@@ -1306,7 +1304,7 @@ do
                                     end
                                     if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
 
-                                    _, _, _, start, duration = UnitCastingInfo( "player" )
+                                    start, duration = select( 4, UnitCastingInfo( "player" ) )
                                     if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end ]]
 
                                     if delay > 0.05 then
@@ -1486,7 +1484,7 @@ do
                             if start > 0 then moment = start + duration - now end
                         end
 
-                        _, _, _, start, duration = UnitCastingInfo( "player" )
+                        start, duration = select( 4, UnitCastingInfo( "player" ) )
                         if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
 
                         local rStart, rDuration = 0, 0
@@ -3111,12 +3109,12 @@ end
 
 function Hekili:SaveCoordinates()
     for i in pairs(Hekili.DB.profile.displays) do
-        local _, _, rel, x, y = ns.UI.Displays[i]:GetPoint()
+        local rel, x, y = select( 3, ns.UI.Displays[i]:GetPoint() )
 
         self.DB.profile.displays[i].rel = "CENTER"
         self.DB.profile.displays[i].x = x
         self.DB.profile.displays[i].y = y
     end
 
-    _, _, _, self.DB.profile.notifications.x, self.DB.profile.notifications.y = HekiliNotification:GetPoint()
+    self.DB.profile.notifications.x, self.DB.profile.notifications.y = select( 4, HekiliNotification:GetPoint() )
 end
