@@ -20,7 +20,7 @@ actions+=/hover,if=settings.use_hover&moving&buff.hover.down&buff.breath_of_eons
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
 actions+=/prescience,if=full_recharge_time<=gcd.max*3|active_dot.prescience=0&cooldown.ebon_might.remains<=gcd.max*4
 actions+=/ebon_might,if=(buff.ebon_might.remains-cast_time)<=buff.ebon_might.duration*0.4|buff.ebon_might.remains>=action.ebon_might.cast_time|solo
-actions+=/run_action_list,name=opener_filler,if=variable.opener_delay>0&!equipped.nymues_unraveling_spindle
+actions+=/run_action_list,name=opener_filler,if=variable.opener_delay>0
 actions+=/potion,if=debuff.temporal_wound.up&buff.ebon_might.up
 actions+=/use_item,name=nymues_unraveling_spindle,if=cooldown.breath_of_eons.remains<=3
 actions+=/use_item,name=irideus_fragment,if=debuff.temporal_wound.up|boss&fight_remains<=30&buff.ebon_might.up
@@ -32,7 +32,7 @@ actions+=/use_item,name=beacon_to_the_beyond,use_off_gcd=1,if=gcd.remains>0.1&((
 actions+=/use_item,name=belorrelos_the_suncaller,use_off_gcd=1,if=gcd.remains>0.1&((!debuff.temporal_wound.up&((trinket.1.cooldown.remains>=20|!variable.trinket_1_exclude)&(trinket.2.cooldown.remains>=20|!variable.trinket_2_exclude))|variable.trinket_1_exclude&variable.trinket_2_exclude))&(!raid_event.adds.exists|raid_event.adds.up|spell_targets.beacon_to_the_beyond>=5|raid_event.adds.in>60)|boss&fight_remains<20
 actions+=/use_item,slot=trinket1,if=!debuff.temporal_wound.up&(cooldown.breath_of_eons.remains>=30|!variable.trinket_2_exclude)&!variable.trinket_1_manual
 actions+=/use_item,slot=trinket2,if=!debuff.temporal_wound.up&(cooldown.breath_of_eons.remains>=30|!variable.trinket_1_exclude)&!variable.trinket_2_manual
-actions+=/use_items,use_off_gcd=1,if=gcd.remains>=gcd.max*0.6
+actions+=/use_item,slot=main_hand,use_off_gcd=1,if=gcd.remains>=gcd.max*0.6
 actions+=/call_action_list,name=fb,if=empowering.fire_breath|cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
 actions+=/upheaval,cycle_targets=1,empower_to=1,if=empowering.upheaval|target.time_to_die>cast_time+0.2&buff.ebon_might.remains>cast_time&cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
 actions+=/breath_of_eons,if=(cooldown.ebon_might.remains<=4|buff.ebon_might.up)&target.time_to_die>15&raid_event.adds.in>15&(!equipped.nymues_unraveling_spindle|trinket.nymues_unraveling_spindle.cooldown.remains>=10|boss&fight_remains<30)|boss&fight_remains<30,line_cd=117
@@ -42,7 +42,7 @@ actions+=/upheaval,cycle_targets=1,empower_to=1,if=empowering.upheaval|target.ti
 actions+=/time_skip,if=(cooldown.fire_breath.remains+cooldown.upheaval.remains+cooldown.prescience.full_recharge_time)>=35
 actions+=/emerald_blossom,if=talent.dream_of_spring&buff.essence_burst.up&(variable.spam_heal=2|variable.spam_heal=1&!buff.ancient_flame.up)&(buff.ebon_might.up|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4)
 actions+=/eruption,if=buff.ebon_might.remains>execute_time|essence.deficit=0&buff.essence_burst.down|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4
-actions+=/blistering_scales,cycle_targets,if=group_members>1&!active_dot.blistering_scales&buff.ebon_might.down
+actions+=/blistering_scales,cycle_targets=1,if=group_members>1&!active_dot.blistering_scales&buff.ebon_might.down
 actions+=/emerald_blossom,if=!buff.ebon_might.up&talent.ancient_flame&talent.scarlet_adaptation&!talent.dream_of_spring&!buff.ancient_flame.up&active_enemies=1
 actions+=/verdant_embrace,if=settings.use_verdant_embrace&!buff.ebon_might.up&talent.ancient_flame&talent.scarlet_adaptation&!buff.ancient_flame.up&(!talent.dream_of_spring|mana>=200000)&active_enemies=1
 actions+=/run_action_list,name=filler
@@ -50,7 +50,6 @@ actions+=/run_action_list,name=filler
 actions.opener_filler+=/variable,name=opener_delay,value=variable.opener_delay>?variable.minimum_opener_delay,if=!variable.opener_cds_detected
 actions.opener_filler+=/variable,name=opener_delay,value=variable.opener_delay-1
 actions.opener_filler+=/variable,name=opener_cds_detected,value=1,if=!variable.opener_cds_detected
-actions.opener_filler+=/variable,name=opener_delay,value=variable.opener_delay-2,if=equipped.nymues_unraveling_spindle&trinket.nymues_unraveling_spindle.cooldown.up
 actions.opener_filler+=/use_item,name=nymues_unraveling_spindle,if=cooldown.breath_of_eons.remains<=3
 actions.opener_filler+=/living_flame,if=active_enemies=1|talent.pupil_of_alexstrasza
 actions.opener_filler+=/azure_strike
