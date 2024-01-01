@@ -2626,6 +2626,19 @@ spec:RegisterAbilities( {
     width = "full"
 } ) ]]
 
+spec:RegisterSetting( "frenzy_cp", 2, {
+    name = strformat( "%s: Combo Point Cap", Hekili:GetSpellLinkWithTexture( spec.abilities.feral_frenzy.id ) ),
+    desc = strformat( "In the default priority, %s will only be recommended if you have fewer than the specified number of Combo Points.  "
+        .. "When %s (or %s) is active, this cap is raised by one point.\n\n"
+        .. "Default: |cFF00B4FF2|r", Hekili:GetSpellLinkWithTexture( spec.abilities.feral_frenzy.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.incarnation.id ) ),
+    type = "range",
+    min = 1,
+    max = 5,
+    step = 1,
+    width = "full",
+} )
+
 spec:RegisterSetting( "use_funnel", false, {
     name = strformat( "%s Funnel", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
     desc = function()
