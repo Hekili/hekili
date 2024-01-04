@@ -836,11 +836,11 @@ do
             no_icd = true,
 
             handler = function ()
-                applyBuff( "soul_ignition" )
+                applyBuff( "soul_ignition_345211" )
             end,
 
             auras = {
-                soul_ignition = {
+                soul_ignition_345211 = {
                     id = 345211,
                     duration = 15,
                     max_stack = 1
