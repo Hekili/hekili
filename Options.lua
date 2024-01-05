@@ -9734,7 +9734,7 @@ do
 
             snapshots = {
                 type = "group",
-                name = "Issues and Snapshots",
+                name = "Snapshots and Reporting",
                 order = 86,
                 args = {
                     autoSnapshot = {
@@ -9780,7 +9780,7 @@ do
 
                     SnapID = {
                         type = "select",
-                        name = "Select Snapshot",
+                        name = "Select Entry",
                         desc = "Select a Snapshot to export.",
                         values = function( info )
                             if #ns.snapshots == 0 then
@@ -9807,7 +9807,7 @@ do
 
                     Snapshot = {
                         type = 'input',
-                        name = "Export Snapshot",
+                        name = "Snapshot",
                         desc = "Click here and press CTRL+A, CTRL+C to copy the snapshot.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket.",
                         order = 20,
                         get = function( info )
@@ -9818,6 +9818,15 @@ do
                         width = "full",
                         hidden = function() return snapshots.selected == 0 or #ns.snapshots == 0 end,
                     },
+
+                    SnapshotInstructions = {
+                        type = "description",
+                        name = "Click the Snapshot and press CTRL+A, CTRL+C to select all text and copy it to the clipboard.\n\n"
+                            .. "Paste the text into a text editor for your own review, or upload to Pastebin to link to an issue report on GitHub.",
+                        order = 30,
+                        width = "full",
+                        hidden = function() return snapshots.selected == 0 or #ns.snapshots == 0 end,
+                    }
                 }
             },
         },
