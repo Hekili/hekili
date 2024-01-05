@@ -30,8 +30,8 @@ actions+=/chi_burst,if=talent.faeline_stomp&cooldown.faeline_stomp.remains&(chi.
 actions+=/call_action_list,name=cd_sef,strict=1,if=!talent.serenity
 actions+=/call_action_list,name=cd_serenity,strict=1,if=talent.serenity
 # Serenity Priority
-actions+=/call_action_list,name=serenity_aoelust,strict=1,if=buff.serenity.up&(buff.invokers_delight.up|buff.power_infusion.up)&active_enemies>4
-actions+=/call_action_list,name=serenity_lust,strict=1,if=buff.serenity.up&(buff.invokers_delight.up|buff.power_infusion.up)&active_enemies<4
++actions+=/call_action_list,name=serenity_aoelust,strict=1,if=buff.serenity.up&((buff.bloodlust.up&(buff.invokers_delight.up|buff.power_infusion.up))|buff.invokers_delight.up&buff.power_infusion.up)&active_enemies>4
++actions+=/call_action_list,name=serenity_lust,strict=1,if=buff.serenity.up&((buff.bloodlust.up&(buff.invokers_delight.up|buff.power_infusion.up))|buff.invokers_delight.up&buff.power_infusion.up)&active_enemies<4
 actions+=/call_action_list,name=serenity_aoe,strict=1,if=buff.serenity.up&active_enemies>4
 actions+=/call_action_list,name=serenity_4t,strict=1,if=buff.serenity.up&active_enemies=4
 actions+=/call_action_list,name=serenity_3t,strict=1,if=buff.serenity.up&active_enemies=3
