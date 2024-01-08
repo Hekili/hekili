@@ -1748,7 +1748,6 @@ do
                                             "FULLSCREEN_DIALOG",
                                             "TOOLTIP"
                                         },
-                                        dialogControl = "DropDownLeftAligned",
                                         width = "full",
                                         order = 1,
                                     },
@@ -5201,7 +5200,7 @@ do
                                 dmgGroup = {
                                     type = "group",
                                     inline = true,
-                                    name = " ",
+                                    name = "",
                                     order = 0.03,
                                     hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     args = {
@@ -5484,7 +5483,7 @@ do
                                     }
                                 },
 
-                                nameplateRange = {
+                                --[[ nameplateRange = {
                                     type = "range",
                                     name = "Nameplate Detection Range",
                                     desc = "When |cFFFFD100Use Nameplate Detection|r is checked, the addon will count any enemies with visible nameplates within this radius of your character.",
@@ -5496,11 +5495,11 @@ do
                                     max = 100,
                                     step = 1,
                                     order = 2,
-                                },
+                                }, ]]
 
                                 cycle = {
                                     type = "toggle",
-                                    name = "Allow Retargeting |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t",
+                                    name = "Recommend Changing Targets |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t",
                                     desc = "When target swapping is enabled, an icon (|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t) may be shown when you should use an ability on a different target.\n\n" ..
                                         "This works well for some specs that simply want to apply a debuff to another target (like Windwalker), but can be less-effective for specializations that are concerned with " ..
                                         "maintaining dots/debuffs based on their durations (like Affliction).\n\nThis feature is targeted for improvement in a future update.",
