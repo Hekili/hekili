@@ -1660,9 +1660,6 @@ spec:RegisterAbilities( {
             removeBuff( "recompense" )
             gain( talent.boundless_judgment.enabled and 2 or 1, "holy_power" )
 
-            if debuff.expurgation.up and set_bonus.tier31_2pc > 0 then
-                applyDebuff( "target", "wrathful_sanction" )
-            end
             if talent.divine_arbiter.enabled then addStack( "divine_arbiter" ) end
             if talent.empyrean_legacy.enabled and debuff.empyrean_legacy_icd.down then
                 applyBuff( "empyrean_legacy" )
