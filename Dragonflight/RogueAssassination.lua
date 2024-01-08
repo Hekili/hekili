@@ -2274,6 +2274,7 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         startsCombat = true,
+        texture = 132304,
 
         handler = function ()
             gain( 2, "combo_points" )
