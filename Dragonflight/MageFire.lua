@@ -1813,7 +1813,7 @@ spec:RegisterAbilities( {
             end
 
             if buff.firefall_ready.up then
-                action.meteor.impact()
+                class.abilities.meteor.impact()
                 removeBuff( "firefall_ready" )
             end
 
