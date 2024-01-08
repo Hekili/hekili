@@ -1569,7 +1569,7 @@ do
                                 disabled = function()
                                     return name == "Multi"
                                 end,
-                                hidden = true --[[ function( info, val )
+                                hidden = function( info, val )
                                     local n = #info
                                     local display = info[2]
 
@@ -1578,7 +1578,7 @@ do
                                     end
 
                                     return false
-                                end, ]]
+                                end,
                             },
 
                             pos = {
