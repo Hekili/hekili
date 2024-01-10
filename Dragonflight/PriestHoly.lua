@@ -350,6 +350,11 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1
     },
+    resonant_words = {
+        id = 372313,
+        duration = 30,
+        max_stack = 1
+    },
     sanctified_prayers = {
         id = 196490,
         duration = 15,
@@ -758,6 +763,7 @@ spec:RegisterAbilities( {
             end
 
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
+            if talent.resonant_words.enabled then applyBuff( "resonant_words" ) end
         end,
     },
     holy_word_salvation = {
@@ -779,6 +785,7 @@ spec:RegisterAbilities( {
             applyBuff( "renew" )
             addStack( "prayer_of_mending", nil, 2 )
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
+            if talent.resonant_words.enabled then applyBuff( "resonant_words" ) end
         end,
     },
 
@@ -807,6 +814,7 @@ spec:RegisterAbilities( {
                 removeStack( "sacred_reverence" )
             end
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
+            if talent.resonant_words.enabled then applyBuff( "resonant_words" ) end
         end,
     },
 
@@ -838,12 +846,11 @@ spec:RegisterAbilities( {
             end
             reduceCooldown( "holy_word_salvation", 30 )
 
-
             if set_bonus.tier31_2pc > 0 then
                 applyBuff( "renew", 14 )
             end
 
-
+            if talent.resonant_words.enabled then applyBuff( "resonant_words" ) end
         end,
     },
     leap_of_faith = {
