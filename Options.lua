@@ -6482,8 +6482,8 @@ do
                                     desc = "Reload Priority",
                                     order = 0.27,
                                     width = 0.15,
-                                    image = GetAtlasFile( "common-icon-undo" ),
-                                    imageCoords = GetAtlasCoords( "common-icon-undo" ),
+                                    image = GetAtlasFile( "UI-RefreshButton" ),
+                                    imageCoords = GetAtlasCoords( "UI-RefreshButton" ),
                                     imageWidth = 25,
                                     imageHeight = 24,
                                     confirm = function ()
