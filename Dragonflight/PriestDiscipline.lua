@@ -286,6 +286,11 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
+    prayer_of_mending = {
+        id = 41635,
+        duration = 30,
+        max_stack = 5
+    },
     psychic_scream = {
         id = 8122,
         duration = 8,
