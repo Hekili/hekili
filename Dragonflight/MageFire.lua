@@ -1812,11 +1812,6 @@ spec:RegisterAbilities( {
                 if set_bonus.tier31_2pc > 0 then addStack( "searing_rage" ) end
             end
 
-            if buff.firefall_ready.up then
-                class.abilities.meteor.impact()
-                removeBuff( "firefall_ready" )
-            end
-
             if legendary.molten_skyfall.enabled and buff.molten_skyfall_ready.down then
                 addStack( "molten_skyfall" )
                 if buff.molten_skyfall.stack == 18 then
