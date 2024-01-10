@@ -402,6 +402,13 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    chilled = {
+        id = 204206,
+        duration = 4,
+        mechanic = "snare",
+        type = "Magic",
+        max_stack = 1
+    },
     cold_heart_item = {
         id = 235599,
         duration = 3600,
