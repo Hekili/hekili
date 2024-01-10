@@ -2166,7 +2166,7 @@ do
                 return t[ k ]
 
             elseif type(k) == "string" and k:sub(1, 17) == "incoming_physical" then
-                local remains = k:sub(19)
+                local remains = k:sub(18, 24) == "_damage" and k:sub(26) or k:sub(19)
                 local time = remains:match("^(%d+)[m]?s")
 
                 if not time then
@@ -2185,7 +2185,7 @@ do
                 return t[ k ]
 
             elseif type(k) == "string" and k:sub(1, 14) == "incoming_magic" then
-                local remains = k:sub(16)
+                local remains = k:sub(15, 21) == "_damage" and k:sub(23) or k:sub(16)
                 local time = remains:match("^(%d+)[m]?s")
 
                 if not time then
