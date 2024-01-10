@@ -30,8 +30,8 @@ actions+=/chi_burst,if=talent.faeline_stomp&cooldown.faeline_stomp.remains&(chi.
 actions+=/call_action_list,name=cd_sef,strict=1,if=!talent.serenity
 actions+=/call_action_list,name=cd_serenity,strict=1,if=talent.serenity
 # Serenity Priority
-+actions+=/call_action_list,name=serenity_aoelust,strict=1,if=buff.serenity.up&((buff.bloodlust.up&(buff.invokers_delight.up|buff.power_infusion.up))|buff.invokers_delight.up&buff.power_infusion.up)&active_enemies>4
-+actions+=/call_action_list,name=serenity_lust,strict=1,if=buff.serenity.up&((buff.bloodlust.up&(buff.invokers_delight.up|buff.power_infusion.up))|buff.invokers_delight.up&buff.power_infusion.up)&active_enemies<4
+actions+=/call_action_list,name=serenity_aoelust,strict=1,if=buff.serenity.up&((buff.bloodlust.up&(buff.invokers_delight.up|buff.power_infusion.up))|buff.invokers_delight.up&buff.power_infusion.up)&active_enemies>4
+actions+=/call_action_list,name=serenity_lust,strict=1,if=buff.serenity.up&((buff.bloodlust.up&(buff.invokers_delight.up|buff.power_infusion.up))|buff.invokers_delight.up&buff.power_infusion.up)&active_enemies<4
 actions+=/call_action_list,name=serenity_aoe,strict=1,if=buff.serenity.up&active_enemies>4
 actions+=/call_action_list,name=serenity_4t,strict=1,if=buff.serenity.up&active_enemies=4
 actions+=/call_action_list,name=serenity_3t,strict=1,if=buff.serenity.up&active_enemies=3
@@ -76,7 +76,7 @@ actions.default_aoe+=/blackout_kick,cycle_targets=1,if=talent.shadowboxing_tread
 actions.default_aoe+=/chi_burst,if=chi.max-chi>=1&active_enemies=1&raid_event.adds.in>20|chi.max-chi>=2
 
 # 4 Targets
-actions.default_4t+=/tiger_palm,cycle_targets=1+(debuff.skyreach_exhaustion.up*20),if=combo_strike&chi<2&(cooldown.fists_of_fury.remains<1|cooldown.strike_of_the_windlord.remains<1)&buff.teachings_of_the_monastery.stack<3
+actions.default_4t+=/tiger_palm,cycle_targets=1,if=combo_strike&chi<2&(cooldown.fists_of_fury.remains<1|cooldown.strike_of_the_windlord.remains<1)&buff.teachings_of_the_monastery.stack<3
 actions.default_4t+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&buff.dance_of_chiji.up&spinning_crane_kick.max&!buff.blackout_reinforcement.up
 actions.default_4t+=/strike_of_the_windlord,cycle_targets=1,if=talent.thunderfist
 actions.default_4t+=/fists_of_fury,cycle_targets=1
@@ -100,7 +100,7 @@ actions.default_4t+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>d
 actions.default_4t+=/blackout_kick,cycle_targets=1,if=combo_strike
 
 # 3 Targets
-actions.default_3t+=/tiger_palm,cycle_targets=1+(debuff.skyreach_exhaustion.up*20),if=combo_strike&chi<2&(cooldown.rising_sun_kick.remains<1|cooldown.fists_of_fury.remains<1|cooldown.strike_of_the_windlord.remains<1)&buff.teachings_of_the_monastery.stack<3
+actions.default_3t+=/tiger_palm,cycle_targets=1,if=combo_strike&chi<2&(cooldown.rising_sun_kick.remains<1|cooldown.fists_of_fury.remains<1|cooldown.strike_of_the_windlord.remains<1)&buff.teachings_of_the_monastery.stack<3
 actions.default_3t+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&buff.dance_of_chiji.up&!buff.blackout_reinforcement.up
 actions.default_3t+=/strike_of_the_windlord,cycle_targets=1,if=talent.thunderfist&set_bonus.tier31_4pc
 actions.default_3t+=/strike_of_the_windlord,cycle_targets=1,if=talent.thunderfist&(cooldown.invoke_xuen_the_white_tiger.remains>20|fight_remains<5)
@@ -128,7 +128,7 @@ actions.default_3t+=/blackout_kick,cycle_targets=1,if=combo_strike&talent.shadow
 actions.default_3t+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&(combo_strike&chi>5&talent.storm_earth_and_fire|combo_strike&chi>4&talent.serenity)
 
 # 2 Targets
-actions.default_2t+=/tiger_palm,cycle_targets=1+(debuff.skyreach_exhaustion.up*20),if=combo_strike&chi<2&(cooldown.rising_sun_kick.remains<1|cooldown.fists_of_fury.remains<1|cooldown.strike_of_the_windlord.remains<1)&buff.teachings_of_the_monastery.stack<3
+actions.default_2t+=/tiger_palm,cycle_targets=1,if=combo_strike&chi<2&(cooldown.rising_sun_kick.remains<1|cooldown.fists_of_fury.remains<1|cooldown.strike_of_the_windlord.remains<1)&buff.teachings_of_the_monastery.stack<3
 actions.default_2t+=/expel_harm,if=chi=1&(!cooldown.rising_sun_kick.remains|!cooldown.strike_of_the_windlord.remains)|chi=2&!cooldown.fists_of_fury.remains
 actions.default_2t+=/blackout_kick,cycle_targets=1,if=buff.teachings_of_the_monastery.stack=3&talent.shadowboxing_treads
 actions.default_2t+=/strike_of_the_windlord,cycle_targets=1,if=talent.thunderfist&set_bonus.tier31_4pc
@@ -158,7 +158,7 @@ actions.default_2t+=/blackout_kick,cycle_targets=1,if=combo_strike
 actions.default_2t+=/faeline_stomp,if=combo_strike
 
 # 1 Target
-actions.default_st+=/tiger_palm,cycle_targets=1+(debuff.skyreach_exhaustion.up*20),if=combo_strike&chi<2&(cooldown.rising_sun_kick.remains<1|cooldown.fists_of_fury.remains<1|cooldown.strike_of_the_windlord.remains<1)&buff.teachings_of_the_monastery.stack<3
+actions.default_st+=/tiger_palm,cycle_targets=1,if=combo_strike&chi<2&(cooldown.rising_sun_kick.remains<1|cooldown.fists_of_fury.remains<1|cooldown.strike_of_the_windlord.remains<1)&buff.teachings_of_the_monastery.stack<3
 actions.default_st+=/expel_harm,if=chi=1&(!cooldown.rising_sun_kick.remains|!cooldown.strike_of_the_windlord.remains)|chi=2&!cooldown.fists_of_fury.remains&cooldown.rising_sun_kick.remains
 actions.default_st+=/strike_of_the_windlord,if=buff.domineering_arrogance.up&talent.thunderfist&talent.serenity&cooldown.invoke_xuen_the_white_tiger.remains>20|fight_remains<5|talent.thunderfist&debuff.skyreach_exhaustion.remains>10&!buff.domineering_arrogance.up|talent.thunderfist&debuff.skyreach_exhaustion.remains>35&!talent.serenity
 actions.default_st+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&buff.dance_of_chiji.up&set_bonus.tier31_2pc&!buff.blackout_reinforcement.up
@@ -285,7 +285,7 @@ actions.serenity_aoelust+=/fists_of_fury,cycle_targets=1,if=buff.invokers_deligh
 actions.serenity_aoelust+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&buff.dance_of_chiji.up
 actions.serenity_aoelust+=/blackout_kick,cycle_targets=1,if=active_enemies<6&combo_strike&set_bonus.tier30_2pc
 actions.serenity_aoelust+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&spinning_crane_kick.max
-actions.serenity_aoelust+=/tiger_palm,cycle_targets=1,if=!debuff.skyreach_exhaustion.up*20&combo_strike&active_enemies=5
+actions.serenity_aoelust+=/tiger_palm,cycle_targets=1,if=!debuff.skyreach_exhaustion.up&combo_strike&active_enemies=5
 actions.serenity_aoelust+=/rushing_jade_wind,if=!buff.rushing_jade_wind.up
 actions.serenity_aoelust+=/blackout_kick,cycle_targets=1,if=talent.shadowboxing_treads&active_enemies>=3&combo_strike
 actions.serenity_aoelust+=/strike_of_the_windlord,cycle_targets=1
@@ -344,7 +344,7 @@ actions.serenity_aoe+=/strike_of_the_windlord,cycle_targets=1,if=talent.thunderf
 actions.serenity_aoe+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&buff.dance_of_chiji.up
 actions.serenity_aoe+=/blackout_kick,cycle_targets=1,if=active_enemies<6&combo_strike&set_bonus.tier30_2pc
 actions.serenity_aoe+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&spinning_crane_kick.max
-actions.serenity_aoe+=/tiger_palm,,cycle_targets=1,if=!debuff.skyreach_exhaustion.up*20&combo_strike&active_enemies=5
+actions.serenity_aoe+=/tiger_palm,,cycle_targets=1,if=!debuff.skyreach_exhaustion.up&combo_strike&active_enemies=5
 actions.serenity_aoe+=/rushing_jade_wind,if=!buff.rushing_jade_wind.up
 actions.serenity_aoe+=/blackout_kick,cycle_targets=1,if=talent.shadowboxing_treads&active_enemies>=3&combo_strike
 actions.serenity_aoe+=/strike_of_the_windlord,cycle_targets=1
@@ -389,7 +389,7 @@ actions.serenity_4t+=/tiger_palm,cycle_targets=1,if=talent.teachings_of_the_mona
 # Serenity 3 Targets
 actions.serenity_3t+=/faeline_stomp,if=debuff.fae_exposure_damage.remains<1
 actions.serenity_3t+=/blackout_kick,cycle_targets=1,if=set_bonus.tier31_2pc&combo_strike&buff.blackout_reinforcement.up
-actions.serenity_3t+=/tiger_palm,cycle_targets=1,if=!debuff.skyreach_exhaustion.up*20&combo_strike
+actions.serenity_3t+=/tiger_palm,cycle_targets=1,if=!debuff.skyreach_exhaustion.up&combo_strike
 actions.serenity_3t+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&buff.dance_of_chiji.up&spinning_crane_kick.max&!buff.blackout_reinforcement.up&set_bonus.tier31_2pc
 actions.serenity_3t+=/strike_of_the_windlord,cycle_targets=1,if=talent.thunderfist&buff.call_to_dominance.up&debuff.skyreach_exhaustion.remains>buff.call_to_dominance.remains
 actions.serenity_3t+=/strike_of_the_windlord,cycle_targets=1,if=talent.thunderfist&debuff.skyreach_exhaustion.remains>55
@@ -418,7 +418,7 @@ actions.serenity_3t+=/tiger_palm,cycle_targets=1,if=talent.teachings_of_the_mona
 
 # Serenity 2 Targets
 actions.serenity_2t+=/faeline_stomp,if=debuff.fae_exposure_damage.remains<2&!debuff.skyreach_exhaustion.remains<2&!debuff.skyreach_exhaustion.remains
-actions.serenity_2t+=/tiger_palm,cycle_targets=1,if=!debuff.skyreach_exhaustion.up*20&combo_strike
+actions.serenity_2t+=/tiger_palm,cycle_targets=1,if=!debuff.skyreach_exhaustion.up&combo_strike
 actions.serenity_2t+=/blackout_kick,cycle_targets=1,if=combo_strike&buff.teachings_of_the_monastery.stack=3&buff.teachings_of_the_monastery.remains<1
 actions.serenity_2t+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&combo_strike&buff.dance_of_chiji.up&!buff.blackout_reinforcement.up&prev.fists_of_fury&set_bonus.tier31_2pc
 actions.serenity_2t+=/rising_sun_kick,cycle_targets=1,if=buff.pressure_point.up|debuff.skyreach_exhaustion.remains>55
@@ -443,7 +443,7 @@ actions.serenity_2t+=/tiger_palm,cycle_targets=1,if=talent.teachings_of_the_mona
 # Serenity 1 Target
 actions.serenity_st+=/faeline_stomp,if=debuff.fae_exposure_damage.remains<2&!debuff.skyreach_exhaustion.remains
 actions.serenity_st+=/spinning_crane_kick,cycle_targets=1,if=target.time_to_die>duration&buff.serenity.remains<1.5&combo_strike&!buff.blackout_reinforcement.remains&set_bonus.tier31_4pc
-actions.serenity_st+=/tiger_palm,if=!debuff.skyreach_exhaustion.up*20&combo_strike
+actions.serenity_st+=/tiger_palm,if=!debuff.skyreach_exhaustion.up&combo_strike
 actions.serenity_st+=/blackout_kick,if=combo_strike&buff.teachings_of_the_monastery.stack=3&buff.teachings_of_the_monastery.remains<1
 actions.serenity_st+=/strike_of_the_windlord,if=talent.thunderfist&set_bonus.tier31_4pc
 actions.serenity_st+=/rising_sun_kick,if=combo_strike
