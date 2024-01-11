@@ -175,6 +175,11 @@ spec:RegisterAuras( {
         tick_time = 10,
         max_stack = 1,
     },
+    clearcasting = {
+        id = 16870,
+        duration = 15,
+        max_stack = 1
+    },
     efflorescence = {
         id = 81262,
         duration = 30,
