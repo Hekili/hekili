@@ -2127,8 +2127,14 @@ spec:RegisterAbilities( {
                 removeBuff( "surge_of_power" )
             end
 
-            if buff.primordial_wave.up and state.spec.elemental and talent.splintered_elements.enabled then
-                applyBuff( "splintered_elements", nil, active_dot.flame_shock )
+            if buff.primordial_wave.up then
+                if state.spec.elemental and talent.splintered_elements.enabled then
+                    applyBuff( "splintered_elements", nil, active_dot.flame_shock )
+                end
+
+                if set_bonus.tier31_4pc > 0 then
+                    applyBuff( "molten_charge", nil, 2 )
+                end
             end
             removeBuff( "primordial_wave" )
 
@@ -2143,7 +2149,9 @@ spec:RegisterAbilities( {
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
-        impact = function () end,  -- This + velocity makes action.lava_burst.in_flight work in APL logic.
+        impact = function ()
+            if set_bonus.tier31_4pc > 0 then applyDebuff( "target", "molten_slag" ) end
+        end,  -- This + velocity makes action.lava_burst.in_flight work in APL logic.
     },
 
     -- Hurls a bolt of lightning at the target, dealing $s1 Nature damage.$?a343725[    |cFFFFFFFFGenerates $343725s1 Maelstrom.|r][]
@@ -2357,8 +2365,10 @@ spec:RegisterAbilities( {
         end,
         startsCombat = true,
 
+        velocity = 30,
+
         handler = function ()
-            applyDebuff( "target", "flame_shock" )
+            -- applyDebuff( "target", "flame_shock" )
             applyBuff( "primordial_wave" )
 
             if talent.primordial_surge.enabled then
@@ -2374,6 +2384,10 @@ spec:RegisterAbilities( {
                 applyBuff( "elemental_blast_haste", 10 )
                 applyBuff( "elemental_blast_mastery", 10 )
             end
+        end,
+
+        impact = function ()
+            applyDebuff( "target", "flame_shock" )
         end,
 
         copy = { 326059, 375982 }
