@@ -1416,13 +1416,15 @@ spec:RegisterAbilities( {
             if talent.obliteration.enabled and buff.pillar_of_frost.up then addStack( "killing_machine" ) end
             if pvptalent.delirium.enabled then applyDebuff( "target", "delirium" ) end
 
-            if legendary.rage_of_the_frozen_champion.enabled and buff.rime.up then
-                gain( 8, "runic_power" )
-            end
-
             if buff.rime.up then
                 removeBuff( "rime" )
-                if set_bonus.tier30_2pc > 0 then addStack( "wrath_of_the_frostwyrm" ) end
+
+                if legendary.rage_of_the_frozen_champion.enabled then
+                    gain( 8, "runic_power" )
+                end
+                if set_bonus.tier30_2pc > 0 then
+                    addStack( "wrath_of_the_frostwyrm" )
+                end
             end
         end,
     },
