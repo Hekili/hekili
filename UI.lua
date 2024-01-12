@@ -3109,11 +3109,14 @@ end
 
 function Hekili:SaveCoordinates()
     for i in pairs(Hekili.DB.profile.displays) do
-        local rel, x, y = select( 3, ns.UI.Displays[i]:GetPoint() )
+        local display = ns.UI.Displays[i]
+        if display then
+            local rel, x, y = select( 3, display:GetPoint() )
 
-        self.DB.profile.displays[i].rel = "CENTER"
-        self.DB.profile.displays[i].x = x
-        self.DB.profile.displays[i].y = y
+            self.DB.profile.displays[i].rel = "CENTER"
+            self.DB.profile.displays[i].x = x
+            self.DB.profile.displays[i].y = y
+        end
     end
 
     self.DB.profile.notifications.x, self.DB.profile.notifications.y = select( 4, HekiliNotification:GetPoint() )
