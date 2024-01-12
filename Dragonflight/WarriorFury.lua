@@ -1346,6 +1346,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "odyns_fury" )
             active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
+            if pvptalent.slaughterhouse.enabled then applyDebuff( "target", "slaughterhouse", nil, debuff.slaughterhouse.stack + 1 ) end
             if talent.dancing_blades.enabled then applyBuff( "dancing_blades" ) end
             if talent.titanic_rage.enabled then
                 applyBuff( "enrage" )
@@ -1376,6 +1377,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "whirlwind" )
+            if pvptalent.slaughterhouse.enabled then applyDebuff( "target", "slaughterhouse", nil, debuff.slaughterhouse.stack + 1 ) end
             if talent.tenderize.enabled then
                 applyBuff( "enrage" )
             end
@@ -1491,6 +1493,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "enrage" )
             removeStack( "whirlwind" )
+            if pvptalent.slaughterhouse.enabled then applyDebuff( "target", "slaughterhouse", nil, debuff.slaughterhouse.stack + 1 ) end
             if talent.frenzy.enabled then addStack( "frenzy" ) end
             if talent.reckless_abandon.enabled then applyBuff( "reckless_abandon" ) end
             if set_bonus.tier30_4pc > 0 then addStack( "merciless_assault" ) end
