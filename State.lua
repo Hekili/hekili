@@ -5135,7 +5135,7 @@ local mt_default_action = {
             return max( value, t.cast_time )
 
         elseif k == "charges" then
-            return ability.charges -- and state.cooldown[ t.action ].charges
+            return state.cooldown[ t.action ].charges
 
         elseif k == "charges_fractional" then
             return state.cooldown[ t.action ].charges_fractional
