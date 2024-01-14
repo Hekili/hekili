@@ -37,7 +37,7 @@ actions.multi_target+=/recklessness,if=raid_event.adds.in>15|active_enemies>1|ta
 actions.multi_target+=/odyns_fury,if=active_enemies>1&talent.titanic_rage&(!buff.meat_cleaver.up|buff.avatar.up|buff.recklessness.up)
 actions.multi_target+=/whirlwind,if=spell_targets.whirlwind>1&talent.improved_whirlwind&!buff.meat_cleaver.up|raid_event.adds.in<2&talent.improved_whirlwind&!buff.meat_cleaver.up
 actions.multi_target+=/execute,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd
-actions.multi_target+=/thunderous_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
+actions.multi_target+=/thunderous_roar,if=buff.enrage.up&(buff.avatar.up|!talent.avatar&!talent.titans_torment)&(spell_targets.whirlwind>1|raid_event.adds.in>15)
 actions.multi_target+=/odyns_fury,if=active_enemies>1&buff.enrage.up&raid_event.adds.in>15
 actions.multi_target+=/bloodbath,if=set_bonus.tier30_4pc&action.bloodthirst.crit_pct_current>=95
 actions.multi_target+=/bloodthirst,if=(set_bonus.tier30_4pc&action.bloodthirst.crit_pct_current>=95)|(!talent.reckless_abandon&buff.furious_bloodthirst.up&buff.enrage.up)
@@ -69,7 +69,7 @@ actions.single_target+=/rampage,if=talent.anger_management&(buff.recklessness.up
 actions.single_target+=/bloodbath,if=set_bonus.tier30_4pc&action.bloodthirst.crit_pct_current>=95
 actions.single_target+=/bloodthirst,if=(set_bonus.tier30_4pc&action.bloodthirst.crit_pct_current>=95)|(!talent.reckless_abandon&buff.furious_bloodthirst.up&buff.enrage.up&(!dot.gushing_wound.remains|buff.elysian_might.up))
 actions.single_target+=/bloodbath,if=set_bonus.tier31_2pc
-actions.single_target+=/thunderous_roar,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)
+actions.single_target+=/thunderous_roar,if=buff.enrage.up&(buff.avatar.up|!talent.avatar&!talent.titans_torment)&(spell_targets.whirlwind>1|raid_event.adds.in>15)
 actions.single_target+=/onslaught,if=buff.enrage.up|talent.tenderize
 actions.single_target+=/crushing_blow,if=talent.wrath_and_fury&buff.enrage.up&!buff.furious_bloodthirst.up
 actions.single_target+=/execute,if=buff.enrage.up&!buff.furious_bloodthirst.up&buff.ashen_juggernaut.up|buff.sudden_death.remains<=gcd&(target.health.pct>35&talent.massacre|target.health.pct>20)
