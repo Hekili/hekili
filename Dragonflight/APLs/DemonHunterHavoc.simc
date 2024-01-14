@@ -8,7 +8,7 @@ actions+=/consume_magic
 actions+=/call_action_list,name=cooldown
 actions+=/fel_rush,if=buff.unbound_chaos.up&buff.unbound_chaos.remains<gcd.max*2
 actions+=/variable,name=fel_barrage,op=set,value=talent.fel_barrage&(cooldown.fel_barrage.remains<gcd.max*7&(active_enemies>=desired_targets+raid_event.adds.count|raid_event.adds.in<gcd.max*7|raid_event.adds.in>90)&(cooldown.metamorphosis.remains|active_enemies>2)|buff.fel_barrage.up)&!(active_enemies=1&!raid_event.adds.exists)
-actions+=/run_action_list,name=opener,strict=1,if=(cooldown.eye_beam.up|cooldown.metamorphosis.up)&time<15&(raid_event.adds.in>40)
+actions+=/call_action_list,name=opener,strict=1,if=(cooldown.eye_beam.up|cooldown.metamorphosis.up)&time<15&(raid_event.adds.in>40)
 actions+=/run_action_list,name=fel_barrage,if=variable.fel_barrage&raid_event.adds.up
 actions+=/immolation_aura,if=active_enemies>2&talent.ragefire&buff.unbound_chaos.down&(!talent.fel_barrage|cooldown.fel_barrage.remains>recharge_time)&debuff.essence_break.down
 actions+=/immolation_aura,if=active_enemies>2&talent.ragefire&raid_event.adds.up&raid_event.adds.remains<15&raid_event.adds.remains>5&debuff.essence_break.down
