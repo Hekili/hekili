@@ -299,9 +299,9 @@ spec:RegisterAuras( {
         max_stack = 3
     },
     -- Talent: Cast time of your Fireball reduced by $203275m1%, and damage increased by $203275m2%.
-    -- https://wowhead.com/beta/spell=203278
+    -- https://wowhead.com/beta/spell=203277
     flame_accelerant = {
-        id = 203278,
+        id = 203277,
         duration = 8,
         max_stack = 1
     },
