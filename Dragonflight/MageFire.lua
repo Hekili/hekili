@@ -302,7 +302,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=203277
     flame_accelerant = {
         id = 203277,
-        duration = 8,
+        duration = 3600,
         max_stack = 1
     },
     -- Talent: Burning
@@ -1466,7 +1466,7 @@ spec:RegisterAbilities( {
             if talent.flame_accelerant.enabled then
                 applyBuff( "flame_accelerant" )
                 buff.flame_accelerant.applied = query_time + 8
-                buff.flame_accelerant.expires = query_time + 8 + 8
+                buff.flame_accelerant.expires = query_time + 8 + 3600
             end
 
             if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
