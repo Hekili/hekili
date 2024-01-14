@@ -1707,6 +1707,11 @@ spec:RegisterSetting( "cleave_apl", false, {
     width = "full",
 } )
 
+spec:RegisterVariable( "cleave_apl", function()
+    if settings.cleave_apl ~= nil then return settings.cleave_apl end
+    return false
+end )
+
 --[[ Retired 2023-02-20.
 spec:RegisterSetting( "fixed_aoe_3_plus", false, {
     name = "Require 3+ Targets for AOE",
