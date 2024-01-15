@@ -1028,7 +1028,7 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         spend = -20,
-        spentType = "rage",
+        spendType = "rage",
 
         startsCombat = true,
         texture = 132337,

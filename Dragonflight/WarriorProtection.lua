@@ -798,7 +798,7 @@ spec:RegisterAbilities( {
         icd = 1,
 
         spend = function () return -20 * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
-        spentType = "rage",
+        spendType = "rage",
 
         startsCombat = true,
         texture = 132337,
