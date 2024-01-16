@@ -1,11 +1,11 @@
-## Interface: 100200
+## Interface: 100205
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
 ## AddonCompartmentFunc: Hekili_OnAddonCompartmentClick
 ## AddonCompartmentFuncOnEnter: Hekili_OnAddonCompartmentEnter
 ## AddonCompartmentFuncOnLeave: Hekili_OnAddonCompartmentLeave
-## IconTexture: Interface\ICONS\spell_nature_bloodlust.blp
+## IconTexture: Interface\AddOns\Hekili\Textures\LOGO-ORANGE.blp
 ## Notes: Priority helper based on SimulationCraft action lists.
 ## SavedVariables: HekiliDB
 ## OptionalDeps: AddOnSkins, ButtonForge, ConsolePort, ElvUI, LibDualSpec-1.0, Masque, WeakAuras
