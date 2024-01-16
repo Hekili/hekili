@@ -66,6 +66,7 @@ spec:RegisterTalents( {
     cruel_strikes                   = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%.
     double_time                     = { 90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
     elysian_might                   = { 90323, 386285, 1 }, --
+    champions_might                 = { 90323, 386285, 1 }, --
     fast_footwork                   = { 90371, 382260, 1 }, -- Movement speed increased by 5%.
     furious_blows                   = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
     heroic_leap                     = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 544 Physical damage to all enemies within 8 yards.
@@ -78,6 +79,7 @@ spec:RegisterTalents( {
     pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 3.50% of your maximum health. This can only occur once every 10 sec.
     piercing_howl                   = { 90348, 12323 , 1 }, -- Snares all enemies within 12 yards, reducing their movement speed by 70% for 8 sec.
     piercing_verdict                = { 90379, 382948, 1 }, -- Spear of Bastion's instant damage increased by 50% and its Rage generation is increased by 100%.
+    piercing_challenge              = { 90379, 382948, 1 }, -- Spear of Bastion's instant damage increased by 50% and its Rage generation is increased by 100%.
     rallying_cry                    = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 10% temporary and maximum health for 10 sec.
     reinforced_plates               = { 90368, 382939, 1 }, -- Armor increased by 20%.
     rumbling_earth                  = { 90374, 275339, 1 }, -- Shockwave's range increased by 6 yards and when Shockwave strikes at least 3 targets, its cooldown is reduced by 15 sec.
@@ -87,6 +89,7 @@ spec:RegisterTalents( {
     shockwave                       = { 90375, 46968 , 1 }, -- Sends a wave of force in a frontal cone, causing 463 damage and stunning all enemies within 10 yards for 2 sec. Generates 10 Rage.
     sonic_boom                      = { 90321, 390725, 1 }, -- Shockwave deals 350% increased damage and will always critical strike.
     spear_of_bastion                = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 3,817 Physical damage instantly and an additional 4,062 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 20 Rage.
+    champions_spear                 = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 3,817 Physical damage instantly and an additional 4,062 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 20 Rage.
     spell_reflection                = { 90385, 23920 , 1 }, -- Raise your weapon, reflecting the first spell cast on you, and reduce magic damage you take by 20% for 5 sec.
     storm_bolt                      = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 659 Physical damage and stunning for 4 sec.
     thunderous_roar                 = { 90359, 384318, 1 }, -- Roar explosively, dealing 3,997 Physical damage to enemies within 12 yds and cause them to bleed for 5,051 physical damage over 8 sec. Generates 10 Rage.

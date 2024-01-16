@@ -406,7 +406,7 @@ spec:RegisterAuras( {
     -- $@auracaster is restoring mana to you when they cast an empowered spell.$?$w2>0[; Healing and damage done increased by $w2%.][]
     source_of_magic = {
         id = 369459,
-        duration = function() return 1800.0 * ( 1 + 1.25 * stat.mastery_value ) end,
+        duration = function() return 3600.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
         dot = "buff",
         no_ticks = true,

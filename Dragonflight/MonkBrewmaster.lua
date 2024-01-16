@@ -278,7 +278,8 @@ spec:RegisterAuras( {
     faeline_stomp = {
         id = 388193,
         duration = 30,
-        max_stack = 1
+        max_stack = 1,
+        copy = "jadefire_stomp"
     },
     fortifying_brew = {
         id = 120954,

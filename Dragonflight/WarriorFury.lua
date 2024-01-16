@@ -122,6 +122,7 @@ spec:RegisterTalents( {
     cruel_strikes             = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%.
     double_time               = { 90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
     elysian_might             = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%.
+    champions_might           = { 90323, 386285, 1 }, -- Spear of Bastion's duration is increased by 2 sec. While you remain within Spear of Bastion's area your critical strike damage is increased by 25%.
     fast_footwork             = { 90371, 382260, 1 }, -- Movement speed increased by 5%.
     furious_blows             = { 90336, 390354, 1 }, -- Auto-attack speed increased by 5%.
     heroic_leap               = { 90346, 6544  , 1 }, -- Leap through the air toward a target location, slamming down with destructive force to deal 479 Physical damage to all enemies within 8 yards.
@@ -134,6 +135,7 @@ spec:RegisterTalents( {
     pain_and_gain             = { 90353, 382549, 1 }, -- When you take any damage, heal for 3.50% of your maximum health. This can only occur once every 10 sec.
     piercing_howl             = { 90348, 12323 , 1 }, -- Snares all enemies within 12 yards, reducing their movement speed by 70% for 8 sec.
     piercing_verdict          = { 90379, 382948, 1 }, -- Spear of Bastion's instant damage increased by 50% and its Rage generation is increased by 100%.
+    piercing_challenge        = { 90379, 382948, 1 }, -- Spear of Bastion's instant damage increased by 50% and its Rage generation is increased by 100%.
     rallying_cry              = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 10% temporary and maximum health for 10 sec.
     reinforced_plates         = { 90368, 382939, 1 }, -- Armor increased by 20%.
     rumbling_earth            = { 90374, 275339, 1 }, -- Shockwave's range increased by 6 yards and when Shockwave strikes at least 3 targets, its cooldown is reduced by 15 sec.
@@ -143,6 +145,7 @@ spec:RegisterTalents( {
     shockwave                 = { 90375, 46968 , 1 }, -- Sends a wave of force in a frontal cone, causing 407 damage and stunning all enemies within 10 yards for 2 sec. Generates 10 Rage.
     sonic_boom                = { 90321, 390725, 1 }, -- Shockwave deals 350% increased damage and will always critical strike.
     spear_of_bastion          = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 5,045 Physical damage instantly and an additional 3,580 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 40 Rage.
+    champions_spear           = { 90380, 376079, 1 }, -- Throw a spear at the target location, dealing 5,045 Physical damage instantly and an additional 3,580 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 40 Rage.
     spell_reflection          = { 90385, 23920 , 1 }, -- Raise your weapon, reflecting the first spell cast on you, and reduce magic damage you take by 20% for 5 sec.
     storm_bolt                = { 90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 581 Physical damage and stunning for 4 sec.
     thunderous_roar           = { 90359, 384318, 1 }, -- Roar explosively, dealing 3,522 Physical damage to enemies within 12 yds and cause them to bleed for 4,122 physical damage over 8 sec. Generates 10 Rage.
@@ -1343,6 +1346,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "odyns_fury" )
             active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
+            if pvptalent.slaughterhouse.enabled then applyDebuff( "target", "slaughterhouse", nil, debuff.slaughterhouse.stack + 1 ) end
             if talent.dancing_blades.enabled then applyBuff( "dancing_blades" ) end
             if talent.titanic_rage.enabled then
                 applyBuff( "enrage" )
@@ -1373,6 +1377,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "whirlwind" )
+            if pvptalent.slaughterhouse.enabled then applyDebuff( "target", "slaughterhouse", nil, debuff.slaughterhouse.stack + 1 ) end
             if talent.tenderize.enabled then
                 applyBuff( "enrage" )
             end
@@ -1488,6 +1493,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "enrage" )
             removeStack( "whirlwind" )
+            if pvptalent.slaughterhouse.enabled then applyDebuff( "target", "slaughterhouse", nil, debuff.slaughterhouse.stack + 1 ) end
             if talent.frenzy.enabled then addStack( "frenzy" ) end
             if talent.reckless_abandon.enabled then applyBuff( "reckless_abandon" ) end
             if set_bonus.tier30_4pc > 0 then addStack( "merciless_assault" ) end

@@ -527,7 +527,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=369459
     source_of_magic = {
         id = 369459,
-        duration = 1800,
+        duration = 3600,
         max_stack = 1,
         dot = "buff",
         friendly = true
