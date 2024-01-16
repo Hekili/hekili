@@ -116,7 +116,7 @@ spec:RegisterTalents( {
     iron_stomach           = { 90744, 193546, 1 }, -- Increases the healing you receive from Crimson Vial, healing potions, and healthstones by $s1%.
     leeching_poison        = { 90758, 280716, 1 }, -- Adds a Leeching effect to your Lethal poisons, granting you $108211s1% Leech.
     lethality              = { 90749, 382238, 2 }, -- Critical strike chance increased by $s1%. Critical strike damage bonus of your attacks that generate combo points increased by $s2%.
-    marked_for_death       = { 90750, 137619, 1 }, -- Marks the target, instantly granting full combo points and increasing the damage of your finishing moves by $s1% for $d. Cooldown resets if the target dies during effect.
+    -- marked_for_death       = { 90750, 137619, 1 }, -- Marks the target, instantly granting full combo points and increasing the damage of your finishing moves by $s1% for $d. Cooldown resets if the target dies during effect.
     master_poisoner        = { 90636, 378436, 1 }, -- Increases the non-damaging effects of your weapon poisons by $s1%.
     nightstalker           = { 90693, 14062 , 2 }, -- While Stealth$?c3[ or Shadow Dance][] is active, your abilities deal $s1% more damage.
     nimble_fingers         = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by $s1.
@@ -1029,6 +1029,7 @@ spec:RegisterAuras( {
     envenom = {
         id = 32645,
         duration = function () return ( effective_combo_points ) + ( 2 * talent.twist_the_knife.rank ) end,
+        tick_time = 5,
         type = "Poison",
         max_stack = 1
     },
@@ -1200,13 +1201,13 @@ spec:RegisterAuras( {
         duration = 4,
         max_stack = 1
     },
-    -- Talent: Marked for death, taking extra damage from @auracaster's finishing moves. Cooldown resets upon death.
+    --[[ Talent: Marked for death, taking extra damage from @auracaster's finishing moves. Cooldown resets upon death.
     -- https://wowhead.com/beta/spell=137619
     marked_for_death = {
         id = 137619,
         duration = 15,
         max_stack = 1
-    },
+    }, ]]
     -- Talent: Critical strike chance increased by $w1%.
     -- https://wowhead.com/beta/spell=256735
     master_assassin = {
@@ -2236,7 +2237,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Marks the target, instantly generating 5 combo points. Cooldown reset if the target dies within 1 min.
+    --[[ Talent: Marks the target, instantly generating 5 combo points. Cooldown reset if the target dies within 1 min.
     -- TODO:  MfD cooldown for Subtlety is different?
     marked_for_death = {
         id = 137619,
@@ -2260,7 +2261,7 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( action.marked_for_death.cp_gain, "combo_points" )
         end,
-    },
+    }, ]]
 
     -- Attack with both weapons, dealing a total of 649 Physical damage. Awards 2 combo points.
     mutilate = {

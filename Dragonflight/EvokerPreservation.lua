@@ -464,7 +464,7 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        spend = 0.01,
+        spend = 0.014,
         spendType = "mana",
 
         startsCombat = false,
@@ -535,7 +535,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         icd = 0.5,
 
-        spend = 0.04,
+        spend = 0.049,
         spendType = "mana",
 
         startsCombat = false,
@@ -688,7 +688,7 @@ spec:RegisterAbilities( {
         cooldown = 8,
         gcd = "spell",
 
-        spend = 0.01,
+        spend = 0.014,
         spendType = "mana",
 
         startsCombat = false,
@@ -745,7 +745,7 @@ spec:RegisterAbilities( {
         recharge = 9,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = 0.028,
         spendType = "mana",
 
         startsCombat = false,
@@ -765,7 +765,7 @@ spec:RegisterAbilities( {
         recharge = function() return talent.temporal_artificer.enabled and 180 or 240 end,
         gcd = "spell",
 
-        spend = 0.05,
+        spend = 0.055,
         spendType = "mana",
 
         startsCombat = false,
@@ -785,7 +785,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         icd = 0.5,
 
-        spend = 0.04,
+        spend = 0.042,
         spendType = "mana",
 
         startsCombat = false,
@@ -861,7 +861,7 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "off",
 
-        spend = 0.02,
+        spend = 0.022,
         spendType = "mana",
 
         startsCombat = false,
@@ -882,7 +882,7 @@ spec:RegisterAbilities( {
         color = "green",
         icd = 0.5,
 
-        spend = 0.03,
+        spend = 0.033,
         spendType = "mana",
 
         talent = "verdant_embrace",

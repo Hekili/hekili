@@ -1056,7 +1056,7 @@ spec:RegisterAbilities( {
         recharge = function() return 6 * ( buff.avenging_crusader.up and 0.7 or 1 ) end,
         gcd = "spell",
 
-        spend = 0.016,
+        spend = 0.006,
         spendType = "mana",
 
         startsCombat = true,

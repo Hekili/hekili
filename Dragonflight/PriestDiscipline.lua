@@ -372,7 +372,8 @@ spec:RegisterAuras( {
     ultimate_penitence = {
         id = 421453,
         duration = 6,
-        max_stack = 1
+        max_stack = 1,
+        copy = 421454
     },
     vampiric_embrace = {
         id = 15286,

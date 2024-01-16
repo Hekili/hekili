@@ -29,7 +29,6 @@ spec:RegisterTalents( {
     earth_shield                = { 81106, 974   , 1 }, -- Protects the target with an earthen shield, increasing your healing on them by 20% and healing them for 6,517 when they take damage. This heal can only occur once every few seconds. Maximum 9 charges. Earth Shield can only be placed on the Shaman and one other target at a time. The Shaman can have up to two Elemental Shields active on them.
     earthgrab_totem             = { 81082, 51485 , 1 }, -- Summons a totem at the target location for 30 sec. The totem pulses every 2 sec, rooting all enemies within 9 yards for 8 sec. Enemies previously rooted by the totem instead suffer 50% movement speed reduction.
     elemental_orbit             = { 81105, 383010, 1 }, -- Increases the number of Elemental Shields you can have active on yourself by 1. You can have Earth Shield on yourself and one ally at the same time.
-    elemental_warding           = { 81084, 381650, 2 }, -- Reduces all magic damage taken by 2%.
     enfeeblement                = { 81078, 378079, 1 }, -- Your Hex target is slowed by 70% during Hex and for 6 sec after it ends.
     fire_and_ice                = { 81067, 382886, 1 }, -- Increases all Fire and Frost damage you deal by 3%.
     flurry                      = { 81059, 382888, 1 }, -- Increases your attack speed by 15% for your next 3 melee swings after dealing a critical strike with a spell or ability.
@@ -90,6 +89,7 @@ spec:RegisterTalents( {
     earthen_wall_totem          = { 81046, 198838, 1 }, -- Summons a totem at the target location with 392,300 health for 18 sec. 2,280 damage from each attack against allies within 11.5 yards of the totem is redirected to the totem.
     earthliving_weapon          = { 81049, 382021, 1 }, -- Imbue your weapon with the element of Earth for 1 |4hour:hrs;. Your Riptide, Healing Wave, Healing Surge, and Chain Heal healing a 20% chance to trigger Earthliving on the target, healing for 9,217 over 12 sec.
     echo_of_the_elements        = { 81044, 333919, 1 }, -- Riptide and Lava Burst have an additional charge.
+    elemental_warding           = { 81084, 381650, 2 }, -- Reduces all magic damage taken by 2%.
     flash_flood                 = { 81020, 280614, 2 }, -- Consuming Tidal Waves reduces the cast time of your next heal by 10%.
     flow_of_the_tides           = { 81031, 382039, 1 }, -- Chain Heal bounces an additional time and casting Chain Heal on a target affected by Riptide consumes Riptide, increasing the healing of your Chain Heal by 30%.
     healing_rain                = { 81040, 73920 , 1 }, -- Blanket the target area in healing rains, restoring 15,586 health to up to 6 allies over 10 sec.
@@ -609,7 +609,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.24,
+        spend = 0.044,
         spendType = "mana",
 
         startsCombat = false,

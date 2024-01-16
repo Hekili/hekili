@@ -826,7 +826,7 @@ spec:RegisterAbilities( {
         school = "fire",
         color = "red",
 
-        spend = 0.10,
+        spend = 0.014,
         spendType = "mana",
 
         talent = "cauterizing_flame",

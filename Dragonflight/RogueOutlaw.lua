@@ -76,7 +76,7 @@ spec:RegisterTalents( {
     iron_stomach              = { 90744, 193546, 1 }, -- Increases the healing you receive from Crimson Vial, healing potions, and healthstones by $s1%.
     leeching_poison           = { 90758, 280716, 1 }, -- Adds a Leeching effect to your Lethal poisons, granting you $108211s1% Leech.
     lethality                 = { 90749, 382238, 2 }, -- Critical strike chance increased by $s1%. Critical strike damage bonus of your attacks that generate combo points increased by $s2%.
-    marked_for_death          = { 90750, 137619, 1 }, -- Marks the target, instantly granting full combo points and increasing the damage of your finishing moves by $s1% for $d. Cooldown resets if the target dies during effect.
+    -- marked_for_death          = { 90750, 137619, 1 }, -- Marks the target, instantly granting full combo points and increasing the damage of your finishing moves by $s1% for $d. Cooldown resets if the target dies during effect.
     master_poisoner           = { 90636, 378436, 1 }, -- Increases the non-damaging effects of your weapon poisons by $s1%.
     nightstalker              = { 90693, 14062 , 2 }, -- While Stealth$?c3[ or Shadow Dance][] is active, your abilities deal $s1% more damage.
     nimble_fingers            = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by $s1.
@@ -773,7 +773,7 @@ local restless_blades_list = {
     "grappling_hook",
     "keep_it_rolling",
     "killing_spree",
-    "marked_for_death",
+    -- "marked_for_death",
     "roll_the_bones",
     "sprint",
     "vanish"
@@ -1419,7 +1419,7 @@ spec:RegisterSetting( "check_blade_rush_range", true, {
     width = "full"
 } )
 
-spec:RegisterSetting( "mfd_points", 3, {
+--[[ spec:RegisterSetting( "mfd_points", 3, {
     name = strformat( "%s: Combo Points", Hekili:GetSpellLinkWithTexture( spec.talents.marked_for_death[2] ) ),
     desc = strformat( "%s will only be recommended if when you have the specified number of combo points or fewer.",
         Hekili:GetSpellLinkWithTexture( spec.talents.marked_for_death[2] ) ),
@@ -1428,7 +1428,7 @@ spec:RegisterSetting( "mfd_points", 3, {
     max = 5,
     step = 1,
     width = "full"
-} )
+} ) ]]
 
 --[[ spec:RegisterSetting( "no_rtb_in_dance_cto", true, {
     name = "Never |T1373910:0|t Roll the Bones during |T236279:0|t Shadow Dance",

@@ -731,7 +731,7 @@ spec:RegisterAbilities( {
     chrono_loop = {
         id = 383005,
         cast = 0.0,
-        cooldown = 60.0,
+        cooldown = 45.0,
         gcd = "spell",
 
         spend = 0.020,

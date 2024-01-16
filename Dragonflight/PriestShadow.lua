@@ -634,6 +634,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 323673
     },
+    mind_trauma = {
+        id = 247776,
+        duration = 15,
+        max_stack = 1
+    },
     -- Talent: Haste increased by $w1%.
     -- https://wowhead.com/beta/spell=10060
     power_infusion = {
