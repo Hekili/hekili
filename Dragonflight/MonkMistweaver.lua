@@ -166,7 +166,8 @@ spec:RegisterAuras( {
     awakened_faeline = {
         id = 389387,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        copy = "awakened_jadefire"
     },
     bonedust_brew = {
         id = 386276,
@@ -254,7 +255,8 @@ spec:RegisterAuras( {
     faeline_stomp = {
         id = 388193,
         duration = 30,
-        max_stack = 1
+        max_stack = 1,
+        copy = "jadefire_stomp",
     },
     fatal_touch = {
         id = 337296,
@@ -1158,11 +1160,11 @@ spec:RegisterSetting( "experimental_msg", nil, {
 
 spec:RegisterSetting( "save_faeline", false, {
     type = "toggle",
-    name = strformat( "%s: Prevent Overlap", Hekili:GetSpellLinkWithTexture( spec.talents.faeline_stomp[2] ) ),
+    name = strformat( "%s: Prevent Overlap", Hekili:GetSpellLinkWithTexture( spec.talents.jadefire_stomp[2] ) ),
     desc = strformat( "If checked, %s will not be recommended when %s, %s, and/or %s are active.\n\n"
-        .. "Disabling this option may impact your mana efficiency.", Hekili:GetSpellLinkWithTexture( spec.talents.faeline_stomp[2] ),
+        .. "Disabling this option may impact your mana efficiency.", Hekili:GetSpellLinkWithTexture( spec.talents.jadefire_stomp[2] ),
         Hekili:GetSpellLinkWithTexture( spec.auras.ancient_concordance.id ), Hekili:GetSpellLinkWithTexture( spec.auras.ancient_teachings.id ),
-        Hekili:GetSpellLinkWithTexture( spec.auras.awakened_faeline.id ) ),
+        Hekili:GetSpellLinkWithTexture( spec.auras.awakened_jadefire.id ) ),
     width = "full",
 } )
 
@@ -1225,4 +1227,4 @@ spec:RegisterOptions( {
 
 
 
-spec:RegisterPack( "Mistweaver", 20231225, [[Hekili:9I1wZnQnu4Fl5LCzAcBa7Sz324mt6oTZSPTB7usFPpaile2QasujX6KD8WV9EKaBazW2z70(WMWQZrNlFNB6Ka3GNc8JrksWN8U2BIRN3noUUEV3DAGV6LcsGFbcNIwaFWq5Wp)fQuTIG(mrOj9sghfRfHKxkWa5a)5L0m1hzbZhsU3o1d4TGGHJV96a)L04ysnVejoWxZ7vUEx5DZ3wf9hssv0Fsyvr)wzMK8DvrO44QOFNkPSfvr(LaLFIItRIOWxp8R)qveVqr5mNQhRECJOCNUru)iIKrzWh(kEErvKIxfvi4y4UmmLWuvrprq4LG0LDeH7vEVderJqEIUGialcLLxfLZfKECAugOGCuwgOaaOsLvrjC4gUx741Y71GH9wdVpaiq8glV2OqFMtHJeemsQm(QTPVAPgwKkel2qxdai4FKNPn3izZno3O9CedbKtsOApf)YfDmLj1WTXua4LNL9MpSKcUkxuqIb7zfvTe0ge2OOm6xq1wAdwdPbcEcndc(iS(ePtby5885i13m7nfCd3poenaQdNxkKQXjVcY00wAdD4uWmqIWLGNhkvcAkPlXsjjKQi5YUhopJZJdtkfV07uIqsePAWQZPz0flvYW)QmErUoJOdPeQGyev3drmmbmduwiwhY7kF0IqEsiyI40EMJfIOLCDSc8hi4Ejnz2jsIszsdLG)h2qF9AfkdmkhuD6AiMZWCrS2goDEzsYqeCI5RyT3CfkLWiXBezZ1So16oncvTP2OVU2ES5wDDlnIew)FdZG8Yl1DqMH4Kl1boSAMR2x1ma(iO)CkrE)SjhweWVhxc3nPt(IJuNiPwwYIjIWeoUuQnyl6cthLqzjlmv3pPp15zqhqEPYqZeDAaMTEUjoVKeMZzqblr8Y61NFYEr8XVQtzX61hIhOWhNE)KlofZ5zAy3XYfCeKCeLjVFbo2jh9SLl9fclSq3tv7oT5AWpZiHBjADP2YXDo2QiUg01nkdl09j7epGO)qbKbcJDseAU1agwnblNFqHTE9w)eUuOqMAlLVQ48HIuLfNEq)AxGT9ClKTMGSGYyApglqqBdT9g4dtKLapBM3QhGVcj0Sjd8FAjmjGMxWfQMXrNbI6m9mM)Ue6Rb99L8CGhuj0dcgBdhGHESli6jH)SzqIE02h4mqpgYNDq05S6PzhMrhcdnpJedx4C3NRhnnGflvVodEY)Jg8E1ODpal9St73JdoIjjOYSxjM4E9iM4UtoSTYbMTmcmmQs(3IdhNpSnUnIh0oXAaG(Jgmwl2PaqAk7QI0JE0yyGV5l9dEHYh4xFY8(5gXe89b(yb88dbfv)yO2Y(QO7Mb5hBEJe84A7wGbkO01i5go22URRcaMM86uzv061qIHvZVw1y18uRHPJQHtae9yloQv8HBqwfDAnsVh0QxVzTjEtxKAtdulG6T28yAMAX0TDzAWgRDzhUniHnX9XJL91rVWQnEFSb3xp0FEvu7LgR4YG(htq6ycMM3LufDVjT7cJOp0lumC38kL9eVhpLC0NVmuL0)zzoTV2zNeMM(07K1SZIm7lRz7IndLV0IABw0XIRP94A7IpwC1dzSweAFa02fJ2ha1FrjloFxp7R7Itwm((UmwViLfhUxVVkOb3RQo3(WJ5AlvgBpR(s6GvCdU31GwZoJS21w6VhwNOt3Llni0XpZ6(6UW1lBPtFBlkSwmREYyy9FJi9Srn7EhTIU7RspsvDf22)Ob7uJnykI3XuDp5WTjm6gER1sUiW)bAkIHsrMtd(N]] )
+spec:RegisterPack( "Mistweaver", 20240116, [[Hekili:9E1wVTTnu4Fl5fNeSexl7002TKa0vSb0STUH5Sx2dIIwIYI1sKQKuXjfg63(ouuwxOUyNoS9qID45WZ1VZHFX1X9b3LbyfX9tZNn)Qzooxp15AN35SWDP65uI7YuS)g8A4lmCc87FJkvBj4hjcTONJ54aTjK8mHpi2D5QmAS6Jm3v22fukL4d)9BM5UmIgeqmkrK(Ul1kD5mNlDU(7Z9(Ru9nZ9u4yctjNMFF(9GclU0z(LZFTwbji9VjSCV)ilws(HCpCqqU3FsLu26CVLzGKFH6Vj3JcF79)(pL7XtvuoRLPCUAVP(zmjMYGVSuXtsbhZZ9sfCF4UmFked5EpqW(rG1Bgnoxo)TGjknYd01eber44KCVeUG0sZcNboibhhdoakHBK5EHC4goZMoVw3zZnfbW3qjkyFKBck8JCkCKG4JLQIC1o03gPllsfMfuixxaWWpKNOL3iC)noRW7jyggehgs1zQ)ZN3iuwyk3fHcuE5XXV6druiv5IusaepBPQiWBqFLIJPFfBI0YAT7YyWNsn8aZjWhFQaTry4vXKa3F0DPVGQickguWxrFKGimscLafMBUn3BH5yodGIrzSaIafY9ZKifb7QaGuHLl14RegkvdgA6aqPfVmxM7TBhKqeLQOxdXnsi3u7grbedjZyOnaat7HRg0dNShcpvTh9G4HivebLWzqhKiEEA5nnoEvwy4ykNbD4jqdD8Q1QyyMLNPQcXx3Ssb2gTfgGTkuxBRZQmHuzP0BAQKmLYy6QHVaZigN1sDLE6oeNfRQA(13LGfOiaLIKkbDJD00Q3MjjiOMMi7R3wN0CEakmt8SLwx1slIqseBGO2sRwLOy66iLe95SG1jq7BSkvivqkC9yvkmZNaPjog5dJ)wA(2wXhEDrxxaft709DnvmLB(SLgoZgdlwHQLq3hvTgqJ7kHPyZ2oKpN5Zfb6WUgFoPeE2Nsb8TS2wAlEdapd27MEmJTgDTrPJQMhgowQvrBL6Q0NXaae6qaid2owuIo(Dq3zMQ04tF9nBmEaDrK5pq6DCMnDiZlK6DDA1NF0o6MVj)ivMrmz3PRURlhz6YEL2XU)8LVD7SCVtEbiKdSh8y2xcVdQzbCxXM9ZlmTpNhRbjtTY7PcscMYKfAV2pyAc(PrwPo8w)6Xm43XeuJxM6(y1)zlNvA2iOuGmsNDYPa9bEYkCxCtVlvMFm(EXHtIcFd8gLADAWkClwOFfb229qeSoIMKYfQsQrNcdtNQ578LmykgWgsEcOdodgNbkIWb(WBiRjAwz)AX2mnnRpWzGFkeF6bHONAywDyf3dqHlCMZtgAs9eXs1llGx8)yapQhThiT8ZqZRhOCusa4LvtCMnqi29Ph7OC4xWSldd6K)T1HJlhQ6BdKbDE1RzH(Jf1yTzVYWgut7UGTniwpHZdPXvlCKtRg5)UBFLzip)((KvnEpSy9GToekLdN2HlxtHvC3AEynxTwNwXnR5PwCXAkQI7vZdBZ1QL9BYTQPaRkcCsBEdxqdV9KEzpTB3W4UjJYwQ(Mw4PjdZoQJ3QWitgHnuZ8YMqXfAQe3clzVWW(4whDU2MFYD3U4WMa(CylCZIgag4nzWkDyOyj36XzlPTEnUO7CWLH72D2jJwXhLTXUDhsNcMg3T48jhIFXDLClSsPkkb60zqkewxQEESZXwtXMIEfNGM9dO73xdPN2ydGq5T6jWmcSs(En2UD2)F22w5BQpFOovw6KdMxDlS1NBvznc69)fgEHlIlCx(E6gmdVbxqbY9Fc]] )

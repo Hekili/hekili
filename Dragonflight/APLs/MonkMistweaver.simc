@@ -11,7 +11,7 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
 actions+=/potion
-actions+=/faeline_stomp,if=!settings.save_faeline|talent.ancient_concordance&buff.ancient_concordance.down|talent.awakened_faeline&buff.awakened_faeline.down|talent.ancient_teachings&buff.ancient_teachings.down
+actions+=/jadefire_stomp,if=!settings.save_faeline|talent.ancient_concordance&buff.ancient_concordance.down|talent.awakened_faeline&buff.awakened_faeline.down|talent.ancient_teachings&buff.ancient_teachings.down
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=3
 actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
 
