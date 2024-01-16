@@ -4151,8 +4151,23 @@ do
             keybind = {
                 type = "input",
                 name = "Override Keybind Text",
-                desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
-                    "This can be helpful if your keybinds are detected incorrectly or is found on multiple action bars.",
+                desc = function()
+                    local output = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  "
+                        .. "This can be helpful if your keybinds are detected incorrectly or is found on multiple action bars."
+
+                    local detected = Hekili.KeybindInfo and Hekili.KeybindInfo[ ability.key ]
+                    if detected then
+                        output = output .. "\n"
+
+                        for page, text in pairs( detected.upper ) do
+                            output = format( "%s\n|cFFFFD100%s|r detected on action page |cFFFFD100%d.", output, text, page )
+                        end
+                    else
+                        output = output .. "\n|cFFFFD100No keybind detected for this ability.|r"
+                    end
+
+                    return output
+                end,
                 validate = function( info, val )
                     val = val:trim()
                     if val:len() > 20 then return "Keybindings should be no longer than 20 characters in length." end
@@ -4397,9 +4412,27 @@ do
 
                     keybind = {
                         type = "input",
-                        name = "Keybind Text",
-                        desc = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  " ..
-                            "This can be helpful if the addon incorrectly detects your keybindings.",
+                        name = "Override Keybind Text",
+                        desc = function()
+                            local output = "If specified, the addon will show this text in place of the auto-detected keybind text when recommending this ability.  "
+                                .. "This can be helpful if your keybinds are detected incorrectly or is found on multiple action bars."
+
+                            local detected = Hekili.KeybindInfo and Hekili.KeybindInfo[ ability.key ]
+                            local found = false
+
+                            if detected then
+                                for page, text in pairs( detected.upper ) do
+                                    if found == false then output = output .. "\n"; found = true end
+                                    output = format( "%s\n|cFFFFD100%s|r detected on action page |cFFFFD100%d.", output, text, page )
+                                end
+                            end
+
+                            if not found then
+                                output = format( "%s\n|cFFFFD100No keybind detected for this ability.|r", output )
+                            end
+
+                            return output
+                        end,
                         validate = function( info, val )
                             val = val:trim()
                             if val:len() > 6 then return "Keybindings should be no longer than 6 characters in length." end
