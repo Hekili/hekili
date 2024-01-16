@@ -1030,21 +1030,26 @@ do
     end
 
     function ns.ClearMarks( super )
+        local count = 0
+        local startTime = debugprofilestop()
         if super then
             for t, keys in pairs( supermarked ) do
                 for key in pairs( keys ) do
                     rawset( t, key, nil )
+                    count = count + 1
                 end
             end
-            return
+        else
+            local data = remove( marked )
+            while( data ) do
+                rawset( data.t, data.k, nil )
+                insert( pool, data )
+                data = remove( marked )
+                count = count + 1
+            end
         end
-
-        local data = remove( marked )
-        while( data ) do
-            rawset( data.t, data.k, nil )
-            insert( pool, data )
-            data = remove( marked )
-        end
+        local endTime = debugprofilestop()
+        if Hekili.ActiveDebug then Hekili:Debug( "Purged %d marked values in %.2fms.", count, endTime - startTime ) end
     end
 
     Hekili.Maintenance = {
