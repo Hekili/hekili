@@ -4720,56 +4720,86 @@ ns.metatables.mt_equipped = mt_equipped
 
 -- Aliases let a single buff name refer to any of multiple buffs.
 -- Developed mainly for RtB; it will also report "stack" or "count" as the sum of stacks of multiple buffs.
-local mt_alias_debuff = {
-    __index = function( t, k )
-        local aura = class.auras[ t.key ]
-        local type = aura.aliasType or "debuff"
+do
+    local autoReset = setmetatable( {
+        applied = 1,
+        caster = 1,
+        count = 1,
+        -- duration = 1,
+        expires = 1,
+        last_application = 1,
+        last_expiry = 1,
+        lastApplied = 1,
+        lastCount = 1,
+        name = 1,
+        timeMod = 1,
+        unit = 1,
+        v1 = 1,
+        v2 = 1,
+        v3 = 1,
+    }, {
+        __index = function( t, k )
+            if class.knownAuraAttributes[ k ] ~= nil then return 1 end
+        end,
+    } )
 
-        if aura.meta and aura.meta[ k ] then return aura.meta[ k ]() end
+    mt_alias_debuff = {
+        __index = function( t, k )
+            local aura = class.auras[ t.key ]
+            local type = aura.aliasType or "debuff"
 
-        if k == "count" or k == "stack" or k == "stacks" then
-            local n = 0
+            if aura.meta and aura.meta[ k ] then return aura.meta[ k ]() end
 
-            if type == "any" then
-                for i, child in ipairs( aura.alias ) do
-                    if state.buff[ child ].up then n = n + max( 1, state.buff[ child ].stack ) end
-                    if state.debuff[ child ].up then n = n + max( 1, state.debuff[ child ].stack ) end
+            if k == "count" or k == "stack" or k == "stacks" then
+                local n = 0
+
+                if type == "any" then
+                    for i, child in ipairs( aura.alias ) do
+                        if state.buff[ child ].up then n = n + max( 1, state.buff[ child ].stack ) end
+                        if state.debuff[ child ].up then n = n + max( 1, state.debuff[ child ].stack ) end
+                    end
+                else
+                    for i, child in ipairs( aura.alias ) do
+                        if state[ type ][ child ].up then n = n + max( 1, state[ type ][ child ].stack ) end
+                    end
                 end
-            else
-                for i, child in ipairs( aura.alias ) do
-                    if state[ type ][ child ].up then n = n + max( 1, state[ type ][ child ].stack ) end
+
+                return n
+            end
+
+            local alias
+            local mode = aura.aliasMode or "first"
+
+            for i, v in ipairs( aura.alias ) do
+                local child
+
+                if type == "any" then
+                    child = state.buff[ v ].up and state.buff[ v ] or state.debuff[ v ]
+                else
+                    child = state.debuff[ v ]
+                end
+
+                if not alias and mode == "first" and child.up then return child[ k ] end
+
+                if child.up then
+                    if mode == "shortest" and ( not alias or child.remains < alias.remains ) then alias = child
+                    elseif mode == "longest" and ( not alias or child.remains > alias.remains ) then alias = child end
                 end
             end
 
-            return n
+            if type == "any" then type = "debuff" end
+
+            if alias then return alias[ k ]
+            else return state[ type ][ aura.alias[1] ][ k ] end
+        end,
+        __newindex = function( t, k, v )
+            if v == nil then return end
+            class.knownAuraAttributes[ k ] = true
+            if autoReset[ k ] then Mark( t, k ) end
+            rawset( t, k, v )
         end
-
-        local alias
-        local mode = aura.aliasMode or "first"
-
-        for i, v in ipairs( aura.alias ) do
-            local child
-
-            if type == "any" then
-                child = state.buff[ v ].up and state.buff[ v ] or state.debuff[ v ]
-            else
-                child = state.debuff[ v ]
-            end
-
-            if not alias and mode == "first" and child.up then return child[ k ] end
-
-            if child.up then
-                if mode == "shortest" and ( not alias or child.remains < alias.remains ) then alias = child
-                elseif mode == "longest" and ( not alias or child.remains > alias.remains ) then alias = child end
-            end
-        end
-
-        if type == "any" then type = "debuff" end
-
-        if alias then return alias[ k ]
-        else return state[ type ][ aura.alias[1] ][ k ] end
-    end
-}
+    }
+end
 
 
 local default_debuff_values = {
@@ -4873,6 +4903,9 @@ do
                 end
 
                 local real = auras.target.debuff[ t.key ] or auras.player.debuff[ t.key ]
+                if aura and aura.shared and auras[ aura.shared ] then
+                    real = auras.player.debuff[ t.key ]
+                end
 
                 if real then
                     t.name = real.name or t.key
