@@ -629,7 +629,14 @@ spec:RegisterStateExpr( "rtb_buffs_longer", function ()
 end )
 
 spec:RegisterStateExpr( "rtb_buffs_will_lose", function ()
-    return rtb_buffs_normal + rtb_buffs_shorter
+    local count = 0
+    count = count + ( rtb_buffs_will_lose_buff.broadside and 1 or 0 )
+    count = count + ( rtb_buffs_will_lose_buff.buried_treasure and 1 or 0 )
+    count = count + ( rtb_buffs_will_lose_buff.grand_melee and 1 or 0 )
+    count = count + ( rtb_buffs_will_lose_buff.ruthless_precision and 1 or 0 )
+    count = count + ( rtb_buffs_will_lose_buff.skull_and_crossbones and 1 or 0 )
+    count = count + ( rtb_buffs_will_lose_buff.true_bearing and 1 or 0 )
+    return count
 end )
 
 spec:RegisterStateTable( "rtb_buffs_will_lose_buff", setmetatable( {}, {
