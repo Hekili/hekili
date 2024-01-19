@@ -474,7 +474,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     thunderous_roar = {
-        id = 384318,
+        id = 397364,
         duration = function () return talent.thunderous_words.enabled and 10 or 8 end,
         tick_time = 2,
         max_stack = 1

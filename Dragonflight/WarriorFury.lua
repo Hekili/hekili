@@ -455,7 +455,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     thunderous_roar = {
-        id = 384318,
+        id = 397364,
         duration = 8,
         tick_time = 2,
         max_stack = 1
