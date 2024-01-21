@@ -54,8 +54,8 @@ actions.standard+=/word_of_glory,if=buff.shining_light_free.up
 actions.standard+=/arcane_torrent,if=holy_power<5
 actions.standard+=/consecration,if=!buff.sanctification_empower.up
 
-actions.trinkets+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)
-actions.trinkets+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
+actions.trinkets+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_cooldown&trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)|!trinket.2.has_cooldown
+actions.trinkets+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_cooldown&trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)|!trinket.1.has_cooldown
 actions.trinkets+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(buff.avenging_wrath.up|boss&fight_remains<=40)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|!buff.avenging_wrath.up))|!variable.trinket_sync_slot)
 actions.trinkets+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(buff.avenging_wrath.up|boss&fight_remains<=40)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|!buff.avenging_wrath.up))|!variable.trinket_sync_slot)
 actions.trinkets+=/use_items
