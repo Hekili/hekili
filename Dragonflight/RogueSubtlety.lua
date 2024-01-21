@@ -789,6 +789,8 @@ spec:RegisterAbilities( {
             removeBuff( "symbols_of_death_crit" )
             removeBuff( "perforated_veins" )
         end,
+
+        bind = "shadowstrike"
     },
 
     -- Talent: Finishing move that launches explosive Black Powder at all nearby enemies dealing Physical damage. Deals reduced damage beyond 8 targets. All nearby targets with your Find Weakness suffer an additional 20% damage as Shadow. 1 point : 135 damage 2 points: 271 damage 3 points: 406 damage 4 points: 541 damage 5 points: 676 damage 6 points: 812 damage
@@ -1158,6 +1160,8 @@ spec:RegisterAbilities( {
 
             applyDebuff( "target", "find_weakness" )
         end,
+
+        bind = "backstab"
     },
 
     -- Talent: Attack with your off-hand, dealing 386 Physical damage, dispelling all enrage effects and applying a concentrated form of your Crippling Poison, reducing movement speed by 70% for 5 sec. Awards 1 combo point.
