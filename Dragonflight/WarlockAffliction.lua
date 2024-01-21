@@ -2342,6 +2342,7 @@ spec:RegisterAbilities( {
 
         talent = "vile_taint",
         startsCombat = true,
+        toggle = "cooldowns", -- Treat as CD since CDs are very dependent on its use.
 
         handler = function()
             applyDebuff( "target", "vile_taint" )
