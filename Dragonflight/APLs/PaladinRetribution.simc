@@ -1,3 +1,4 @@
+actions.precombat+=/retribution_aura,if=!buff.paladin_aura.up
 actions.precombat+=/arcane_torrent,if=talent.final_reckoning
 actions.precombat+=/shield_of_vengeance
 actions.precombat+=/variable,name=trinket_1_buffs,value=trinket.1.has_buff.strength|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit
