@@ -2359,7 +2359,11 @@ spec:RegisterAbilities( {
         aura = "rupture",
         cycle = "rupture",
 
-        usable = function () return combo_points.current > 0, "requires combo_points" end,
+        usable = function ()
+            if combo_points.current == 0 then return false, "requires combo_points" end
+            if ( settings.rupture_duration or 0 ) > 0 and target.time_to_die < ( settings.rupture_duration or 0 ) then return false, "target will die within " .. ( settings.rupture_duration or 0 ) .. " seconds" end
+            return true
+        end,
 
         used_for_danse = function()
             if not state.spec.subtlety or not talent.danse_macabre.enabled or buff.shadow_dance.down then return false end

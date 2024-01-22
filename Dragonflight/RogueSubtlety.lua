@@ -8,6 +8,7 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
 local insert, wipe = table.insert, table.wipe
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 261 )
 
@@ -655,7 +656,7 @@ spec:RegisterHook( "reset_precast", function( amt, resource )
     end
 
     if buff.shuriken_tornado.up then
-        local moment = buff.shuriken_tornado.expires
+        local moment = buff.shuriken_tornado.expires - 0.02
         while( moment > query_time ) do
             state:QueueAuraEvent( "shuriken_tornado", class.abilities.shuriken_storm.handler, moment, "AURA_PERIODIC" )
             moment = moment - 1
@@ -1260,7 +1261,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "shuriken_tornado" )
 
-            local moment = buff.shuriken_tornado.expires
+            local moment = buff.shuriken_tornado.expires - 0.02
             while( moment > query_time ) do
                 state:QueueAuraEvent( "shuriken_tornado", class.abilities.shuriken_storm.handler, moment, "AURA_PERIODIC" )
                 moment = moment - 1
@@ -1363,6 +1364,18 @@ spec:RegisterStateExpr( "priority_rotation", function ()
     if prio == nil then return true end
     return prio
 end )
+
+spec:RegisterSetting( "rupture_duration", 12, {
+    name = strformat( "%s Duration", Hekili:GetSpellLinkWithTexture( 1943 ) ),
+    desc = strformat( "If set above 0, %s will not be recommended if the target will die within the timeframe specified.\n\n"
+        .. "Popular guides suggest using that a target should live at least 12 seconds for %s to be worth using.\n\n",
+        Hekili:GetSpellLinkWithTexture( 1943 ), class.specs[ 259 ].abilities.rupture.name ),
+    type = "range",
+    min = 0,
+    max = 18,
+    step = 0.1,
+    width = "full",
+} )
 
 spec:RegisterSetting( "solo_vanish", true, {
     name = "Allow |T132331:0|t Vanish when Solo",
