@@ -2281,7 +2281,9 @@ spec:RegisterAbilities( {
 
         usable = function ()
             if combo_points.current == 0 then return false, "no combo points" end
-            if settings.rip_duration > 0 and target.time_to_die < settings.rip_duration then return false, "target will die in " .. target.time_to_die .. " seconds (<" .. settings.rip_duration .. ")" end
+
+            local rip_duration = settings.rip_duration or 0
+            if rip_duration > 0 and target.time_to_die < rip_duration then return false, "target will die in " .. target.time_to_die .. " seconds (<" .. rip_duration .. ")" end
             --[[ if settings.hold_bleed_pct > 0 then
                 local limit = settings.hold_bleed_pct * debuff.rip.duration
                 if target.time_to_die < limit then return false, "target will die in " .. target.time_to_die .. " seconds (<" .. limit .. ")" end
