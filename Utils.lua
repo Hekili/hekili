@@ -1011,11 +1011,18 @@ do
     local supermarked = {}
     local pool = {}
 
+    local seen = {}
+
     function ns.Mark( table, key )
-        local data = remove( pool ) or {}
-        data.t = table
-        data.k = key
-        insert( marked, data )
+        local unique = tostring( table ) .. ":" .. tostring( key )
+
+        if not seen[ unique ] then
+            local data = remove( pool ) or {}
+            data.t = table
+            data.k = key
+            insert( marked, data )
+            seen[ unique ] = true
+        end
     end
 
     function ns.SuperMark( table, keys )
@@ -1039,13 +1046,21 @@ do
                     count = count + 1
                 end
             end
+
+            wipe( seen )
         else
             local data = remove( marked )
             while( data ) do
-                rawset( data.t, data.k, nil )
-                insert( pool, data )
+                local unique = tostring( data.t ) .. ":" .. tostring( data.k )
+
+                if seen[ unique ] then
+                    rawset( data.t, data.k, nil )
+                    insert( pool, data )
+                    seen[ unique ] = nil
+                    count = count + 1
+                end
+
                 data = remove( marked )
-                count = count + 1
             end
         end
         local endTime = debugprofilestop()
