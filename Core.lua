@@ -83,6 +83,7 @@ function Hekili:OnInitialize()
     local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
 
     Hekili_OnAddonCompartmentClick = function( btn, arg1, arg2, checked, button )
+        button = button or arg1
         if button == "RightButton" then ns.StartConfiguration()
         else
             ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 8, 5 )
