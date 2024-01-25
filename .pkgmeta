@@ -48,6 +48,8 @@ externals:
         url: https://github.com/WeakAuras/LibRangeCheck-3.0
     Libs/LibCompress:
         url: https://repos.wowace.com/wow/libcompress/trunk
+    Libs/LibDBIcon-1.0:
+        url: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     Libs/LibDeflate:
         url: https://github.com/SafeteeWoW/LibDeflate.git
     Libs/LibDualSpec-1.0:
