@@ -1013,16 +1013,9 @@ do
 
     local seen = {}
 
-    function ns.Mark( table, key )
-        local unique = tostring( table ) .. ":" .. tostring( key )
-
-        if not seen[ unique ] then
-            local data = remove( pool ) or {}
-            data.t = table
-            data.k = key
-            insert( marked, data )
-            seen[ unique ] = true
-        end
+    function ns.Mark( t, key )
+        if not marked[ t ] then marked[ t ] = {} end
+        marked[ t ][ key ] = true
     end
 
     function ns.SuperMark( table, keys )
@@ -1049,20 +1042,16 @@ do
 
             wipe( seen )
         else
-            local data = remove( marked )
-            while( data ) do
-                local unique = tostring( data.t ) .. ":" .. tostring( data.k )
+            for t, data in pairs( marked ) do
+                for key in pairs( data ) do
+                    rawset( t, key, nil )
+                    data[ key ] = nil
 
-                if seen[ unique ] then
-                    rawset( data.t, data.k, nil )
-                    insert( pool, data )
-                    seen[ unique ] = nil
                     count = count + 1
                 end
-
-                data = remove( marked )
             end
         end
+
         local endTime = debugprofilestop()
         if Hekili.ActiveDebug then Hekili:Debug( "Purged %d marked values in %.2fms.", count, endTime - startTime ) end
     end
