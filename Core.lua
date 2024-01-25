@@ -82,7 +82,7 @@ function Hekili:OnInitialize()
     local LDB = LibStub( "LibDataBroker-1.1", true )
     local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
 
-    Hekili_OnAddonCompartmentClick = function( addonName, button )
+    Hekili_OnAddonCompartmentClick = function( btn, arg1, arg2, checked, button )
         if button == "RightButton" then ns.StartConfiguration()
         else
             ToggleDropDownMenu( 1, nil, ns.UI.Menu, "cursor", 8, 5 )
@@ -124,7 +124,15 @@ function Hekili:OnInitialize()
         GameTooltip:Hide()
     end
 
-
+    AddonCompartmentFrame:RegisterAddon({
+        text = "Hekili",
+        icon = "Interface\\AddOns\\Hekili\\Textures\\LOGO-ORANGE.blp",
+        registerForAnyClick = true,
+        notCheckable = true,
+        func = Hekili_OnAddonCompartmentClick,
+        funcOnEnter = Hekili_OnAddonCompartmentEnter,
+        funcOnLeave = Hekili_OnAddonCompartmentLeave
+    } )
 
     if LDB then
         ns.UI.Minimap = ns.UI.Minimap or LDB:NewDataObject( "Hekili", {

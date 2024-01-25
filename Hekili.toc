@@ -2,9 +2,6 @@
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
-## AddonCompartmentFunc: Hekili_OnAddonCompartmentClick
-## AddonCompartmentFuncOnEnter: Hekili_OnAddonCompartmentEnter
-## AddonCompartmentFuncOnLeave: Hekili_OnAddonCompartmentLeave
 ## IconTexture: Interface\AddOns\Hekili\Textures\LOGO-ORANGE.blp
 ## Notes: Priority helper based on SimulationCraft action lists.
 ## SavedVariables: HekiliDB
