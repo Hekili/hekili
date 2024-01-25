@@ -19,9 +19,9 @@ actions.cooldowns+=/sentinel,if=!defensive_sentinel
 actions.cooldowns+=/potion,if=buff.aw_sentinel.up
 actions.cooldowns+=/moment_of_glory,if=(buff.aw_sentinel.remains<15|(time>10|cooldown.sentinel.remains>15|cooldown.avenging_wrath.remains>15)&(cooldown.avengers_shield.remains&cooldown.judgment.remains&cooldown.hammer_of_wrath.remains))
 actions.cooldowns+=/divine_toll,if=spell_targets.shield_of_the_righteous>=3
-actions.cooldowns+=/bastion_of_light,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains<=30
-## actions.cooldowns+=/invoke_external_buff,name=power_infusion,if=buff.avenging_wrath.up
-actions.cooldowns+=/fireblood,if=buff.avenging_wrath.remains>8
+actions.cooldowns+=/bastion_of_light,if=buff.aw_sentinel.up|talent.sentinel&cooldown.sentinel.remains<=30|!talent.sentinel&cooldown.avenging_wrath.remains<=30
+## actions.cooldowns+=/invoke_external_buff,name=power_infusion,if=buff.aw_sentinel.up
+actions.cooldowns+=/fireblood,if=buff.aw_sentinel.remains>8
 
 actions.mitigation=shield_of_the_righteous,if=tanking&buff.shield_of_the_righteous.down&(holy_power.deficit=0|buff.divine_purpose.up)
 actions.mitigation+=/word_of_glory,if=health.pct<wog_health&(holy_power.deficit=0|buff.divine_purpose.up|buff.shining_light_free.up)
@@ -56,6 +56,6 @@ actions.standard+=/consecration,if=!buff.sanctification_empower.up
 
 actions.trinkets+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_cooldown&trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)|!trinket.2.has_cooldown
 actions.trinkets+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_cooldown&trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)|!trinket.1.has_cooldown
-actions.trinkets+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(buff.avenging_wrath.up|boss&fight_remains<=40)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|!buff.avenging_wrath.up))|!variable.trinket_sync_slot)
-actions.trinkets+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(buff.avenging_wrath.up|boss&fight_remains<=40)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|!buff.avenging_wrath.up))|!variable.trinket_sync_slot)
+actions.trinkets+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(buff.aw_sentinel.up|boss&fight_remains<=40)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|!buff.aw_sentinel.up))|!variable.trinket_sync_slot)
+actions.trinkets+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(buff.aw_sentinel.up|boss&fight_remains<=40)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|!buff.aw_sentinel.up))|!variable.trinket_sync_slot)
 actions.trinkets+=/use_items
