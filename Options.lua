@@ -7144,7 +7144,7 @@ do
                                                             local aName = bypass[ a ] or class.abilities[ a ].name
                                                             local bName = bypass[ b ] or class.abilities[ b ].name
 
-                                                            return a < b
+                                                            return aName < bName
                                                         end )
 
                                                         return list
