@@ -2290,6 +2290,6 @@ all:RegisterAbilities( {
             },
         },
 
-        copy = "fyralath_the_dream_render"
+        copy = { "fyralath_the_dream_render", "rage_of_fyralath_417131" }
     },
 } )
