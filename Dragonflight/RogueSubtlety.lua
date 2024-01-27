@@ -556,7 +556,7 @@ local function comboSpender( amt, resource )
         end
 
         if talent.secret_technique.enabled then
-            cooldown.secret_technique.expires = max( 0, cooldown.secret_technique.expires - amt )
+            reduceCooldown( "secret_technique", amt )
         end
 
         reduceCooldown( "shadow_dance", amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) )
