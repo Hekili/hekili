@@ -2501,7 +2501,10 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
         nobuff = "shadow_dance",
 
-        usable = function () return not stealthed.all, "not used in stealth" end,
+        usable = function ()
+            if state.spec.subtlety then return end
+            return not stealthed.all, "not used in stealth"
+        end,
         handler = function ()
             applyBuff( "shadow_dance" )
 
