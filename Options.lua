@@ -1831,6 +1831,7 @@ do
                                         end,
                                         set = function( info, val )
                                             Hekili.DB.profile.displays[ name ].queue.anchor = val
+                                            Hekili:BuildUI()
                                         end,
                                     },
 
@@ -1852,6 +1853,7 @@ do
                                         end,
                                         set = function( info, val )
                                             Hekili.DB.profile.displays[ name ].queue.direction = val
+                                            Hekili:BuildUI()
                                         end,
                                     },
 
@@ -1877,6 +1879,7 @@ do
                                         end,
                                         set = function( info, val )
                                             Hekili.DB.profile.displays[ name ].queue.offsetX = val
+                                            Hekili:BuildUI()
                                         end,
                                     },
 
@@ -1895,6 +1898,7 @@ do
                                         end,
                                         set = function( info, val )
                                             Hekili.DB.profile.displays[ name ].queue.offsetY = val
+                                            Hekili:BuildUI()
                                         end,
                                     },
 
@@ -1921,6 +1925,7 @@ do
                                         end,
                                         set = function( info, val )
                                             Hekili.DB.profile.displays[ name ].queue.spacing = val
+                                            Hekili:BuildUI()
                                         end,
                                     },
                                 }
