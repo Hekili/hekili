@@ -1237,8 +1237,6 @@ spec:RegisterAbilities( {
             end
 
             st_gain( "shuriken_storm" )
-
-            gain( amount, "combo_points" )
         end,
     },
 
