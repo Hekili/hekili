@@ -21,30 +21,7 @@ spec:RegisterResource( Enum.PowerType.Energy, {
     }
 } )
 
-spec:RegisterResource( Enum.PowerType.ComboPoints, {
-    shadow_techniques = {
-        last = function () return state.query_time end,
-        interval = function () return state.time_to_sht[5] end,
-        value = 1,
-        stop = function () return state.time_to_sht[5] == 0 or state.time_to_sht[5] == 3600 end,
-    },
-
-    --[[ shuriken_tornado = {
-        aura = "shuriken_tornado",
-        last = function ()
-            local app = state.buff.shuriken_tornado.applied
-            local t = state.query_time
-
-            return app + floor( ( t - app ) / 0.95 ) * 0.95
-        end,
-
-        stop = function( x ) return state.buff.shuriken_tornado.remains == 0 end,
-
-        interval = 0.95,
-        value = function () return state.active_enemies + ( state.buff.shadow_blades.up and 1 or 0 ) end,
-    }, ]]
-} )
-
+spec:RegisterResource( Enum.PowerType.ComboPoints )
 
 -- Talents
 spec:RegisterTalents( {
@@ -298,6 +275,11 @@ spec:RegisterAuras( {
         id = 121471,
         duration = 20,
         max_stack = 1
+    },
+    shadow_techniques = {
+        id = 196911,
+        duration = 3600,
+        max_stack = 14,
     },
     shot_in_the_dark = {
         id = 257506,
@@ -568,6 +550,20 @@ local function comboSpender( amt, resource )
 end
 
 spec:RegisterHook( "spend", comboSpender )
+
+local function st_gain( token )
+    local amount = action[ token ].cp_gain
+    local st_addl_gain = max( 0, min( combo_points.deficit - amount, buff.shadow_techniques.stack ) )
+
+    if st_addl_gain > 0 then
+        removeStack( "shadow_techniques", st_addl_gain )
+        amount = amount + st_addl_gain
+    end
+
+    gain( amount, "combo_points" )
+end
+
+setfenv( st_gain, state )
 -- spec:RegisterHook( "spendResources", comboSpender )
 
 
@@ -771,7 +767,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return 7 end
-            return 1 + ( buff.broadside.up and 1 or 0 )
+            return 1 + ( buff.broadside.up and 1 or 0 ) + buff.secret_techniques.stack
         end,
 
         handler = function ()
@@ -784,7 +780,7 @@ spec:RegisterAbilities( {
                 gainChargeTime( "shadow_blades", 0.5 )
             end
 
-            gain( action.backstab.cp_gain, "combo_points" )
+            st_gain( "backstab" )
 
             removeBuff( "the_rotten" )
             removeBuff( "symbols_of_death_crit" )
@@ -872,7 +868,7 @@ spec:RegisterAbilities( {
 
             if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
 
-            gain( action.cheap_shot.cp_gain, "combo_points" )
+            st_gain( "cheap_shot" )
 
             if buff.cold_blood.up then removeBuff( "cold_blood" )
             elseif buff.the_rotten.up then removeStack( "the_rotten" ) end
@@ -907,7 +903,7 @@ spec:RegisterAbilities( {
                 applyBuff( "echoing_reprimand_5", nil, 5 )
             end
 
-            gain( action.echoing_reprimand.cp_gain, "combo_points" )
+            st_gain( "echoing_reprimand" )
 
             if buff.cold_blood.up then removeBuff( "cold_blood" )
             elseif buff.the_rotten.up then removeStack( "the_rotten" ) end
@@ -1015,7 +1011,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "shadows_grasp", 8 )
             if buff.stealth.up then removeBuff( "stealth" ) end
-            gain( ( buff.shadow_blades.up and 2 or 1 ) + ( buff.the_rotten.up and 4 or 0 ), "combo_points" )
+
+            st_gain( "gloomblade" )
 
             if buff.cold_blood.up then removeBuff( "cold_blood" )
             elseif buff.the_rotten.up then removeStack( "the_rotten" )
@@ -1043,7 +1040,8 @@ spec:RegisterAbilities( {
         end,
 
         handler = function()
-            gain( action.goremaws_bite.cp_gain, "combo_points" )
+            st_gain( "goremaws_bite" )
+
             applyBuff( "goremaws_bite" )
             if buff.cold_blood.up then removeBuff( "cold_blood" )
             elseif buff.the_rotten.up then removeStack( "the_rotten" ) end
@@ -1137,7 +1135,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            gain( action.shadowstrike.cp_gain, "combo_points" )
+            st_gain( "shadowstrike" )
 
             removeBuff( "honed_blades" )
             removeBuff( "symbols_of_death_crit" )
@@ -1194,7 +1192,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            gain( action.shiv.cp_gain, "combo_points" )
+            st_gain( "shiv" )
             removeDebuff( "target", "dispellable_enrage" )
             if talent.improved_shiv.enabled then applyDebuff( "target", "shiv" ) end
         end,
@@ -1238,7 +1236,9 @@ spec:RegisterAbilities( {
                 removeBuff( "silent_storm" )
             end
 
-            gain( action.shuriken_storm.cp_gain, "combo_points" )
+            st_gain( "shuriken_storm" )
+
+            gain( amount, "combo_points" )
         end,
     },
 
@@ -1287,7 +1287,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            gain( 1, "combo_points" )
+
 
             removeBuff( "symbols_of_death_crit" )
             removeStack( "the_rotten" )
