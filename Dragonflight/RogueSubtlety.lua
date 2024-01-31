@@ -776,6 +776,11 @@ spec:RegisterAbilities( {
             return 1 + ( buff.broadside.up and 1 or 0 )
         end,
 
+        used_for_danse = function()
+            if not talent.danse_macabre.enabled or buff.shadow_dance.down then return false end
+            return danse_macabre_tracker.backstab
+        end,
+
         handler = function ()
             removeBuff( "honed_blades" )
             applyDebuff( "target", "shadows_grasp", 8 )
