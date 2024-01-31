@@ -767,7 +767,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return 7 end
-            return 1 + ( buff.broadside.up and 1 or 0 ) + buff.secret_techniques.stack
+            return 1 + ( buff.broadside.up and 1 or 0 )
         end,
 
         handler = function ()
