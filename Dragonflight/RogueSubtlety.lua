@@ -652,6 +652,12 @@ spec:RegisterHook( "reset_precast", function( amt, resource )
     end
 
     if buff.shuriken_tornado.up then
+        if prev_gcd[1].shuriken_tornado then
+            class.abilities.shuriken_storm.handler()
+            if buff.shadow_dance.up and talent.danse_macabre.enabled and not danse_macabre_tracker.shuriken_storm then
+                danse_macabre_tracker.shuriken_storm = true
+            end
+        end
         local moment = buff.shuriken_tornado.expires - 0.02
         while( moment > query_time ) do
             state:QueueAuraEvent( "shuriken_tornado", class.abilities.shuriken_storm.handler, moment, "AURA_PERIODIC" )
@@ -1258,6 +1264,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "shuriken_tornado" )
+            if buff.shadow_dance.up and talent.danse_macabre.enabled and not danse_macabre_tracker.shuriken_storm then
+                danse_macabre_tracker.shuriken_storm = true
+            end
 
             local moment = buff.shuriken_tornado.expires - 0.02
             while( moment > query_time ) do
