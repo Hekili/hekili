@@ -16,7 +16,7 @@ spec:RegisterResource( Enum.PowerType.Energy, {
     shadow_techniques = {
         last = function () return state.query_time end,
         interval = function () return state.time_to_sht[5] end,
-        value = 8,
+        value = 7,
         stop = function () return state.time_to_sht[5] == 0 or state.time_to_sht[5] == 3600 end,
     }
 } )
@@ -1124,7 +1124,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return 7 end
-            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( buff.premeditation.up and buff.slice_and_dice.up and 2 or 0 )
+            return 2 + ( talent.improved_ambush.enabled and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( buff.premeditation.up and buff.slice_and_dice.up and 2 or 0 )
         end,
 
         usable = function () return stealthed.all or buff.sepsis_buff.up, "requires stealth or sepsis_buff" end,
