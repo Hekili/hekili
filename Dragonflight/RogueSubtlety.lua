@@ -1075,7 +1075,7 @@ spec:RegisterAbilities( {
     secret_technique = {
         id = 280719,
         cast = 0,
-        cooldown = function () return 45 - min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ) end,
+        cooldown = 60,
         gcd = "totem",
         school = "physical",
 
