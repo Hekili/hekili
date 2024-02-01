@@ -922,8 +922,8 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     -- Unbound Chaos effect remains even after the buff falls off, so we'll reapply the buff whenever Immo Aura has been used more recently than Fel Rush.
-    if talent.unbound_chaos.enabled and action.immolation_aura.lastCast > action.fel_rush.lastCast then
-        applyBuff( "unbound_chaos" )
+    if talent.unbound_chaos.enabled and buff.unbound_chaos.remains < gcd.max and action.immolation_aura.lastCast > action.fel_rush.lastCast then
+        applyBuff( "unbound_chaos", nil, gcd.max )
     end
 
     for s, a in ipairs( sigil_types ) do
