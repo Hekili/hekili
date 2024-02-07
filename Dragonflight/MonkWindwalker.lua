@@ -1221,15 +1221,15 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "jadefire_stomp" )
 
-            if spec.brewmaster then
+            if state.spec.brewmaster then
                 applyDebuff( "target", "breath_of_fire" )
                 active_dot.breath_of_fire = active_enemies
             end
 
-            if spec.mistweaver then
+            if state.spec.mistweaver then
                 if talent.ancient_concordance.enabled then applyBuff( "ancient_concordance" ) end
                 if talent.ancient_teachings.enabled then applyBuff( "ancient_teachings" ) end
-                if talent.awakened_faeline.enabled then applyBuff( "awakened_faeline" ) end
+                if talent.awakened_jadefire.enabled then applyBuff( "awakened_jadefire" ) end
             end
 
             if talent.jadefire_harmony.enabled or legendary.fae_exposure.enabled then applyDebuff( "target", "jadefire_brand" ) end
