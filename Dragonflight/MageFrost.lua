@@ -877,6 +877,11 @@ spec:RegisterAbilities( {
 
         velocity = 20,
 
+        usable = function ()
+            if not buff.freezing_rain.up and moving and settings.prevent_hardcasts and action.blizzard.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
+            return true
+        end,
+
         handler = function ()
             applyDebuff( "target", "blizzard" )
             applyBuff( "active_blizzard" )
@@ -971,6 +976,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         flightTime = 1,
 
+
         handler = function ()
             removeBuff( "brain_freeze" )
             removeBuff( "cold_front_ready" )
@@ -1042,6 +1048,11 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         velocity = 35,
+
+        usable = function ()
+            if moving and settings.prevent_hardcasts and action.frostbolt.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
+            return true
+        end,
 
         handler = function ()
             addStack( "icicles" )
@@ -1129,7 +1140,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         velocity = 40,
 
-        usable = function() return buff.icicles.stack == 5 or buff.glacial_spike_usable.up, "requires 5 icicles or glacial_spike!" end,
+        usable = function() 
+            if moving and settings.prevent_hardcasts and action.glacial_spike.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
+            return buff.icicles.stack == 5 or buff.glacial_spike_usable.up, "requires 5 icicles or glacial_spike!" 
+        end,
 
         handler = function ()
             removeBuff( "icicles" )
@@ -1366,6 +1380,12 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
+        
+        usable = function ()
+            if moving and settings.prevent_hardcasts and action.shifting_power.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
+            return true
+        end,
+
         cdr = function ()
             return - action.shifting_power.execute_time / action.shifting_power.tick_time * ( -3 + conduit.discipline_of_the_grove.time_value )
         end,
@@ -1498,6 +1518,23 @@ spec:RegisterOptions( {
     potion = "phantom_fire",
 
     package = "Frost Mage",
+} )
+
+spec:RegisterSetting( "prevent_hardcasts", false, {
+    name = strformat( "%s, %s, %s: Instant-Only When Moving", 
+        Hekili:GetSpellLinkWithTexture( spec.abilities.blizzard.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.glacial_spike.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.frostbolt.id )
+    ),
+    desc = strformat( "If checked, non-instant %s, %s, %s casts will not be recommended while you are moving.\n\nAn exception is made if %s is talented and active and your cast "
+        .. "would be complete before |W%s|w expires.", 
+        Hekili:GetSpellLinkWithTexture( spec.abilities.blizzard.id ), 
+        Hekili:GetSpellLinkWithTexture( spec.abilities.glacial_spike.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.frostbolt.id ),
+        Hekili:GetSpellLinkWithTexture( 108839 ), ( GetSpellInfo( 108839 ) ) 
+    ),
+    type = "toggle",
+    width = "full"
 } )
 
 
