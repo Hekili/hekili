@@ -838,7 +838,10 @@ spec:RegisterHook( "reset_precast", function ()
         Hekili:Debug( "Ice Lance in-flight?  %s\nWinter's Chill Actual Stacks?  %d\nremaining_winters_chill:  %d", state:IsInFlight( "ice_lance" ) and "Yes" or "No", state.debuff.winters_chill.stack, state.remaining_winters_chill )
     end
 
-    if buff.icy_veins.up then summonPet( "water_elemental", buff.icy_veins.remains ) end
+    local remaining_pet = class.auras.icy_veins.duration - action.icy_veins.time_since
+    if remaining_pet > 0 then
+        summonPet( "water_elemental", remaining_pet )
+    end
 
     if  active_dot.glacial_spike > 0 and debuff.glacial_spike.down or
         active_dot.winters_chill > 0 and debuff.winters_chill.down or
