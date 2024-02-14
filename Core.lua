@@ -1600,15 +1600,13 @@ function Hekili.Update( initial )
                         state:HandleEvent( event )
                         state.offset = state.offset + t
                         event = events[ 1 ]
-                    elseif t < 0.2 then
+                    --[[ elseif t < 0.2 then
                         if debug then Hekili:Debug( 1, "Finishing queued event #%d ( %s of %s ) due at %.2f because the event occurs w/in 0.2 seconds.\n", n, event.type, event.action, t ) end
                         state.advance( t )
                         if event == events[ 1 ] then
-                            -- Event did not get handled due to rounding.
                             state:HandleEvent( event )
-                            -- state:RemoveEvent( event )
                         end
-                        event = events[ 1 ]
+                        event = events[ 1 ] ]]
                     else
                         --[[
                             Okay, new paradigm.  We're checking whether we should break channeled spells before we worry about casting while casting.
