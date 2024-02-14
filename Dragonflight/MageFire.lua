@@ -1858,7 +1858,9 @@ spec:RegisterAbilities( {
         talent = "scorch",
         startsCombat = true,
 
-        handler = function ()
+        flightTime = 0.015,
+
+        impact = function ()
             hot_streak( talent.searing_touch.enabled and target.health_pct < 30 )
             applyDebuff( "target", "ignite" )
             if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
