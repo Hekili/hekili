@@ -55,7 +55,7 @@ me:RegisterResource( Enum.PowerType.Runes, {
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
-            start = roundUp( start, 2 )
+            start = roundUp( start, 3 )
 
             t.expiry[ i ] = ready and 0 or start + duration
             t.cooldown = duration

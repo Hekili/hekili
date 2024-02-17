@@ -1700,7 +1700,7 @@ do
                 local i = 1
                 while ( true ) do
                     if remains - ( i * aura.tick_time ) > 0 then
-                        workTable[ roundUp( remains - ( i * aura.tick_time ), 2 ) ] = true
+                        workTable[ roundUp( remains - ( i * aura.tick_time ), 3 ) ] = true
                     else break end
                     i = i + 1
                 end
@@ -6756,7 +6756,7 @@ function state.advance( time )
     end
 
     time = ns.callHook( "advance", time ) or time
-    if not state.resetting then time = roundUp( time, 2 ) end
+    if not state.resetting then time = roundUp( time, 3 ) end
 
     state.delay = 0
 
