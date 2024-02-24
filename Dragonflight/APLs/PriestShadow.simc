@@ -26,7 +26,7 @@ actions.aoe+=/call_action_list,name=cds,if=fight_remains<30|target.time_to_die>1
 # Use Shadowfiend or Mindbender on cooldown if DoTs are active and sync with Dark Ascension
 actions.aoe+=/mindbender,if=(dot.shadow_word_pain.ticking&variable.dots_up|action.shadow_crash.in_flight&talent.whispering_shadows)&(fight_remains<30|target.time_to_die>15)&(!talent.dark_ascension|cooldown.dark_ascension.remains<gcd.max|fight_remains<15)
 actions.aoe+=/devouring_plague,cycle_targets=1,if=talent.distorted_reality&(active_dot.devouring_plague=0|insanity.deficit<=20)
-actions.aoe+=/shadow_word_death,cycle_targets=1,if=dot.devouring_plague.remains&(set_bonus.tier31_4pc|pet.fiend.active&talent.inescapable_torment&set_bonus.tier31_2pc)
+actions.aoe+=/shadow_word_death,target_if=max:dot.devouring_plague.remains,if=pet.fiend.remains<=2&pet.fiend.active&talent.inescapable_torment&active_enemies<=7
 # Use Mind Blast when capped on charges and talented into Mind Devourer to fish for the buff or if Inescapable Torment is talented with Mindbender active. Only use when facing 3-7 targets.
 actions.aoe+=/mind_blast,cycle_targetse=1,if=(cooldown.mind_blast.full_recharge_time<=gcd.max+cast_time|pet.fiend.remains<=cast_time+gcd.max)&pet.fiend.active&talent.inescapable_torment&pet.fiend.remains>cast_time&active_enemies<=7&!buff.mind_devourer.up&dot.devouring_plague.remains>execute_time
 # High Priority Shadow Word: Death is Mindbender is expiring in less than 2 seconds
