@@ -1267,6 +1267,7 @@ spec:RegisterAbilities( {
     -- Talent: Place a Sigil of Misery at your location that activates after $d.    Causes all enemies affected by the sigil to cower in fear. Targets are disoriented for $207685d.
     sigil_of_misery = {
         id = function () return talent.concentrated_sigils.enabled and 207684 or 202140 end,
+        known = 207684,
         cast = 0,
         cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 120 - ( talent.improved_sigil_of_misery.enabled and 30 or 0 ) end,
         charges = function () if talent.illuminated_sigils.enabled then return 2 end end,
