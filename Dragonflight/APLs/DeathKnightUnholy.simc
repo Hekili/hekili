@@ -36,7 +36,7 @@ actions+=/variable,name=trinket_1_manual,value=trinket.1.is.algethar_puzzle_box|
 actions+=/variable,name=trinket_2_manual,value=trinket.2.is.algethar_puzzle_box|trinket.2.is.irideus_fragment|trinket.2.is.vial_of_animated_blood
 actions+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&variable.trinket_2_buffs&(trinket.2.has_cooldown&!variable.trinket_2_exclude|!trinket.1.has_cooldown)|variable.trinket_2_buffs&((trinket.2.cooldown.duration%trinket.2.proc.any_dps.duration)*(1.5+trinket.2.has_buff.strength)*(variable.trinket_2_sync))>((trinket.1.cooldown.duration%trinket.1.proc.any_dps.duration)*(1.5+trinket.1.has_buff.strength)*(variable.trinket_1_sync)*(1+((trinket.1.ilvl-trinket.2.ilvl)%100)))
 actions+=/variable,name=damage_trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&!variable.trinket_2_buffs&trinket.2.ilvl>=trinket.1.ilvl
-actions+=/use_item,name=fyralath_the_dreamrender,if=dot.mark_of_fyralath.ticking&(active_enemies<5|active_enemies>21|boss&fight_remains<4)&(debuff.festering_wound.stack>2|time>15)
+actions+=/use_item,name=fyralath_the_dreamrender,if=dot.mark_of_fyralath.ticking&(active_enemies<5|active_enemies>21|fight_remains<4)&(debuff.festering_wound.stack>=2|time>15)
 actions+=/use_item,name=gavel_of_the_first_arbiter
 actions+=/use_item,use_off_gcd=1,name=algethar_puzzle_box,if=cooldown.summon_gargoyle.remains<5&rune<=4|!talent.summon_gargoyle&pet.army_ghoul.active|active_enemies>3&variable.adds_remain&(buff.dark_transformation.up|talent.bursting_sores&cooldown.any_dnd.remains<10&!death_and_decay.ticking)
 actions+=/use_item,use_off_gcd=1,name=irideus_fragment,if=(pet.gargoyle.active&pet.gargoyle.remains<16|!talent.summon_gargoyle&pet.army_ghoul.active&pet.army_ghoul.remains<16)|active_enemies>3&variable.adds_remain&(buff.dark_transformation.up|talent.bursting_sores&death_and_decay.ticking)
@@ -112,7 +112,7 @@ actions.garg_setup+=/festering_strike,if=debuff.festering_wound.stack=0|talent.a
 actions.garg_setup+=/death_coil,if=rune<=1
 
 # Racials
-actions.racials+=/arcane_torrent,if=runic_power.deficit>20&(cooldown.summon_gargoyle.remains<gcd.max|!talent.summon_gargoyle.enabled|pet.gargoyle.active&rune<2&debuff.festering_wound.stack<1)
+actions.racials+=/arcane_torrent,if=runic_power.deficit>20&(cooldown.summon_gargoyle.remains<gcd&time>15|!talent.summon_gargoyle.enabled|pet.gargoyle.active&rune<2&debuff.festering_wound.stack<1)
 actions.racials+=/blood_fury,if=(buff.blood_fury.duration+3>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=buff.blood_fury.duration+3|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=buff.blood_fury.duration+3|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=buff.blood_fury.duration+3
 actions.racials+=/berserking,if=(buff.berserking.duration+3>=pet.gargoyle.remains&pet.gargoyle.active)|(!talent.summon_gargoyle|cooldown.summon_gargoyle.remains>60)&(pet.army_ghoul.active&pet.army_ghoul.remains<=buff.berserking.duration+3|pet.apoc_ghoul.active&pet.apoc_ghoul.remains<=buff.berserking.duration+3|active_enemies>=2&death_and_decay.ticking)|boss&fight_remains<=buff.berserking.duration+3
 actions.racials+=/lights_judgment,if=buff.unholy_strength.up&(!talent.festermight|buff.festermight.remains<target.time_to_die|buff.unholy_strength.remains<target.time_to_die)
