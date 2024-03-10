@@ -1420,7 +1420,10 @@ spec:RegisterAbilities( {
     -- Throws a fiery ball that causes 749 Fire damage. Each time your Fireball fails to critically strike a target, it gains a stacking 10% increased critical strike chance. Effect ends when Fireball critically strikes.
     fireball = {
         id = 133,
-        cast = function() return 2.25 * ( buff.flame_accelerant.up and 0.6 or 1 ) * haste end,
+        cast = function() 
+            local flame_accelerant_reduction = 1 - (talent.flame_accelerant.rank * 0.2)
+            return 2.25 * ( buff.flame_accelerant.up and flame_accelerant_reduction or 1 ) * haste 
+        end,
         cooldown = 0,
         gcd = "spell",
         school = "fire",
@@ -1438,6 +1441,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "molten_skyfall_ready" )
+            removeBuff( "flame_accelerant" )
         end,
 
         impact = function ()
@@ -1453,7 +1457,6 @@ spec:RegisterAbilities( {
                 class.abilities.meteor.impact()
                 removeBuff( "firefall_ready" )
             end
-            removeBuff( "flame_accelerant" )
 
             if talent.conflagration.enabled then applyDebuff( "target", "conflagration" ) end
             if talent.firefall.enabled then
