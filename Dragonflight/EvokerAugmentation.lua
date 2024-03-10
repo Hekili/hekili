@@ -1043,7 +1043,7 @@ spec:RegisterOptions( {
     gcdSync = false,
 
     nameplates = false,
-    rangeCheck = "azure_strike",
+    nameplateRange = 30,
 
     damage = true,
     damageDots = true,

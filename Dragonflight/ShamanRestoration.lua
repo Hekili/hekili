@@ -947,7 +947,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "lightning_bolt",
+    nameplateRange = 40,
     rangeFilter = false,
 
     damage = true,

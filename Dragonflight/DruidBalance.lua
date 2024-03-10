@@ -2067,6 +2067,7 @@ spec:RegisterAbilities( {
         bind = "half_moon",
 
         ap_check = function() return check_for_ap_overcap( "full_moon" ) end,
+        energize_amount = function() return action.full_moon.spend * -1 end,
 
         usable = function () return active_moon == "full_moon" end,
         handler = function ()
@@ -3224,7 +3225,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "moonfire",
+    nameplateRange = 40,
     rangeFilter = false,
 
     damage = true,

@@ -1833,7 +1833,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "disrupt",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

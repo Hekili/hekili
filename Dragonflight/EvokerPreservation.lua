@@ -959,7 +959,7 @@ spec:RegisterOptions( {
     aoe = 3,
 
     nameplates = false,
-    rangeCheck = "living_flame",
+    nameplateRange = 40,
 
     damage = true,
     damageDots = true,

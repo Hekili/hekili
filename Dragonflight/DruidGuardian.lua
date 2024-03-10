@@ -2106,7 +2106,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "shred",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

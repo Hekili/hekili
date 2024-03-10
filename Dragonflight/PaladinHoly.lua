@@ -1680,7 +1680,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "judgment",
+    nameplateRange = 40,
     rangeFilter = false,
 
     damage = true,

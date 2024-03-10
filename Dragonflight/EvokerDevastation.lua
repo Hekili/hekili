@@ -1735,7 +1735,7 @@ spec:RegisterOptions( {
     gcdSync = false,
 
     nameplates = false,
-    rangeCheck = "azure_strike",
+    rangeChecker = 30,
 
     damage = true,
     damageDots = true,

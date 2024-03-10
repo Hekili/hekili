@@ -1216,7 +1216,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "aimed_shot",
+    nameplateRange = 40,
     rangeFilter = false,
 
     damage = true,

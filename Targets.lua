@@ -362,12 +362,9 @@ do
         local FriendCheck = inRaid and UnitInRaid or UnitInParty
 
         local checkPets = showNPs and spec and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
-        local filterPlates = showNPs and spec and spec.rangeFilter and class.specs[ state.spec.id ].rangeFilter
+        -- local filterPlates = showNPs and spec and spec.rangeFilter and class.specs[ state.spec.id ].rangeFilter
 
-        local checkPlates = not filterPlates and showNPs and spec and spec.nameplates and spec.rangeChecker
-        checkPlates = checkPlates and ( spec.rangeChecker or class.specs[ state.spec.id ].ranges[ 1 ] )
-        checkPlates = checkPlates and class.abilities[ checkPlates ].id
-        if checkPlates and not IsSpellKnownOrOverridesKnown( checkPlates ) then checkPlates = false end
+        local checkPlates = showNPs and spec and spec.nameplates and ( spec.nameplateRange or class.specs[ state.spec.id ].nameplateRange )
 
         --[[ if rangeCheck == "Auto" then
             rangeChecker = spec.ranges.Auto[2]
@@ -377,7 +374,7 @@ do
         end ]]
 
         if spec then
-            if checkPets or checkPlates or filterPlates then
+            if checkPets or checkPlates then
                 for unit, guid in pairs( npGUIDs ) do
                     if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                         local excluded = not UnitIsUnit( unit, "target" )
@@ -412,18 +409,12 @@ do
                                 end
                             end
 
-                            if not excluded and filterPlates then
-                                excluded = filterPlates( unit )
+                            if not excluded and checkPlates then
+                                local _, maxR = RC:GetRange( unit )
+                                excluded = maxR and maxR > checkPlates
 
                                 if debugging and excluded then
-                                    details = format( "%s\n    - Excluded by nameplate filter (%d > %d).", details, range, spec.nameplateRange )
-                                end
-
-                            elseif not excluded and checkPlates then
-                                excluded = LSR.IsSpellInRange( checkPlates, unit ) ~= 1
-
-                                if debugging and excluded then
-                                    details = format( "%s\n    - Excluded by spell range (%s = %s).", details, checkPlates, tostring( LSR.IsSpellInRange( checkPlates, unit ) or "null" ) )
+                                    details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
                                 end
                             end
 
@@ -485,17 +476,12 @@ do
                                     end
                                 end
 
-                                if not excluded and filterPlates then
-                                    excluded = filterPlates( unit )
+                                if not excluded and checkPlates then
+                                    local _, maxR = RC:GetRange( unit )
+                                    excluded = maxR and maxR > checkPlates
 
                                     if debugging and excluded then
-                                        details = format( "%s\n    - Excluded by nameplate filter (%d > %d).", details, range, spec.nameplateRange )
-                                    end
-                                elseif not excluded and checkPlates then
-                                    excluded = LSR.IsSpellInRange( checkPlates, unit ) ~= 1
-
-                                    if debugging and excluded then
-                                        details = format( "%s\n    - Excluded by spell range (%s).", details, checkPlates )
+                                        details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
                                     end
                                 end
 

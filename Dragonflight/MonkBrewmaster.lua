@@ -1684,7 +1684,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "blackout_kick",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

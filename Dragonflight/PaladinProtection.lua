@@ -1613,7 +1613,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "shield_of_the_righteous",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

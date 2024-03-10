@@ -1686,7 +1686,7 @@ spec:RegisterOptions( {
     aoe = 2,
 
     nameplates = true,
-    rangeChecker = "hamstring",
+    nameplateRange = 10,
     rangeFilter = true,
 
     damage = true,

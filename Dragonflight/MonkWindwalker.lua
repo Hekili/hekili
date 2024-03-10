@@ -2062,7 +2062,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "fists_of_fury",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

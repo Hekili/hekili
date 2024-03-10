@@ -240,7 +240,7 @@ spec:RegisterAuras( {
         id = 384088,
         duration = 25,
         max_stack = 1,
-        copy = 336217
+        copy = { 336217, "echoes_of_great_sundering_es", "echoes_of_great_sundering_eb" }
     },
     -- Your next damage or healing spell will be cast a second time ${$s2/1000}.1 sec later for free.
     -- https://wowhead.com/beta/spell=320125
@@ -2734,7 +2734,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "lightning_bolt",
+    nameplateRange = 40,
     rangeFilter = false,
 
     canFunnel = true,

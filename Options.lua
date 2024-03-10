@@ -5212,6 +5212,14 @@ do
                             desc = "Settings related to how enemies are identified and counted.",
                             order = 3,
                             args = {
+                                targetsHeader = {
+                                    type = "description",
+                                    name = "These settings control how targets are counted when generating ability recommendations.\n\nBy default, the number of "
+                                        .. "targets is shown on the bottom-right of the primary icon in the Primary and AOE displays, unless only one target is "
+                                        .. "detected.\n\n",
+                                    width = "full",
+                                    order = 0.01
+                                },
                                 yourTarget = {
                                     type = "toggle",
                                     name = "Your Target",
@@ -5220,7 +5228,7 @@ do
                                     width = "full",
                                     get = function() return true end,
                                     set = function() end,
-                                    order = 0.01,
+                                    order = 0.02,
                                 },
 
                                 -- Damage Detection Quasi-Group
@@ -5232,45 +5240,45 @@ do
                                         .. CreateAtlasMarkup( "services-checkmark" ) .. " Auto-enabled when nameplates are disabled\n\n"
                                         .. CreateAtlasMarkup( "services-checkmark" ) .. " Recommended for |cffffd100ranged|r unable to use |cffffd100Pet-Based Target Detection|r",
                                     width = "full",
-                                    order = 0.02,
+                                    order = 0.3,
                                 },
 
                                 dmgGroup = {
                                     type = "group",
                                     inline = true,
-                                    name = "",
-                                    order = 0.03,
+                                    name = "Damage Detection",
+                                    order = 0.4,
                                     hidden = function () return self.DB.profile.specs[ id ].damage == false end,
                                     args = {
-                                        damageExpiration = {
-                                            type = "range",
-                                            name = "Timeout",
-                                            desc = "When |cFFFFD100Count Damaged Enemies|r is checked, enemies will be counted until they have been ignored/undamaged for this period of time (or they die).\n\n"
-                                                .. "Ideally, this period should reflect enough time that you will continue to do AOE/cleave damage to enemies in this period, but not so long that enemies "
-                                                .. "could have wandered a great distance away in the interim.",
-                                            softMin = 3,
-                                            min = 1,
-                                            max = 10,
-                                            step = 0.1,
+                                        damagePets = {
+                                            type = "toggle",
+                                            name = "Enemies Damaged by Minions",
+                                            desc = "If checked, the addon will count enemies that your pets or minions have hit (or hit you) within the past several seconds.  "
+                                                .. "This may give misleading target counts if your pet/minions are spread out over the battlefield.",
                                             order = 1,
                                             width = "full",
                                         },
 
-                                        damagePets = {
-                                            type = "toggle",
-                                            name = "Detect Enemies Damaged by Pets",
-                                            desc = "If checked, the addon will count enemies that your pets or minions have hit (or hit you) within the past several seconds.  "
-                                                .. "This may give misleading target counts if your pet/minions are spread out over the battlefield.",
+                                        damageExpiration = {
+                                            type = "range",
+                                            name = "Timeout",
+                                            desc = "Enemies will be counted until they have been ignored/undamaged for this period of time (or they die).\n\n"
+                                                .. "Ideally, this period should reflect enough time that to continue to do AOE/cleave damage to enemies in this period, but not so long that enemies "
+                                                .. "could have wandered out of range.",
+                                            softMin = 3,
+                                            min = 1,
+                                            max = 10,
+                                            step = 0.1,
                                             order = 2,
                                             width = "full",
                                         },
 
                                         damageDots = {
                                             type = "toggle",
-                                            name = "Count Debuffed/Dotted Enemies",
+                                            name = "DOTted / Debuffed Enemies",
                                             desc = "When checked, enemies that have your debuffs or damage-over-time effects will be counted as targets, regardless of their location on the battlefield.\n\n"
-                                                .. "This may not be ideal for melee specializations, as enemies may wander away after you've applied your dots/bleeds.  If used with |cFFFFD100Use Nameplate Detection|r, "
-                                                .. "dotted enemies that are no longer in melee range will be filtered.\n\n"
+                                                .. "This may not be ideal for melee specializations, as enemies may wander away after you've applied your dots/bleeds.  If |cFFFFD100Count Nameplates|r is "
+                                                .. "enabled, enemies that are no longer in range will be filtered.\n\n"
                                                 .. "Recommended for ranged specializations that will DoT multiple enemies and do not rely on the enemy being stacked for AOE damage.",
                                             width = "full",
                                             order = 3,
@@ -5278,7 +5286,7 @@ do
 
                                         damageOnScreen = {
                                             type = "toggle",
-                                            name = "Count On-Screen (Nameplates) |cffff0000Only|r",
+                                            name = "Filter Off-Screen (Nameplate-less) Enemies",
                                             desc = function()
                                                 return "If checked, the damage-based target system will only count enemies that are on screen.  If unchecked, offscreen targets can be included in target counts.\n\n"
                                                     .. ( GetCVar( "nameplateShowEnemies" ) == "0" and "|cFFFF0000Requires Enemy Nameplates|r" or "|cFF00FF00Requires Enemy Nameplates|r" )
@@ -5290,19 +5298,19 @@ do
                                 },
                                 nameplates = {
                                     type = "toggle",
-                                    name = "Count Targets by Nameplates",
-                                    desc = "If checked, enemy nameplates in range of the selected spell will be counted as enemy targets.\n\n"
-                                        .. AtlasToString( "common-icon-checkmark" ) .. " Recommended for melee specializations using a melee ability or short range spell.\n\n"
+                                    name = "Count Nameplates",
+                                    desc = "If checked, enemy nameplates within the specified radius will be counted as enemy targets.\n\n"
+                                        .. AtlasToString( "common-icon-checkmark" ) .. " Recommended for melee specializations using a range of 10 yds or fewer\n\n"
                                         .. AtlasToString( "common-icon-redx" ) .. " Discouraged for ranged specializations.",
                                     width = "full",
-                                    order = 1,
+                                    order = 0.1,
                                 },
 
                                 npGroup = {
                                     type = "group",
                                     inline = true,
-                                    name = "Nameplates",
-                                    order = 2,
+                                    name = "Nameplate Detection",
+                                    order = 0.2,
                                     hidden = function ()
                                         return not self.DB.profile.specs[ id ].nameplates
                                     end,
@@ -5353,7 +5361,7 @@ do
                                             order = 1.3,
                                         },
 
-                                        rangeFilter = {
+                                        --[[ rangeFilter = {
                                             type = "toggle",
                                             name = function()
                                                 if spec.filterName then return format( "Use Automatic Filter:  %s", spec.filterName ) end
@@ -5367,12 +5375,27 @@ do
                                             hidden = function() return not spec.filterName end,
                                             order = 1.6,
                                             width = "full"
+                                        }, ]]
+
+                                        nameplateRange = {
+                                            type = "range",
+                                            name = "Enemy Range Radius",
+                                            desc = "If |cFFFFD100Count Nameplates|r is enabled, enemies within this range will be included in target counts.\n\n"
+                                                .. "This setting is only available if |cFFFFD100Show Enemy Nameplates|r and |cFFFFD100Show All Nameplates|r are both enabled.",
+                                            width = "full",
+                                            order = 1.7,
+                                            min = 0,
+                                            max = 100,
+                                            step = 1,
+                                            hidden = function()
+                                                return not ( GetCVar( "nameplateShowEnemies" ) == "1" and GetCVar( "nameplateShowAll" ) == "1" )
+                                            end,
                                         },
 
-                                        rangeChecker = {
+                                        --[[ rangeChecker = {
                                             type = "select",
                                             name = "Range Filter by Spell",
-                                            desc = "When |cFFFFD100Count Targets by Nameplates|r is enabled, enemies within range of this ability will be included in target counts.\n\n"
+                                            desc = "When |cFFFFD100Count Nameplates|r is enabled, enemies within range of this ability will be included in target counts.\n\n"
                                             .. "Your character must actually know the selected spell, otherwise |cFFFFD100Count Targets by Damage|r will be force-enabled.",
                                             width = "full",
                                             order = 1.8,
@@ -5426,7 +5449,7 @@ do
                                             hidden = function()
                                                 return self.DB.profile.specs[ id ].nameplates == false
                                             end,
-                                        },
+                                        }, ]]
 
                                         -- Pet-Based Cluster Detection
                                         petbased = {
@@ -5547,7 +5570,7 @@ do
 
                                 cycleGroup = {
                                     type = "group",
-                                    name = "Retargeting",
+                                    name = "Secondary Targets",
                                     inline = true,
                                     hidden = function() return not self.DB.profile.specs[ id ].cycle end,
                                     order = 7,
@@ -5570,7 +5593,7 @@ do
                                 aoe = {
                                     type = "range",
                                     name = "AOE Display:  Minimum Targets",
-                                    desc = "When the AOE Display is shown, its recommendations will be made assuming this many targets are available.",
+                                    desc = "When the AOE Display is shown (or the Primary display is in AOE mode), its recommendations will assume that there are at least this many targets available.",
                                     width = "full",
                                     min = 2,
                                     max = 10,
@@ -9771,7 +9794,7 @@ do
 
             snapshots = {
                 type = "group",
-                name = "Snapshots and Reporting",
+                name = "Issue Reporting (Snapshots)",
                 order = 86,
                 args = {
                     autoSnapshot = {

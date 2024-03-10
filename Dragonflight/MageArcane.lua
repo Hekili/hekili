@@ -2233,7 +2233,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "arcane_blast",
+    nameplateRange = 40,
     rangeFilter = false,
 
     damage = true,

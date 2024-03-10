@@ -819,7 +819,7 @@ local hot_streak_spells = {
     -- "fire_blast",
     "phoenix_flames",
     "pyroblast",
-    -- "scorch",
+    "scorch",
 }
 spec:RegisterStateExpr( "hot_streak_spells_in_flight", function ()
     local count = 0
@@ -1858,7 +1858,7 @@ spec:RegisterAbilities( {
         talent = "scorch",
         startsCombat = true,
 
-        flightTime = 0.015,
+        flightTime = 0.03,
 
         impact = function ()
             hot_streak( talent.searing_touch.enabled and target.health_pct < 30 )
@@ -1949,7 +1949,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "fireball",
+    nameplateRange = 40,
     rangeFilter = false,
 
     damage = true,

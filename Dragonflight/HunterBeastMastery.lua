@@ -2384,7 +2384,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "arcane_shot",
+    nameplateRange = 40,
     rangeFilter = false,
 
     damage = true,

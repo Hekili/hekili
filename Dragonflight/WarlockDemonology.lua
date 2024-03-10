@@ -1964,7 +1964,7 @@ spec:RegisterOptions( {
     aoe = 3,
 
     nameplates = false,
-    rangeChecker = "corruption",
+    nameplateRange = 40,
     rangeFilter = false,
 
     cycle = true,

@@ -2085,7 +2085,7 @@ me:RegisterOptions( {
     aoe = 2,
 
     nameplates = true,
-    rangeChecker = "festering_strike",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

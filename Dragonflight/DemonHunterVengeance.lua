@@ -318,7 +318,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=204843
     sigil_of_chains = {
         id = 204843,
-        duration = function () return 6 + talent.erratic_felheart.rank + ( 2 * talent.precise_sigils.rank ) end,
+        duration = function () return 6 + ( 2 * talent.chains_of_anger.rank ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -334,7 +334,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=204598
     sigil_of_flame = {
         id = 204598,
-        duration = function () return 6 + talent.erratic_felheart.rank + ( 2 * talent.precise_sigils.rank ) end,
+        duration = function () return 6 + ( 2 * talent.chains_of_anger.rank ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -342,7 +342,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=207685
     sigil_of_misery_debuff = {
         id = 207685,
-        duration = function () return ( talent.concentrated_sigils.enabled and 22 or 20 ) + talent.erratic_felheart.rank + ( 2 * talent.precise_sigils.rank ) end,
+        duration = function () return 20 + ( 2 * talent.chains_of_anger.rank ) end,
         mechanic = "flee",
         type = "Magic",
         max_stack = 1
@@ -351,7 +351,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=204490
     sigil_of_silence = {
         id = 204490,
-        duration = function () return 6 + talent.erratic_felheart.rank + ( 2 * talent.precise_sigils.rank ) end,
+        duration = function () return 6 + ( 2 * talent.chains_of_anger.rank ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -1218,11 +1218,12 @@ spec:RegisterAbilities( {
 
     -- Talent: Place a Sigil of Chains at the target location that activates after $d.    All enemies affected by the sigil are pulled to its center and are snared, reducing movement speed by $204843s1% for $204843d.
     sigil_of_chains = {
-        id = 202138,
+        id = function() return talent.precise_sigils.enabled and 389807 or 202138 end,
+        known = 202138,
         cast = 0,
         cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end,
-        charges = function () if talent.illuminated_sigils.enabled then return 2 end end,
-        recharge = function () if talent.illuminated_sigils.enabled then return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end end,
+        charges = function () return talent.illuminated_sigils.enabled and 2 or 1 end,
+        recharge = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end,
         gcd = "spell",
         school = "physical",
 
@@ -1232,16 +1233,18 @@ spec:RegisterAbilities( {
         handler = function ()
             create_sigil( "chains" )
         end,
+
+        copy = { 202138, 389807 }
     },
 
     -- Talent: Place a Sigil of Flame at your location that activates after $d.    Deals $204598s1 Fire damage, and an additional $204598o3 Fire damage over $204598d, to all enemies affected by the sigil.    |CFFffffffGenerates $389787s1 Fury.|R
     sigil_of_flame = {
-        id = function () return talent.precise_sigils.enabled and 389810 or talent.concentrated_sigils.enabled and 204513 or 204596 end,
+        id = function () return talent.precise_sigils.enabled and 389810 or 204596 end,
         known = 204596,
         cast = 0,
         cooldown = 30,
-        charges = function () if talent.illuminated_sigils.enabled then return 2 end end,
-        recharge = function () if talent.illuminated_sigils.enabled then return 30 end end,
+        charges = function () return talent.illuminated_sigils.enabled and 2 or 1 end,
+        recharge = 30,
         gcd = "spell",
         icd = function() return 0.25 + ( talent.quickened_sigils.enabled and 1 or 2 ) end,
         school = "physical",
@@ -1261,12 +1264,13 @@ spec:RegisterAbilities( {
             create_sigil( "flame" )
         end,
 
-        copy = { 204596, 204513, 389810 }
+        copy = { 204596, 389810 }
     },
 
     -- Talent: Place a Sigil of Misery at your location that activates after $d.    Causes all enemies affected by the sigil to cower in fear. Targets are disoriented for $207685d.
     sigil_of_misery = {
-        id = function () return talent.concentrated_sigils.enabled and 207684 or 202140 end,
+        id = function () return talent.precise_sigils.enabled and 389813 or 207684 end,
+        known = 207684,
         cast = 0,
         cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 120 - ( talent.improved_sigil_of_misery.enabled and 30 or 0 ) end,
         charges = function () if talent.illuminated_sigils.enabled then return 2 end end,
@@ -1283,13 +1287,13 @@ spec:RegisterAbilities( {
             create_sigil( "misery" )
         end,
 
-        copy = { 207684, 202140 }
+        copy = { 207684, 389813 }
     },
 
 
 
     sigil_of_silence = {
-        id = function () return talent.concentrated_sigils.enabled and 207682 or 202137 end,
+        id = function () return talent.precise_sigils.enabled and 389809 or 202137 end,
         known = 202137,
         cast = 0,
         cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 60 end,
@@ -1308,7 +1312,7 @@ spec:RegisterAbilities( {
             create_sigil( "silence" )
         end,
 
-        copy = { 207682, 202137 },
+        copy = { 202137, 389809 },
 
         auras = {
             -- Conduit, applies after SoS expires.
@@ -1572,7 +1576,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "disrupt",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

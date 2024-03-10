@@ -1954,7 +1954,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "death_strike",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

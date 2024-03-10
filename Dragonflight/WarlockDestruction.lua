@@ -1666,7 +1666,7 @@ spec:RegisterOptions( {
     cycle = true,
 
     nameplates = false,
-    rangeChecker = "corruption",
+    nameplateRange = 40,
     rangeFilter = false,
 
 

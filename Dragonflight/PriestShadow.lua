@@ -2218,7 +2218,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "mind_blast",
+    nameplateRange = 40,
     rangeFilter = false,
 
     damage = true,

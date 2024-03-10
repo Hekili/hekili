@@ -1360,7 +1360,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "pick_pocket",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

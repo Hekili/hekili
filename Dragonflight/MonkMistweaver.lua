@@ -1219,7 +1219,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = false,
-    rangeChecker = "blackout_kick",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,

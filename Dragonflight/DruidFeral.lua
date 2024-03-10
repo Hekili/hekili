@@ -2768,7 +2768,7 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    rangeChecker = "rake",
+    nameplateRange = 10,
     rangeFilter = false,
 
     damage = true,
