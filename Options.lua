@@ -474,14 +474,14 @@ do
 
                     cooldowns = {
                         key = "ALT-SHIFT-R",
-                        value = false,
+                        value = true,
                         override = false,
                         separate = false,
                     },
 
                     defensives = {
                         key = "ALT-SHIFT-T",
-                        value = false,
+                        value = true,
                         separate = false,
                     },
 
@@ -492,7 +492,7 @@ do
 
                     interrupts = {
                         key = "ALT-SHIFT-I",
-                        value = false,
+                        value = true,
                         separate = false,
                     },
 
