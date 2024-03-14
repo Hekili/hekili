@@ -1,0 +1,109 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+    <Script file="Easing.lua"/>
+    <Script file="ActionButton.lua"/>
+	<Script file="Core.lua"/>
+
+    <Frame name="AnimatedQueueActionTemplate" mixin="AnimatedQueueActionMixin" virtual="true">
+        <Size x="45" y="45"/>
+        <Frames>
+            <Frame parentKey="Reference">
+                <Size x="16" y="16"/>
+                <Anchors>
+                    <Anchor point="CENTER"/>
+                </Anchors>
+            </Frame>
+            <Cooldown parentKey="Cooldown" hidden="true">
+                <SwipeTexture>
+                    <Color r="0" g="0" b="0" a="0.85"/>
+                </SwipeTexture>
+                <EdgeTexture file="Interface\Cooldown\edge"/>
+                <BlingTexture file="Interface\Cooldown\star4">
+                    <Color r="0.3" g="0.6" b="1" a="0.8"/>
+                </BlingTexture>
+                <Anchors>
+                    <Anchor point="CENTER"/>
+                </Anchors>
+                <Size x="45" y="45"/>
+            </Cooldown>
+        </Frames>
+        <Layers>
+            <Layer level="BACKGROUND" textureSubLevel="1">
+                <Texture parentKey="Icon">
+                    <TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>
+                    <Size x="45" y="45"/>
+                    <Anchors>
+                        <Anchor point="CENTER" relativeKey="$parent.Reference" relativePoint="CENTER" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture parentKey="Border" snapToPixelGrid="true" texelSnappingBias="0" file="Interface\AddOns\Hekili\AnimatedQueue\Art\Border-Square-GradientStroke">
+                    <TextureSliceMargins left="4" right="4" top="4" bottom="4"/>
+                    <TextureSliceMode mode="Stretched"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="0" y="0"/>
+                        <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
+                    <Color r="0.9" g="0.9" b="0.9"/>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" x="-2" y="-4"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Frame>
+
+    <Frame name="AnimatedQueueFrame" mixin="AnimatedQueueFrameMixin" parent="UIParent" frameStrata="LOW">
+        <Size x="45" y="45"/>
+        <Anchors>
+            <Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="-196"/>
+        </Anchors>
+        <Frames>
+            <Frame parentKey="ActionContainer">
+                <Size x="16" y="16"/>
+                <Anchors>
+                    <Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
+                </Anchors>
+            </Frame>
+            <Frame parentKey="HighlightFrame">
+                <Size x="45" y="45"/>
+                <Anchors>
+                    <Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="ARTWORK" textureSubLevel="1">
+                        <Texture parentKey="Icon" setAllPoints="true">
+                            <TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>
+                        </Texture>
+                    </Layer>
+                    <Layer level="OVERLAY">
+                        <Texture parentKey="GlowBorder" setAllPoints="true" snapToPixelGrid="true" texelSnappingBias="0" file="Interface\AddOns\Hekili\AnimatedQueue\Art\Border-Square-Highlight-Blue" alpha="0">
+                            <TextureSliceMargins left="16" right="16" top="16" bottom="16"/>
+                            <TextureSliceMode mode="Stretched"/>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Animations>
+                    <AnimationGroup parentKey="AnimGlow" setToFinalAlpha="true">
+                        <Alpha startDelay="0" fromAlpha="0" toAlpha="1" duration="0.05" childKey="GlowBorder" order="1"/>
+                        <Alpha fromAlpha="1" toAlpha="0" duration="0.2" childKey="GlowBorder" order="2"/>
+
+                        <Alpha startDelay="0" fromAlpha="1" toAlpha="1" duration="0.05" childKey="Icon" order="1"/>
+                        <Scale startDelay="0" scaleX="0.9" scaleY="0.9" duration="0.05" childKey="Icon" order="1"/>
+                        <Alpha fromAlpha="1" toAlpha="0" duration="0.2" childKey="Icon" order="2"/>
+                    </AnimationGroup>
+                </Animations>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+    </Frame>
+</Ui>
