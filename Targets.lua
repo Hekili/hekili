@@ -364,7 +364,7 @@ do
         local checkPets = showNPs and spec and spec.petbased and Hekili:PetBasedTargetDetectionIsReady()
         -- local filterPlates = showNPs and spec and spec.rangeFilter and class.specs[ state.spec.id ].rangeFilter
 
-        local checkPlates = showNPs and spec and spec.nameplates and ( spec.nameplateRange or class.specs[ state.spec.id ].nameplateRange )
+        local checkPlates = showNPs and spec and spec.nameplates and ( spec.nameplateRange or class.specs[ state.spec.id ].nameplateRange or 10 )
 
         --[[ if rangeCheck == "Auto" then
             rangeChecker = spec.ranges.Auto[2]
