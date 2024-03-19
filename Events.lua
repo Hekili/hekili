@@ -15,12 +15,13 @@ local abs = math.abs
 local lower = string.lower
 local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
+local CGetItemInfo = C_Item.GetItemInfo
+local IsEquippedItem = C_Item.IsEquippedItem
 local UA_GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local FindStringInInventoryItemTooltip = ns.FindStringInInventoryItemTooltip
 local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
 
-local CGetItemInfo = ns.CachedGetItemInfo
 local RC = LibStub( "LibRangeCheck-3.0" )
 
 -- Abandoning AceEvent in favor of darkend's solution from:
@@ -714,7 +715,7 @@ do
         for set, items in pairs( class.gear ) do
             state.set_bonus[ set ] = 0
             for item, _ in pairs( items ) do
-                if item > maxItemSlot and IsEquippedItem( CGetItemInfo( item ) ) then
+                if item > maxItemSlot and IsEquippedItem( item ) then
                     state.set_bonus[ set ] = state.set_bonus[ set ] + 1
                 end
             end
