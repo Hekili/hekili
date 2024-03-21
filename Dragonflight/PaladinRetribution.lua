@@ -1845,7 +1845,7 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         usable = function ()
-            if ( settings.sov_damage or 0 ) > 0 then return incoming_damage_5s > 0.01 * settings.sov_damage * health.max, "incoming damage over 5s must exceed " .. settings.sov_damage .. "% of max health" end
+            if ( settings.sov_damage or 20 ) > 0 then return incoming_damage_5s > 0.01 * settings.sov_damage * health.max, "incoming damage over 5s must exceed " .. settings.sov_damage .. "% of max health" end
             return true
         end,
 
@@ -2057,7 +2057,7 @@ spec:RegisterOptions( {
     desc = "If checked, when your target is outside of |T1112939:0|t Wake of Ashes' range, it will not be recommended.",
     type = "toggle",
     width = "full",
-} )
+} ) ]]
 
 spec:RegisterSetting( "sov_damage", 20, {
     name = "|T236264:0|t Shield of Vengeance Damage Threshold",
@@ -2067,7 +2067,7 @@ spec:RegisterSetting( "sov_damage", 20, {
     min = 0,
     max = 100,
     step = 1,
-} ) ]]
+} )
 
 --[[ Retired 20230426.
     spec:RegisterSetting( "desync_toll", false, {
