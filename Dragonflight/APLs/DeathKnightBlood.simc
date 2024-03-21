@@ -5,7 +5,7 @@ actions+=/mind_freeze
 # Interrupt.
 actions+=/strangulate
 # Death Strike at 65+ Runic Power.
-actions+=/variable,name=death_strike_dump_amount,value=65
+actions+=/variable,name=death_strike_dump_amount,value=settings.death_strike_pool_amount
 # Refresh Bone Shield at 4 stacks with Death's Caress, Consumption, or Blooddrinker; otherwise 5 stacks.
 actions+=/variable,name=bone_shield_refresh_value,value=4,op=setif,condition=!talent.deaths_caress.enabled|talent.consumption.enabled|talent.blooddrinker.enabled,value_else=5
 # Use a Potion during Dancing Rune Weapon.
@@ -21,7 +21,7 @@ actions+=/vampiric_blood,if=tanking&incoming_damage_5s>=vb_damage&!(buff.dancing
 # Use Rune Tap if you're taking sufficient damage and you don't have Dancing Rune Weapon, Vampiric Blood, or Icebound Fortitude up.
 actions+=/rune_tap,if=tanking&incoming_damage_5s>=rt_damage&!(buff.dancing_rune_weapon.up|buff.vampiric_blood.up|buff.icebound_fortitude.up)
 # Use Death Strike if your Blood Shield is going to expire.
-actions+=/death_strike,if=buff.blood_shield.up&buff.blood_shield.remains<=gcd.max
+actions+=/death_strike,if=settings.save_blood_shield&buff.blood_shield.up&buff.blood_shield.remains<=gcd.max
 # Use Death's Caress if Bone Shield is not up.
 actions+=/deaths_caress,if=!buff.bone_shield.up
 # Use Death and Decay if it's not already up and you have 4 targets, Unholy Ground, Sanguine Ground, or Crimson Scourge.
