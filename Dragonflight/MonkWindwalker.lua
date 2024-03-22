@@ -956,7 +956,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.serenity.up or buff.bok_proc.up then return 0 end
-            return weapons_of_order( 1 )
+            return weapons_of_order( level < 17 and 3 or 1 )
         end,
         spendType = "chi",
 
@@ -997,8 +997,11 @@ spec:RegisterAbilities( {
                 removeBuff( "bok_proc" )
                 if set_bonus.tier21_4pc > 0 then gain( 1, "chi" ) end
             end
-            reduceCooldown( "rising_sun_kick", buff.weapons_of_order.up and 2 or 1 )
-            reduceCooldown( "fists_of_fury", buff.weapons_of_order.up and 2 or 1 )
+
+            if level > 22 then
+                reduceCooldown( "rising_sun_kick", buff.weapons_of_order.up and 2 or 1 )
+                reduceCooldown( "fists_of_fury", buff.weapons_of_order.up and 2 or 1 )
+            end
 
             removeBuff( "teachings_of_the_monastery" )
 
