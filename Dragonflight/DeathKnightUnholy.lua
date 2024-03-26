@@ -2016,6 +2016,11 @@ me:RegisterAbilities( {
             applyDebuff( "target", "unholy_blight" )
             applyDebuff( "target", "virulent_plague" )
             active_dot.virulent_plague = active_enemies
+
+            if talent.superstrain.enabled then
+                applyDebuff( "target", "blood_plague_superstrain" )
+                applyDebuff( "target", "frost_fever_superstrain" )
+            end
         end,
     },
 
