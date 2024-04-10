@@ -79,9 +79,10 @@ actions.cds+=/berserking
 actions.cds+=/fireblood
 actions.cds+=/ancestral_call
 # Default conditions for usable items.
-actions.cds+=/use_item,name=manic_grieftorch,use_off_gcd=1,if=!stealthed.all&gcd.remains>gcd.max-0.1&buff.between_the_eyes.up|boss&fight_remains<=5
-actions.cds+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=!stealthed.mantle&time>0&((!trinket.1.is.dragonfire_bomb_dispenser&trinket.1.cooldown.remains>10|trinket.2.cooldown.remains>10)|cooldown.dragonfire_bomb_dispenser.charges>2|boss&fight_remains<20|!trinket.2.has_cooldown|!trinket.1.has_cooldown)
-actions.cds+=/use_item,name=beacon_to_the_beyond,use_off_gcd=1,if=!stealthed.mantle&gcd.remains>gcd.max-0.1&buff.between_the_eyes.up|boss&fight_remains<=5
+actions.cds+=/use_item,name=manic_grieftorch,use_off_gcd=1,if=gcd.remains<=action.sinister_strike.gcd%2&(!stealthed.all&buff.between_the_eyes.up|fight_remains<=5)
+# Use Bomb Dispenser on cooldown, but hold if 2nd trinket is nearly off cooldown, unless at max charges or sim duration ends soon
+actions.cds+=/use_item,name=dragonfire_bomb_dispenser,use_off_gcd=1,if=gcd.remains<=action.sinister_strike.gcd%2&((!trinket.1.is.dragonfire_bomb_dispenser&trinket.1.cooldown.remains>10|trinket.2.cooldown.remains>10)|cooldown.dragonfire_bomb_dispenser.charges>2|fight_remains<20|!trinket.2.has_cooldown|!trinket.1.has_cooldown)
+actions.cds+=/use_item,name=beacon_to_the_beyond,use_off_gcd=1,if=gcd.remains<=action.sinister_strike.gcd%2&(!stealthed.all&buff.between_the_eyes.up|fight_remains<=5)
 actions.cds+=/use_item,name=stormeaters_boon,if=!stealthed.mantle&(spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|boss&fight_remains<10)
 actions.cds+=/use_item,name=windscar_whetstone,if=!stealthed.mantle&(spell_targets.blade_flurry>desired_targets|raid_event.adds.in>60|boss&fight_remains<7)
 actions.cds+=/trinket1,if=!stealthed.mantle&(buff.between_the_eyes.up|trinket.1.has_stat.any_dps|boss&fight_remains<=20)
@@ -101,9 +102,11 @@ actions.finish+=/dispatch
 # Stealth
 actions.stealth+=/blade_flurry,if=talent.subterfuge&talent.hidden_opportunity&spell_targets>=2&buff.blade_flurry.remains<gcd
 actions.stealth+=/cold_blood,if=variable.finish_condition
+### Ensure Crackshot BtE is not skipped because of low energy
+## actions.stealth+=/pool_resource,for_next=1
 # High priority Between the Eyes for Crackshot, except not directly out of Shadowmeld
 actions.stealth+=/between_the_eyes,if=variable.finish_condition&talent.crackshot&(!buff.shadowmeld.up|stealthed.rogue)
-actions.stealth+=/dispatch,if=variable.finish_condition
+actions.stealth+=/dispatch,if=variable.finish_condition&!(talent.crackshot&(!buff.shadowmeld.up|stealthed.rogue))
 # 2 Fan the Hammer Crackshot builds can consume Opportunity in stealth with max stacks, Broadside, and low CPs, or with Greenskins active
 actions.stealth+=/pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
 actions.stealth+=/ambush,if=talent.hidden_opportunity
