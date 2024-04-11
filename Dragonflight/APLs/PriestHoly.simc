@@ -15,13 +15,11 @@ actions+=/run_action_list,name=divine_image,strict=1,if=talent.divine_image
 # Otherwise generic rotation
 actions+=/run_action_list,name=generic
 
-actions.divine_favor_chastise_prep+=/variable,name=empyreal_exec_time,op=setif,condition=talent.empyreal_blaze,value=action.empyreal_blaze.execute_time,value_else=0
+actions.divine_favor_chastise_prep+=/variable,name=empyreal_exec_time,op=set,value=0
 # apotheosis_exec_time: Store how long Apotheosis will take to execute
 actions.divine_favor_chastise_prep+=/variable,name=apotheosis_exec_time,op=setif,condition=talent.apotheosis,value=action.apotheosis.execute_time,value_else=0
 # Use apotheosis to get Chastise back if its on cooldown and Divine Word will be up soon. We can use Apotheosis (2min CD) to reset Chastise for every other Divine Word (1min CD).
 actions.divine_favor_chastise_prep+=/apotheosis,if=(cooldown.holy_word_chastise.remains>cooldown.divine_word.remains)&(cooldown.divine_word.remains<=(variable.empyreal_exec_time+variable.apotheosis_exec_time))
-# If we're about to cast divine favor, cast empyreal blaze first so we don't waste a GCD on non-damage during the buff window
-actions.divine_favor_chastise_prep+=/empyreal_blaze,if=cooldown.divine_word.remains<=action.empyreal_blaze.execute_time
 # Divine Word only if we can sync with Chastise and (if talented) Empyreal Blaze
 actions.divine_favor_chastise_prep+=/divine_word,if=cooldown.holy_word_chastise.up&(!talent.empyreal_blaze|buff.empyreal_blaze.up)
 # Holy word chastise to trigger divine favor: chastise
@@ -53,7 +51,6 @@ actions.divine_image+=/apotheosis,if=buff.answered_prayers.down&!(cooldown.holy_
 actions.divine_image+=/holy_word_sanctify,line_cd=9
 actions.divine_image+=/holy_word_serenity,line_cd=9
 actions.divine_image+=/holy_word_chastise
-actions.divine_image+=/empyreal_blaze
 actions.divine_image+=/halo,if=spell_targets.halo>=2
 actions.divine_image+=/divine_star,if=spell_targets.divine_star>=2
 # There are particular breakpoints combinations of rhapsody and spell targets beyond which holy nova beats everything else we can do
@@ -63,7 +60,6 @@ actions.divine_image+=/shadow_word_death,if=target.health.pct<20
 actions.divine_image+=/smite
 
 actions.generic+=/holy_word_chastise
-actions.generic+=/empyreal_blaze
 # Hold Apotheosis if chastise will be up soon
 actions.generic+=/apotheosis,if=cooldown.holy_word_chastise.remains>(gcd.max*3)
 actions.generic+=/halo,if=spell_targets.halo>=2

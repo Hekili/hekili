@@ -23,46 +23,46 @@ spec:RegisterTalents( {
     binding_heals              = { 82678, 368275, 1 }, -- 20% of Heal or Flash Heal healing on other targets also heals you.
     blessed_recovery           = { 82720, 390767, 1 }, -- After being struck by a melee or ranged critical hit, heal 20% of the damage taken over 6 sec.
     body_and_soul              = { 82706, 64129 , 1 }, -- Power Word: Shield and Leap of Faith increase your target's movement speed by 40% for 3 sec.
-    crystalline_reflection     = { 82681, 373457, 2 }, -- Power Word: Shield instantly heals the target for 690 and reflects 10% of damage absorbed.
+    crystalline_reflection     = { 82681, 373457, 2 }, -- Power Word: Shield instantly heals the target for 4,118 and reflects 10% of damage absorbed.
     death_and_madness          = { 82711, 321291, 1 }, -- If your Shadow Word: Death fails to kill a target at or below 20% health, its cooldown is reset. Cannot occur more than once every 10 sec.
     dispel_magic               = { 82715, 528   , 1 }, -- Dispels Magic on the enemy target, removing 1 beneficial Magic effect.
     dominate_mind              = { 82710, 205364, 1 }, -- Controls a mind up to 1 level above yours for 30 sec while still controlling your own mind. Does not work versus Demonic, Mechanical, or Undead beings or players. This spell shares diminishing returns with other disorienting effects.
-    essence_devourer           = { 82674, 415479, 1 }, -- Attacks from your Shadowfiend siphon life from enemies, healing a nearby injured ally for 2,242.
+    essence_devourer           = { 82674, 415479, 1 }, -- Attacks from your Shadowfiend siphon life from enemies, healing a nearby injured ally for 22,433.
     focused_mending            = { 82719, 372354, 1 }, -- Prayer of Mending does 45% increased healing to the initial target.
-    from_darkness_comes_light  = { 82707, 390615, 1 }, -- Each time Shadow Word: Pain$?s137032[ or Purge the Wicked][] deals damage, the healing of your next Flash Heal is increased by $s1%, up to a maximum of $?a137033&$?a134735[$390617s2][${$s1*$390617u}]%.
-    holy_nova                  = { 82701, 132157, 1 }, -- An explosion of holy light around you deals up to 2,503 Holy damage to enemies and up to 2,697 healing to allies within 12 yds, reduced if there are more than 5 targets.
+    from_darkness_comes_light  = { 82707, 390615, 1 }, -- Each time Shadow Word: Pain deals damage, the healing of your next Flash Heal is increased by 1%, up to a maximum of 50%.
+    holy_nova                  = { 82701, 132157, 1 }, -- An explosion of holy light around you deals up to 28,713 Holy damage to enemies and up to 19,629 healing to allies within 12 yds, reduced if there are more than 5 targets.
     improved_fade              = { 82686, 390670, 2 }, -- Reduces the cooldown of Fade by 5 sec.
     improved_flash_heal        = { 82714, 393870, 1 }, -- Increases healing done by Flash Heal by 15%.
     inspiration                = { 82696, 390676, 1 }, -- Reduces your target's physical damage taken by 5% for 15 sec after a critical heal with Flash Heal, Heal, or Holy Word: Serenity.
     leap_of_faith              = { 82716, 73325 , 1 }, -- Pulls the spirit of a party or raid member, instantly moving them directly in front of you.
     lights_inspiration         = { 82679, 373450, 2 }, -- Increases the maximum health gained from Desperate Prayer by 8%.
-    manipulation               = { 82672, 390996, 2 }, -- Your $?a137033[Mind Blast, Mind Flay, and Mind Spike]?a137031[Smite and Holy Fire][Smite, Mind Blast, and Penance] casts reduce the cooldown of Mindgames by ${$s1/2}.1 sec.
+    manipulation               = { 82672, 390996, 2 }, -- Your Smite and Holy Fire casts reduce the cooldown of Mindgames by 0.5 sec.
     mass_dispel                = { 82699, 32375 , 1 }, -- Dispels magic in a 15 yard radius, removing all harmful Magic from 5 friendly targets and 1 beneficial Magic effect from 5 enemy targets. Potent enough to remove Magic that is normally undispellable.
-    mental_agility             = { 82698, 341167, 1 }, -- Reduces the mana cost of $?a137033[Purify Disease][Purify] and Mass Dispel by $s1% and Dispel Magic by $s2%.;
+    mental_agility             = { 82698, 341167, 1 }, -- Reduces the mana cost of Purify and Mass Dispel by 50% and Dispel Magic by 10%.
     mind_control               = { 82710, 605   , 1 }, -- Controls a mind up to 1 level above yours for 30 sec. Does not work versus Demonic, Undead, or Mechanical beings. Shares diminishing returns with other disorienting effects.
-    mindgames                  = { 82687, 375901, 1 }, -- Assault an enemy's mind, dealing 5,170 Shadow damage and briefly reversing their perception of reality. For 5 sec, the next 4,932 damage they deal will heal their target, and the next 4,932 healing they deal will damage their target.
+    mindgames                  = { 82687, 375901, 1 }, -- Assault an enemy's mind, dealing 30,842 Shadow damage and briefly reversing their perception of reality. For 5 sec, the next 29,419 damage they deal will heal their target, and the next 29,419 healing they deal will damage their target.
     move_with_grace            = { 82702, 390620, 1 }, -- Reduces the cooldown of Leap of Faith by 30 sec.
     petrifying_scream          = { 82695, 55676 , 1 }, -- Psychic Scream causes enemies to tremble in place instead of fleeing in fear.
     phantasm                   = { 82556, 108942, 1 }, -- Activating Fade removes all snare effects.
-    power_infusion             = { 82694, 10060 , 1 }, -- Infuses the target with power for 20 sec, increasing haste by 25%. Can only be cast on players.
-    power_word_life            = { 82676, 373481, 1 }, -- A word of holy power that heals the target for $s1. ; Only usable if the target is below $s2% health.
+    power_infusion             = { 82694, 10060 , 1 }, -- Infuses the target with power for 15 sec, increasing haste by 20%. Can only be cast on players.
+    power_word_life            = { 82676, 373481, 1 }, -- A word of holy power that heals the target for 93,474. Only usable if the target is below 35% health.
     protective_light           = { 82707, 193063, 1 }, -- Casting Flash Heal on yourself reduces all damage you take by 10% for 10 sec.
     psychic_voice              = { 82695, 196704, 1 }, -- Reduces the cooldown of Psychic Scream by 15 sec.
-    rhapsody                   = { 82700, 390622, 1 }, -- Every 2 sec, the damage of your next Holy Nova is increased by 10% and its healing is increased by 20%. Stacks up to 20 times.
+    rhapsody                   = { 82700, 390622, 1 }, -- Every 1 sec, the damage of your next Holy Nova is increased by 20% and its healing is increased by 20%. Stacks up to 20 times.
     sanguine_teachings         = { 82691, 373218, 1 }, -- Increases your Leech by 3%.
-    sanlayn                    = { 82690, 199855, 1 }, --  Sanguine Teachings Sanguine Teachings grants an additional 2% Leech.  Vampiric Embrace Reduces the cooldown of Vampiric Embrace by 45 sec, increases its healing done by 25%.
+    sanlayn                    = { 82690, 199855, 1 }, --  Sanguine Teachings Sanguine Teachings grants an additional 2% Leech.  Vampiric Embrace Reduces the cooldown of Vampiric Embrace by 30 sec, increases its healing done by 25%.
     shackle_undead             = { 82693, 9484  , 1 }, -- Shackles the target undead enemy for 50 sec, preventing all actions and movement. Damage will cancel the effect. Limit 1.
     shattered_perceptions      = { 82673, 391112, 1 }, -- Mindgames lasts an additional 2 sec, deals an additional 25% initial damage, and reverses an additional 25% damage or healing.
     sheer_terror               = { 82708, 390919, 1 }, -- Increases the amount of damage required to break your Psychic Scream by 75%.
     spell_warding              = { 82720, 390667, 1 }, -- Reduces all magic damage taken by 3%.
     surge_of_light             = { 82677, 109186, 2 }, -- Your healing spells and Smite have a 4% chance to make your next Flash Heal instant and cost no mana. Stacks to 2.
     throes_of_pain             = { 82709, 377422, 2 }, -- Shadow Word: Pain deals an additional 3% damage. When an enemy dies while afflicted by your Shadow Word: Pain, you gain 0.5% Mana.
-    tithe_evasion              = { 82688, 373223, 1 }, -- Shadow Word: Death deals 75% less damage to you.
+    tithe_evasion              = { 82688, 373223, 1 }, -- Shadow Word: Death deals 50% less damage to you.
     translucent_image          = { 82685, 373446, 1 }, -- Fade reduces damage you take by 10%.
     twins_of_the_sun_priestess = { 82683, 373466, 1 }, -- Power Infusion also grants you 100% of its effects when used on an ally.
     twist_of_fate              = { 82684, 390972, 2 }, -- After damaging or healing a target below 35% health, gain 5% increased damage and healing for 8 sec.
     unwavering_will            = { 82697, 373456, 2 }, -- While above 75% health, the cast time of your Flash Heal, Heal, Prayer of Healing, and Smite are reduced by 5%.
-    vampiric_embrace           = { 82691, 15286 , 1 }, -- Fills you with the embrace of Shadow energy for 12 sec, causing you to heal a nearby ally for 50% of any single-target Shadow spell damage you deal.
+    vampiric_embrace           = { 82691, 15286 , 1 }, -- Fills you with the embrace of Shadow energy for 12 sec, causing you to heal a nearby ally for 40% of any single-target Shadow spell damage you deal.
     void_shield                = { 82692, 280749, 1 }, -- When cast on yourself, 30% of damage you deal refills your Power Word: Shield.
     void_shift                 = { 82674, 108968, 1 }, -- You and the currently targeted party or raid member swap health percentages. Increases the lower health percentage of the two to 25% if below that amount.
     void_tendrils              = { 82708, 108920, 1 }, -- Summons shadowy tendrils, rooting all enemies within 8 yards for 20 sec or until the tendril is killed.
@@ -73,59 +73,57 @@ spec:RegisterTalents( {
     answered_prayers           = { 82608, 391387, 2 }, -- After your Prayer of Mending heals 50 times, gain Apotheosis for 8 sec.
     apotheosis                 = { 82610, 200183, 1 }, -- Reset the cooldown of your Holy Words, and enter a pure Holy form for 20 sec, increasing the cooldown reductions to your Holy Words by 300% and reducing their cost by 100%.
     benediction                = { 82641, 193157, 1 }, -- Your Prayer of Mending has a 12% chance to leave a Renew on each target it heals.
-    burning_vehemence          = { 82607, 372307, 1 }, -- Increases the damage of Holy Fire by 30%. Holy Fire deals 60% of its initial damage to all nearby enemies within 12 yards of your target. Damage reduced beyond 5 targets.
+    burning_vehemence          = { 82607, 372307, 1 }, -- Increases the damage of Holy Fire by 30%. Holy Fire deals 75% of its initial damage to all nearby enemies within 12 yards of your target. Damage reduced beyond 5 targets.
     censure                    = { 82619, 200199, 1 }, -- Holy Word: Chastise stuns the target for 4 sec and is not broken by damage.
-    circle_of_healing          = { 82624, 204883, 1 }, -- Heals the target and 4 injured allies within 30 yards of the target for 2,033.
-    cosmic_ripple              = { 82630, 238136, 1 }, -- When Holy Word: Serenity or Holy Word: Sanctify finish their cooldown, you emit a burst of light that heals up to 5 injured targets within 40 yards for 813.
+    circle_of_healing          = { 82624, 204883, 1 }, -- Heals the target and 4 injured allies within 30 yards of the target for 12,432.
+    cosmic_ripple              = { 82630, 238136, 1 }, -- When Holy Word: Serenity or Holy Word: Sanctify finish their cooldown, you emit a burst of light that heals up to 5 injured targets within 40 yards for 4,973.
     crisis_management          = { 82627, 390954, 2 }, -- Increases the critical strike chance of Flash Heal and Heal by 8%.
     desperate_times            = { 82609, 391381, 2 }, -- Increases healing by 10% on friendly targets at or below 50% health.
-    divine_hymn                = { 82621, 64843 , 1 }, -- Heals all party or raid members within 40 yards for 5,809 over 6.5 sec. Each heal increases all targets' healing taken by 4% for 15 sec, stacking. Healing increased by 100% when not in a raid.
+    divine_hymn                = { 82621, 64843 , 1 }, -- Heals all party or raid members within 40 yards for 35,520 over 6.7 sec. Each heal increases all targets' healing taken by 4% for 15 sec, stacking. Healing increased by 100% when not in a raid.
     divine_image               = { 82554, 392988, 1 }, -- When you use a Holy Word spell, you summon an image of a Naaru at your side. For 9 sec, whenever you cast a healing or damaging spell, the Naaru will cast a similar spell. If an image has already been summoned, that image is empowered instead.
     divine_service             = { 82642, 391233, 1 }, -- Prayer of Mending heals 4% more for each bounce remaining.
-    divine_star                = { 82682, 110744, 1 }, -- Throw a Divine Star forward 27 yds, healing allies in its path for 1,427 and dealing 1,316 Holy damage to enemies. After reaching its destination, the Divine Star returns to you, healing allies and damaging enemies in its path again. Healing reduced beyond 6 targets.
-    divine_word                = { 82554, 372760, 1 }, -- The effectiveness of your next Holy Word: Serenity, Sanctify, or Chastise is increased by 50% and grants a corresponding Divine Favor for 15 sec. Chastise: Increases your damage by 30% and Smite has a 40% chance to apply Holy Fire. Sanctify: Blesses the target area, healing up to 6 allies for 8,943 over 15 sec. Serenity: Flash Heal, Heal, and Renew heal for 30% more, have a 20% increased chance to critically strike, and cost 20% less mana.
-    empowered_renew            = { 82612, 391339, 1 }, -- Renew casts instantly heal your target for 40% of its total periodic effect.
-    empyreal_blaze             = { 82640, 372616, 1 }, -- Refreshes Holy Fire. Your next 3 casts of Holy Fire cost no Mana, incur no cooldown, and cast instantly. Whenever Holy Fire is reapplied, its duration is now extended instead.
+    divine_star                = { 82682, 110744, 1 }, -- Throw a Divine Star forward 27 yds, healing allies in its path for 6,543 and dealing 7,853 Holy damage to enemies. After reaching its destination, the Divine Star returns to you, healing allies and damaging enemies in its path again. Healing reduced beyond 6 targets.
+    divine_word                = { 82605, 372760, 1 }, -- The effectiveness of your next Holy Word: Serenity, Sanctify, or Chastise is increased by 30% and grants a corresponding Divine Favor for 15 sec. Chastise: Increases your damage by 20% and refunds 15 sec from the cooldown of Holy Word: Chastise. Sanctify: Blesses the target area, healing up to 5 allies for 66,467 over 15 sec. Serenity: Flash Heal, Heal, and Renew heal for 30% more and cost 20% less mana.
+    empyreal_blaze             = { 82640, 372616, 1 }, -- Holy Word: Chastise causes your next 2 casts of Holy Fire to be instant, cost no mana, and incur no cooldown. Refreshing Holy Fire on a target now extends its duration by 7 sec.
     enlightenment              = { 82618, 193155, 1 }, -- You regenerate mana 10% faster.
     epiphany                   = { 82606, 414553, 2 }, -- Your Holy Words have a 25% chance to reset the cooldown of Prayer of Mending.
     everlasting_light          = { 82622, 391161, 1 }, -- Heal restores up to 15% additional health, based on your missing mana.
-    gales_of_song              = { 82613, 372370, 2 }, -- Divine Hymn heals for 8% more. Stacks of Divine Hymn increase healing taken by an additional 1% per stack.
+    gales_of_song              = { 82613, 372370, 1 }, -- Divine Hymn heals for 15% more. Stacks of Divine Hymn increase healing taken by an additional 2% per stack.
     guardian_angel             = { 82636, 200209, 1 }, -- When Guardian Spirit saves the target from death, it does not expire. When Guardian Spirit expires without saving the target from death, reduce its remaining cooldown to 60 seconds.
     guardian_spirit            = { 82637, 47788 , 1 }, -- Calls upon a guardian spirit to watch over the friendly target for 10 sec, increasing healing received by 60%. If the target would die, the Spirit sacrifices itself and restores the target to 40% health. Castable while stunned. Cannot save the target from massive damage.
     guardians_of_the_light     = { 82636, 196437, 1 }, -- Guardian Spirit also grants you 100% of its effects when used on an ally.
-    halo                       = { 82682, 120517, 1 }, -- Creates a ring of Holy energy around you that quickly expands to a 30 yd radius, healing allies for 3,282 and dealing 3,390 Holy damage to enemies. Healing reduced beyond 6 targets.
-    harmonious_apparatus       = { 82611, 390994, 2 }, -- Circle of Healing reduces the cooldown of Holy Word: Sanctify, Prayer of Mending reduces the cooldown of Holy Word: Serenity, and Holy Fire reduces the cooldown of Holy Word: Chastise by 4 sec.
-    healing_chorus             = { 82625, 390881, 1 }, -- Your Renew healing increases the healing done by your next Circle of Healing by 2%, stacking up to 50 times.
-    holy_mending               = { 82641, 391154, 1 }, -- When Prayer of Mending jumps to a target affected by your Renew, that target is instantly healed for 616.
-    holy_word_chastise         = { 82639, 88625 , 1 }, -- Chastises the target for 4,443 Holy damage and incapacitates them for 4 sec. Cooldown reduced by 4 sec when you cast Smite.
-    holy_word_salvation        = { 82610, 265202, 1 }, -- Heals all allies within 40 yards for 2,130, and applies Renew and 2 stacks of Prayer of Mending to each of them. Cooldown reduced by 30 sec when you cast Holy Word: Serenity or Holy Word: Sanctify.
-    holy_word_sanctify         = { 82631, 34861 , 1 }, -- Releases miraculous light at a target location, healing up to 6 allies within 10 yds for 4,745. Cooldown reduced by 6 sec when you cast Prayer of Healing and by 2 sec when you cast Renew.
-    holy_word_serenity         = { 82638, 2050  , 1 }, -- Perform a miracle, healing an ally for 13,556. Cooldown reduced by 6 sec when you cast Heal or Flash Heal.
+    halo                       = { 82682, 120517, 1 }, -- Creates a ring of Holy energy around you that quickly expands to a 30 yd radius, healing allies for 17,056 and dealing 20,221 Holy damage to enemies. Healing reduced beyond 6 targets.
+    healing_chorus             = { 82625, 390881, 1 }, -- Your Renew healing increases the healing done by your next Circle of Healing by 5%, stacking up to 20 times.
+    holy_mending               = { 82641, 391154, 1 }, -- When Prayer of Mending jumps to a target affected by your Renew, that target is instantly healed for 3,677.
+    holy_word_chastise         = { 82639, 88625 , 1 }, -- Chastises the target for 34,456 Holy damage and incapacitates them for 4 sec. Cooldown reduced by 4 sec when you cast Smite.
+    holy_word_salvation        = { 82610, 265202, 1 }, -- Heals all allies within 40 yards for 13,024, and applies Renew and 2 stacks of Prayer of Mending to each of them. Cooldown reduced by 15 sec when you cast Holy Word: Serenity or Holy Word: Sanctify.
+    holy_word_sanctify         = { 82631, 34861 , 1 }, -- Releases miraculous light at a target location, healing up to 5 allies within 10 yds for 36,268. Cooldown reduced by 6 sec when you cast Prayer of Healing and by 2 sec when you cast Renew.
+    holy_word_serenity         = { 82638, 2050  , 1 }, -- Perform a miracle, healing an ally for 107,807. Cooldown reduced by 6 sec when you cast Heal or Flash Heal.
     improved_purify            = { 82705, 390632, 1 }, -- Purify additionally removes all Disease effects.
     light_of_the_naaru         = { 82629, 196985, 2 }, -- The cooldowns of your Holy Words are reduced by an additional 10% when you cast the relevant spells.
     lightweaver                = { 82603, 390992, 1 }, -- Flash Heal reduces the cast time of your next Heal within 20 sec by 30% and increases its healing done by 15%. Stacks up to 2 times.
-    lightwell                  = { 82603, 372835, 1 }, -- Creates a Holy Lightwell. Every 1 sec the Lightwell will attempt to heal party and raid members within 20 yards that are lower than 50% health for 2,352 over 6 sec. Lightwell lasts for 2 min or until 15 heals are expended.
-    miracle_worker             = { 82605, 235587, 1 }, -- Holy Word: Serenity and Holy Word: Sanctify gain an additional charge.
+    lightwell                  = { 82603, 372835, 1 }, -- Creates a Holy Lightwell. Every 1 sec the Lightwell will attempt to heal a nearby party or raid member within 40 yards that is lower than 50% health for 18,694 and apply a Renew to them for 6 sec. Lightwell lasts for 2 min or until it heals 15 times. Cooldown reduced by 3 sec when you cast Holy Word: Serenity or Holy Word: Sanctify.
+    miracle_worker             = { 82612, 235587, 1 }, -- Holy Word: Serenity and Holy Word: Sanctify gain an additional charge.
     orison                     = { 82626, 390947, 1 }, -- Circle of Healing heals 1 additional ally and its cooldown is reduced by 3 sec.
-    pontifex                   = { 82628, 390980, 1 }, -- Critical heals from Flash Heal and Heal increase your healing done by your next Holy Word spell by 10%, stacking up to 2 times.
-    prayer_circle              = { 82625, 321377, 1 }, -- Using Circle of Healing reduces the cast time and cost of your Prayer of Healing by 20% for 8 sec.
-    prayer_of_healing          = { 82632, 596   , 1 }, -- A powerful prayer that heals the target and the 4 nearest allies within 40 yards for 1,694.
-    prayer_of_mending          = { 82718, 33076 , 1 }, -- Places a ward on an ally that heals them for 1,181 the next time they take damage, and then jumps to another ally within 30 yds. Jumps up to 6 times and lasts 30 sec after each jump.
-    prayerful_litany           = { 82623, 391209, 1 }, -- Prayer of Healing heals for 30% more to the most injured ally it affects.
+    pontifex                   = { 82628, 390980, 1 }, -- Flash Heal, Heal, Prayer of Healing, and Circle of Healing increase the healing done by your next Holy Word spell by 6%, stacking up to 5 times. Lasts 30 sec.
+    prayer_circle              = { 82625, 321377, 1 }, -- Circle of Healing reduces the cast time and cost of your Prayer of Healing by 20% for 8 sec.
+    prayer_of_healing          = { 82632, 596   , 1 }, -- A powerful prayer that heals the target and the 4 nearest allies within 40 yards for 10,360.
+    prayer_of_mending          = { 82718, 33076 , 1 }, -- Places a ward on an ally that heals them for 7,868 the next time they take damage, and then jumps to another ally within 30 yds. Jumps up to 6 times and lasts 30 sec after each jump.
+    prayerful_litany           = { 82623, 391209, 1 }, -- Prayer of Healing heals for 100% more to the most injured ally it affects.
     prayers_of_the_virtuous    = { 82616, 390977, 2 }, -- Prayer of Mending jumps 1 additional time.
     prismatic_echoes           = { 82614, 390967, 2 }, -- Increases the healing done by your Mastery: Echo of Light by 6%.
-    rapid_recovery             = { 82612, 391368, 1 }, -- Increases healing done by Renew by 35%, but decreases its base duration by 3 sec.
-    renew                      = { 82717, 139   , 1 }, -- Fill the target with faith in the light, healing for 4,036 over 15 sec.
+    renew                      = { 82717, 139   , 1 }, -- Fill the target with faith in the light, healing for 24,093 over 15 sec.
     renewed_faith              = { 82620, 341997, 1 }, -- Your healing on allies with your Renew is increased by 6%.
-    resonant_words             = { 82604, 372309, 2 }, -- Casting a Holy Word spell increases the healing of your next Heal or Flash Heal by 15%.
+    resonant_words             = { 82604, 372309, 2 }, -- Casting a Holy Word spell increases the healing of your next Flash Heal, Heal, Prayer of Healing, or Circle of Healing by 15%. Lasts 30 sec.
     restitution                = { 82605, 391124, 1 }, -- After Spirit of Redemption expires, you will revive at up to 100% health, based on your healing done during Spirit of Redemption. After reviving, you cannot benefit from Spirit of Redemption for 10 min.
     revitalizing_prayers       = { 82633, 391208, 1 }, -- Prayer of Healing has a 25% chance to apply a 6 second Renew to allies it heals.
     sanctified_prayers         = { 82633, 196489, 1 }, -- Holy Word: Sanctify increases the healing done by Prayer of Healing by 15% for 15 sec.
     say_your_prayers           = { 82615, 391186, 1 }, -- Prayer of Mending has a 15% chance to not consume a charge when it jumps to a new target.
-    shadow_word_death          = { 82712, 32379 , 1 }, -- A word of dark binding that inflicts $s1 Shadow damage to your target. If your target is not killed by Shadow Word: Death, you take backlash damage equal to $s5% of your maximum health.$?A364675[; Damage increased by ${$s3+$364675s2}% to targets below ${$s2+$364675s1}% health.][; Damage increased by $s3% to targets below $s2% health.]$?c3[][]$?s137033[; Generates ${$s4/100} Insanity.][]
+    shadow_word_death          = { 82712, 32379 , 1 }, -- A word of dark binding that inflicts 12,039 Shadow damage to your target. If your target is not killed by Shadow Word: Death, you take backlash damage equal to 8% of your maximum health. Damage increased by 150% to targets below 20% health.
     shadowfiend                = { 82713, 34433 , 1 }, -- Summons a shadowy fiend to attack the target for 15 sec. Generates 0.5% Mana each time the Shadowfiend attacks.
-    symbol_of_hope             = { 82617, 64901 , 1 }, -- Bolster the morale of raid members within 40 yds. They each recover 60 sec of cooldown of a major defensive ability, and regain 15% of their missing mana, over 3.2 sec.
+    symbol_of_hope             = { 82617, 64901 , 1 }, -- Bolster the morale of raid members within 40 yds. They each recover 30 sec of cooldown of a major defensive ability, and regain 10% of their missing mana, over 3.3 sec.
     trail_of_light             = { 82634, 200128, 2 }, -- When you cast Heal or Flash Heal, 18% of the healing is replicated to the previous target you healed with Heal or Flash Heal.
+    voice_of_harmony           = { 82611, 390994, 2 }, -- Circle of Healing reduces the cooldown of Holy Word: Sanctify by 4 sec. Prayer of Mending reduces the cooldown of Holy Word: Serenity by 4 sec. Holy Fire and Holy Nova reduce the cooldown of Holy Word: Chastise by 4 sec.
 } )
 
 
@@ -254,7 +252,7 @@ spec:RegisterAuras( {
     },
     holy_fire = {
         id = 14914,
-        duration = 7,
+        duration = function () return talent.empyreal_blaze.enabled and debuff.holy_fire.up and 21 or 7 end,
         tick_time = 1,
         max_stack = 1
     },
@@ -548,11 +546,11 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyDebuff( "dominate_mind" )
+            applyDebuff( "target", "dominate_mind" )
         end,
     },
 
-    -- Refreshes Holy Fire. Your next 3 casts of Holy Fire cost no Mana, incur no cooldown, and cast instantly. Whenever Holy Fire is reapplied, its duration is now extended instead.
+    --[[ Refreshes Holy Fire. Your next 3 casts of Holy Fire cost no Mana, incur no cooldown, and cast instantly. Whenever Holy Fire is reapplied, its duration is now extended instead.
     empyreal_blaze = {
         id = 372616,
         cast = 0,
@@ -571,7 +569,7 @@ spec:RegisterAbilities( {
             applyBuff( "empyreal_blaze", nil, 3 )
             setCooldown( "holy_fire", 0 )
         end,
-    },
+    }, ]]
 
     fade = {
         id = 586,
@@ -688,7 +686,7 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "spell",
 
-        spend = 0.01,
+        spend = function() return buff.empyreal_blaze.up and 0 or 0.01 end,
         spendType = "mana",
 
         startsCombat = true,
@@ -696,8 +694,12 @@ spec:RegisterAbilities( {
         cycle = "holy_fire",
 
         handler = function ()
-            applyDebuff( "holy_fire" )
-            removeStack( "empyreal_blaze" )
+            applyDebuff( "target", "holy_fire", buff.empyreal_blaze.up and debuff.holy_fire.up and ( debuff.holy_fire.remains + 7 ) or nil )
+
+            if buff.empyreal_blaze.up then
+                removeStack( "empyreal_blaze" )
+                setCooldown( "holy_fire", 0 )
+            end
 
             if talent.harmonious_apparatus.enabled then
                 reduceCooldown( "holy_word_chastise", 2 * talent.harmonious_apparatus.rank * ( buff.apotheosis.up and 3 or 1 ) )
@@ -760,6 +762,10 @@ spec:RegisterAbilities( {
             if buff.divine_word.up then
                 applyBuff( "divine_favor_chastise" )
                 removeBuff( "divine_word" )
+            end
+
+            if talent.empyreal_blaze.enabled then
+                applyBuff( "empyreal_blaze", nil, 2 )
             end
 
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
@@ -925,7 +931,7 @@ spec:RegisterAbilities( {
         texture = 136206,
 
         handler = function ()
-            applyDebuff( "mind_control" )
+            applyDebuff( "target", "mind_control" )
         end,
     },
 
@@ -942,7 +948,7 @@ spec:RegisterAbilities( {
         texture = 135933,
 
         handler = function ()
-            applyDebuff( "mind_soothe" )
+            applyDebuff( "target", "mind_soothe" )
         end,
     },
 
@@ -959,7 +965,7 @@ spec:RegisterAbilities( {
         texture = 135934,
 
         handler = function ()
-            applyDebuff( "mind_vision" )
+            applyDebuff( "target", "mind_vision" )
         end,
     },
 
@@ -978,7 +984,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyDebuff( "mindgames" )
+            applyDebuff( "target", "mindgames" )
         end,
     },
 
@@ -1091,7 +1097,7 @@ spec:RegisterAbilities( {
         texture = 136184,
 
         handler = function ()
-            applyDebuff( "psychic_scream" )
+            applyDebuff( "target", "psychic_scream" )
         end,
     },
 
@@ -1170,7 +1176,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyDebuff( "shackle_undead" )
+            applyDebuff( "target", "shackle_undead" )
         end,
     },
 
@@ -1203,7 +1209,7 @@ spec:RegisterAbilities( {
         texture = 136207,
 
         handler = function ()
-            applyDebuff( "shadow_word_pain" )
+            applyDebuff( "target", "shadow_word_pain" )
         end,
     },
 
@@ -1310,7 +1316,7 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         handler = function ()
-            applyDebuff( "void_tendrils" )
+            applyDebuff( "target", "void_tendrils" )
         end,
     },
 } )
@@ -1357,4 +1363,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Holy Priest", 20230504, [[Hekili:TZvBZTTns4FlE6m2sTk6KFlnPtuMPxs71K7M2mNAN(njbrczHZue84lwX3OH)2VDxqqcccsr560lNN8LezcGf777dwqP5Np)xNpZNLYN)Zxm5IlNC9KRgpzYfxF93oFw69r85ZIyE3YUb(qiBl8V)Km4(8LFiwWtsXbVpqY8rIKiZI9GjmF2Qmrq67cNVYnLFom3iUh8yCt2i895Q5Yt8MpdN7ZMC9ZMC53LVmF5VfHKWpF56y528LZeBFZ483N)E10UcMzRtd4Uy5AraWtmVuHmmzCum3tUDfl9BM(xIK74Xl2jJ9xSwgNksZ85iL)Q8LFFWo29j5lZs45l)PFmFPyD(YDWN3WUd(x(2O7J5SG8LRcy)h4bd8LPWJ)ykpmb2NH5lLX4KJ3kdfYmGsSOiwmlf)4apGnJ5(zepvmxCdePNbdhIKYlloMhMIA6uH3TIWBgNV8xs3WJ3js4JG1eIJr83Un8qKGRJ5jByRcGhLkbwd()KSyUIXVHdufwF(Yaz4nGPlFPFgWqahKVmsMKiGfc7X7iEaukPBqgsrkpgoF(D4(O2nIsPSyIS7ebGQWxGBOeP3kwcAkWp(VYs0BSiuKkqL2gKU(STGtfSJ)omelib2gFz4zi5yH12xX2TCFbyDrjwg65YaiqJvKM7qbMHsoyUJIaLhYD3jc5KK5N)(c3bWjyd4nVyTiMpY7EVa(cLmLm98rI1thKYcaRWy92TG2T97lECL9DrP5D)(tkmy73BysgE6jdwLTETfPgNfD6apPmWxUlCSIhjpsyG97Pfu)HdpTC2eNtEVEBa9e4wGJtUVVvPivQVz)(39bYyt6bwKemgYeuHH(DA9YA2DYyisQKwommKgsB2tqpmpg5bI2trIY4P8Cid(F7nVnbCvteKnB2wrk8F(GWdRnjqCZgY)EReTuk3bCHmWaYagkdDQqMFSP9cuNG0RK7iMiKmtgk6k9)WthO40XPITGHvUa8qF9uisDSnrgRdfaZKPsNukMQ3IHRuIWZin(hahnYJdDBbFdEhQwtXXJfeSq9NlcejPJWCStDU9lqNzuCl8(mCmov7q2WL40oeh0lIy(FqXVVTGF)rCAqcfzAr6HDc0K2Q4Se3dk8ZqWIZc7RCHt7o(OK0yHxQkWRtJaXZ)ZSqlwc(pipepoPjRRyqL8EmSOIGFs0514FHY3VnnEXWQnK73xzGwwn1ADPqrwKzklSG1jc5WcmyMdTB6v8(Yz6w2j)xGi3XIfyKQA1L5d5FK7TaJuhjJMMWtfRh5jd9fifN6mp8O7ybz8PQn1oXksUSuUII0exWds4tNqcCvaC1(cU0ZsPCrBK7uLjbGagPlvL5sz3QdZvBXdsSDXaDi4vtVUqBKiQBb(3qBRzUFuaOI3VPkmgW5PbIKOQERl2aRn0VkdXVJfrl0himdSYlw5VOOHhMcNkmyQ(gCXwb88382HQDhYyxF)xJXWaiJySmp6rAVHdoxtHX9uPBO3W6eDv7mMVfQeK8ANvJlgCylfRlg(vthOTYJB6x)nLJ5Y4puv5(DeoZZqVq2kzwnCq1Y2nQevMnuiamd(CSUnIdQeuvcw9LrvLvg3qz4Z0LD1WdO62Q0L7eHGG2tfTvKjOS7wrD4GwfqMA2FfMxnuCYll5(qpD6YkpjYzDaorDotWN7hkvu)vsr1pbZG7RjvorFD6GtAbXOBSFkBU6aveWuJIQODhsDFZn9ckr3crtM1UiBb8YdNexvSgPjlqIubojhaHPat4y8PVE6f9MkfdNaRVjXmgKOjOR(viTaxdUNbhAZllGbkOvGE92iPieZCHNWtesvVW8yGBq8gwuI0)(cxdABQbK9Ej(8DBeEBW8)ObjuEhdhIHZGslLUHIrW0QgUG(YElTKDaPlLnYsZPhdevfccntpguaE3(6PN)IH733(QU09QEzNl6k3l6kyrTUMR7T8cPR9Vbk3L07vyImhoPq6gfSfcg)gi0jDZ4iV0xDXKEtXM((KJewNY4GMQt2KOoIc(eFX61C8i4gUj4ZtGqkMV2hbp4i6bGJILM((F5hWZ7KMPC(gHjuRGoOYRw5DHN0UibCFLgIdDDu12DMooA3Agafw4hyGF5IFkhVxPHEshMxkMhk6UCIhrq9xzJG0Ro8qnEfwIgHo(j02OcXu9NZeOl7oMiq1vSv81e(EcKti)JP1Bl0OcyNQdcz0GnS9gQgljsnH9QamJGFz6ECLa6dSLDBl4rt6Fi1K7Q0viona7RXr1jyvWHOl4k6EEayqJ4EagPx1jMTHhI9Bl9bDmZgyXv9rjmzheF7d4uy3dNCNoE8PN4ITtyHazxFp1ymxJJjRfPToUbknfQRaK3WoXcj0VJt5rI5pdXutb969tNbPG8WKW(wbpDh7(rky108XEDrDVc7tMmlWV4KruJqXchrXsVghPVSjOVd7PkNO1iTR0ooE(OKiSFWRybmQlAR4PWZXdK57tBCr7ZmPlv3rbD0QNFJkeNsXuhprC)owrrUGYMfxWNQMQZzu2siILw7gdCRGpevkuhIzOkBZFOPTDuHnz6l7ZIkSih1IAf3SEQ1HO3ofpQAG6v90S4xnT8tWQEA5R9YD6zCe15AJc25qlAU2bCIRMLT)R64L(17edEW4Q6QnBJJlcxp7DFAKYGB88hVL9XV(YHoLN(fcvTGNyrpww2NsbovIMJyMQbFaHlgl2osr7swDjrRfCWsHUcZOUe9H3D4RYq3CPuP822qVzUtQ7qweUodV3xYaEsZ7kWejMj0QSOdDDEkSk)cHffIafyF7ew99I4b8XkMOngnTGbjtBD(wFPkBOufa0HWBlpWR6kMPncuGoPnmLfG1yBs7KF(miQa)C57cWLZNTJfhcHjjZN9RkSgrY40cG(NvUbNHOj(3za8cmCusiRZsLBvx3pOSWRZEC(7)hKP6cWC(gziSB0WN10yCMsUCmYyEiEqbCgdo)JdPxZahCMpFnlli944RZDZx1ZxBXA2Dh1M76KYUUCAl67AkTTlx(OQx7KMnJeS57MHkTSdx)jGRBHMpIC9Z7KRjScUzBAO(6fBEiUAnm(Zfh7wcLRqIyrvZld7OmD)H4183)osVIe8fGMYtLKgVFuujnFg9j6LSYPghxWDCy8FMEtSkO)8)68zEXqs1ybJEBPSWiLV81tbnK(fBA(m8HZtHSR9KigaMAqlJXqsEPfjl3sDXF1BUvSis98plbEzQjguq9MWykuf5lpv1TwliqQHphmZdZxUFp4dCakDz3u6L9Mqx1nHUQKqDsLRrZ5vO5uBdlbOzAHHjDDRUrnaOLV8vGkBsfnBGRdj4Zn31MPcT2(VTfxoc1hWnM9)gdCApwXYYA5Q(51TaGs(lm1tfIRPQjTm8Ks23DEJ2BYg5oDc531DZ2uEvD3WTwNJbswWbTsUQYu7kLvtVen)yz9(sl8(ZPfELA65ZE5bliuZ5WELxDuzbU2C21RdBnZN3ZQEDw60oPZJqPZx8LsNpLkD(Y(u688jp21op)8ExuW8oz(cMYVey8NuGX)dXu2zDOQclnG99K8kMT8i74QJjnCx33RPB0rDnYaLNEqsxwVT7SALFDDkZLPNVRV8oDNuSwpoCLBugbSb((3wTl6xzt6tluF)NA(MDw3vUJUgGKr)I5oF2KI)uVDD92q6knSb)2y)B2leRqGhZ3aAtTJl66wF2HIOLxR5UkCyCKI6c6tT3852cXDeAwgU96dgpsLcgCOPHb2WK64LCoF53ymUlNbAZgww0WHP0gPFnZ5NDVG0M2JdR96xKUDLslquQm91ulFcFrPDkGTCgFLt0jAY1sAqvDf3Vs0f(gp4s7)bEzQB05K6xvNQKs51s1OIKXLoAb8PTgCu)wYSeKhJ7S0kxrLDXX1C0SyFDXNmUhY(RdTBllT6wiTK0J62nByKAEvJDKAP8MkTyHnh6Ip712cUhfxqDdNJd2RJl6DVoo6kGh)lasFd5nlWaEofVWh5l)A6ukotY)GoaA7NC4bFa0otW8LdG()Bha9B7ZbqT7g3F4dG(YdFcMIxwaxN3OMlhEhcDFXgd6vv1EC1(QjIfduFrPv)DTF)agAC)aTvNUdaJ6ReWrvunTpyLeR4VV8lYWt5Frg6cLK9xwFBKVpT(ToWkIVMpKDyB5P2ksFz87CGk1yN)whyeLBgNwVzj6iD9KQ9lFGl0i1SnhZVkcvgC7FteC0EdN4xpTk7xZCkMZQdXftjPELnk6NrhTqYb6MAs)J1pRcvAgRV)9qSb9L73QqrNwZEiC4oCNZZHwt8EG)cm0H085IzU46tCGsSDfWX9t4WXAs7418YLyi0Vnb2xPz9ZDL2(V6dDWGgBN(0oPkSoSS0nY45Z(7SiaCCOGE68)7p]] )
+spec:RegisterPack( "Holy Priest", 20240411, [[Hekili:TVr7UTnoYNLGfiXERRpNeNUTfXfOBB3Rn3HDloVl6)SfJeDeVilQtIkU(GHE2VziPKOKOKLBt3RBq(rtTfhoC((doYloDXVVyUhrqx8RNn5SPtME6PJNCXPNn9IfZfBJOlMhrCVLCd8HqYA4VVNhSnZ5JXmAIaxCBaN4HijHNg7caSy(1PSaXhcxCTDmFoaBe1fE8f)0I5(mppQcwAI7I5aSN)0jx80jN)YmNmN)icrHxMZQy(6mN5S1VzC2vzxPaBkazRGTyEalrKizq2DSq6YvK74XlD9jjcwcDjXvWUJcR)RsPanKCDa1BXpVyUBmtqJzejLgeSuqIVHksg7tc4zoVAwMZzlMJBNhcCa8WfcGD6js0etc89g4YyneLNxdLfhjOewgYVJOKAXSi1Z)DFAmnZHG)jIelyUPb4PCDmLCBeNfksYCC5RVMfsWDaFJVkZj2NeLW9a9kjeKHsYnZrtVWUPB54Z34ZC9ZC8Lwa4PJlrqiO3rJ3k8zH3aFoibo9nW)CjHzoECtjXan2lLO5CIwuK5CmG10vRgNtuJbHH7TQLp95zodZC2TlZzFy68UX0l6nIM2nIMwGOoXYfO6CkQoZ1HRzHE3aUujMAyaOlA1msH6X(usGWFCKRiZ5sqKnPeNj(ep(MLB4XEl9avJpIWNzEQsYsUEUBqTJ)NAXKlznqga1S1nGMZKOJt7(k10S1mv)eAKqcbEqaUus0cIq8qupXJTAfymlbi3qeFEseyl7LBfUIHM6ECCvgyT96F7DaimrQY8EeShFgS2ggArJkrt73tGv8iRXOBaN)Ct5KMDnfnIc3tMClDg3qAVqct2a8G3YOyYwAm46Z3eknNosA35Y5b4JgxQvsiHafSA740iLvLnyq5ct0jm5Axjmdl5lsex4t5jSeBHSAALKtp10EbOyWfudG24oQmSsm9PU4zIXaY3vEafnbdaXUXh0OKnKTJq9Vg()(BElQE9jcKzsd8WilzoPjyiDuRhfZDrBcu8dAAu(NR6gN58bqOkOsCj14OL0gkvGwlC4VxtcacIIivaphGM45jp41CP9JjELgnaDEdOirqkLyJ0StbBQiGmhj1dmJIwdWdwseA6uLtIsKbpbNx5EvwHOmgw6Zrs74RPRK0tPOSqsVy(l2BcHkgh1350dkkq7bHoGeIpRNi5asi2w0PhtiU38yFpMq859jH4lUVtiE6KEhPxvX4ki7bn(XcfF0V4pj)I)pwOyNjxkZw0OwoPomf1O5abj(4XLjjX0JbCzg1eLAxvuMp5oQzww4Z3rybivuMruMonK(zrzYAKGGmY42I3ipoEiAVjPbMaTcXm9YpPQ(dXNuDG1erYtsNaIw4JS1AA0e)1SilQZQKAhhtxtyO)XLgRR9oruucqPzux1R5Lgl94wcffqDL90E5S9I6ICJDhvdQwdDQjIIyz5WhXHkvvKciXfqf0E7jOyrB0asJSfBKhbKbvuEg3rabjSk(PGu4)MiF2s1flqxhTfI(eamo1DjQpSfRuJu2QQ27bqnOMAL8Du1oTeGYd5LzoZfsBmF(MCl0xBynQmEeKBPQY7WDMkOMKUn82kBVeJ7P5DPuqbxfQxDefcH2IUBumFvg9psQ5sHe(nyDPVPW5u5kWwHUiy49WsJmD493Q9e(KSi1sNi09jHdKmSufpFtX2GZwJnK9M3ouD6X0KQNVm4GmFG2jU(bo40CmmUn)ql(pf(eVAVonY41d2hyO3hauUwCCt70mNNySUnJb5HnSiYUfvPXrxtxwvOOIXHATIeNjBdDr1JW3u8k1GdqavEhupGeENM2ZC(5aY)LAkw3xpKkr1r5ORumCnIPChoviozoWAaO6d1sARENL59gDmvMJbTT0TRvg7wgH6LLG1OZCtnDAKk6wUeiPrWrmd810qpOgWQPGBR)zv0uw4Q0eL21KpMl1xF8d56S2i6s1SGZVTZetLQftgRIoPn7CTUDFQ)C732cfbg9n50FtASQwsD)mM2QsHe(4CPunDuvHOsn1Q)de)zjS711JecSJN0aj82IRqsgRsrdF8d96ybRJBOHaqUnSn2BR0TzJ0AW73ljzZyPODqPvrZaX91p2m2iypCJR341KpN58JYQGTQF)IAWPUs6EObNoJA8ydo)vRbNN1NgCQFzpF1n40NB4LUIKgiSvpBfto8IN7(2Wh0RuLAq8jXR5HmEAYsseyVsePjvbedXZCVvAyHFpMUckPYx1M0qJlvUTKVDuRt(9iBj1yoU3B(HA(FVoydzBIow77)LYCzQ29OffIijqG08WlQfAWJgIHDHdflpSuSGLZQLlaW4npht9sLAenSQkzXR0perLBAmo9a0bvl3GYv)T8MfhvPBrvNIvKOyEcmeBsAS2h(MIR1f7rGMGTIQ7vdZLLKWWQ)YC(GKgajeMFHLpFdccpEv55NMetklN8q6EmQkEowCU8QVXp(VttkUp5qMGHcnFeVfx)nweojibhAcp8eeDLZvrEUS1RPEmIGICmxEt4nuayEgurQOUnfXoHM7Iux2Tz5hDKxZ0Zlcs3uVCwfjQiS5F6LFukgRDt7knABfgzJL1dqYisTlP4MayjkXIsNifL4ehgHJksknMRM7eeOia2BsaoLcuwPhpG(gme(yyCim2QuuDHeF9otQydv3TTOHdD4lSZGLc(sPEhdnc(aJRl(gxAKv4LB6NwTz8Cp9CGmAQuv)u987v0nFeu2sTUSpxONHolPoxH7sGG9QVSeN4ULoZTwv6XLr)AgtXeQoyxmKKAo)6wX74kkSuysfU)DkgoVFRFbrbOr5cT4FFvRRMUiiMlKmXPHvfmjqHOUIAjk6uB2dMdpH7O2ksQc79VsdRr944tXl2oPjxQ4fL0TvU57f1S(65TCdMTla0JMRnTRE58wNpuvAv5HezLxjvt2GLpc66v8uTBQYB6u3msj93bbACC59Wiu16aLQkB8cF)CoFYftMUy(gsCieRkrwankgIGyM67Q5KIgKpbd09FsHsGWAK5YBonvWxREfCaTgMFCC2v)tPS8mWl5n8q40KlFstJLturCSSsUu7e86G(8q5R(Jfktx12HrxNANUQw6unsZEPCLuxNy2wrE1WFx1bw)uo)EvU2joB65wNUB11U(jCX3aQUfCEps1pRtQw6)ANSR47VpR4wZDDyg2T4WvwlqnsT59MxN9N(nWvj7Qpi5EeHqZSQywqX147ShSmoScoezVOqJKXftV4jZ(B2MxbIZFiZ5XwpEi36r2vAZbWiOOt8rvAeF2PJyRMnWQD4UDDePD3UJ0kSD7mujdp(Ob27Q(4bT0p9UDw6LE4XD3f9qP57dSgKm1x17TrQMme0LY)HhpOztsVAwNnibQPolLwVCLwIKs8dPTht2PEJpJWQSM1EuCKDBMu74wtgD8EQiws83xDTyYy1QHSl(s18XivvWkhVU7ofP5VWwromsuHWVjY8VIoj6lpi3wfXQL6kKetxTfS3tlFhxvaPDExA)cijFkNQD3CuOJ4rZsOIrYrBpBIKaVpN6(xezAJa0ekB1ixEOhdX5SgLdPzd1r22a6hvovFnd)qB679uOBi3W469yquVQRjVpSLKR6LVC2Gogj)t6CC8d1zARWW3RtwVNImd(cLzDxEWXdoQLsASxCIIj)kMAEpzIMeB9Sa66F2Fugv2eeNKaoILMdD8vZoR3yrVmodXMiZyrjobz13LdnS3CBXC2KUFTmdoGvp2Ye8E1StF(WD7AFxNBFxVOZnn1(MMcBQ19CrV53IXg27D0yOGQ8Q1ML4LNnP3ySPTV0q67RFCl9MBKuOTEPA3y6WWDRraufR9f64xS5hY(7LsOh0U5fS5(8Ula8aCQ)H6Lm5wTEO)k)QkVpXK9S0d64vA(YoRodmioOxJ5lN1j62h53w4dzFqnk(u1OVTF9DhFKnY24xD3UDD)lUZ66gvPPQ66XFFC)587JRv7HM62rADYSx0NnP1ih0MATU5cqpOKB576HzwTkIVhGPZY5V2ZJLdXbKaRnmup4O(ADAVa1d)Dm1gYRg0Tpn8pq)oN(JNp0k12phKYn8aZ3OME7HKBrjRzXJOCXVaNbJnx3pO4nwOaZRyuqtHMc3hVg(2pPQVb5sf4rnVdAZcOmRiknAFJjsvIXb9Y13gHk0eOu124nFxEo(77nO3oUlEH8Bh9lMtsf(84fZ)hKiWpmKjFVuw8)o]] )
