@@ -2423,8 +2423,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136018,
 
+        toggle = "interrupts",
         debuff = "casting",
-        readyTime = timeToInterrupt,
+        readyTime = state.timeToInterrupt,
 
         handler = function ()
             interrupt()
@@ -2532,7 +2533,7 @@ spec:RegisterSetting( "st_fn_mana_threshold", 3000, {
 spec:RegisterSetting( "shaman_rage_threshold", 60, {
     type = "range",
     name = "|T136088:0|t Shamanistic Rage Threshold",
-    desc = "When below the specified mana percentage, the addon may recommend using Shamanistic Rage to regenerate mana.",
+    desc = "When below the specified mana percentage, the addon may recommend using Shamanistic Rage to regenerate mana.\n\nThis setting is ignored when wearing T10_2Pc.",
     min = 0,
     max = 100,
     step = 1,
@@ -2543,7 +2544,7 @@ spec:RegisterSetting( "shaman_rage_threshold", 60, {
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 3,
+    aoe = 2,
 
     gcd = 8017,
 
@@ -2552,15 +2553,16 @@ spec:RegisterOptions( {
 
     damage = true,
     damageExpiration = 6,
+    potion = "speed",
 
-    package = "Enhancement (IV)",
+    package = "Enhancement",
     usePackSelector = true
 } )
 
 
 spec:RegisterPack( "Elemental / Resto DPS (IV)", 20220925, [[Hekili:1EvZUnUnq4NLGfWjbnw(NDZUnTj5q72djhcwuVy7njslrzXAksbskl4Ia(S3zOSLLKLtt32CXwIC4W5NVz(gfol8RHlsOww4tZNoF(0BMFDWS5F465FmCHDBblCrbnEnDf8GKMd)(BcwotAPchzIJ87mJv5iF(llCKlE4BxIIVvOOjOAnQsDmCKmRTW8ttMuvvfWJ3oEdJlnbXQ8jvkRy94yb1y4Xty7v9ytgnNkhNuygxSHnwRSulxjhhRuIevL0mMUKl4woZeUyzjxyFqgUCyh5AWqkyXHp9jWs4jjSAjzM4WfFnJBCKcnxP52TWtGVELJaBYxjzjosQs7iTC5lwwADendmEyPKgrAhhOGkRycXLocQ9LudkwzHs6ipaU)3q3)8oQDH3FDKvL8e2ov(hAQnliCHGBSgmCsvm4VN8zmMKUuWsc)LWfXGPZ0Ckgistds5AwKvzz5byKcowmg6cxKtxLtR3j0cbjVk3TN)qs1gABndc9(2c1KEIYPg4k32t4p0w44mkxgj4RYSsUCvprVUNpS)u2SsiOQHyPoVohP5f1BvlIjaIc)WDtAl4v807GOhnOi2E7ntF(zlvVIzdsGahvgZUD20rReBlYc8)gPsJAF8G92rRizpn4i3ENJmBQJmYr2FvWIoYnWAp)CVfnmRf8ztGXgfJrlje3Z0mtgGEb33IUwkTuyBYN7davCzsKjJr19IyhNUoKoQZPVqMR0WIaxl3mugBqOeEYnWDiz5qnMJCp4(TsUuHiQ(LieEwdsJQBqGW09P4xl05JN0qoZrS841EiuJ7lGlcIsQ414H)0jpCIYg0s4anlhqL1UtmyirwU3I3PxbDdnAzjalq1(JNuT5QnG94bd9VHJSvitAZoyR3CcG)rLlDW(pXWoiydMyndAXbp7BCH914ub)V8DhDeLx(Go2AdW8()zG5tZMEsN(TSKy46F0E6uC0eEIwQGANoqi41cFB5Lu7l3L8m004YmkuPXZxwYs6HSSk5QswufJcTSBQ9gkPHLb(UjnvJMEzUViOySAlWeIjqSgeyfsXeiB75AylPcIqubKxt2ISei9JsEoSyfvARZ6q9lCkB9jRyNVH5xdWeu0z(tKU4x)8Uli4ikHAm4bobFoBiYIdBubOm9G7q5TxVPvZ3bHKFnm(vHmDd1pAVKgWdW0(UgDNO2if6D6Jiv0T1RSbmJu85mQ1hYbGOKwaGo41mKN2sxZaNRatthh46AHbLfhcdjSCLKhhbtmyHn8iqadc3ObnRMzqGw6unIzbKXd5fkTfn33d2zCDnRNEpW9iIFvPCb0p6DVBWHdUagEWr8tpCP7rui8sgp9MXZV29O7X9mKn1bap5XaAKT8SEfaG2CK)9q1F()muDyJEO6k0ShempAiq2ObbXJgaapSf0nX3C39lxWW2)J4VHTLoG)gt5iO5OHGLTGfGMomCr7vhAyI273m8q7f7pbWvi3)Da1pAGDhE4(zTp4rtc0XuoWK6HP7ytBlYboAuItqWFFd5ENR(avSFKrpl(OtWG3l3(Q4D7eG6sO3Eg17FrYW2kP)uU9hS9oyY2ot(28YR(k6YP2Uns9G2T(QHtxg09inFmr)noDUFNa9cA1n5oKeQzgGVschJ3S7ZKQZi42vk96aFERRwFd(wH(g(BuIcyalTzk4BbA(Urpnt4F)d]] )
 
-spec:RegisterPack( "Enhancement (IV)", 20231106, [[Hekili:nJ1xVnQrq8pl5fRKRTuJDCUls25HQwPMRvPpqv7BaRHbZkVWI2DXUPkIp7D2fBZcgWjxUQwDsN8n7S)MzN538NdFx)F33lMOa)NMnD2Cx3P354o92zl(OVN65cW3RGeTLSb)rojd)7FkpLKhbzqUQk86h)JB0A8mJtI1ij5LIiulFV1LuM6XC)19d)cFpsPkLl89(ri5VjrP(EP04yO(gGmY37p5QF9xQcbBlktjzK8Qqbxruuo(ReUOk8NHTugfDfbpHYqhGePpv6uiGiE2AI6Bw997P5XjLINd2dKcE(3stwDvgHQHpoGMTUeIN0iiLidKfaJvW3dIQp3hIjmmMO45BkHJGki5BxvRRZ5h7Kr(RaTkFNBVM)9ADnM8Keli7)Qm6MuvonFtGmLcSy9fxxMK4u)pDI57Z7)MreglGNeOsHaGzYkYt3gicvAGIRGmdetmstOc4mH7rsH4mPeQTS(9GcUjX3FirBQdUfHvdv1NpP7bsa(Orpv71XGXSrePcdgoLft6iz3Svt7E93nh6)cMZBMVGxOucbumckTf2j8pyq36CqGILfubvna82IRlXPy8pcFWBaTtkbvWAEEP0rrbH7uREcbZkIw5AdqgztgP2noXm7Yb1AVd96CiJcYhMF27jNVJOV9OkQdOizIhT1ejrpElsAMOiInGcD1mTndIPWdRU)OuEPssJHBB9KvCrMujOBHMkXgzTlgAv(UMZuNUsgby4n4zh5msf28E1Ijx3(vSY9LxUkIZzACDIsrQtWjiXIGBSTvNJVOXg4D9fh3EJz2(dtnD5qgksA0oRMFz8bhiNSMH1qd2beXQU1Mr)b5kiTL4evkeOfEaPS6ois0ubj5b6ZWMMcaHG1QkJr2rcyez6LEPwY0DQotMa0nbKlN)1kgyYOlTLOBczK(HPoZNFPQ2d5Z9uvkn3D6et8PisTSj2yUL5cnbhFVDGqI42S0GV3EIq)kK(EpMvWfkStv4SQWAhOkKHww6u9zCfKciY)jC9L1eje)B59UYIrDZQpqcPKPWF(KzvOdHb)FW3lcBxbckrRuNPevHtQcpBsrv4QQWPh39aD5tJA8v4tzq4VQkSt3Cd(2IB3uVTjSghPTZ8o25OQN39)v4dd6a6jrhXE8PvAF62XE7TN)mQdJqTqd1rvonbXgDuP7SvQEGvhn(OTg9naRJ(FQL(wd06O39Vg3ZD6GXJlmOZqXCBSq3Qod6dtK7THPop3E(qv4dvHZBSIvtgJbgMkpooNAwAqPlrTfP4WibJZD(ybeymoCV9PhhR2H)u3DZyVHjH9oV1ki3CIbOfJdu)dgnzUfgp(6ZJ36SAv4lVyQ6hzYCv4nn(v7TamU2DF5UwdUDmRb4w1l2bKom7p9UtQdNaV)nXRhK(oB4QVrgmAC6Uli0xUO(yJHCTdAwlq0jOnB46j7nkmvtJUvXavAZMB7hNw3ORxCH6J2BF0eo6zdKQWLJ1)y2WfqVLeWbU7Y2spTHsv4hWPX4wkxijnCjtN1xomqSEfgJDV0AmJ0LwP)wfh()To(YhFD3oOlv7)dBhm6GG322bxQh)RT09cT47(DoA4M9nCT3V3rZjT)MhwTH75lT8VYYnh)J))m]] )
+spec:RegisterPack( "Enhancement", 20240413, [[Hekili:nJvxVTUnp4FlNBc25So)gN0pofOPxmGbS23HUl8W2DYwXwowOYwgsYnRaf(3(OKtSLL)Qh0HTHcuKsrrsr(q(WgKp63qbjyfb90M1BUC9L(B92S(YnxDlkq9AjbfuIJFgFa(qboh(9pvKHlIj5KcL(SxzCCI2gsELigohfSVIYupuG2pUH3IcWvQmUafeuvsefvsjkiJMKqAUdrgJc(dU6x()1rKoVvhjZW54I6ibxHvuo8PuUOo6Njptzuiye8ukdcbCS(uPxPGeZZ3JvF)U)3rArsAL41WJeCjV4cA6UpLJPAZNesZ3xrsw1jidldLLegRKFKiQFCmlMYG8HIxCOIC2OcCXZ7A01B4XE54)muRYp4pQ7)OExBtEAQLjh)Qm6HmvbT4qOmJsyj6lUVkn1R5p9s4hlg)MXyglKNgQYiHeMPQiBVnbluzHkUIKBmXBVzeNsfKHspcadXqXyQTWXdIsUP2)y7PNQUWRbcbxPF4A()gv6V56lCHMMdQurJbxFGOvxsuH75qdMNIse(RT6Mc3ugVZ32avssifs9sBHNt2wbMUEEQ4JznvRENteGyzjvqvty(bMRG)cwhVAXVawVGKtjY77fEXzqslSf72c7YXeMuj45NZ9sfmWA3vRMZyhXu1yoCvmNZ0qpV24Ytq0Ll5D7w7DZkxi9PdVF67DHKeVB6JTJQUgZ9CMAXx4a4c0bWJF(I4xJzq8Hfhik5o)l0GX(Y2yWsas5zWzRAKcqKC9RkmHsUF3T9s9Z1270FVAq79583M1Jw37HHvCro8uPpt6gk1jR)qbq)C8HCCJBglEARCmiCkIFToAvDuNsoG4bwVzGMjNoEvQB8jyeWs6cJU9ZCfpsbEpdA2NC0A)hCpxGFbhYWYSLESwY8Qkxnq25mW2)UEagO3D2s0OlJ0VS2B72LMiDcRDKQYOf(RHjHfyVYy1DWOkfessVMBzUaa4eeiwyjOGxicjyxZYeB99xFnk4iwOFfWYdpKxYfkyEy0M6OMaOoIbEw6v)iSAsjjg90nWMjyjj5xl6TetD039WV)z43B(mkWChZgrKuCftbF8jZgsngf8zlrdk4u(b9JifewAT6KeedJ)ickgf8P6iN5)gCOT4(0a99MfbM2pBD8ZzvhYx8oIHjdan31zBpp)MoMUCU3EFgRzdyWuxnPPwGlRoAxDKFN5DbFAJFTDLSLpYPqEJTsn0FoA8vBngBsIJ(32tFl6rh98x)EIpF)jtr9zZQJUVxgPDIRXktJxNHZXKKVYaDM3xoK1gp6ICbErqXjjgx6HzIIz4vJUdIvGY2zOFV5Iglnxi02ic7lyEetd1xmT1zT(88g76I771L0mpgCMnjUEWuWaQDuWgN(VtS8M0WqMEidaX2TMy465FBoe9D51ri7HSpmlETfGyKvimo9MbntgiQdM)RZhAU7iyngO7eJHU9D)g7HJE)lq05AlEydbrVUBRDlCjsMU)Egs6UiZAtJXqCnhBC0g7aYor5eqBT1RD1exTwSZWEtLUWDKTvmGNTtNiNMJ4BjbDQZ8U(sB3MPo6l6XhB3UqsC6MgNvDor42SUJXVlTYZmuz6V6LZ)lXT7O8pW2hUSg)xy7dxELpW2hlGHF3TwtJqh9BkPo6T3gYr5CI73yI1r9)wtwEO71lTIZ5Fq)f]] )
 
 
 spec:RegisterPackSelector( "elemental", "Elemental / Resto DPS (IV)", "|T136048:0|t Elemental",
@@ -2569,7 +2571,7 @@ spec:RegisterPackSelector( "elemental", "Elemental / Resto DPS (IV)", "|T136048:
         return tab1 > max( tab2, tab3 )
     end )
 
-spec:RegisterPackSelector( "enhancement", "Enhancement (IV)", "|T136051:0|t Enhancement",
+spec:RegisterPackSelector( "enhancement", "Enhancement", "|T136051:0|t Enhancement",
     "If you have spent more points in |T136051:0|t Enhancement than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
