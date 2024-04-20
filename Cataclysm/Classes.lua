@@ -1,7 +1,7 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-if not Hekili.IsCata() then return end
+if not Hekili.IsCataclysm()) then return end
 
 local class, state = Hekili.Class, Hekili.State
 

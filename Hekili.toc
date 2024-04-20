@@ -2,7 +2,7 @@
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
-## X-Flavor: Cata
+## X-Flavor: Cataclysm
 ## Notes: Priority helper for many DPS and tanking specializations, based on SimulationCraft action lists.
 ## SavedVariables: HekiliDB
 ## OptionalDeps: AddOnSkins, ButtonForge, ConsolePort, ElvUI, LibDualSpec-1.0, Masque, WeakAuras
@@ -22,17 +22,17 @@ Events.lua
 
 Classes.lua
 
-Cata\Classes.lua
-Cata\DeathKnight.lua
-Cata\Druid.lua
-Cata\Hunter.lua
-Cata\Mage.lua
-Cata\Paladin.lua
-Cata\Priest.lua
-Cata\Rogue.lua
-Cata\Shaman.lua
-Cata\Warlock.lua
-Cata\Warrior.lua
+Cataclysm\Classes.lua
+Cataclysm\DeathKnight.lua
+Cataclysm\Druid.lua
+Cataclysm\Hunter.lua
+Cataclysm\Mage.lua
+Cataclysm\Paladin.lua
+Cataclysm\Priest.lua
+Cataclysm\Rogue.lua
+Cataclysm\Shaman.lua
+Cataclysm\Warlock.lua
+Cataclysm\Warrior.lua
 
 Targets.lua
 Options.lua
