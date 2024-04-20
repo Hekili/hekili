@@ -70,7 +70,7 @@ Libs/LibCompress
 Libs/LibDeflate
 Libs/LibCustomGlow-1.0/
 Libs/LibDataBroker-1-1
-Libs/LibDualSpec-1.0
+#FIXME:Libs/LibDualSpec-1.0
 Libs/LibItemBuffs-1.0
 Libs/LibNameplateRegistry-1.0/
 Libs/LibRangeCheck-2.0
