@@ -2494,7 +2494,7 @@ do
         b.Caption:ClearAllPoints()
         b.Caption:SetPoint( capAnchor, b, capAnchor, conf.captions.x or 0, conf.captions.y or 0 )
         b.Caption:SetHeight( b:GetHeight() / 2 )
-        b.Caption:SetJustifyV( capAnchor:match("RIGHT") and "RIGHT" or ( capAnchor:match( "LEFT" ) and "LEFT" or "CENTER" ) )
+        b.Caption:SetJustifyV( capAnchor:match("TOP") and "TOP" or ( capAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" ) )
         b.Caption:SetJustifyH( conf.captions.align or "CENTER" )
         b.Caption:SetTextColor( unpack( conf.captions.color ) )
         b.Caption:SetWordWrap( false )
