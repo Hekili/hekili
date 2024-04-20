@@ -1770,7 +1770,7 @@ all:RegisterAuras( {
 
     -- Increases stats by $s1%.
     blessing_of_kings = {
-        id = 20217,
+        id = 79063,
         duration = 600,
         max_stack = 1,
         shared = "player"

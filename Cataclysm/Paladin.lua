@@ -737,7 +737,7 @@ spec:RegisterAbilities( {
 
     -- Places a Blessing on the friendly target, increasing total stats by 10% for 10 min.  Players may only have one Blessing on them per Paladin at any one time.
     blessing_of_kings = {
-        id = 20217,
+        id = 79063,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
