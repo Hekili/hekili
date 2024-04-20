@@ -1,8 +1,8 @@
-## Interface: 30403
+## Interface: 40400
 ## Version: @project-version@
 ## Title: Hekili
 ## Author: Hekili
-## X-Flavor: Wrath
+## X-Flavor: Cata
 ## Notes: Priority helper for many DPS and tanking specializations, based on SimulationCraft action lists.
 ## SavedVariables: HekiliDB
 ## OptionalDeps: AddOnSkins, ButtonForge, ConsolePort, ElvUI, LibDualSpec-1.0, Masque, WeakAuras
@@ -22,17 +22,17 @@ Events.lua
 
 Classes.lua
 
-Wrath\Classes.lua
-Wrath\DeathKnight.lua
-Wrath\Druid.lua
-Wrath\Hunter.lua
-Wrath\Mage.lua
-Wrath\Paladin.lua
-Wrath\Priest.lua
-Wrath\Rogue.lua
-Wrath\Shaman.lua
-Wrath\Warlock.lua
-Wrath\Warrior.lua
+Cata\Classes.lua
+Cata\DeathKnight.lua
+Cata\Druid.lua
+Cata\Hunter.lua
+Cata\Mage.lua
+Cata\Paladin.lua
+Cata\Priest.lua
+Cata\Rogue.lua
+Cata\Shaman.lua
+Cata\Warlock.lua
+Cata\Warrior.lua
 
 Targets.lua
 Options.lua

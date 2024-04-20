@@ -26,7 +26,7 @@ local GetSpecializationInfo = _G.GetSpecializationInfo or function()
     return id, baseName, name
 end
 local HasVehicleActionBar, HasOverrideActionBar, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, UnitHasVehicleUI, UnitOnTaxi
-local IsInPetBattle = Hekili.IsWrath() and function() return false end or C_PetBattles.IsInBattle
+local IsInPetBattle = Hekili.IsClassic() and function() return false end or C_PetBattles.IsInBattle
 local IsSpellOverlayed = _G.IsSpellOverlayed or function() return false end
 
 local Masque, MasqueGroup

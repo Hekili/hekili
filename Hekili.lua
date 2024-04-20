@@ -22,8 +22,11 @@ end
 Hekili.IsWrath = function()
     return Hekili.Flavor == "Wrath"
 end
+Hekili.IsCata = function()
+    return Hekili.Flavor == "Cata"
+end
 Hekili.IsClassic = function()
-    return Hekili.IsWrath()
+    return Hekili.IsWrath() or Hekili.IsCata()
 end
 Hekili.IsDragonflight = function()
     return select( 4, GetBuildInfo() ) >= 100000

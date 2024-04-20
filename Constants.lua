@@ -258,7 +258,7 @@ ns.FrameStratas = {
 }
 
 
-if Hekili.IsWrath() then
+if Hekili.IsClassic then
     ns.WrathTalentToSpellID = {
         [23] = { 11083, 12351 },
         [24] = { 11094, 13043 },
