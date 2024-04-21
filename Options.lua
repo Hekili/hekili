@@ -8650,9 +8650,9 @@ do
 
                         insert( talents, { name = key, talent = talentID, ranks = ranks } )
 
-                        local tToS = ns.WrathTalentToSpellID[ talentID ]
+                        local tToS = ns.TalentToSpellID[ talentID ]
 
-                        for rank, spell in ipairs( ns.WrathTalentToSpellID[ talentID ] ) do
+                        for rank, spell in ipairs( tToS ) do
                             EmbedSpellData( spell, key, true, rank )
                         end
                     end
