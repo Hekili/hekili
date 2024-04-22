@@ -8859,12 +8859,12 @@ do
 
                                 for i, tal in ipairs( talents ) do
                                     local fmt = "%-" .. maxlength .. "s = { %5d, %d"
-                                    for i = 1, #ns.WrathTalentToSpellID[ tal.talent ] do
+                                    for i = 1, #ns.TalentToSpellID[ tal.talent ] do
                                         fmt = fmt .. ", %5d"
                                     end
                                     fmt = fmt .. " },"
 
-                                    append( format( fmt, tal.name, tal.talent, tal.ranks, unpack( ns.WrathTalentToSpellID[ tal.talent ] ) ) )
+                                    append( format( fmt, tal.name, tal.talent, tal.ranks, unpack( ns.TalentToSpellID[ tal.talent ] ) ) )
                                 end
                             else
 
