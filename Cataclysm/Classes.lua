@@ -87,8 +87,8 @@ function ns.updateGlyphs()
         glyph.rank = 0
     end
 
-    for i = 1, 6 do
-        local enabled, rank, spellID = GetGlyphSocketInfo( i )
+    for i = 1, 9 do
+        local enabled, rank, index, spellID, icon = GetGlyphSocketInfo( i )
 
         if enabled and spellID then
             local name = class.glyphs[ spellID ]
