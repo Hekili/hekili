@@ -737,7 +737,7 @@ spec:RegisterTalents( {
     starlight_wrath = {9964, 3, 16816, 16814, 16815},
     sunfire = {12150, 1, 93401},
     typhoon = {10012, 1, 50516},
-    
+
     --feral
     berserk = {9270, 1, 50334},
     blood_in_the_water = {9264, 2, 80318, 80319},
@@ -761,7 +761,7 @@ spec:RegisterTalents( {
     stampede = {8301, 2, 78892, 78893},
     survival_instincts = {9236, 1, 61336},
     thick_hide = {8293, 3, 16929, 16931, 16930},
-    
+
     --restoration
     blessing_of_the_grove = {9665, 2, 78784, 78785},
     efflorescence = {9357, 3, 81275, 34151, 81274},
@@ -795,8 +795,8 @@ spec:RegisterGlyphs( {
     [54815] = "bloodletting",--Each time you Shred or Mangle in Cat Form, the duration of your Rip on the target is extended by 2 sec, up to amaximum of 6 sec.
     [54830] = "insect_swarm",--Increases the damage of your Insect Swarm ability by 30%.
     [94382] = "lacerate",--Increases the critical strike chance of your Lacerate ability by 5%.
-    [54826] = "lifebloom"--Increases the critical effect chance of your Lifebloom by 10%.
-    [54813] = "mangle"--Increases the damage done by Mangle by 10%.
+    [54826] = "lifebloom",--Increases the critical effect chance of your Lifebloom by 10%.
+    [54813] = "mangle",--Increases the damage done by Mangle by 10%.
     [54829] = "moonfire",--Increases the periodic damage of your Moonfire ability by 20%.
     [54743] = "regrowth",--Your Regrowth heal-over-time will automatically refresh its duration on targets at or below 50% health.
     [54754] = "rejuvenation",--Increases the healing done by your Rejuvenation by 10%.
@@ -828,13 +828,13 @@ spec:RegisterGlyphs( {
     [57862] = "thorns",--Reduces the cooldown of your Thorns spell by 20 sec.
     [54756] = "wild_growth",--Wild Growth can affect 1 additional target, but its cooldown is increased by 2 sec.
     --Minor
-    [57856] = "aquatic_form"--Increases your swim speed by 50% while in Aquatic Form.
-    [57858] = "challenging_roar"--Reduces the cooldown of your Challenging Roar ability by 30 sec.
-    [59219] = "dash"--Reduces the cooldown of your Dash ability by 20%.
-    [57855] = "mark_of_the_wild"--Mana cost of your Mark of the Wild reduced by 50%.
-    [95212] = "the_treant"--Your Tree of Life Form now resembles a Treant.
-    [62135] = "typhoon"--Reduces the cost of your Typhoon spell by 8% and increases its radius by 10 yards, but it no longer knocks enemies back.
-    [57857] = "unburdened_rebirth"--Your Rebirth spell no longer requires a reagent.
+    [57856] = "aquatic_form",--Increases your swim speed by 50% while in Aquatic Form.
+    [57858] = "challenging_roar",--Reduces the cooldown of your Challenging Roar ability by 30 sec.
+    [59219] = "dash",--Reduces the cooldown of your Dash ability by 20%.
+    [57855] = "mark_of_the_wild",--Mana cost of your Mark of the Wild reduced by 50%.
+    [95212] = "the_treant",--Your Tree of Life Form now resembles a Treant.
+    [62135] = "typhoon",--Reduces the cost of your Typhoon spell by 8% and increases its radius by 10 yards, but it no longer knocks enemies back.
+    [57857] = "unburdened_rebirth",--Your Rebirth spell no longer requires a reagent.
 } )
 
 
