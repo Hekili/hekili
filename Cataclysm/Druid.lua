@@ -121,7 +121,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
         end
     end
 
-    if state.glyph.shred.enabled then
+    if state.glyph.bloodletting.enabled then
         if attack_events[subtype] then
             -- Track rip time extension from Glyph of Rip
             local rip = FindUnitDebuffByID( "target", 49800 )
@@ -234,14 +234,14 @@ spec:RegisterStateExpr("rage_gain", function()
 end)
 
 spec:RegisterStateExpr("rip_canextend", function()
-    return debuff.rip.up and glyph.shred.enabled and rip_tracker[target.unit].extension < 6
+    return debuff.rip.up and glyph.bloodletting.enabled and rip_tracker[target.unit].extension < 6
 end)
 
 spec:RegisterStateExpr("rip_maxremains", function()
     if debuff.rip.remains == 0 then
         return 0
     else
-        return debuff.rip.remains + ((debuff.rip.up and glyph.shred.enabled and (6 - rip_tracker[target.unit].extension)) or 0)
+        return debuff.rip.remains + ((debuff.rip.up and glyph.bloodletting.enabled and (6 - rip_tracker[target.unit].extension)) or 0)
     end
 end)
 
@@ -679,7 +679,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
     enrage = {
         aura = "enrage",
 
-        last = function ()
+        last = function()
             local app = state.buff.enrage.applied
             local t = state.query_time
 
@@ -694,7 +694,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         swing = "mainhand",
         aura = "dire_bear_form",
 
-        last = function ()
+        last = function()
             local swing = state.combat == 0 and state.now or state.swings.mainhand
             local t = state.query_time
 
@@ -703,7 +703,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         interval = "mainhand_speed",
 
-        stop = function () return state.swings.mainhand == 0 end,
+        stop = function() return state.swings.mainhand == 0 end,
         value = function( now )
             return state.buff.maul.expires < now and rage_amount() or 0
         end,
@@ -726,6 +726,7 @@ spec:RegisterTalents( {
     gale_winds = {1925, 2, 48514, 48488},
     genesis = {11284, 3, 57812, 57810, 57811},
     lunar_shower = {10008, 3, 33605, 33603, 33604},
+    moonfury = {792, 1, 16913},
     moonglow = {9968, 3, 16846, 16847, 16845},
     moonkin_form = {11278, 1, 24858},
     natures_grace = {9974, 3, 61346, 61345, 16880},
@@ -1096,8 +1097,15 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 34153, 34152, 34151 },
     },
+    mark_of_the_wild = {
+        id = 79061,
+        duration = 6000,
+        max_stack = 1,
+        shared = "player",
+        copy = { 1126, 5232, 5234, 6756, 8907, 9884, 9885, 16878, 24752, 26990, 39233, 48469 },
+    },
     maul = {
-        duration = function () return swings.mainhand_speed end,
+        duration = function() return swings.mainhand_speed end,
         max_stack = 1,
     },
     -- $s1 Arcane damage every $t1 seconds.
@@ -1420,1478 +1428,1969 @@ end )
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- Attempts to cure 1 poison effect on the target, and 1 more poison effect every 3 seconds for 12 sec.
-    abolish_poison = {
-        id = 2893,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.13,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136068,
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Shapeshift into aquatic form, increasing swim speed by 50% and allowing the druid to breathe underwater.  Also protects the caster from Polymorph effects.    The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
-    aquatic_form = {
-        id = 1066,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.13,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 132112,
-
-        handler = function ()
-            swap_form( "aquatic_form" )
-        end,
-    },
-
-
-    -- The druid's skin becomes as tough as bark.  All damage taken is reduced by 20%.  While protected, damaging attacks will not cause spellcasting delays.  This spell is usable while stunned, frozen, incapacitated, feared or asleep.  Usable in all forms.  Lasts 12 sec.
-    barkskin = {
-        id = 22812,
-        cast = 0,
-        cooldown = function() return 60 - ((set_bonus.tier9feral_4pc == 1 and 12) or 0) end,
-        gcd = "off",
-
-        startsCombat = true,
-        texture = 136097,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Stuns the target for 4 sec and interrupts non-player spellcasting for 3 sec.
-    bash = {
-        id = 8983,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 10 end,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132114,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-    -- When activated, this ability causes your Mangle (Bear) ability to hit up to 3 targets and have no cooldown, and reduces the energy cost of all your Cat Form abilities by 50%.  Lasts 15 sec.  You cannot use Tiger's Fury while Berserk is active.     Clears the effect of Fear and makes you immune to Fear for the duration.
-    berserk = {
-        id = 50334,
-        cast = 0,
-        cooldown = 180,
-        gcd = "totem",
-
-        spend = 0,
-        spendType = "energy",
-
-        talent = "berserk",
-        startsCombat = true,
-        texture = 236149,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "berserk" )
-        end,
-    },
-
-
-    -- Shapeshift into cat form, increasing melee attack power by 160 plus Agility.  Also protects the caster from Polymorph effects and allows the use of various cat abilities.    The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
-    cat_form = {
-        id = 768,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return 0.35 * ((talent.king_of_the_jungle.rank > 0 and 0.60) or 1) * ((talent.natural_shapeshifter.rank > 0 and 0.30) or 1) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 132115,
-
-        handler = function ()
-            swap_form( "cat_form" )
-        end,
-    },
-
-
-    -- Forces all nearby enemies within 10 yards to focus attacks on you for 6 sec.
-    challenging_roar = {
-        id = 5209,
-        cast = 0,
-        cooldown = function() return glyph.challenging_roar.enabled and 150 or 180 end,
-        gcd = "spell",
-
-        spend = 15,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132117,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Claw the enemy, causing 370 additional damage.  Awards 1 combo point.
-    claw = {
-        id = 48570,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function() return (buff.clearcasting.up and 0) or (((glyph.claw.enabled and 40) or 45) * ((buff.berserk.up and 0.5) or 1)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132140,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            gain( 1, "combo_points" )
-        end,
-    },
-
-
-    -- Cower, causing no damage but lowering your threat a large amount, making the enemy less likely to attack you.
-    cower = {
-        id = 48575,
-        cast = 0,
-        cooldown = 10,
-        gcd = "totem",
-
-        spend = function() return 20 * ((buff.berserk.up and 0.5) or 1) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132118,
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Cures 1 poison effect on the target.
-    cure_poison = {
-        id = 8946,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.13,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136067,
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Tosses the enemy target into the air, preventing all action but making them invulnerable for up to 6 sec.  Only one target can be affected by your Cyclone at a time.
-    cyclone = {
-        id = 33786,
-        cast = 1.5,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136022,
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Increases movement speed by 70% while in Cat Form for 15 sec.  Does not break prowling.
-    dash = {
-        id = 33357,
-        cast = 0,
-        cooldown = function() return 180 * ( glyph.dash.enabled and 0.8 or 1 ) end,
-        gcd = "off",
-
-        spend = 0,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132120,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    -- The druid roars, decreasing nearby enemies' melee attack power by 411.  Lasts 30 sec.
-    demoralizing_roar = {
-        id = 48560,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 10 end,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132121,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            applyDebuff( "target", "demoralizing_roar" )
-        end,
-    },
-
-
-    -- Shapeshift into dire bear form, increasing melee attack power, armor contribution from cloth and leather items, and Stamina. Also protects the caster from Polymorph effects and allows the use of various bear abilities. The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
-    dire_bear_form = {
-        id = 9634,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return 0.35 * ( talent.king_of_the_jungle.enabled and 0.6 or 1 ) * ( talent.natural_shapeshifter.enabled and 0.3 or 1 ) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 132276,
-
-        handler = function ()
-            swap_form( "dire_bear_form" )
-        end,
-
-        copy = { 5487, "bear_form" }
-    },
-
-
-    -- Generates 20 rage, and then generates an additional 10 rage over 10 sec, but reduces base armor by 27% in Bear Form and 16% in Dire Bear Form.
-    enrage = {
-        id = 5229,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-
-        spend = 0,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132126,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            gain(20, "rage" )
-            applyBuff( "enrage" )
-        end,
-    },
-
-    -- Roots the target in place and causes 20 Nature damage over 12 sec.  Damage caused may interrupt the effect.
-    entangling_roots = {
-        id = 339,
-        cast = 1.5,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.07 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136100,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            applyDebuff( "target", "entangling_roots", 27 )
-        end,
-
-        copy = { 1062, 5195, 5196, 9852, 9853, 26989, 53308 },
-    },
-
-
-    -- Decrease the armor of the target by 5% for 5 min.  While affected, the target cannot stealth or turn invisible.
-    faerie_fire = {
-        id = 770,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        cycle = "faerie_fire",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136033,
-
-        handler = function ()
-            removeDebuff( "armor_reduction" )
-            applyDebuff( "target", "faerie_fire", 300 )
-        end,
-    },
-
-
-    -- Decrease the armor of the target by 5% for 5 min.  While affected, the target cannot stealth or turn invisible.  Deals 26 damage and additional threat when used in Bear Form or Dire Bear Form.
-    faerie_fire_feral = {
-        id = 16857,
-        cast = 0,
-        cooldown = 6,
-        gcd = "totem",
-
-        spend = 0,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 136033,
-
-        handler = function ()
-            removeDebuff( "armor_reduction" )
-            applyDebuff( "target", "faerie_fire_feral", 300 )
-            if glyph.omen_of_clarity.enabled then
-                applyBuff("clearcasting")
-            end
-        end,
-    },
-
-
-    -- Finishing move that causes damage per combo point and converts each extra point of energy (up to a maximum of 30 extra energy) into 9.8 additional damage.  Damage is increased by your attack power.     1 point  : 422-562 damage     2 points: 724-864 damage     3 points: 1025-1165 damage     4 points: 1327-1467 damage     5 points: 1628-1768 damage
-    ferocious_bite = {
-        id = 48577,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function() return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132127,
-
-        usable = function() return combo_points.current > 0, "requires combo_points" end,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            if combo_points.current == 5 then
-                applyBuff("predators_swiftness")
-            end
-            set_last_finisher_cp(combo_points.current)
-            spend( combo_points.current, "combo_points" )
-            spend( min( 30, energy.current ), "energy" )
-        end,
-    },
-
-
-    -- Summons 3 treants to attack enemy targets for 30 sec.
-    force_of_nature = {
-        id = 33831,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.12 end,
-        spendType = "mana",
-
-        talent = "force_of_nature",
-        startsCombat = true,
-        texture = 132129,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Converts up to 10 rage per second into health for 10 sec.  Each point of rage is converted into 0.3% of max health.
-    frenzied_regeneration = {
-        id = 22842,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-
-        spend = 0,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132091,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "frenzied_regeneration" )
-        end,
-    },
-
-
-    -- Gives the Gift of the Wild to all party and raid members, increasing armor by 240, all attributes by 10 and all resistances by 15 for 1 |4hour:hrs;.
-    gift_of_the_wild = {
-        id = 21849,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return glyph.wild.enabled and 0.32 or 0.64 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136038,
-
-        handler = function ()
-            applyBuff( "gift_of_the_wild" )
-            swap_form( "" )
-        end,
-
-        copy = { 21850, 26991, 48470 },
-    },
-
-
-    -- Taunts the target to attack you, but has no effect if the target is already attacking you.
-    growl = {
-        id = 6795,
-        cast = 0,
-        cooldown = function() return 8 - ((set_bonus.tier9feral_2pc == 1 and 2) or 0) end,
-        gcd = "off",
-
-        spend = 0,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132270,
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Heals a friendly target for 40 to 55.
-    healing_touch = {
-        id = 5185,
-        cast = function() return glyph.healing_touch.enabled and 1.5 or 3 end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.17 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136041,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-
-        copy = { 5186, 5187, 5188, 5189, 6778, 8903, 9758, 9888, 9889, 25297, 26978, 26979, 48377, 48378 },
-    },
-
-
-    -- Forces the enemy target to sleep for up to 20 sec.  Any damage will awaken the target.  Only one target can be forced to hibernate at a time.  Only works on Beasts and Dragonkin.
-    hibernate = {
-        id = 2637,
-        cast = 1.5,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.07,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136090,
-
-        handler = function ()
-        end,
-
-        copy = { 18657, 18658 },
-    },
-
-
-    -- Creates a violent storm in the target area causing 101 Nature damage to enemies every 1 sec, and increasing the time between attacks of enemies by 20%.  Lasts 10 sec.  Druid must channel to maintain the spell.
-    hurricane = {
-        id = 16914,
-        cast = function() return 10 * haste end,
-        channeled = true,
-        breakable = true,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.81 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136018,
-
-        aura = "hurricane",
-        tick_time = function () return class.auras.hurricane.tick_time end,
-
-        start = function ()
-            applyDebuff( "target", "hurricane" )
-        end,
-
-        tick = function ()
-        end,
-
-        breakchannel = function ()
-            removeDebuff( "target", "hurricane" )
-        end,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-
-        copy = { 17401, 17402, 27012, 48467 },
-    },
-
-
-    -- Causes the target to regenerate mana equal to 225% of the casting Druid's base mana pool over 10 sec.
-    innervate = {
-        id = 29166,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-
-        startsCombat = true,
-        texture = 136048,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "innervate" )
-        end,
-    },
-
-
-    -- The enemy target is swarmed by insects, decreasing their chance to hit by 3% and causing 144 Nature damage over 12 sec.
-    insect_swarm = {
-        id = 5570,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.08 end,
-        spendType = "mana",
-
-        talent = "insect_swarm",
-        startsCombat = true,
-        texture = 136045,
-
-        handler = function ()
-            applyDebuff( "target", "insect_swarm" )
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Lacerates the enemy target, dealing 88 damage and making them bleed for 320 damage over 15 sec and causing a high amount of threat.  Damage increased by attack power.  This effect stacks up to 5 times on the same target.
-    lacerate = {
-        id = 48568,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or (15 - talent.shredding_attacks.rank) end,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132131,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            applyDebuff( "target", "lacerate", 15, min( 5, debuff.lacerate.stack + 1 ) )
-        end,
-    },
-
-
-    -- Heals the target for 224 over 7 sec.  When Lifebloom completes its duration or is dispelled, the target instantly heals themself for 480 and the Druid regains half the cost of the spell.  This effect can stack up to 3 times on the same target.
-    lifebloom = {
-        id = 33763,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.28 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 134206,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-
-        copy = { 48450, 48451 },
-    },
-
-    -- Finishing move that causes damage and stuns the target.  Non-player victim spellcasting is also interrupted for 3 sec.  Causes more damage and lasts longer per combo point:     1 point  : 249-250 damage, 1 sec     2 points: 407-408 damage, 2 sec     3 points: 565-566 damage, 3 sec     4 points: 723-724 damage, 4 sec     5 points: 881-882 damage, 5 sec
-    maim = {
-        id = 49802,
-        cast = 0,
-        cooldown = 10,
-        gcd = "totem",
-
-        spend = function() return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132134,
-
-        usable = function() return combo_points.current > 0, "requires combo_points" end,
-
-        handler = function ()
-            applyDebuff( "target", "maim", combo_points.current )
-            removeBuff( "clearcasting" )
-            if combo_points.current == 5 then
-                applyBuff("predators_swiftness")
-            end
-            set_last_finisher_cp(combo_points.current)
-            spend( combo_points.current, "combo_points" )
-        end,
-    },
-
-
-    -- Mangle (Bear)
-    mangle_bear = {
-        id = 33878,
-        cast = 0,
-        cooldown = function() return buff.berserk.up and 1.5 or 6 end,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or (20 - talent.ferocity.rank) end,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132135,
-
-        handler = function()
-            removeDebuff( "mangle" )
-            applyDebuff( "target", "mangle_bear", 60 )
-            removeBuff( "clearcasting" )
-        end,
-
-        copy = { 33878, 33986, 33987, 48563, 48564 }
-    },
-
-
-    -- Mangle (Cat)
-    mangle_cat = {
-        id = 33876,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function () return (buff.clearcasting.up and 0) or (40 * ((buff.berserk.up and 0.5) or 1)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132135,
-
-        handler = function()
-            removeDebuff( "target", "mangle" )
-            applyDebuff( "target", "mangle_cat" )
-            removeBuff( "clearcasting" )
-            gain( 1, "combo_points" )
-        end,
-
-        copy = { 33982, 33983, 48565, 48566 }
-    },
-
-
-    -- A strong attack that increases melee damage and causes a high amount of threat. Effects which increase Bleed damage also increase Maul damage.
-    maul = {
-        id = 48480,
-        cast = 0,
-        cooldown = 0,
-        gcd = "off",
-
-        spend = function()
-            return (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1))
-        end,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 132136,
-
-        nobuff = "maul",
-
-        usable = function() return not buff.maul.up end,
-        readyTime = function() return buff.maul.expires end,
-
-        handler = function( rank )
-            gain( (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)), "rage" )
-            start_maul()
-        end,
-
-        copy = { 6807, 6808, 6809, 8972, 9745, 9880, 9881, 26996, 48479 }
-    },
-
-
-    -- Increases the friendly target's armor by 25 for 30 min.
-    mark_of_the_wild = {
-        id = 1126,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return glyph.wild.enabled and 0.12 or 0.24 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136078,
-
-        handler = function ()
-            applyBuff( "mark_of_the_wild" )
-        end,
-
-        copy = { 5232, 6756, 5234, 8907, 9884, 9885, 26990, 48469 },
-    },
-
-
-    -- Burns the enemy for 9 to 12 Arcane damage and then an additional 12 Arcane damage over 9 sec.
-    moonfire = {
-        id = 8921,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0 or 0.21) * (1 - talent.moonglow.rank * 0.03) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136096,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            applyDebuff( "target", "moonfire" )
-        end,
-
-        copy = { 8924, 8925, 8926, 8927, 8928, 8929, 9833, 9834, 9835, 26987, 26988, 48462, 48463 },
-    },
-
-
-    -- Shapeshift into Moonkin Form.  While in this form the armor contribution from items is increased by 370%, damage taken while stunned is reduced by 15%, and all party and raid members within 100 yards have their spell critical chance increased by 5%.  Single target spell critical strikes in this form instantly regenerate 2% of your total mana.  The Moonkin can not cast healing or resurrection spells while shapeshifted.    The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
+        --Increases your attack power by 25%. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from World of Warcraft: Cataclysm.
+        aggression = {
+            id = 84735,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132138,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=101690/greater-heal"
+            end,
+    
+        },
+        --Shapeshift into aquatic form, increasing swim speed by 50% and allowing the Druid to breathe underwater.  Also protects the caster from Polymorph effects.The act of shapeshifting frees the caster of movement slowing effects.
+        aquatic_form = {
+            id = 1066,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.08, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132112,
+    
+            --fix:
+            
+            handler = function()
+                swap_form( "aquatic_form" )
+            end,
+    
+        },
+        --The Druid's skin becomes as tough as bark.  All damage taken is reduced by 20%.  While protected, damaging attacks will not cause spellcasting delays.  This spell is usable while stunned, frozen, incapacitated, feared or asleep.  Usable in all forms.  Lasts 12 sec.
+        barkskin = {
+            id = 22812,
+            cast = 0,
+            cooldown = function() return 60 - ((set_bonus.tier9feral_4pc == 1 and 12) or 0) end,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 136097,
+    
+            toggle = "cooldowns",
+            
+            handler = function()
+            end,
+    
+        },
+        --Stuns the target for 4 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from Classic World of Warcraft.
+        bash = {
+            id = 5211,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 10 end, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 132114,
+            debuff = "casting",
+            readyTime = state.timeToInterrupt,
+            toggle = "interrupts",
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                interrupt()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Shapeshift into Bear Form, increasing armor contribution from cloth and leather items by 120% and Stamina by 20%.  Significantly increases threat generation, causes Agility to increase attack power, and also protects the caster from Polymorph effects and allows the use of various bear abilities.The act of shapeshifting frees the caster of movement slowing effects.
+        bear_form = {
+            id = 5487,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.05, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132276,
+    
+            --fix:
+            
+            handler = function()
+                swap_form( "bear_form" )
+            end,
+    
+        },
+        --Your Lacerate periodic damage has a 50% chance to refresh the cooldown of your Mangle (Bear) ability and make it cost no rage.  In addition, when activated this ability causes your Mangle (Bear) ability to hit up to 3 targets and have no cooldown, and reduces the energy cost of all your Cat Form abilities by 50%.  Lasts 15 sec.  You cannot use Tiger's Fury while Berserk is active.
+        berserk = {
+            id = 50334,
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+
+            talent = "berserk",
+            startsCombat = true,
+            texture = 236149,
+
+            toggle = "cooldowns",
+
+            handler = function()
+                applyBuff( "berserk" )
+            end,
+
+        },
+        --When you Ferocious Bite a target at or below 25% health, you have a chance to instantly refresh the duration of your Rip on the target. Requires Druid.
+        blood_in_the_water = {
+            id = 80863,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 237347,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=80863/blood-in-the-water"
+            end,
+    
+        },
+        --Shapeshift into Cat Form, causing agility to increase attack power.  Also protects the caster from Polymorph effects and allows the use of various cat abilities.The act of shapeshifting frees the caster of movement slowing effects.
+        cat_form = {
+            id = 768,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.05, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132115,
+    
+            --fix:
+            
+            handler = function()
+                swap_form( "cat_form" )
+            end,
+    
+        },
+        --Reduces the pushback suffered from damaging attacks while casting Wrath, Starfire, Entangling Roots, Hurricane, Typhoon, Hibernate, Cyclone, and Starfire by 70%.
+        celestial_focus = {
+            id = 84738,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 135728,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=45283/natural-perfection"
+            end,
+    
+        },
+        --Forces all nearby enemies within 10 yards to focus attacks on you for 6 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        challenging_roar = {
+            id = 5209,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+    
+            spend = 15, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 132117,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+            end,
+    
+        },
+        --Claw the enemy, causing 77% of normal damage plus 637.  Awards 1 combo point. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        claw = {
+            id = 1082,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = 40, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132140,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                gain( 1, "combo_points" )
+            end,
+    
+        },
+        --Cower, causing no damage but lowering your threat by 10%, making the enemy less likely to attack you. In the Feral Abilities category. Requires Druid.
+        cower = {
+            id = 8998,
+            cast = 0,
+            cooldown = 10,
+            gcd = "totem",
+    
+            spend = function() return 20 * ((buff.berserk.up and 0.5) or 1) end, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132118,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                --"/cata/spell=8998/cower"
+            end,
+    
+        },
+        --Tosses the enemy target into the air, preventing all action but making them invulnerable for up to 6 sec.  Only one target can be affected by your Cyclone at a time.
+        cyclone = {
+            id = 33786,
+            cast = 1.7,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.08, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136022,
+    
+            --fix:
+            
+            handler = function()
+            end,
+    
+        },
+        --Increases movement speed by 70% while in Cat Form for 15 sec.  Does not break prowling. In the Feral Abilities category. Requires Druid. A spell.
+        dash = {
+            id = 1850,
+            cast = 0,
+            cooldown = function() return 180 * ( glyph.dash.enabled and 0.8 or 1 ) end,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132120,
+
+            toggle = "cooldowns",
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=1850/dash"
+            end,
+    
+        },
+        --The Druid roars, reducing the physical damage caused by all enemies within 10 yards by 10% for 30 sec. In the Feral Abilities category. A spell.
+        demoralizing_roar = {
+            id = 99,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 10, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 132121,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                applyDebuff( "target", "demoralizing_roar", 30 )
+            end,
+    
+        },
+        --Allows the druid to clear all roots when Shapeshifting in addition to snares. In the Restoration Abilities category. Learn how to use this in our class guide.
+        disentanglement = {
+            id = 96429,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132158,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=100855/tranquility"
+            end,
+    
+        },
+        --In the Balance Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from World of Warcraft: Cataclysm. Always up to date.
+        eclipse_mastery_driver_passive = {
+            id = 79577,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132347,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=79577/eclipse-mastery-driver-passive"
+            end,
+    
+        },
+        --Generates 20 Rage, and then generates an additional 10 Rage over 10 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        enrage = {
+            id = 5229,
+            cast = 0,
+            cooldown = 60,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132126,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                gain(20, "rage" )
+                applyBuff( "enrage" )
+            end,
+    
+        },
+        --Roots the target in place for 30 sec.  Damage caused may interrupt the effect.Tree of LifeTree of Life: Instant cast. In the Balance Abilities category.
+        entangling_roots = {
+            id = 339,
+            cast = 1.7,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.07, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136100,
+    
+            --fix:
+            
+            handler = function()
+                applyDebuff( "target", "entangling_roots", 30 )
+            end,
+    
+        },
+        --Decreases the armor of the target by 4% for 5 min.  While affected, the target cannot stealth or turn invisible.  Stacks up to 3 times. Requires Druid.
+        faerie_fire = {
+            id = 770,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.08, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136033,
+    
+            
+            handler = function()
+                removeDebuff( "armor_reduction" )
+                applyDebuff( "target", "faerie_fire", 300 )
+            end,
+    
+        },
+        --Decreases the armor of the target by 4% for 5 min.  While affected, the target cannot stealth or turn invisible.  Stacks up to 3 times.  Deals 2950 damage and additional threat when used in Bear Form.
+        faerie_fire_feral = {
+            id = 16857,
+            cast = 0,
+            cooldown = 6,
+            gcd = "totem",
+    
+            
+    
+            startsCombat = true,
+            texture = 136033,
+    
+            --fix:
+            stance = "Cat Form, Bear Form",
+            handler = function()
+                removeDebuff( "armor_reduction" )
+                applyDebuff( "target", "faerie_fire_feral", 300 )
+                if glyph.omen_of_clarity.enabled then
+                    applyBuff("clearcasting")
+                end
+            end,
+    
+        },
+        --Reduces damage from falling. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from Classic World of Warcraft.
+        feline_grace = {
+            id = 20719,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132914,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                --"/cata/spell=20719/feline-grace"
+            end,
+    
+        },
+        --Causes you to leap behind an enemy, dazing them for 3 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        feral_charge_cat = {
+            id = 49376,
+            cast = 0,
+            cooldown = 30,
+            gcd = "off",
+    
+            spend = 10, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 304501,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                --"/cata/spell=50259/dazed"
+            end,
+    
+        },
+        --Causes you to charge an enemy, immobilizing them for 4 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        feral_charge_bear = {
+            id = 16979,
+            cast = 0,
+            cooldown = 15,
+            gcd = "off",
+    
+            spend = 5, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 132183,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                --"/cata/spell=45334/feral-charge-effect"
+            end,
+    
+        },
+        --Reduces the chance enemies have to detect you while Prowling. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        feral_instinct = {
+            id = 87335,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132089,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=87335/feral-instinct"
+            end,
+    
+        },
+        --Finishing move that causes damage per combo pointGlyph of Ferocious Biteand consumes up to 25 additional energy to increase damage by up to 100%, and heals you for 1% of your total maximum health for each 10 energy used and consumes up to 25 additional energy to increase damage by up to 100%.  Damage is increased by your attack power.   1 point  : (214 + 36 * 1 *      1 + 0.125 * Attack power *      1)-(463 + 36 * 1 *      1 + 0.125 * Attack power *      1) damage   2 points: (214 + 36 * 2 *      1 + 0.250 * Attack power *      1)-(463 + 36 * 2 *      1 + 0.250 * Attack power *      1) damage   3 points: (214 + 36 * 3 *      1 + 0.375 * Attack power *      1)-(463 + 36 * 3 *      1 + 0.375 * Attack power *      1) damage   4 points: (214 + 36 * 4 *      1 + 0.500 * Attack power *      1)-(463 + 36 * 4 *      1 + 0.500 * Attack power *      1) damage   5 points: (214 + 36 * 5 *      1 + 0.625 * Attack power *      1)-(463 + 36 * 5 *      1 + 0.625 * Attack power *      1) damage
+        ferocious_bite = {
+            id = 22568,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function() return (25* ((buff.berserk.up and 0.5) or 1)) end, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132127,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                removeBuff( "clearcasting" )
+                set_last_finisher_cp(combo_points.current)
+                spend( combo_points.current, "combo_points" )
+                spend( min( 30, energy.current ), "energy" )
+            end,
+    
+        },
+        --Shapeshift into flight form, increasing movement speed by 150% and allowing you to fly.  Cannot use in combat. The act of shapeshifting frees the caster of movement slowing effects.
+        flight_form = {
+            id = 33943,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.08, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132128,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=33943/flight-form"
+            end,
+    
+        },
+        --Increases maximum health by 30%, increases health to 30% (if below that value), and Glyph of Frenzied Regenerationhealing received is increased by 30%.  Lasts 20 secconverts up to 10 Rage per second into health for 20 sec.  Each point of Rage is converted into 0.30% of max health.
+        frenzied_regeneration = {
+            id = 22842,
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132091,
+            toggle = "cooldowns",
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                applyBuff( "frenzied_regeneration" )
+            end,
+    
+        },
+        --When your Treants die or your Wild Mushrooms are triggered, you spawn a Fungal Growth at its wake covering the area within 8 yards, slowing all enemy targets. Lasts 20 sec.
+        fungal_growth = {
+            id = 81283,
+            cast = 0,
+            cooldown = 60,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 134222,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=81283/fungal-growth"
+            end,
+            copy = {81291}
+        },
+        --When you autoattack while in Cat Form or Bear Form, you have a chance to cause a Fury Swipe dealing 310% weapon damage. This effect cannot occur more than once every 3 sec.
+        fury_swipes = {
+            id = 80861,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            
+    
+            startsCombat = true,
+            texture = 132140,
+    
+            --fix:
+            stance = "Cat Form, Bear Form",
+            handler = function()
+                --"/cata/spell=80861/fury-swipes"
+            end,
+    
+        },
+        --Healing increased by 25%. In the Restoration Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from World of Warcraft: Cataclysm.
+        gift_of_nature = {
+            id = 87305,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 136094,
+            
+            handler = function()
+            end,
+    
+        },
+        --Taunts the target to attack you, but has no effect if the target is already attacking you. In the Feral Abilities category. Requires Druid. A spell.
+        growl = {
+            id = 6795,
+            cast = 0,
+            cooldown = function() return 8 - ((set_bonus.tier9feral_2pc == 1 and 2) or 0) end,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132270,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+            end,
+    
+        },
+        --Heals a friendly target for 7211 to 8516Glyph of Healing Touchand reduces your remaining cooldown on Nature's Swiftness by 10 sec. Requires Druid.
+        healing_touch = {
+            id = 5185,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend =function() return (buff.clearcasting.up and 0) or 0.3 end,  
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136041,
+    
+            --fix:
+            
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Forces the enemy target to sleep for up to 40 sec.  Any damage will awaken the target.  Only one target can be forced to hibernate at a time.  Only works on Beasts and Dragonkin.
+        hibernate = {
+            id = 2637,
+            cast = 1.5,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.07, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136090,
+    
+            --fix:
+            
+            handler = function()
+                applyDebuff( "target", "hibernate", 40)
+            end,
+    
+        },
+        --Creates a violent storm in the target area causing 323 Nature damage to enemies every 1 sec,Glyph of Hurricanereducing movement speed by 50% and increasing the time between attacks of enemies by 20%.  Lasts 10 sec.  Druid must channel to maintain the spell.
+        hurricane = {
+            id = 16914,
+            cast = function() return 10 * haste end,
+            channeled = true,
+            breakable = true,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 0.81 end,
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136018,
+    
+            aura = "hurricane",
+            tick_time = function () return class.auras.hurricane.tick_time end,
+            
+            start = function ()
+                applyDebuff( "target", "hurricane" )
+            end,
+    
+            tick = function ()
+            end,
+    
+            breakchannel = function ()
+                removeDebuff( "target", "hurricane" )
+            end,
+    
+            handler = function ()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Your Faerie Fire spell also increases the chance the target will be hit by spell attacks by 3%, and increases the critical strike chance of your damage spells by 3% on targets afflicted by Faerie Fire.
+        improved_faerie_fire = {
+            id = 33602,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 136033,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=91565/faerie-fire"
+            end,
+            copy = {33601},
+        },
+        
+        --Causes the target to regenerate 5% of maximum mana over 10 sec.  If cast on self, the caster will regenerate an additional (15)% of maximum mana over 10 sec.Glyph of InnervateIf cast on a target other than the caster, the caster will gain 10% of maximum mana over 10 sec
+        innervate = {
+            id = 29166,
+            cast = 0,
+            cooldown = 180,
+            gcd = "spell",
+    
+            
+    
+            startsCombat = true,
+            texture = 136048,
+    
+            toggle = "cooldowns",
+
+            handler = function ()
+                applyBuff( "innervate" )
+            end,
+    
+        },
+        --The enemy target is swarmed by insects, causing 816 Nature damage over 12 sec. In the Balance Abilities category. Requires Druid. Learn how to use this in our class guide.
+        insect_swarm = {
+            id = 5570,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 0.08 end,
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136045,
+    
+            --fix:
+            
+            handler = function()
+                applyDebuff( "target", "insect_swarm" )
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Lacerates the enemy target, dealing [3608 + (Attack power * 0.0552)] damage and making them bleed for [5 * (69 + (Attack power * 0.00369))] damage over 15 sec.  Damage increased by attack power.  This effect stacks up to 3 times on the same target.
+        lacerate = {
+            id = 33745,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 15 end,
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 132131,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                removeBuff( "clearcasting" )
+                applyDebuff( "target", "lacerate", 15, min( 3, debuff.lacerate.stack + 1 ) )
+            end,
+    
+        },
+        --Heals the target for [2280 * ((1))] over 10 sec.  When Lifebloom expires or is dispelled, the target is instantly healed for [1848 * (1 *  (1) *  1 *  (1) *  1)]. This effect can stack up to 3 times on the same target. Lifebloom can be active only on one target at a time.Tree of LifeTree of Life: Can be cast on unlimited targets.
+        lifebloom = {
+            id = 33763,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend =function() return (buff.clearcasting.up and 0) or 0.07 end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 134206,
+    
+            --fix:
+            
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Finishing move that causes damage and stuns the target.  Causes more damage and lasts longer per combo point:   1 point  : (84 * 1 +  74 + 1.55 * Mainhand weapon min damage)-(84 * 1 +  74 + 1.55 * Mainhand weapon max damage) damage, 1 sec   2 points: (84 * 2 +  74 + 1.55 * Mainhand weapon min damage)-(84 * 2 +  74 + 1.55 * Mainhand weapon max damage) damage, 2 sec   3 points: (84 * 3 +  74 + 1.55 * Mainhand weapon min damage)-(84 * 3 +  74 + 1.55 * Mainhand weapon max damage) damage, 3 sec   4 points: (84 * 4 +  74 + 1.55 * Mainhand weapon min damage)-(84 * 4 +  74 + 1.55 * Mainhand weapon max damage) damage, 4 sec   5 points: (84 * 5 +  74 + 1.55 * Mainhand weapon min damage)-(84 * 5 +  74 + 1.55 * Mainhand weapon max damage) damage, 5 sec
+        maim = {
+            id = 22570,
+            cast = 0,
+            cooldown = 10,
+            gcd = "totem",
+    
+            spend = function() return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end,
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132134,
+            toggle = "interrupts",
+            readyTime = state.timeToInterrupt,
+            debuff = "casting",
+
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                
+                interrupt()
+                applyDebuff( "target", "maim", combo_points.current )
+                removeBuff( "clearcasting" )
+                set_last_finisher_cp(combo_points.current)
+                spend( combo_points.current, "combo_points" )
+            end,
+    
+        },
+        --Mangle the target for 50% normal damage plus 1559 and causes the target to take 30% additional damage from bleed effects for 1 min. Requires Druid.
+        mangle_bear = {
+            id = 33878,
+            cast = 0,
+            cooldown = function() return buff.berserk.up and 0 or 6 end,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 15 end, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 132135,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                removeDebuff( "mangle" )
+                applyDebuff( "target", "mangle_bear", 60 )
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Mangle the target for 285% normal damage plus 50 and causes the target to take 30% additional damage from bleed effects for 1 min.  Awards 1 combo point.
+        mangle_cat = {
+            id = 33876,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function () return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132135,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                removeDebuff( "target", "mangle" )
+                applyDebuff( "target", "mangle_cat", 60 )
+                removeBuff( "clearcasting" )
+                gain( 1, "combo_points" )
+            end,
+    
+        },
+        --Increases the friendly target's Strength, Agility, Stamina, and Intellect by 5%, and all magical resistances by (85 / 2 - 0.5), for 1 hour.  If target is in your party or raid, all party and raid members will be affected.
+        mark_of_the_wild = {
+            id = 1126,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return glyph.mark_of_the_wild.enabled and 0.12 or 0.24 end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136078,
+    
+            --fix:
+            
+            handler = function()
+                applyBuff( "mark_of_the_wild" )
+                swap_form( "" )
+            end,
+    
+        },
+        --An attack that instantly deals (35 + Attack power * 0.19 - 1) physical damageGlyph of Maul and an additional [(35 + Attack power * 0.19 - 1) * 0.50] damage to a nearby target  Effects which increase Bleed damage also increase Maul damage.
+        maul = {
+            id = 6807,
+            cast = 0,
+            cooldown = 3,
+            gcd = "off",
+    
+            spend = function() return (buff.clearcasting.up and 0) or (30 * ((buff.berserk.up and 0.5) or 1)) end, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 132136,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+            end,
+    
+        },
+        --Allows 50% of your mana regeneration from Spirit to continue while in combat. In the Restoration Abilities category. Requires Druid. A spell.
+        meditation = {
+            id = 85101,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 136090,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=85101/meditation"
+            end,
+    
+        },
+        --TODO: implement lunar shower, natures_grace, moonglow
+        --Burns the enemy for 218 Arcane damage and then an additional (94 * 6) Arcane damage over 12 sec. In the Balance Abilities category. Requires Druid.
+        moonfire = {
+            id = 8921,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0 or 0.09) end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136096,
+    
+            --fix:
+            
+            handler = function()
+                removeBuff( "clearcasting" )
+                applyDebuff( "target", "moonfire" )
+            end,
+    
+        },
+
+
+         --Shapeshift into Moonkin Form, increasing Arcane and Nature spell damage by 10%, reducing all damage taken by 15%, and increases spell haste of all party and raid members by 5%. The Moonkin can not cast healing or resurrection spells while shapeshifted.The act of shapeshifting frees the caster of movement impairing effects.
     moonkin_form = {
         id = 24858,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.13,
+        spend = 0.13, 
         spendType = "mana",
 
         talent = "moonkin_form",
         startsCombat = true,
         texture = 136036,
 
-        handler = function ()
+        --fix:
+        handler = function()
             swap_form( "moonkin_form" )
         end,
     },
-
-
-    -- While active, any time an enemy strikes the caster they have a 100% chance to become afflicted by Entangling Roots (Rank 1). 3 charges.  Lasts 45 sec.
-    natures_grasp = {
-        id = 16689,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        startsCombat = true,
-        texture = 136063,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "natures_grasp" )
-        end,
-
-        copy = { 16810, 16811, 16812, 16813, 17329, 27009, 53312 },
-    },
-
-
-    -- When activated, your next Nature spell with a base casting time less than 10 sec. becomes an instant cast spell.
+        
+    
+    
+        --Reduces the pushback suffered from damaging attacks while casting Healing Touch, Regrowth, Tranquility, Rebirth, Cyclone, Entangling Roots, and Nourish.
+        natures_focus = {
+            id = 84736,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 136100,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=100855/tranquility"
+            end,
+    
+        },
+        --While active, any time an enemy strikes the caster they have a 100% chance to become afflicted by Entangling Roots. 3 charges.  Lasts 45 sec.
+        natures_grasp = {
+            id = 16689,
+            cast = 0,
+            cooldown = 60,
+            gcd = "spell",
+    
+            
+    
+            startsCombat = true,
+            texture = 136063,
+            toggle = "cooldowns",
+            --fix:
+            handler = function()
+                applyBuff( "natures_grasp" )
+            end,
+    
+        },
+            --When activated, your next Nature spell with a base casting time less than 10 sec. becomes an instant cast spell.  If that spell is a healing spell, the amount healed will be increased by 50%.
     natures_swiftness = {
         id = 17116,
         cast = 0,
-        cooldown = 180,
+        cooldown = 3,
         gcd = "off",
 
         talent = "natures_swiftness",
+
         startsCombat = true,
         texture = 136076,
-
         toggle = "cooldowns",
 
-        handler = function ()
+        handler = function()
             applyBuff( "natures_swiftness" )
         end,
+
     },
-
-
-    -- Heals a friendly target for 1883 to 2187. Heals for an additional 20% if you have a Rejuvenation, Regrowth, Lifebloom, or Wild Growth effect active on the target.
-    nourish = {
-        id = 50464,
-        cast = 1.5,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 236162,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Pounce, stunning the target for 3 sec and causing 2100 damage over 18 sec.  Must be prowling.  Awards 1 combo point.
-    pounce = {
-        id = 49803,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function() return (buff.clearcasting.up and 0) or (50 * ((buff.berserk.up and 0.5) or 1)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132142,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            applyDebuff( "target", "pounce", 3)
-            applyDebuff( "target", "pounce_bleed", 18 )
-            gain( 1, "combo_points" )
-        end,
-    },
-
-
-    -- Allows the Druid to prowl around, but reduces your movement speed by 30%.  Lasts until cancelled.
-    prowl = {
-        id = 5215,
-        cast = 0,
-        cooldown = 10,
-        gcd = "off",
-
-        spend = 0,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132089,
-
-        handler = function ()
-            applyBuff( "prowl" )
-        end,
-    },
-
-
-    -- Rake the target for 178 bleed damage and an additional 1104 damage over 9 sec.  Awards 1 combo point.
-    rake = {
-        id = 48574,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function () return (buff.clearcasting.up and 0) or ((40 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132122,
-
-        readyTime = function() return debuff.rake.remains end,
-
-        handler = function ()
-            applyDebuff( "target", "rake" )
-            removeBuff( "clearcasting" )
-            gain( 1, "combo_points" )
-        end,
-    },
-
-
-    -- Ravage the target, causing 385% damage plus 1771 to the target.  Must be prowling and behind the target.  Awards 1 combo point.
-    ravage = {
-        id = 48579,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function() return (buff.clearcasting.up and 0) or (60 * ((buff.berserk.up and 0.5) or 1)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132141,
-
-        buff = "prowl",
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            gain( 1, "combo_points" )
-        end,
-    },
-
-
-    -- Returns the spirit to the body, restoring a dead target to life with 400 health and 700 mana.
-    rebirth = {
-        id = 20484,
-        cast = 2,
-        cooldown = 600,
-        gcd = "spell",
-
-        spend = 0.68,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136080,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            -- glyph.unburdened_rebirth.enabled removes reagent requirement; doesn't matter because addon shouldn't recommend rebirth.
-        end,
-
-        copy = { 20739, 20742, 20747, 20748, 26994, 48477 },
-    },
-
-
-    -- Heals a friendly target for 93 to 107 and another 98 over 21 sec.
-    regrowth = {
-        id = 8936,
-        cast = 2,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.29 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136085,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            removeBuff( "predators_swiftness" )
-        end,
-
-        copy = { 8938, 8939, 8940, 8941, 9750, 9856, 9857, 9858, 26980, 48442, 48443 },
-    },
-
-
-    -- Heals the target for 40 over 15 sec.
-    rejuvenation = {
-        id = 774,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.18 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136081,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-
-        copy = { 1058, 1430, 2090, 2091, 3627, 8910, 9839, 9840, 9841, 25299, 26981, 26982, 48440, 48441 },
-    },
-
-
-    -- Dispels 1 Curse from a friendly target.
-    remove_curse = {
-        id = 2782,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135952,
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Returns the spirit to the body, restoring a dead target to life with 65 health and 120 mana.  Cannot be cast when in combat.
-    revive = {
-        id = 50769,
-        cast = 10,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.72,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 132132,
-
-        handler = function ()
-        end,
-
-        copy = { 50768, 50767, 50766, 50765, 50764, 50763 },
-    },
-
-
-    -- Finishing move that causes damage over time.  Damage increases per combo point and by your attack power:     1 point: 784 damage over 12 sec.     2 points: 1352 damage over 12 sec.     3 points: 1920 damage over 12 sec.     4 points: 2488 damage over 12 sec.     5 points: 3056 damage over 12 sec.
-    rip = {
-        id = 49800,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function ()
-            if buff.clearcasting.up then
-                return 0
-            end
-            return ((30 - ((set_bonus.tier10feral_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1))
-        end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132152,
-
-        usable = function() return combo_points.current > 0, "requires combo_points" end,
-        readyTime = function() return debuff.rip.remains end, -- Clipping rip is a DPS loss and an unpredictable recommendation. AP snapshot on previous rip will prevent overriding
-
-        handler = function ()
-            applyDebuff( "target", "rip" )
-            removeBuff( "clearcasting" )
-            if combo_points.current == 5 then
-                applyBuff("predators_swiftness")
-            end
-            set_last_finisher_cp(combo_points.current)
-            spend( combo_points.current, "combo_points" )
-            rip_tracker[target.unit].extension = 0
-        end,
-    },
-
-
-    -- Finishing move that increases physical damage done by 30%.  Only useable while in Cat Form.  Lasts longer per combo point:     1 point  : 14 seconds     2 points: 19 seconds     3 points: 24 seconds     4 points: 29 seconds     5 points: 34 seconds
-    savage_roar = {
-        id = 52610,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function() return 25 * ((buff.berserk.up and 0.5) or 1) end,
-        spendType = "energy",
-
-        startsCombat = false,
-        texture = 236167,
-
-        usable = function() return combo_points.current > 0, "requires combo_points" end,
-
-        handler = function ()
-            applyBuff( "savage_roar" )
-            if combo_points.current == 5 then
-                applyBuff("predators_swiftness")
-            end
-            set_last_finisher_cp(combo_points.current)
-            spend( combo_points.current, "combo_points" )
-        end,
-    },
-
-
-    -- Shred the target, causing 225% damage plus 666 to the target.  Must be behind the target.  Awards 1 combo point.  Effects which increase Bleed damage also increase Shred damage.
-    shred = {
-        id = 48572,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function () return (buff.clearcasting.up and 0) or ((60 * ((buff.berserk.up and 0.5) or 1)) - (talent.shredding_attacks.rank * 9)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 136231,
-
-        handler = function ()
-            if glyph.shred.enabled and debuff.rip.up and rip_tracker[target.unit].extension < 6 then
-                rip_tracker[target.unit].extension = rip_tracker[target.unit].extension + 2
-                applyDebuff( "target", "rip", debuff.rip.remains + 2)
-            end
-            gain( 1, "combo_points" )
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Soothes the target beast, reducing the range at which it will attack you by 10 yards.  Only affects Beast and Dragonkin targets level 40 or lower.  Lasts 15 sec.
-    soothe_animal = {
-        id = 2908,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.06,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 132163,
-
-        handler = function ()
-        end,
-
-        copy = { 8955, 9901, 26995 },
-    },
-
-
-    -- You summon a flurry of stars from the sky on all targets within 30 yards of the caster, each dealing 145 to 167 Arcane damage. Also causes 26 Arcane damage to all other enemies within 5 yards of the enemy target. Maximum 20 stars. Lasts 10 sec.  Shapeshifting into an animal form or mounting cancels the effect. Any effect which causes you to lose control of your character will suppress the starfall effect.
-    starfall = {
-        id = 48505,
-        cast = 0,
-        cooldown = function() return glyph.starfall.enabled and 60 or 90 end,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0 or 0.35) * (1 - talent.moonglow.rank * 0.03) end,
-        spendType = "mana",
-
-        talent = "starfall",
-        startsCombat = true,
-        texture = 236168,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Causes 127 to 155 Arcane damage to the target.
-    starfire = {
-        id = 2912,
-        cast = function() return buff.elunes_wrath.up and 0 or ((3.5 * haste) - (talent.starlight_wrath.rank * 0.1)) end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0 or 0.16) * (1 - talent.moonglow.rank * 0.03) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135753,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            if glyph.starfire.enabled and debuff.moonfire.up then
-                debuff.moonfire.expires = debuff.moonfire.expires + 3
-                -- TODO: Cap at 3 applications.
-            end
-        end,
-
-        copy = { 8949, 8950, 8951, 9875, 9876, 25298, 26986, 48464, 48465 },
-    },
-
-
-    -- When activated, this ability temporarily grants you 30% of your maximum health for 20 sec while in Bear Form, Cat Form, or Dire Bear Form.  After the effect expires, the health is lost.
-    survival_instincts = {
-        id = 61336,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
-
-        spend = 0,
-        spendType = "energy",
-
-        talent = "survival_instincts",
-        startsCombat = true,
-        texture = 236169,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "survival_instincts" )
-        end,
-    },
-
-
-    -- Shapeshift into swift flight form, increasing movement speed by 280% and allowing you to fly.  Cannot use in combat.  Can only use this form in Outland or Northrend.    The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
-    swift_flight_form = {
-        id = 40120,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.13,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 132128,
-
-        handler = function ()
-            swap_form( "swift_flight_form" )
-        end,
-    },
-
-
-    -- Consumes a Rejuvenation or Regrowth effect on a friendly target to instantly heal them an amount equal to 12 sec. of Rejuvenation or 18 sec. of Regrowth.
-    swiftmend = {
-        id = 18562,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.16 end,
-        spendType = "mana",
-
-        talent = "swiftmend",
-        startsCombat = true,
-        texture = 134914,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            if glyph.swiftmend.enabled then return end
-            if buff.rejuvenation.up then removeBuff( "rejuvenation" )
-            elseif buff.regrowth.up then removeBuff( "regrowth" ) end
-        end,
-    },
-
-
-    -- Swipe nearby enemies, inflicting 108 damage.  Damage increased by attack power.
-    swipe_bear = {
-        id = 48562,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or (20 - talent.ferocity.rank) end,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 134296,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Swipe nearby enemies, inflicting 250% weapon damage.
-    swipe_cat = {
-        id = 62078,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = function () return (buff.clearcasting.up and 0) or ((50 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)) end,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 134296,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Thorns sprout from the friendly target causing 3 Nature damage to attackers when hit.  Lasts 10 min.
-    thorns = {
-        id = 467,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.17 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136104,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            applyBuff( "thorns" )
-        end,
-
-        copy = { 782, 1075, 8914, 9756, 9910, 26992, 53307 },
-    },
-
-
-    -- Increases damage done by 80 for 6 sec.
-    tigers_fury = {
-        id = 50213,
-        cast = 0,
-        cooldown = function() return 30 - ((set_bonus.tier7feral_4pc == 1 and 3) or 0) end,
-        gcd = "off",
-
-        spend = 0,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132242,
-
-        usable = function() return not buff.berserk.up end,
-
-        handler = function ()
-            gain( 60, "energy" )
-        end,
-    },
-
-
-    -- Shows the location of all nearby humanoids on the minimap.  Only one type of thing can be tracked at a time.
-    track_humanoids = {
-        id = 5225,
-        cast = 0,
-        cooldown = 1.5,
-        gcd = "off",
-
-        spend = 0,
-        spendType = "energy",
-
-        startsCombat = true,
-        texture = 132328,
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Heals all nearby group members for 364 every 2 seconds for 8 sec.  Druid must channel to maintain the spell.
-    tranquility = {
-        id = 740,
-        cast = 0,
-        cooldown = 480,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.7 end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136107,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-
-        copy = { 8918, 9862, 9863, 26983, 48446 },
-    },
-
-
-    -- Shapeshift into travel form, increasing movement speed by 40%.  Also protects the caster from Polymorph effects.  Only useable outdoors.    The act of shapeshifting frees the caster of Polymorph and Movement Impairing effects.
-    travel_form = {
-        id = 783,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.13,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 132144,
-
-        handler = function ()
-            swap_form( "travel_form" )
-        end,
-    },
-
-
-    -- You summon a violent Typhoon that does 400 Nature damage when in contact with hostile targets, knocking them back and dazing them for 6 sec.
-    typhoon = {
-        id = 50516,
-        cast = 0,
-        cooldown = function() return glyph.monsoon.enabled and 17 or 20 end,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or (0.25 * ( glyph.typhoon.enabled and 0.92 or 1 )) end,
-        spendType = "mana",
-
-        talent = "typhoon",
-        startsCombat = true,
-        texture = 236170,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Stuns up to 5 enemies within 8 yds for 2 sec.
-    war_stomp = {
-        id = 20549,
-        cast = 0.5,
-        cooldown = 120,
-        gcd = "off",
-
-        startsCombat = true,
-        texture = 132368,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Heals up to 5 friendly party or raid members within 15 yards of the target for 686 over 7 sec. The amount healed is applied quickly at first, and slows down as the Wild Growth reaches its full duration.
-    wild_growth = {
-        id = 48438,
-        cast = 0,
-        cooldown = 6,
-        gcd = "spell",
-
-        spend = function() return (buff.clearcasting.up and 0) or 0.23 end,
-        spendType = "mana",
-
-        talent = "wild_growth",
-        startsCombat = true,
-        texture = 236153,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-        end,
-    },
-
-
-    -- Causes 18 to 21 Nature damage to the target.
-    wrath = {
-        id = 5176,
-        cast = function() return ( ( buff.predators_swiftness.up and 0 or 2 ) * haste ) - ( talent.starlight_wrath.rank * 0.1 ) end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return ( buff.clearcasting.up and 0 or 0.08 ) * ( 1 - talent.moonglow.rank * 0.03 ) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136006,
-
-        handler = function ()
-            removeBuff( "clearcasting" )
-            removeBuff( "predators_swiftness" )
-        end,
-
-        copy = { 5177, 5178, 5179, 5180, 6780, 8905, 9912, 26984, 26985, 48459, 48461 },
-    },
+        --Heals a friendly target for 2403 to 2792. Heals for an additional 20% if you have a Rejuvenation, Regrowth, Lifebloom, or Wild Growth effect active on the target.
+        nourish = {
+            id = 50464,
+            cast = 3,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or  0.1 end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 236162,
+    
+            --fix:
+            
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Pounce, stunning the target for 3 sec and causing 2346 Bleed damage over 18 sec.  Must be prowling.  Awards 1 combo point. In the Feral Abilities category.
+        pounce = {
+            id = 9005,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function() return (buff.clearcasting.up and 0) or (50 * ((buff.berserk.up and 0.5) or 1)) end,
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132142,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                removeBuff( "clearcasting" )
+                applyDebuff( "target", "pounce", 3)
+                applyDebuff( "target", "pounce_bleed", 18 )
+                gain( 1, "combo_points" )
+            end,
+    
+        },
+        --Gives you a 100% chance to gain an additional 5 Rage anytime you get a critical strike while in Bear Form. In the Feral Abilities category. Requires Druid.
+        primal_fury = {
+            id = 16961,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132278,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+
+            end,
+    
+        },
+        --Tiger's Fury and Beserk also increases your maximum Energy by 10/20 during its duration, and your Enrage and Beserk abilities instantly generates 60/120 Rage.
+        primal_madness = {
+            id = 80886,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            talent = "primal_madness",
+    
+            startsCombat = true,
+            texture = 132242,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=80886/primal-madness"
+            end,
+            copy = {17080, 80879}
+        },
+
+        --Allows the Druid to prowl around, but reduces your movement speed by 30%.  Lasts until cancelled. In the Feral Abilities category. A spell. Always up to date.
+        prowl = {
+            id = 5215,
+            cast = 0,
+            cooldown = 10,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 514640,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                applyBuff( "prowl" )
+            end,
+        },
+        --In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from World of Warcraft: Cataclysm. Always up to date.
+        pulverize = {
+            id = 80951,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            talent = "pulverize",
+    
+            startsCombat = true,
+            texture = 132318,
+    
+            --fix:
+            stance = "Bear Form, Dire Bear Form",
+            handler = function()
+            end,
+    
+        },
+        --Rake the target for (Attack power * 0.147 +  56) Bleed damage and an additional Endless Carnage(56 * 5 + Attack power * 0.735)(56 * 4 + Attack power * 0.588)(56 * 3 + Attack power * 0.441) Bleed damage over 9 sec.  Awards 1 combo point.
+        rake = {
+            id = 1822,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function () return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132122,
+            
+            readyTime = function() return debuff.rake.remains end,
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                applyDebuff( "target", "rake" )
+                removeBuff( "clearcasting" )
+                gain( 1, "combo_points" )
+            end,
+    
+        },
+        --Ravage the target, causing 625% damage plus 50 to the target.  Must be prowling and behind the target.  Awards 1 combo point. In the Feral Abilities category.
+        ravage = {
+            id = 6785,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function() return (buff.clearcasting.up and 0) or (60 * ((buff.berserk.up and 0.5) or 1)) end, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132141,
+    
+            buff = "prowl", --add stampede
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                removeBuff( "clearcasting" )
+                removeBuff( "stampede")
+                gain( 1, "combo_points" )
+            end,
+            copy = {81170}
+    
+        },
+        --TODO:current:
+        --Returns the spirit to the body, restoring a dead target to life with 20% health and 20% mana. In the Restoration Abilities category. Requires Druid.
+        rebirth = {
+            id = 20484,
+            cast = 2,
+            cooldown = 600,
+            gcd = "spell",
+    
+            
+    
+            startsCombat = true,
+            texture = 136080,
+    
+            
+            
+            handler = function()
+                --"/cata/spell=20484/rebirth"
+            end,
+    
+        },
+        --Heals a friendly target for 3579.5 and another [1083 * ((1))] over 6 sec.Glyph of RegrowthRegrowth's duration automatically refreshes to 6 sec each time it heals targets at or below 50% healthTree of LifeTree of Life: Instant cast.
+        regrowth = {
+            id = 8936,
+            cast = 1.5,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 0.35 end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136085,
+    
+            --fix:
+            
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Heals the target for 1307 every 3 sec for 12 sec. In the Restoration Abilities category. Requires Druid. Learn how to use this in our class guide.
+        rejuvenation = {
+            id = 774,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 0.2 end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136081,
+    
+            --fix:
+            
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Nullifies corrupting effects on the friendly target, Nature's Cureremoving 0 Magic, 1 Curse, and 1 Poison effectremoving 1 Curse and 1 Poison effect.
+        remove_corruption = {
+            id = 2782,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.17, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 135952,
+    
+            handler = function()
+                --"/cata/spell=2782/remove-corruption"
+            end,
+    
+        },
+        --Brings all dead party and raid members back to life with 35% health and 35% mana. Cannot be cast in combat or while in a battleground or arena.
+        revitalize = {
+            id = 450759,
+            cast = 10,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 1.0, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132125,
+          
+            handler = function()
+                --"/cata/spell=450759/revitalize"
+            end,
+    
+        },
+        --Returns the spirit to the body, restoring a dead target to life with 35% of maximum health and mana.  Cannot be cast when in combat. Requires Druid.
+        revive = {
+            id = 50769,
+            cast = 10,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.72, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132132,
+    
+            handler = function()
+                --"/cata/spell=50769/revive"
+            end,
+    
+        },
+        --Finishing move that causes Bleed damage over time.  Damage increases per combo point and by your attack power:   1 point: [(57 + 4 * 1 + 0.0207 * Attack power) * 8] damage over 16 sec.   2 points: [(57 + 4 * 2 + 0.0414 * Attack power) * 8] damage over 16 sec.   3 points: [(57 + 4 * 3 + 0.0621 * Attack power) * 8] damage over 16 sec.   4 points: [(57 + 4 * 4 + 0.0828 * Attack power) * 8] damage over 16 sec.   5 points: [(57 + 4 * 5 + 0.1035 * Attack power) * 8] damage over 16 sec.Glyph of BloodlettingEach time you Shred or Mangle the target while in Cat Form the duration of your Rip on that target is extended by 2 sec, up to a maximum of 6 sec
+        rip = {
+            id = 1079,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function ()
+                if buff.clearcasting.up then
+                    return 0
+                end
+                return ((30 - ((set_bonus.tier10feral_2pc == 1 and 10) or 0)) * ((buff.berserk.up and 0.5) or 1))
+            end,
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 132152,
+    
+            usable = function() return combo_points.current > 0, "requires combo_points" end,
+            readyTime = function() return debuff.rip.remains end, -- Clipping rip is a DPS loss and an unpredictable recommendation. AP snapshot on previous rip will prevent overriding
+
+            handler = function ()
+                applyDebuff( "target", "rip" )
+                removeBuff( "clearcasting" )
+                set_last_finisher_cp(combo_points.current)
+                spend( combo_points.current, "combo_points" )
+                rip_tracker[target.unit].extension = 0
+            end,
+    
+        },
+        --Each time you deal a non-periodic critical strike while in Bear Form, you have a 50% chance to gain Savage Defense, absorbing physical damage equal to 35% of your attack power for 10 sec.
+        savage_defense = {
+            id = 62600,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132278,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                applyBuff("savage_defense")
+            end,
+    
+        },
+        --Finishing move that consumes combo points on any nearby target to increase autoattack damage done by 80%.  Only useable while in Cat Form.  Lasts longer per combo point:   1 point  : 14 seconds   2 points: 19 seconds   3 points: 24 seconds   4 points: 29 seconds   5 points: 34 seconds
+        savage_roar = {
+            id = 52610,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function() return 25 * ((buff.berserk.up and 0.5) or 1) end, 
+            spendType = "energy",
+    
+            startsCombat = false,
+            texture = 236167,
+    
+            usable = function() return combo_points.current > 0, "requires combo_points" end,
+
+            handler = function ()
+                applyBuff( "savage_roar" )
+                set_last_finisher_cp(combo_points.current)
+                spend( combo_points.current, "combo_points" )
+            end,
+    
+        },
+        --Reduces the mana cost of all shapeshifting by 60%. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        shapeshifter = {
+            id = 87793,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 236161,
+    
+            
+            handler = function()
+            end,
+    
+        },
+        --Shred the target, causing 425% damage plus 50 to the target.  Must be behind the target.  Awards 1 combo point.  Effects which increase Bleed damage also increase Shred damage.
+        shred = {
+            id = 5221,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function () return (buff.clearcasting.up and 0) or (40 * ((buff.berserk.up and 0.5) or 1)) end, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 136231,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function ()
+                if glyph.bloodletting.enabled and debuff.rip.up and rip_tracker[target.unit].extension < 6 then
+                    rip_tracker[target.unit].extension = rip_tracker[target.unit].extension + 2
+                    applyDebuff( "target", "rip", debuff.rip.remains + 2)
+                end
+                gain( 1, "combo_points" )
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --You charge and skull bash the target, interrupting spellcasting and preventing any spell in that school from being cast for 4 sec. Requires Druid.
+        skull_bash_cat = {
+            id = 80965,
+            cast = 0,
+            cooldown = 60,
+            gcd = "off",
+    
+            spend = 25, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 236946,
+            toggle = "interrupts",
+
+            readyTime = state.timeToInterrupt,
+            debuff = "casting",
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                interrupt()
+            end,
+    
+        },
+        --You charge and skull bash the target, interrupting spellcasting and preventing any spell in that school from being cast for 4 sec. Requires Druid.
+        skull_bash_bear = {
+            id = 80964,
+            cast = 0,
+            cooldown = 60,
+            gcd = "off",
+    
+            spend = 15, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 133732,
+            toggle = "interrupts",
+
+            readyTime = state.timeToInterrupt,
+            debuff = "casting",
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                interrupt()
+            end,
+    
+        },
+        --Soothes the target, dispelling all enrage effects. In the Balance Abilities category. Requires Druid. Learn how to use this in our class guide.
+        soothe = {
+            id = 2908,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.06, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132163,
+    
+            handler = function()
+            end,
+    
+        },
+        --TODO: make aura instead
+        --Increases your melee haste by 30% after you use Feral Charge (Bear) for 8 sec, and your next Ravage will temporarily not require stealth or have a positioning requirement for 10 sec after you use Feral Charge (Cat), and cost 100% less energy.
+        stampede = {
+            id = 81017,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            talent = "stampede",
+    
+            startsCombat = true,
+            texture = 304501,
+    
+            --fix:
+            
+            handler = function()
+                --"/cata/spell=5221/shred"
+            end,
+            copy= {81016, 81021, 81022}
+        },
+        --The Druid roars, increasing the movement speed of all friendly players within 10 yards by 60% for 8 sec. Does not break prowling. Learn how to use this in our class guide.
+        stampeding_roar_cat = {
+            id = 77764,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+    
+            spend = 30, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 464343,
+    
+            --fix:
+            
+            handler = function()
+                applyBuff("stampeding_roar")
+            end,
+    
+        },
+        --The Druid roars, increasing the movement speed of all friendly players within 10 yards by 60% for 8 sec. In the Feral Abilities category. A spell.
+        stampeding_roar_bear = {
+            id = 77761,
+            cast = 0,
+            cooldown = 120,
+            gcd = "spell",
+    
+            spend = 15, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 463283,
+    
+            --fix:
+            
+            handler = function()
+                applyBuff("stampeding_roar")
+            end,
+    
+        },
+        --You summon a flurry of stars from the sky on all targets within 40 yards of the caster that you're in combat with, each dealing 398.5 Arcane damage. Maximum 20 stars. Lasts 10 sec.  Shapeshifting into an animal form or mounting cancels the effect. Any effect which causes you to lose control of your character will suppress the starfall effect.
+        starfall = {
+            id = 48505,
+            cast = 0,
+            cooldown = function() return glyph.starfall.enabled and 60 or 90 end,
+            gcd = "spell",
+
+            spend =function() return (buff.clearcasting.up and 0 or 0.35) * (1 - talent.moonglow.rank * 0.03) end,
+            spendType = "mana",
+
+            talent = "starfall",
+            startsCombat = true,
+            texture = 236168,
+            toggle = "cooldowns",
+            handler = function ()
+                removeBuff( "clearcasting" )
+            end,
+
+        },
+            --Causes 1364.5 Arcane damage to the targetGlyph of Starfireand increases the duration of your Moonfire effect on the target by 3 sec, up to a maximum of 9 additional seconds.StarsurgeGenerates 20 Solar Energy
+        starfire = {
+            id = 2912,
+            cast = function() return (3.5 * haste) - (talent.starlight_wrath.rank * 0.1) end,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0 or 0.11) * (1 - talent.moonglow.rank * 0.03) end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 135753,
+    
+            handler = function()
+                removeBuff( "clearcasting" )
+                if glyph.starfire.enabled and debuff.moonfire.up then
+                    debuff.moonfire.expires = debuff.moonfire.expires + 3
+                    -- TODO: Cap at 3 applications.
+                end
+            end,
+    
+        },
+        --You fuse the power of the moon and sun, launching a devastating blast of energy at the target. Causes 1211.5 Spellstorm damage to the target and generates 15 Lunar or Solar energy, whichever is more beneficial to you.
+        starsurge = {
+            id = 78674,
+            cast = 0, --TODO: check if this is really instant
+            cooldown = 15,
+            gcd = "spell",
+
+            spend = function() return (buff.clearcasting.up and 0 or 0.11) * (1 - talent.moonglow.rank * 0.03) end, 
+            spendType = "mana",
+
+            startsCombat = true,
+            texture = 135730,
+
+            --fix:
+            stance = "None",
+            handler = function()
+                --TODO: generates 15 Lunar or Solar energy
+            end,
+
+        },
+        --Reduces all damage taken by 50% for 12 sec.  Only usable while in Bear Form or Cat Form. In the Druid Talents category. Learn how to use this in our class guide.
+        survival_instincts = {
+            id = 61336,
+            cast = 0,
+            cooldown = 180,
+            gcd = "off",
+
+
+            talent = "survival_instincts",
+            startsCombat = true,
+            texture = 236169,
+
+            toggle = "cooldowns",
+            handler = function()
+                applyBuff( "survival_instincts" )
+            end,
+
+        },
+        --TODO: Add genesis, add lunar_shower
+        --Burns the enemy for 218 Nature damage and then an additional (94 * 6) Nature damage over 12 sec. In the Balance Abilities category. Requires Druid.
+        sunfire = {
+            id = 93402,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0 or 0.09) * (1 - talent.moonglow.rank * 0.03) end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 236216,
+            talent = "sunfire",
+        
+            handler = function()
+                --"/cata/spell=93402/sunfire"
+            end,
+    
+        },
+        --Swift Flight Form, available in Phase 2 of Burning Crusade Classic, grants Druids a 280% speed boost. Shapeshift into swift flight form, increasing movement speed by 280% and allowing you to fly.  Cannot use in combat.The act of shapeshifting frees the caster of movement slowing effects.
+        swift_flight_form = {
+            id = 40120,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.08, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132128,
+    
+            --fix:
+            
+            handler = function()
+                swap_form("swift_flight_form")
+            end,
+    
+        },
+        --Glyph of SwiftmendInstantly heals a friendly target that has an active Rejuvenation or Regrowth effect for 5229Consumes a Rejuvenation or Regrowth effect on a friendly target to instantly heal the target for 5229.
+        swiftmend = {
+            id = 18562,
+            cast = 0,
+            cooldown = 15,
+            gcd = "spell",
+
+            spend = function() return (buff.clearcasting.up and 0) or 0.1 end, 
+            spendType = "mana",
+            talent = "swiftmend",
+            startsCombat = true,
+            texture = 134914,
+
+            handler = function()
+                removeBuff( "clearcasting" )
+                if glyph.swiftmend.enabled then return end
+                if buff.rejuvenation.up then removeBuff( "rejuvenation" )
+                elseif buff.regrowth.up then removeBuff( "regrowth" ) end
+            end,
+
+        },
+        --Swipe nearby enemies, inflicting 929 damage.  Damage increased by attack power. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        swipe_bear = {
+            id = 779,
+            cast = 0,
+            cooldown = 3,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 15 end, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 134296,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Swipe nearby enemies, inflicting 526% weapon damage. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        swipe_cat = {
+            id = 62078,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function () return (buff.clearcasting.up and 0) or (45 * ((buff.berserk.up and 0.5) or 1)) end, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 134296,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
+        --Teleports the caster to the Moonglade. In the Balance Abilities category. Requires Druid. Learn how to use this in our class guide. A spell.
+        teleport_moonglade = {
+            id = 18960,
+            cast = 10,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 120, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 135758,
+    
+            handler = function()
+                --"/cata/spell=18960/teleport-moonglade"
+            end,
+    
+        },
+        --Thorns sprout from the friendly target causing Mangle[179 + (Attack power * .168)][(179 + (Spell power * .168)) *  1] Nature damage to attackers when hit.  VengeanceAttack power gained from Vengeance will not increase Thorns damageLasts 20 sec.
+        thorns = {
+            id = 467,
+            cast = 0,
+            cooldown = 45,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 0.36 end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136104,
+    
+            handler = function()
+                removeBuff( "clearcasting" )
+                applyBuff( "thorns" )
+            end,
+    
+        },
+        --Deals (Attack power * 0.0982 +  933) to (Attack power * 0.0982 +  1151) damage, and causes all targets within 8 yards to bleed for [(Attack power * 0.0167 +  581) * 3] damage over 6 sec.
+        thrash = {
+            id = 77758,
+            cast = 0,
+            cooldown = 6,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 25 end, 
+            spendType = "rage",
+    
+            startsCombat = true,
+            texture = 451161,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                removeBuff( "clearcasting" )
+                applyDebuff("thresh")
+            end,
+    
+        },
+        --Increases physical damage done by 15% for 6 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell.
+        tigers_fury = {
+            id = 5217,
+            cast = 0,
+            cooldown = function() return 30 - ((set_bonus.tier7feral_4pc == 1 and 3) or 0) end,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132242,
+            
+            usable = function() return not buff.berserk.up end,
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                gain( 20 * talent.king_of_the_jungle.rank, "energy" )
+            end,
+    
+        },
+        --Shows the location of all nearby humanoids on the minimap.  Only one type of thing can be tracked at a time. In the Feral Abilities category.
+        track_humanoids = {
+            id = 5225,
+            cast = 0,
+            cooldown = 1.5,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 132328,
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                applyBuff("track_humanoids")
+            end,
+    
+        },
+        --Heals 5 nearby lowest health party or raid targets within 40 yards with Tranquility every 2 sec for 8 sec. Tranquility heals for 3882 plus an additional 343 every 2 sec over 8 sec. Stacks up to 3 times. The Druid must channel to maintain the spell.
+        tranquility = {
+            id = 740,
+            cast = function() return 8 * haste end,
+            channeled = true,
+            breakable = true,
+            cooldown = 480,
+            gcd = "spell",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 0.32 end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 136107,
+    
+            toggle = "cooldowns",
+            
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+            copy = {44203}
+        },
+        --See also: Archdruid's Lunarwing Form. Shapeshift into travel form, increasing movement speed by 40%.  Also protects the caster from Polymorph effects.  Only useable outdoors.The act of shapeshifting frees the caster of movement slowing effects.
+        travel_form = {
+            id = 783,
+            cast = 0,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.08, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 132144,
+    
+            handler = function()
+                swap_form( "travel_form" )
+            end,
+        },
+            --You summon a violent Typhoon that does 1298 Nature damage to targets in front of the caster within 30 yards, knocking them back and dazing them for 6 sec.
+        typhoon = {
+            id = 50516,
+            cast = 0,
+            cooldown = function() return glyph.monsoon.enabled and 17 or 20 end,
+            gcd = "spell",
+
+            spend = function() return (buff.clearcasting.up and 0) or (0.16 * ( glyph.typhoon.enabled and 0.92 or 1 )) end, 
+            spendType = "mana",
+
+            talent = "typhoon",
+            startsCombat = true,
+            texture = 236170,
+
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+
+        },
+        --TODO: dafuq is this
+        --Each time you take damage while in Bear Form, you gain 5% of the damage taken as attack power, up to a maximum of 10% of your health.  Entering Cat Form will cancel this effect.
+        vengeance = {
+            id = 84840,
+            cast = 0,
+            cooldown = 0,
+            gcd = "off",
+    
+            
+    
+            startsCombat = true,
+            texture = 236265,
+    
+            --fix:
+            stance = "Bear Form",
+            handler = function()
+                applyBuff("vengeance")
+            end,
+    
+        },
+        --Grow a magical Mushroom with 5 Health at the target location. After 6 sec, the Mushroom will become invisible. When detonated by the Druid, all Mushrooms will explode dealing 934 Nature damage to all nearby enemies within 6 yards. Only 3 Mushrooms can be placed at one time. Use Wild Mushroom: Detonate to detonate all Mushrooms.
+        wild_mushroom = {
+            id = 88747,
+            cast = 0,
+            cooldown = 0,
+            gcd = "totem",
+    
+            spend = function() return (buff.clearcasting.up and 0) or 0.11 end, 
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 464341,
+    
+            --fix:
+            
+            handler = function()
+                applyBuff("wild_mushroom")
+            end,
+            copy = {78777}
+        },
+
+        --Detonates all of your Wild Mushrooms, dealing 934 Nature damage to all nearby targets within 6 yards. In the Balance Abilities category. Requires Druid.
+        wild_mushroom_detonate = {
+            id = 88751,
+            cast = 0,
+            cooldown = 10,
+            gcd = "off",
+    
+            
+            usable = function() return buff.wild_mushroom.up end,
+            startsCombat = true,
+            texture = 464342,
+    
+            handler = function()
+                removeBuff("wild_mushroom")
+            end,
+    
+        },
+        --Causes 884 Nature damage to the target. StarsurgeGenerates 13 Lunar EnergyTree of LifeTree of Life: Cast time reduced by 50%, damage increased by 30%.
+        wrath = {
+            id = 5176,
+            cast = function() return ( 2.5* haste ) - ( talent.starlight_wrath.rank * 0.1 ) end,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = function() return ( buff.clearcasting.up and 0 or 0.09 ) * ( 1 - talent.moonglow.rank * 0.03 ) end,
+            spendType = "mana",
+    
+            startsCombat = true,
+            texture = 535045,
+    
+            handler = function()
+                removeBuff( "clearcasting" )
+            end,
+    
+        },
 } )
 
 

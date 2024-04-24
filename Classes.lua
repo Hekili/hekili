@@ -1692,7 +1692,7 @@ all:RegisterAuras( {
 
     -- Increases armor by $s1.
     mark_of_the_wild = {
-        id = 1126,
+        id = 79061,
         duration = 1800,
         max_stack = 1,
         shared = "player",
