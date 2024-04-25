@@ -622,7 +622,7 @@ end)
 
 spec:RegisterStateExpr("should_flowerweave", function()
     local furor_cap = min(20 * talent.furor.rank, 85)
-    local flower_gcd = action.gift_of_the_wild.gcd
+    local flower_gcd = action.mark_of_the_wild.gcd
     local flowershift_energy = min(furor_cap, 75) - 10 * flower_gcd - 20 * latency
     local flower_end = flower_gcd + 1.5 + 2 * latency
     local dump_action_cost = active_enemies > 2 and 45 or 42
@@ -1195,8 +1195,8 @@ spec:RegisterAuras( {
     },
     -- Bleeding for $s2 damage every $t2 seconds.
     rake = {
-        id = 48574,
-        duration = function() return 9 + ((set_bonus.tier9feral_2pc == 1 and 3) or 0) end,
+        id = 1822,
+        duration = function() return 9 + (talent.endless_carnage.rank * 3) + ((set_bonus.tier9feral_2pc == 1 and 3) or 0) end,
         max_stack = 1,
         copy = { 1822, 1823, 1824, 9904, 27003, 48573, 48574, 59881, 59882, 59883, 59884, 59885, 59886 },
     },
@@ -1886,9 +1886,8 @@ spec:RegisterAbilities( {
             startsCombat = true,
             texture = 132183,
             talent = "feral_charge",
-    
-            --fix:
-            stance = "Bear Form",
+            
+            buff = "bear_form",
             handler = function()
                 if talent.stampede.enabled then
                     applyBuff("stampede_bear")
@@ -1912,7 +1911,7 @@ spec:RegisterAbilities( {
             talent = "feral_charge",
     
             --fix:
-            stance = "Cat Form",
+            buff = "cat_form",
             handler = function()
                 if talent.stampede.enabled then
                     applyBuff("stampede_cat")
@@ -2630,7 +2629,7 @@ spec:RegisterAbilities( {
             cooldown = 0,
             gcd = "totem",
     
-            spend = function() return (buff.clearcasting.up and 0) or (60 * ((buff.berserk.up and 0.5) or 1)) end, 
+            spend = function() return (buff.clearcasting.up and 0) or (60 * (1 - ((buff.stampede_cat.up and 0.5*talent.stampede.rank) or 0) ) * ((buff.berserk.up and 0.5) or 1)) end, 
             spendType = "energy",
     
             startsCombat = true,
@@ -2640,7 +2639,9 @@ spec:RegisterAbilities( {
             --fix:
             stance = "Cat Form",
             handler = function()
-                removeBuff( "clearcasting" )
+                if not (buff.stampede_cat.up and talent.stampede.rank==2) then
+                    removeBuff( "clearcasting" )
+                end
                 removeBuff( "stampede_cat")
                 gain( 1, "combo_points" )
             end,
