@@ -692,7 +692,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
     mainhand = {
         swing = "mainhand",
-        aura = "dire_bear_form",
+        aura = "bear_form",
 
         last = function()
             local swing = state.combat == 0 and state.now or state.swings.mainhand
@@ -925,12 +925,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 99, 1735, 9490, 9747, 9898, 26998, 48559, 48560 },
     },
-    -- Immune to Polymorph effects.  Increases melee attack power by $9635s3, armor contribution from cloth and leather items by $9635s1%, and Stamina by $9635s2%.
-    dire_bear_form = {
-        id = 9634,
-        duration = 3600,
-        max_stack = 1,
-    },
     -- Increases spell damage taken by $s1%.
     earth_and_moon = {
         id = 60433,
@@ -1008,7 +1002,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     form = {
-        alias = { "aquatic_form", "cat_form", "bear_form", "dire_bear_form", "flight_form", "moonkin_form", "swift_flight_form", "travel_form"  },
+        alias = { "aquatic_form", "cat_form", "bear_form", "flight_form", "moonkin_form", "swift_flight_form", "travel_form"  },
         aliasType = "buff",
         aliasMode = "first"
     },
@@ -1266,6 +1260,22 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 2908, 8955, 9901, 26995 },
     },
+    -- Melee haste increased by 15%.
+    stampede_bear = {
+        id = 81016,
+        duration = 8,
+        max_stack = 1,
+        copy = {81016, 81017}
+
+    },
+    -- Your next Ravage can be used without requiring stealth or proper positioning, and costs 100% less energy.
+    stampede_cat = {
+        id = 81021,
+        duration = 10,
+        max_stack = 1,
+        copy = {81021, 81022}
+
+    },
     -- Summoning stars from the sky.
     starfall = {
         id = 48505,
@@ -1399,7 +1409,7 @@ spec:RegisterStateFunction( "swap_form", function( form )
     removeBuff( "form" )
     removeBuff( "maul" )
 
-    if form == "bear_form" or form == "dire_bear_form" then
+    if form == "bear_form" then
         spend( rage.current, "rage" )
         if talent.furor.rank==5 then
             gain( 10, "rage" )
@@ -1428,7 +1438,7 @@ end )
 
 -- Abilities
 spec:RegisterAbilities( {
-        --Increases your attack power by 25%. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from World of Warcraft: Cataclysm.
+        --Increases your attack power by 25%. In the Feral Abilities category. Requires Druid.  
         aggression = {
             id = 84735,
             cast = 0,
@@ -1485,7 +1495,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Stuns the target for 4 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from Classic World of Warcraft.
+        --Stuns the target for 4 sec. In the Feral Abilities category. Requires Druid.  A spell from Classic World of Warcraft.
         bash = {
             id = 5211,
             cast = 0,
@@ -1605,7 +1615,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Forces all nearby enemies within 10 yards to focus attacks on you for 6 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Forces all nearby enemies within 10 yards to focus attacks on you for 6 sec. In the Feral Abilities category. Requires Druid. 
         challenging_roar = {
             id = 5209,
             cast = 0,
@@ -1624,7 +1634,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Claw the enemy, causing 77% of normal damage plus 637.  Awards 1 combo point. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Claw the enemy, causing 77% of normal damage plus 637.  Awards 1 combo point. In the Feral Abilities category. Requires Druid. 
         claw = {
             id = 1082,
             cast = 0,
@@ -1683,7 +1693,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Increases movement speed by 70% while in Cat Form for 15 sec.  Does not break prowling. In the Feral Abilities category. Requires Druid. A spell.
+        --Increases movement speed by 70% while in Cat Form for 15 sec.  Does not break prowling. In the Feral Abilities category. Requires Druid. 
         dash = {
             id = 1850,
             cast = 0,
@@ -1703,7 +1713,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --The Druid roars, reducing the physical damage caused by all enemies within 10 yards by 10% for 30 sec. In the Feral Abilities category. A spell.
+        --The Druid roars, reducing the physical damage caused by all enemies within 10 yards by 10% for 30 sec. In the Feral Abilities category. 
         demoralizing_roar = {
             id = 99,
             cast = 0,
@@ -1723,7 +1733,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Allows the druid to clear all roots when Shapeshifting in addition to snares. In the Restoration Abilities category. Learn how to use this in our class guide.
+        --Allows the druid to clear all roots when Shapeshifting in addition to snares. In the Restoration Abilities category. 
         disentanglement = {
             id = 96429,
             cast = 0,
@@ -1742,7 +1752,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --In the Balance Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from World of Warcraft: Cataclysm. Always up to date.
+        --In the Balance Abilities category. Requires Druid.   
         eclipse_mastery_driver_passive = {
             id = 79577,
             cast = 0,
@@ -1761,7 +1771,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Generates 20 Rage, and then generates an additional 10 Rage over 10 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Generates 20 Rage, and then generates an additional 10 Rage over 10 sec. In the Feral Abilities category. Requires Druid. 
         enrage = {
             id = 5229,
             cast = 0,
@@ -1844,7 +1854,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Reduces damage from falling. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from Classic World of Warcraft.
+        --Reduces damage from falling. In the Feral Abilities category. Requires Druid.  A spell from Classic World of Warcraft.
         feline_grace = {
             id = 20719,
             cast = 0,
@@ -1863,27 +1873,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Causes you to leap behind an enemy, dazing them for 3 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
-        feral_charge_cat = {
-            id = 49376,
-            cast = 0,
-            cooldown = 30,
-            gcd = "off",
-    
-            spend = 10, 
-            spendType = "energy",
-    
-            startsCombat = true,
-            texture = 304501,
-    
-            --fix:
-            stance = "Cat Form",
-            handler = function()
-                --"/cata/spell=50259/dazed"
-            end,
-    
-        },
-        --Causes you to charge an enemy, immobilizing them for 4 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Causes you to charge an enemy, immobilizing them for 4 sec. In the Feral Abilities category. Requires Druid. 
         feral_charge_bear = {
             id = 16979,
             cast = 0,
@@ -1895,15 +1885,43 @@ spec:RegisterAbilities( {
     
             startsCombat = true,
             texture = 132183,
+            talent = "feral_charge",
     
             --fix:
             stance = "Bear Form",
             handler = function()
-                --"/cata/spell=45334/feral-charge-effect"
+                if talent.stampede.enabled then
+                    applyBuff("stampede_bear")
+                end
+                applyDebuff("target", "feral_charge_effect", 4)
             end,
     
         },
-        --Reduces the chance enemies have to detect you while Prowling. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Causes you to leap behind an enemy, dazing them for 3 sec. In the Feral Abilities category. Requires Druid. 
+        feral_charge_cat = {
+            id = 49376,
+            cast = 0,
+            cooldown = 30,
+            gcd = "off",
+    
+            spend = 10, 
+            spendType = "energy",
+    
+            startsCombat = true,
+            texture = 304501,
+            talent = "feral_charge",
+    
+            --fix:
+            stance = "Cat Form",
+            handler = function()
+                if talent.stampede.enabled then
+                    applyBuff("stampede_cat")
+                end
+                applyDebuff("taget", "dazed", 3)
+            end,
+    
+        },
+        --Reduces the chance enemies have to detect you while Prowling. In the Feral Abilities category. Requires Druid. 
         feral_instinct = {
             id = 87335,
             cast = 0,
@@ -2022,7 +2040,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Healing increased by 25%. In the Restoration Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from World of Warcraft: Cataclysm.
+        --Healing increased by 25%. In the Restoration Abilities category. Requires Druid.  
         gift_of_nature = {
             id = 87305,
             cast = 0,
@@ -2038,7 +2056,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Taunts the target to attack you, but has no effect if the target is already attacking you. In the Feral Abilities category. Requires Druid. A spell.
+        --Taunts the target to attack you, but has no effect if the target is already attacking you. In the Feral Abilities category. Requires Druid. 
         growl = {
             id = 6795,
             cast = 0,
@@ -2169,7 +2187,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --The enemy target is swarmed by insects, causing 816 Nature damage over 12 sec. In the Balance Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --The enemy target is swarmed by insects, causing 816 Nature damage over 12 sec. In the Balance Abilities category. Requires Druid. 
         insect_swarm = {
             id = 5570,
             cast = 0,
@@ -2344,7 +2362,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Allows 50% of your mana regeneration from Spirit to continue while in combat. In the Restoration Abilities category. Requires Druid. A spell.
+        --Allows 50% of your mana regeneration from Spirit to continue while in combat. In the Restoration Abilities category. Requires Druid. 
         meditation = {
             id = 85101,
             cast = 0,
@@ -2546,7 +2564,7 @@ spec:RegisterAbilities( {
             copy = {17080, 80879}
         },
 
-        --Allows the Druid to prowl around, but reduces your movement speed by 30%.  Lasts until cancelled. In the Feral Abilities category. A spell. Always up to date.
+        --Allows the Druid to prowl around, but reduces your movement speed by 30%.  Lasts until cancelled. In the Feral Abilities category.  
         prowl = {
             id = 5215,
             cast = 0,
@@ -2564,7 +2582,7 @@ spec:RegisterAbilities( {
                 applyBuff( "prowl" )
             end,
         },
-        --In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell from World of Warcraft: Cataclysm. Always up to date.
+        --In the Feral Abilities category. Requires Druid.   
         pulverize = {
             id = 80951,
             cast = 0,
@@ -2577,7 +2595,7 @@ spec:RegisterAbilities( {
             texture = 132318,
     
             --fix:
-            stance = "Bear Form, Dire Bear Form",
+            stance = "Bear Form",
             handler = function()
             end,
     
@@ -2618,12 +2636,12 @@ spec:RegisterAbilities( {
             startsCombat = true,
             texture = 132141,
     
-            buff = "prowl", --add stampede
+            usable = function() return buff.stampede_cat.up or buff.prowl.up, "must have stampede_cat-buff or be prowling behind target" end,
             --fix:
             stance = "Cat Form",
             handler = function()
                 removeBuff( "clearcasting" )
-                removeBuff( "stampede")
+                removeBuff( "stampede_cat")
                 gain( 1, "combo_points" )
             end,
             copy = {81170}
@@ -2669,7 +2687,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Heals the target for 1307 every 3 sec for 12 sec. In the Restoration Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Heals the target for 1307 every 3 sec for 12 sec. In the Restoration Abilities category. Requires Druid. 
         rejuvenation = {
             id = 774,
             cast = 0,
@@ -2814,7 +2832,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Reduces the mana cost of all shapeshifting by 60%. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Reduces the mana cost of all shapeshifting by 60%. In the Feral Abilities category. Requires Druid. 
         shapeshifter = {
             id = 87793,
             cast = 0,
@@ -2903,7 +2921,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Soothes the target, dispelling all enrage effects. In the Balance Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Soothes the target, dispelling all enrage effects. In the Balance Abilities category. Requires Druid. 
         soothe = {
             id = 2908,
             cast = 0,
@@ -2940,7 +2958,7 @@ spec:RegisterAbilities( {
             end,
             copy= {81016, 81021, 81022}
         },
-        --The Druid roars, increasing the movement speed of all friendly players within 10 yards by 60% for 8 sec. Does not break prowling. Learn how to use this in our class guide.
+        --The Druid roars, increasing the movement speed of all friendly players within 10 yards by 60% for 8 sec. Does not break prowling. 
         stampeding_roar_cat = {
             id = 77764,
             cast = 0,
@@ -2960,7 +2978,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --The Druid roars, increasing the movement speed of all friendly players within 10 yards by 60% for 8 sec. In the Feral Abilities category. A spell.
+        --The Druid roars, increasing the movement speed of all friendly players within 10 yards by 60% for 8 sec. In the Feral Abilities category. 
         stampeding_roar_bear = {
             id = 77761,
             cast = 0,
@@ -3041,7 +3059,7 @@ spec:RegisterAbilities( {
             end,
 
         },
-        --Reduces all damage taken by 50% for 12 sec.  Only usable while in Bear Form or Cat Form. In the Druid Talents category. Learn how to use this in our class guide.
+        --Reduces all damage taken by 50% for 12 sec.  Only usable while in Bear Form or Cat Form. In the Druid Talents category. 
         survival_instincts = {
             id = 61336,
             cast = 0,
@@ -3120,7 +3138,7 @@ spec:RegisterAbilities( {
             end,
 
         },
-        --Swipe nearby enemies, inflicting 929 damage.  Damage increased by attack power. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Swipe nearby enemies, inflicting 929 damage.  Damage increased by attack power. In the Feral Abilities category. Requires Druid. 
         swipe_bear = {
             id = 779,
             cast = 0,
@@ -3140,7 +3158,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Swipe nearby enemies, inflicting 526% weapon damage. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide.
+        --Swipe nearby enemies, inflicting 526% weapon damage. In the Feral Abilities category. Requires Druid. 
         swipe_cat = {
             id = 62078,
             cast = 0,
@@ -3160,7 +3178,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Teleports the caster to the Moonglade. In the Balance Abilities category. Requires Druid. Learn how to use this in our class guide. A spell.
+        --Teleports the caster to the Moonglade. In the Balance Abilities category. Requires Druid.  
         teleport_moonglade = {
             id = 18960,
             cast = 10,
@@ -3218,7 +3236,7 @@ spec:RegisterAbilities( {
             end,
     
         },
-        --Increases physical damage done by 15% for 6 sec. In the Feral Abilities category. Requires Druid. Learn how to use this in our class guide. A spell.
+        --Increases physical damage done by 15% for 6 sec. In the Feral Abilities category. Requires Druid.  
         tigers_fury = {
             id = 5217,
             cast = 0,
