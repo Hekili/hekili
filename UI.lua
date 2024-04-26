@@ -26,7 +26,7 @@ local GetSpecializationInfo = _G.GetSpecializationInfo or function()
     return id, baseName, name
 end
 local HasVehicleActionBar, HasOverrideActionBar, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, UnitHasVehicleUI, UnitOnTaxi
-local IsInPetBattle = Hekili.IsWrath() and function() return false end or C_PetBattles.IsInBattle
+local IsInPetBattle = Hekili.IsClassic() and function() return false end or C_PetBattles.IsInBattle
 local IsSpellOverlayed = _G.IsSpellOverlayed or function() return false end
 
 local Masque, MasqueGroup
@@ -2494,7 +2494,7 @@ do
         b.Caption:ClearAllPoints()
         b.Caption:SetPoint( capAnchor, b, capAnchor, conf.captions.x or 0, conf.captions.y or 0 )
         b.Caption:SetHeight( b:GetHeight() / 2 )
-        b.Caption:SetJustifyV( capAnchor:match("RIGHT") and "RIGHT" or ( capAnchor:match( "LEFT" ) and "LEFT" or "CENTER" ) )
+        b.Caption:SetJustifyV( capAnchor:match("TOP") and "TOP" or ( capAnchor:match( "BOTTOM" ) and "BOTTOM" or "MIDDLE" ) )
         b.Caption:SetJustifyH( conf.captions.align or "CENTER" )
         b.Caption:SetTextColor( unpack( conf.captions.color ) )
         b.Caption:SetWordWrap( false )
