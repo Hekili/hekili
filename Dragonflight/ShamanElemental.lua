@@ -1080,7 +1080,7 @@ spec:RegisterAura( "primal_fracture", {
     copy = "t30_4pc_ele"
 } )
 
-spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212 )
+spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212, 217238, 217240, 217236, 217237, 217239 )
 spec:RegisterAuras( {
     molten_slag = {
         id = 426577,

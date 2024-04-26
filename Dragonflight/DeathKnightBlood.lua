@@ -867,7 +867,7 @@ spec:RegisterAura( "vigorous_lifeblood", {
 } )
 
 -- Tier 30
-spec:RegisterGear( "tier30", 202464, 202462, 202461, 202460, 202459 )
+spec:RegisterGear( "tier30", 202464, 202462, 202461, 202460, 202459, 217223, 217225, 217221, 217222, 217224 )
 -- 2 pieces (Blood) : Heart Strike and Blood Boil deal 20% increased damage and have a 10% chance to grant Vampiric Blood for 5 sec.
 -- 4 pieces (Blood) : When you would gain Vampiric Blood you are infused with Vampiric Strength, granting you 10% Strength for 5 sec. Your Heart Strike and Blood Boil extend the duration of Vampiric Strength by 0.5 sec.
 spec:RegisterAura( "vampiric_strength", {

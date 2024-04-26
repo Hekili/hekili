@@ -678,7 +678,7 @@ spec:RegisterAura( "shadowflame_vulnerability", {
 } )
 
 
-spec:RegisterGear( "tier29", 200360, 200362, 200363, 200364, 200365 )
+spec:RegisterGear( "tier29", 200360, 200362, 200363, 200364, 200365, 217188, 217190, 217186, 217187, 217189 )
 spec:RegisterAuras( {
     kicks_of_flowing_momentum = {
         id = 394944,

@@ -516,7 +516,7 @@ local TriggerBombardier = setfenv( function()
 end, state )
 
 
-spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
+spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391, 217183, 217185, 217181, 217182, 217184 )
 spec:RegisterAura( "bestial_barrage", {
     id = 394388,
     duration = 15,

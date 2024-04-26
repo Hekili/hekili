@@ -658,7 +658,7 @@ spec:RegisterAura( "limitless_potential", {
 } )
 
 
-spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486 )
+spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486, 217178, 217180, 217176, 217177, 217179 )
 -- 2 pieces (Devastation) : Disintegrate and Pyre pierce enemies with Obsidian Shards, dealing 12% of damage done as Volcanic damage over 8 sec.
 spec:RegisterAura( "obsidian_shards", {
     id = 409776,

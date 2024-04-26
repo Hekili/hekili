@@ -281,7 +281,7 @@ spec:RegisterAuras( {
     }
 } )
 
-spec:RegisterGear( "tier30", 202543, 202542, 202541, 202545, 202540 )
+spec:RegisterGear( "tier30", 202543, 202542, 202541, 202545, 202540, 217202, 217204, 217205, 217201, 217203 )
 spec:RegisterAuras( {
     darkflame_embers = {
         id = 409502,

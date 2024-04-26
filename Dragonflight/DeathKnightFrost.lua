@@ -840,7 +840,7 @@ spec:RegisterTotem( "ghoul", 1100170 )
 spec:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
 
 -- Tier 30
-spec:RegisterGear( "tier30", 202464, 202462, 202461, 202460, 202459 )
+spec:RegisterGear( "tier30", 202464, 202462, 202461, 202460, 202459, 217223, 217225, 217221, 217222, 217224 )
 -- 2 pieces (Frost) : Howling Blast damage increased by 20%. Consuming Rime increases the damage of your next Frostwyrm's Fury by 5%, stacking 10 times. Pillar of Frost calls a Frostwyrm's Fury at 40% effectiveness that cannot Freeze enemies.
 spec:RegisterAura( "wrath_of_the_frostwyrm", {
     id = 408368,

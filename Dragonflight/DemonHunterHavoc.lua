@@ -891,7 +891,7 @@ spec:RegisterAura( "seething_potential", {
     max_stack = 5
 } )
 
-spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266 )
+spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266, 217228, 217230, 217226, 217227, 217229 )
 -- (2) Blade Dance automatically triggers Throw Glaive on your primary target for $s3% damage and each slash has a $s2% chance to Throw Glaive an enemy for $s1% damage.
 -- (4) Throw Glaive reduces the remaining cooldown of The Hunt by ${$s1/1000}.1 sec, and The Hunt's damage over time effect lasts ${$s2/1000} sec longer.
 

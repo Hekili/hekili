@@ -858,7 +858,7 @@ spec:RegisterAura( "bloody_healing", {
 } )
 
 -- Tier 30
-spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
+spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513, 217193, 217195, 217191, 217192, 217194 )
 -- 2 pieces (Guardian) : When you take damage, Mangle and Thrash damage and Rage generation are increased by 15% for 8 sec and you heal for 6% of damage taken over 8 sec.
 spec:RegisterAura( "furious_regeneration", {
     id = 408504,

@@ -1204,7 +1204,7 @@ local ExpireNesingwarysTrappingApparatus = setfenv( function()
 end, state )
 
 
-spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221 )
+spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221, 217183, 217185, 217181, 217182, 217184 )
 
 spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
 spec:RegisterAura( "lethal_command", {

@@ -808,7 +808,7 @@ spec:RegisterStateExpr( "comet_storm_remains", function () return buff.active_co
 
 
 
-spec:RegisterGear( "tier31", 207288, 207289, 207290, 207291, 207293 )
+spec:RegisterGear( "tier31", 207288, 207289, 207290, 207291, 207293, 217232, 217234, 217235, 217231, 217233 )
 
 spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549 )
 

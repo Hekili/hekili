@@ -742,7 +742,7 @@ spec:RegisterAura( "searing_rage", {
     max_stack = 5
 } )
 
-spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549 )
+spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549, 217232, 217234, 217235, 217231, 217233 )
 spec:RegisterAuras( {
     charring_embers = {
         id = 408665,

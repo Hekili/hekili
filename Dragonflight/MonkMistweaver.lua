@@ -562,7 +562,7 @@ spec:RegisterAuras( {
 } )
 
 
-spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248 )
+spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248, 217188, 217190, 217186, 217187, 217189 )
 spec:RegisterAuras( {
     chi_harmony = {
         id = 423439,

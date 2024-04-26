@@ -661,7 +661,7 @@ spec:RegisterAura( "heartfire", {
 
 
 -- Gear Sets
-spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
+spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418, 217198, 217200, 217196, 217197, 217199 )
 spec:RegisterAuras( {
     ally_of_the_light = {
         id = 394714,

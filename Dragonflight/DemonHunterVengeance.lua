@@ -759,7 +759,7 @@ spec:RegisterAura( "recrimination", {
     max_stack = 1
 } )
 
-spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266 )
+spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266, 217228, 217230, 217226, 217227, 217229 )
 -- (2) When you attack a target afflicted by Sigil of Flame, your damage and healing are increased by 2% and your Stamina is increased by 2% for 8 sec, stacking up to 5.
 -- (4) Sigil of Flame's periodic damage has a chance to flare up, shattering an additional Soul Fragment from a target and dealing $425672s1 additional damage. Each $s1 Fury you spend reduces its cooldown by ${$s2/1000}.1 sec.
 spec:RegisterAura( "fiery_resolve", {

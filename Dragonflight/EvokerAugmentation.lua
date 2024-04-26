@@ -563,7 +563,7 @@ end )
 
 spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
 spec:RegisterGear( "tier30", 202491, 202489, 202488, 202487, 202486 )
-spec:RegisterGear( "tier31", 207225, 207226, 207227, 207228, 207230 )
+spec:RegisterGear( "tier31", 207225, 207226, 207227, 207228, 207230, 217178, 217180, 217176, 217177, 217179 )
 spec:RegisterAuras( {
     t31_2pc_proc = {
         duration = 3600,

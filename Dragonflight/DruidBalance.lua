@@ -1735,13 +1735,13 @@ end )
 
 
 -- Tier 29
-spec:RegisterGear( "tier29", 200351, 200353, 200354, 200355, 200356 )
+spec:RegisterGear( "tier29", 200351, 200353, 200354, 200355, 200356, 217193, 217195, 217191, 217192, 217194 )
 spec:RegisterSetBonuses( "tier29_2pc", 393632, "tier29_4pc", 393633 )
 spec:RegisterAuras( {
     gathering_starstuff = {
         id = 394412,
         duration = 15,
-        max_stack = 1,
+        max_stack = 3,
     },
     touch_the_cosmos = {
         id = 394414,

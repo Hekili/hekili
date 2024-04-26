@@ -334,7 +334,7 @@ spec:RegisterAura( "rite_of_ruvaraad", {
     max_stack = 1
 } )
 
-spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275 )
+spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275, 217212, 217214, 217215, 217211, 217213 )
 spec:RegisterAuras( {
     doom_brand = {
         id = 423583,

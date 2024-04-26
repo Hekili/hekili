@@ -748,7 +748,7 @@ do
 end
 
 
-spec:RegisterGear( "tier31", 207288, 207289, 207290, 207291, 207293 )
+spec:RegisterGear( "tier31", 207288, 207289, 207290, 207291, 207293, 217232, 217234, 217235, 217231, 217233 )
 spec:RegisterAuras( {
     forethought = {
         id = 424293,

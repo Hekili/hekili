@@ -475,7 +475,7 @@ spec:RegisterAuras( {
 } )
 
 
-spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
+spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450, 217198, 217200, 217196, 217197, 217199 )
 -- 2pc is based on crits which aren't guaranteed, so we can't proactively model them.
 
 local HandleAwakening = setfenv( function()

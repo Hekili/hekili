@@ -397,7 +397,7 @@ spec:RegisterHook( "runHandler", function( action )
     end
 end )
 
-spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382 )
+spec:RegisterGear( "tier29", 200381, 200383, 200378, 200380, 200382, 217178, 217180, 217176, 217177, 217179 )
 spec:RegisterAuras( {
     time_bender = {
         id = 394544,

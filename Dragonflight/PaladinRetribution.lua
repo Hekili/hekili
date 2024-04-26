@@ -910,7 +910,7 @@ end )
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
 
 
-spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194 )
+spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194, 217198, 217200, 217196, 217197, 217199 )
 spec:RegisterAura( "echoes_of_wrath", {
     id = 423590,
     duration = 12,

@@ -1376,7 +1376,7 @@ spec:RegisterAura( "predator_revealed", {
     max_stack = 1
 } )
 
-spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257 )
+spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257, 217193, 217195, 217191, 217192, 217194 )
 -- (2) Feral Frenzy grants Smoldering Frenzy, increasing all damage you deal by $422751s1% for $422751d.
 -- (4) Feral Frenzy's cooldown is reduced by ${$s1/-1000} sec. During Smoldering Frenzy, enemies burn for $422751s6% of damage you deal as Fire over $422779d.
 spec:RegisterAuras( {

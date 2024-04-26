@@ -419,7 +419,7 @@ spec:RegisterAuras( {
     }
 } )
 
-spec:RegisterGear( "tier31", 207279, 207280, 207281, 207282, 207284 )
+spec:RegisterGear( "tier31", 207279, 207280, 207281, 207282, 207284, 217202, 217204, 217205, 217201, 217203 )
 
 
 spec:RegisterStateTable( "priest", {
