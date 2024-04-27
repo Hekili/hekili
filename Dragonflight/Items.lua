@@ -644,8 +644,7 @@ all:RegisterAbilities( {
 
         item = 193732,
 
-
-        usable = function() return active_dot.skewering_cold > 0, "requires skewering_cold stacks" end,
+        -- usable = function() return active_dot.skewering_cold > 0, "requires skewering_cold stacks" end,
         handler = function()
             if debuff.skewering_cold.up then
                 removeDebuff( "target", "skewering_cold" )
