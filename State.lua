@@ -27,16 +27,12 @@ local LSR = LibStub( "SpellRange-1.0" )
 local class = Hekili.Class
 local scripts = Hekili.Scripts
 
-local GetMeleeHaste = _G.GetMeleeHaste or function() return GetCombatRatingBonus( CR_HASTE_MELEE ) end
-local GetRangedHaste = _G.GetRangedHaste or function() return GetCombatRatingBonus( CR_HASTE_RANGED ) end
 local GetSpecialization = _G.GetSpecialization or function() return GetActiveTalentGroup() end
 local GetSpecializationInfo = _G.GetSpecializationInfo or function()
     local name, baseName, id = UnitClass( "player" )
     return id, baseName, name
 end
 local IsInJailersTower = _G.IsInJailersTower or function() return false end
-local UnitEffectiveLevel = _G.UnitEffectiveLevel or _G.UnitLevel
-local UnitSpellHaste = _G.UnitSpellHaste or function() return GetCombatRatingBonus( CR_HASTE_SPELL ) end
 
 -- This will be our environment table for local functions.
 local state = Hekili.State
