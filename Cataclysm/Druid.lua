@@ -375,6 +375,34 @@ spec:RegisterStateExpr("rip_now", function()
     return rtn
 end)
 
+local function calc_tf_energy_thresh(leeway)
+    local delayTime = leeway + (state.buff.clearcasting.up and 1 or 0)
+    return (40.0 - delayTime *  state.energy.regen)
+end
+
+-- Delay Rip refreshes if Tiger's Fury will be usable soon enough for the snapshot to outweigh the lost Rip ticks from waiting
+spec:RegisterStateExpr("delay_rip", function()
+    local maxRipTicks = aura.rip.duration/aura.rip.tick_time
+    local finalTickLeeway = debuff.bleed.up and debuff.rip.tick_time_remains or 0
+
+    if rip_now and not buff.tigers_fury.up then
+        local buffedTickCount = math.min(maxRipTicks, math.floor((ttd - finalTickLeeway) / aura.rip.tick_time))
+        local delayBreakpoint = finalTickLeeway + 0.15 * buffedTickCount * aura.rip.tick_time
+
+        if tf_expected_before(time, time + delayBreakpoint) then
+            local delaySeconds = delayBreakpoint
+            local energyToDump = energy.current + delaySeconds * energy.gain - calc_tf_energy_thresh(latency)
+            local secondsToDump = math.ceil(energyToDump / action.shred.DefaultCast.cost)
+
+            if secondsToDump < delaySeconds then
+                return true
+            end
+        end
+    end
+
+    return false
+end)
+
 spec:RegisterStateExpr("mangle_refresh_now", function()
     --!debuff.mangle.up&ttd>=1
     return (not debuff.mangle.up) and ttd >= 1
