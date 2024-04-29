@@ -33,6 +33,7 @@ local GetSpecializationInfo = _G.GetSpecializationInfo or function()
     return id, baseName, name
 end
 local IsInJailersTower = _G.IsInJailersTower or function() return false end
+local GetMasteryEffect = _G.GetMasteryEffect or function() return GetCombatRating(CR_MASTERY)/1.79280040 end
 
 -- This will be our environment table for local functions.
 local state = Hekili.State
