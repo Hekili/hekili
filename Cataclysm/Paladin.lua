@@ -51,7 +51,7 @@ end )
 
 -- Talents
 spec:RegisterTalents( {
-    --Holy
+    -- Holy
     arbiter_of_the_light            = { 10113, 2, 20359, 20360 },
     protector_of_the_innocent       = { 12189, 3, 20138, 20139, 20140 },
     judgements_of_the_pure          = { 10127, 3, 53671, 53673, 54151 },
@@ -73,7 +73,7 @@ spec:RegisterTalents( {
     blessed_life                    = { 10117, 2, 31828, 31829 },
     light_of_dawn                   = { 11203, 1, 85222 },
 
-    --Protection
+    -- Protection
     divinity                        = { 12198, 3, 63646, 63647, 63648 },
     seals_of_the_pure               = { 10324, 2, 20224, 20225 },
     eternal_glory                   = { 12152, 2, 87163, 87164 },
@@ -95,7 +95,7 @@ spec:RegisterTalents( {
     shield_of_the_templar           = { 10340, 3, 31848, 31849, 84854 },
     ardent_defender                 = { 10350, 1, 31850 },
 
-    --Retribution
+    -- Retribution
     eye_for_an_eye                  = { 10647, 2, 9799, 25988 },
     crusade                         = { 10651, 3, 31866, 31867, 31868 },
     improved_judgement              = { 11612, 2, 87174, 87175 },
@@ -126,15 +126,25 @@ spec:RegisterAuras( {
         aliasMode = "first",
         aliasType = "buff",
     },
+    stat_buff = {
+        alias = { "blessing_of_kings", "mark_of_the_wild" },
+        aliasMode = "first",
+        aliasType = "buff"
+    },
+    seal = {
+        alias = { "seal_of_truth", "seal_of_righteousness", "seal_of_insight", "seal_of_justice" },
+        aliasMode = "first",
+        aliasType = "buff"
+    },
     active_consecration = {
-        duration = function() return 8 + (glyph.consecration.enabled and 2 or 0) end,
+        duration = function() return 10 + (glyph.consecration.enabled and 2 or 0) end,
         max_stack = 1,
         generate = function ( t )
             local applied = action.consecration.lastCast
 
-            if applied and now - applied < 8 + (glyph.consecration.enabled and 2 or 0) then
+            if applied and now - applied < 10 + (glyph.consecration.enabled and 2 or 0) then
                 t.count = 1
-                t.expires = applied + 8 + (glyph.consecration.enabled and 2 or 0)
+                t.expires = applied + 10 + (glyph.consecration.enabled and 2 or 0)
                 t.applied = applied
                 t.caster = "player"
                 return
@@ -146,31 +156,294 @@ spec:RegisterAuras( {
             t.caster = "nobody"
         end,
     },
-    -- Ardent Defender recently prevented your death.
-    ardent_defender = {
-        id = 66233,
-        duration = 120,
-        max_stack = 1,
-    },
-    -- Increases speed by $s2%.
-    argent_charger = {
-        id = 66906,
+
+    -- Auras
+    -- Increases armor by $s2%.
+    devotion_aura = {
+        id = 465,
         duration = 3600,
         max_stack = 1,
+        shared = "player"
     },
-    -- Increases speed by $s2%.
-    argent_warhorse = {
-        id = 66907,
+    -- Does $s2% Holy damage to anyone who strikes you.
+    retribution_aura = {
+        id = 7294,
         duration = 3600,
         max_stack = 1,
+        shared = "player",
     },
-    -- Concentration Aura provides immunity to Silence and Interrupt effects.  Effectiveness of all other auras increased by $s1%.
+    -- Reduces casting or channeling time lost when damaged by 35%.
+    concentration_aura = {
+        id = 19746,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+    },
+    -- Increases Fire, Frost and Shadow resistance by $s1.
+    resistance_aura = {
+        id = 19891,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+    },
+    -- Mounted speed increased by 20%. This does not stack with other movement speed increasing effects.
+    crusader_aura = {
+        id = 32223,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player",
+    },
+
+    -- Seals
+    -- Single-target attacks cause Holy damage over 15 sec.
+    seal_of_truth = {
+        id = 31801,
+        duration = 1800,
+        max_stack = 1
+    },
+    -- Melee attacks cause an additional [Mainhand weapon base speed * (0.011 * Attack power + 0.022 * Spell power) * (100) / 100] Holy damage.
+    seal_of_righteousness = {
+        id = 20154,
+        duration = 1800,
+        max_stack = 1
+    },
+    -- Melee attacks have a chance to heal you and regenerate mana.
+    seal_of_insight = {
+        id = 20165,
+        duration = 1800,
+        max_stack = 1
+    },
+    -- Melee attacks limit maximum run speed for 5 sec and deal [Mainhand weapon base speed * (0.005 * Attack power + 0.01 * Spell power) * (100) / 100] additional Holy damage.
+    seal_of_justice = {
+        id = 20164,
+        duration = 1800,
+        max_stack = 1
+    },
+
+    -- Class Buffs
+    -- All damage and healing increased by 20%
+    avenging_wrath = {
+        id = 31884,
+        duration = 20,
+        max_stack = 1
+    },
+    -- Places a Blessing on the friendly target, increasing Strength, Agility, Stamina, and Intellect by 5%, and all magical resistances by 97, for 1 hour.  
+    -- If target is in your party or raid, all party and raid members will be affected. Players may only have one Blessing on them per Paladin at any one time.
+    blessing_of_kings = {
+        id = 20217,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player"
+    },
+    -- Places a Blessing on the friendly target, increasing melee attack power by 20%, increasing ranged attack power by 10%, and restoring 0 mana every 5 seconds for 1 hour.  
+    -- If target is in your party or raid, all party and raid members will be affected. Players may only have one Blessing on them per Paladin at any one time.
+    blessing_of_might = {
+        id = 19740,
+        duration = 3600,
+        max_stack = 1,
+        shared = "player"
+    },
+    -- Gaining 12% of total mana. Healing spells reduced by 50%.
+    divine_plea = {
+        id = 54428,
+        duration = 9,
+        max_stack = 1
+    },
+    -- Damage taken reduced by 20%.
+    -- Glyph of Divine Protection: Also reduced magical damage by 20%.
+    divine_protection = {
+        id = 498,
+        duration = 10,
+        max_stack = 1
+    },
+    -- Immune to all attacks and spells, but reduces all damage you deal by 50%.
+    divine_shield = {
+        id = 642,
+        duration = 8,
+        max_stack = 1
+    },
+    -- TODO: This effect changes based on spec, it needs additional logic to determine the correct effect.
+    -- Guardian of Ancient Kings, it does a lot of stuff.
+    guardian_of_ancient_kings = {
+        id = 86150,
+        duration = 30,
+        max_stack = 1
+    },
+    -- Immune to movement impairing effects.
+    hand_of_freedom = {
+        id = 1044,
+        duration = function() return 6 + 2 * talent.guardians_favor.rank end,
+        max_stack = 1
+    },
+    -- Immune to physical attacks.  Cannot attack or use physical abilities.
+    hand_of_protection = {
+        id = 1022,
+        duration = 10,
+        max_stack = 1
+    },
+    -- Transfers 30% damage taken to the paladin.
+    hand_of_sacrifice = {
+        id = 6940,
+        duration = 12,
+        max_stack = 1
+    },
+    -- Reduces total threat by 2% each second.
+    -- Glyph of Salvation: Threat temporarily reduced.
+    hand_of_salvation = {
+        id = 1038,
+        duration = 10,
+        max_stack = 1
+    },
+    -- Imbues a friendly target with radiant energy, healing that target and all allies within 10 yards for 2428 and another 473 every 1 sec for 3 sec. Healing effectiveness diminishes for each player target beyond 6.
+    holy_radiance = {
+        id = 82327,
+        duration = 3,
+        max_stack = 1
+    },
+    -- Increases Holy damage done by 30%.
+    -- TODO: Create proper Holy Power tracking and update this
+    -- Duration is 4 seconds per Holy Power spent, increased by the Inquiry of Faith talent.
+    inquisition = {
+        id = 84963,
+        duration = function()
+            local holyPowerSpent = math.min(action.holy_power, 3)
+            local inquisitionRank = talent.inquiry_of_faith.rank
+
+            if inquisitionRank == 1 then
+                return holyPowerSpent * 4 * 1.66
+            elseif inquisitionRank == 2 then
+                return holyPowerSpent * 4 * 2.33
+            elseif inquisitionRank == 3 then
+                return holyPowerSpent * 4 * 3.00
+            else
+                return holyPowerSpent * 4
+            end
+        end,
+        max_stack = 1
+    },
+    -- Increases your threat generation while active.
+    righteous_fury = {
+        id = 25780,
+        duration = 3600,
+        max_stack = 1
+    },
+
+
+
+
+    -- Holy Buffs
+    -- Concentration Aura provides immunity to Silence and Interrupt effects.  Effectiveness of Devotion Aura, Resistance Aura, and Retribution Aura increased by 100%.
     aura_mastery = {
         id = 31821,
         duration = 6,
         max_stack = 1,
         shared = "player"
     },
+    -- Beacon of Light.
+    beacon_of_light = {
+        id = 53563,
+        duration = 300,
+        max_stack = 1,
+        dot = "buff",
+        friendly = true
+    },
+    -- Spell haste increased by 20%. Spell critical chance increased by 20%.
+    divine_favor = {
+        id = 31842,
+        duration = 20,
+        max_stack = 1
+    },
+    -- Reduces the cast time of your next Flash of Light, Holy Light, Divine Light or Holy Radiance by 0.75 sec.
+    infusion_of_light = {
+        id = 53672,
+        duration = 15,
+        max_stack = 1,
+        copy = { 54149 },
+    },
+    -- Casting and melee speed increased by 3%. Mana regeneration from Spirit increased by 10%.
+    judgements_of_the_pure = {
+        id = 53657,
+        duration = 60,
+        max_stack = 1,
+        copy = { 53655, 53656 }
+    },
+
+    -- Protection Buffs
+    -- Damage taken reduced by 20%. The next attack that would otherwise kill you will instead cause you to be healed for 15% of your maximum health.
+    ardent_defender = {
+        id = 31850,
+        duration = 10,
+        max_stack = 1
+    },
+    -- 30% of all damage taken by party members redirected to the Paladin.
+    divine_sacrifice = {
+        id = 64205,
+        duration = 10,
+        max_stack = 1
+    },
+    -- Increases damage blocked by 20%.
+    holy_shield = {
+        id = 20925,
+        duration = 10,
+        max_stack = 1
+    },
+    -- Attack speed slowed.
+    judgements_of_the_just = {
+        id = 68055,
+        duration = 20,
+        max_stack = 1
+    },
+    -- Each weapon swing generates an additional attack.
+    reckoning = {
+        id = 20178,
+        duration = 8,
+        max_stack = 4,
+        copy = { 20178 }
+    },
+    -- Your next Shield of the Righteous will be a critical strike.
+    sacred_duty = {
+        id = 85433,
+        duration = 10,
+        max_stack = 1,
+        copy = { 85433 }
+    },
+
+    -- Retribution Buffs
+    -- Damage and healing increasedy by 1/2/3%
+    conviction = {
+        id = 20050,
+        duration = 15,
+        max_stack = 3,
+        copy = { 20052, 20053 }
+    },
+    -- Your next Holy Light heals for an additional 100%.
+    crusader = {
+        id = 94686,
+        duration = 15,
+        max_stack = 1
+    },
+    -- Regaining 3% of your base mana per second.
+    judgements_of_the_wise = {
+        id = 31930,
+        duration = 10,
+        max_stack = 1
+    },
+
+    -- NOTE: Should Replenishment be in the paladin lua?
+    -- Replenishes 1% of maximum mana per 10 sec.
+    replenishment = {
+        id = 57669,
+        duration = 15,
+        max_stack = 1
+    },
+    -- Your next Exorcism is instant, free, and causes 100% additional damage.
+    the_art_of_war = {
+        id = 59578,
+        duration = 15,
+        max_stack = 1
+    },
+
+    -- TODO: Continue updating auras list, this was my stopping point
     -- Dazed.
     avengers_shield = {
         id = 48827,
@@ -178,36 +451,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 31935, 32699, 32700, 48826, 48827 },
     },
-    -- All damage and healing caused increased by $s1%.
-    avenging_wrath = {
-        id = 31884,
-        duration = 20,
-        max_stack = 1,
-    },
-    -- Beacon of Light.
-    beacon_of_light = {
-        id = 53563,
-        duration = function() return glyph.beacon_of_light.enabled and 90 or 60 end,
-        max_stack = 1,
-        dot = "buff",
-        friendly = true
-    },
+
     blessed_life = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=31830)
         id = 31830,
         duration = 3600,
         max_stack = 1,
         copy = { 31830, 31829, 31828 },
-    },
-    blessing = {
-        alias = { "blessing_of_kings", "blessing_of_might", "blessing_of_sanctuary", "blessing_of_wisdom", "greater_blessing_of_kings", "greater_blessing_of_might", "greater_blessing_of_sanctuary", "greater_blessing_of_wisdom" },
-        aliasMode = "first",
-        aliasType = "buff",
-    },
-    -- Increases speed by $s2%.
-    charger = {
-        id = 23214,
-        duration = 3600,
-        max_stack = 1,
     },
     -- $s1 damage every $t1 $lsecond:seconds;.
     consecration = {
@@ -216,27 +465,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1,
         copy = { 20116, 20922, 20923, 20924, 26573, 27173, 48818, 48819 },
-    },
-    -- Mounted speed increased by $s1%.  This does not stack with other movement speed increasing effects.
-    crusader_aura = {
-        id = 32223,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    -- Increases armor by $s1.
-    devotion_aura = {
-        id = 48942,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player",
-        copy = { 465, 643, 1032, 10290, 10291, 10292, 10293, 27149, 48941, 48942 },
-    },
-    -- Critical effect chance of next Flash of Light, Holy Light, or Holy Shock spell increased by $s1%.
-    divine_favor = {
-        id = 20216,
-        duration = 3600,
-        max_stack = 1,
     },
     -- Reduced damage taken.
     divine_guardian = {
@@ -254,31 +482,6 @@ spec:RegisterAuras( {
     divine_intervention = {
         id = 19753,
         duration = 180,
-        max_stack = 1,
-    },
-    -- Gaining $o1% of total mana.  Healing spells reduced by $s2%.
-    divine_plea = {
-        id = 54428,
-        duration = 15,
-        tick_time = 3,
-        max_stack = 1,
-    },
-    -- Damage taken reduced by $s2%.
-    divine_protection = {
-        id = 498,
-        duration = 12,
-        max_stack = 1,
-    },
-    -- $s1% of all damage taken by party members redirected to the Paladin.
-    divine_sacrifice = {
-        id = 64205,
-        duration = 10,
-        max_stack = 1,
-    },
-    -- Immune to all attacks and spells, but reduces all damage you deal by $s1%.
-    divine_shield = {
-        id = 642,
-        duration = 12,
         max_stack = 1,
     },
     forbearance = {
@@ -300,44 +503,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 853, 5588, 5589, 10308 },
     },
-    -- Immune to movement impairing effects.
-    hand_of_freedom = {
-        id = 1044,
-        duration = function() return 6 + 2 * talent.guardians_favor.rank end,
-        max_stack = 1,
-    },
-    -- Immune to physical attacks.  Cannot attack or use physical abilities.
-    hand_of_protection = {
-        id = 10278,
-        duration = 10,
-        max_stack = 1,
-        copy = { 1022, 5599, 10278, 66009 },
-    },
     -- Taunted.
     hand_of_reckoning = {
         id = 62124,
         duration = 3,
         max_stack = 1,
-    },
-    -- Transfers $s1% damage taken to the paladin.
-    hand_of_sacrifice = {
-        id = 6940,
-        duration = 12,
-        max_stack = 1,
-    },
-    -- Reduces total threat by $53055s1% each second.
-    hand_of_salvation = {
-        id = 1038,
-        duration = 10,
-        tick_time = 1,
-        max_stack = 1,
-    },
-    -- Block chance increased by $s1%.  $s2 Holy damage dealt to attacker when blocked.  $n charges.
-    holy_shield = {
-        id = 20925,
-        duration = 10,
-        max_stack = 1,
-        copy = { 20925, 20927, 20928, 27179, 48951, 48952 },
     },
     holy_vengeance = {
         id = 31803,
@@ -351,32 +521,6 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
         copy = { 2812, 10318, 27139, 48816, 48817 },
-    },
-    -- Reduces the cast time of your next Flash of Light by ${$54149m2/-1000}.1 sec or increase the critical chance of your next Holy Light by $s1%.
-    infusion_of_light = {
-        id = 54149,
-        duration = 15,
-        max_stack = 1,
-    },
-    -- Reduces melee attack speed.
-    judgements_of_the_just = {
-        id = 68055,
-        duration = 20,
-        max_stack = 1,
-        copy = { 68055 },
-    },
-
-    -- Casting and melee speed increased by $s1%.
-    judgements_of_the_pure = {
-        id = 54153,
-        duration = 60,
-        max_stack = 1,
-        copy = { 53655, 53656, 53657, 54152, 54153 },
-    },
-    judgement = {
-        alias = { "judgement_of_justice", "judgement_of_light", "judgement_of_wisdom" },
-        aliasMode = "first",
-        aliasType = "debuff",
     },
     judgement_of_justice = {
         id = 20184,
@@ -411,12 +555,6 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
-    -- Each weapon swing generates an additional attack.
-    reckoning = {
-        id = 20178,
-        duration = 8,
-        max_stack = 4,
-    },
     -- Block chance increased by $s1%.  Lasts maximum of $n  blocks.
     redoubt = {
         id = 20132,
@@ -428,12 +566,6 @@ spec:RegisterAuras( {
     repentance = {
         id = 20066,
         duration = 60,
-        max_stack = 1,
-    },
-    -- Increases the threat generated by your Holy spells by $s1%.
-    righteous_fury = {
-        id = 25780,
-        duration = 3600,
         max_stack = 1,
     },
     righteous_vengeance = {
@@ -469,24 +601,11 @@ spec:RegisterAuras( {
         duration = 1800,
         max_stack = 1,
     },
-    -- Melee attacks have a chance to stun for $20170d.
-    seal_of_justice = {
-        id = 20164,
-        duration = 1800,
-        max_stack = 1,
-    },
     -- Melee attacks have a chance to heal you.
     seal_of_light = {
         id = 20165,
         duration = 1800,
         max_stack = 1,
-    },
-    -- Melee attacks cause an additional  ${$MWS*(0.022*$AP+0.044*$SPH)} Holy damage.
-    seal_of_righteousness = {
-        id = 21084,
-        duration = 1800,
-        max_stack = 1,
-        copy = { 21084, 20154 },
     },
     -- Melee attacks cause Holy damage over $31803d.
     seal_of_vengeance = {
@@ -500,11 +619,6 @@ spec:RegisterAuras( {
         id = 20166,
         duration = 1800,
         max_stack = 1,
-    },
-    seal = {
-        alias = { "seal_of_command", "seal_of_justice", "seal_of_light", "seal_of_righteousness", "seal_of_vengeance", "seal_of_wisdom" },
-        aliasMode = "first",
-        aliasType = "buff",
     },
     -- Detecting Undead.
     sense_undead = {
@@ -522,24 +636,6 @@ spec:RegisterAuras( {
     stun = {
         id = 20170,
         duration = function() return 2 + 0.5 * talent.judgements_of_the_just.rank end,
-        max_stack = 1,
-    },
-    -- Increases speed by $s2%.
-    summon_charger = {
-        id = 34767,
-        duration = 3600,
-        max_stack = 1,
-    },
-    -- Increases speed by $s2%.
-    summon_warhorse = {
-        id = 34769,
-        duration = 3600,
-        max_stack = 1,
-    },
-    -- Your next Flash of Light or Exorcism spell is instant cast.
-    the_art_of_war = {
-        id = 59578,
-        duration = 15,
         max_stack = 1,
     },
     -- Compelled to flee.
