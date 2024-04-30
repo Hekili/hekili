@@ -50,6 +50,10 @@ end )
 spec:RegisterTalents( {
     -- Holy
 
+    holy_shock                      = { 20473, 1, 20473 },
+    mediation                       = { 95859, 1, 95859 },
+    walk_in_the_light               = { 85102, 1, 85102 },
+    illuminated_healing             = { 76669, 1, 76669 },
     arbiter_of_the_light            = { 10113, 2, 20359, 20360 },
     protector_of_the_innocent       = { 12189, 3, 20138, 20139, 20140 },
     judgements_of_the_pure          = { 10127, 3, 53671, 53673, 54151 },
@@ -73,6 +77,10 @@ spec:RegisterTalents( {
 
     -- Protection
 
+    avengers_shield                 = { 31935, 1, 31935 },
+    vengeance                       = { 84839, 1, 84839 },
+    judgements_of_the_wise          = { 31878, 1, 31878 },
+    divine_bulwark                  = { 76671, 1, 76671 },
     divinity                        = { 12198, 3, 63646, 63647, 63648 },
     seals_of_the_pure               = { 10324, 2, 20224, 20225 },
     eternal_glory                   = { 12152, 2, 87163, 87164 },
@@ -96,6 +104,11 @@ spec:RegisterTalents( {
 
     -- Retribution
 
+    templars_verdict                = { 85256, 1, 85256 },
+    sheath_of_light                 = { 53503, 1, 53503 },
+    two_handed_weapon_specialization= { 20113, 1, 20113 },
+    judgements_of_the_bold          = { 89901, 1, 89901 },
+    hand_of_light                   = { 76672, 1, 76672 },
     eye_for_an_eye                  = { 10647, 2, 9799, 25988 },
     crusade                         = { 10651, 3, 31866, 31867, 31868 },
     improved_judgement              = { 11612, 2, 87174, 87175 },
@@ -404,6 +417,13 @@ spec:RegisterAuras( {
         id = 31850,
         duration = 10,
         max_stack = 1
+    },
+    -- Damage taken reduced by 20%.
+    divine_guardian = {
+        id = 70940,
+        duration = 6,
+        max_stack = 1,
+        shared = "player"
     },
     -- 30% of all damage taken by party members redirected to the Paladin.
     divine_sacrifice = {
@@ -896,6 +916,39 @@ spec:RegisterAbilities( {
             applyBuff( "devotion_aura" )
         end,
     },
+    -- A large heal that heals a friendly target for 11245. Good for periods of heavy damage.
+    divine_light = {
+        id = 82326,
+        cast = function()
+            local base_cast = 3
+            if talent.clarity_of_purpose.rank == 1 then
+                base_cast = base_cast - 0.15
+            elseif talent.clarity_of_purpose.rank == 2 then
+                base_cast = base_cast - 0.3
+            elseif talent.clarity_of_purpose.rank == 3 then
+                base_cast = base_cast - 0.5
+            end
+            if buff.infusion_of_light.up and talent.infusion_of_light.rank == 1 then
+                return base_cast - 0.75
+            elseif buff.infusion_of_light.up and talent.infusion_of_light.rank == 2 then
+                return base_cast - 1.5
+            else
+                return base_cast
+            end
+        end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.35,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135981,
+
+        handler = function ()
+            if buff.infusion_of_light.up then removeBuff( "infusion_of_light" ) end
+        end,
+    },
     -- You gain 12% of your total mana over 9 sec, but the amount healed by your healing spells is reduced by 50%.
     divine_plea = {
         id = 54428,
@@ -1193,7 +1246,7 @@ spec:RegisterAbilities( {
         texture = 135920,
 
         handler = function ()
-            removeBuff( "infusion_of_light" )
+            if buff.infusion_of_light.up then removeBuff( "infusion_of_light" ) end
         end,
     },
     -- Imbues a friendly target with radiant energy, healing that target and all allies within 10 yards for 2428 and another 473 every 1 sec for 3 sec. Healing effectiveness diminishes for each player target beyond 6.
@@ -1544,7 +1597,7 @@ spec:RegisterAbilities( {
     word_of_glory = {
         id = 85673,
         cast = 0,
-        cooldown = 0,
+        cooldown = function() return talent.walk_in_the_light.enabled and 0 or 20 end,
         gcd = "spell",
 
         spend = function()
@@ -1689,6 +1742,23 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "avengers_shield" )
             if glyph.dazing_shield.enabled then applyDebuff( "target", "dazing_shield" ) end
+        end,
+    },
+    -- All party or raid members within 30 yards, excluding the Paladin, take 20% reduced damage for 6 sec.
+    divine_guardian = {
+        id = 70940,
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        talent = "divine_guardian",
+        startsCombat = false,
+        texture = 253400,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "divine_guardian" )
         end,
     },
     -- 30% of all damage taken by party members within 30 yards is redirected to the Paladin (up to a maximum of 40% of the Paladin's health times the number of party members).
