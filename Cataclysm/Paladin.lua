@@ -7,6 +7,7 @@ local class, state = Hekili.Class, Hekili.State
 local spec = Hekili:NewSpecialization( 2 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
+spec:RegisterResource( Enum.PowerType.HolyPower )
 
 
 -- Idols
@@ -52,6 +53,7 @@ end )
 -- Talents
 spec:RegisterTalents( {
     -- Holy
+
     arbiter_of_the_light            = { 10113, 2, 20359, 20360 },
     protector_of_the_innocent       = { 12189, 3, 20138, 20139, 20140 },
     judgements_of_the_pure          = { 10127, 3, 53671, 53673, 54151 },
@@ -74,6 +76,7 @@ spec:RegisterTalents( {
     light_of_dawn                   = { 11203, 1, 85222 },
 
     -- Protection
+
     divinity                        = { 12198, 3, 63646, 63647, 63648 },
     seals_of_the_pure               = { 10324, 2, 20224, 20225 },
     eternal_glory                   = { 12152, 2, 87163, 87164 },
@@ -96,6 +99,7 @@ spec:RegisterTalents( {
     ardent_defender                 = { 10350, 1, 31850 },
 
     -- Retribution
+
     eye_for_an_eye                  = { 10647, 2, 9799, 25988 },
     crusade                         = { 10651, 3, 31866, 31867, 31868 },
     improved_judgement              = { 11612, 2, 87174, 87175 },
@@ -158,6 +162,7 @@ spec:RegisterAuras( {
     },
 
     -- Auras
+
     -- Increases armor by $s2%.
     devotion_aura = {
         id = 465,
@@ -195,6 +200,7 @@ spec:RegisterAuras( {
     },
 
     -- Seals
+
     -- Single-target attacks cause Holy damage over 15 sec.
     seal_of_truth = {
         id = 31801,
@@ -221,6 +227,7 @@ spec:RegisterAuras( {
     },
 
     -- Class Buffs
+
     -- All damage and healing increased by 20%
     avenging_wrath = {
         id = 31884,
@@ -250,7 +257,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Damage taken reduced by 20%.
-    -- Glyph of Divine Protection: Also reduced magical damage by 20%.
+    -- ALT: Glyph of Divine Protection - Also reduced magical damage by 20%.
     divine_protection = {
         id = 498,
         duration = 10,
@@ -288,7 +295,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Reduces total threat by 2% each second.
-    -- Glyph of Salvation: Threat temporarily reduced.
+    -- ALT: Glyph of Salvation - Threat temporarily reduced.
     hand_of_salvation = {
         id = 1038,
         duration = 10,
@@ -301,19 +308,18 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Increases Holy damage done by 30%.
-    -- TODO: Create proper Holy Power tracking and update this
     -- Duration is 4 seconds per Holy Power spent, increased by the Inquiry of Faith talent.
     inquisition = {
         id = 84963,
         duration = function()
-            local holyPowerSpent = math.min(action.holy_power, 3)
-            local inquisitionRank = talent.inquiry_of_faith.rank
+            local holyPowerSpent = math.min(holy_power.current, 3)
+            local inquiryRank = talent.inquiry_of_faith.rank
 
-            if inquisitionRank == 1 then
+            if inquiryRank == 1 then
                 return holyPowerSpent * 4 * 1.66
-            elseif inquisitionRank == 2 then
+            elseif inquiryRank == 2 then
                 return holyPowerSpent * 4 * 2.33
-            elseif inquisitionRank == 3 then
+            elseif inquiryRank == 3 then
                 return holyPowerSpent * 4 * 3.00
             else
                 return holyPowerSpent * 4
@@ -327,11 +333,15 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-
-
-
-
+    -- Detecting Undead.
+    sense_undead = {
+        id = 5502,
+        duration = 3600,
+        max_stack = 1,
+    },
+    
     -- Holy Buffs
+
     -- Concentration Aura provides immunity to Silence and Interrupt effects.  Effectiveness of Devotion Aura, Resistance Aura, and Retribution Aura increased by 100%.
     aura_mastery = {
         id = 31821,
@@ -353,6 +363,13 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
+    -- TODO: This is the holy T12 4 set bonus so it probably needs to be moved.
+    -- Heals for 10% of the value of Flash of Light, Holy Light, or Divine Light.
+    divine_flame = {
+        id = 54968,
+        duration = 0,
+        max_stack = 1
+    },
     -- Reduces the cast time of your next Flash of Light, Holy Light, Divine Light or Holy Radiance by 0.75 sec.
     infusion_of_light = {
         id = 53672,
@@ -367,8 +384,15 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 53655, 53656 }
     },
-
+    -- The paladin's healing spells cast on you also heal the Beacon of Light.
+    lights_beacon = {
+        id = 53651,
+        duration = 2,
+        max_stack = 1,
+    },
+    
     -- Protection Buffs
+    
     -- Damage taken reduced by 20%. The next attack that would otherwise kill you will instead cause you to be healed for 15% of your maximum health.
     ardent_defender = {
         id = 31850,
@@ -381,16 +405,16 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    -- Your next Avenger's Shield will generate Holy Power.
+    grand_crusader = {
+        id = 85416,
+        duration = 6,
+        max_stack = 1
+    },
     -- Increases damage blocked by 20%.
     holy_shield = {
         id = 20925,
         duration = 10,
-        max_stack = 1
-    },
-    -- Attack speed slowed.
-    judgements_of_the_just = {
-        id = 68055,
-        duration = 20,
         max_stack = 1
     },
     -- Each weapon swing generates an additional attack.
@@ -407,8 +431,15 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 85433 }
     },
-
+    -- Increases attack power by $s1%.
+    vengeance = {
+        id = 76691,
+        duration = 3600,
+        max_stack = 1
+    },
+    
     -- Retribution Buffs
+    
     -- Damage and healing increasedy by 1/2/3%
     conviction = {
         id = 20050,
@@ -428,12 +459,29 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
-
+    -- Movement speed increased by 45%.
+    long_arm_of_the_law = {
+        id = 87173,
+        duration = 4,
+        max_stack = 1
+    },
     -- NOTE: Should Replenishment be in the paladin lua?
     -- Replenishes 1% of maximum mana per 10 sec.
     replenishment = {
         id = 57669,
         duration = 15,
+        max_stack = 1
+    },
+    -- Absorbs $s1% damage. Increases healing received by 20%.
+    sacred_shield = {
+        id = 96263,
+        duration = 15,
+        max_stack = 1
+    },
+    -- Movement speed increased by 20/40/60%.
+    speed_of_light = {
+        id = 85497,
+        duration = 10,
         max_stack = 1
     },
     -- Your next Exorcism is instant, free, and causes 100% additional damage.
@@ -443,65 +491,40 @@ spec:RegisterAuras( {
         max_stack = 1
     },
 
-    -- TODO: Continue updating auras list, this was my stopping point
-    -- Dazed.
-    avengers_shield = {
-        id = 48827,
-        duration = 10,
-        max_stack = 1,
-        copy = { 31935, 32699, 32700, 48826, 48827 },
-    },
+    -- Class Debuffs
 
-    blessed_life = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=31830)
-        id = 31830,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 31830, 31829, 31828 },
-    },
-    -- $s1 damage every $t1 $lsecond:seconds;.
-    consecration = {
-        id = 48819,
-        duration = function() return glyph.consecration.enabled and 10 or 8 end,
-        tick_time = 1,
-        max_stack = 1,
-        copy = { 20116, 20922, 20923, 20924, 26573, 27173, 48818, 48819 },
-    },
-    -- Reduced damage taken.
-    divine_guardian = {
-        id = 70940,
-        duration = 6,
-        max_stack = 1,
-    },
-    -- Mana cost of all spells reduced by $s1%.
-    divine_illumination = {
-        id = 31842,
-        duration = 15,
-        max_stack = 1,
-    },
-    -- Complete immunity but unable to move.
-    divine_intervention = {
-        id = 19753,
-        duration = 180,
-        max_stack = 1,
-    },
-    forbearance = {
-        id = 25771,
-        duration = 120,
-        max_stack = 1,
-        shared = "player"
-    },
-    -- Strength increased by 44.  Stacks up to 5 times.
-    formidable = {
-        id = 71187,
+    -- Holy damage every 3 sec.
+    censure = {
+        id = 31803,
         duration = 15,
         max_stack = 5
     },
+    -- $s1 damage every 1 second.
+    consecration = {
+        id = 82366,
+        duration = function() return glyph.consecration.enabled and 12 or 10 end,
+        tick_time = 1,
+        max_stack = 1,
+        copy = { 26573 },
+    },
+    -- Suffering $s1% Holy damage per 2 sec.
+    exorcism = {
+        id = 879,
+        duration = 6,
+        max_stack = 1
+    },
+    -- Cannot be affected by Divine Shield, Hand of Protection or Lay on Hands.
+    forbearance = {
+        id = 25771,
+        duration = 60,
+        max_stack = 1,
+        shared = "player"
+    },
     -- Stunned.
     hammer_of_justice = {
-        id = 10308,
+        id = 853,
         duration = 6,
-        max_stack = 1,
-        copy = { 853, 5588, 5589, 10308 },
+        max_stack = 1
     },
     -- Taunted.
     hand_of_reckoning = {
@@ -509,133 +532,17 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    holy_vengeance = {
-        id = 31803,
-        duration = 15,
-        max_stack = 5,
-        copy = { 53742, 356110, "blood_corruption" }
-    },
     -- Stunned.
     holy_wrath = {
         id = 2812,
         duration = 3,
-        max_stack = 1,
-        copy = { 2812, 10318, 27139, 48816, 48817 },
-    },
-    judgement_of_justice = {
-        id = 20184,
-        duration = 20,
-        max_stack = 1,
-    },
-    judgement_of_light = {
-        id = 20185,
-        duration = 20,
-        max_stack = 1,
-    },
-    judgement_of_wisdom = {
-        id = 20186,
-        duration = 20,
-        max_stack = 1,
-    },
-    -- Physical damage taken reduced by $s1%.
-    lay_on_hands = {
-        id = 20236,
-        duration = 15,
-        max_stack = 1,
-        copy = { 20233, 20236 },
-    },
-    -- The paladin's heals on you also heal the Beacon of Light.
-    lights_beacon = {
-        id = 53651,
-        duration = 2,
-        max_stack = 1,
-    },
-    lights_grace = {
-        id = 31834,
-        duration = 15,
         max_stack = 1
     },
-    -- Block chance increased by $s1%.  Lasts maximum of $n  blocks.
-    redoubt = {
-        id = 20132,
-        duration = 10,
-        max_stack = 5,
-        copy = { 20132, 20131, 20128 },
-    },
-    -- Incapacitated.
-    repentance = {
-        id = 20066,
-        duration = 60,
-        max_stack = 1,
-    },
-    righteous_vengeance = {
-        id = 61840,
-        duration = 8,
-        max_stack = 1
-    },
-    -- Resistance to Disease, Magic and Poison increased by $s1%.
-    sacred_cleansing = {
-        id = 53659,
-        duration = 10,
-        max_stack = 1,
-    },
-    -- Absorbs damage and increases the casting paladin's chance to critically hit with Flash of Light by $s2%.
-    sacred_shield = {
-        id = 53601,
-        duration = function() return 30 * ( 1 + 0.5 * ( buff.divine_sacrifice.up and talent.divine_guardian.rank or 0 ) ) end,
-        max_stack = 1,
-        no_ticks = true,
-        friendly = true,
-        dot = "buff",
-        shared = "player"
-    },
-    -- Absorbs damage and increases the casting paladin's chance to critically hit with Flash of Light by 50%.
-    sacred_shield_absorb = {
-        id = 58597,
-        duration = 6,
-        max_stack = 1,
-    },
-    -- Melee attacks deal additional Holy damage.
-    seal_of_command = {
-        id = 20375,
-        duration = 1800,
-        max_stack = 1,
-    },
-    -- Melee attacks have a chance to heal you.
-    seal_of_light = {
-        id = 20165,
-        duration = 1800,
-        max_stack = 1,
-    },
-    -- Melee attacks cause Holy damage over $31803d.
-    seal_of_vengeance = {
-        id = 31801,
-        duration = 1800,
-        max_stack = 1,
-        copy = { 348704, "seal_of_corruption" }
-    },
-    -- Melee attacks have a chance to restore mana.
-    seal_of_wisdom = {
-        id = 20166,
-        duration = 1800,
-        max_stack = 1,
-    },
-    -- Detecting Undead.
-    sense_undead = {
-        id = 5502,
-        duration = 3600,
-        max_stack = 1,
-    },
-    -- Silenced.
-    silenced_shield_of_the_templar = {
-        id = 63529,
-        duration = 3,
-        max_stack = 1,
-    },
-    -- Stunned.
-    stun = {
+    -- NOTE: This is actually called Seal of Justice but shares a name with the buff seal as well.
+    -- Cannot move faster than normal movement speed.
+    justice = {
         id = 20170,
-        duration = function() return 2 + 0.5 * talent.judgements_of_the_just.rank end,
+        duration = function() return 5 + 1 * talent.judgements_of_the_just.rank end,
         max_stack = 1,
     },
     -- Compelled to flee.
@@ -644,29 +551,49 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1,
     },
-    vengeance = {
-        id = 20053,
-        duration = 3600,
-        max_stack = 3,
-        copy = { 20052, 20050 }
+
+    -- Holy Debuffs
+
+    -- Incapable of causing a critical effect.
+    denounce = {
+        id = 85509,
+        duration = 6,
+        max_stack = 1
     },
-    -- Attack power reduced by $s1.
+
+    -- Protection Debuffs
+
+    -- Silenced.
+    avengers_shield = {
+        id = 48827,
+        duration = 3,
+        max_stack = 1
+    },
+    -- Attack speed slowed.
+    judgements_of_the_just = {
+        id = 68055,
+        duration = 20,
+        max_stack = 1
+    },
+    -- Physical damage done reduced by 10%.
     vindication = {
         id = 26017,
         duration = 10,
         max_stack = 1,
-        shared = "target",
-        copy = { 67, 26017 },
+        shared = "target"
     },
-    -- Increases speed by $s2%.
-    warhorse = {
-        id = 13819,
-        duration = 3600,
+
+    -- Retribution Debuffs
+
+    -- Incapacitated.
+    repentance = {
+        id = 20066,
+        duration = 60,
         max_stack = 1,
-    },
+    }
 } )
 
-
+-- TODO: Update for Cataclysm
 -- Glyphs
 spec:RegisterGlyphs( {
     [54930] = "avengers_shield",
@@ -707,6 +634,7 @@ spec:RegisterGlyphs( {
     [54931] = "turn_evil",
 } )
 
+-- TODO: Update for Cataclysm
 local mod_blessed_hands = setfenv( function( base )
     return base * ( 1 - 0.15 * talent.blessed_hands.rank )
 end, state )
@@ -734,6 +662,308 @@ end, state )
 
 -- Abilities
 spec:RegisterAbilities( {
+    -- Class Abilities
+
+    -- Brings all dead party and raid members back to life with 35% health and 35% mana. Cannot be cast in combat or while in a battleground or arena.
+    absolution = {
+        id = 450761,
+        cast = 10,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 135950,
+
+        handler = function ()
+        end,
+    },
+    -- Increases all damage and healing caused by 20% for 20 sec.
+    avenging_wrath = {
+        id = 31884,
+        cast = 0,
+        cooldown = function() return 180 - 30 * talent.paragon_of_virtue.rank end,
+        gcd = "off",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135875,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "avenging_wrath" )
+        end,
+    },
+    -- Places a Blessing on the friendly target, increasing Strength, Agility, Stamina, and Intellect by 5%, and all magical resistances by 97, for 1 hour.  
+    -- If target is in your party or raid, all party and raid members will be affected.  Players may only have one Blessing on them per Paladin at any one time.
+    blessing_of_kings = {
+        id = 20217,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() 
+            local base_cost = 0.19
+            local reduction = glyph.blessing_of_kings.enabled and 0.5 or 1
+            return base_cost * reduction
+        end,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135993,
+
+        handler = function ()
+            removeBuff( "blessing" )
+            applyBuff( "blessing_of_kings" )
+        end,
+    },
+    -- Places a Blessing on the friendly target, increasing melee attack power by 20%, increasing ranged attack power by 10%, and restoring 0 mana every 5 seconds for 1 hour.
+    -- If target is in your party or raid, all party and raid members will be affected.  Players may only have one Blessing on them per Paladin at any one time.
+    blessing_of_might = {
+        id = 19740,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() 
+            local base_cost = 0.19
+            local reduction = glyph.blessing_of_might.enabled and 0.5 or 1
+            return base_cost * reduction
+        end,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135908,
+
+        handler = function ()
+            removeBuff( "blessing" )
+            applyBuff( "blessing_of_might" )
+        end,
+    },
+    -- Cleanses a friendly target, removing 1 Poison effect and 1 Disease effect.
+    -- ALT: Sacred Cleansing - Cleanses a friendly target, removing 1 Poison effect, 1 Disease effect, and 1 Magic effect.
+    -- ALT: Acts of Sacrifice - Cleanses a friendly target, removing 1 Poison effect, 1 Disease effect. Also removes a movement impairing effect if used on yourself.
+    cleanse = {
+        id = 4987,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() 
+            local base_cost = 0.14
+            local reduction = glyph.cleansing.enabled and 0.2 or 1
+            return base_cost * reduction
+        end,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135949,
+
+        buff = function()
+            if buff.dispellable_poison.up then return "dispellable_poison" end
+            if buff.dispellable_disease.up then return "dispellable_disease" end
+            if buff.dispellable_magic.up and glyph.sacred_cleansing.enabled then return "dispellable_magic" end
+            return "dispellable_magic"
+        end,
+
+        handler = function ()
+            removeBuff( "dispellable_poison" )
+            removeBuff( "dispellable_disease" )
+            if glyph.sacred_cleansing.enabled then removeBuff( "dispellable_magic" ) end
+        end,
+    },
+    -- All party or raid members within 40 yards lose 35% less casting or channeling time when damaged. Players may only have one Aura on them per Paladin at any one time.
+    concentration_aura = {
+        id = 19746,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 135933,
+
+        handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "concentration_aura" )
+        end,
+    },
+    -- Consecrates the land beneath the Paladin, doing 780 Holy damage over 10 sec to enemies who enter the area.
+    consecration = {
+        id = 26573,
+        cast = 0,
+        cooldown = function() return glyph.consecration.enabled and 36 or 30 end,
+        gcd = "spell",
+
+        spend = function()
+            local base_cost = 0.19
+            if talent.hallowed_ground.rank == 1 then
+                return base_cost * 0.6
+            elseif talent.hallowed_ground.rank == 2 then
+                return base_cost * 0.2
+            else
+                return base_cost
+            end
+        end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135926,
+
+        handler = function ()
+            applyBuff( "active_consecration" )
+            applyDebuff( "target", "consecration" )
+        end,
+    },
+    -- Increases the mounted speed by 20% for all party and raid members within 40 yards. Players may only have one Aura on them per Paladin at any one time. This does not stack with other movement speed increasing effects.
+    crusader_aura = {
+        id = 32223,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 135890,
+
+        handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "crusader_aura" )
+        end,
+    },
+    -- An instant strike that causes 75% weapon damage.
+    crusader_strike = {
+        id = 35395,
+        cast = 0,
+        cooldown = function()
+            local base_cooldown = 4
+            local haste_multiplier = 1 / (1 + min(haste, 100) / 100)
+
+            if talent.sanctity_of_battle.enabled then
+                return base_cooldown * haste_multiplier
+            else
+                return base_cooldown
+            end
+        end,
+        gcd = "spell",
+
+        spend = function() 
+            local base_cost = 0.1
+            local reduction = glyph.ascetic_crusader.enabled and 0.7 or 1
+            return base_cost * reduction
+        end,
+        spendType = "mana",
+
+        talent = "crusader_strike",
+        startsCombat = true,
+        texture = 135891,
+
+        handler = function ()
+        end,
+    },
+    -- Gives 0 additional armor to party and raid members within 40 yards.  Players may only have one Aura on them per time per Paladin at any one time.
+    devotion_aura = {
+        id = 465,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 135893,
+
+        nobuff = "devotion_aura",
+
+        handler = function ()
+            removeBuff( "aura" )
+            applyBuff( "devotion_aura" )
+        end,
+    },
+    -- You gain 12% of your total mana over 9 sec, but the amount healed by your healing spells is reduced by 50%.
+    divine_plea = {
+        id = 54428,
+        cast = 0,
+        cooldown = 60,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 237537,
+        nobuff = "divine_plea",
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "divine_plea" )
+        end,
+    },
+    -- Reduces all damage taken by 20% for 10 sec.
+    -- ALT: Glyph of Divine Protection - Also reduces magical damage taken by 20%.
+    divine_protection = {
+        id = 498,
+        cast = 0,
+        cooldown = function() return 60 - 15 * talent.paragon_of_virtue.rank end,
+        gcd = "off",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 524353,
+
+        toggle = "defensives",
+        
+        nobuff = "divine_protection",
+        
+        handler = function ()
+            applyBuff( "divine_protection" )
+        end,
+    },
+    -- Protects you from all damage and spells for 8 sec, but reduces all damage you deal by 50%. Cannot be used on a target with Forbearance. Causes Forbearance for 1 min.
+    divine_shield = {
+        id = 642,
+        cast = 0,
+        cooldown = 300,
+        gcd = "spell",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 524354,
+
+        toggle = "defensives",
+
+        nodebuff = "forbearance",
+
+        handler = function ()
+            applyBuff( "divine_shield" )
+            applyDebuff( "player", "forbearance" )
+        end,
+    },
+    -- Causes [((2483 + 2771) / 2) + (0.344 * Attack power)] Holy damage to an enemy target.  If the target is Undead or Demon, it will always critically hit.
+    exorcism = {
+        id = 879,
+        cast = function() return mod_art_of_war( 1.5 ) end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.3,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135903,
+
+        handler = function ()
+            removeBuff("the_art_of_war")
+            if glyph.exoricism.enabled then applyDebuff( "target", "exorcism" ) end
+            if talent.denounce.rank == 1 and rng.roll(0.5) then applyDebuff( "target", "denounce" ) end
+            if talent.denounce.rank == 2 then applyDebuff( "target", "denounce" ) end
+        end,
+    },
+
+
+    
+    
+    --TODO: Update for Cataclysm, this was my stopping point
     -- Causes your Concentration Aura to make all affected targets immune to Silence and Interrupt effects and improve the effect of all other auras by 100%.  Lasts 6 sec.
     aura_mastery = {
         id = 31821,
@@ -776,257 +1006,6 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Increases all damage and healing caused by 20% for 20 sec.  Cannot be used within 30 sec of being the target of Divine Shield, Divine Protection, or Hand of Protection, or of using Lay on Hands on oneself.
-    avenging_wrath = {
-        id = 31884,
-        cast = 0,
-        cooldown = function() return 180 - 30 * talent.sanctified_wrath.rank end,
-        gcd = "off",
-
-        spend = function() return mod_benediction( mod_divine_illumination( 0.08 ) ) end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135875,
-
-        toggle = "cooldowns",
-
-        nodebuff = "forbearance",
-
-        handler = function ()
-            applyBuff( "avenging_wrath" )
-        end,
-    },
-
-
-    -- The target becomes a Beacon of Light to all members of your party or raid within a 60 yard radius.  Any heals you cast on party or raid members will also heal the Beacon for 100% of the amount healed.  Only one target can be the Beacon of Light at a time. Lasts 1 min.
-    beacon_of_light = {
-        id = 53563,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return mod_benediction( mod_divine_illumination( 0.35 ) ) end,
-        spendType = "mana",
-
-        talent = "beacon_of_light",
-        startsCombat = false,
-        texture = 236247,
-
-        handler = function ()
-            applyBuff( "beacon_of_light" )
-        end,
-    },
-
-
-    -- Places a Blessing on the friendly target, increasing total stats by 10% for 10 min.  Players may only have one Blessing on them per Paladin at any one time.
-    blessing_of_kings = {
-        id = 79063,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return mod_benediction( mod_divine_illumination( glyph.blessing_of_kings.enabled and 0.03 or 0.06 ) ) end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135995,
-
-        handler = function ()
-            removeBuff( "blessing" )
-            applyBuff( "blessing_of_kings" )
-        end,
-    },
-
-
-    -- Places a Blessing on the friendly target, increasing attack power by 20 for 10 min.  Players may only have one Blessing on them per Paladin at any one time.
-    blessing_of_might = {
-        id = 19740,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135906,
-
-        handler = function ()
-            removeBuff( "blessing" )
-            applyBuff( "blessing_of_might" )
-        end,
-
-        copy = { 19834, 19835, 19836, 19837, 19838, 25291, 27140, 48931, 48932 },
-    },
-
-
-    -- Places a Blessing on the friendly target, reducing damage taken from all sources by 3% for 10 min and increasing strength and stamina by 10%.  In addition, when the target blocks, parries, or dodges a melee attack the target will gain 2% of maximum displayed mana.  Players may only have one Blessing on them per Paladin at any one time.
-    blessing_of_sanctuary = {
-        id = 20911,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return mod_benediction( mod_divine_illumination( 0.07 ) ) end,
-        spendType = "mana",
-
-        talent = "blessing_of_sanctuary",
-        startsCombat = false,
-        texture = 136051,
-
-        handler = function ()
-            removeBuff( "blessing" )
-            applyBuff( "blessing_of_sanctuary" )
-        end,
-    },
-
-
-    -- Places a Blessing on the friendly target, restoring 10 mana every 5 seconds for 10 min.  Players may only have one Blessing on them per Paladin at any one time.
-    blessing_of_wisdom = {
-        id = 19742,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135970,
-
-        handler = function ()
-            removeBuff( "blessing" )
-            applyBuff( "blessing_of_wisdom" )
-        end,
-
-        copy = { 19850, 19852, 19853, 19854, 25290, 27142, 48935, 48936 },
-    },
-
-
-    -- Cleanses a friendly target, removing 1 poison effect, 1 disease effect, and 1 magic effect.
-    cleanse = {
-        id = 4987,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return mod_benediction( mod_divine_illumination( mod_purifying_power_cost( 0.06 ) ) * ( glyph.cleansing.enabled and 0.8 or 1 ) ) end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135953,
-
-        buff = function()
-            if buff.dispellable_poison.up then return "dispellable_poison" end
-            if buff.dispellable_disease.up then return "dispellable_disease" end
-            return "dispellable_magic"
-        end,
-
-        handler = function ()
-            removeBuff( "dispellable_poison" )
-            removeBuff( "dispellable_disease" )
-            removeBuff( "dispellable_magic" )
-        end,
-    },
-
-
-    -- All party or raid members within 40 yards lose 35% less casting or channeling time when damaged.  Players may only have one Aura on them per Paladin at any one time.
-    concentration_aura = {
-        id = 19746,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 135933,
-
-        handler = function ()
-            removeBuff( "aura" )
-            applyBuff( "concentration_aura" )
-        end,
-    },
-
-
-    -- Consecrates the land beneath the Paladin, doing 239 Holy damage over 8 sec to enemies who enter the area.
-    consecration = {
-        id = 26573,
-        cast = 0,
-        cooldown = function() return glyph.consecration.enabled and 10 or 8 end,
-        gcd = "spell",
-
-        spend = function() return mod_benediction( mod_divine_illumination( mod_purifying_power_cost( 0.22 ) ) ) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135926,
-
-        handler = function ()
-            applyBuff( "active_consecration" )
-            applyDebuff( "target", "consecration" )
-        end,
-
-        copy = { 20116, 20922, 20923, 20924, 27173, 48818, 48819 },
-    },
-
-
-    -- Increases the mounted speed by 20% for all party and raid members within 40 yards.  Players may only have one Aura on them per Paladin at any one time.  This does not stack with other movement speed increasing effects.
-    crusader_aura = {
-        id = 32223,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 135890,
-
-        handler = function ()
-            removeBuff( "aura" )
-            applyBuff( "crusader_aura" )
-        end,
-    },
-
-
-    -- An instant strike that causes 75% weapon damage.
-    crusader_strike = {
-        id = 35395,
-        cast = 0,
-        cooldown = 4,
-        gcd = "spell",
-
-        spend = function() return mod_benediction( mod_divine_illumination( 0.05 ) ) * ( glyph.crusader_strike.enabled and 0.8 or 1 ) end,
-        spendType = "mana",
-
-        talent = "crusader_strike",
-        startsCombat = true,
-        texture = 135891,
-
-        handler = function ()
-            if set_bonus.libram_of_three_truths then
-                applyBuff("formidable")
-            end
-        end,
-    },
-
-
-    -- Gives 1205 additional armor to party and raid members within 40 yards.  Players may only have one Aura on them per Paladin at any one time.
-    devotion_aura = {
-        id = 48942,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 135893,
-
-        nobuff = "devotion_aura",
-
-        handler = function ()
-            removeBuff( "aura" )
-            applyBuff( "devotion_aura" )
-        end,
-    },
-
 
     -- When activated, gives your next Flash of Light, Holy Light, or Holy Shock spell a 100% critical effect chance.
     divine_favor = {
@@ -1050,85 +1029,7 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Reduces the mana cost of all spells by 50% for 15 sec.
-    divine_illumination = {
-        id = 31842,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
 
-        talent = "divine_illumination",
-        startsCombat = false,
-        texture = 135895,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "divine_illumination" )
-        end,
-    },
-
-
-    -- The paladin sacrifices herself to remove the targeted party member from harm's way.  Enemies will stop attacking the protected party member, who will be immune to all harmful attacks but will not be able to take any action for 3 min.
-    divine_intervention = {
-        id = 19752,
-        cast = 0,
-        cooldown = 600,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 136106,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "target", "divine_intervention" )
-            health.current = 0
-        end,
-    },
-
-
-    -- You gain 25% of your total mana over 15 sec, but the amount healed by your Flash of Light, Holy Light, and Holy Shock spells is reduced by 50%.
-    divine_plea = {
-        id = 54428,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-
-        startsCombat = false,
-        texture = 237537,
-        nobuff = "divine_plea",
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "divine_plea" )
-        end,
-    },
-
-
-    -- Reduces all damage taken by 50% for 12 sec.  Once protected, the target cannot be targeted by Divine Shield, Divine Protection, or Hand of Protection again for 2 min.  Cannot be used within 30 sec of using Avenging Wrath.
-    divine_protection = {
-        id = 498,
-        cast = 0,
-        cooldown = function() return 180 - 30 * talent.sacred_duty.rank end,
-        gcd = "off",
-
-        spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135954,
-
-        toggle = "defensives",
-
-        nodebuff = "forbearance",
-
-        handler = function ()
-            applyBuff( "divine_protection" )
-            applyDebuff( "player", "forbearance" )
-        end,
-    },
 
 
     -- 30% of all damage taken by party members within 30 yards is redirected to the Paladin (up to a maximum of 40% of the Paladin's health times the number of party members).  Damage which reduces the Paladin below 20% health will break the effect.  Lasts 10 sec.
@@ -1150,28 +1051,7 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Protects the paladin from all damage and spells for 12 sec, but reduces all damage you deal by 50%.  Once protected, the target cannot be targeted by Divine Shield, Divine Protection, or Hand of Protection again for 2 min.  Cannot be used within 30 sec. of using Avenging Wrath.
-    divine_shield = {
-        id = 642,
-        cast = 0,
-        cooldown = function() return 300 - 30 * talent.sacred_duty.rank end,
-        gcd = "spell",
 
-        spend = function() return mod_benediction( mod_divine_illumination( 0.03 ) ) end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135896,
-
-        toggle = "defensives",
-
-        nodebuff = "forbearance",
-
-        handler = function ()
-            applyBuff( "divine_shield" )
-            applyDebuff( "player", "forbearance" )
-        end,
-    },
 
 
     -- An instant weapon attack that causes 110% of weapon damage to up to 4 enemies within 8 yards.  The Divine Storm heals up to 3 party or raid members totaling 25% of the damage caused.
@@ -1192,26 +1072,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-    -- Causes 180 to 194 Holy damage to an enemy target.  If the target is Undead or Demon, it will always critically hit.
-    exorcism = {
-        id = 879,
-        cast = function() return mod_art_of_war( 1.5 ) end,
-        cooldown = function() return mod_benediction( mod_purifying_power_cd( 15 ) ) end,
-        gcd = "spell",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 135903,
-
-        handler = function ()
-            removeBuff("the_art_of_war")
-        end,
-
-        copy = { 5614, 5615, 10312, 10313, 10314, 27138, 48800, 48801 },
-    },
 
 
     -- Gives 130 additional Fire resistance to all party and raid members within 40 yards.  Players may only have one Aura on them per Paladin at any one time.
