@@ -333,7 +333,7 @@ spec:RegisterStateExpr("base_end_thresh", function()
 end)
 
 spec:RegisterStateExpr("bite_at_end", function()
-    return combo_points.current == 5 and (ttd < base_end_thresh or debuff.rip.up and ttd - debuff.rip.remains < base_end_thresh)
+    return combo_points.current == 5 and (ttd < end_thresh_for_clip or (debuff.rip.up and ttd - debuff.rip.remains < base_end_thresh))
 end)
 
 spec:RegisterStateExpr("is_execute_phase", function()
@@ -361,7 +361,11 @@ spec:RegisterStateExpr("bite_before_rip", function()
 end)
 
 spec:RegisterStateExpr("bite_now", function()
-    return (bite_before_rip or bite_at_end) and not buff.clearcasting.up
+    local bite_now =  (bite_before_rip or bite_at_end) and not buff.clearcasting.up
+    -- Ignore minimum CP enforcement during Execute phase if Rip is about to fall off
+    local emergency_bite_now = is_execute_phase and debuff.rip.up and (debuff.rip.remains < debuff.rip.tick_time) and (curCp >= 1)
+
+    return bite_now or emergency_bite_now
 end)
 
 spec:RegisterStateExpr("bite_during_berserk", function()
@@ -369,41 +373,95 @@ spec:RegisterStateExpr("bite_during_berserk", function()
     return buff.berserk.up and energy.current <= settings.max_bite_energy
 end)
 
-spec:RegisterStateExpr("ff_during_berserk", function()
-    local end_energy = energy.current + (buff.berserk.remains * 10)
-    local will_use_roar = buff.savage_roar.remains < buff.berserk.remains
-        and combo_points.current > 0
-        and end_energy >= action.savage_roar.spend
-    local will_use_rip = debuff.rip.remains < buff.berserk.remains
-        and combo_points.current == 5
-        and end_energy >= action.rip.spend
-    local will_use_mangle = buff.mangle.remains < buff.berserk.remains
-        and end_energy >= action.mangle_cat.spend
-    local will_use_rake = debuff.rake.remains < buff.berserk.remains
-        and end_energy >= action.rake.spend
-    local will_use_shred = end_energy >= action.shred.spend
-
-    return energy.current <= settings.max_ff_energy or
-        not (will_use_roar or will_use_rip or will_use_mangle or will_use_rake or will_use_shred)
-end)
+--spec:RegisterStateExpr("ff_during_berserk", function()
+--    local end_energy = energy.current + (buff.berserk.remains * 10)
+--    local will_use_roar = buff.savage_roar.remains < buff.berserk.remains
+--        and combo_points.current > 0
+--        and end_energy >= action.savage_roar.spend
+--    local will_use_rip = debuff.rip.remains < buff.berserk.remains
+--        and combo_points.current == 5
+--        and end_energy >= action.rip.spend
+--    local will_use_mangle = buff.mangle.remains < buff.berserk.remains
+--        and end_energy >= action.mangle_cat.spend
+--    local will_use_rake = debuff.rake.remains < buff.berserk.remains
+--        and end_energy >= action.rake.spend
+--    local will_use_shred = end_energy >= action.shred.spend
+--
+--    return energy.current <= settings.max_ff_energy or
+--        not (will_use_roar or will_use_rip or will_use_mangle or will_use_rake or will_use_shred)
+--end)
 
 spec:RegisterStateExpr("wait_for_tf", function()
     --cooldown.tigers_fury.remains<=buff.berserk.duration&cooldown.tigers_fury.remains+1<ttd-buff.berserk.duration
     return cooldown.tigers_fury.remains <= buff.berserk.duration and cooldown.tigers_fury.remains + 1 < ttd - buff.berserk.duration
 end)
 
-spec:RegisterStateExpr("rip_now", function() --TODO:continue - update function
+spec:RegisterStateExpr("rip_now", function() 
     --!debuff.rip.up&combo_points.current=5&ttd>=end_thresh
-    local rtn = (not debuff.rip.up)
-        and combo_points.current == 5
-        and ttd >= end_thresh
+    local rip_cc_check = debuff.bleed.up and not buff.clearcasting.up or true
 
-    if rtn and buff.clearcasting.up then
-        local rip_cast_time = max(1.0, (action.rip.spend - energy.current) / 10 + latency)
-        rtn = buff.savage_roar.up and rip_cast_time >= buff.savage_roar.remains
+    local rip_now = combo_points.current == 5 and ttd >= end_thresh_for_clip and rip_cc_check and (not debuff.rip.up or (query_time > rip_refresh_time and not is_execute_phase))
+    
+    local max_rip_ticks = aura.rip.duration/aura.rip.tick_time
+
+    -- Delay Rip refreshes if Tiger's Fury will be usable soon enough for the snapshot to outweigh the lost Rip ticks from waiting
+    if rip_now and not buff.tigers_fury.up then
+        local buffed_tick_count = math.min(max_rip_ticks, math.floor((ttd - final_tick_leeway) / aura.rip.tick_time))
+        local delay_breakpoint = final_tick_leeway + 0.15 * buffed_tick_count * aura.rip.tick_time
+
+        if tf_expected_before(time, time + delay_breakpoint) then
+            local delay_seconds = delay_breakpoint
+            local energy_to_dump = energy.current + delay_seconds * energy.gain - calc_tf_energy_thresh(latency)
+            local seconds_to_dump = ceil(energy_to_dump / action.shred.cost)
+
+            if seconds_to_dump < delay_seconds then
+                return false
+            end
+        end
     end
 
-    return rtn
+    return rip_now
+
+end)
+
+-- Rake calcs
+
+spec:RegisterStateExpr("rake_now", function()
+    local rake_now = (not rakeDot.IsActive() or (rakeDot.RemainingDuration(sim) < rakeDot.TickLength)) and (simTimeRemain > rakeDot.TickLength) and rakeCcCheck
+
+    -- DELETEME: only for old gear
+    if rake_now and (set_bonus.tier9feral_2pc == 1 or set_bonus.tier10feral_4pc == 1) then
+        return true
+    end
+
+    -- Additionally, don't Rake if the current Shred DPE is higher due to trinket procs etc.
+    local rake_dpe, shred_dpe = calc_rake_dpe()
+    rake_now = rake_dpe >= shred_dpe
+
+    -- Additionally, don't Rake if there is insufficient time to max out our available glyph of shred extensions before rip falls off - skip if not relevant
+    if not (rake_now and debuff.rip.up) then
+        return rake_now
+    end
+
+    local remaining_rip_dur = rip_maxremains()
+    local energy_for_shreds = energy.current - action.rake.cost - action.rip.cost + debuff.rip.remains * energy.gain + tf_expected_before(time, time + debuff.rip.remains) and 60 or 0
+    local max_shreds_possible = min(energy_for_shreds / action.shred.cost, (debuff.rip.expires - (query_time + 1)))
+
+    return (not rip_canextend) or (max_shreds_possible > (remaining_rip_dur - debuff.rip.remains))
+
+end)
+
+-- Disable Energy pooling for Rake in weaving rotations, since these rotations prioritize weave cpm over Rake uptime.
+spec:RegisterStateExpr("pool_for_rake", function()
+    return not (bearweaving_enabled or flowerweaving_enabled)
+end)
+
+spec:RegisterStateExpr("roar_now", function()
+    return curCp >= 1 and (not buff.savage_roar.up or clip_roar)
+end)
+
+spec:RegisterStateExpr("ff_now", function()
+    return settings.maintain_ff and debuff.armor_reduction.down
 end)
 
 local function calc_tf_energy_thresh(leeway)
@@ -419,7 +477,7 @@ spec:RegisterStateExpr("end_thresh_for_clip", function()
     return base_end_thresh + final_tick_leeway
 end)
 
-spec:RegisterStateExpr("ripRefreshTime", function()
+spec:RegisterStateExpr("rip_refresh_time", function()
     return calc_rip_refresh_time
 end)
 
@@ -474,37 +532,15 @@ spec:RegisterStateExpr("calc_rip_refresh_time", function()
     return (energy_equivalent > action.rip.cost) and latest_possible_snapshot or standard_refresh_time
 end)
 
--- Delay Rip refreshes if Tiger's Fury will be usable soon enough for the snapshot to outweigh the lost Rip ticks from waiting
-spec:RegisterStateExpr("delay_rip", function()
-    local max_rip_ticks = aura.rip.duration/aura.rip.tick_time
-
-    if rip_now and not buff.tigers_fury.up then
-        local buffed_tick_count = math.min(max_rip_ticks, math.floor((ttd - final_tick_leeway) / aura.rip.tick_time))
-        local delay_breakpoint = final_tick_leeway + 0.15 * buffed_tick_count * aura.rip.tick_time
-
-        if tf_expected_before(time, time + delay_breakpoint) then
-            local delay_seconds = delay_breakpoint
-            local energy_to_dump = energy.current + delay_seconds * energy.gain - calc_tf_energy_thresh(latency)
-            local seconds_to_dump = ceil(energy_to_dump / action.shred.cost)
-
-            if seconds_to_dump < delay_seconds then
-                return true
-            end
-        end
-    end
-
-    return false
-end)
-
 spec:RegisterStateExpr("mangle_refresh_now", function()
     --!debuff.mangle.up&ttd>=1
-    return (not debuff.mangle.up) and ttd >= 1
+    return (not debuff.mangle.up) and ttd > 1
 end)
 
-spec:RegisterStateExpr("mangle_refresh_pending", function()
-    --debuff.mangle.up&debuff.mangle.remains<ttd-1
-    return debuff.mangle.up and debuff.mangle.remains < ttd - 1
-end)
+--spec:RegisterStateExpr("mangle_refresh_pending", function()
+--    --debuff.mangle.up&debuff.mangle.remains<ttd-1
+--    return debuff.mangle.up and debuff.mangle.remains < ttd - 1
+--end)
 
 spec:RegisterStateExpr("clip_mangle", function()
     local num_mangles_remaining = floor(1 + (ttd - 1 - debuff.mangle.remains) / 60)
@@ -531,7 +567,7 @@ spec:RegisterStateExpr("cached_rip_end_thresh", function()
     return cachedRipEndThresh
 end)
 
-spec:RegisterStateFunction("calc_rip_end_thresh", function()
+spec:RegisterStateExpr("calc_rip_end_thresh", function()
     if combo_points.current < 5 then
         return cached_rip_end_thresh
     end
@@ -552,6 +588,10 @@ spec:RegisterStateFunction("calc_rip_end_thresh", function()
 
 end)
 
+spec:RegisterStateExpr("clip_roar", function()
+    return false --TODO: replace with real logic 
+end)
+
 spec:RegisterStateFunction("tf_expected_before", function(current_time, future_time)
     if cooldown.tigers_fury.remains > 0 then
         return current_time + cooldown.tigers_fury.remains < future_time
@@ -562,12 +602,12 @@ spec:RegisterStateFunction("tf_expected_before", function(current_time, future_t
     return true
 end)
 
-spec:RegisterStateFunction("ff_expected_before", function(current_time, future_time)
-    if cooldown.faerie_fire_feral.remains > 0 then
-        return current_time + cooldown.faerie_fire_feral.remains < future_time
-    end
-    return true
-end)
+--spec:RegisterStateFunction("ff_expected_before", function(current_time, future_time)
+--    if cooldown.faerie_fire_feral.remains > 0 then
+--        return current_time + cooldown.faerie_fire_feral.remains < future_time
+--    end
+--    return true
+--end)
 
 spec:RegisterStateFunction("berserk_expected_at", function(current_time, future_time)
     if buff.berserk.up then
@@ -586,23 +626,23 @@ spec:RegisterStateFunction("berserk_expected_at", function(current_time, future_
     return false
 end)
 
-spec:RegisterStateExpr("can_spend_ff", function()
-    local max_shreds_without_ff = floor((energy.current + ttd * 10) / (active_enemies > 2 and action.swipe_cat.spend or action.shred.spend))
-    local num_shreds_without_ff = min(max_shreds_without_ff, floor(ttd) + 1)
-    local num_shreds_with_ff = min(max_shreds_without_ff + 1, floor(ttd))
-    return num_shreds_with_ff > num_shreds_without_ff
-end)
+--spec:RegisterStateExpr("can_spend_ff", function()
+--    local max_shreds_without_ff = floor((energy.current + ttd * 10) / (active_enemies > 2 and action.swipe_cat.spend or action.shred.spend))
+--    local num_shreds_without_ff = min(max_shreds_without_ff, floor(ttd) + 1)
+--    local num_shreds_with_ff = min(max_shreds_without_ff + 1, floor(ttd))
+--    return num_shreds_with_ff > num_shreds_without_ff
+--end)
 
-spec:RegisterStateExpr("wait_for_ff", function()
-    local next_ff_energy = energy.current + 10 * (cooldown.faerie_fire_feral.remains + latency)
-    local ff_energy_threshold = buff.berserk.up and settings.max_ff_energy or 87
-    return ff_procs_ooc
-        and can_spend_ff
-        and cooldown.faerie_fire_feral.remains < 1.0 - settings.max_ff_delay
-        and (next_ff_energy < ff_energy_threshold)
-        and (not buff.clearcasting.up)
-        and ((not debuff.rip.up) or (debuff.rip.remains > 1.0) or active_enemies > 2)
-end)
+--spec:RegisterStateExpr("wait_for_ff", function()
+--    local next_ff_energy = energy.current + 10 * (cooldown.faerie_fire_feral.remains + latency)
+--    local ff_energy_threshold = buff.berserk.up and settings.max_ff_energy or 87
+--    return ff_procs_ooc
+--        and can_spend_ff
+--        and cooldown.faerie_fire_feral.remains < 1.0 - settings.max_ff_delay
+--        and (next_ff_energy < ff_energy_threshold)
+--        and (not buff.clearcasting.up)
+--        and ((not debuff.rip.up) or (debuff.rip.remains > 1.0) or active_enemies > 2)
+--end)
 
 local pending_actions = {
     mangle_cat = {
@@ -809,7 +849,7 @@ spec:RegisterStateExpr("should_flowerweave", function()
         ((not rip_refresh_pending) or (debuff.rip.remains >= flower_end) or active_enemies > 2) and
         (not buff.berserk.up) and
         (not tf_expected_before(time, time + flower_end)) and
-        (not ff_expected_before(time, time + flower_end + 1)) and
+        --(not ff_expected_before(time, time + flower_end + 1)) and
         flower_end + 1 + floor(energy_to_dump / dump_action_cost) < ttd
     )
 end)
@@ -828,7 +868,7 @@ spec:RegisterStateExpr("should_bearweave", function()
         (not buff.clearcasting.up) and
         (not buff.berserk.up) and
         (not tf_expected_before(time, time + weave_end)) and
-        (not ff_expected_before(time, time + 3)) and
+        --(not ff_expected_before(time, time + 3)) and
         weave_end + floor(energy_to_dump / dump_action_cost) < ttd
     )
 end)
@@ -2769,7 +2809,7 @@ spec:RegisterAbilities( {
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
-        cost = function () return max( 1, class.abilities.rake.spend ) end,
+        cost = function () return max( 35, class.abilities.rake.spend ) end,
 
         
         readyTime = function() return debuff.rake.remains end,
@@ -3028,7 +3068,7 @@ spec:RegisterAbilities( {
         end,
     
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
-        cost = function () return max( 1, class.abilities.shred.spend ) end,
+        cost = function () return max( 40, class.abilities.shred.spend ) end,
 
         handler = function ()
             if glyph.bloodletting.enabled and debuff.rip.up and rip_tracker[target.unit].extension < 6 then
@@ -3596,28 +3636,36 @@ spec:RegisterSetting( "rip_leeway", 3, {
     step = 0.1,
 } )
 
-spec:RegisterSetting( "max_ff_delay", 0.1, {
-    type = "range",
-    name = strformat( "Maximum %s Delay", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ) ),
-    desc = strformat( "Specify the maximum wait time for %s cooldown in seconds.\n\n"..
-        "Recommendation:\n - 0.07 in P2 BiS\n - 0.10 in P3 BiS\n\n"..
-        "Default: 0.1", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ) ),
-    width = "full",
-    min = 0,
-    softMax = 1,
-    step = 0.01,
- })
+--spec:RegisterSetting( "max_ff_delay", 0.1, {
+--    type = "range",
+--    name = strformat( "Maximum %s Delay", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ) ),
+--    desc = strformat( "Specify the maximum wait time for %s cooldown in seconds.\n\n"..
+--        "Recommendation:\n - 0.07 in P2 BiS\n - 0.10 in P3 BiS\n\n"..
+--        "Default: 0.1", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ) ),
+--    width = "full",
+--    min = 0,
+--    softMax = 1,
+--    step = 0.01,
+-- })
 
-spec:RegisterSetting( "max_ff_energy", 15, {
-    type = "range",
-    name = strformat( "Maximum Energy for %s During %s", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ) ),
-    desc = strformat( "Specify the maximum Energy threshold for %s during %s.\n\n"..
-        "Recommendation: 15\n\n"..
-        "Default: 15", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ) ),
+--spec:RegisterSetting( "max_ff_energy", 15, {
+--    type = "range",
+--    name = strformat( "Maximum Energy for %s During %s", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ) ),
+--    desc = strformat( "Specify the maximum Energy threshold for %s during %s.\n\n"..
+--        "Recommendation: 15\n\n"..
+--        "Default: 15", Hekili:GetSpellLinkWithTexture( spec.abilities.faerie_fire_feral.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.berserk.id ) ),
+--    width = "full",
+--    min = 0,
+--    softMax = 100,
+--    step = 1,
+--} )
+
+spec:RegisterSetting( "maintain_ff", true, {
+    type = "toggle",
+    name = "Maintain Faerie Fire",
+    desc = "If checked, Keep up Sunder debuff if not provided externally.\n\n"..
+        "Default: Checked",
     width = "full",
-    min = 0,
-    softMax = 100,
-    step = 1,
 } )
 
 spec:RegisterSetting( "optimize_trinkets", false, {
