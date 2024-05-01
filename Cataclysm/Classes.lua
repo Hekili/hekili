@@ -112,7 +112,6 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", ns.updateGlyphs )
 
 all = class.specs[ 0 ]
 
-
 all:RegisterAuras({
     -- Phase 4
     -- Death's Verdict/Choice Buffs
