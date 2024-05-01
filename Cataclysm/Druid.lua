@@ -236,6 +236,15 @@ spec:RegisterStateFunction("set_last_finisher_cp", function(val)
     lastfinishercp = val
 end)
 
+local riptfsnapshot = nil
+spec:RegisterStateExpr("rip_tf_snapshot", function()
+    return riptfsnapshot
+end)
+
+spec:RegisterStateFunction("set_rip_tf_snapshot", function(val)
+    riptfsnapshot = val
+end)
+
 local training_dummy_cache = {}
 local avg_rage_amount = rage_amount()
 spec:RegisterHook( "reset_precast", function()
@@ -319,18 +328,40 @@ spec:RegisterStateExpr("ttd", function()
     return target.time_to_die
 end)
 
-spec:RegisterStateExpr("end_thresh", function()
+spec:RegisterStateExpr("base_end_thresh", function()
     return 10
 end)
 
 spec:RegisterStateExpr("bite_at_end", function()
-    --combo_points.current=5&(ttd<end_thresh|debuff.rip.up&ttd-debuff.rip.remains<end_thresh)
-    return combo_points.current == 5 and (ttd < end_thresh or debuff.rip.up and ttd - debuff.rip.remains < end_thresh)
+    return combo_points.current == 5 and (ttd < base_end_thresh or debuff.rip.up and ttd - debuff.rip.remains < base_end_thresh)
+end)
+
+spec:RegisterStateExpr("is_execute_phase", function()
+    return target.health.pct <= 25
+end)
+
+spec:RegisterStateExpr("can_bite", function()
+    if buff.tigers_fury.up and is_execute_phase then
+        return true
+    end
+
+    if buff.savage_roar.remains < settings.min_bite_sr_remains then
+        return false
+    end
+    
+    if is_execute_phase then
+        return not rip_tf_snapshot
+    end 
+
+    return debuff.rip.remains >= settings.min_bite_sr_remains
 end)
 
 spec:RegisterStateExpr("bite_before_rip", function()
-    --combo_points.current=5&debuff.rip.remains>=settings.min_bite_rip_remains&buff.savage_roar.remains>=settings.min_bite_sr_remains
-    return combo_points.current == 5 and debuff.rip.remains >= settings.min_bite_rip_remains and buff.savage_roar.remains >= settings.min_bite_sr_remains
+    return combo_points.current == 5 and debuff.rip.up and buff.savage_roar.up and (settings.ferociousbite_enabled or is_execute_phase) and can_bite
+end)
+
+spec:RegisterStateExpr("bite_now", function()
+    return (bite_before_rip or bite_at_end) and not buff.clearcasting.up
 end)
 
 spec:RegisterStateExpr("bite_during_berserk", function()
@@ -361,7 +392,7 @@ spec:RegisterStateExpr("wait_for_tf", function()
     return cooldown.tigers_fury.remains <= buff.berserk.duration and cooldown.tigers_fury.remains + 1 < ttd - buff.berserk.duration
 end)
 
-spec:RegisterStateExpr("rip_now", function()
+spec:RegisterStateExpr("rip_now", function() --TODO:continue - update function
     --!debuff.rip.up&combo_points.current=5&ttd>=end_thresh
     local rtn = (not debuff.rip.up)
         and combo_points.current == 5
@@ -380,21 +411,83 @@ local function calc_tf_energy_thresh(leeway)
     return (40.0 - delayTime *  state.energy.regen)
 end
 
+spec:RegisterStateExpr("final_tick_leeway", function()
+    return debuff.bleed.up and debuff.rip.tick_time_remains or 0
+end)
+
+spec:RegisterStateExpr("end_thresh_for_clip", function()
+    return base_end_thresh + final_tick_leeway
+end)
+
+spec:RegisterStateExpr("ripRefreshTime", function()
+    return calc_rip_refresh_time
+end)
+
+spec:RegisterStateExpr("calc_rip_refresh_time", function()
+    if not debuff.rip.up then
+        return query_time - latency
+    end
+
+    -- If we're not gaining a new Tiger's Fury snapshot, then use the standard 1 tick refresh window
+    local standard_refresh_time = debuff.rip.expires - debuff.rip.tick_time
+
+    if not buff.tigers_fury.up or is_execute_phase or (combo_points.current < 5) then
+        return standard_refresh_time
+    end
+
+    -- Likewise, if the existing TF buff will still be up at the start of the normal window, then don't clip unnecessarily
+    local tf_end = buff.tigers_fury.expires
+
+    if tf_end > standard_refresh_time + latency then
+        return standard_refresh_time
+    end
+
+    -- Potential clips for a TF snapshot should be done as late as possible
+    local latest_possible_snapshot = tf_end - latency * 2
+
+    -- Determine if an early clip would cost us an extra Rip cast over the course of the fight
+    local max_rip_dur = debuff.rip.duration
+    local final_possible_rip_cast = (talent.blood_in_the_water == 2 and target.time_to_25 - latency) or (target.time_to_die - cached_rip_end_thresh)
+    local min_rips_possible = (final_possible_rip_cast - standard_refresh_time) / max_rip_dur
+    local projected_rip_casts = (final_possible_rip_cast - latest_possible_snapshot) / max_rip_dur
+
+    -- If the clip is free, then always allow it
+    if projected_rip_casts == min_rips_possible then
+        return latest_possible_snapshot
+    end
+
+    -- If the clip costs us a Rip cast (30 Energy), then we need to determine whether the damage gain is worth the spend.
+    -- First calculate the maximum number of buffed Rip ticks we can get out before the fight ends.
+    local buffed_tick_count = min(aura.rip.duration/aura.rip.tick_time + 1, floor((target.time_to_die - latest_possible_snapshot) / debuff.rip.tick_time))
+
+    -- Subtract out any ticks that would already be buffed by an existing snapshot
+    if rip_tf_snapshot then
+        buffed_tick_count = buffed_tick_count - debuff.rip.ticks_remain
+    end
+
+    -- Perform a DPE comparison vs. Shred
+    local expected_damage_gain = action.rip.tick_damage * (1.0 - 1.0 / 1.15) * buffed_tick_count --TODO: check if TF is already applied in damage calc
+    local energy_equivalent = expected_damage_gain / action.shred.damage * action.shred.cost
+
+    Hekili:Debug("Rip TF snapshot is worth %.1f Energy", energy_equivalent)
+
+    return (energy_equivalent > action.rip.cost) and latest_possible_snapshot or standard_refresh_time
+end)
+
 -- Delay Rip refreshes if Tiger's Fury will be usable soon enough for the snapshot to outweigh the lost Rip ticks from waiting
 spec:RegisterStateExpr("delay_rip", function()
-    local maxRipTicks = aura.rip.duration/aura.rip.tick_time
-    local finalTickLeeway = debuff.bleed.up and debuff.rip.tick_time_remains or 0
+    local max_rip_ticks = aura.rip.duration/aura.rip.tick_time
 
     if rip_now and not buff.tigers_fury.up then
-        local buffedTickCount = math.min(maxRipTicks, math.floor((ttd - finalTickLeeway) / aura.rip.tick_time))
-        local delayBreakpoint = finalTickLeeway + 0.15 * buffedTickCount * aura.rip.tick_time
+        local buffed_tick_count = math.min(max_rip_ticks, math.floor((ttd - final_tick_leeway) / aura.rip.tick_time))
+        local delay_breakpoint = final_tick_leeway + 0.15 * buffed_tick_count * aura.rip.tick_time
 
-        if tf_expected_before(time, time + delayBreakpoint) then
-            local delaySeconds = delayBreakpoint
-            local energyToDump = energy.current + delaySeconds * energy.gain - calc_tf_energy_thresh(latency)
-            local secondsToDump = math.ceil(energyToDump / action.shred.DefaultCast.cost)
+        if tf_expected_before(time, time + delay_breakpoint) then
+            local delay_seconds = delay_breakpoint
+            local energy_to_dump = energy.current + delay_seconds * energy.gain - calc_tf_energy_thresh(latency)
+            local seconds_to_dump = ceil(energy_to_dump / action.shred.cost)
 
-            if secondsToDump < delaySeconds then
+            if seconds_to_dump < delay_seconds then
                 return true
             end
         end
@@ -419,6 +512,10 @@ spec:RegisterStateExpr("clip_mangle", function()
     return earliest_mangle <= 0
 end)
 
+spec:RegisterStateExpr("mangle_now", function()
+    return (mangle_refresh_now or clip_mangle)
+end)
+
 spec:RegisterStateExpr("ff_procs_ooc", function()
     return glyph.omen_of_clarity.enabled
 end)
@@ -427,6 +524,32 @@ spec:RegisterStateFunction("calc_rake_dpe", function()
     local rake_dpe = action.rake.damage + action.rake.tick_damage*(math.floor(min(aura.rake.duration,ttd)/aura.rake.tick_time))/action.rake.cost
     local shred_dpe = action.shred.damage/action.shred.cost
     return rake_dpe, shred_dpe
+end)
+
+local cachedRipEndThresh = 10 -- placeholder until first calc
+spec:RegisterStateExpr("cached_rip_end_thresh", function()
+    return cachedRipEndThresh
+end)
+
+spec:RegisterStateFunction("calc_rip_end_thresh", function()
+    if combo_points.current < 5 then
+        return cached_rip_end_thresh
+    end
+    
+    --Calculate the minimum DoT duration at which a Rip cast will provide higher DPE than a Bite cast
+    expected_bite_dpe = 1 --TODO:FIXME
+    expected_rip_tick_dpe = 1 --TODO:FIXME
+    num_ticks_to_break_even = 1 + floor(expected_bite_dpe/expected_rip_tick_dpe)
+
+    Hekili:Debug("Bite Break-Even Point = %d Rip ticks", num_ticks_to_break_even)
+
+    end_thresh = num_ticks_to_break_even * aura.rip.tick_time
+
+    --Store the result so we can keep using it even when not at 5 CP
+    cachedRipEndThresh = end_thresh
+
+    return end_thresh
+
 end)
 
 spec:RegisterStateFunction("tf_expected_before", function(current_time, future_time)
@@ -669,7 +792,7 @@ spec:RegisterStateExpr("excess_e", function()
 end)
 
 spec:RegisterStateExpr("rip_refresh_pending", function()
-    return debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - end_thresh
+    return debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - base_end_thresh
 end)
 
 spec:RegisterStateExpr("should_flowerweave", function()
@@ -2823,6 +2946,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "rip" )
             removeBuff( "clearcasting" )
             set_last_finisher_cp(combo_points.current)
+            set_rip_tf_snapshot(buff.tigers_fury.up) -- FIXME: is there no better way to bind the information on each active rip? This will be a bottleneck on multi-rips
             spend( combo_points.current, "combo_points" )
             rip_tracker[target.unit].extension = 0
         end,
