@@ -134,7 +134,7 @@ all:RegisterAuras({
         aliasMode = "latest",
         aliasType = "buff",        
     },
-    
+
     -- DBW Buffs
     aim_of_the_iron_dwarves = {
         -- crit: DK, Hunter, Paladin
