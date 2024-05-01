@@ -2765,6 +2765,8 @@ do
         is_friendly = 1,
         is_player = 1,
         is_undead = 1,
+        is_dragonkin = 1,
+        is_elemental = 1,
         level = 1,
         moving = 1,
         real_ttd = 1,
@@ -2839,6 +2841,10 @@ do
             elseif k == "is_friendly" then t[k] = t.exists and UnitIsFriend( "target", "player" )
             elseif k == "is_player" then t[k] = UnitIsPlayer( "target" )
             elseif k == "is_undead" then t[k] = UnitCreatureType( "target" ) == BATTLE_PET_NAME_4
+
+            -- TODO: This probably needs peer review, not sure it works as intended.
+            elseif k == "is_dragonkin" then t[k] = UnitCreatureType( "target" ) == "Dragonkin"
+            elseif k == "is_elemental" then t[k] = UnitCreatureType( "target" ) == "Elemental"
 
             elseif k == "level" then t[k] = UnitLevel( "target" ) or UnitLevel( "player" ) or MAX_PLAYER_LEVEL
             elseif k == "moving" then t[k] = GetUnitSpeed( "target" ) > 0

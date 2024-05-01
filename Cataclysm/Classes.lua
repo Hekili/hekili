@@ -112,7 +112,6 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", ns.updateGlyphs )
 
 all = class.specs[ 0 ]
 
-
 all:RegisterAuras({
     -- Phase 4
     -- Death's Verdict/Choice Buffs
@@ -135,7 +134,7 @@ all:RegisterAuras({
         aliasMode = "latest",
         aliasType = "buff",        
     },
-    
+
     -- DBW Buffs
     aim_of_the_iron_dwarves = {
         -- crit: DK, Hunter, Paladin
