@@ -24,7 +24,6 @@ actions+=/run_action_list,name=single
 
 ## Init Parameters
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
-actions.init+=/variable,name=execute_phase,value=target.health.pct<20
 
 ## Cleave
 actions.cleave+=/seal_of_righteousness,if=buff.seal_of_righteousness.down&active_enemies>=settings.seal_of_righteousness
