@@ -2840,7 +2840,7 @@ spec:RegisterAbilities( {
         cost = function () return max( 35, class.abilities.rake.spend ) end,
 
         
-        readyTime = function() return debuff.rake.remains end,
+        readyTime = function() return debuff.rake.remains - debuff.rake.tick_time end,
 
         form = "cat_form",
         handler = function()
@@ -3012,7 +3012,7 @@ spec:RegisterAbilities( {
         texture = 132152,
 
         usable = function() return combo_points.current > 0, "requires combo_points" end,
-        readyTime = function() return debuff.rip.remains end, -- Clipping rip is a DPS loss and an unpredictable recommendation. AP snapshot on previous rip will prevent overriding
+        readyTime = function() return debuff.rip.remains - debuff.rip.tick_time end, -- Clipping rip is a DPS loss and an unpredictable recommendation. AP snapshot on previous rip will prevent overriding
         handler = function ()
             applyDebuff( "target", "rip" )
             removeBuff( "clearcasting" )
