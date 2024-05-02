@@ -14,25 +14,22 @@ actions+=/run_action_list,name=cat,if=buff.cat_form.up
 actions+=/cat_form,if=!up
 
 actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcasting.up&15|0)
-actions.cat+=/mangle_cat,if=mangle_now
-actions.cat+=/faerie_fire_feral,if=ff_now&target.outside2
+actions.cat+=/faerie_fire_feral,if=ff_now
 #actions.cat+=/faerie_fire_feral,if=glyph.omen_of_clarity.enabled&!buff.clearcasting.up&(target.outside2|buff.berserk.up&ff_during_berserk|!buff.berserk.up&energy.current<87)&(!rip_now|energy.current<action.rip.spend)&can_spend_ff
 actions.cat+=/feral_charge_cat,if=target.outside7
 actions.cat+=/berserk,use_off_gcd=1,if=!wait_for_tf&debuff.rip.up&!buff.clearcasting.up
-actions.cat+=/ravage,if=energy.current<=90
+actions.cat+=/ravage,if=energy.current<=energy.max-energy.regen*(1+latency)
+actions.cat+=/shred,if=rip_now&(glyph.bloodletting.enabled&debuff.rip.up&rip_tracker[target.unit].extension<6)
 actions.cat+=/rip,if=rip_now
-#actions.cat+=/savage_roar,if=debuff.rip.up&buff.savage_roar.up&buff.savage_roar.remains-(rip_maxremains+settings.rip_leeway)<=0&rip_maxremains+settings.min_roar_offset<=sr_new_duration&!buff.savage_roar.remains>=ttd
-#actions.cat+=/ferocious_bite,if=settings.ferociousbite_enabled&energy.current<67&!buff.clearcasting.up&(bite_at_end|bite_before_rip)&(!buff.berserk.up|bite_during_berserk)
+actions.cat+=/savage_roar,if=roar_now
+actions.cat+=/ferocious_bite,if=bite_now
+actions.cat+=/mangle_cat,if=mangle_now
 
-actions.cat+=/rake,if=buff.clearcasting.up&!debuff.bleed.up&ttd>9
-#actions.cat+=/rake,if=!up&!buff.clearcasting.up&(should_rake|!debuff.bleed.up)&ttd>9&!wait_for_ff
-actions.cat+=/rake,if=(!up|up&buff.tigers_fury.up&debuff.rake.remains<class.auras.rake.duration-6)
-actions.cat+=/faerie_fire_feral,if=ff_now&energy.current<=90
-actions.cat+=/savage_roar,if=!buff.savage_roar.up
-actions.cat+=/feral_charge_cat,if=!aggro&!buff.clearcasting.up&energy.current<=70
+actions.cat+=/rake,if=rake_now
+actions.cat+=/feral_charge_cat,if=!aggro&!buff.clearcasting.up&energy.current<=70&(!debuff.rip.up|debuff.rip.remains>3)&(!debuff.rake.up|debuff.rip.remains>3)
 actions.cat+=/bear_form,if=should_bearweave
 actions.cat+=/mark_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
-actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current>=100)
+actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current=energy.max)
 
 actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcasting.up&15|0)
 actions.cat_aoe+=/berserk,if=energy.current>60&cooldown.tigers_fury.remains>=15

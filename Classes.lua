@@ -1509,10 +1509,19 @@ all:RegisterAuras( {
         copy = { 7405, 8380, 11596, 11597, 25225, 47467, 58567, 65936, 71554 },
     },
 
+    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
+    faerie_fire = {
+        id = 91565,
+        duration = 300,
+        max_stack = 3,
+        shared = "target",
+        copy = { 770, 16857 },
+    },
+
     major_armor_reduction = {
-        alias = { "sunder_armor", "acid_spit", "expose_armor" },
+        alias = { "faerie_fire","sunder_armor", "acid_spit", "expose_armor" },
         aliasType = "debuff",
-        aliasMode = "first"
+        aliasMode = "longest"
     },
 
     -- Reduces melee attack power by $s1.
@@ -1649,22 +1658,6 @@ all:RegisterAuras( {
         aliasMode = "longest"
     },
 
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    faerie_fire = {
-        id = 770,
-        duration = 300,
-        max_stack = 1,
-        shared = "target",
-        copy = { 770, 778, 9749, 9907, 26993 },
-    },
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    faerie_fire_feral = {
-        id = 16857,
-        duration = 300,
-        max_stack = 1,
-        shared = "target",
-        copy = { 16857, 17390, 17391, 17392, 27011 },
-    },
 
     -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
     curse_of_weakness = {
@@ -1685,7 +1678,7 @@ all:RegisterAuras( {
     },
 
     armor_reduction = {
-        alias = { "faerie_fire", "faerie_fire_feral", "curse_of_weakness", "sting" },
+        alias = { "curse_of_weakness", "sting" },
         aliasType = "debuff",
         aliasMode = "first"
     },

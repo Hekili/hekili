@@ -51,7 +51,7 @@ end
 local function calculate_damage( coefficient, flatdmg, weaponBased, masteryFlag, armorFlag, critChanceMult )
     local feralAura = 1
     local razorClawsMultiplier = state.talent.mangle.enabled --Use MasterySpell(Mangle) as trigger, since razorClaws is neither talent nor ability?
-    local boss_armor = 10643*(1-0.05*(state.debuff.armor_reduction.up and 1 or 0))*(1-0.2*(state.debuff.major_armor_reduction.up and 1 or 0))*(1-0.2*(state.debuff.shattering_throw.up and 1 or 0))
+    local boss_armor = 10643*(1-0.2*(state.debuff.major_armor_reduction.up and 1 or 0))*(1-0.2*(state.debuff.shattering_throw.up and 1 or 0))
     local armor_coeff = (1 - boss_armor/15232.5) -- no more armor_pen
     local armor = armorFlag and armor_coeff or 1
     local crit = min( ( 1 + state.stat.crit * 0.01 * ( critChanceMult or 1 ) ), 2 )
@@ -307,14 +307,6 @@ spec:RegisterStateExpr( "mainhand_remains", function()
     return next_swing
 end)
 
-spec:RegisterStateExpr("should_rake", function()
-    if set_bonus.tier9feral_2pc == 1 or set_bonus.tier10feral_4pc == 1 then
-        return true
-    end
-
-    local r, s = calc_rake_dpe()
-    return r >= s
-end)
 
 spec:RegisterStateExpr("is_training_dummy", function()
     return training_dummy_cache[target.unit] == true
@@ -363,7 +355,7 @@ end)
 spec:RegisterStateExpr("bite_now", function()
     local bite_now =  (bite_before_rip or bite_at_end) and not buff.clearcasting.up
     -- Ignore minimum CP enforcement during Execute phase if Rip is about to fall off
-    local emergency_bite_now = is_execute_phase and debuff.rip.up and (debuff.rip.remains < debuff.rip.tick_time) and (curCp >= 1)
+    local emergency_bite_now = is_execute_phase and debuff.rip.up and (debuff.rip.remains < debuff.rip.tick_time) and (combo_points.current >= 1)
 
     return bite_now or emergency_bite_now
 end)
@@ -411,7 +403,7 @@ spec:RegisterStateExpr("rip_now", function()
 
         if tf_expected_before(time, time + delay_breakpoint) then
             local delay_seconds = delay_breakpoint
-            local energy_to_dump = energy.current + delay_seconds * energy.gain - calc_tf_energy_thresh(latency)
+            local energy_to_dump = energy.current + delay_seconds * energy.regen - calc_tf_energy_thresh(latency)
             local seconds_to_dump = ceil(energy_to_dump / action.shred.cost)
 
             if seconds_to_dump < delay_seconds then
@@ -427,7 +419,8 @@ end)
 -- Rake calcs
 
 spec:RegisterStateExpr("rake_now", function()
-    local rake_now = (not rakeDot.IsActive() or (rakeDot.RemainingDuration(sim) < rakeDot.TickLength)) and (simTimeRemain > rakeDot.TickLength) and rakeCcCheck
+    local rake_cc_check = (not buff.clearcasting.up) or (not debuff.rake.up) or (debuff.rake.remains < 1)
+    local rake_now = (not debuff.rake.up or (debuff.rake.remains < debuff.rake.tick_time)) and (ttd > debuff.rake.tick_time) and rake_cc_check
 
     -- DELETEME: only for old gear
     if rake_now and (set_bonus.tier9feral_2pc == 1 or set_bonus.tier10feral_4pc == 1) then
@@ -435,19 +428,22 @@ spec:RegisterStateExpr("rake_now", function()
     end
 
     -- Additionally, don't Rake if the current Shred DPE is higher due to trinket procs etc.
-    local rake_dpe, shred_dpe = calc_rake_dpe()
-    rake_now = rake_dpe >= shred_dpe
-
-    -- Additionally, don't Rake if there is insufficient time to max out our available glyph of shred extensions before rip falls off - skip if not relevant
-    if not (rake_now and debuff.rip.up) then
-        return rake_now
+    if settings.rake_dpe_check and rake_now then
+        local rake_dpe = calc_rake_dpe
+        local shred_dpe = calc_shred_dpe
+        rake_now = rake_dpe >= shred_dpe
     end
 
-    local remaining_rip_dur = rip_maxremains()
-    local energy_for_shreds = energy.current - action.rake.cost - action.rip.cost + debuff.rip.remains * energy.gain + tf_expected_before(time, time + debuff.rip.remains) and 60 or 0
-    local max_shreds_possible = min(energy_for_shreds / action.shred.cost, (debuff.rip.expires - (query_time + 1)))
+    -- Additionally, don't Rake if there is insufficient time to max out our available glyph of shred extensions before rip falls off - skip if not relevant
+    if rake_now and debuff.rip.up then
+        local remaining_rip_dur = rip_maxremains
+        local energy_for_shreds = energy.current - action.rake.cost - action.rip.cost + debuff.rip.remains * energy.regen + (tf_expected_before(time, time + debuff.rip.remains) and 60 or 0)
+        local max_shreds_possible = min(energy_for_shreds / action.shred.cost, (debuff.rip.expires - (query_time + 1)))
 
-    return (not rip_canextend) or (max_shreds_possible > (remaining_rip_dur - debuff.rip.remains))
+        return (not rip_canextend) or (max_shreds_possible > (remaining_rip_dur - debuff.rip.remains))
+    end
+
+    return rake_now
 
 end)
 
@@ -457,20 +453,20 @@ spec:RegisterStateExpr("pool_for_rake", function()
 end)
 
 spec:RegisterStateExpr("roar_now", function()
-    return curCp >= 1 and (not buff.savage_roar.up or clip_roar)
+    return combo_points.current >= 1 and (not buff.savage_roar.up or clip_roar)
 end)
 
 spec:RegisterStateExpr("ff_now", function()
-    return settings.maintain_ff and debuff.armor_reduction.down
+    return settings.maintain_ff and debuff.major_armor_reduction.down
 end)
 
-local function calc_tf_energy_thresh(leeway)
-    local delayTime = leeway + (state.buff.clearcasting.up and 1 or 0)
-    return (40.0 - delayTime *  state.energy.regen)
-end
+spec:RegisterStateFunction("calc_tf_energy_thresh", function(leeway)
+    local delayTime = leeway + (buff.clearcasting.up and 1 or 0)
+    return (40.0 - delayTime *  energy.regen)
+end)
 
 spec:RegisterStateExpr("final_tick_leeway", function()
-    return debuff.bleed.up and debuff.rip.tick_time_remains or 0
+    return max(debuff.rip.remains % debuff.rip.tick_time, 0) --debuff.rip.tick_time_remains not possible because of shred extensions (crashes default)
 end)
 
 spec:RegisterStateExpr("end_thresh_for_clip", function()
@@ -537,10 +533,9 @@ spec:RegisterStateExpr("mangle_refresh_now", function()
     return (not debuff.mangle.up) and ttd > 1
 end)
 
---spec:RegisterStateExpr("mangle_refresh_pending", function()
---    --debuff.mangle.up&debuff.mangle.remains<ttd-1
---    return debuff.mangle.up and debuff.mangle.remains < ttd - 1
---end)
+spec:RegisterStateExpr("mangle_refresh_pending", function()
+    return debuff.mangle.up and debuff.mangle.remains < ttd - 1
+end)
 
 spec:RegisterStateExpr("clip_mangle", function()
     local num_mangles_remaining = floor(1 + (ttd - 1 - debuff.mangle.remains) / 60)
@@ -556,10 +551,15 @@ spec:RegisterStateExpr("ff_procs_ooc", function()
     return glyph.omen_of_clarity.enabled
 end)
 
-spec:RegisterStateFunction("calc_rake_dpe", function()
+
+spec:RegisterStateExpr("calc_rake_dpe", function()
     local rake_dpe = action.rake.damage + action.rake.tick_damage*(math.floor(min(aura.rake.duration,ttd)/aura.rake.tick_time))/action.rake.cost
+    return rake_dpe
+end)
+
+spec:RegisterStateExpr("calc_shred_dpe", function()
     local shred_dpe = action.shred.damage/action.shred.cost
-    return rake_dpe, shred_dpe
+    return shred_dpe
 end)
 
 local cachedRipEndThresh = 10 -- placeholder until first calc
@@ -644,6 +644,18 @@ end)
 --        and ((not debuff.rip.up) or (debuff.rip.remains > 1.0) or active_enemies > 2)
 --end)
 
+spec:RegisterStateExpr("rip_refresh_pending", function()
+    return debuff.rip.up and (debuff.rip.remains < ttd - base_end_thresh) and (combo_points.current >= (is_execute_phase and 1 or 5))
+end)
+
+spec:RegisterStateExpr("rake_refresh_pending", function()
+    return debuff.rake.up and (debuff.rake.remains < ttd - debuff.rake.tick_time)
+end)
+
+spec:RegisterStateExpr("roar_refresh_pending", function()
+    return buff.savage_roar.up and (buff.savage_roar.remains < ttd - latency) and combo_points.current >= 1
+end)
+
 local pending_actions = {
     mangle_cat = {
         refresh_time = 0,
@@ -667,34 +679,34 @@ for entry in pairs(pending_actions) do
     table.insert(sorted_actions, entry)
 end
 spec:RegisterStateExpr("excess_e", function()
-    if active_enemies <= 2 then
-        if debuff.rip.up and combo_points.current == 5 then
-            pending_actions.rip.refresh_time = query_time + debuff.rip.remains
-            pending_actions.rip.refresh_cost = (30 - (set_bonus.tier10feral_2pc == 1 and 10 or 0)) * (berserk_expected_at(query_time, query_time + debuff.rip.remains) and 0.5 or 1)
+    --if active_enemies <= 2 then
+        if rip_refresh_pending and query_time < rip_refresh_time then
+            pending_actions.rip.refresh_time = rip_refresh_time
+            pending_actions.rip.refresh_cost = action.rip.cost * (berserk_expected_at(query_time, rip_refresh_time) and 0.5 or 1)
         else
             pending_actions.rip.refresh_time = 0
             pending_actions.rip.refresh_cost = 0
         end
 
-        if debuff.rake.up and debuff.rake.remains < ttd - 9 and should_rake then
-            pending_actions.rake.refresh_time = query_time + debuff.rake.remains
-            pending_actions.rake.refresh_cost = (40 - talent.ferocity.rank) * (berserk_expected_at(query_time, query_time + debuff.rake.remains) and 0.5 or 1)
+        if pool_for_rake and rake_refresh_pending and debuff.rake.remains > debuff.rake.tick_time then
+            pending_actions.rake.refresh_time = debuff.rake.expires - debuff.rake.tick_time
+            pending_actions.rake.refresh_cost = action.rake.cost * (berserk_expected_at(query_time, pending_actions.rake.refresh_time) and 0.5 or 1)
         else
             pending_actions.rake.refresh_time = 0
             pending_actions.rake.refresh_cost = 0
         end
 
-        if debuff.mangle.up and debuff.mangle.remains < ttd - 1 then
-            pending_actions.mangle_cat.refresh_time = query_time + debuff.mangle.remains
-            pending_actions.mangle_cat.refresh_cost = 40 * (berserk_expected_at(query_time, query_time + debuff.mangle.remains) and 0.5 or 1)
+        if mangle_refresh_pending then
+            pending_actions.mangle_cat.refresh_time = debuff.mangle.expires
+            pending_actions.mangle_cat.refresh_cost = action.mangle_cat.cost * (berserk_expected_at(query_time, debuff.mangle.expires) and 0.5 or 1)
         else
             pending_actions.mangle_cat.refresh_time = 0
             pending_actions.mangle_cat.refresh_cost = 0
         end
 
-        if buff.savage_roar.up and combo_points.current > 0 then
-            pending_actions.savage_roar.refresh_time = query_time + buff.savage_roar.remains
-            pending_actions.savage_roar.refresh_cost = 25 * (berserk_expected_at(query_time, query_time + buff.savage_roar.remains) and 0.5 or 1)
+        if roar_refresh_pending then
+            pending_actions.savage_roar.refresh_time = buff.savage_roar.expires
+            pending_actions.savage_roar.refresh_cost = action.savage_roar.cost * (berserk_expected_at(query_time, buff.savage_roar.expires) and 0.5 or 1)
         else
             pending_actions.savage_roar.refresh_time = 0
             pending_actions.savage_roar.refresh_cost = 0
@@ -709,37 +721,37 @@ spec:RegisterStateExpr("excess_e", function()
                 pending_actions.rip.refresh_cost = 0
             end
         end
-    else
-        if buff.savage_roar.up then
-            pending_actions.savage_roar.refresh_time = query_time + buff.savage_roar.remains
-            pending_actions.savage_roar.refresh_cost = 25 * (berserk_expected_at(query_time, query_time + buff.savage_roar.remains) and 0.5 or 1)
-            if combo_points.current == 0 and buff.savage_roar.remains > 1 then
-                if set_bonus.idol_of_the_corruptor == 1 or set_bonus.idol_of_mutilation == 1 then
-                    pending_actions.mangle_cat.refresh_time = query_time + buff.savage_roar.remains - 1
-                    pending_actions.mangle_cat.refresh_cost = 40 * (berserk_expected_at(query_time, query_time + debuff.mangle.remains) and 0.5 or 1)
-                    pending_actions.rake.refresh_time = 0
-                    pending_actions.rake.refresh_cost = 0
-                else
-                    pending_actions.rake.refresh_time = query_time + buff.savage_roar.remains - 1
-                    pending_actions.rake.refresh_cost = (40 - talent.ferocity.rank) * (berserk_expected_at(query_time, query_time + debuff.rake.remains) and 0.5 or 1)
-                    pending_actions.mangle_cat.refresh_time = 0
-                    pending_actions.mangle_cat.refresh_cost = 0
-                end
-            else
-                pending_actions.rake.refresh_time = 0
-                pending_actions.rake.refresh_cost = 0
-                pending_actions.mangle_cat.refresh_time = 0
-                pending_actions.mangle_cat.refresh_cost = 0
-            end
-        else
-            pending_actions.savage_roar.refresh_time = 0
-            pending_actions.savage_roar.refresh_cost = 0
-            pending_actions.rake.refresh_time = 0
-            pending_actions.rake.refresh_cost = 0
-            pending_actions.mangle_cat.refresh_time = 0
-            pending_actions.mangle_cat.refresh_cost = 0
-        end
-    end
+    --else
+    --    if buff.savage_roar.up then
+    --        pending_actions.savage_roar.refresh_time = query_time + buff.savage_roar.remains
+    --        pending_actions.savage_roar.refresh_cost = 25 * (berserk_expected_at(query_time, query_time + buff.savage_roar.remains) and 0.5 or 1)
+    --        if combo_points.current == 0 and buff.savage_roar.remains > 1 then
+    --            if set_bonus.idol_of_the_corruptor == 1 or set_bonus.idol_of_mutilation == 1 then
+    --                pending_actions.mangle_cat.refresh_time = query_time + buff.savage_roar.remains - 1
+    --                pending_actions.mangle_cat.refresh_cost = 40 * (berserk_expected_at(query_time, query_time + debuff.mangle.remains) and 0.5 or 1)
+    --                pending_actions.rake.refresh_time = 0
+    --                pending_actions.rake.refresh_cost = 0
+    --            else
+    --                pending_actions.rake.refresh_time = query_time + buff.savage_roar.remains - 1
+    --                pending_actions.rake.refresh_cost = 40 * (berserk_expected_at(query_time, query_time + debuff.rake.remains) and 0.5 or 1)
+    --                pending_actions.mangle_cat.refresh_time = 0
+    --                pending_actions.mangle_cat.refresh_cost = 0
+    --            end
+    --        else
+    --            pending_actions.rake.refresh_time = 0
+    --            pending_actions.rake.refresh_cost = 0
+    --            pending_actions.mangle_cat.refresh_time = 0
+    --            pending_actions.mangle_cat.refresh_cost = 0
+    --        end
+    --    else
+    --        pending_actions.savage_roar.refresh_time = 0
+    --        pending_actions.savage_roar.refresh_cost = 0
+    --        pending_actions.rake.refresh_time = 0
+    --        pending_actions.rake.refresh_cost = 0
+    --        pending_actions.mangle_cat.refresh_time = 0
+    --        pending_actions.mangle_cat.refresh_cost = 0
+    --    end
+    --end
 
     table.sort(sorted_actions, function(a,b)
         return pending_actions[a].refresh_time < pending_actions[b].refresh_time
@@ -748,10 +760,12 @@ spec:RegisterStateExpr("excess_e", function()
     local floating_energy = 0
     local previous_time = query_time
     local tf_pending = false
+    local regen_rate = energy.regen
     for i = 1, #sorted_actions do
         local entry = sorted_actions[i]
         if pending_actions[entry].refresh_time > 0 then
-            local delta_t = pending_actions[entry].refresh_time - previous_time
+            local elapsed_time = pending_actions[entry].refresh_time - previous_time
+            local energy_gain = elapsed_time * regen_rate
             if not tf_pending then
                 tf_pending = tf_expected_before(query_time, pending_actions[entry].refresh_time)
                 if tf_pending then
@@ -759,16 +773,16 @@ spec:RegisterStateExpr("excess_e", function()
                 end
             end
 
-            if delta_t < pending_actions[entry].refresh_cost / 10 then
-                floating_energy = floating_energy + pending_actions[entry].refresh_cost - 10 * delta_t
+            if energy_gain < pending_actions[entry].refresh_cost then
+                floating_energy = floating_energy + pending_actions[entry].refresh_cost -  energy_gain
                 previous_time = pending_actions[entry].refresh_time
             else
-                previous_time = previous_time + pending_actions[entry].refresh_cost / 10
+                previous_time = previous_time + pending_actions[entry].refresh_cost / regen_rate
             end
         end
     end
 
-    local time_to_cap = query_time + (100 - energy.current) / 10
+    local time_to_cap = query_time + (energy.max - energy.current) / regen_rate
     local time_to_end = query_time + ttd
     local trinket_active = false
     local earliest_proc = 0
@@ -815,33 +829,30 @@ spec:RegisterStateExpr("excess_e", function()
         end
         
         if (not trinket_active) and earliest_proc > 0 and earliest_proc < time_to_cap and earliest_proc_end <= time_to_end then
-            floating_energy = max(floating_energy, 100)
+            floating_energy = max(floating_energy, energy.max)
             Hekili:Debug("(excess_e) Pooling to "..tostring(floating_energy).." for trinket proc at approximately "..tostring(earliest_proc - query_time))
         end
     end
 
-    if combo_points.current == 5 and not (bite_before_rip or bite_at_end)
+    if combo_points.current == 5 and not (bite_now)
         and (not trinket_active) and buff.savage_roar.up and buff.savage_roar.remains < ttd
         and rip_refresh_pending
         and min(buff.savage_roar.remains, debuff.rip.remains) < time_to_cap - query_time then
-            floating_energy = max(floating_energy, 100)
+            floating_energy = max(floating_energy, energy.max)
             Hekili:Debug("(excess_e) Pooling to "..tostring(floating_energy).." for next finisher")
     end
 
     return energy.current - floating_energy
 end)
 
-spec:RegisterStateExpr("rip_refresh_pending", function()
-    return debuff.rip.up and combo_points.current == 5 and debuff.rip.remains < ttd - base_end_thresh
-end)
 
 spec:RegisterStateExpr("should_flowerweave", function()
     local furor_cap = min(20 * talent.furor.rank, 85)
     local flower_gcd = action.mark_of_the_wild.gcd
-    local flowershift_energy = min(furor_cap, 75) - 10 * flower_gcd - 20 * latency
+    local flowershift_energy = min(furor_cap, 75) - energy.regen * flower_gcd - 20 * latency
     local flower_end = flower_gcd + 1.5 + 2 * latency
     local dump_action_cost = active_enemies > 2 and 45 or 42
-    local energy_to_dump = energy.current + (flower_end + 1) * 10
+    local energy_to_dump = energy.current + (flower_end + 1) * energy.regen
     return (
         flowerweaving_enabled and
         energy.current <= flowershift_energy and
@@ -859,7 +870,7 @@ spec:RegisterStateExpr("should_bearweave", function()
     local weave_end = 6 + 2 * latency
     local weave_energy = furor_cap - 30 - (20 * latency) - (talent.furor.rank > 3 and 15 or 0)
     local dump_action_cost = active_enemies > 2 and 45 or 42
-    local energy_to_dump = energy.current + weave_end * 10
+    local energy_to_dump = energy.current + weave_end * energy.regen
     return (
         bearweaving_enabled and
         energy.current <= weave_energy and
@@ -1642,7 +1653,7 @@ end )
 
 -- Maul Helper
 local finish_maul = setfenv( function()
-    spend( (buff.clearcasting.up and 0) or ((15 - talent.ferocity.rank) * ((buff.berserk.up and 0.5) or 1)), "rage" )
+    spend( (buff.clearcasting.up and 0) or (15 * ((buff.berserk.up and 0.5) or 1)), "rage" )
 end, state )
 
 spec:RegisterStateFunction( "start_maul", function()
@@ -2034,8 +2045,7 @@ spec:RegisterAbilities( {
 
         
         handler = function()
-            removeDebuff( "armor_reduction" )
-            applyDebuff( "target", "faerie_fire", 300 )
+            applyDebuff( "target", "faerie_fire", 300, min( 3, debuff.faerie_fire.stack + 1 ) )
         end,
 
     },
@@ -2054,8 +2064,7 @@ spec:RegisterAbilities( {
         --fix:
         stance = "Cat Form, Bear Form",
         handler = function()
-            removeDebuff( "armor_reduction" )
-            applyDebuff( "target", "faerie_fire_feral", 300 )
+            applyDebuff( "target", "faerie_fire", 300, min( 3, debuff.faerie_fire.stack + ( 1 + talent.feral_aggression.rank ) ) )
             if glyph.omen_of_clarity.enabled then
                 applyBuff("clearcasting")
             end
@@ -2152,8 +2161,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function() return (25* ((buff.berserk.up and 0.5) or 1)) end, 
+        spend = function()
+            local unglyphed = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
+            --Glyph of Ferocious Bite: and consumes up to 25 additional energy to increase damage by up to 100%, and heals you for 1% of your total maximum health for each 10 energy used
+            local additional_due_glyph = (glyph.ferocious_bite.enabled and min(25, energy.current - unglyphed) or 0)
+            return  unglyphed + additional_due_glyph end, 
         spendType = "energy",
+
+        -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost
+        cost = function () return max( 25, class.abilities.ferocious_bite.spend ) end,
 
         startsCombat = true,
         texture = 132127,
@@ -2163,7 +2179,7 @@ spec:RegisterAbilities( {
             removeBuff( "clearcasting" )
             set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
-            spend( min( 30, energy.current ), "energy" )
+            --spend( min( 30, energy.current ), "energy" )
         end,
 
     },
@@ -2507,6 +2523,9 @@ spec:RegisterAbilities( {
 
         spend = function () return (buff.clearcasting.up and 0) or (35 * ((buff.berserk.up and 0.5) or 1)) end, 
         spendType = "energy",
+
+        -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
+        cost = function () return max( 35, class.abilities.mangle_cat.spend ) end,
 
         startsCombat = true,
         texture = 132135,
@@ -2977,6 +2996,9 @@ spec:RegisterAbilities( {
         end,
         spendType = "energy",
 
+        -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost
+        cost = function () return max( 30, class.abilities.rip.spend ) end,
+
         startsCombat = true,
         texture = 132152,
 
@@ -3019,6 +3041,9 @@ spec:RegisterAbilities( {
 
         spend = function() return 25 * ((buff.berserk.up and 0.5) or 1) end, 
         spendType = "energy",
+
+        -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
+        cost = function () return max( 25, class.abilities.savage_roar.spend ) end,
 
         startsCombat = false,
         texture = 236167,
@@ -3667,6 +3692,13 @@ spec:RegisterSetting( "maintain_ff", true, {
         "Default: Checked",
     width = "full",
 } )
+spec:RegisterSetting( "rake_dpe_check", true, {
+    type = "toggle",
+    name = "Compare Rake DPE with Shred",
+    desc = "If checked, skip rake if shred has better DPE.\n\n"..
+        "Default: Checked",
+    width = "full",
+} )
 
 spec:RegisterSetting( "optimize_trinkets", false, {
     type = "toggle",
@@ -3902,14 +3934,14 @@ spec:RegisterOptions( {
 
     potion = "speed",
 
-    package = "Feral DPS (IV)",
+    package = "Feral DPS",
     usePackSelector = true
 } )
 
 
 -- Default Packs
 spec:RegisterPack( "Balance (IV)", 20230228, [[Hekili:9IvZUTnoq4NfFXigBQw74MMgG6COOh20d9IxShLeTmvmr0FlfLnYcb9SVdffTO4pskfO9sRd5mFZhNz4mdL)g))2F)red7)J7wF3213D3N92S5(h)4g)9S3kW(7lqrVIEb(rgkf(3VIsqzr4MWBE(FwX39TKC0rokL5v0iqc)9hQijSNZ8pyf6TpcYwGJ8)XgWiNihpIfIIlJuW)B0kYXMWckjNsyV1egNtBc)l8RKecyxAEmjbSgkIrYZk9kO4O80di2FS7ptr0xdYJdyNWbxijhVLeVBrvXYfhQIJ9EHeZu31RQO572GHDkNMv2PSDrsZZZELKfaClDublY5R189R7cRfHssce)zqcPKDl3dVJKryQsrRYmfcLJ5MJV(zCaodNsWLpTDs9klqT88mIsqhsWE8fcYYVmPMXKYtk03JttqwjqcHsQYq0ajM3EgLuH3160XrjKIsCqRed84wbQmpzcGALyganeIRN7HmTUU3HmWYtGo3POG(chWVCXph8cuIqzbq6EKB3zcQKfGkksi4J7wxx)Vvy6Bbmsk(dti9t72UEkpylJhJeIqXCjHP0ZGecpHM7(QtvU(sn)VK0Z6eoj43OfeLOxxRh3L7Ss9cdhhW0LmenMqBV(k8lGo4YGlue7eKpV8gD0KeOU2uEkofrYk)IWiEsW9Ej6yDDA(zs2lRmOaVOLKcloIBrvUgNbc9mudQXfH5foZqSkk2(jdkPzQictj4GRMKFizOeCgZJKc(PZ4JbkY4HZ4NE4a8cnVQiifNEatlFA39UpsGpahXckVG6Qd3DSuxFqXIo9GwCNGtoxfb0lFjbwYRBDjvE3UqhHWL6IkJFBnSqB8DqP6HqnAILwMAVo9AXlbbADc6XtHUXqiaffHtWGzH9VTQKhQJdGePDB6Zv1QIV0YQDhPNkXmg4qlL3jYZtoMFbAPGXxqVzqerdYF)2LBqcdNw(730tvkWqHzMLdLqSsDzbeRC)HvgMZmf0v3llhihTcvtbHHygEfCI7Ec5nlZiw)ufLsGkVWmHNHuAyNRZD(G)EW1KXdn(7FoTiNYaCd)utOaIMq(CoLEnF3FF7V4JZYV0a))pANqUJl(F1FFemnkuRcXhZ1smlCjmACt4IMqxxCdRRBcDwkVj8lsAnOCUqTUsZHRKd(cJs3jKpdoVo5kWhZYuTKvazpEY954TLJNCdT6)Qgce9JQIkJrAYC)y0R33nJEdcVXG(dnHpTRj8EN(jfu4C5tZWvPDVQhl1n4G9GtWKebozwZU7XSBdoCFEgCtpm6mBBPPkQPABTh5F0jfCyOEyAtN5ySz90GmSbL1SAg)PHXOQeMTRJsf0FmL4MCG4rR8X(g)(bxZ(xsb5sd8mAViAa2q1NRxvM4S2vdCE4YL(6fllh4X0TT2vRN76BqhVuw)9VfD1MS8kzLmfThypzThvLfpRECFMMkQpZ2OyJyYHHLAyI4YON55FF8UzuBBqPsLErASQnQoJUk6pxMhAC39UnFD8PpuiN9r(83RmaeNGJgt)LZszu1KuUZA(LtQRdlAJx6xuhFqb7nWhTdPJ300pXHJZF)8goDapmOvPE7n39kDmzOLMbUBr6ysrx9cARLB5guo4sH4yVAsC5)cErVJ0Jw56kBQralxaENgr(rQunIMNYsc90gX1W1THANXefoOyD902PTU5ST9ey5WrFDtHRT8TK1pnfSekv)IsnHWOGRfUJ(Vdvt4hSEryOM8Pi3U2mTq(rDSDH4DsyZpb2CjSnnnj8WVpLTBFtt4Z6F)lBtzE1egEl1WR(4S)Sg)gJeRRFGVwhNzEz)(Rm9pkuumWqfFYe)9Fdh)FOiX8t())d]] )
-spec:RegisterPack( "Feral DPS (IV)", 20231026.2, [[Hekili:nV1xVnoUr8pl(fb7l76A7ehVlqCEO4qb2TfBpaF46BsIwIYriYsguujxkm0N9oKuuII)rwjBsX9qcSPgoZW5p)gsoY(l9)D)DXik2)hRwS66LlwD78LRwD9QB83rF5e2F3ju0JOdWhYrhH))pWeuwD4V(B7QdN(T)ygJGxYkqXmgvwurIaI83TVknJ(TC)925(kG2t4i)FSCP)UhsJJXcsXLr(7(pf0)1)SoukjsvACD4VrsliP0uCz93R)(VxC4qgUoef)ekpcdpNuqr00IC4t4OIJhX5X8VxwhMcdsFaOokdvcFV4e)bZbvNuKKMbkmksm0j(K3JOxT9VDerEmOijaMAWZPzXFknz7KQtEt2xLKm)qAcv9PZRov)DBSH(qbjVSzY2jjcrdskih7lH4ucoypgr4pZj)pvWx2FV9PWyvL4Guk(yP6Gsc7g5bWbta)aooaffHZado7rFIn9IKKGdrXBxYuQsmnyFrEv5CWbq2KW8mb3CkA7sVPCDLMEa4uqsf5fqrpFoQOilU458EpGGpIsZlVF7Y1ZuvdsvEG4BbzPL0pXc02Yw4pJrpHzY3U9WtstA(HaCoAFgeimg(gqr5pgGkgI3tSWCpg3EcdFfFeceV)gUgeCSigly5RwjETkWBuESam1LRmGJjhT10QXWmBmsDEAb0kbNSzWsk6clmJ2avHC4L5rvecoNE31l(Siilkdw9rOskyryA(Y1NpVyMoRtqyskoiHzq5bQCL4q2lNEyEbalWsAbGaal5L5sZ6KymxciYXcsabhxXzjtiue5aMoVOIwMgJxnkPDbHzDXmvtqNpZjBpyMWKhzuaMO4kclAOzWZNNOtJMP7lBM5nDcj9uqEXZNpR9uXkzo845aiqE8mViuEa)Jbjj6R0gPWTMpJs5o4aAIxJPJXLwOlTfNoRkrpbvucificND85Om4LNsFHAz(MJ1G(85PmZXr0F289RaSnMAwYywqgg)m6Lz3TDHNlYoMMZzilMfg8UTLKGC8ZmFdh90ZC50c8rPX6lmqmSfuJpYi8ctkIslQkd2d45nqXc9O9rSN0cqO5IVDJRWn(SG0uWzdHASVShdEuqJtpXcA0ISAOPFaOrU3ruouwoObHqMvjgLNmrJVFPxx4Jzugb9OcmLMslziSsXXs(9vxSyIRWrVPLpuuLfhWOesI046mbBhunFNbz08AB)6cDb2V(apqqSgARtQpd9nOOmNKSINXIz5boh08tr077fGZFwa7z662ngqGLpaRL(WcjjEtX)zeUSmaF)2gCgoDcKMgWnn)IbK35ZtB3iHHfxMvDhSjK(649B2OJ1TD5IfZMPvhIvs8Dfc)DcX2jkCJc)rv8SH9ka9A21Bx4DPn2zJH6W9sGGRYGtgKh9IT50hjzA3gqtJlYKH1rfes1jAbz7YZNnj5yfnnJJjVDjyvHnmxeCQinNw2gwSWzDciSY6ArgSpS4Edsd2bayuCrWvTwlR(SwmV)APwLpNEQ1jAciiF6qGc2y7hf0M1O33xOEviOwO73rqi7CxD)4ngkyi70IZjGx2eyPnZVj1KnhNc8iQkZKfURiZezlmJm(GXerOXvtDiDVws7gTjysfCRVQ1sQUZqCOQ08uwzTNaRnZqlo0dn9iCMRIG4u8NEcLvH3oTXhtjqIadJpU64r2PF9UgQ1C(CZ(5vM4Ofg7YtIdYqrSdKlLNmMsomV(O(yLuu0J3T(nkjaqfoKxXjg4wAcZJjPEUvvQX43jDML)xMU(ZwvRzIzfGZkXBxmAvKHZqH)mSho0npDHlXY(IZN0YP3IZYq)gWk6ATy1q(2mx4JaMgdqwxgMHpoTh3mF9R0wzr94WozzdDdmSfG9z(Xahk5Ulio2s6UL2S1DBlY(dTJ31dvZeuZramp(5k3XmIN7c4ZU(1glOgnAgQ4AXPGyokV1Rqj6V2pF2962otfBIGnIHf)2f2b4f11F9bb93FSBc4bdrVaHIbIIaLaNho442bKNYkuJP(7Ec0fysQxVU)UNrewbPs)DF74PccLD94FPouW)6qwMy586V7VJ)j2923ks4l)G3sGMSk))U8UX93PNnlMFGOTa9tQ9PGgPXMiiBfctq(7gmpUo0RoCsDOTS5oDXiIJjXRDkrMpTo8U6WLl64HiaWFNINHT4bgDdJrsYAC3QCgizTtzP6xRdVxA3vs8RdVQoCOK)(eyhaGtJlqGoTNjvBlXBDQ)dap0X22rawTr1APOkAwSVOsMP)RpXF9YQxF7wD45ZdzZSR6q4WODJ3Qe60Ls6ZI1HudQTmNoU1)Kg8qXRxuh(56WP2d15PbWXP5llGYzDcx5K328SUZ7GSQrL65(Wlmc0UN63Co5OufNMMPgkIWuPD9kCAnUggbPtStTfx1x2aoaPyHPjVSwoBSqFtAz7fRlNT6f7Cb72nd5fvU(DoF7DB4JdavIQniuMKl9VADL0GUXhgtXubTWx7J3SVtzUs)BLNdcA5c85g872YZC8gEsAxNVyAAxPFptQvL7EysuASttZg34mIyPUzcd0cxADgd3baxXW3Uzm5ukDfOjFQFNb6NhyK(0od98nf4R(T0yyW(oWO2EiiWGOXCm5LY1KYnpBulIbopmwVtlsN8330CGEI)RkEn0JIkkURbamB4StPLvP7eTivgQXS(AYGgIwL7JU2GrChKw81fxaQBP7Ae694OJt97hcNnUHmnVBqU2kVFqUf0XDe6kD6gLcF6xhjxBgevvTZsnoD5TJkWsAQGO0YeLYBgHnwl8Xge47LBGIWnT06kfmmB2yVohBolwWdevYU5ASytrX4eyZNDBmsss7lNI2E(wPsK4LvrJIbcuC8cQiuZw0nMnQ)RQIyTnuxneoe2wXuwMoEZzCEyc3WoMVLp8YGyJ39dL05(VvggNdtKQmyL9be9eRsN)iMq7Evr4rh30QUMVwkJxJBpU7WBJ4TP1Vlk3WfXfPLkVlmoSwRgNuBA(WWBdqxMJM1xSKRkVKcqKs3fDn4PDgvLK3Wb8Dx(QRPgwv9bqoC0yHo2CHRj4NOuV2rm366QcurX1A(ImoZ6nbA5SJUUoG1(J5m80UqZpg)FpG6pUtX9kohM7qU)pEKE3rVwQxFR4mpJPKM1JdoMOAL9FdXNnDa25HFCxgAkFFxd1zFzbCMnBOEBlPRXbBPn3Cke2g3NJJVtixNGWDHPXOz)0QLm5qA8Dt(vAEgR7qBGYztgNT(VkRi5XBCxR0(MR7)6h4Ed2k2o5ugUg6hX5nwFHZB4(0T)0hTByisQXL)BP2qXjEsshNK3ul7tzvyouGRgQZvWRBoRbZjz2ADodB2IJ6WwqWVSQ0zluAwQqYwBSn3bTwvf6F302GWB0I0e76HDgXV4FvxRJldVzLWBDS)UfTlSMa)(TzUo8x4jHR51UCSaNzRYWOSKoVVEptH1HoWBy1fOWwNOvTDM9aWsTOr6hS3dgRUclTE4v4nSvN5Y2zBHRxW6DZ81xKMlzHT0Hin8GlUvXxzN56Dhb27mNEMw)T(2RdQmMQlefDZwlGSKg0V4GyxZgIHBxA)z7mSnX80dw(XgPUW6)7uA4TTQD(oXVoPH3KPP(yCgC7N6QxFuTDJoIOfujo(FNB7NwgQIPF(7(vCY)ff9aNE))3d]] )
+spec:RegisterPack( "Feral DPS", 20240502.2, [[Hekili:vRvBVTTUv4FlgdWWUPvZYXoPdioFyyyanBO7c4l2(WW0lrI2risIguujnac63(oKuuIIVi7K7kWDFOTwIhEohEENpvb(b)AW(0ykk47RxTEZQTRw75F96BVoyp9TtOG9NItEo(i8JY4c4V)RisCEB0F5x2Zw6TCCCkJdv4AscSCW(hRZYPFRm4rRSD9naTNqjbF33py)tzPPibPOQKG9)lm9V)3AJKYGuNL2g9lKmmjJMHQAFO9HFfF8yoQnko9L4YeeSobtJPz4s4xOeCrbQmL)CvBug8s6ta1j5XvWZ4t8f8avNGpKLdkCCI4vN4B(Xy6v7(JfXKNdXhcHTg(AwE6NZoSBw9P5ZES(Wbp9v9Qp1(WFWgFOpHjLvD7U9bBKKetdpGjfJfXJOyc)1EU23jm)i)q)QW7QRqHzuurL6lLeo8MNa3kb8bO0W4KeuoySzl9z22XhoeEmjDNptFQq0WhXL1vEGXNC7bMxjCZPKD(ZxWvtA2rGtHhQjVbkAttcgNNIFTC0ceurCwz19783Uuvni1LHINcZZQOFMfETJDWFff)cIjFdtXC5YzLhdrLXpMd()lHLH04YNdJXoy7ml8DoJrVGGhrfqO39B4cpSaNIeC7Dl)3HS)GIIfmPEiLbxm5ODCwFjmZgJu3NwWRs0iBhSeGH4aZWlqvihFZlPMqqL07UE1xervj5WPpjUIcweMM7VTPz1sDwFigrYqHhYiWFXImzSeyFj(vLSXjO9y(BNEYddLlyjZqbcOgZBEspWmRQYcAm5iI6HRPvzPO1nnDousfI8mJcqdsRjmFz3lBAMPtJ2b)R3UC(IzKStmDVPrBvXjXdw2dYzltxopjUmK)ZWdhmSk8C0KNyQzyNhCSoFR(w6umt)ZSxJZ4(3q6H5Pi(PGPg9vP0So6mMe)c03WINw(Cr8p(s3pjOJOYpTW)QCOLrzYBgU7QNiiED4o708fc)3J5yCAoIY1bPZBSYY2bLaDXqK)DNTOUmJ(F8q)aKvfiK7UXqEWMuKMH2WpAHeCmHtf8V2id8g4KmCDv4JqDzE2e8V2OSiUe6Qj9yDpXPZ0Q(mNtS)1HmnIaMfF8ib7iMw35C7kiACKfSPr5rz58RxQqgOlUPZmGRR8hVhZt4680W(6(MggZwXD75qo(vKyxZblwS3Pe69vIqHkVISYq(AHS10pLBw7maBb6hjOQQq0976Y94ljY(6s41SHgLb0ZIvI4xQ5szfS)jwPSJ9YKCdMD)nRMFU222yOwgaB0fkn9((eyB7zCq(IHXlYsX5sNCcMqQprXKD(nnMKuutZY5ZRSZhkfcJdHdpHZkPv926vZ5ghfnuEyUBNV1ZI01pT4(asdAyagfxeCLJYDDQLmtF2VVuRQxZo17enZvKRov(I9GJFoj6wJENC4HHn0xvsBwNo9cELDArLewNpJ84(eTUmb2EgzouzsrCDULMYU6(oNjY(SAP7GXeHN4QfoK(8EshEBNVtTwYyvRNuDZLyG1mO)kq3lWmvSoYIbkPzfW8S4W0m0NFjoVgTBrx)cO7mSdyMP06Ic2vjMF9QvlBA66wRSXlwySBHMgMhNWUDJuEY(vYxR2ZQ)DvuyuH72(bLeu)cgGgFIvlj7aZJjP2ZQk1z8hKoZY)PfB)Iv1APyxHO8k0UvxSkYsRPWFmSho0T56cxw64RoxPNtFeNLH(nHv01zXQH8JzUqfqjew9pDzyg(40ESXB770wzr94LDYZN6oTSdG9D6QietO35BZAmmNG9fTxrAuDhZYoocX4E4RC7vfR7Q0KD9R3BPgVy6mDD4uQPzJaJEgVdLy8zVPX952otfDvzVXWIFZk7LGfn6E)bbJhy0nb8GHK3GUqHIY0vaNNo44MjKNYjuJPb7Fb0fytdijgS)1ycRHrvW(VvCctOmCa)ABKG7TrSmLkV2hc2Z)fdGYEbcp8DoOND3wm4plbbmyVE2My)HcKphN0fqb9rJnje46DGNnypZ(2gDxBK)QbUlCgb7vSsmvby01mgjjRZ0RYzGKnoLLQnUn6EPvqjjSn6Q2OPsehtG9KronUsih0EMuTDe36u)NivDGT9Vby1nQwlfvrZIDRkzgzVAe)1ZREJTBTrnntzZSR6)Pl3lEJsKZq2ralWBFpsW2cMh45S2iy6YO5TrWV49ISGDTQPC8IthIBYCEcshmHQ5uIbNnIZfitp2pq50p9PA8e(8SSRx1g9L2OfDkI(1nykjCnwUhdOC5GoOCJxBbTUp9Illmv8L84AV(Wym5u4dAm8ntN6dwEfq64NZri3mY9OzvSuW59K1A4f21gnGYb3DOITxB0N4(hFEzejibQUcbCH9532ts6GJJDSaM5gcqhMIZdfipC6MrkghEG(cktPxkhMSttxvrczOIygUj(0vkKyiokOrbNr2UH2oU2(a4Igfr7I38DN7jrDu1T9SqItwPGda5urJ81SftD7kP3EMHhLLpBc5iV651Gl0YgfavE2DoD(OV78AD4mvtY6koY5G7uAtmp4hdjUhCv0b2h2THTrBwpDnEF3z5G1tcXdi5D9daOajQWyA3N2VYa0OIxQRLAfpSK9rfMqHvDY(ddOZyVjK7avhiKCXtWDH9jTf6R1(FNRP4ahIluKySX18z2695AsTnx04vIo1SP3))GU16kbF8kUGMc7BHFaYom6uEHoCknLlRrn9CwX3DnHf8u(PalNNb5lSztbxSKULDhEtKJ5uiSnUaiwuy23v7d3vtUen73SAjR6ln(Uj)QPghPVRV7PrMDz26FVCIKDQDpgJ9s9Jr03D5E9RR0fo4EgOFgT62oDRo3tvDjd0tvbb4Sv(ENyaSwTSRDma0R5mUs(iCtymvxiN52Mwkbn2HkAcyign7chCelgg8jEbGbMkV7m7x51iEzox)hcW93xVAfVYfla08)Aaod7GQr91wAmCEvzyKrfWEhn24yG55(5TQQWy0cS5960ISd21d7mIdfJQN0b8eDNeo03b7x1FW6sQhdtU8YzB59LDCaxAla5ISKorqzUPWgQ8Xb07muydjDvBNjQmw6pDH(b7OIz1vybmO3H3WwtNZBNTfUEgR3gVTNLMZzHTGzhVEqk6auuAOqGuV7)gf1kTnQ6NnKHMyGlxFNIknGLZAo(lwuKqFjJaoQrQJpGsNZsBvPnqmtmjaY4JbuPb(4ptpdWPf3nAYjWSl1zwfC)fkg(Sb5Tk20RPMFIIxUYo0eDYzSE3k8)t0RPhtsm8JYNePdd16ltQYRrn5Ss6Y8Iz90t9WVRYaVuUMSORECfk9FuQ(vFd5sF7FYsgQzFDZb73xdjdqUxfFhb)3d]] )
 spec:RegisterPack( "Feral Tank (IV)", 20230613, [[Hekili:vI1wpnoou4Fl8cIoW0nfOfwj68Wk0kb7kMrkODFZjUooflsIJCCaXQQ8BFp2oxCsC6LhMrPoh)DoNVZvcAb6vKFewsrVCT3134TAXnZxCR3QRVg5l)kNI8ZXK3XBHhYWPW))NuboPk8vC27vHx80)mtjXxjCCKcPcEPGasH83uYsKpLH24g(fGS5uc6LfWtVXIIOgrPfeK))YL)9FvfwRQhfLSOgn(lbJlysgTO65QNFLVDBcTkeh9boJqbPeCjwY4zWtucpnLMfP)Drvidou(ginjbxa)MNRFXCWbe8ywcy2yI5OC9L3GLxU(3sXI3d4XbWvd(KLeDflE9zL5NF2MY445BzXs73oVmV6zxWiFJlYkQVSBrIycAWgkweeZfP7v0CU2jFU9TWzeCssG5NbjSc5vQa2AwgtAlvzbnGjPPf2h2ax3jVbXEbeHOraKeAcekuV6k115XXbBjrRxyFbrz2yLRDgmNQ8fnD13fbY6C1D(GgqZOPqq9h3EuyonE2xFc(SJrvCdi3hybdVjHAWxYsPbsEqeJE1h4Ks66lIOALjfy4gzBdIktt)sz8345nB3ojwSLkNBDXdOcvTruqcMOy1gTCwTwAogWF3UHNviHQXhwEs4hq4a3XZxxqLSyfn0i9CNgIbAlDMdfrF7ILF3PXmZCRaAsbDT3bmSuGaLW)g57tyrNpuLcQcIIhUFY30I0Xhogzv7HXMYdCsANc1qtPqwug5RHipoTysF)25lprEPZOu1jGrfJPcgniwv6eR6)Q8EOEhArskc4CsDFpscipbxiH6HE98QXHMjGHg9BxOGsP9hw4ns(nq3gQ49rNNIltgJIc75KsHGMj)rn1RK0q7xor2KoSE50HsZ7BHldgTOBFyqDKP1gNSZpghgD4sTiFy6)40AF)C3UP9Xr4v8jl3ymJi2vEdtqu9Yp1GB9DCgGRFNoit(cYPcm9sla82FqFLBTy5ndWd5)bybG81BIS07oK)NyHQHEbY)P0CUqQ2GyjSoHg4Qq1qNI5vpJ81pPxvIgdgReE8f9Qt0mfphH(JMLhq(dNdBUDGz9jvTpsc2G6Yn3ODMSnEGq3ylKzg9ajUvjHftPSQ2BmXm8bqSCGBqG1RGKqSAfoNtydp3WqDtTRc)rv4TDkEWC7EeqtWsP6vNOQpEnOq)Ujr)SQqBW6RhKk(yItocYC4EWuHUl3uQPEcAxJ8VOkCQ9f0uhSZqv4SQWD7G1rhT5GgWAhX(4MuMtYuoR1uSMEy0SZz5vHpa5)2Mq)glT5KJTcwSB7Wnq6oT2rKj6Kv7j6jOiFVwhZ502QWVb)fj6c4VpPdoRTQ5uzYjmrDmDIHUA(8(dkHRrZ2C3OM4UkBpY4G7HEodfJv7PenCvFFyE2v66bypyPNdkZHy4XtTnDb0TsC0fOJTSxnsBgqMIRfK685rJ4DvB3PaLfR9HfEDyygapQZ)Wrg1ZCDnZWPUSNWQ7Pxhz7wTQk8YjRe0zs9fWD2MwMwOhSMvN1R0QlxC6bw7zlSoyTlIwzZwwMYag7oBXgh)6l89h28g2br1qEFLDUm9F)4JIRSYC6wqQldxpoEVz5Nys41hojC4yK(b9E7UP3Pz4oo73DDKL7GagRgnL0(Dw2pNOxIOxjVJVfKTJ1)ZiT)Q(bBOy(4rU4TJFPgdJ08AxBtAsiWf0OFM1(H(E8x(nFNpCPYoq(psJ)pm5nT8O))d]] )
 
 
