@@ -1,0 +1,72 @@
+# Paladin: Protection
+# Himea's Beta APL - Discord: himea.saito
+# Modified from WoWTBC Cata Guides - https://wowtbc.gg/cata/class-guides/protection-paladin/
+# May 2024
+
+## Precombat
+actions.precombat+=/righteous_fury,if=buff.righteous_fury.down
+actions.precombat+=/retribution_aura,if=!buff.aura.up&settings.maintain_aura&assigned_aura.retribution_aura
+actions.precombat+=/concentration_aura,if=!buff.aura.up&settings.maintain_aura&assigned_aura.concentration_aura
+actions.precombat+=/crusader_aura,if=!buff.aura.up&settings.maintain_aura&assigned_aura.crusader_aura
+actions.precombat+=/devotion_aura,if=!buff.aura.up&settings.maintain_aura&assigned_aura.devotion_aura
+actions.precombat+=/resistance_aura,if=!buff.aura.up&settings.maintain_aura&assigned_aura.resistance_aura
+actions.precombat+=/blessing_of_kings,if=!buff.blessing.up&settings.maintain_blessing&assigned_blessing.blessing_of_kings
+actions.precombat+=/blessing_of_might,if=!buff.blessing.up&settings.maintain_blessing&assigned_blessing.blessing_of_might
+actions.precombat+=/seal_of_truth,if=buff.seal.remains<360|buff.seal.down
+actions.precombat+=/divine_plea,if=(holy_power<3|mana.percent<settings.divine_plea_threshold)&settings.ranged_opener
+actions.precombat+=/inquisition,if=(buff.inquisition.down|buff.inquisition.remains<6)&holy_power=3&settings.ranged_opener
+actions.precombat+=/potion
+actions.precombat+=/avenging_wrath,if=settings.ranged_opener
+actions.precombat+=/exorcism,if=settings.ranged_opener
+actions.precombat+=/avengers_shield,if=settings.ranged_opener
+actions.precombat+=/judgement,if=settings.ranged_openerr
+
+## Default
+actions+=/call_action_list,name=init
+actions+=/use_items
+actions+=/potion
+actions+=/hyperspeed_acceleration,use_off_gcd=1
+actions+=/run_action_list,name=cleave,if=active_enemies>1
+actions+=/run_action_list,name=single
+
+## Init Parameters
+actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
+
+## Cleave
+actions.cleave+=/lay_on_hands,if=health.percent<settings.major_defensive
+actions.cleave+=/guardian_of_ancient_kings,if=health.percent<settings.major_defensive&buff.ardent_defender.down
+actions.cleave+=/ardent_defender,if=health.percent<settings.major_defensive&buff.guardian_of_ancient_kings.down
+actions.cleave+=/holy_shield,if=health.percent<settings.defensive_threshold&buff.defensive.down
+actions.cleave+=/divine_protection,if=health.percent<settings.defensive_threshold&buff.defensive.down
+actions.cleave+=/divine_guardian,if=health.percent<settings.defensive_threshold&buff.defensive.down&settings.use_guardian
+actions.cleave+=/lay_on_hands,if=health.percent<settings.major_defensive
+actions.cleave+=/seal_of_truth,if=buff.seal.down
+actions.cleave+=/avenging_wrath
+actions.cleave+=/divine_plea,if=holy_power=0|mana.percent<settings.divine_plea_threshold
+actions.cleave+=/word_of_glory,if=holy_power=3&health.percent<settings.wog_threshold
+actions.cleave+=/inquisition,if=holy_power=3
+actions.cleave+=/hammer_of_the_righteous
+actions.cleave+=/avengers_shield
+actions.cleave+=/consecration
+actions.cleave+=/holy_wrath
+actions.cleave+=/judgement
+
+## Singleactions.defensive+=/guardian_of_ancient_kings,if=health.percent<50
+actions.single+=/lay_on_hands,if=health.percent<settings.major_defensive
+actions.single+=/guardian_of_ancient_kings,if=health.percent<settings.major_defensive&buff.ardent_defender.down
+actions.single+=/ardent_defender,if=health.percent<settings.major_defensive&buff.guardian_of_ancient_kings.down
+actions.single+=/holy_shield,if=health.percent<settings.defensive_threshold&buff.defensive.down
+actions.single+=/divine_protection,if=health.percent<settings.defensive_threshold&buff.defensive.down
+actions.single+=/divine_guardian,if=health.percent<settings.defensive_threshold&buff.defensive.down&settings.use_guardian
+actions.single+=/seal_of_truth,if=buff.seal.down
+actions.single+=/avenging_wrath
+actions.single+=/avengers_shield,if=settings.captain_america
+actions.single+=/divine_plea,if=holy_power=0|mana.percent<settings.divine_plea_threshold
+actions.single+=/word_of_glory,if=holy_power=3&health.percent<settings.wog_threshold
+actions.single+=/shield_of_the_righteous,if=holy_power=3
+actions.single+=/crusader_strike,if=holy_power<3
+actions.single+=/avengers_shield
+actions.single+=/hammer_of_wrath,if=target.health.pct<20
+actions.single+=/judgement
+actions.single+=/consecration
+actions.single+=/holy_wrath

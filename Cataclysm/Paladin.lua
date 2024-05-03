@@ -155,6 +155,11 @@ spec:RegisterAuras( {
         aliasMode = "first",
         aliasType = "buff"
     },
+    defensive = {
+        alias = { "holy_shield", "divine_protection", "divine_guardian", "ardent_defender", "guardian_of_ancient_kings"},
+        aliasMode = "first",
+        aliasType = "buff"
+    },
     active_consecration = {
         duration = function() return 10 + (glyph.consecration.enabled and 2 or 0) end,
         max_stack = 1,
@@ -357,7 +362,7 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-    
+
     -- Holy Buffs
 
     -- Concentration Aura provides immunity to Silence and Interrupt effects.  Effectiveness of Devotion Aura, Resistance Aura, and Retribution Aura increased by 100%.
@@ -728,7 +733,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         startsCombat = false,
-        texture = 135950,
+        texture = 135951,
 
         handler = function ()
         end,
@@ -984,7 +989,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "divine_plea" )
-            if talent.shield_of_the_templar.enabled then gain( 1, "holy_power" ) end
+            if talent.shield_of_the_templar.rank == 1 then gain( 1, "holy_power" ) end
+            if talent.shield_of_the_templar.rank == 2 then gain( 2, "holy_power" ) end
+            if talent.shield_of_the_templar.rank == 3 then gain( 3, "holy_power" ) end
         end,
     },
     -- Reduces all damage taken by 20% for 10 sec.
@@ -1092,6 +1099,14 @@ spec:RegisterAbilities( {
 
         startsCombat = function() if spec.retribution then return true else return false end end,
         texture = 135919,
+
+        toggle = function()
+            if spec.protection then
+                return "defensives"
+            else
+                return "cooldowns"
+            end
+        end,
 
         handler = function ()
             applyBuff( "guardian_of_ancient_kings" )
@@ -1572,7 +1587,7 @@ spec:RegisterAbilities( {
     -- 1 Holy Power: 584 damage
     -- 2 Holy Power: 1752 damage
     -- 3 Holy Power: 3504 damage
-    shield_of_righteousness = {
+    shield_of_the_righteous = {
         id = 53600,
         cast = 0,
         cooldown = 6,
@@ -1594,6 +1609,11 @@ spec:RegisterAbilities( {
         equipped = "shield",
 
         handler = function ()
+            if buff.divine_purpose.up then
+                removeBuff( "divine_purpose" )
+            else
+                gain( -holy_power.current, "holy_power" )
+            end
         end,
     },
     -- The targeted undead or demon enemy will be compelled to flee for up to 20 sec. Damage caused may interrupt the effect. Only one target can be turned at a time.
@@ -1634,7 +1654,6 @@ spec:RegisterAbilities( {
         end,
         spendType = "holy_power",
 
-        talent = "word_of_glory",
         startsCombat = true,
         texture = 133192,
 
@@ -1739,11 +1758,13 @@ spec:RegisterAbilities( {
         id = 31850,
         cast = 0,
         cooldown = 180,
-        gcd = 0,
+        gcd = "off",
 
         talent = "ardent_defender",
         starsCombat = false,
         texture = 135870,
+
+        toggle="defensives",
 
         handler = function()
             applyBuff( "ardent_defender" )
@@ -1781,7 +1802,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 253400,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "divine_guardian" )
@@ -1829,7 +1850,7 @@ spec:RegisterAbilities( {
         id = 20925,
         cast = 0,
         cooldown = 8,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.03,
         spendType = "mana",
@@ -1837,6 +1858,8 @@ spec:RegisterAbilities( {
         talent = "holy_shield",
         startsCombat = false,
         texture = 135880,
+
+        toggle = "defensives",
 
         handler = function ()
             applyBuff( "holy_shield" )
@@ -1888,8 +1911,6 @@ spec:RegisterAbilities( {
         talent = "repentance",
         startsCombat = false,
         texture = 135942,
-
-        toggle = "defensives",
 
         usable = function() return not target.is_boss, "not usable against bosses" end,
 
@@ -2071,7 +2092,7 @@ spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
 spec:RegisterSetting("divine_plea_threshold", 75, {
     type = "range",
     name = "Divine Plea Threshold",
-    desc = "Select the minimum mana percent at which divine plea will be recommended",
+    desc = "Select the maximum mana percent at which divine plea will be recommended.",
     width = "full",
     min = 0,
     max = 100,
@@ -2080,10 +2101,10 @@ spec:RegisterSetting("divine_plea_threshold", 75, {
         Hekili.DB.profile.specs[ 2 ].settings.divine_plea_threshold = val
     end
 })
-spec:RegisterSetting("mana_judgement_threshold", 80, {
+spec:RegisterSetting("mana_judgement_threshold", 50, {
     type = "range",
     name = "Mana Judgement Threshold",
-    desc = "Select the minimum mana percent at which judgement will be recommended for Judgements of the Wise and Judgements of the Bold",
+    desc = "Select the maximum mana percent at which judgement will be prioritized for Judgements of the Wise / Bold.",
     width = "full",
     min = 0,
     max = 100,
@@ -2120,7 +2141,7 @@ spec:RegisterSetting("retribution_header", nil, {
     type = "header",
     name = "Retribution"
 })
-spec:RegisterSetting("divine_storm_threshold", 4, {
+spec:RegisterSetting("divine_storm_threshold", 8, {
     type = "range",
     name = "Divine Storm Threshold",
     desc = "Select the minimum number of enemies before Divine Storm will be prioritized higher than Inquisition.",
@@ -2174,41 +2195,71 @@ spec:RegisterSetting("protection_header", nil, {
     type = "header",
     name = "Protection"
 })
-spec:RegisterSetting("max_wait_for_six", 0.3, {
+spec:RegisterSetting("defensive_threshold", 60, {
     type = "range",
-    name = "Max Wait for Six",
-    desc = "Max allowed delay to wait for 6s-Casts (SotR, HotR) CD in seconds.\n\n"..
-        "Recommendation:\n - 0.3 seconds\n\n"..
-        "Default: 0.3",
+    name = "Defensive Threshold",
+    desc = "Select the health percentage to recommend defensives.\n\n"..
+        "It is recommended to place this higher than the Major Defensive Threshold to avoid overlapping cooldowns.\n\n"..
+        "Defensives: Holy Shield, Divine Protection, and Divine Guardian if enabled.",
     width = "full",
     min = 0,
-    softMax = 1,
-    step = 0.01,
+    softMax = 100,
+    step = 1,
     set = function( _, val )
-        Hekili.DB.profile.specs[ 2 ].settings.max_wait_for_six = val
+        Hekili.DB.profile.specs[ 2 ].settings.defensive_threshold = val
     end
 })
-spec:RegisterSetting("min_six_delay", 4, {
+spec:RegisterSetting("major_defensive", 20, {
     type = "range",
-    name = "Min Six Delay",
-    desc = "Min allowed delay to wait between 6s-Casts (SotR, HotR) CD in seconds.\n\n"..
-        "Recommendation:\n - 4 seconds\n\n"..
-        "Default: 4",
+    name = "Major Defensive Threshold",
+    desc = "Select the health percentage to recommend using major defensive cooldowns.\n\n"..
+        "Major Defensives: Lay on Hands, Guardian of Ancient Kings, Ardent Defender.",
     width = "full",
     min = 0,
-    softMax = 6,
-    step = 0.1,
+    softMax = 100,
+    step = 1,
     set = function( _, val )
-        Hekili.DB.profile.specs[ 2 ].settings.min_six_delay = val
+        Hekili.DB.profile.specs[ 2 ].settings.major_defensive = val
     end
 })
-spec:RegisterSetting("squeeze_hw_in_bl", true, {
+spec:RegisterSetting("wog_threshold", 50, {
+    type = "range",
+    name = "Word of Glory Threshold",
+    desc = "Select the health percentage to recommend Word of Glory instead of Shield of the Righteous.",
+    width = "full",
+    min = 0,
+    softMax = 100,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.wog_threshold = val
+    end
+})
+spec:RegisterSetting("captain_america", false, {
     type = "toggle",
-    name = "Use HolyWrath during BL",
-    desc = "Enable to squeeze HW in open partial global after Consecration during bloodlust against Undead/Demon",
+    name = "Captain America Mode",
+    desc = "Enable if you want to prioritize Avenger's Shield for Grand Crusader.\n\n"..
+        "This will put Avenger's Shield before other abilities for more reset chances.",
     width = "single",
     set = function( _, val )
-        Hekili.DB.profile.specs[ 2 ].settings.squeeze_hw_in_bl = val
+        Hekili.DB.profile.specs[ 2 ].settings.captain_america = val
+    end
+})
+spec:RegisterSetting("use_guardian", false, {
+    type = "toggle",
+    name = "Divine Guardian Defensive",
+    desc = "Enable to include Divine Guardian as a recommended defensive.",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.use_guardian = val
+    end
+})
+spec:RegisterSetting("ranged_opener", false, {
+    type = "toggle",
+    name = "Ranged Opener",
+    desc = "Enable to recommend pre-pull casts for maximum snap threat.",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.ranged_opener = val
     end
 })
 spec:RegisterSetting("protection_footer", nil, {
@@ -2269,11 +2320,11 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Retribution (Himea Beta)", 20240430.1, [[Hekili:nRvFVTnUz8plfdW15wRM8lnD9GDa61dyTfhkoCUa7)KeJeTnxKe9OOsAgm0N99qsljsjszNANEhAtGIiFELpV8JKkysWxdwLG44GVm1F6C)34pXZFY03n9nbR4pUdhSAhk(o0g4HCug87)aZzKBl5eAEv04psYWOQOFbZrxjM6JPuuIGLf0swmm9vKSYuKy2FGHwZRIUF(SPVEAWQBljP8pLhCRDXdCyhogEBWQTKKeSAI4I4GvFDlPOks8di5dAxveDn83Xk1kLuWHHxtzvrFeFhjL4bkhJUMKcQ0FRk63rPOes(pxfPBoFggrAqVSqzsvrV)3)TQOxxf9RKIyklbiyRycEficNkj497yK0QiH2x9z4ncUZWX0SBr8QpR0OcVD1V6VV8FWAfziQKHEfz9YxCB561EI)YRC3OcmNtY3u4LHi5C4h58gHkkiBYXjY)YRlBSlSyAEmoNZqNR46ZihcKvwGsWSZsw68WUysW3tpxtYGhUwRkGyjey6NJG6Wf7I62umqu(Mq66W7eSSvy1dzxG1J2k0M53JNhx0zKnB5xyrl5PDrxGrPIPWzL8TcXkLQ4TGxtiNIfZU23rma5EsooCxkwUWKHYrE7Wmry6IgDvBsH8TWkXwAAID(9Fkt2GZaQRtK)v8AuzARMlcVrPPHQ)muuM5vIQIlj5eJzvwGdjCCwH(l3rvvzAFZwOaldQZjItIJXPyv21ReKtxVoCtCYYj6eWkZ7l8yW0Uhl8aIHUhhIZXzeCXnhNuXcukU2C)KWkGAJmyioOyTEjH9b84EeJGGfwfXCOsyiNgMqWV6EuAjE54eSC5dQsauaR9jLzzpkcDM57F1(9CeBdM7Pr4reb(B44soS6TfvulKdmzleIW36TlMVyQFTf8bPROLPkxJwygtejIPLf5q0Pr4wVr9sOpKpQJlDztCLvASi5MGk3HOI3g2mV2O0rsLRzGczEYwC4TWykTZXeEGuGLtWI(SPeXsiOCXCHkseHeBk3etbwd059)aRJYzp2KeoX3cVQNLbPofqnVUXF0Pp5fawGrJbVXJH7OpGzlNTFV0QRZRlz7OG1wU7klki878nIaXhGmR2Ylnwhez(IMLH63gMHIz0FWlLwe3blSGtzzwYUx2TeNCI2QX1Wrs()TKuqK1yagowQuAVuQjh8V6VUPs8vN4srN0MfxBrzEaWtjCdBsPQiOXhYftxNwN(DYYtlTurEOO(aMDcU1wbSywV09LZTWbakubo(qTAHI3iDOhiLHd1Nqyg9E5A((9VaEeM2vJoaHqjl9jlci7OcwvGA8rfaeW7WhXkwyJfqZPDPiwr49yibmM3KB0Z5UFV(sWF2UJPhlV0mbxwLu33yHC83OSysrwd1IeteJlcoFaXaLWcrBrzzWcGykgLwmR4iDFwAyDmJa8GqPH8YcOxjMnzw40DXHzaab8OEfWoI11jwXMPiyGuDDNT8DHXs1tE1bmg1SwH5Wg0VXTy)Kj)wOrVJZ4X1Gf0ru8t(EV71t9V6gfTTUQ6EoqnLxy01xkF5kvcL7bwwrjd7b41JV7M5NAfil6A)MpNMg3je67vVpEJTgn1i2B8fUZMnxZfaeI1qIthxXZpiKbId(oaH0WTJu7)yRUNC5XgY)HbAWIS)bJrOrUNF3Xgw9u6U0q051DXwwYfU9IRWrB2IL2lndEoTx6RlpRar01TBERVw4Ku(HQfcdYcwbXpfIhuNU58z(Etcwbl7IDhxeS6F)()4lF6l)RFUkQk6RBXvrKSDug)Wrx(svx4xwfXWqEfdNufvqZGPHk50mex8I4TO8n4cVQp)BGtQkAIpWTpqzmCSCCGsukH)OyM447awZOzaVxUe4lNkEcEy8KVDLNOJ9NKkGGW3058uHHdwbcElLfSsEmPbRKdipUxPpaE6lYdugNlAYLe8lbRIzeogA6fSACvKzd(QORaogR8ugD1c4It(Dagb)3wR0QOFQkcANkpZwipi6QQOBQTJ(qbKJpsYTxOPC6nxRI2VVkQxdwjBNRrFBAsv0YQOzk6SxZWWURvkHjp7IBYoWsCPmCGyhDUAnqtvqyMZhYm1tZQIwOjaxiqKAYXqHy4ZBMNqBEJtTXjqePEnXVLHorqieW1hxahfbI0T7lT0NcrGAcqxUOXOV1P10T1XzeH8pDkeDBaSUzTCPtNibBE3jQRQaKrMEitUBeYal9hRixxasA(AlGKus7suorJ5sn9ukhRbM67xfKK5cIvR(zGOtQHURZ7swc9OR21kHUy3KcXDLv7yYAzxn(njBCx5Yo8mLU2dIMkXuR(rh8Esz5UUKB4BTLc7MhEQr2YIvUsP0uhXCFR(CBH51DAUtMDxR3kKVwHPnSueUt0hRX0HqbQwPGQvkSGAn4gatOCkMgbuM(T(DYfgaFyJNw)TIvIvjQ7EYgKQgI6Cxuk8yHQ7PxCFknWOQPO5EP6SgntFsQ7PQZmKr(A3lLqRAx7TFpwDyH7a6dE3dNXN0jQX9o3CLHvQqiBRl7Pq9buRs)DZfboKhV7DUR(KeyKDQH1(wa0nVMGi1DgBgDyCVXYHg(A(hgA8zjQ(xXVraA3XgeW65Pi63)VLYr1I3D54Zs8gFxaAfDmE9Gb0NL4781cOh9zoWGylRvHBBVaFhQr9mmvLBD(ne0Qq9hAqaIplQK8BlWUkPgAq4KTBi1aj21A9M7TXu3nBUy9Z81Rh32G2OEkVP63G762yZD9VGBLhUB93Lgq5SqBF3J5WdwK6zBlEUNuZnI7a3J7czxOnb6Uu1tz)C)vztGUR8Db3eO7ABptbqoInCxqBW8g73kFVCE54dxK6pN9uATYaWYRBnHoB2Cqu4)LyVMU33E39h5SU4C3RGdVz7N5THybd9CN7VyODDFsEIfMCV)rVCSDCFz2w)GNK4pEh(0bC4NAjZN8zr5Um5t6OnoY5690oAdTTgA5KnCxP758KnENoMQHpzJPg4VCEYgtDNVFHqcYpSpEli8O7KURwkRVCaXtPLyzkGRVhtPJBMV62c0wh1UxbjdpSpz9xBbz3Xvf3NawRqm(wpL2U6Fb)))]] )
+spec:RegisterPack( "Retribution (Himea Beta)", 20240430.1, [[Hekili:nRvFVTTnA8plfhGR9UwDYV00ld2bORd4wlgkgMlW9FsIwI2MxKe1rrLSCWqF2VhsAjrjrk7u70n0MaBs(8kFE5hjJ3uVV6TocXXEFzM7SfUVZDMZ03n1D6TER5pLH9wNHcVhTd(qkkb(9VJ5mYMcoHMwgm(xijyuzWpH5OjIL(umffjyzoTGfclFnjPigjw9hzOT8YGhwmF2BN5TEtbjM)PuVnMepqFgoegZB9EsuewTmCEO36VUNKxgi(bK7rDRmGUf(EOsPIj5Cy6TuwzWVGVNetCavJr3sIbf6Vvg8BOyuej9hld0nMpdZinNxNRmOYGp8B)AzWBld(zsEiLfbeSxSaNCeHtLe8HmgjUmqO7LFggrWDgoKMSbXl)SsJYDYQg6VV6FWAePpQGHEdz7QxTPy7whX3CkYgLJ5Cs6UCNeejLd)ix3iuEozxkos(nNUSXSWcPPH4uodDPIRpJSiqwrokcZUizPZdZIjc)a9snPw8W2EvoelHat)seuhUywuBIXarP78PB9VxWYgHvnLzbwnBJqRxFpEEArNq2TNFLfTKNMfDogflwcNvW3leRuQIrbVMqo5lNFJRLyaYdKuSFwmwUXKGsrozyMimDzTUQTiF(EyNypnoYm)(pfr7Wja1vjY)mElQiUrZfH3O4yF1x9fLzEJOM4kskP1QkYX(eoojxFWmQQktZi7HYRmOoNiojmehJvzxVrqoD7w)DHrRMQtaRiTVWdbt7bSWdiM6bSpofNqW53DAsfBqX4kZ9tcRaQnYGP4GI14Le2hWJhqmcc2yveZHkH(CQFeb)MhqXf4vJJWYTpOkbqbS3hvKK8Ki0zUR7Kdh4i2om3rJWkr)rPn0iqLnPfFWeHqyArEkew1koP3Sor0hth1XxSQoGWingKCD0G9ylXO(1RRj8AKu5QNixgGVh7VbMtPDwwWJKCSCbg0NDfiwebLkwlukHiKyDDIqkWAGoN)hyDuo7P6SNPUg4v1QArQvbuXR7ChD(lE5SBNnAm4nEYpJ(iMTA(HdsRUkHSGLrbRTiBIbfe(D6ore0JqkrtDHARdcPEv92q1O(jOqg978wPbXD0cZ5uwIH0YvDRnjxOPIt1CKK(Fli5ezXbGHJLkL2Gsn5O)vF46sOtoZTIoPnlVXGY8iaes4g2ftvrqJpMlgVnUk97SLNwAPIC)9WUjMDgU1gbSCEV09vlmWbadtoo8yrwHIxlDO5fLH91xGFc9b5E(HdVc(iSSjJo27xjl9flci7OcgvGkGn5a2T7XNWkwAIfqxLSyel3)bmKagYRZn65CpCqFl4pB3XStLx2obxwLu33yGC8FqzHK8KAQfjMigxeC(iIbkHbI2JssGnaXsAvAPDfhP77y7krajmswiF5jncWdcLgslYHMCy205(ZYc9tGo74r9kGDcRRtSIjtrWaP6ApB5BcCKQN86JGdQyTcSGjmBJBaTjt(nqJEhNXJRasOdf4hCDU9TZCNCNI2gxvvphOMYRA11xkF5oveL7awwEbd7aaTdV)UfNBfid6A)MpNNg3je6BvVpDJTAnTvS34RCNntUMRaieJHeNpUIxEqideh8nacPMBNO2)P2Dp7YJ1K)Dd0Gbz)DgJqTCV8UJ1S650DPMOlR7IPSKRC7fBHJMSfdTxQN8sAV0xxErbIORB39ExTWjP89vBeTiZBne)Kl(G6sjxm31zQ3AyBxCS2CV1)7p87F5tF5F9JLbLbFDpUmGKKrz8J354RvDHFDzadd5vmCuzqonbwgQGttqCXaH7rP7W5oLF(xbNuzWuxGBFKYy4q58aLOyc)jXkXH3dSMrtaEVAfWxov8j4dJN(htCeDS)Kubee(UoxekmT3AqW7PmV1Y730BTCc5T0k9bWN(I8EGXPIMCrE)K36qgHJHMEERhxg0UbFzWeGJHkpvRUAECXv2oaJG)BQvAzWpugaTtLx2kKhemPm4Uk7Opua58JKC7vAkNEZ1YGdhkd61GvY2fA03KMugSQmyUIoZ1mAz3vkLWKNF1nzlyjUwgoqSLoxngyBvqyMlgYm1tZkdwQjaBiqKAYPqH0YNxVoH28oRAJvGis9AQBddTIGqiGBoTaojcePB3vAPphIa1eGUCvJrFVvRPBRJlic5FAvi62ayDZB4sNorc2C7zQRQaKrT9qT5ERqgyR)uf56cqsZxBaKKsAxJYjAmxQPNt5ynWuF7QGKmBqSA0Vwi6KAO9682KLqp6QDnsOl2nPqSxz1mMSg2vHFtYg7vUmdptPR9GOPsm1QF0bVNuw2Rlzh(wtPWU5HNBKTSyLTukn1rS23RV2gyEDxM9Kz716nc5RryAtlfH9e9XAmDiuGQDkOALclOwdUbWekxsBJakt)E3o5cdGpS2tRpQyNyDK6rJmbPQMOopIKcpMV651fV1snmQkkQFqPo7rZ1xK6bM6SczKV2dkj0QM9EZpavhwypG(O394D8jDIACVZto1YkviKn1L9CO(iQvP)U(f8gYJ39XYv)TeWizQP1EeFDZRois9yVTJoA9GVYPg(95hgA8fjQ(VnFRa0UZniG1ltr0F4EdLJQeV9YXxK4B9G(AfDAn8Gb0xK478m)6rFTNyqSLvQWMMxE3IAuTI2QYgRp(FJc1FQbbi(IOsY)OamRsQPgeozZbsBHe7gTEZ9oyQ9MnxT(zU61JBAq3QEkVU63GN6U1H76)a3kpC36VRAbLZaT9DpTNEWIuVyhXZ(IQFrCl4ESxi7kDiq7LQEoNN7Vkhc0ELVR4HaTxB7fkaYsSH9cAdM3y(v57LZlNF4Iu)5CMsJvgawEtJj05WMdIc)VeN10(527E(iR1fxyFhC4dB)cFmedyOxy98fdDQ7ZYtSSn37F1lN6e3xNJ1p4nj(93HpBah(5wY8zFxu2lt(SUAJtCVEpVR2q7OHgUzd7v6EjVzJB1Xun8nBmRf(lR3SXm757xjKG8JNJ3acpAM0D1qz1Jdi(uCbwMcy7pKsPJBUR61c02h1ExbjdpEoz9H51)Z7))]] )
+
+spec:RegisterPack( "Protection (Himea Beta)", 20240502.1, [[Hekili:TR1wVTTnu4FlfdWlbl1XxsCxkCkWslWAdw7kGlqFZs0s02SrsuJKkEbWq)23Hu3iLjvIDU8Y6lbo8Y57WdjpFNpcnF48VnFwisGN)LrdgD2GZhmQ)WZhC(4rZNjUlfpFwkk4g0k4hjOy4VFLrf4abHMK7FXez33frrHsZWPzSayiRfIu(Bp90n0nIfb9xT60aKaDAqeIZF9QmsiMFAATzEDkkcfssoD(SfzKiXNsMVyxx6SZV48HaeP4aOzadsyiUyKyEGPB91cdM7dTHkAAjLL7)r8nKis)C)RqCCyUVSdWh5KyEUFeDfj4eyo4LOabLjhGAwxm5IjnMA(SicxWvlxsYQim8RVOcI4e0IiC48RMplGreygbbUjgfjw3pfdbMerU)0CFowiGzY7hJ(bL5fIxIt4KBH4gkOeb0DE0eV1OKq(CHC5(ey(C)E5(lYwUSpIbrorrpHyw)q6MKgWxLb9tqjE0LEOKaICO3inO0tg)06joXQLp1YJLEYzhKNu7dEI1mmFnnkSXBQ7Sf6WOUZJVMGJcLiF(lhYHKBjjyVM7ks8N8CJVQ96jMXXEv7t74z1Da(1BC6xkm4GZ1A5jBsU1lyzI1st87stuVPFlozf4cEByiOBntdJ8cNGv74bOubIK4bzTyKauldJzCT90HdChuL7(P0nyivWL5(dY93Un3pgLGCeOl3ZIWOMq9UBPq3kG7i1HjWJvBlDTfVHUYgIBOSqzuEveLDNcZoYN0ctT9kvSsTBTg7XiRwlW0mvsHHDKvqZEtnSxalJJG7YECbJCdwzNZ2z7xBxYC)FO7BHceBfw0VksfueLgnq7cnkgotixlfhTK2BIo2)ilCfogcWTr9n6JkGMWXbSsAbZbACswffSCkwijVwIYIe2irQHbff5v8pEsUNcgiVc2yscrutrund5vwiAeZB5vJ1huk1IFR2bKtNUeoWeek9QMLbuoadiGXHG7eGJWwx6U3yK2bY)GtWXemW4(UCFnRZYsCUkdGBl3ITL87Hm7sEAv8oLHdOXlqDgXRpD7TmdUYOQWGrsl68ZO7KNMgD2oz4mNwrUUozVFvfHCgd1pl1mVBmK7Qi)f0RQlO6jYQez0xoEggU4SitTKLnO5(T7PtI7hLtaxbK5Hkoi0YnS0xN82pohPkDslFWO5opD(OGpeFl1siWS5o5UFuWd58HJ7qfu4Doky2rN00vUa0dxENXTBunctxPEEv)qMHTO0XAhA3UQO9F5CPy59u7UurxDwFrtXmmSeDEbZ2KYcdEW160rjhhb88TiopOQoY9p2mAXqaLkqINc5GzhsnjhvUajj)tgHtKtVSKX61UEx6rOjvEJ16AUpxuZQnLW0jvwhvLCFG1QYZ6stoiJH)xklGWJVNQwUpZyROv3ztSBnMTkCu0ILeS)uk7b7j)uk7)lKYUhNnCFjWnF3dM94c98FDQu(NsBVpPTT5wmKj1Ov0u3BRG8ElDvRkzNIin0K6sezlrPoKUkkLkAjdpnvXx0yIBrqad6v(ROmSI1peRoAcvZdMboPfMfhFxv1yJhmqrUlp9uQ(wqIHRNuVqIYmSsPy6nxs9CleOKWkFR3Xdho6S(GOWniwsrHJFkoLYeYhJ9COUoLhM7REc2(5xl1ZrxsKU6Vu)SVVf(vZJbFn0Xhbur)kugYvybu(8F81)k3)15(FGWdGdqW4xlhqFoIiOQj8zAizjr9cWmACU)3PF)Bx9(C)3JKZ)pvVGTYeh4lDxasLqY8RH)x6)vAtZVUyHY7xlx93U8ut5LNqwEPlvNoMFlzHsl8kDnh9SR3Ox36oTd2UI)oq421qoauxP3HILUnSdJHIUdegdB4AVYq32bculRyhQfTvK1a2IgvxwaSQ3EpabG3p0kLxpXqRSPDOniuRVlPlRBkiPB7wtczhNjA49Kw6OgMMPJ3UvNoDA3uPh3ZED72HvJ2sbRvHzLRalIYMo54EnE6LJ3lSluCzVpZQrKU2(y5k5s778AX5UVtVM209ezv5P)qXB2wBiz2NwVr7js6UlLmU6JQ(Dz1BSvOeAXX7SEI27YE5q9j06XplaVqsNC5i7Q5DxF39p1IhmTA5(j5QaixzqxqTuA3LLRpWgv1lumznk(tu1pC5rUkEOhu4WXB3UBjdvq)E1AObWI1eaPEf1YLOzTJtDkxBxl5u32Ey2Eo1IAbWwdBVHPBHMwautZxxGzrvvpBkQ2fGDK29Sct16)jaKEwvg(SECRdEhxNxmsN2r4VK(rlN(G9I9XIPn0x1Y4J75kkyiwZIvBrCPBtBhFTlaZvKQHcWYi0fB56MIRWCndrvYPzQSKvJREtFpZPC(GgSkY7(uCER2s7JR8ysVvd4lv6TAaFUsVvdWZB6T2W8cMERg6hCsPMDzhjLmhGJYXA9Hz0ri)PlLwTPFstP1ebT)1r4o9w9mB9DqyoJP2MHZ0Cnxjm)(gK2CNpkIPJSL4rlj3UEQ1KNM3dlFFQfYVVU)oX8RYBYfZNHGdyu28zQxKr9(pZ)V)]] )
 
 -- TODO: This needs updating for Cataclysm
--- spec:RegisterPack( "Protection 96", 20231124.1, [[Hekili:nRvBVTnos4FlflGBmUu5O8IBsrCwS7xU2Id5wuVa9BsIwI2MxLe9ksf3CWq)2VziTTOKOEXBsaUp0ABXHZ8WHZlpImEUE)P38iIK694LxC5vUUxETJ7hV6MlV1BU85nuV5BiH)GSc(skjb())iJlPHsgpTi4UP4WphZjrOAe88SqqK1s5gXNMmzftUoFHtipzYw(wblraFkJ)XKfX8ftsicjnBc84jBiXKiw6Knh19e4Be8loR4EZxKZILFj1BHDO(rW0BOHWJbBZIIOAjPIWQW9p0MPi4GYlcwYZkc(m9hSyMtrWVte0OIaCG9aUiiMVIfEomh6ssOKNHcOM1DtVBAPQ8MhZesHYnW(j8XJkplnLSiMg597EZdZyW6Lr8Md6H9e1NMstyuWepue4wemQiiKZJJ4BtDeRz04iF(s)m2Q1skpxKsfcNmAcHLct5(zfbNnGjeLNTFL(HIabvkzPReojSuFaL(r0yYZfbJ1qcxeRjjj0mupY10sD5jrNBBRNJOOLz3oSBBcNkSBz5JW(Q(H9)h6TLq6glL2DC07kcwKVCPZ(4PqEQGgQrGt(gveLLqTRkTV5m6ElMSAvgViy3UIGiQYOYmW3aRp)O8KKNb7zSS4Xp7R9rDVdCyberFcwS(BIPKdahC3RIFEZANiw5y7vIghGejKuIZgku0jvc7sg(CJzb(2mQaWemVXvC)gcH486EX5P5ODB3rFZjvBOupKNOPROzcdV70Uq9(9Q)tE0kAc4KQSnD8Pya4wMiINGk8JTQq9gsnmCytPtqE7lX1kLrk)W1QFvDp)bvCWXTDlljZT)jkLmU99L7AfNGvKKSvuPdtazYjysogfw(W80ikrhJPJFnbM4VYP0)l9ZqMX3bZT(GmhlPuzHFSWdS8M6C7n6axTbBeGmZWmQmVTObQe1xl1ujaUCDVO11B7PwD6J7n6YvvoZQqXy9pt4GI3rjjTJiIlDeKqOV8(4TIaWJCHrVbZb1LwJGE55XYURUQclfusSdUbnGKCuwCDa8DaVxu3fuhG2Nzv7QKlskWZ6qP1k5Dyfz9(Bvh51MsMlO(aqse1e6gtH2W1Fwrcv1gC68Ll9xfgHoWYGlGVygWed82KWqAmDFIvvvuV(YXCrsCSV(h(ixknJkFnRtKtvN1r2NhUg8sY1oBcL6U2xEHTUThtaQNVdPGQu9E70xsn4xhaDMJsBKjULWK1kW8Mz1QjWjKF6Jw3hOX6V3X2OsWG2vuuuuzuBYOqy)csp5ussm2fILam9Fcctocw)L5zp3Svs1X7oJc6KSVHHXkLLkH)5taIz6CmHGTkfdqHNaEizgBrUAXHpWWW1hPpEmNQPH69yPvDgsnJBzS(ONCYMplxqIGOMAwUYJ7KOYFdJc084wwUvFCFuAovJUKLbjfube1IvnRzBRJ2jjO)oqiJdPmTJbRd3hRPtfeI1eOAr7OOLX7KuuxWaKgSF6QQq5WtDo8fSS1pWzwIKMd1nvLxjuKOPFydf6HoYE5TefcW1lZjqXoRiPC4Ujh9kHM982ScfdoDTxzSKMtzVl4vqNErpeBCBVANwLMK6Q(I6Dq97r3kmCmFp1A0oN2lti32lr8MXD(2tH7SQV8taHmuA1jMDXTU344IupYs1PCF)3(2JF5X)5Nkckc(Z10IaOZmptU)eUEp2F)94rF9x5m1bFj4jGqKCjpHiXheUMa7AcNIVQM(sECmFRk2cREa7iBPzWZZvNRgE0Bsum9sOiaPsGV)N8GCPCLTHxLYu6Oiu4iIKSGiOFQ4RQZxX4qdGN81VOqoAMRRAaeCibf(swmWz5x(LIaBhk4xXbqVKJRRZLxJQuRfHZrYn)JztQYi5C2YzdJttlARgnduFVlFZi7v1h1n7f7MOjzItYinNElMXK5WPzbZzAx5vyiCskVYmTRCBuaojBytbTykBD6pnBztd2nM9g6NK1SRc7MRrx72T0brhnaAb9BmvZ5xSXuAPFJDS)7l2Gh1u)gv3b4fBrTAAjyPEty0AnAEFp04UL5B2PTCU26sF)Sw0Hr7y7cO7dBFmlTmryy2k((H1gEa6pwhSy0JWWfU)4FQ6aXxuFekB5b88GRTz3YgGL5pRY8RE4pMJC8WEmFynxj69TF4nNBCypvTy9tg4C8mbMjy)SIwREMl6(L1oPM7ND5fMZbpBIZf0WzNn0de5(FDOhgYyebVf69(wpEL(9zinlD0eYb53ud)H)LIBKIh20IG5qKyA0hMVHghdSQo7ZC53Maey)24YWvWwv84vakUURh)nAW(Hb4YoC3xFW(9E1aNTOheNd1PBcR(UjXHcRoCF96cEv9wTfmCxZGbcsxE7AI8949vtxknwvySLMf4XRxq1iPJlDPEDQRAOnJk1Q4k8Yb3TRTlgSX0nU3TsSu9oahDwR3(3UDNzVQU178B8RRVWTH2QDBx2YZAmNwAw9olxx3qSxN3l3lB5lLrpC9it)9dNnS2OtUUPNV82NuLHRDHA72v)Y0gp6SsRv)k0gDwNxE2d4fNnE8UD12nMDuH2USSMy(TGyHnvhxLa6ErAWRA)QPXTEn7cV54Bhh9VtR(h9Y078MdVW(AEM3855aItZf6)cd8(Fp]] )
-
 -- spec:RegisterPack( "Holy Paladin (wowtbc.gg)", 20221002.1, [[Hekili:vA1YUTToq0pMceKG2kl5Mw3CrCw0vnErAbua6ozrjowIxtrkqsz3ayWV9ouQrMsrooDtc9WZCMhCMJDsuYJjXuIbsEyE485rHHZdIwm)MWRtInpvdjX1K8TKc8GGuH)97s(t20Fs4ektytVCVCVjlpOO4kh0N4sc1rPw2OYr4LgtT()MnRhgEYW3olNt06pw0WOGEwjY5hR7OCwsCwdJBUxKKnvM95imZ01qoAgPNrPqhsqNNe)yjtBtRvmPIzW809PmIgO2ujMTMsWM2Nk20FPiMsBABAeKeZzAJUTHaBinCdE8H2geiizCGM8TK4CKyqXijXKCdBhSMknbzajxkwl3SMZkkn20L20WoesbwqdVoX4Y9trBwZMnbAGWdOY9IJK4m5OypttLvoo(0j5WqufGjGI1drKJ18T20OqB6f20kIGeud4JJW0AFHxI()n0cOcVzyGU2fOjX0vpEjbI(ZVLoMMKRa6ADjd40X9Rbx6O8l(jazhikyII17DVEJc(cFKu2oMawZ48MkMG0zCa8Vob8Aoqgb7gFy1Yjikk0hsJgJQbQ0Jrfnr82q2jvJbo3hOB)a7gY8TJH9Voc41JBBUU3qL7neKnAbO1TSE95EbbbuXaC36oK02XQZfoC(xd5QU3axmo7uYlJXL9HHPxtHk3g9Hd(gBeuGGJtxnQ31nP4c7Gjj43svotxnSRIZZ1kixwLroQa8SlkWOyznUpSM0OgpOCM1A0SwJJUJwTF2S71yl(F9RVD)wPQFbUTM2bkTdsVAAs8EIs0gU47RQLkJtMCUnTJlBARCyGDLRFi3W4OC(7ENnD43aSYzcD6h5gzgOWZi92v2vDSOd67LVF5muZNviWvBxRBAiVOx8b2MLVSIpVZDv)P8U3FNxdLNDUCAT9LH(UouuUpy9Y3(yNqC15WOnNBJcVWxJ(2fHNKKUVSXpD8fohvhdUByvmur1)MjuqN4ANIPV5ofsFl9cIt4DR(NV9JYDdQTPfSMUf67OV0Jxp5V6l3fDXR7(rbKjD(Yrsshomwo6kF2ok5qAmLoD)(Fos7AAYFc]] )
 
 
@@ -2283,13 +2334,13 @@ spec:RegisterPackSelector( "retribution", "Retribution (Himea Beta)", "|T135873:
         return tab3 > max( tab1, tab2 )
     end )
 
--- TODO: This needs updating for Cataclysm
--- spec:RegisterPackSelector( "protection", "Protection 96", "|T135893:0|t Protection",
---     "If you have spent more points in |T135893:0|t Protection than in any other tree, this priority will be automatically selected for you.",
---     function( tab1, tab2, tab3 )
---         return tab2 > max( tab1, tab3 )
---     end )
+spec:RegisterPackSelector( "protection", "Protection (Himea Beta)", "|T135893:0|t Protection",
+    "If you have spent more points in |T135893:0|t Protection than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 )
+    end )
 
+-- TODO: This needs updating for Cataclysm
 -- spec:RegisterPackSelector( "holy", "Holy Paladin (wowtbc.gg)", "|T135920:0|t Holy",
 --     "If you have spent more points in |T135920:0|t Holy than in any other tree, this priority will be automatically selected for you.",
 --     function( tab1, tab2, tab3 )
