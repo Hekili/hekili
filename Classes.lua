@@ -1509,19 +1509,10 @@ all:RegisterAuras( {
         copy = { 7405, 8380, 11596, 11597, 25225, 47467, 58567, 65936, 71554 },
     },
 
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    faerie_fire = {
-        id = 91565,
-        duration = 300,
-        max_stack = 3,
-        shared = "target",
-        copy = { 770, 16857 },
-    },
-
     major_armor_reduction = {
-        alias = { "faerie_fire","sunder_armor", "acid_spit", "expose_armor" },
+        alias = { "sunder_armor", "acid_spit", "expose_armor" },
         aliasType = "debuff",
-        aliasMode = "longest"
+        aliasMode = "first"
     },
 
     -- Reduces melee attack power by $s1.
@@ -1658,6 +1649,22 @@ all:RegisterAuras( {
         aliasMode = "longest"
     },
 
+    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
+    faerie_fire = {
+        id = 770,
+        duration = 300,
+        max_stack = 1,
+        shared = "target",
+        copy = { 770, 778, 9749, 9907, 26993 },
+    },
+    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
+    faerie_fire_feral = {
+        id = 16857,
+        duration = 300,
+        max_stack = 1,
+        shared = "target",
+        copy = { 16857, 17390, 17391, 17392, 27011 },
+    },
 
     -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
     curse_of_weakness = {
@@ -1678,7 +1685,7 @@ all:RegisterAuras( {
     },
 
     armor_reduction = {
-        alias = { "curse_of_weakness", "sting" },
+        alias = { "faerie_fire", "faerie_fire_feral", "curse_of_weakness", "sting" },
         aliasType = "debuff",
         aliasMode = "first"
     },
@@ -2463,8 +2470,7 @@ all:RegisterAuras( {
     }
 } )
 
--- TODO: Needs Catalcysm potions
--- TODO: Something about potions is not currently working, needs investigation.
+
 all:RegisterPotions( {
     speed = {
         item = 40211,
@@ -4205,6 +4211,37 @@ if Hekili.IsClassic() then
 
         handler = function()
             applyBuff("hyperspeed_acceleration")
+        end
+    } )
+end
+
+if Hekili.IsClassic() then
+    all:RegisterAura( "tol'vir_agility", {
+        id = 79633,
+        duration = 25,
+        max_stack = 1
+    })
+    all:RegisterAbility( "tol'vir_agility", {
+        id = 79633,
+        known = function () return tinker.hand.spell == 79633 end,
+        cast = 0,
+        cooldown = 1,
+        gcd = "off",
+
+        item = function() return tinker.hand.spell == 79633 and tinker.hand.item or 0 end,
+        itemKey = "tol'vir_agility",
+
+        texture = function() return tinker.hand.spell == 463923 and tinker.hand.texture or 0 end,
+        startsCombat = true,
+
+        toggle = "tol'vir_agility",
+
+        usable = function ()
+            return tinker.hand.spell == 79633
+        end,
+
+        handler = function()
+            applyBuff("tol'vir_agility")
         end
     } )
 end
