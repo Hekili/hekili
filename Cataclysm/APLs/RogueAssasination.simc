@@ -1,0 +1,14 @@
+Smufrik assassination rogue
+
+actions+=stealth
+actions+=garrote
+actions+=slice_and_dice,if=buff.slice_and_dice.down
+actions+=envenom,if=buff.slice_and_dice.remains>1
+actions+=rupture,if=(debuff.rupture.remains<3|debuff.rupture.remains<5&combo_points>=4)&buff.slice_and_dice.remains>6
+actions+=rupture,if=target.debuff.rupture.down&time_to_die>6
+actions+=vanish,if=buff.overkill.down
+actions+=cold_blood,if=combo_points=5&time_to_die>5
+actions+=envenom,if=combo_points>=4&(buff.envenom.down&energy>=55|buff.envenom.up&energy>=80)&target.health.percent>35
+actions+=envenom,if=combo_points=5&(buff.envenom.up&energy>=65|buff.envenom.down)&target.health.percent<35
+actions+=backstab,if=combo_points<4&target.health.percent<35
+actions+=mutilate,if=combo_points<3&target.health.percent>35
