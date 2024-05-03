@@ -1038,8 +1038,7 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 10,
         gcd = "totem",
-        requiresFacing = function() return not glyph.gouge.enabled end,
-        
+            
         spendType = "energy",
         startsCombat = true,
     
@@ -1361,16 +1360,12 @@ spec:RegisterAbilities( {
         copy = { 2070, 6770, 11297, 51724 },
     },
 
-    smokeBomb = {
+    smoke_bomb = {
         id = 76577,
         cast = 0,
         cooldown = 180,
         radius = 8,
         duration = 5,
-        handler = function ()
-            local smokeCloud = CreateSmokeCloud(8, 5) -- Create a smoke cloud with a radius of 8 yards that lasts for 5 seconds
-            smokeCloud:SetPreventTargeting(true) -- Prevent enemies from targeting into or out of the smoke cloud
-        end,
     
     },
     -- Enter the Shadow Dance for 6 sec, allowing the use of Sap, Garrote, Ambush, Cheap Shot, Premeditation, Pickpocket and Disarm Trap regardless of being stealthed.
@@ -1442,7 +1437,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
 
         spend = function()
-            if talent.improved_sinister_strike.rank == 2 then return 39 end
+            if talent.improved_sinister_strike.rank == 3 then return 39 end
             if talent.improved_sinister_strike.rank == 2 then return 41 end
             if talent.improved_sinister_strike.rank == 1 then return 43 end
             return 45
