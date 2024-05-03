@@ -43,13 +43,24 @@ spec:RegisterResource( Enum.PowerType.RuneBlood, {
         local t = state.blood_runes
 
         for i = 1, 2 do
-            local start, duration, ready = GetRuneCooldown( i )
+            local start, duration, ready = GetRuneCooldown( i );
 
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
             t.expiry[ i ] = ready and 0 or start + duration
-            t.cooldown = duration
+
+            -- Cataclysm changed how the cooldown is calculated. It now only generates
+            -- One rune per type at a time. So we need to calculate the cooldown based on
+            -- the value start that blizard gives us is the time the rune actually will start refreshing.
+            -- so we can calculated the TOTAL cooldown by adding the duration to the start time.
+            -- For example:
+            -- We use rune 1 at 50 seconds, it has a start time of 50 seconds and a duration of 10 seconds.
+            ------- its calculated cooldown is 10 seconds.
+            -- we use rune 2 at 52 seconds, it has a start time of 60 seconds (when rune 1 finishes) and a duration of 10 seconds.
+            ------- It has an 18 second cooldown.
+            local calculated_cool = (start - state.query_time +  duration)
+            t.cooldown = (calculated_cool > 0 and calculated_cool or 0)
         end
 
         table.sort( t.expiry )
@@ -188,7 +199,9 @@ spec:RegisterResource( Enum.PowerType.RuneFrost, {
             duration = duration or ( 10 * state.haste )
 
             t.expiry[ i ] = ready and 0 or start + duration
-            t.cooldown = duration
+            local calculated_cool = (start - state.query_time +  duration)
+            t.cooldown = (calculated_cool > 0 and calculated_cool or 0)
+
         end
 
         table.sort( t.expiry )
@@ -329,7 +342,9 @@ spec:RegisterResource( Enum.PowerType.RuneUnholy, {
             duration = duration or ( 10 * state.haste )
 
             t.expiry[ i - 2 ] = ready and 0 or start + duration
-            t.cooldown = duration
+            local calculated_cool = (start - state.query_time +  duration)
+            t.cooldown = (calculated_cool > 0 and calculated_cool or 0)
+
         end
 
         table.sort( t.expiry )
