@@ -1,0 +1,16 @@
+Smufrik Rogue Subtlety
+
+actions+=stealth
+actions+=rupture,if=target.debuff.rupture.down&combo_points=5&time_to_die>10
+actions+=eviscerate,if=combo_points=5&target.debuff.rupture.remains<6
+actions+=recuperate,if=buff.recuperate.remains<3&combo_points=5&time_to_die>10
+actions+=slice_and_dice,if=buff.slice_and_dice.remains<2&combo_points=5&time_to_die>10
+actions+=eviscerate,if=combo_points=5
+actions+=hemorrhage,if=target.debuff.hemorrhage.down&buff.shadow_dance.down&buff.stealth.down&time_to_die>10&(combo_points<4|combo_points=5&energy>=80)
+actions+=shadowstep,if=target.debuff.find_weakness.up&combo_points<5&spell.ambush.usable
+actions+=shadow_dance,if=combo_points<2&energy>50&buff.stealth.down
+actions+=vanish,if=target.debuff.find_weakness.remains<2&combo_points<2&energy>50&buff.shadow_dance.down&buff.stealth.down
+actions+=premeditation,if=combo_points<2
+actions+=ambush,if=(combo_points<4|combo_points=5&energy>=95)&buff.shadow_dance.remains>1
+actions+=backstab,if=(combo_points<4|combo_points=5&energy>=95)
+actions+=preparation,if=spell.vanish.cooldown.up
