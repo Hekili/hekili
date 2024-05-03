@@ -4216,12 +4216,12 @@ if Hekili.IsClassic() then
 end
 
 if Hekili.IsClassic() then
-    all:RegisterAura( "tol'vir_agility", {
+    all:RegisterAura( "tolvir_agility", {
         id = 79633,
         duration = 25,
         max_stack = 1
     })
-    all:RegisterAbility( "tol'vir_agility", {
+    all:RegisterAbility( "tolvir_agility", {
         id = 79633,
         known = function () return tinker.hand.spell == 79633 end,
         cast = 0,
@@ -4229,19 +4229,16 @@ if Hekili.IsClassic() then
         gcd = "off",
 
         item = function() return tinker.hand.spell == 79633 and tinker.hand.item or 0 end,
-        itemKey = "tol'vir_agility",
+        itemKey = "tolvir_agility",
 
-        texture = function() return tinker.hand.spell == 463923 and tinker.hand.texture or 0 end,
-        startsCombat = true,
-
-        toggle = "tol'vir_agility",
+        toggle = "tolvir_agility",
 
         usable = function ()
             return tinker.hand.spell == 79633
         end,
 
         handler = function()
-            applyBuff("tol'vir_agility")
+            applyBuff("tolvir_agility")
         end
     } )
 end
