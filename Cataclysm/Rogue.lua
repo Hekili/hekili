@@ -15,91 +15,86 @@ spec:RegisterResource( Enum.PowerType.Energy )
 
 -- Talents
 spec:RegisterTalents( {
-    adrenaline_rush            = {   205, 1, 13750 },
-    aggression                 = {  1122, 5, 18427, 18428, 18429, 61330, 61331 },
-    blade_flurry               = {   223, 1, 13877 },
-    blade_twisting             = {  1706, 2, 31124, 31126 },
-    blood_spatter              = {  2068, 2, 51632, 51633 },
-    camouflage                 = {   244, 3, 13975, 14062, 14063 },
-    cheat_death                = {  1722, 3, 31228, 31229, 31230 },
-    close_quarters_combat      = {   182, 5, 13706, 13804, 13805, 13806, 13807 },
-    cold_blood                 = {   280, 1, 14177 },
-    combat_potency             = {  1825, 5, 35541, 35550, 35551, 35552, 35553 },
-    cut_to_the_chase           = {  2070, 5, 51664, 51665, 51667, 51668, 51669 },
-    deadened_nerves            = {  1723, 3, 31380, 31382, 31383 },
-    deadliness                 = {  1702, 5, 30902, 30903, 30904, 30905, 30906 },
-    deadly_brew                = {  2065, 2, 51625, 51626 },
-    deflection                 = {   187, 3, 13713, 13853, 13854 },
-    dirty_deeds                = {   265, 2, 14082, 14083 },
-    dirty_tricks               = {   262, 2, 14076, 14094 },
-    dual_wield_specialization  = {   221, 5, 13715, 13848, 13849, 13851, 13852 },
-    elusiveness                = {   247, 2, 13981, 14066 },
-    endurance                  = {   204, 2, 13742, 13872 },
-    enveloping_shadows         = {  1711, 3, 31211, 31212, 31213 },
-    filthy_tricks              = {  2079, 2, 58414, 58415 },
-    find_weakness              = {  1718, 3, 31234, 31235, 31236 },
-    fleet_footed               = {  1721, 2, 31208, 31209 },
-    focused_attacks            = {  2069, 3, 51634, 51635, 51636 },
-    ghostly_strike             = {   303, 1, 14278 },
-    hack_and_slash             = {   242, 5, 13960, 13961, 13962, 13963, 13964 },
-    heightened_senses          = {  1701, 2, 30894, 30895 },
-    hemorrhage                 = {   681, 1, 16511 },
-    honor_among_thieves        = {  2078, 3, 51698, 51700, 51701 },
-    hunger_for_blood           = {  2071, 1, 51662 },
-    improved_ambush            = {   263, 2, 14079, 14080 },
-    improved_eviscerate        = {   276, 3, 14162, 14163, 14164 },
-    improved_expose_armor      = {   278, 2, 14168, 14169 },
-    improved_gouge             = {   203, 3, 13741, 13793, 13792 },
-    improved_kick              = {   206, 2, 13754, 13867 },
-    improved_kidney_shot       = {   279, 3, 14174, 14175, 14176 },
-    improved_poisons           = {   268, 5, 14113, 14114, 14115, 14116, 14117 },
-    improved_sinister_strike   = {   201, 2, 13732, 13863 },
-    improved_slice_and_dice    = {  1827, 2, 14165, 14166 },
-    improved_sprint            = {   222, 2, 13743, 13875 },
-    initiative                 = {   245, 3, 13976, 13979, 13980 },
-    killing_spree              = {  2076, 1, 51690 },
-    lethality                  = {   269, 5, 14128, 14132, 14135, 14136, 14137 },
-    lightning_reflexes         = {   186, 3, 13712, 13788, 13789 },
-    mace_specialization        = {   184, 5, 13709, 13800, 13801, 13802, 13803 },
-    malice                     = {   270, 5, 14138, 14139, 14140, 14141, 14142 },
-    master_of_deception        = {   241, 3, 13958, 13970, 13971 },
-    master_of_subtlety         = {  1713, 3, 31221, 31222, 31223 },
-    master_poisoner            = {  1715, 3, 31226, 31227, 58410 },
-    murder                     = {   274, 2, 14158, 14159 },
-    mutilate                   = {  1719, 1,  1329 },
-    nerves_of_steel            = {  1707, 2, 31130, 31131 },
-    opportunity                = {   261, 2, 14057, 14072 },
-    overkill                   = {   281, 1, 58426 },
-    precision                  = {   181, 5, 13705, 13832, 13843, 13844, 13845 },
-    premeditation              = {   381, 1, 14183 },
-    preparation                = {   284, 1, 14185 },
-    prey_on_the_weak           = {  2075, 5, 51685, 51686, 51687, 51688, 51689 },
-    puncturing_wounds          = {   277, 3, 13733, 13865, 13866 },
-    quick_recovery             = {  1762, 2, 31244, 31245 },
-    relentless_strikes         = {  2244, 5, 14179, 58422, 58423, 58424, 58425 },
-    remorseless_attacks        = {   272, 2, 14144, 14148 },
-    riposte                    = {   301, 1, 14251 },
-    ruthlessness               = {   273, 3, 14156, 14160, 14161 },
-    savage_combat              = {  2074, 2, 51682, 58413 },
-    seal_fate                  = {   283, 5, 14186, 14190, 14193, 14194, 14195 },
-    serrated_blades            = {  1123, 3, 14171, 14172, 14173 },
-    setup                      = {   246, 3, 13983, 14070, 14071 },
-    shadow_dance               = {  2081, 1, 51713 },
-    shadowstep                 = {  1714, 1, 36554 },
-    sinister_calling           = {  1712, 5, 31216, 31217, 31218, 31219, 31220 },
-    slaughter_from_the_shadows = {  2080, 5, 51708, 51709, 51710, 51711, 51712 },
-    sleight_of_hand            = {  1700, 2, 30892, 30893 },
-    surprise_attacks           = {  1709, 1, 32601 },
-    throwing_specialization    = {  2072, 2,  5952, 51679 },
-    turn_the_tables            = {  2066, 3, 51627, 51628, 51629 },
-    unfair_advantage           = {  2073, 2, 51672, 51674 },
-    vigor                      = {   382, 1, 14983 },
-    vile_poisons               = {   682, 3, 16513, 16514, 16515 },
-    vitality                   = {  1705, 3, 31122, 31123, 61329 },
-    waylay                     = {  2077, 2, 51692, 51696 },
-    weapon_expertise           = {  1703, 2, 30919, 30920 },
-} )
+adrenaline_rush             = {   205, 1, 13750 },
+aggression                  = {  1122, 3, 18427, 18428, 18429 },
+ambidexterity               = {  5686, 1, 13852 },
+bandits_guile               = {  11174, 3, 84652, 84653, 84654 },
+blackjack                   = {  6515, 2, 79123, 79125 },
+blade_flurry                = {  5170, 1, 13877 },
+blade_twisting              = {  1706, 2, 31124, 31126 },
+cheat_death                 = {  1722, 3, 31228, 31229, 31230 },
+cold_blood                  = {  280,  1, 14177 },
+combat_potency              = {  1825, 3, 35541, 35550, 35551 },
+coup_de_grace               = {  276,  3, 14162, 14163, 14164 },
+cut_to_the_chase            = {  2070, 3, 51664, 51665, 51667 },
+deadened_nerves             = {  1723, 3, 31380, 31382, 31383 },
+deadliness                  = {  1702, 5, 30902, 30903, 30904, 30905, 30906 },
+deadly_brew                 = {  2065, 2, 51625, 51626 },
+deadly_momentum             = {  6514, 2, 79121, 79122 },
+deflection                  = {  5690, 3, 13713, 13853, 13854 },
+dirty_deeds                 = {  5654, 2, 14082, 14083 },
+elusiveness                 = {  247,  2, 13981, 14066 },
+energetic_recovery          = {  11665, 3, 79150, 79151, 79152 },
+enveloping_shadows          = {  1711, 3, 31211, 31212, 31213 },
+filthy_tricks               = {  2079, 2, 58414, 58415 },
+find_weakness               = {  6519, 2, 51632, 91023 },
+heightened_senses           = {  1701, 2, 30894, 30895 },
+hemorrhage                  = {  681,  1, 16511 },
+honor_among_thieves         = {  2078, 3, 51698, 51700, 51701 },
+improved_ambush             = {  261,  3, 14079, 14080, 84661 },
+improved_expose_armor       = {  278,  2, 14168, 14169 },
+improved_gouge              = {  203,  2, 13741, 13793 },
+improved_kick               = {  206,  2, 13754, 13867 },
+improved_poisons            = {  5758, 5, 14113, 14114, 14115, 14116, 14117 },
+improved_recuperate         = {  6395, 2, 79007, 79008 },
+improved_sinister_strike    = {  201,  3, 13732, 13863, 79004 },
+improved_slice_and_dice     = {  1827, 2, 14165, 14166 },
+improved_sprint             = {  222,  2, 13743, 13875 },
+initiative                  = {  245,  2, 13976, 13979 },
+killing_spree               = {  2076, 1, 51690 },
+lethality                   = {  269,  3, 14128, 14132, 14135 },
+lightning_reflexes          = {  186,  3, 13712, 13788, 13789 },
+malice                      = {  5742, 5, 14138, 14139, 14140, 14141, 14142 },
+master_of_subtlety          = {  10054,1, 31223 },
+master_poisoner             = {  1715, 1, 58410 },
+murderous_intent            = {  6516, 2, 14158, 14159 },
+mutilate                    = {  1719, 1, 1329 },
+nerves_of_steel             = {  5722, 2, 31130, 31131 },
+nightstalker                = {  244,  2, 13975, 14062 },
+opportunity                 = {  261,  3, 14057, 14072, 79141 },
+overkill                    = {  281,  1, 58426 },
+precision                   = {  181,  3, 13705, 13832, 13843 },
+premeditation               = {  381,  1, 14183 },
+preparation                 = {  284,  1, 14185 },
+prey_on_the_weak            = {  5734, 5, 51685, 51686, 51687, 51688, 51689 },
+puncturing_wounds           = {  5748, 3, 13733, 13865, 13866 },
+quickening                  = {  5760, 2, 31208, 31209 },
+reinforced_leather          = {  6511, 2, 79077, 79079 },
+relentless_strikes          = {  2244, 3, 14179, 58422, 58423 },
+remorseless_attacks         = {  272,  2, 14144, 14148 },
+restless_blades             = {  5740, 2, 79095, 79096 },
+revealing_strike            = {  11171,1, 84617 },
+riposte                     = {  5696, 1, 14251 },
+ruthlessness                = {  1744, 3, 14156, 14160, 14161 },
+sanguinary_vein             = {  10074,2, 79146, 79147 },
+savage_combat               = {  10898,2, 51682, 58413 },
+seal_fate                   = {  283,  2, 14186, 14190 },
+serrated_blades             = {  1123, 2, 14171, 14172 },
+setup                       = {  5644, 3, 13983, 14070, 14071 },
+shadow_dance                = {  5680, 1, 51713 },
+shadowstep                  = {  10072, 1, 36554 },
+sinister_calling            = {  1712, 1, 31220 },
+slaughter_from_the_shadows  = {  2080, 3, 51708, 51709, 51710 },
+surprise_attacks            = {  5730, 1, 32601 },
+throwing_specialization     = {  9944, 2, 5952, 51679 },
+unfair_advantage            = {  2073, 2, 51672, 51674 },
+vendetta                    = {  2071, 1, 79140 },
+venomous_wounds             = {  6517, 2, 79133, 79134 },
+vile_poisons                = {  5756, 3, 16513, 16514, 16515 },
+vitality                    = {  1705, 1, 61329 },
+waylay                      = {  2077, 2, 51692, 51696 },
 
+} )
 
 -- Glyphs
 spec:RegisterGlyphs( {
@@ -146,21 +141,21 @@ spec:RegisterAuras( {
     -- Energy regeneration increased by $s1%.
     adrenaline_rush = {
         id = 13750,
-        duration = function() return glyph.adrenaline_rush.enabled and 21 or 15 end,
+        duration = function() return glyph.adrenaline_rush.enabled and 20 or 15 end,
         max_stack = 1,
     },
-    -- Attack speed increased by $s1%.  Weapon attacks strike an additional nearby opponent.
+    -- Weapon attacks strike an additional nearby opponent.
     blade_flurry = {
         id = 13877,
-        duration = 15,
+        duration = 3600,
         max_stack = 1,
     },
     -- Dazed.
     blade_twisting = {
-        id = 51585,
+        id = 31124,
         duration = 8,
         max_stack = 1,
-        copy = { 51585, 31125 },
+        copy = { 31124, 31126 },
     },
     -- Disoriented.
     blind = {
@@ -230,6 +225,7 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 5277, 26669, 67354, 67378, 67380 },
     },
+
     -- $s2% reduced damage taken from area of effect attacks.
     feint = {
         id = 48659,
@@ -260,7 +256,7 @@ spec:RegisterAuras( {
     -- Incapacitated.
     gouge = {
         id = 1776,
-        duration = function() return 4 + 0.5 * talent.improved_gouge.rank end,
+        duration = function() return 4 + 2 * talent.improved_gouge.rank end,
         max_stack = 1,
     },
     -- Increases damage taken by $s3.
@@ -299,6 +295,12 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1,
     },
+    recuperate = {
+        id = 73651,
+        max_stack = 1,
+        tick_time = 3,
+        copy = { 79007 },
+    },
     -- Critical strike chance for your next Sinister Strike, Backstab, Mutilate, Ambush, Hemorrhage, or Ghostly strike increased by $s1%.
     remorseless = {
         id = 14149,
@@ -306,6 +308,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 14143, 14149 },
     },
+    -- Restless Blades logic
+    restless_blades = {
+    id = 79096,
+    max_stack = 1,
+    },
+
     -- Melee attack speed slowed by $s2%.
     riposte = {
         id = 14251,
@@ -319,6 +327,11 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1,
         copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671, 48672 },
+    },
+    bandits_guile = {
+        id = 84654,
+        max_stack = 1,
+        
     },
     -- Sapped.
     sap = {
@@ -376,6 +389,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    smoke_bomb = {
+        id = 76577,
+        duration = 5,
+        max_stack = 1,
+    
+    },
     -- $s1% increased critical strike chance with combo moves.
     turn_the_tables = {
         id = 52915,
@@ -432,11 +451,30 @@ spec:RegisterAuras( {
         shared = "target",
         copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208 }
     },
+    -- Revealing Strike logic
+    revealing_strike = {
+       id = 84617,
+       duration = 15,
+       max_stack = 1,
+        
+    },
+     -- redirect
+     redirect = {
+        id = 73981,
+        max_stack = 1,
+         
+     },
+    -- Bleeding for $s1 damage every $t1 seconds.
     deep_wound = {
         id = 43104,
         duration = 12,
         max_stack = 1,
         shared = "target"
+    },
+    deep_insight = {
+        id = 84747,
+        duration = 15,
+        max_stack = 1,
     },
     bleed = {
         alias = { "lacerate", "pounce_bleed", "rip", "rake", "deep_wound", "rend", "garrote", "rupture" },
@@ -629,7 +667,7 @@ spec:RegisterAbilities( {
     blade_flurry = {
         id = 13877,
         cast = 0,
-        cooldown = 120,
+        cooldown = 10,
         gcd = "totem",
 
         spend = function() return glyph.blade_flurry.enabled and 0 or 25 end,
@@ -1000,13 +1038,10 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 10,
         gcd = "totem",
-
-        spend = function() return glyph.gouge.enabled and 30 or 45 end,
+            
         spendType = "energy",
-
         startsCombat = true,
-        texture = 132155,
-
+    
         handler = function ()
             applyDebuff( "target", "gouge" )
             gain( 1, "combo_points" )
@@ -1251,7 +1286,57 @@ spec:RegisterAbilities( {
 
         copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671, 48672 },
     },
+    
+    recuperate = {
+        id = 73651,  -- Replace with the actual ID
+        duration = function() return 6 * combo_points.current end,
+        tick_time = 3,
+        max_stack = 1,
+        spend = 30,
+        spendType = "energy",
 
+        healthRestorePercentage = 0.035,
+        handler = function ()
+        local totalHealthRestore = max_health * healthRestorePercentage
+        local healthRestorePerTick = totalHealthRestore / (duration() / tick_time)
+        end,
+    },
+    revealing_strike = {
+        id = 84617,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
+        spend = 40,
+        spendType = "energy",
+
+        talent = "revealing_strike",
+        startsCombat = true,
+        texture = 135407,
+
+        handler = function ()
+            gain( 1, "combo_points" )
+            applyBuff( "revealing_strike" )
+        end,
+    },
+
+    redirect = {
+        id = 73981,
+        range = 40,
+        cast = 0,
+        cooldown = 60,
+
+        handler = function ()
+            local comboPoints = GetComboPoints("player", "target")
+            if comboPoints > 0 then
+            for i = 1, comboPoints do
+                ComboPointUnit("target", i)
+            end
+            
+          end
+        
+        end,
+    },
 
     -- Incapacitates the target for up to 45 sec.  Must be stealthed.  Only works on Humanoids that are not in combat.  Any damage caused will revive the target.  Only 1 target may be sapped at a time.
     sap = {
@@ -1275,7 +1360,14 @@ spec:RegisterAbilities( {
         copy = { 2070, 6770, 11297, 51724 },
     },
 
-
+    smoke_bomb = {
+        id = 76577,
+        cast = 0,
+        cooldown = 180,
+        radius = 8,
+        duration = 5,
+    
+    },
     -- Enter the Shadow Dance for 6 sec, allowing the use of Sap, Garrote, Ambush, Cheap Shot, Premeditation, Pickpocket and Disarm Trap regardless of being stealthed.
     shadow_dance = {
         id = 51713,
@@ -1345,8 +1437,9 @@ spec:RegisterAbilities( {
         gcd = "totem",
 
         spend = function()
-            if talent.improved_sinister_strike.rank == 2 then return 40 end
-            if talent.improved_sinister_strike.rank == 1 then return 42 end
+            if talent.improved_sinister_strike.rank == 3 then return 39 end
+            if talent.improved_sinister_strike.rank == 2 then return 41 end
+            if talent.improved_sinister_strike.rank == 1 then return 43 end
             return 45
         end,
         spendType = "energy",
