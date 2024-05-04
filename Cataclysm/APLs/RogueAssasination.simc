@@ -24,3 +24,4 @@ actions.st+=/envenom,if=combo_points=5&(buff.envenom.up&energy>=65|buff.envenom.
 actions.st+=/backstab,if=combo_points<4&target.health.percent<35
 actions.st+=/mutilate,if=combo_points<3&target.health.percent>35
 actions.st+=/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
+actions.st+=/expose_armor,if=settings.maintain_expose&combo_points.current>=4
