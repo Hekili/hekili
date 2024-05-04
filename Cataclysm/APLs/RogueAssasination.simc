@@ -1,14 +1,25 @@
 Smufrik assassination rogue
 
-actions+=stealth
-actions+=garrote
-actions+=slice_and_dice,if=buff.slice_and_dice.down
-actions+=envenom,if=buff.slice_and_dice.remains>1
-actions+=rupture,if=(debuff.rupture.remains<3|debuff.rupture.remains<5&combo_points>=4)&buff.slice_and_dice.remains>6
-actions+=rupture,if=target.debuff.rupture.down&time_to_die>6
-actions+=vanish,if=buff.overkill.down
-actions+=cold_blood,if=combo_points=5&time_to_die>5
-actions+=envenom,if=combo_points>=4&(buff.envenom.down&energy>=55|buff.envenom.up&energy>=80)&target.health.percent>35
-actions+=envenom,if=combo_points=5&(buff.envenom.up&energy>=65|buff.envenom.down)&target.health.percent<35
-actions+=backstab,if=combo_points<4&target.health.percent<35
-actions+=mutilate,if=combo_points<3&target.health.percent>35
+actions.precombat=stealth
+actions.precombat+=/potion,name=potion_of_the_tol_vir
+
+actions=auto_attack
+actions+=/call_action_list,name=init
+actions+=/run_action_list,name=st
+
+actions.init=variable,name=envenom_for_buff,value=debuff.deadly_poison.up&combo_points>=4&!buff.envenom.up
+actions.init+=/variable,name=envenom_for_spend,value=debuff.deadly_poison.up&combo_points>=4&energy>90
+actions.init+=/variable,name=envenom_for_snd,value=debuff.deadly_poison.up&combo_points>=2&buff.slice_and_dice.up&buff.slice_and_dice.remains<2
+actions.init+=/variable,name=envenom_pending,value=variable.envenom_for_buff|variable.envenom_for_spend|variable.envenom_for_snd
+
+actions.st=garrote,if=buff.stealth.up
+actions.st+=/slice_and_dice,if=buff.slice_and_dice.down
+actions.st+=/envenom,if=buff.slice_and_dice.remains>1
+actions.st+=/rupture,if=(debuff.rupture.remains<3|debuff.rupture.remains<5&combo_points>=4)&buff.slice_and_dice.remains>6
+actions.st+=/rupture,if=target.debuff.rupture.down&time_to_die>6
+actions.st+=/vanish,if=buff.overkill.down
+actions.st+=/cold_blood,if=combo_points=5&time_to_die>5
+actions.st+=/envenom,if=combo_points>=4&(buff.envenom.down&energy>=55|buff.envenom.up&energy>=80)&target.health.percent>35
+actions.st+=/envenom,if=combo_points=5&(buff.envenom.up&energy>=65|buff.envenom.down)&target.health.percent<35
+actions.st+=/backstab,if=combo_points<4&target.health.percent<35
+actions.st+=/mutilate,if=combo_points<3&target.health.percent>35
