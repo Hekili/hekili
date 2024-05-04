@@ -12,7 +12,7 @@ actions.init+=/variable,name=envenom_for_spend,value=debuff.deadly_poison.up&com
 actions.init+=/variable,name=envenom_for_snd,value=debuff.deadly_poison.up&combo_points>=2&buff.slice_and_dice.up&buff.slice_and_dice.remains<2
 actions.init+=/variable,name=envenom_pending,value=variable.envenom_for_buff|variable.envenom_for_spend|variable.envenom_for_snd
 
-actions.st=garrote,if=buff.stealth.up
+actions.st+=/garrote,if=buff.stealth.up
 actions.st+=/slice_and_dice,if=buff.slice_and_dice.down
 actions.st+=/envenom,if=buff.slice_and_dice.remains>1
 actions.st+=/rupture,if=(debuff.rupture.remains<3|debuff.rupture.remains<5&combo_points>=4)&buff.slice_and_dice.remains>6
@@ -23,3 +23,4 @@ actions.st+=/envenom,if=combo_points>=4&(buff.envenom.down&energy>=55|buff.enven
 actions.st+=/envenom,if=combo_points=5&(buff.envenom.up&energy>=65|buff.envenom.down)&target.health.percent<35
 actions.st+=/backstab,if=combo_points<4&target.health.percent<35
 actions.st+=/mutilate,if=combo_points<3&target.health.percent>35
+actions.st+=/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
