@@ -14,7 +14,7 @@ actions.st+=/slice_and_dice,if=buff.slice_and_dice.down
 actions.st+=/rupture,if=variable.rupture_maintain
 actions.st+=/killing_spree,if=energy.current<20&buff.bandits_guile.stack>=3
 actions.st+=/adrenaline_rush,if=energy.current<80
-actions.st+=/tricks_of_the_trade
+actions.st+=/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 actions.st+=/revealing_strike,if=variable.revealing_strike_use
 actions.st+=/eviscerate,if=variable.eviscerate_use
 actions.st+=/sinister_strike
