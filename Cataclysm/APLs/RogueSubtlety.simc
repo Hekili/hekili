@@ -35,3 +35,4 @@ actions.st+=/hemorrhage,if=debuff.hemorrhage.down
 actions.st+=/eviscerate,if=variable.eviscerate_use
 actions.st+=/backstab
 actions.st+=/hemorrhage,if=!action.backstab.usable
+actions.st+=/expose_armor,if=settings.maintain_expose&combo_points.current>=4 
