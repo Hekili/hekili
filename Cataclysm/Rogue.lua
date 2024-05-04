@@ -1290,7 +1290,7 @@ spec:RegisterAbilities( {
     },
     
     recuperate = {
-        id = 73651,  -- Replace with the actual ID
+        id = 73651, 
         duration = function() return 6 * combo_points.current end,
         tick_time = 3,
         max_stack = 1,
@@ -1321,7 +1321,7 @@ spec:RegisterAbilities( {
             applyBuff( "revealing_strike" )
         end,
     },
-
+    -- Transferes any existiong combo points to the current enemy target
     redirect = {
         id = 73981,
         range = 40,
@@ -1429,7 +1429,7 @@ spec:RegisterAbilities( {
         texture = 135428,
 
         handler = function ()
-            -- TODO: Apply offhand poison.
+            dispelEnrageEffectsOnTarget()
             gain( 1, "combo_points" )
         end,
     },
