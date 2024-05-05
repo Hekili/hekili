@@ -1957,7 +1957,7 @@ paladin:RegisterAbilities( {
     }
 } )
 
--- TODO: These States probably need to be updated for Cataclysm
+
 paladin:RegisterStateTable("assigned_aura", setmetatable( {}, {
     __index = function( t, k )
         return settings.assigned_aura == k
@@ -2000,22 +2000,22 @@ end)
 -- end)
 
 
-paladin:RegisterSetting("paladin_description", nil, {
+paladin:RegisterSetting( "paladin_description", nil, {
     type = "description",
     name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
         "to determine the optimal values for these settings for your character."
 })
 
-paladin:RegisterSetting("paladin_description_footer", nil, {
+paladin:RegisterSetting( "paladin_description_footer", nil, {
     type = "description",
     name = "\n\n"
 })
 
-paladin:RegisterSetting("general_header", nil, {
+paladin:RegisterSetting( "general_header", nil, {
     type = "header",
     name = "General"
 })
-paladin:RegisterSetting("maintain_aura", true, {
+paladin:RegisterSetting( "maintain_aura", true, {
     type = "toggle",
     name = "Maintain Aura",
     desc = "When enabled, selected aura will be recommended if it is down",
@@ -2046,7 +2046,7 @@ paladin:RegisterSetting( "assigned_aura", "retribution_aura", {
         class.abilities.assigned_aura = class.abilities[ val ]
     end,
 } )
-paladin:RegisterSetting("maintain_blessing", true, {
+paladin:RegisterSetting( "maintain_blessing", true, {
     type = "toggle",
     name = "Maintain Aura",
     desc = "When enabled, selected blessing will be recommended if it is down. Disable this setting if your raid group uses another "..
@@ -2077,7 +2077,7 @@ paladin:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
         class.abilities.assigned_blessing = class.abilities[ val ]
     end,
 } )
-paladin:RegisterSetting("divine_plea_threshold", 75, {
+paladin:RegisterSetting( "divine_plea_threshold", 75, {
     type = "range",
     name = "Divine Plea Threshold",
     desc = "Select the maximum mana percent at which divine plea will be recommended.",
@@ -2089,7 +2089,7 @@ paladin:RegisterSetting("divine_plea_threshold", 75, {
         Hekili.DB.profile.specs[ 2 ].settings.divine_plea_threshold = val
     end
 })
-paladin:RegisterSetting("mana_judgement_threshold", 50, {
+paladin:RegisterSetting( "mana_judgement_threshold", 50, {
     type = "range",
     name = "Mana Judgement Threshold",
     desc = "Select the maximum mana percent at which judgement will be prioritized for Judgements of the Wise / Bold.",
@@ -2101,7 +2101,7 @@ paladin:RegisterSetting("mana_judgement_threshold", 50, {
         Hekili.DB.profile.specs[ 2 ].settings.mana_judgement_threshold = val
     end
 })
-paladin:RegisterSetting("single_target_consecration", false, {
+paladin:RegisterSetting( "single_target_consecration", false, {
     type = "toggle",
     name = "Consecrate Single Target",
     desc = "Enable to recommend Consecration filler for single target.\n\n"..
@@ -2111,7 +2111,7 @@ paladin:RegisterSetting("single_target_consecration", false, {
         Hekili.DB.profile.specs[ 2 ].settings.single_target_consecration = val
     end
 })
-paladin:RegisterSetting("ignore_consecration_movement", false, {
+paladin:RegisterSetting( "ignore_consecration_movement", false, {
     type = "toggle",
     name = "Consecrate While Moving",
     desc = "Enable to recommend Consecration even while moving.",
@@ -2120,16 +2120,16 @@ paladin:RegisterSetting("ignore_consecration_movement", false, {
         Hekili.DB.profile.specs[ 2 ].settings.ignore_consecration_movement = val
     end
 })
-paladin:RegisterSetting("general_footer", nil, {
+paladin:RegisterSetting( "general_footer", nil, {
     type = "description",
     name = "\n\n\n"
 })
 
-paladin:RegisterSetting("retribution_header", nil, {
+paladin:RegisterSetting( "retribution_header", nil, {
     type = "header",
     name = "retribution"
 })
-paladin:RegisterSetting("divine_storm_threshold", 8, {
+paladin:RegisterSetting( "divine_storm_threshold", 8, {
     type = "range",
     name = "Divine Storm Threshold",
     desc = "Select the minimum number of enemies before Divine Storm will be prioritized higher than Inquisition.",
@@ -2141,7 +2141,7 @@ paladin:RegisterSetting("divine_storm_threshold", 8, {
         Hekili.DB.profile.specs[ 2 ].settings.divine_storm_threshold = val
     end
 })
-paladin:RegisterSetting("seal_of_righteousness", 4, {
+paladin:RegisterSetting( "seal_of_righteousness", 4, {
     type = "range",
     name = "Seal of Righteousness Threshold",
     desc = "Select the minimum number of enemies before Seal of Righteousness will be prioritized higher.",
@@ -2153,7 +2153,7 @@ paladin:RegisterSetting("seal_of_righteousness", 4, {
         Hekili.DB.profile.specs[ 2 ].settings.seal_of_righteousness = val
     end
 })
-paladin:RegisterSetting("selfless_healer", false, {
+paladin:RegisterSetting( "selfless_healer", false, {
     type = "toggle",
     name = "Selfless Healer WoG",
     desc = "Enable to recommend World of Glory to get Selfless Healer buff.\n\n"..
@@ -2163,7 +2163,7 @@ paladin:RegisterSetting("selfless_healer", false, {
         Hekili.DB.profile.specs[ 2 ].settings.selfless_healer = val
     end
 })
-paladin:RegisterSetting("zealotry_macro", false, {
+paladin:RegisterSetting( "zealotry_macro", false, {
     type = "toggle",
     name = "Zealotry / Avenging Wrath Macro",
     desc = "Check on if you've combined Zealotry and Avenging Wrath into one macro.\n\n"..
@@ -2173,17 +2173,17 @@ paladin:RegisterSetting("zealotry_macro", false, {
         Hekili.DB.profile.specs[ 2 ].settings.zealotry_macro = val
     end
 })
-paladin:RegisterSetting("retribution_footer", nil, {
+paladin:RegisterSetting( "retribution_footer", nil, {
     type = "description",
     name = "\n\n\n"
 })
 
 -- TODO: Are these options still need for Cataclysm?
-paladin:RegisterSetting("protection_header", nil, {
+paladin:RegisterSetting( "protection_header", nil, {
     type = "header",
     name = "Protection"
 })
-paladin:RegisterSetting("defensive_threshold", 60, {
+paladin:RegisterSetting( "defensive_threshold", 60, {
     type = "range",
     name = "Defensive Threshold",
     desc = "Select the health percentage to recommend defensives.\n\n"..
@@ -2197,7 +2197,7 @@ paladin:RegisterSetting("defensive_threshold", 60, {
         Hekili.DB.profile.specs[ 2 ].settings.defensive_threshold = val
     end
 })
-paladin:RegisterSetting("major_defensive", 20, {
+paladin:RegisterSetting( "major_defensive", 20, {
     type = "range",
     name = "Major Defensive Threshold",
     desc = "Select the health percentage to recommend using major defensive cooldowns.\n\n"..
@@ -2210,7 +2210,7 @@ paladin:RegisterSetting("major_defensive", 20, {
         Hekili.DB.profile.specs[ 2 ].settings.major_defensive = val
     end
 })
-paladin:RegisterSetting("wog_threshold", 90, {
+paladin:RegisterSetting( "wog_threshold", 90, {
     type = "range",
     name = "Word of Glory Threshold",
     desc = "Select the health percentage to recommend Word of Glory instead of Shield of the Righteous.\n\n"..
@@ -2223,7 +2223,7 @@ paladin:RegisterSetting("wog_threshold", 90, {
         Hekili.DB.profile.specs[ 2 ].settings.wog_threshold = val
     end
 })
-paladin:RegisterSetting("captain_america", false, {
+paladin:RegisterSetting( "captain_america", false, {
     type = "toggle",
     name = "Captain America Mode",
     desc = "Enable if you want to prioritize Avenger's Shield for Grand Crusader.\n\n"..
@@ -2233,7 +2233,7 @@ paladin:RegisterSetting("captain_america", false, {
         Hekili.DB.profile.specs[ 2 ].settings.captain_america = val
     end
 })
-paladin:RegisterSetting("use_guardian", false, {
+paladin:RegisterSetting( "use_guardian", false, {
     type = "toggle",
     name = "Divine Guardian Defensive",
     desc = "Enable to include Divine Guardian as a recommended defensive.",
@@ -2242,7 +2242,7 @@ paladin:RegisterSetting("use_guardian", false, {
         Hekili.DB.profile.specs[ 2 ].settings.use_guardian = val
     end
 })
-paladin:RegisterSetting("ranged_opener", false, {
+paladin:RegisterSetting( "ranged_opener", false, {
     type = "toggle",
     name = "Ranged Opener",
     desc = "Enable to recommend pre-pull casts for maximum snap threat.",
@@ -2251,7 +2251,7 @@ paladin:RegisterSetting("ranged_opener", false, {
         Hekili.DB.profile.specs[ 2 ].settings.ranged_opener = val
     end
 })
-paladin:RegisterSetting("protection_footer", nil, {
+paladin:RegisterSetting( "protection_footer", nil, {
     type = "description",
     name = "\n\n\n"
 })
@@ -2261,13 +2261,11 @@ if (Hekili.Version:match( "^Dev" )) then
         type = "header",
         name = "Debug"
     })
-
-    paladin:RegisterSetting("pala_debug_description", nil, {
+    paladin:RegisterSetting( "pala_debug_description", nil, {
         type = "description",
         name = "Settings used for testing\n\n"
     })
-
-    paladin:RegisterSetting("dummy_ttd", 300, {
+    paladin:RegisterSetting( "dummy_ttd", 300, {
         type = "range",
         name = "Training Dummy Time To Die",
         desc = "Select the time to die to report when targeting a training dummy",
@@ -2279,9 +2277,7 @@ if (Hekili.Version:match( "^Dev" )) then
             Hekili.DB.profile.specs[ 2 ].settings.dummy_ttd = val
         end
     })
-
-
-    paladin:RegisterSetting("pala_debug_footer", nil, {
+    paladin:RegisterSetting( "pala_debug_footer", nil, {
         type = "description",
         name = "\n\n"
     })
