@@ -1357,7 +1357,7 @@ spec:RegisterAuras( {
         id = 48568,
         duration = 15,
         tick_time = 3,
-        max_stack = 5,
+        max_stack = 3,
         copy = { 33745, 48567, 48568 },
     },
     -- Heals $s1 every second and $s2 when effect finishes or is dispelled.
@@ -1475,6 +1475,13 @@ spec:RegisterAuras( {
         id = 5215,
         duration = 3600,
         max_stack = 1,
+    },
+    -- Melee critical strike chance increased by 3%.
+    pulverize = {
+        id = 80951,
+        duration = 10,
+        max_stack = 3,
+
     },
     -- Bleeding for $s2 damage every $t2 seconds.
     rake = {
@@ -2846,18 +2853,25 @@ spec:RegisterAbilities( {
     },
     --In the Feral Abilities category. Requires Druid.   
     pulverize = {
-        id = 80951,
+        id = 80313,
         cast = 0,
         cooldown = 0,
-        gcd = "off",
+        gcd = "spell",
 
         talent = "pulverize",
+        spend = function () return (buff.clearcasting.up and 0) or 15 end,
+        spendType = "rage",
 
         startsCombat = true,
         texture = 132318,
 
         form = "bear_form",
         handler = function()
+            if debuff.lacerate.up then
+                applyBuff("pulverize", 10, min( 3, debuff.lacerate.stack ) )
+                removeDebuff("target","lacerate")
+            end
+            removeBuff( "clearcasting" )
         end,
 
     },
