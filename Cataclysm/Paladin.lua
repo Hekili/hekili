@@ -4,28 +4,27 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
-local spec = Hekili:NewSpecialization( 2 )
+local paladin = Hekili:NewSpecialization( 2 )
 
-spec:RegisterResource( Enum.PowerType.Mana )
-spec:RegisterResource( Enum.PowerType.HolyPower )
-
+paladin:RegisterResource( Enum.PowerType.Mana )
+paladin:RegisterResource( Enum.PowerType.HolyPower )
 
 
 -- Idols
 -- TODO: Update for Cataclysm
-spec:RegisterGear( "libram_of_discord", 45510 )
-spec:RegisterGear( "libram_of_fortitude", 42611, 42851, 42852, 42853, 42854 )
-spec:RegisterGear( "libram_of_valiance", 47661 )
-spec:RegisterGear( "libram_of_three_truths", 50455 )
+paladin:RegisterGear( "libram_of_discord", 45510 )
+paladin:RegisterGear( "libram_of_fortitude", 42611, 42851, 42852, 42853, 42854 )
+paladin:RegisterGear( "libram_of_valiance", 47661 )
+paladin:RegisterGear( "libram_of_three_truths", 50455 )
 
 -- Sets
 -- TODO: Update for Cataclysm
-spec:RegisterGear( "tier7ret", 43794, 43796, 43801, 43803, 43805, 40574, 40575, 40576, 40577, 40578 )
-spec:RegisterGear( "tier10ret", 50324, 50325, 50326, 50327, 50328, 51160, 51161, 51162, 51163, 51164, 51275, 51276, 51277, 51278, 51279 )
+paladin:RegisterGear( "tier7ret", 43794, 43796, 43801, 43803, 43805, 40574, 40575, 40576, 40577, 40578 )
+paladin:RegisterGear( "tier10ret", 50324, 50325, 50326, 50327, 50328, 51160, 51161, 51162, 51163, 51164, 51275, 51276, 51277, 51278, 51279 )
 
 -- Hooks
 local LastConsecrationCast = 0
-spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+paladin:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= state.GUID then
         return
     end
@@ -33,7 +32,7 @@ end, false )
 
 local aura_assigned
 local blessing_assigned
-spec:RegisterHook( "reset_precast", function()
+paladin:RegisterHook( "reset_precast", function()
     if not aura_assigned then
         class.abilityList.assigned_aura = "|cff00ccff[Assigned Aura]|r"
         class.abilities.assigned_aura = class.abilities[ settings.assigned_aura or "devotion_aura" ]
@@ -48,7 +47,7 @@ spec:RegisterHook( "reset_precast", function()
 end )
 
 -- Talents
-spec:RegisterTalents( {
+paladin:RegisterTalents( {
     -- Holy
 
     holy_shock                       = { 20473, 1, 20473 },
@@ -134,7 +133,7 @@ spec:RegisterTalents( {
 
 
 -- Auras
-spec:RegisterAuras( {
+paladin:RegisterAuras( {
     aura = {
         alias = { "devotion_aura", "retribution_aura", "concentration_aura", "resistance_aura", "crusader_aura" },
         aliasMode = "first",
@@ -296,7 +295,7 @@ spec:RegisterAuras( {
     guardian_of_ancient_kings = {
         id = 86669,
         duration = function()
-            if spec.protection then
+            if state.spec.protection then
                 return 12
             else
                 return 30
@@ -683,7 +682,7 @@ spec:RegisterAuras( {
 } )
 
 -- Glyphs
-spec:RegisterGlyphs( {
+paladin:RegisterGlyphs( {
     [63218] = "beacon_of_light",
     [57937] = "blessing_of_kings",
     [57958] = "blessing_of_might",
@@ -722,7 +721,7 @@ spec:RegisterGlyphs( {
 } )
 
 -- Abilities
-spec:RegisterAbilities( {
+paladin:RegisterAbilities( {
     -- Class Abilities
 
     -- Brings all dead party and raid members back to life with 35% health and 35% mana. Cannot be cast in combat or while in a battleground or arena.
@@ -1097,11 +1096,11 @@ spec:RegisterAbilities( {
         cooldown = 300,
         gcd = "spell",
 
-        startsCombat = function() if spec.retribution then return true else return false end end,
+        startsCombat = function() if state.spec.retribution then return true else return false end end,
         texture = 135919,
 
         toggle = function()
-            if spec.protection then
+            if state.spec.protection then
                 return "defensives"
             else
                 return "cooldowns"
@@ -1110,7 +1109,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "guardian_of_ancient_kings" )
-            if spec.retribution then applyBuff( 'ancient_fury' ) end
+            if state.spec.retribution then applyBuff( 'ancient_fury' ) end
         end,
     },
     -- Stuns the target for 6 sec.
@@ -1594,11 +1593,10 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            local holy_power = holy_power.current
             if buff.divine_purpose.up then
                 return 0
             else
-                return holy_power
+                return state.holy_power.current
             end
         end,
         spendType = "holy_power",
@@ -1612,7 +1610,7 @@ spec:RegisterAbilities( {
             if buff.divine_purpose.up then
                 removeBuff( "divine_purpose" )
             else
-                gain( -holy_power.current, "holy_power" )
+                gain( -state.holy_power.current, "holy_power" )
             end
         end,
     },
@@ -1637,7 +1635,7 @@ spec:RegisterAbilities( {
     },
     -- Consumes all Holy Power to heal a friendly target for [((1733 + 1930) / 2) + 0.198 * Attack power] per charge of Holy Power.
     -- ALT: Glyph of the Long Word: plus 1831.5 over 6 sec
-    -- TODO: The Overheal tracking component needs testing
+    -- TODO: Overhealing with Guarded by the Light might need to be tracked here
     word_of_glory = {
         id = 85673,
         cast = 0,
@@ -1645,11 +1643,10 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            local holy_power = holy_power.current
             if buff.divine_purpose.up then
                 return 0
             else
-                return holy_power
+                return state.holy_power.current
             end
         end,
         spendType = "holy_power",
@@ -1661,18 +1658,9 @@ spec:RegisterAbilities( {
             if glyph.long_word.enabled then
                 applyBuff("long_word")
             end
-
-            local heal_amount = 0
-            local target = "player"
-            local healed = state:Heal(target, "word_of_glory", heal_amount)
-
-            -- Check for overhealing
-            if healed > state.health.max then
-                local overheal = healed - state.health.max
-                applyBuff("guarded_by_the_light", 6, 1, overheal)
+            if talent.selfless_healer.enabled then
+                applyBuff("selfless")
             end
-
-            if talent.selfless_healer.enabled then applyBuff( "selfless" ) end
         end,
     },
 
@@ -1893,7 +1881,7 @@ spec:RegisterAbilities( {
         texture = 236250,
 
         handler = function ()
-            if state.enemies >= 4 then
+            if active_enemies >= 4 then
                 gain( 1, "holy_power" )
             end
         end,
@@ -1969,20 +1957,20 @@ spec:RegisterAbilities( {
     }
 } )
 
--- TODO: These States probably need to be updated for Cataclysm
-spec:RegisterStateTable("assigned_aura", setmetatable( {}, {
+
+paladin:RegisterStateTable("assigned_aura", setmetatable( {}, {
     __index = function( t, k )
         return settings.assigned_aura == k
     end
 }))
 
-spec:RegisterStateTable("assigned_blessing", setmetatable( {}, {
+paladin:RegisterStateTable("assigned_blessing", setmetatable( {}, {
     __index = function( t, k )
         return settings.assigned_blessing == k
     end
 }))
 
-spec:RegisterStateExpr("ttd", function()
+paladin:RegisterStateExpr("ttd", function()
     if is_training_dummy then
         return Hekili.Version:match( "^Dev" ) and settings.dummy_ttd or 300
     end
@@ -1991,11 +1979,11 @@ spec:RegisterStateExpr("ttd", function()
 end)
 
 -- TODO: Can these be removed? What was their purpose?
--- spec:RegisterStateExpr("next_primary_at", function()
+-- paladin:RegisterStateExpr("next_primary_at", function()
 --     return min(cooldown.crusader_strike.remains, cooldown.divine_storm.remains, cooldown.judgement_of_light.remains)
 -- end)
 
--- spec:RegisterStateExpr("should_hammer", function()
+-- paladin:RegisterStateExpr("should_hammer", function()
 --     local hammercd = cooldown.hammer_of_the_righteous.remains
 --     local shieldcd = cooldown.shield_of_righteousness.remains
 
@@ -2003,7 +1991,7 @@ end)
 --     and (shieldcd < (settings.min_six_delay-settings.max_wait_for_six))
 -- end)
 
--- spec:RegisterStateExpr("should_shield", function()
+-- paladin:RegisterStateExpr("should_shield", function()
 --     local hammercd = cooldown.hammer_of_the_righteous.remains
 --     local shieldcd = cooldown.shield_of_righteousness.remains
 
@@ -2012,22 +2000,22 @@ end)
 -- end)
 
 
-spec:RegisterSetting("paladin_description", nil, {
+paladin:RegisterSetting( "paladin_description", nil, {
     type = "description",
     name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
-        "to determine the optimal values for these settings for your specific character."
+        "to determine the optimal values for these settings for your character."
 })
 
-spec:RegisterSetting("paladin_description_footer", nil, {
+paladin:RegisterSetting( "paladin_description_footer", nil, {
     type = "description",
     name = "\n\n"
 })
 
-spec:RegisterSetting("general_header", nil, {
+paladin:RegisterSetting( "general_header", nil, {
     type = "header",
     name = "General"
 })
-spec:RegisterSetting("maintain_aura", true, {
+paladin:RegisterSetting( "maintain_aura", true, {
     type = "toggle",
     name = "Maintain Aura",
     desc = "When enabled, selected aura will be recommended if it is down",
@@ -2037,7 +2025,7 @@ spec:RegisterSetting("maintain_aura", true, {
     end
 })
 local auras = {}
-spec:RegisterSetting( "assigned_aura", "retribution_aura", {
+paladin:RegisterSetting( "assigned_aura", "retribution_aura", {
     type = "select",
     name = "Assigned Aura",
     desc = "Select the Aura that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Aura]|r in your priority.",
@@ -2058,7 +2046,7 @@ spec:RegisterSetting( "assigned_aura", "retribution_aura", {
         class.abilities.assigned_aura = class.abilities[ val ]
     end,
 } )
-spec:RegisterSetting("maintain_blessing", true, {
+paladin:RegisterSetting( "maintain_blessing", true, {
     type = "toggle",
     name = "Maintain Aura",
     desc = "When enabled, selected blessing will be recommended if it is down. Disable this setting if your raid group uses another "..
@@ -2069,7 +2057,7 @@ spec:RegisterSetting("maintain_blessing", true, {
     end
 })
 local blessings = {}
-spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
+paladin:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
     type = "select",
     name = "Assigned Blessing",
     desc = "Select the Blessing that should be recommended by the addon.  It is referenced as |cff00ccff[Assigned Blessing]|r in your priority.",
@@ -2089,7 +2077,7 @@ spec:RegisterSetting( "assigned_blessing", "blessing_of_kings", {
         class.abilities.assigned_blessing = class.abilities[ val ]
     end,
 } )
-spec:RegisterSetting("divine_plea_threshold", 75, {
+paladin:RegisterSetting( "divine_plea_threshold", 75, {
     type = "range",
     name = "Divine Plea Threshold",
     desc = "Select the maximum mana percent at which divine plea will be recommended.",
@@ -2101,7 +2089,7 @@ spec:RegisterSetting("divine_plea_threshold", 75, {
         Hekili.DB.profile.specs[ 2 ].settings.divine_plea_threshold = val
     end
 })
-spec:RegisterSetting("mana_judgement_threshold", 50, {
+paladin:RegisterSetting( "mana_judgement_threshold", 50, {
     type = "range",
     name = "Mana Judgement Threshold",
     desc = "Select the maximum mana percent at which judgement will be prioritized for Judgements of the Wise / Bold.",
@@ -2113,7 +2101,7 @@ spec:RegisterSetting("mana_judgement_threshold", 50, {
         Hekili.DB.profile.specs[ 2 ].settings.mana_judgement_threshold = val
     end
 })
-spec:RegisterSetting("single_target_consecration", false, {
+paladin:RegisterSetting( "single_target_consecration", false, {
     type = "toggle",
     name = "Consecrate Single Target",
     desc = "Enable to recommend Consecration filler for single target.\n\n"..
@@ -2123,7 +2111,7 @@ spec:RegisterSetting("single_target_consecration", false, {
         Hekili.DB.profile.specs[ 2 ].settings.single_target_consecration = val
     end
 })
-spec:RegisterSetting("ignore_consecration_movement", false, {
+paladin:RegisterSetting( "ignore_consecration_movement", false, {
     type = "toggle",
     name = "Consecrate While Moving",
     desc = "Enable to recommend Consecration even while moving.",
@@ -2132,16 +2120,16 @@ spec:RegisterSetting("ignore_consecration_movement", false, {
         Hekili.DB.profile.specs[ 2 ].settings.ignore_consecration_movement = val
     end
 })
-spec:RegisterSetting("general_footer", nil, {
+paladin:RegisterSetting( "general_footer", nil, {
     type = "description",
     name = "\n\n\n"
 })
 
-spec:RegisterSetting("retribution_header", nil, {
+paladin:RegisterSetting( "retribution_header", nil, {
     type = "header",
     name = "Retribution"
 })
-spec:RegisterSetting("divine_storm_threshold", 8, {
+paladin:RegisterSetting( "divine_storm_threshold", 8, {
     type = "range",
     name = "Divine Storm Threshold",
     desc = "Select the minimum number of enemies before Divine Storm will be prioritized higher than Inquisition.",
@@ -2153,7 +2141,7 @@ spec:RegisterSetting("divine_storm_threshold", 8, {
         Hekili.DB.profile.specs[ 2 ].settings.divine_storm_threshold = val
     end
 })
-spec:RegisterSetting("seal_of_righteousness", 4, {
+paladin:RegisterSetting( "seal_of_righteousness", 4, {
     type = "range",
     name = "Seal of Righteousness Threshold",
     desc = "Select the minimum number of enemies before Seal of Righteousness will be prioritized higher.",
@@ -2165,7 +2153,7 @@ spec:RegisterSetting("seal_of_righteousness", 4, {
         Hekili.DB.profile.specs[ 2 ].settings.seal_of_righteousness = val
     end
 })
-spec:RegisterSetting("selfless_healer", false, {
+paladin:RegisterSetting( "selfless_healer", false, {
     type = "toggle",
     name = "Selfless Healer WoG",
     desc = "Enable to recommend World of Glory to get Selfless Healer buff.\n\n"..
@@ -2175,7 +2163,7 @@ spec:RegisterSetting("selfless_healer", false, {
         Hekili.DB.profile.specs[ 2 ].settings.selfless_healer = val
     end
 })
-spec:RegisterSetting("zealotry_macro", false, {
+paladin:RegisterSetting( "zealotry_macro", false, {
     type = "toggle",
     name = "Zealotry / Avenging Wrath Macro",
     desc = "Check on if you've combined Zealotry and Avenging Wrath into one macro.\n\n"..
@@ -2185,17 +2173,17 @@ spec:RegisterSetting("zealotry_macro", false, {
         Hekili.DB.profile.specs[ 2 ].settings.zealotry_macro = val
     end
 })
-spec:RegisterSetting("retribution_footer", nil, {
+paladin:RegisterSetting( "retribution_footer", nil, {
     type = "description",
     name = "\n\n\n"
 })
 
 -- TODO: Are these options still need for Cataclysm?
-spec:RegisterSetting("protection_header", nil, {
+paladin:RegisterSetting( "protection_header", nil, {
     type = "header",
     name = "Protection"
 })
-spec:RegisterSetting("defensive_threshold", 60, {
+paladin:RegisterSetting( "defensive_threshold", 60, {
     type = "range",
     name = "Defensive Threshold",
     desc = "Select the health percentage to recommend defensives.\n\n"..
@@ -2209,7 +2197,7 @@ spec:RegisterSetting("defensive_threshold", 60, {
         Hekili.DB.profile.specs[ 2 ].settings.defensive_threshold = val
     end
 })
-spec:RegisterSetting("major_defensive", 20, {
+paladin:RegisterSetting( "major_defensive", 20, {
     type = "range",
     name = "Major Defensive Threshold",
     desc = "Select the health percentage to recommend using major defensive cooldowns.\n\n"..
@@ -2222,10 +2210,11 @@ spec:RegisterSetting("major_defensive", 20, {
         Hekili.DB.profile.specs[ 2 ].settings.major_defensive = val
     end
 })
-spec:RegisterSetting("wog_threshold", 50, {
+paladin:RegisterSetting( "wog_threshold", 90, {
     type = "range",
     name = "Word of Glory Threshold",
-    desc = "Select the health percentage to recommend Word of Glory instead of Shield of the Righteous.",
+    desc = "Select the health percentage to recommend Word of Glory instead of Shield of the Righteous.\n\n"..
+        "Guarded by the Light talent will give you a shield equal to overhealing.",
     width = "full",
     min = 0,
     softMax = 100,
@@ -2234,7 +2223,7 @@ spec:RegisterSetting("wog_threshold", 50, {
         Hekili.DB.profile.specs[ 2 ].settings.wog_threshold = val
     end
 })
-spec:RegisterSetting("captain_america", false, {
+paladin:RegisterSetting( "captain_america", false, {
     type = "toggle",
     name = "Captain America Mode",
     desc = "Enable if you want to prioritize Avenger's Shield for Grand Crusader.\n\n"..
@@ -2244,7 +2233,7 @@ spec:RegisterSetting("captain_america", false, {
         Hekili.DB.profile.specs[ 2 ].settings.captain_america = val
     end
 })
-spec:RegisterSetting("use_guardian", false, {
+paladin:RegisterSetting( "use_guardian", false, {
     type = "toggle",
     name = "Divine Guardian Defensive",
     desc = "Enable to include Divine Guardian as a recommended defensive.",
@@ -2253,7 +2242,7 @@ spec:RegisterSetting("use_guardian", false, {
         Hekili.DB.profile.specs[ 2 ].settings.use_guardian = val
     end
 })
-spec:RegisterSetting("ranged_opener", false, {
+paladin:RegisterSetting( "ranged_opener", false, {
     type = "toggle",
     name = "Ranged Opener",
     desc = "Enable to recommend pre-pull casts for maximum snap threat.",
@@ -2262,23 +2251,21 @@ spec:RegisterSetting("ranged_opener", false, {
         Hekili.DB.profile.specs[ 2 ].settings.ranged_opener = val
     end
 })
-spec:RegisterSetting("protection_footer", nil, {
+paladin:RegisterSetting( "protection_footer", nil, {
     type = "description",
     name = "\n\n\n"
 })
 
 if (Hekili.Version:match( "^Dev" )) then
-    spec:RegisterSetting("pala_debug_header", nil, {
+    paladin:RegisterSetting("pala_debug_header", nil, {
         type = "header",
         name = "Debug"
     })
-
-    spec:RegisterSetting("pala_debug_description", nil, {
+    paladin:RegisterSetting( "pala_debug_description", nil, {
         type = "description",
         name = "Settings used for testing\n\n"
     })
-
-    spec:RegisterSetting("dummy_ttd", 300, {
+    paladin:RegisterSetting( "dummy_ttd", 300, {
         type = "range",
         name = "Training Dummy Time To Die",
         desc = "Select the time to die to report when targeting a training dummy",
@@ -2290,16 +2277,14 @@ if (Hekili.Version:match( "^Dev" )) then
             Hekili.DB.profile.specs[ 2 ].settings.dummy_ttd = val
         end
     })
-
-
-    spec:RegisterSetting("pala_debug_footer", nil, {
+    paladin:RegisterSetting( "pala_debug_footer", nil, {
         type = "description",
         name = "\n\n"
     })
 end
 
 
-spec:RegisterOptions( {
+paladin:RegisterOptions( {
     enabled = true,
 
     aoe = 2,
@@ -2320,28 +2305,28 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Retribution (Himea Beta)", 20240430.1, [[Hekili:nRvFVTTnA8plfhGR9UwDYV00ld2bORd4wlgkgMlW9FsIwI2MxKe1rrLSCWqF2VhsAjrjrk7u70n0MaBs(8kFE5hjJ3uVV6TocXXEFzM7SfUVZDMZ03n1D6TER5pLH9wNHcVhTd(qkkb(9VJ5mYMcoHMwgm(xijyuzWpH5OjIL(umffjyzoTGfclFnjPigjw9hzOT8YGhwmF2BN5TEtbjM)PuVnMepqFgoegZB9EsuewTmCEO36VUNKxgi(bK7rDRmGUf(EOsPIj5Cy6TuwzWVGVNetCavJr3sIbf6Vvg8BOyuej9hld0nMpdZinNxNRmOYGp8B)AzWBld(zsEiLfbeSxSaNCeHtLe8HmgjUmqO7LFggrWDgoKMSbXl)SsJYDYQg6VV6FWAePpQGHEdz7QxTPy7whX3CkYgLJ5Cs6UCNeejLd)ix3iuEozxkos(nNUSXSWcPPH4uodDPIRpJSiqwrokcZUizPZdZIjc)a9snPw8W2EvoelHat)seuhUywuBIXarP78PB9VxWYgHvnLzbwnBJqRxFpEEArNq2TNFLfTKNMfDogflwcNvW3leRuQIrbVMqo5lNFJRLyaYdKuSFwmwUXKGsrozyMimDzTUQTiF(EyNypnoYm)(pfr7Wja1vjY)mElQiUrZfH3O4yF1x9fLzEJOM4kskP1QkYX(eoojxFWmQQktZi7HYRmOoNiojmehJvzxVrqoD7w)DHrRMQtaRiTVWdbt7bSWdiM6bSpofNqW53DAsfBqX4kZ9tcRaQnYGP4GI14Le2hWJhqmcc2yveZHkH(CQFeb)MhqXf4vJJWYTpOkbqbS3hvKK8Ki0zUR7Kdh4i2om3rJWkr)rPn0iqLnPfFWeHqyArEkew1koP3Sor0hth1XxSQoGWingKCD0G9ylXO(1RRj8AKu5QNixgGVh7VbMtPDwwWJKCSCbg0NDfiwebLkwlukHiKyDDIqkWAGoN)hyDuo7P6SNPUg4v1QArQvbuXR7ChD(lE5SBNnAm4nEYpJ(iMTA(HdsRUkHSGLrbRTiBIbfe(D6ore0JqkrtDHARdcPEv92q1O(jOqg978wPbXD0cZ5uwIH0YvDRnjxOPIt1CKK(Fli5ezXbGHJLkL2Gsn5O)vF46sOtoZTIoPnlVXGY8iaes4g2ftvrqJpMlgVnUk97SLNwAPIC)9WUjMDgU1gbSCEV09vlmWbadtoo8yrwHIxlDO5fLH91xGFc9b5E(HdVc(iSSjJo27xjl9flci7OcgvGkGn5a2T7XNWkwAIfqxLSyel3)bmKagYRZn65CpCqFl4pB3XStLx2obxwLu33yGC8FqzHK8KAQfjMigxeC(iIbkHbI2JssGnaXsAvAPDfhP77y7krajmswiF5jncWdcLgslYHMCy205(ZYc9tGo74r9kGDcRRtSIjtrWaP6ApB5BcCKQN86JGdQyTcSGjmBJBaTjt(nqJEhNXJRasOdf4hCDU9TZCNCNI2gxvvphOMYRA11xkF5oveL7awwEbd7aaTdV)UfNBfid6A)MpNNg3je6BvVpDJTAnTvS34RCNntUMRaieJHeNpUIxEqideh8nacPMBNO2)P2Dp7YJ1K)Dd0Gbz)DgJqTCV8UJ1S650DPMOlR7IPSKRC7fBHJMSfdTxQN8sAV0xxErbIORB39ExTWjP89vBeTiZBne)Kl(G6sjxm31zQ3AyBxCS2CV1)7p87F5tF5F9JLbLbFDpUmGKKrz8J354RvDHFDzadd5vmCuzqonbwgQGttqCXaH7rP7W5oLF(xbNuzWuxGBFKYy4q58aLOyc)jXkXH3dSMrtaEVAfWxov8j4dJN(htCeDS)Kubee(UoxekmT3AqW7PmV1Y730BTCc5T0k9bWN(I8EGXPIMCrE)K36qgHJHMEERhxg0UbFzWeGJHkpvRUAECXv2oaJG)BQvAzWpugaTtLx2kKhemPm4Uk7Opua58JKC7vAkNEZ1YGdhkd61GvY2fA03KMugSQmyUIoZ1mAz3vkLWKNF1nzlyjUwgoqSLoxngyBvqyMlgYm1tZkdwQjaBiqKAYPqH0YNxVoH28oRAJvGis9AQBddTIGqiGBoTaojcePB3vAPphIa1eGUCvJrFVvRPBRJlic5FAvi62ayDZB4sNorc2C7zQRQaKrT9qT5ERqgyR)uf56cqsZxBaKKsAxJYjAmxQPNt5ynWuF7QGKmBqSA0Vwi6KAO9682KLqp6QDnsOl2nPqSxz1mMSg2vHFtYg7vUmdptPR9GOPsm1QF0bVNuw2Rlzh(wtPWU5HNBKTSyLTukn1rS23RV2gyEDxM9Kz716nc5RryAtlfH9e9XAmDiuGQDkOALclOwdUbWekxsBJakt)E3o5cdGpS2tRpQyNyDK6rJmbPQMOopIKcpMV651fV1snmQkkQFqPo7rZ1xK6bM6SczKV2dkj0QM9EZpavhwypG(O394D8jDIACVZto1YkviKn1L9CO(iQvP)U(f8gYJ39XYv)TeWizQP1EeFDZRois9yVTJoA9GVYPg(95hgA8fjQ(VnFRa0UZniG1ltr0F4EdLJQeV9YXxK4B9G(AfDAn8Gb0xK478m)6rFTNyqSLvQWMMxE3IAuTI2QYgRp(FJc1FQbbi(IOsY)OamRsQPgeozZbsBHe7gTEZ9oyQ9MnxT(zU61JBAq3QEkVU63GN6U1H76)a3kpC36VRAbLZaT9DpTNEWIuVyhXZ(IQFrCl4ESxi7kDiq7LQEoNN7Vkhc0ELVR4HaTxB7fkaYsSH9cAdM3y(v57LZlNF4Iu)5CMsJvgawEtJj05WMdIc)VeN10(527E(iR1fxyFhC4dB)cFmedyOxy98fdDQ7ZYtSSn37F1lN6e3xNJ1p4nj(93HpBah(5wY8zFxu2lt(SUAJtCVEpVR2q7OHgUzd7v6EjVzJB1Xun8nBmRf(lR3SXm757xjKG8JNJ3acpAM0D1qz1Jdi(uCbwMcy7pKsPJBUR61c02h1ExbjdpEoz9H51)Z7))]] )
+paladin:RegisterPack( "Retribution (Himea Beta)", 20240430.1, [[Hekili:nRvFVTTnA8plfhGR9UwDYV00ld2bORd4wlgkgMlW9FsIwI2MxKe1rrLSCWqF2VhsAjrjrk7u70n0MaBs(8kFE5hjJ3uVV6TocXXEFzM7SfUVZDMZ03n1D6TER5pLH9wNHcVhTd(qkkb(9VJ5mYMcoHMwgm(xijyuzWpH5OjIL(umffjyzoTGfclFnjPigjw9hzOT8YGhwmF2BN5TEtbjM)PuVnMepqFgoegZB9EsuewTmCEO36VUNKxgi(bK7rDRmGUf(EOsPIj5Cy6TuwzWVGVNetCavJr3sIbf6Vvg8BOyuej9hld0nMpdZinNxNRmOYGp8B)AzWBld(zsEiLfbeSxSaNCeHtLe8HmgjUmqO7LFggrWDgoKMSbXl)SsJYDYQg6VV6FWAePpQGHEdz7QxTPy7whX3CkYgLJ5Cs6UCNeejLd)ix3iuEozxkos(nNUSXSWcPPH4uodDPIRpJSiqwrokcZUizPZdZIjc)a9snPw8W2EvoelHat)seuhUywuBIXarP78PB9VxWYgHvnLzbwnBJqRxFpEEArNq2TNFLfTKNMfDogflwcNvW3leRuQIrbVMqo5lNFJRLyaYdKuSFwmwUXKGsrozyMimDzTUQTiF(EyNypnoYm)(pfr7Wja1vjY)mElQiUrZfH3O4yF1x9fLzEJOM4kskP1QkYX(eoojxFWmQQktZi7HYRmOoNiojmehJvzxVrqoD7w)DHrRMQtaRiTVWdbt7bSWdiM6bSpofNqW53DAsfBqX4kZ9tcRaQnYGP4GI14Le2hWJhqmcc2yveZHkH(CQFeb)MhqXf4vJJWYTpOkbqbS3hvKK8Ki0zUR7Kdh4i2om3rJWkr)rPn0iqLnPfFWeHqyArEkew1koP3Sor0hth1XxSQoGWingKCD0G9ylXO(1RRj8AKu5QNixgGVh7VbMtPDwwWJKCSCbg0NDfiwebLkwlukHiKyDDIqkWAGoN)hyDuo7P6SNPUg4v1QArQvbuXR7ChD(lE5SBNnAm4nEYpJ(iMTA(HdsRUkHSGLrbRTiBIbfe(D6ore0JqkrtDHARdcPEv92q1O(jOqg978wPbXD0cZ5uwIH0YvDRnjxOPIt1CKK(Fli5ezXbGHJLkL2Gsn5O)vF46sOtoZTIoPnlVXGY8iaes4g2ftvrqJpMlgVnUk97SLNwAPIC)9WUjMDgU1gbSCEV09vlmWbadtoo8yrwHIxlDO5fLH91xGFc9b5E(HdVc(iSSjJo27xjl9flci7OcgvGkGn5a2T7XNWkwAIfqxLSyel3)bmKagYRZn65CpCqFl4pB3XStLx2obxwLu33yGC8FqzHK8KAQfjMigxeC(iIbkHbI2JssGnaXsAvAPDfhP77y7krajmswiF5jncWdcLgslYHMCy205(ZYc9tGo74r9kGDcRRtSIjtrWaP6ApB5BcCKQN86JGdQyTcSGjmBJBaTjt(nqJEhNXJRasOdf4hCDU9TZCNCNI2gxvvphOMYRA11xkF5oveL7awwEbd7aaTdV)UfNBfid6A)MpNNg3je6BvVpDJTAnTvS34RCNntUMRaieJHeNpUIxEqideh8nacPMBNO2)P2Dp7YJ1K)Dd0Gbz)DgJqTCV8UJ1S650DPMOlR7IPSKRC7fBHJMSfdTxQN8sAV0xxErbIORB39ExTWjP89vBeTiZBne)Kl(G6sjxm31zQ3AyBxCS2CV1)7p87F5tF5F9JLbLbFDpUmGKKrz8J354RvDHFDzadd5vmCuzqonbwgQGttqCXaH7rP7W5oLF(xbNuzWuxGBFKYy4q58aLOyc)jXkXH3dSMrtaEVAfWxov8j4dJN(htCeDS)Kubee(UoxekmT3AqW7PmV1Y730BTCc5T0k9bWN(I8EGXPIMCrE)K36qgHJHMEERhxg0UbFzWeGJHkpvRUAECXv2oaJG)BQvAzWpugaTtLx2kKhemPm4Uk7Opua58JKC7vAkNEZ1YGdhkd61GvY2fA03KMugSQmyUIoZ1mAz3vkLWKNF1nzlyjUwgoqSLoxngyBvqyMlgYm1tZkdwQjaBiqKAYPqH0YNxVoH28oRAJvGis9AQBddTIGqiGBoTaojcePB3vAPphIa1eGUCvJrFVvRPBRJlic5FAvi62ayDZB4sNorc2C7zQRQaKrT9qT5ERqgyR)uf56cqsZxBaKKsAxJYjAmxQPNt5ynWuF7QGKmBqSA0Vwi6KAO9682KLqp6QDnsOl2nPqSxz1mMSg2vHFtYg7vUmdptPR9GOPsm1QF0bVNuw2Rlzh(wtPWU5HNBKTSyLTukn1rS23RV2gyEDxM9Kz716nc5RryAtlfH9e9XAmDiuGQDkOALclOwdUbWekxsBJakt)E3o5cdGpS2tRpQyNyDK6rJmbPQMOopIKcpMV651fV1snmQkkQFqPo7rZ1xK6bM6SczKV2dkj0QM9EZpavhwypG(O394D8jDIACVZto1YkviKn1L9CO(iQvP)U(f8gYJ39XYv)TeWizQP1EeFDZRois9yVTJoA9GVYPg(95hgA8fjQ(VnFRa0UZniG1ltr0F4EdLJQeV9YXxK4B9G(AfDAn8Gb0xK478m)6rFTNyqSLvQWMMxE3IAuTI2QYgRp(FJc1FQbbi(IOsY)OamRsQPgeozZbsBHe7gTEZ9oyQ9MnxT(zU61JBAq3QEkVU63GN6U1H76)a3kpC36VRAbLZaT9DpTNEWIuVyhXZ(IQFrCl4ESxi7kDiq7LQEoNN7Vkhc0ELVR4HaTxB7fkaYsSH9cAdM3y(v57LZlNF4Iu)5CMsJvgawEtJj05WMdIc)VeN10(527E(iR1fxyFhC4dB)cFmedyOxy98fdDQ7ZYtSSn37F1lN6e3xNJ1p4nj(93HpBah(5wY8zFxu2lt(SUAJtCVEpVR2q7OHgUzd7v6EjVzJB1Xun8nBmRf(lR3SXm757xjKG8JNJ3acpAM0D1qz1Jdi(uCbwMcy7pKsPJBUR61c02h1ExbjdpEoz9H51)Z7))]] )
 
-spec:RegisterPack( "Protection (Himea Beta)", 20240502.1, [[Hekili:TR1wVTTnu4FlfdWlbl1XxsCxkCkWslWAdw7kGlqFZs0s02SrsuJKkEbWq)23Hu3iLjvIDU8Y6lbo8Y57WdjpFNpcnF48VnFwisGN)LrdgD2GZhmQ)WZhC(4rZNjUlfpFwkk4g0k4hjOy4VFLrf4abHMK7FXez33frrHsZWPzSayiRfIu(Bp90n0nIfb9xT60aKaDAqeIZF9QmsiMFAATzEDkkcfssoD(SfzKiXNsMVyxx6SZV48HaeP4aOzadsyiUyKyEGPB91cdM7dTHkAAjLL7)r8nKis)C)RqCCyUVSdWh5KyEUFeDfj4eyo4LOabLjhGAwxm5IjnMA(SicxWvlxsYQim8RVOcI4e0IiC48RMplGreygbbUjgfjw3pfdbMerU)0CFowiGzY7hJ(bL5fIxIt4KBH4gkOeb0DE0eV1OKq(CHC5(ey(C)E5(lYwUSpIbrorrpHyw)q6MKgWxLb9tqjE0LEOKaICO3inO0tg)06joXQLp1YJLEYzhKNu7dEI1mmFnnkSXBQ7Sf6WOUZJVMGJcLiF(lhYHKBjjyVM7ks8N8CJVQ96jMXXEv7t74z1Da(1BC6xkm4GZ1A5jBsU1lyzI1st87stuVPFlozf4cEByiOBntdJ8cNGv74bOubIK4bzTyKauldJzCT90HdChuL7(P0nyivWL5(dY93Un3pgLGCeOl3ZIWOMq9UBPq3kG7i1HjWJvBlDTfVHUYgIBOSqzuEveLDNcZoYN0ctT9kvSsTBTg7XiRwlW0mvsHHDKvqZEtnSxalJJG7YECbJCdwzNZ2z7xBxYC)FO7BHceBfw0VksfueLgnq7cnkgotixlfhTK2BIo2)ilCfogcWTr9n6JkGMWXbSsAbZbACswffSCkwijVwIYIe2irQHbff5v8pEsUNcgiVc2yscrutrund5vwiAeZB5vJ1huk1IFR2bKtNUeoWeek9QMLbuoadiGXHG7eGJWwx6U3yK2bY)GtWXemW4(UCFnRZYsCUkdGBl3ITL87Hm7sEAv8oLHdOXlqDgXRpD7TmdUYOQWGrsl68ZO7KNMgD2oz4mNwrUUozVFvfHCgd1pl1mVBmK7Qi)f0RQlO6jYQez0xoEggU4SitTKLnO5(T7PtI7hLtaxbK5Hkoi0YnS0xN82pohPkDslFWO5opD(OGpeFl1siWS5o5UFuWd58HJ7qfu4Doky2rN00vUa0dxENXTBunctxPEEv)qMHTO0XAhA3UQO9F5CPy59u7UurxDwFrtXmmSeDEbZ2KYcdEW160rjhhb88TiopOQoY9p2mAXqaLkqINc5GzhsnjhvUajj)tgHtKtVSKX61UEx6rOjvEJ16AUpxuZQnLW0jvwhvLCFG1QYZ6stoiJH)xklGWJVNQwUpZyROv3ztSBnMTkCu0ILeS)uk7b7j)uk7)lKYUhNnCFjWnF3dM94c98FDQu(NsBVpPTT5wmKj1Ov0u3BRG8ElDvRkzNIin0K6sezlrPoKUkkLkAjdpnvXx0yIBrqad6v(ROmSI1peRoAcvZdMboPfMfhFxv1yJhmqrUlp9uQ(wqIHRNuVqIYmSsPy6nxs9CleOKWkFR3Xdho6S(GOWniwsrHJFkoLYeYhJ9COUoLhM7REc2(5xl1ZrxsKU6Vu)SVVf(vZJbFn0Xhbur)kugYvybu(8F81)k3)15(FGWdGdqW4xlhqFoIiOQj8zAizjr9cWmACU)3PF)Bx9(C)3JKZ)pvVGTYeh4lDxasLqY8RH)x6)vAtZVUyHY7xlx93U8ut5LNqwEPlvNoMFlzHsl8kDnh9SR3Ox36oTd2UI)oq421qoauxP3HILUnSdJHIUdegdB4AVYq32bculRyhQfTvK1a2IgvxwaSQ3EpabG3p0kLxpXqRSPDOniuRVlPlRBkiPB7wtczhNjA49Kw6OgMMPJ3UvNoDA3uPh3ZED72HvJ2sbRvHzLRalIYMo54EnE6LJ3lSluCzVpZQrKU2(y5k5s778AX5UVtVM209ezv5P)qXB2wBiz2NwVr7js6UlLmU6JQ(Dz1BSvOeAXX7SEI27YE5q9j06XplaVqsNC5i7Q5DxF39p1IhmTA5(j5QaixzqxqTuA3LLRpWgv1lumznk(tu1pC5rUkEOhu4WXB3UBjdvq)E1AObWI1eaPEf1YLOzTJtDkxBxl5u32Ey2Eo1IAbWwdBVHPBHMwautZxxGzrvvpBkQ2fGDK29Sct16)jaKEwvg(SECRdEhxNxmsN2r4VK(rlN(G9I9XIPn0x1Y4J75kkyiwZIvBrCPBtBhFTlaZvKQHcWYi0fB56MIRWCndrvYPzQSKvJREtFpZPC(GgSkY7(uCER2s7JR8ysVvd4lv6TAaFUsVvdWZB6T2W8cMERg6hCsPMDzhjLmhGJYXA9Hz0ri)PlLwTPFstP1ebT)1r4o9w9mB9DqyoJP2MHZ0Cnxjm)(gK2CNpkIPJSL4rlj3UEQ1KNM3dlFFQfYVVU)oX8RYBYfZNHGdyu28zQxKr9(pZ)V)]] )
+paladin:RegisterPack( "Protection (Himea Beta)", 20240502.1, [[Hekili:TR1wVTTnu4FlfdWlbl1XxsCxkCkWslWAdw7kGlqFZs0s02SrsuJKkEbWq)23Hu3iLjvIDU8Y6lbo8Y57WdjpFNpcnF48VnFwisGN)LrdgD2GZhmQ)WZhC(4rZNjUlfpFwkk4g0k4hjOy4VFLrf4abHMK7FXez33frrHsZWPzSayiRfIu(Bp90n0nIfb9xT60aKaDAqeIZF9QmsiMFAATzEDkkcfssoD(SfzKiXNsMVyxx6SZV48HaeP4aOzadsyiUyKyEGPB91cdM7dTHkAAjLL7)r8nKis)C)RqCCyUVSdWh5KyEUFeDfj4eyo4LOabLjhGAwxm5IjnMA(SicxWvlxsYQim8RVOcI4e0IiC48RMplGreygbbUjgfjw3pfdbMerU)0CFowiGzY7hJ(bL5fIxIt4KBH4gkOeb0DE0eV1OKq(CHC5(ey(C)E5(lYwUSpIbrorrpHyw)q6MKgWxLb9tqjE0LEOKaICO3inO0tg)06joXQLp1YJLEYzhKNu7dEI1mmFnnkSXBQ7Sf6WOUZJVMGJcLiF(lhYHKBjjyVM7ks8N8CJVQ96jMXXEv7t74z1Da(1BC6xkm4GZ1A5jBsU1lyzI1st87stuVPFlozf4cEByiOBntdJ8cNGv74bOubIK4bzTyKauldJzCT90HdChuL7(P0nyivWL5(dY93Un3pgLGCeOl3ZIWOMq9UBPq3kG7i1HjWJvBlDTfVHUYgIBOSqzuEveLDNcZoYN0ctT9kvSsTBTg7XiRwlW0mvsHHDKvqZEtnSxalJJG7YECbJCdwzNZ2z7xBxYC)FO7BHceBfw0VksfueLgnq7cnkgotixlfhTK2BIo2)ilCfogcWTr9n6JkGMWXbSsAbZbACswffSCkwijVwIYIe2irQHbff5v8pEsUNcgiVc2yscrutrund5vwiAeZB5vJ1huk1IFR2bKtNUeoWeek9QMLbuoadiGXHG7eGJWwx6U3yK2bY)GtWXemW4(UCFnRZYsCUkdGBl3ITL87Hm7sEAv8oLHdOXlqDgXRpD7TmdUYOQWGrsl68ZO7KNMgD2oz4mNwrUUozVFvfHCgd1pl1mVBmK7Qi)f0RQlO6jYQez0xoEggU4SitTKLnO5(T7PtI7hLtaxbK5Hkoi0YnS0xN82pohPkDslFWO5opD(OGpeFl1siWS5o5UFuWd58HJ7qfu4Doky2rN00vUa0dxENXTBunctxPEEv)qMHTO0XAhA3UQO9F5CPy59u7UurxDwFrtXmmSeDEbZ2KYcdEW160rjhhb88TiopOQoY9p2mAXqaLkqINc5GzhsnjhvUajj)tgHtKtVSKX61UEx6rOjvEJ16AUpxuZQnLW0jvwhvLCFG1QYZ6stoiJH)xklGWJVNQwUpZyROv3ztSBnMTkCu0ILeS)uk7b7j)uk7)lKYUhNnCFjWnF3dM94c98FDQu(NsBVpPTT5wmKj1Ov0u3BRG8ElDvRkzNIin0K6sezlrPoKUkkLkAjdpnvXx0yIBrqad6v(ROmSI1peRoAcvZdMboPfMfhFxv1yJhmqrUlp9uQ(wqIHRNuVqIYmSsPy6nxs9CleOKWkFR3Xdho6S(GOWniwsrHJFkoLYeYhJ9COUoLhM7REc2(5xl1ZrxsKU6Vu)SVVf(vZJbFn0Xhbur)kugYvybu(8F81)k3)15(FGWdGdqW4xlhqFoIiOQj8zAizjr9cWmACU)3PF)Bx9(C)3JKZ)pvVGTYeh4lDxasLqY8RH)x6)vAtZVUyHY7xlx93U8ut5LNqwEPlvNoMFlzHsl8kDnh9SR3Ox36oTd2UI)oq421qoauxP3HILUnSdJHIUdegdB4AVYq32bculRyhQfTvK1a2IgvxwaSQ3EpabG3p0kLxpXqRSPDOniuRVlPlRBkiPB7wtczhNjA49Kw6OgMMPJ3UvNoDA3uPh3ZED72HvJ2sbRvHzLRalIYMo54EnE6LJ3lSluCzVpZQrKU2(y5k5s778AX5UVtVM209ezv5P)qXB2wBiz2NwVr7js6UlLmU6JQ(Dz1BSvOeAXX7SEI27YE5q9j06XplaVqsNC5i7Q5DxF39p1IhmTA5(j5QaixzqxqTuA3LLRpWgv1lumznk(tu1pC5rUkEOhu4WXB3UBjdvq)E1AObWI1eaPEf1YLOzTJtDkxBxl5u32Ey2Eo1IAbWwdBVHPBHMwautZxxGzrvvpBkQ2fGDK29Sct16)jaKEwvg(SECRdEhxNxmsN2r4VK(rlN(G9I9XIPn0x1Y4J75kkyiwZIvBrCPBtBhFTlaZvKQHcWYi0fB56MIRWCndrvYPzQSKvJREtFpZPC(GgSkY7(uCER2s7JR8ysVvd4lv6TAaFUsVvdWZB6T2W8cMERg6hCsPMDzhjLmhGJYXA9Hz0ri)PlLwTPFstP1ebT)1r4o9w9mB9DqyoJP2MHZ0Cnxjm)(gK2CNpkIPJSL4rlj3UEQ1KNM3dlFFQfYVVU)oX8RYBYfZNHGdyu28zQxKr9(pZ)V)]] )
 
 -- TODO: This needs updating for Cataclysm
--- spec:RegisterPack( "Holy Paladin (wowtbc.gg)", 20221002.1, [[Hekili:vA1YUTToq0pMceKG2kl5Mw3CrCw0vnErAbua6ozrjowIxtrkqsz3ayWV9ouQrMsrooDtc9WZCMhCMJDsuYJjXuIbsEyE485rHHZdIwm)MWRtInpvdjX1K8TKc8GGuH)97s(t20Fs4ektytVCVCVjlpOO4kh0N4sc1rPw2OYr4LgtT()MnRhgEYW3olNt06pw0WOGEwjY5hR7OCwsCwdJBUxKKnvM95imZ01qoAgPNrPqhsqNNe)yjtBtRvmPIzW809PmIgO2ujMTMsWM2Nk20FPiMsBABAeKeZzAJUTHaBinCdE8H2geiizCGM8TK4CKyqXijXKCdBhSMknbzajxkwl3SMZkkn20L20WoesbwqdVoX4Y9trBwZMnbAGWdOY9IJK4m5OypttLvoo(0j5WqufGjGI1drKJ18T20OqB6f20kIGeud4JJW0AFHxI()n0cOcVzyGU2fOjX0vpEjbI(ZVLoMMKRa6ADjd40X9Rbx6O8l(jazhikyII17DVEJc(cFKu2oMawZ48MkMG0zCa8Vob8Aoqgb7gFy1Yjikk0hsJgJQbQ0Jrfnr82q2jvJbo3hOB)a7gY8TJH9Voc41JBBUU3qL7neKnAbO1TSE95EbbbuXaC36oK02XQZfoC(xd5QU3axmo7uYlJXL9HHPxtHk3g9Hd(gBeuGGJtxnQ31nP4c7Gjj43svotxnSRIZZ1kixwLroQa8SlkWOyznUpSM0OgpOCM1A0SwJJUJwTF2S71yl(F9RVD)wPQFbUTM2bkTdsVAAs8EIs0gU47RQLkJtMCUnTJlBARCyGDLRFi3W4OC(7ENnD43aSYzcD6h5gzgOWZi92v2vDSOd67LVF5muZNviWvBxRBAiVOx8b2MLVSIpVZDv)P8U3FNxdLNDUCAT9LH(UouuUpy9Y3(yNqC15WOnNBJcVWxJ(2fHNKKUVSXpD8fohvhdUByvmur1)MjuqN4ANIPV5ofsFl9cIt4DR(NV9JYDdQTPfSMUf67OV0Jxp5V6l3fDXR7(rbKjD(Yrsshomwo6kF2ok5qAmLoD)(Fos7AAYFc]] )
+-- paladin:RegisterPack( "Holy Paladin (wowtbc.gg)", 20221002.1, [[Hekili:vA1YUTToq0pMceKG2kl5Mw3CrCw0vnErAbua6ozrjowIxtrkqsz3ayWV9ouQrMsrooDtc9WZCMhCMJDsuYJjXuIbsEyE485rHHZdIwm)MWRtInpvdjX1K8TKc8GGuH)97s(t20Fs4ektytVCVCVjlpOO4kh0N4sc1rPw2OYr4LgtT()MnRhgEYW3olNt06pw0WOGEwjY5hR7OCwsCwdJBUxKKnvM95imZ01qoAgPNrPqhsqNNe)yjtBtRvmPIzW809PmIgO2ujMTMsWM2Nk20FPiMsBABAeKeZzAJUTHaBinCdE8H2geiizCGM8TK4CKyqXijXKCdBhSMknbzajxkwl3SMZkkn20L20WoesbwqdVoX4Y9trBwZMnbAGWdOY9IJK4m5OypttLvoo(0j5WqufGjGI1drKJ18T20OqB6f20kIGeud4JJW0AFHxI()n0cOcVzyGU2fOjX0vpEjbI(ZVLoMMKRa6ADjd40X9Rbx6O8l(jazhikyII17DVEJc(cFKu2oMawZ48MkMG0zCa8Vob8Aoqgb7gFy1Yjikk0hsJgJQbQ0Jrfnr82q2jvJbo3hOB)a7gY8TJH9Voc41JBBUU3qL7neKnAbO1TSE95EbbbuXaC36oK02XQZfoC(xd5QU3axmo7uYlJXL9HHPxtHk3g9Hd(gBeuGGJtxnQ31nP4c7Gjj43svotxnSRIZZ1kixwLroQa8SlkWOyznUpSM0OgpOCM1A0SwJJUJwTF2S71yl(F9RVD)wPQFbUTM2bkTdsVAAs8EIs0gU47RQLkJtMCUnTJlBARCyGDLRFi3W4OC(7ENnD43aSYzcD6h5gzgOWZi92v2vDSOd67LVF5muZNviWvBxRBAiVOx8b2MLVSIpVZDv)P8U3FNxdLNDUCAT9LH(UouuUpy9Y3(yNqC15WOnNBJcVWxJ(2fHNKKUVSXpD8fohvhdUByvmur1)MjuqN4ANIPV5ofsFl9cIt4DR(NV9JYDdQTPfSMUf67OV0Jxp5V6l3fDXR7(rbKjD(Yrsshomwo6kF2ok5qAmLoD)(Fos7AAYFc]] )
 
 
-spec:RegisterPackSelector( "retribution", "Retribution (Himea Beta)", "|T135873:0|t Retribution",
+paladin:RegisterPackSelector( "retribution", "Retribution (Himea Beta)", "|T135873:0|t Retribution",
     "If you have spent more points in |T135873:0|t Retribution than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
     end )
 
-spec:RegisterPackSelector( "protection", "Protection (Himea Beta)", "|T135893:0|t Protection",
+paladin:RegisterPackSelector( "protection", "Protection (Himea Beta)", "|T135893:0|t Protection",
     "If you have spent more points in |T135893:0|t Protection than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
 -- TODO: This needs updating for Cataclysm
--- spec:RegisterPackSelector( "holy", "Holy Paladin (wowtbc.gg)", "|T135920:0|t Holy",
+-- paladin:RegisterPackSelector( "holy", "Holy Paladin (wowtbc.gg)", "|T135920:0|t Holy",
 --     "If you have spent more points in |T135920:0|t Holy than in any other tree, this priority will be automatically selected for you.",
 --     function( tab1, tab2, tab3 )
 --         return tab1 > max( tab2, tab3 )
