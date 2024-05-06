@@ -2127,7 +2127,7 @@ paladin:RegisterSetting( "general_footer", nil, {
 
 paladin:RegisterSetting( "retribution_header", nil, {
     type = "header",
-    name = "retribution"
+    name = "Retribution"
 })
 paladin:RegisterSetting( "divine_storm_threshold", 8, {
     type = "range",
