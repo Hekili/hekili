@@ -13,11 +13,11 @@ actions+=/run_action_list,name=cat_aoe,if=buff.cat_form.up&active_enemies>2
 actions+=/run_action_list,name=cat,if=buff.cat_form.up
 actions+=/cat_form,if=!up
 
-actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<60-(buff.clearcasting.up&15|0)
+actions.cat+=/tigers_fury,use_off_gcd=1,if=try_tigers_fury
+actions.cat+=/berserk,use_off_gcd=1,if=try_berserk
 actions.cat+=/faerie_fire_feral,if=ff_now
 #actions.cat+=/faerie_fire_feral,if=glyph.omen_of_clarity.enabled&!buff.clearcasting.up&(target.outside2|buff.berserk.up&ff_during_berserk|!buff.berserk.up&energy.current<87)&(!rip_now|energy.current<action.rip.spend)&can_spend_ff
 actions.cat+=/feral_charge_cat,if=target.outside7
-actions.cat+=/berserk,use_off_gcd=1,if=!wait_for_tf&debuff.rip.up&!buff.clearcasting.up
 actions.cat+=/ravage,if=energy.current<=energy.max-energy.regen*(1+latency)&!buff.clearcasting.up
 actions.cat+=/shred,if=rip_now&(glyph.bloodletting.enabled&debuff.rip.up&rip_tracker[target.unit].extension<6)
 actions.cat+=/rip,if=rip_now
