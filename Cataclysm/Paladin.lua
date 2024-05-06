@@ -1881,7 +1881,7 @@ paladin:RegisterAbilities( {
         texture = 236250,
 
         handler = function ()
-            if state.enemies >= 4 then
+            if active_enemies >= 4 then
                 gain( 1, "holy_power" )
             end
         end,
