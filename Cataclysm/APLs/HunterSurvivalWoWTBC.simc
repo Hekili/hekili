@@ -28,7 +28,7 @@ actions.aoe+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.asp
 actions.aoe+=/rapid_fire,if=cooldown.call_of_the_wild.up
 actions.aoe+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
 actions.aoe+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
-actions.aoe+=/explosive_trap
+actions.aoe+=/explosive_trap,cycle_targets=2,max_cycle_targets=2
 actions.aoe+=/multishot
 actions.aoe+=/explosive_shot,if=buff.lock_and_load.up&debuff.explosive_shot.down
 actions.aoe+=/kill_shot,if=target.health.pct<20
@@ -40,20 +40,20 @@ actions.cleave+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.
 actions.cleave+=/rapid_fire,if=cooldown.call_of_the_wild.up
 actions.cleave+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
 actions.cleave+=/serpent_sting,cycle_targets=1,max_cycle_targets=2,if=debuff.serpent_sting.down
-actions.cleave+=/explosive_shot,if=debuff.explosive_shot.down
+actions.cleave+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=debuff.explosive_shot.down
 actions.cleave+=/kill_shot,if=target.health.pct<20
 actions.cleave+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
 actions.cleave+=/explosive_trap
 actions.cleave+=/arcane_shot,if=focus>80
-actions.cleave+=/cobra_shot,if=!moving
+actions.cleave+=/cobra_shot,cycle_targets=1,max_cycle_targets=2,if=!moving
 actions.cleave+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Single
 actions.single+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.aspect_of_the_hawk&!moving
 actions.single+=/rapid_fire,if=cooldown.call_of_the_wild.up
 actions.single+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
-actions.single+=/serpent_sting,if=debuff.serpent_sting.down
-actions.single+=/explosive_shot,if=debuff.explosive_shot.down
+actions.single+=/serpent_sting,if=debuff.serpent_sting.down&!prev_gcd.1.serpent_sting
+actions.single+=/explosive_shot,if=debuff.explosive_shot.down&(buff.lock_and_load.up|!prev_gcd.1.explosive_shot)
 actions.single+=/kill_shot,if=target.health.pct<20
 actions.single+=/hunters_mark,if=debuff.hunters_mark.down
 actions.single+=/black_arrow,if=debuff.black_arrow.down

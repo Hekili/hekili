@@ -817,15 +817,10 @@ hunter:RegisterStateExpr("kill_shot_glyph_cooldown", function()
 end )
 
 hunter:RegisterStateExpr( "kill_shot_glyph_cooldown", function()
-    return max(0, state.cooldown.kill_shot_glyph - (query_time - state.cooldown.kill_shot_glyph_start))
+    return max( 0, state.cooldown.kill_shot_glyph - (query_time - state.cooldown.kill_shot_glyph_start) )
 end )
 
--- Track two steady shot casts in a row
-hunter.DOUBLE_STEADY_SHOT = false
-
---Delay for explosive shot and serpent sting for travel time
-hunter.EXPLOSIVE_SHOT_TRAVEL = 0
-hunter.SERPENT_STING_TRAVEL = 0
+-- TODO: Some work probably needs to be added for tracking target swapping with Explosive Shot and Serpent Sting
 
 -- Abilities
 hunter:RegisterAbilities( {
@@ -843,7 +838,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             summonPet( "pet" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Summons your second pet to you.
@@ -858,7 +852,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             summonPet( "pet" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Summons your third pet to you.
@@ -873,7 +866,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             summonPet( "pet" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Summons your fourth pet to you.
@@ -888,7 +880,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             summonPet( "pet" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Summons your fifth pet to you.
@@ -903,7 +894,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             summonPet( "pet" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Dismiss your pet.  Dismissing your pet will reduce its happiness by 50.
@@ -918,7 +908,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             dismissPet()
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Feed your pet the selected item, instantly restoring 50% of its total health. Cannot be used while in combat.
@@ -933,7 +922,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             healPet( 0.5 )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Heals your pet for 25% of its total health over 10 sec.
@@ -950,7 +938,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "mend_pet" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Revive your pet, returning it to life with 15% of its base health.
@@ -965,7 +952,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             summonPet( "pet" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Begins taming a beast to be your companion. If you lose the beast's attention for any reason, the taming process will fail.
@@ -983,7 +969,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "tame_beast" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -1004,7 +989,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             removeBuff( "aspect" )
             applyBuff( "aspect_of_the_cheetah" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- The Hunter takes on the aspects of a fox, allowing him to shoot Steady Shot and Cobra Shot while moving and causing him to gain 2 Focus whenever he receives a melee attack.
@@ -1022,7 +1006,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             removeBuff( "aspect" )
             applyBuff( "aspect_of_the_fox" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- The Hunter takes on the aspects of a hawk, increasing ranged attack power by $s1. Only one Aspect can be active at a time.
@@ -1040,7 +1023,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             removeBuff( "aspect" )
             applyBuff( "aspect_of_the_hawk" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- The Hunter and raid members within 40 yards take on the aspects of a pack of cheetahs, increasing movement speed by 30%. 
@@ -1059,7 +1041,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             removeBuff( "aspect" )
             applyBuff( "aspect_of_the_pack" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- The Hunter, group and raid members within 30 yards take on the aspect of the wild, increasing Nature resistance by 195. Only one Aspect can be active at a time.
@@ -1077,7 +1058,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             removeBuff( "aspect" )
             applyBuff( "aspect_of_the_wild" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -1111,7 +1091,6 @@ hunter:RegisterAbilities( {
             if buff.trap_launcher.up then
                 removeBuff( "trap_launcher" )
             end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Launch a frost trap to the target location that freezes the first enemy that approaches, preventing all action for up to 1 min.
@@ -1142,7 +1121,6 @@ hunter:RegisterAbilities( {
             if buff.trap_launcher.up then
                 removeBuff( "trap_launcher" )
             end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Place a frost trap that creates an ice slick around itself for 30 sec when the first enemy approaches it.
@@ -1173,7 +1151,6 @@ hunter:RegisterAbilities( {
             if buff.trap_launcher.up then
                 removeBuff( "trap_launcher" )
             end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Place a fire trap that will burn the first enemy to approach for ((Ranged attack power * 0.02 + 576) * 5)] Fire damage over 15 sec.
@@ -1204,7 +1181,6 @@ hunter:RegisterAbilities( {
             if buff.trap_launcher.up then
                 removeBuff( "trap_launcher" )
             end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Place a nature trap that will release several venomous snakes to attack the first enemy to approach.
@@ -1235,7 +1211,6 @@ hunter:RegisterAbilities( {
             if buff.trap_launcher.up then
                 removeBuff( "trap_launcher" )
             end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -1396,7 +1371,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "camouflage" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- When activated, causes you to deflect melee attacks, ranged attacks, and spells, and reduces all damage taken by 30%. While Deterrence is active, you cannot attack. Lasts 5 sec.
@@ -1413,7 +1387,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "deterrence" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- You attempt to disengage from combat, leaping backwards. Can only be used while in combat.
@@ -1428,7 +1401,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             setDistance( 20 + target.distance )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Zooms in the Hunter's vision. Only usable outdoors. Lasts 1 min.
@@ -1443,7 +1415,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "eagle_eye" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Feign death, tricking enemies into ignoring you. Lasts up to 6 min.
@@ -1460,7 +1431,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "feign_death" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Your pet attempts to remove all root and movement impairing effects from itself and its target, and causes your pet and its target to be immune to all such effects for 4 sec.
@@ -1477,7 +1447,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "masters_call" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- The current party or raid member targeted will receive the threat caused by your next damaging attack and all actions taken for 4 sec afterwards.
@@ -1495,7 +1464,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "misdirection" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- When used, your next Trap can be launched to a target location within 40 yards. Lasts for 15 sec.
@@ -1512,7 +1480,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "trap_launcher" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Increases ranged attack speed by 40% for 15 sec.
@@ -1538,7 +1505,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             applyBuff( "rapid_fire" )
             if talent.rapid_recuperation.enabled then applyBuff( "rapid_recuperation" ) end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -1557,7 +1523,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "beast_lore" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Dazes the target, slowing movement speed by 50% for 4 sec.
@@ -1572,7 +1537,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "concussive_shot" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Distracts the target to attack you, but has no effect if the target is already attacking you. Lasts 6 sec.
@@ -1588,7 +1552,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "distracting_shot" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Exposes all hidden and invisible enemies within 10 yards of the targeted area for 20 sec.
@@ -1602,7 +1565,6 @@ hunter:RegisterAbilities( {
         texture = 135815,
 
         handler = function ()
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Places the Hunter's Mark on the target, increasing the ranged attack power of all attackers against that target by 0.
@@ -1619,7 +1581,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "hunters_mark" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Scares a beast, causing it to run in fear for up to 20 sec. Damage caused may interrupt the effect. Only one beast can be feared at a time.
@@ -1639,7 +1600,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "scare_beast" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- A short-range shot that deals 50% weapon damage and disorients the target for 4 sec. Any damage caused will remove the effect. Turns off your attack when used.
@@ -1655,7 +1615,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "scatter_shot" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Causes [Ranged attack power * 0.4 + (460 * 15 / 3)] Nature damage over 15 sec.
@@ -1673,7 +1632,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "serpent_sting" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Attempts to remove 1 Enrage and 1 Magic effect from an enemy target.
@@ -1696,7 +1654,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             removeDebuff( "target", "dispellable_enrage" )
             removeDebuff( "target", "dispellable_magic" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- A venomous shot that reduces the effectiveness of any healing taken for 30 sec.
@@ -1714,7 +1671,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "widow_venom" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Maims the enemy, reducing the target's movement speed by 50% for 10 sec.
@@ -1731,7 +1687,6 @@ hunter:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "wing_clip" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -1764,7 +1719,6 @@ hunter:RegisterAbilities( {
             if buff.repid_killing.up then
                 removeBuff( "rapid_killing" )
             end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Automatically shoots the target until cancelled.
@@ -1781,7 +1735,6 @@ hunter:RegisterAbilities( {
 
         handler = function()
             applyBuff( "auto_shot" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end
     },
     -- Deals weapon damage plus [277 + (Ranged attack power * 0.017)] in the form of Nature damage and increases the duration of your Serpent Sting on the target by 6 sec. 
@@ -1797,7 +1750,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             gain( 9, "focus" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- A strike that becomes active after parrying an opponent's attack. This attack deals (Attack power * 0.2 + 321) damage and immobilizes the target for 5 sec.
@@ -1819,7 +1771,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             removeBufF( "counterattack_usable" )
             applyDebuff( "target", "counterattack" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- You attempt to finish the wounded target off, firing a long range attack dealing 116% weapon damage plus (Ranged attack power * 0.45 + 543).
@@ -1843,7 +1794,6 @@ hunter:RegisterAbilities( {
             if glyph.kill_shot.enabled and kill_shot_glyph_cooldown == 0 then
                 state.cooldown.kill_shot_glyph_start = query_time
             end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Fires several missiles, hitting your current target and all enemies within 8 yards of that target for 121% of weapon damage.
@@ -1861,7 +1811,6 @@ hunter:RegisterAbilities( {
         velocity = 40,
 
         handler = function ()
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
 
         impact = function ()
@@ -1879,7 +1828,6 @@ hunter:RegisterAbilities( {
         texture = 132223,
 
         handler = function ()
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- A steady shot that causes 62% weapon damage plus (Ranged attack power * 0.021 + 280). Generates 9 Focus.
@@ -1893,12 +1841,6 @@ hunter:RegisterAbilities( {
         texture = 132213,
 
         handler = function ()
-            if hunter.double_steady_shot then
-                applyBuff( "improved_steady_shot" )
-            end
-
-            hunter.DOUBLE_STEADY_SHOT = true
-
             gain( 9, "focus" )
         end,
     },
@@ -1921,7 +1863,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             applyBuff( "bestial_wrath" )
             if talent.the_beast_within.enabled then applyBuff( "the_beast_within" ) end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Command your pet to intimidate the target, causing a high amount of threat and stunning the target for 3 sec. Lasts 15 sec.
@@ -1937,7 +1878,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "intimidation" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- Consumes your pet's Frenzy Effect stack, restoring 4 Focus to your pet and increasing your ranged haste by 3% for each Frenzy Effect stack consumed. Lasts for 20 sec.
@@ -1955,7 +1895,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             applyBuff( "focus_fire" )
             removeBuff( "frenzy_effect" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -1994,7 +1933,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "kill_command" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -2014,7 +1952,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "trueshot_aura" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- When activated, this ability immediately finishes the cooldown on all Hunter abilities.
@@ -2031,7 +1968,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             resetCooldowns()
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -2051,7 +1987,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "silencing_shot" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -2080,7 +2015,6 @@ hunter:RegisterAbilities( {
             if talent.marked_for_death.rank == 2 then
                 applyDebuff( "target", "marked_for_death" )
             end
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- An instant shot that causes ranged weapon Nature damage plus (Ranged attack power * 0.732 + 1620), refreshing the duration of your Serpent Sting and healing you for 5% of your total health.
@@ -2109,7 +2043,6 @@ hunter:RegisterAbilities( {
         velocity = 40,
 
         handler = function ()
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
 
         impact = function ()
@@ -2148,7 +2081,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "black_arrow" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
     -- A stinging shot that puts the target to sleep for 30 sec.  Any damage will cancel the effect.  When the target wakes up, the Sting causes 300 Nature damage over 6 sec.  Only one Sting per Hunter can be active on the target at a time.
@@ -2170,7 +2102,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             removeDebuff( "target", "stings" )
             applyDebuff( "target", "wyvern_sting" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -2190,7 +2121,6 @@ hunter:RegisterAbilities( {
         handler = function ()
             gain( 50, "focus" )
             gain( 50, "pet_focus" )
-            hunter.DOUBLE_STEADY_SHOT = false
         end,
     },
 
@@ -2226,20 +2156,10 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             removeStack( "lock_and_load" )
-            hunter.DOUBLE_STEADY_SHOT = false
-            hunter.EXPLOSIVE_SHOT_TRAVEL = GetTime()
         end,
 
         impact = function()
             applyDebuff("target", "explosive_shot")
-        end,
-
-        indicator = function()
-            if GetTime() - hunter.EXPLOSIVE_SHOT_TRAVEL < 1 then
-                return false
-            end
-
-            return true
         end,
     },
 
@@ -2407,7 +2327,8 @@ hunter:RegisterOptions( {
 
 -- hunter:RegisterPack( "Marksmanship", 20230226, [[Hekili:TA12UnUnq0)gJDrxO6ljoDbI9dfOaDdW6x0(mLOLgBrejsbsQ4AGa(T3HuXwu0sYPa9flBZzoCUCMZiYcYViX5unq2TC(YvZxUCD0INw89vprI1NRbsCnn7v6r8lCAf(5pPYxvvuUQGvBp8CPGMBbrjAKzObK49nSs9p4K9dJ8JOT1qgz3ksCblphATeuz9r3Kw0W1G0KwlzcjtF2KEqG)8VHxzLmsCjtPv2RMka8XoxUaC6(siN8NK4m0hqYOyMqLhbD0jMUGXX7NMPzcoA8)uxkuS3GeTKwt0yO6W7JJRAk1mvHq7dR2g4JDrwpr0aouXaLjD7gt6QoaFtuwcNTq8WOqKd7BoCisPz8JQOCXjEN)kqwdCDI7qlmp6hUzfSkqstUnI1wypqX0z660qH)YUlq2WtA)EIT232bsA5f2EWL6Nh2Fgxv62qu9jIobpIAzp6eXHeDbK8gRgKrAmZtumEgysF2KU2KoZK6QJdzDtT78mHO0wFJ8lCrsOIY42K3Ko3R0RbA(52A7a5Px)dr0bpsJPr41LHDmhAl9yE9dRCj9OGxqp9600R(SH2Xdvsfo0mnNYvjqgolp5atcbSQUdUsPghLmAz5LW(eRmpaRWJTiU2NKwl(y0ZFG6jFlAuqcELvQaJ(dFJkqTjjwdHCKwLbLy7BaC)UVlOOr5aZg7wm))NzXfl(CdJ7w0tKHI2LpOzJZd(Ih51RT2rDX52fpo3K((73Zst6hIJUriTijNHZqF9ZoG03UUCzSXijofX4Gs5YWh6viKzuomyLyCoPc0TnhvZXJakP0jPBvzgxOFX67JPDc(iKyF0QCmWC9ZBMAW25L766rX9ftcfQRLqMOApTtm8UAg9RwtlnnQ8H7YFd)d7HxxztIprLCB1Ge)JQAHud5M0hmPTOysDlHJmVydCXbwjC5curxZKFBZVpwSBEziR9dTVXoSXPPEXs88GTjFZUhzdUbYAB)DyB3S8UoQ0Mx6IdLna8AqxW8UBEEE9Sj24mBYHPTZdcGXQxxQgZ8zHBx(yG7twaBnPtnWAWqBicCiuA)QBdUsiW5wz)G)8QsFy0pS4EGvx1Zd7D(cZUK)gv8WmZRJe2hUQOfw(UiKzVHVmHg72nOs87VpLf3Qa)17rxMnHM7TKPoL1Gt6RlAtLjfuNKK6y69G4g9ZES2N3CdT1BSZFKeNShmw7)A9H2F9T3dpO9TWhsRyvOP)N4sTU0FXpTrxiKK4Fva)vLcVwk3P0s(3)]] )
 
-hunter:RegisterPack( "Survival (Himea Beta)", 20240505, [[Hekili:TN12UTnot4NLGc40InvXXPjBArtb6HfDtqBqXVYICNKOLOSjIKOwkk7gGa(SVZqzD0I2kbo5hl2ErRTjN5BMHCoY4CKZ1o2bej15QjJN8MXNm(eRXto5Tto1XwExk1XoL4Flzg8Lesm8)25IfSfKiL3lxYxkN6BnB2RqQUlItcq0Y45cFGY5szA27o8WkYo0Nijh6hrYYE9SCwan7WSvO9655jsQ4qh7P5Si5fjot7tTo7KJa8tP(oxDmiawqaTGsAMVJ91ZzzkVubJlyY7uE4VMsYObkpEIYtoNQ8QugL3ncICUYtRjwo2rSmzMw)zjZIOW3UsF4qtitJOboFYX2hWLkyeGgQucKLzftyjs4FUeuTKkVrkpW(yZsObRwZQ4dxEOlOcUZjlVvt2EkVy(cafhBIVKXtGpxJshjCcyun858Oa(YelFsuujBlzrbw5P1OkiPSa3qMGIOD82rRMbaNsDTYK7kl3yIVGxlUU7Jc9ngfAaDAEyOvgvKstKUzOmSqTOgWw7HODY2qJ(Z0iEgBb1nBox2bU2BI4DQr8KeXmQ0AoLejNBLIxWVx5nzCnA3YaRTeOFFBkwHBEgCKjUTJA1CleRZ2gwtJGitxIqWx2bQg7Gi9wJifY9ZHGKpO8oRHjre(KK6tNJgBK)ECH95tfKAEnhcvWO27QY1QT)Fi)NUzljPTPPteNPGhGzhufGtRqsEKSV45wESf)WftduKmWTiHhlHjRIcl5ipJ6cgsCwt8kdUkjkLVYHRjf6ibKDEyO7m)auRQ9bGmUcWmWCh((0ikKIADim7(J4a(10eAmJwCXoPrEG8eJwjHt3CKqpqF0WG2pIswq7l8yiCVkBS(Qmvq95XtjB8YSNCO66dcwAbbFNChgcp5nD8K1bvRszNVzNUbMMFZjV35IeD53y0WgY9VZvg)5uQKm3KcvU9gRnSZvkSxgtAKEVngDTZvhD1rdQtzLtZrKTkPyUIszbfzrq(VAR5zPTMkHw3THeKFFcgx3nIKNaXeIUsT1MvUNR3kdsxNYeN2KYyOeiROSCBQm3YI27kIJDsKe4ID3xQ9pUUSm3qZdSllZ9ZS9(rm3lZZv)i6(j6jkKNQJ)Q5Fbb0lyx8Br5WhVS6KhUTbysM5gKhhFx51YXJhR8ELY7(7HHDkosLSyW3G7gW0WiwvuT5YALAvn6FLC4jm5qjTThNX2)o4W3T4(kt3nym5NUTx1Espj(7zKP)DoB0twUYZgCUY)tpIeqWcySdKc81woE8eqNSxseykgW57Mp()U6IR(67uEkVRXhrHfNYfW1DixO82VOd99vEc6FNdXpbGMWJbYi5sEmrIl4pNKmJMzPU8BSeyRJgdO9xjz5PisiffQiax9PZ(a5A5fYJI4l1hfKCbbUowsfW65632Hv(2oLqGtpGTQjlPlHRv28KwuheGehqKe8rIEN6sL3Rb2QNDgw5YTy7vtK8Wm)tnA9n6z7)lMFd5paZhAOCxz41nOSFf1VDGojBvplkV9Wu1b7IQU8I4ssoT91aIgo2kpKH1XFHY7p1NVaYvVJ6L4Qq9yY(Wf7NGHIuEF8hFtFz8fwMpxeauphjWkJWKCndFNhWczOedf8yL3n8BU(tFw59zcY)x1pUAX95J4rylKq5uYOb(cyHFu6QRUSWeZSQ8()TZpC9Y4hWcpFV2dmnYukQrdO)HbiwiJ2ouQaAdrORgLDhk4vioeHJtTUdLmc3qel2JZouSiC9l2g5Jq5zyM3sF0Vu8wFvqba09T9oa7a(CSj8Muv9EEnxS497AUIH3N7GgVN35h1KHoVSvHWHSMOTGRx)IAFyYw5RilwpSUDrwuJU8y6c069(braBbNJ1gTfEUayuo6rbZnMw4a9OiN)stZHmcMb5v3F)6tFuk6pY)JAPbhegZC8i9Kq2hT3QgN6iO6w8rbSP5i6YzxsAXFRjhgT3wMzOl0TAATfUR1nCdS7Pp4Ua3M9U7wxU1mF4UOg17dbmY84eDrSAmaeS1MA49tgV2XDv9vDoM(Vn7nZFbPJ2s3Ygttv6L(zDKwTelI8EE8vRK1JXDTI5Nep2k0Bn65bTMv98JoyT5xpFsJC3Rp2ApcyDNWH4UvX(dWJRINNGaXEmN2XI1(v1ZtIIwp05hoRp1ClXgg8u3THh2RQMuk0IQlppHhvY6XeEuX8ts4rf6TdpgMRFfZpox)k2FaU(v808p98ADzL1SnR1yTX4Yn4S7FA6(Cv2MhF9D1M94n48TB84DSHjeNZfo26r00pwIZ)a]] )
+-- TODO: Currently there is a problem with this APL not recomending serpent sting or explosive shot at the correct time if the player doesn't press any other button for their duration
+hunter:RegisterPack( "Survival (Himea Beta)", 20240505, [[Hekili:TN12UTnoq0VLGfWBc2u5lnPnBrDb6LfBBWUfbWbOVjjAjABIijkqrz3aeWV9DgkRRMu2jWjyFOp06yroNZqQ5mCgA3XU36olKiPUFFYOjxm6Yrx6mz0O3CXBDNjVpL6olLeChzj8hjKy4)NLlwZwtIu(N(vwmLO8)evsodN39rCsiIxgpxeaZDLuMM9UHd3W3iNh4SC5WaIKmmiIKL9QL5SqA2WST49Qv5jsQyO7S55Si53sCNB2XUeWpLg4(9xdeWcdPfZKMf4o72vSmLFQGXfm59kF8BZjz0qLppr5lxrv(voJY)hcICLYx7joUZIyzYmT)ZswgrH)676ThAczEen09tUZcaCPcgbMdvkHPL5etyjs4FEe0TKk)bkFy9XwMqd3(mNIp84l8axWBfzZD6PDIYpMVgqXDgjqY4jWN7mtxjSdy1nc48Oq(MeNasuuPzByrHo5P1OkiPSqVfmbfr717hTAdaCk91QLCxU8IjbcEnDDhhj9cRKgsNNVyHtgvKstKEzihoOxuYBQGU2BzqOZ42tQMW2pgy7Y9Xg9NPr8m2AQx2kUSMUtHagC8iEWDEKKqpmMwVh8WdDDM2yO8pR2HApe6rVXQhjjILuPZkkjsUYjfdHEVYFYOA0UJb7NLa929T0keszWlfXD6fwnqnhcX6Q9H18icUpie8nDGQXiis)PvKwWdYbz4hu(x1yjrebKK6DNXJSAVbrsaFUGuBRDrAHH6xSvbVTvyl4)0lBdjT9C6OPTjpbJDrxa2TwqYJKMYy0stu8fpmrtr6gVIKQSeMSsNxArEg1dwiXznXRu(woPu(2aUMZqR1qZ5lwGXQOxvhdaz1fWYaZofeqJOqsWDHWUacXbIRPj0ygT4f7KgzAYtSUkjCA)kbdqp(WGoiIswtnjpoeR3MVx)Qe03b845KEFzAilT(eiblTyc)l5Eucp5IorYAr12dfY7pO7apiP)Jho6uIH89Qg650LJUZeSIc1ESYMdvoCVN(C0DkSEjBEKESEvxhD3rF(Rf3P8Sz7kYh9rkYcz(VkD6fP0PksRR3qc8BIy85ErK8eqvi6YARbnfGgt(PxW9qwwVIQvGZKAK0Vn7GB1AMWRGYySsdIHdlz6ZVBFQJ9ABSuugSiTxqNjhSSOb7v(8ilhZEHp7VWf7f98sv4Y2Zn)LC9zuUwo3o9U0rKm2Mi7aAuYKI1sO)tNwtcSxM(AE2YYDvZCsDtI1kX0XU9gdjeEcVzQvv))OniDBmgYLWt1zrQTFnb8lyu8VIYHpoTkpoS5dWKS0lmpo((Y3XVE0iO)6IMW3gxjzXW(c3lKPHrSTw(Mpww4wRH6tqARUij3zBicKeyd9BXPCHeVHO3azZ0(NYxFtqoQRbpoxUIlCNPVRlS7a(cg63)MY)R6kFENYV6kXUgFkoXFpR4AXu(F8M)r5)kL)xyzbCrim7v4eCYimjxBW)YdzlyOdSqWJv()G)JB)0Nv(FMG2)36BjtdXt520kyOSze11W3HhCtzpoQRlwXzovT98hthUBM5ZzlMEs76shylkzWbCKWbqleuDezfq7qiDBhdhrI3I4Hqo2CWrKzeUdHw8yRJiTiCMPTzNciH26TOmk9lfxQsfyaeDVeLZrn)umTtZzvDXjnFyXfL08jwUiKZBCXjth30GoxHqb5q3o4IbFE9vx8Hj71UIkVmy6(PS46kk3M(gU69VHiGHWnY6nFCFbWOmzBHXnYpEUo570tTL5DaK19ShEy38TLu)r(FvZgSryn3XtmwcnFWjBp9Qdr11THe0xXHDTS7uAzFRYbhCYEkeSl0TQWOfU7u6sdSnu0sxGBB(5Tkky6KZ3PqHPt6Iqvlx2HghfDAJ9AnONloVdIvL1HGTtvGVFYODEJuvfKorK5x4gpEOyQd2tvnwZLvgi)zTySMXcX5lt4CfxpLi6kJFwcQRqVvlhDI(gBk6Rr(Dd)Uo7sqNGWhhd9gswrXJiQSYMNb9SHLmoFtXE19qGuRB04dxzYnBOFoWDo7rHpNYSzBp4QK0IdYEzKzvC9uKzvg)SiZQqVTmRpj0GtS9JIAa2DZWBx4m4uJz)F4HtS(dFEMbkFeITkBo86d3X0g)yKnSS7pEPPaV9PXQFZ3)zuwcLpo6hDBSU)3d]] )
 
 -- TODO: Update for Cataclysm
 -- hunter:RegisterPackSelector( "beast_mastery", "Beast Mastery (wowtbc.gg)", "|T132164:0|t Beast Mastery",
