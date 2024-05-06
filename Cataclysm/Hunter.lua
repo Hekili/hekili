@@ -469,7 +469,7 @@ hunter:RegisterAuras( {
             local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 19615 )
 
             if name then
-                t.count = 1
+                t.count = count
                 t.applied = expires - duration
                 t.expires = expires
                 t.caster = "pet"
