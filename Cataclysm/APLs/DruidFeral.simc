@@ -13,7 +13,7 @@ actions+=/run_action_list,name=cat_aoe,if=buff.cat_form.up&active_enemies>2
 actions+=/run_action_list,name=cat,if=buff.cat_form.up
 actions+=/cat_form,if=!up
 
-actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcasting.up&15|0)
+actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<60-(buff.clearcasting.up&15|0)
 actions.cat+=/faerie_fire_feral,if=ff_now
 #actions.cat+=/faerie_fire_feral,if=glyph.omen_of_clarity.enabled&!buff.clearcasting.up&(target.outside2|buff.berserk.up&ff_during_berserk|!buff.berserk.up&energy.current<87)&(!rip_now|energy.current<action.rip.spend)&can_spend_ff
 actions.cat+=/feral_charge_cat,if=target.outside7
@@ -31,7 +31,7 @@ actions.cat+=/bear_form,if=should_bearweave
 actions.cat+=/mark_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
 actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current=energy.max)
 
-actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<30-(buff.clearcasting.up&15|0)
+actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<60-(buff.clearcasting.up&15|0)
 actions.cat_aoe+=/berserk,if=energy.current>60&cooldown.tigers_fury.remains>=15
 actions.cat_aoe+=/savage_roar,if=!up&ttd>1+latency
 actions.cat_aoe+=/mangle_cat,if=(set_bonus.idol_of_the_corruptor=1|set_bonus.idol_of_mutilation=1)&combo_points.current=0&buff.savage_roar.remains<=1
