@@ -900,7 +900,7 @@ spec:RegisterAbilities( {
         bind = "bloodthirst",
 
         critical = function()
-            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack ) + ( buff.furious_bloodthirst.up and 100 or 0 )
+            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 12 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack ) + ( buff.furious_bloodthirst.up and 100 or 0 )
         end,
 
         handler = function ()
@@ -975,7 +975,7 @@ spec:RegisterAbilities( {
         bind = "bloodbath",
 
         critical = function()
-            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 10 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack ) + ( buff.furious_bloodthirst.up and 100 or 0 )
+            return stat.crit + ( 15 * buff.bloodcraze.stack ) + ( 12 * buff.merciless_assault.stack ) + ( 20 * buff.recklessness.stack ) + ( buff.furious_bloodthirst.up and 100 or 0 )
         end,
 
         handler = function ()
