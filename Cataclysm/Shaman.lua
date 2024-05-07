@@ -304,8 +304,15 @@ spec:RegisterAuras( {
     -- Increases Nature damage taken from the Shaman by $s1%.
     stormstrike = {
         id = 17364,
-        duration = 12,
-        max_stack = 4,
+        duration = 15,
+
+    },
+        
+    -- Increases Nature damage taken from the Shaman by $s1%.
+    unleash_elements = {
+        id = 73680,
+        duration = 15,
+
     },
     -- Increases the critical effect chance of your Healing Wave, Lesser Healing Wave and Chain Heal by $s1%. Each critical heal reduces the chance by 20%. Lasts $55166d.
     tidal_force = {
