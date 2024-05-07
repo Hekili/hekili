@@ -2169,7 +2169,7 @@ paladin:RegisterSetting( "zealotry_macro", false, {
     type = "toggle",
     name = "Zealotry / Avenging Wrath Macro",
     desc = "Enable if you've combined Zealotry and Avenging Wrath into one macro.\n\n"..
-        "This will turn off recommendation to cast Avenging Wrath.\n"..
+        "This will turn off recommendation to cast Avenging Wrath.\n\n"..
         "Avenging Wrath will be recommended instead if the Zealotry talent is not learned.",
     width = "single",
     set = function( _, val )
