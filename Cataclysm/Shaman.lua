@@ -1561,7 +1561,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
-        texture = 135814,
+        texture = 462326,
 
         usable = function() return ( equipped.mainhand and not mainhand_imbued ) or ( equipped.offhand and not offhand_imbued ), "must have an unimbued weapon" end,
 
@@ -2457,7 +2457,7 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of dealing additional damage equal to two extra attacks with 1250 extra attack power.  Lasts 30 minutes.
+    -- Imbue the Shaman's weapon with wind.  Each hit has a 20% chance of dealing additional damage equal to three extra attacks with 1250 extra attack power.  Lasts 30 minutes.
     windfury_weapon = {
         id = 8232,
         cast = 0,
