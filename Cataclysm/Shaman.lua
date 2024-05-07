@@ -1470,7 +1470,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-        texture = 135824,
+        texture = 459026,
 
         buff = "fire_totem",
 
