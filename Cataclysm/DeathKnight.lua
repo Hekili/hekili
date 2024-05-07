@@ -6,6 +6,11 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 6 )
 
+-- TODO
+--- Unholy Presence reduces global cooldown by .5 seconds. (Unsure how to do this)
+--- Deathstrike healing calculation
+--- Death Rune managemenet. afaik blood doesn't really use deathrunes outside of ocassionally bloodtap so they can get an addition deathstrike.
+
 spec:RegisterResource( Enum.PowerType.RunicPower )
 
 
@@ -119,9 +124,6 @@ spec:RegisterResource( Enum.PowerType.RuneBlood, {
                 end
             end
 
-
-            
-
             return t.actual
 
         elseif k == "deficit" then
@@ -187,7 +189,6 @@ spec:RegisterResource( Enum.PowerType.RuneFrost, {
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
-            t.expiry[ i ] = ready and 0 or start + duration
             t.cooldown = duration
         end
 
@@ -497,45 +498,43 @@ spec:RegisterTalents( {
     vampiric_blood = { 5416, 1, 55233 },
     virulence = { 1932, 3, 48962, 49567, 49568 },
     will_of_the_necropolis = { 1959, 3, 52284, 81163, 81164 },
+
+    -- Blood Specific Talents
+    veteran_of_the_third_war = { 6713, 1, 50029 },
 } )
 
 
 -- Glyphs
--- TODO Glyphs
+-- Unused note means it is unused by hekili, not that it unused by players.
 spec:RegisterGlyphs( {
     [58623] = "antimagic_shell",
-    [59332] = "blood_strike",
-    [58640] = "blood_tap",
-    [58673] = "bone_shield",
-    [58620] = "chains_of_ice",
-    [59307] = "corpse_explosion",
-    [63330] = "dancing_rune_weapon",
-    [58613] = "dark_command",
-    [63333] = "dark_death",
-    [58629] = "death_and_decay",
+    [59332] = "blood_boil", 
+    [58640] = "blood_tap", 
+    [58620] = "chains_of_ice", 
+    [96279] = "dark_succor", 
+    [58629] = "death_and_decay", 
+    [63333] = "death_coil", 
     [62259] = "death_grip",
-    [59336] = "death_strike",
     [58677] = "deaths_embrace",
-    [63334] = "disease",
     [58647] = "frost_strike",
-    [58616] = "heart_strike",
     [58680] = "horn_of_winter",
     [63335] = "howling_blast",
     [63331] = "hungering_cold",
-    [58625] = "icebound_fortitude",
-    [58631] = "icy_touch",
-    [58671] = "obliterate",
-    [59309] = "pestilence",
-    [58657] = "plague_strike",
-    [60200] = "raise_dead",
-    [58669] = "rune_strike",
-    [59327] = "rune_tap",
-    [58618] = "strangulate",
-    [58686] = "ghoul",
-    [58635] = "unbreakable_armor",
-    [63332] = "unholy_blight",
+    [58657] = "pestilence",
     [58676] = "vampiric_blood",
 } )
+    -- [58673] = "bone_shield", -- 15% movement speed unused.
+    -- [63330] = "dancing_rune_weapon", -- threat improvement unused.
+    -- [60200] = "death_gate", -- death gate cooldown, unused
+    -- [59336] = "death_strike", -- Increases damage based on RP. unused.
+    -- [58616] = "heart_strike", -- damage of heart_strike by 30%. unused.
+    -- [58631] = "icy_touch", -- damage buff, unused
+    -- [58671] = "obliterate", -- damage buff, unused
+    -- [59307] = "path_of_frost", -- fall damaged, unused
+    -- [58635] = "pillar_of_frost", -- cc immune unused.
+    -- [58669] = "rune_strike", -- damage buff, unused
+    -- [59327] = "rune_tap", -- %5 health to party unused.
+    -- [58618] = "strangulate", -- silence length, unused
 
 
 -- Auras
@@ -599,7 +598,7 @@ spec:RegisterAuras( {
     bone_shield = {
         id = 49222,
         duration = 300,
-        max_stack = function () return glyph.bone_shield.enabled and 4 or 3 end,
+        max_stack = 6,
     },
     -- Slowed by frozen chains.
     chains_of_ice = {
@@ -635,7 +634,7 @@ spec:RegisterAuras( {
     -- $s1 Shadow damage inflicted every sec
     death_and_decay = {
         id = 49938,
-        duration = 10,
+        duration = function() return glyph.death_and_decay.enabled and 15 or 10 end,
         tick_time = 1,
         max_stack = 1,
         copy = { 43265, 49936, 49937, 49938 },
@@ -721,6 +720,11 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
+    horn_of_winter = {
+        id = 57330,
+        duration = function() return  glyph.horn_of_winter.enabled and 180 or 120 end,
+        max_stack = 1,
+    },
     -- Damage taken reduced.  Immune to Stun effects.
     icebound_fortitude = {
         id = 48792,
@@ -763,10 +767,6 @@ spec:RegisterAuras( {
         alias = { "blood_presence", "frost_presence", "unholy_presence" },
         aliasMode = "first",
         aliasType = "buff",
-    },
-    rune_strike = {
-        duration = function () return swings.mainhand_speed end,
-        max_stack = 1,
     },
     rune_strike_usable = {
         duration = 5,
@@ -817,35 +817,42 @@ spec:RegisterAuras( {
     -- Healing improved by $s1%  Maximum health increased by $s2%
     vampiric_blood = {
         id = 55233,
-        duration = function() return glyph.vampiric_blood.enabled and 15 or 10 end,
+        duration = function() return glyph.vampiric_blood.enabled and 40 or 25 end,
         max_stack = 1,
     },
 
-    -- Death Runes
-    death_rune_1 = {
-        duration = 30,
+    will_of_the_necropolis = {
+        id = 81164,
+        copy = {52284, 81163},
         max_stack = 1,
-    },
-    death_rune_2 = {
-        duration = 30,
-        max_stack = 1,
-    },
-    death_rune_3 = {
-        duration = 30,
-        max_stack = 1,
-    },
-    death_rune_4 = {
-        duration = 30,
-        max_stack = 1,
-    },
-    death_rune_5 = {
-        duration = 30,
-        max_stack = 1,
-    },
-    death_rune_6 = {
-        duration = 30,
-        max_stack = 1,
+        duration = 8,
     }
+
+    -- -- Death Runes
+    -- death_rune_1 = {
+    --     duration = 30,
+    --     max_stack = 1,
+    -- },
+    -- death_rune_2 = {
+    --     duration = 30,
+    --     max_stack = 1,
+    -- },
+    -- death_rune_3 = {
+    --     duration = 30,
+    --     max_stack = 1,
+    -- },
+    -- death_rune_4 = {
+    --     duration = 30,
+    --     max_stack = 1,
+    -- },
+    -- death_rune_5 = {
+    --     duration = 30,
+    --     max_stack = 1,
+    -- },
+    -- death_rune_6 = {
+    --     duration = 30,
+    --     max_stack = 1,
+    -- }
 } )
 
 local GetRuneType, IsCurrentSpell = _G.GetRuneType, _G.IsCurrentSpell
@@ -1011,17 +1018,18 @@ spec:RegisterAbilities( {
     blood_tap = {
         id = 45529,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return  60 - (15 * talent.improved_blood_tap.rank) end,
         gcd = "off",
 
-        spend = 487,
+        spend = function() return glyph.improved_blood_tap.enabled and 0 or (0.06 * health.max) end, -- technically 6% of base health
         spendType = "health",
 
         startsCombat = true,
         texture = 237515,
 
         handler = function ()
-            gain( 1, "blood_runes" )
+            -- gain( 1, "blood_runes" ) -- TODO we actually gain a death rune
+            -- I believe the precast check will catch this.
             applyBuff( "blood_tap" )
         end,
     },
@@ -1042,12 +1050,12 @@ spec:RegisterAbilities( {
 
         talent = "bone_shield",
         startsCombat = false,
-        texture = 132728,
+        texture = 458717,
 
-        toggle = "defensives",
+        toggle = "cooldowns",
 
         handler = function ()
-            applyBuff( "bone_shield", nil, glyph.bone_shield.enabled and 4 or 3 )
+            applyBuff( "bone_shield")
         end,
     },
 
@@ -1565,6 +1573,21 @@ spec:RegisterAbilities( {
         copy = { 51423, 51424, 51425 }
     },
 
+    outbreak = {
+        id = 77575,
+        cast = 0,
+        cooldown = function() return talent.veteran_of_the_third_war.rank > 0 and 30 or 60 end,
+        gcd = "spell",
+
+        startsCombat = true,
+        texture = 348565,
+
+        handler = function ()
+            applyDebuff("target", "frost_fever" )
+            applyDebuff("target", "blood_plague")
+        end,
+    },
+
 
     -- The Death Knight's freezing aura creates ice beneath her feet, allowing her and her party or raid to walk on water for 10 min.  Works while mounted.  Any damage will cancel the effect.
     path_of_frost = {
@@ -1752,7 +1775,7 @@ spec:RegisterAbilities( {
     strangulate = {
         id = 47476,
         cast = 0,
-        cooldown = function() return glyph.strangulate.enabled and 100 or 120 end,
+        cooldown = function() return  120 - (30 * talent.hand_of_doom.rank) end,
         gcd = "spell",
 
         spend = 1,
@@ -1856,7 +1879,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "vampiric_blood" )
-            health.max = health.max * 1.15
+            if not ( glyph.vampiric_blood.enabled ) then
+                health.max = health.max * 1.15
+            end
         end,
     },
 } )
@@ -1879,7 +1904,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Blood (wowtbc.gg)", 20230411, [[Hekili:TEvBVTTnq4FlbfinUUwXY2jDRWUbRRadjBifOoOBFss0u0wewMutKkUUWG)23Ds2suYsoRy7lj28E)5U7H0EUEp5npKOzEpoA4OjdVz4ih33nzY4B9MR3LW8MNqORjRGpiiBG)(XyPm0eC19FThkBxSKeI(qjZsPG8iTor9(RVE72ToC6UbpZ4cLdvU56TsD86b0yIsXPxVa9ZGqgrhnyTGVkspqteRhK8mBqQut0CPyavkJdLBfQbKf8yUMZuEZxKXJ13l8wyL4JhoX1fsIeg17ri1J4HHScvykQ38NI4ktqskxMY17mb43wqumOsKctGoIzcUNcc(kMUMGvz8qMJ38yUsRWYJizW)EmhUium5qxdjVpre6hYOKDEZzcYIywO3h90qwHQwDYCkezwkNa2j1oltLkT)s2ZSuhnNUMlwzcU0eGYYHg)KyYQmwnHxzcWy)mZVHlmb9RjY2dMGPqbMMX8pOatW2aaPj4nMGrMGEvfuctP5Xmb0hHcyCNfWff5zl1qLVGEVVwMrJad3rJz(As6kgaMagcoFYr0uxlgLzsEQ7R0P81SwcDBqe62B6mNJyKyDKtcvBc(Gj42Hnq0subqRj1qfWYuDvQ0sXC7)9OcchxlQfv4cjpgJW76mcPzco1prUfAcHSLCkhc10zqRDyLZaLkbtWB)u7GFLtxKTCPd81nkPWxrHv7vmNSKoYonUkSKKfRpzfzdh2owMYyFN9dSESvyH(YuHVCP)wUaKF(5snFtX4(OMlPRs5jhh7E5ofcF3oSPpQWVBSlXmfZhCYgvJc82AkjIKX7qKq89MefD3BBzibj5G8GQrG2U)6x8zFKXQG3YVGWgzUo0Z7MoQtkNteMYGIqfH(XeSFFNmbLwBlZY4UyD(5)NyDqaA4l5RwPr6GecDO7ln(qZsHwSUKpwkCShECq1Ybhyi9GjBiFRvS6FZTcDpI62C)QnQGxKgjNfb92y7H56eI1MLD7Ebdi9kkbmdu1qQIY(0ZpS10qqVMR4Sn55DUE(BzKe4WCwPKug8WJfKkEPUz7aDv4mOtD6NIu7OWC3cog6pkuS1tp2ssfqhbyb(ZF5lpE)J)27nbMGNWhwWH8lfs8Ls4I6xd7JV2eKY(7mEk((dLejTizA5g41mWb0iIyfuWMh(dUaeDd4PFvkGyMl(1AcSSOD(lWlAP13DouCW5x5(TEG9MhUpp0OzJpoqAcYFudigbi5soUl(Qxzco8YUpHtsMGFp)nz4d9kFwupZdOEynpy4KbUUyekCQYPeR7p766G2B5lNDkeBzlyH19e2hxN8hDuHPvAurVJsXlaMo6u5fZQOgv08tNb3gBPzjpETdT5TTf0GX9Tix7mO1(2c25zUyWQZF)bxBhuX6vuwTVGF554F3VVdoJlpdVRDouYwIPWfD4S97TxpregSXhyTMUIgwRISPll9yR3SyzvH8kJS5iotW6OVEGKO)z4ENwX7Eco1jQ3zIRj5dExTkExsKt5zh3f3VVAG7d3oS3LTqboByJbRJyyTnblo3tXbk8qmmnAHfF6OHDb3fRZp95p953JR9Wg2MCcNdmaFjd)IIRZY)XyofQ3X0ZD3DNDyAHsohMAP873c7F)2y(7HB2veoWYwz9x(BWAk(0TSFK29LxDydUHH9To22UPT8ZSEZOEntQkGR2pMOGZOR1WtQSABBD5OZoeFWtvVLVobjmVwcahPWgTF)fhUVXEI8Ks0w4PmHth3EB88JXWLYzA4gbV5vxjLFDS3)a]] )
+spec:RegisterPack( "Blood (IV)", 20230411, [[Hekili:nFvyVTnop4FlddORzzXnoTPDRiPf3UbCO9o0bSuS7(KTvKvIfIJKpl5MLHa9B)iTtSLDSZ2H79dVFPnruKI8HKpKXZ17zVzHenZ7PrdhD1WXdV2Xf(V7yVz6TjmVzje6kYs4dcYA4VFmwkdnbN)Wx7HY2gljHOnuYSukipsRtu3EXfB2SXHt3o4fgxOCOY1xSrQJxnGgtuko9I5ODgeYi6ObRe8Lr6bAIy1GKxydsLAIMlfdOszCOCJqnGmNhZ1CMYB28mES(bH3Clh)YHx56corcJ6901GxWddzfxHPOEZEoIRmbjPCzkxV1eGFBorXGirkmb6iMj4bki4RO7AcwMXdzoEZI5kTcdpIKb)7PC4IqrNdnn48(erOFiJs26nJjiZJzHEF0tdE1H7RTfmJcoalLt8M9QqP2jhg8tIjlZyoAoDfxS0eCMj4iHPSfPmveAitWUDMGC9xKkvA)fSxyPhPUTmlTRcazMEEkJScD3lXiRv)8h9mDgcNBcWx6fMFdtyc6xtKTfmbtG8rAgZF)fyc2AiVBcERjyKjOxL7NWuAEmtaLDqaCvNbWRogo27Mv2ckv91YmAeO4wAmZxtsxYGCpKcbJpU9KzPNK76(kDkFfRLNUnicn71D6ZrmsSoYjHQnb3zcUEydeTeva06QAOcOzQUYvAjyU5)(RccVS2RweHZL8y8fEFNVqAMGt9tKBGKqiBbNYHNAYui1oSYyWLkbtWAF4h1jnpBXch4RRvsHVIcmrlzozjD4DASZDbjlwFuh9Ao0mdnkSVZAPBUR2Jncl0xMk8Ll83WfG8dnwh8(s)rIbyeNfh24DUQLBhseuOGXphw2Wij4H10ACNENMVUOLAutERLP8KF(AqmfDZWM2OkhDJnmMPy(GrwRA4MVV2LerY4TiAl(EtUZp0Pp1sHiY7d(bvJaNDnKFXN9rs8cQC)IzyizoE7HNURUKE8)hiTr)19)ruCOT6UG(uCwDW4HgS7bi7RJOzPqUwxs(lfo2vro41YrcOADVkRjFRvG5Nzeu31QUnhv0gVZpKZkNYcT2y7Q66SV1kQD7Utdyylcb0du1qQIW(4Z33(0qqVM96S15(DnUd0xU50L(weM)e8S5CQjPmylV5Kkw1U5QH7QW52o1jplI1dcZnlyyiHRqXw75THKkGumWV8N)YxE6HN(TBnbMGNXT44qaNciXcjSMXBGo93ycsz)Dgpfx2tjr6qsMwUgwDeoGgrelbe084FWfGOXGL(vPaEZCXVrtGfm0o)fyfT067o7do48ZD)wpqFZJpK)0OAxEOc3eKVbjigbi5coU(1RFTjy)A0Fclnnb)E(cW4w1L7G2Z8iEpmMhm8QbUU4luyuLtjw3F6f1bT3Xxm9yi2sxqdRPC2hxF0fAOcvRUr1GdukoAzYOJLxu8J3OAaYKPWUew3SCcrTdTNiylObx(7qw8PqQ9Df8(tDXhR(KH7CTnq1MIfHv7mgNDk67D76Ge6StWAB7dL0VOl01yGD7S73reg0XhObNSKgwlIS5FlTyRdMS0QqELs2KoN4X6iVUN1P)jiZNurKFeo1jQ3PJRj5fENVmEBsKt5zh6f3TRQG7URh27Sw4uNoSrH1bmSwNGfj(X4afyfr3OLXctgnSl4UOD(5p)PpFl22dDyRZjC2Za8Lm8lkUol)x(6uC9oQEU)(7TFMw44ZHPwc)(TmoPFBJs6HD2veoqZwz8x(dEBk(4US)nP7ZoFFhCdf7BDSTEtA5hj(2r9A6uvaxTFkubNrNBJ1mYQ1T1LHozr8ElvnyTobjuVwcahOWgTB3R2pVXUI8Oq0w4XmHtUS904PlJHHYzAyIG3SQrs5JJ9(Nd]] )
 
 spec:RegisterPack( "Frost DK (IV)", 20221001, [[Hekili:DAvxVrQnu0FlRwP08XczystAsvsEOQQsjRuEzQ2hbBGldwdyJSndAQI8V9ETjDgddKnPVKmCTVN7X3po2XrX)D8QCQgIFz5ILlJwSikm6MLrxFx8k9UgiEvdnBdDn(doTg)7FjfkTH8NF3qo9PFCMD9DvcAUfhLOvMH7PuRBu)(Lx211fYY2fSfyCvyMO(YoHUAtqwfvPyzxwyXkihO6YGnC26s8JgvqZwiqk0untWdYeIQCrhxfqtzvmnduXRsBzv6N4XPtW9OBrI0azXVCdYewEo0VpqLnG9nsMqY07mKuQcYneb3qEkd)(hw6(lgY6wwoeINqPOGvHNRV(vd5)qWsAd57owBtf7D8mZZ29zzuq0IGfrMNnptZShgvyJeW0qkvFXdxMwje5jOffWZGP3tPqYtefjDmUgKFJv8qABrr4qZH28Jxuq)Qz88Kcja)d4BglgjArBwPfPVKl0HUsqsbSfHrZY2W4R9DOu0vHMssXkM2606QDnLHdmhcCAAfKFYhbWMk66wirPLSnWEw8wQWT2KEbknwbW0K1LzcZjZH0jwG2cjJ87cpZ(UD)YZ1sKJVTmWHASPZNoT8ujq3yp1juzTq6VypuAAJRA5(q2YbS)VvkbU((L(7wKI90GeBIN)82NZZzkaBu3NT)0zHth7HeWoevPfUxF9i38w9mFUb1nIoq6oujDaTrWN5KErFWgARLxkQ2nkLC1GSRcsWCs9GuEgTQkP)ZKkg2lAvJEGkGVzBLY0pezjXWs2Jr(i0tMdnEUbPnSkxJCnnRKXHW2M3T735JBSYAUqSEKd9jH(ymxS9Ldq(pomJx0PoMqXX5CiJUZnYul2AlOfwTNejutrzNhrzpSOQqx7LdxC3YBcJIx1rLCC3OQ5tyLtQTsDxzi9rXqSjtvO554vUFzLXXaJ)7f3vd9Bdfs95y8Q3AcJ)Jyngn7gpyzvM02sZOXR(IH0Zvd5edzaFnKhnKBpeGrNtexT1ybTTsFeB8K3(mCzMrMd4UxF0c1vZc17ic6oOFKqnmHIH7x)zmFQH6d4nqy1I31ZI3CY0wQpRASDXP1rnKlgSKV7gY94vHgY5gYeAQESFVGNL634xRpsSDuf)3M9CoHKupFoa(EXAls36h2dcZJI3D)K2Ir607ZQ)VY4NESVE6YgYRVobad2XzZLKJw85sCyrEc9CN9P00Dz6Roe8jU2WXIbZ17L(hLZJMFSEyhLtvbf96VuWQASh7X3G0l4L0)QwRKND7ZpZpZ1fhW3xJ3H18d0tDnY7OmeDTFoY)oMXPPbdodi0GnQTVP9ThzEK26WNL(HLxN7DP(Nl)fD0ajcTvxANPXhqh4E)SZC8)c]] )
 
