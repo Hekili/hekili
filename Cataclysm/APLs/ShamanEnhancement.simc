@@ -21,3 +21,4 @@ actions+=/stormstrike
 actions+=/lava_lash
 actions+=/unleash_elements
 actions+=/earth_shock
+actions+=/lightning_bolt,if=buff.maelstrom_weapon.stack>3
