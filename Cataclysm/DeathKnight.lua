@@ -6,6 +6,9 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 6 )
 
+spec:RegisterResource( Enum.PowerType.RunicPower )
+
+
 spec:RegisterResource( Enum.PowerType.RuneBlood, {
     rune_regen = {
         last = function ()
@@ -89,7 +92,6 @@ spec:RegisterResource( Enum.PowerType.RuneBlood, {
                     amount = amount + 1
                 end
             end
-
             return amount
 
         elseif k == "current" then
@@ -116,6 +118,9 @@ spec:RegisterResource( Enum.PowerType.RuneBlood, {
                     return t.values[ q ]
                 end
             end
+
+
+            
 
             return t.actual
 
@@ -425,105 +430,78 @@ spec:RegisterResource( Enum.PowerType.RuneUnholy, {
     end
 } ) )
 
-spec:RegisterResource( Enum.PowerType.RunicPower )
 -- butchery talent should generate 1 RP every 5/2.5 seconds depending on rank.
 -- scent_of_blood should generate 10 RP on next attack.
 
 
 -- Talents
 spec:RegisterTalents( {
-    abominations_might              = {  2105, 2, 53137, 53138 },
-    acclimation                     = {  1997, 3, 49200, 50151, 50152 },
-    annihilation                    = {  2048, 3, 51468, 51472, 51473 },
-    anticipation                    = {  2218, 5, 55129, 55130, 55131, 55132, 55133 },
-    antimagic_zone                  = {  2221, 1, 51052 },
-    black_ice                       = {  1973, 5, 49140, 49661, 49662, 49663, 49664 },
-    blade_barrier                   = {  2017, 5, 49182, 49500, 49501, 55225, 55226 },
-    bladed_armor                    = {  1938, 5, 48978, 49390, 49391, 49392, 49393 },
-    blood_gorged                    = {  2034, 5, 61154, 61155, 61156, 61157, 61158 },
-    blood_of_the_north              = {  2210, 3, 54639, 54638, 54637 },
-    bloodcaked_blade                = {  2004, 3, 49219, 49627, 49628 },
-    bloodworms                      = {  1960, 3, 49027, 49542, 49543 },
-    bloody_strikes                  = {  2015, 3, 48977, 49394, 49395 },
-    bloody_vengeance                = {  1944, 3, 48988, 49503, 49504 },
-    bone_shield                     = {  2007, 1, 49222 },
-    butchery                        = {  1939, 2, 48979, 49483 },
-    chilblains                      = {  2260, 3, 50040, 50041, 50043 },
-    chill_of_the_grave              = {  1981, 2, 49149, 50115 },
-    corpse_explosion                = {  1985, 1, 49158 },
-    crypt_fever                     = {  1962, 3, 49032, 49631, 49632 },
-    dancing_rune_weapon             = {  1961, 1, 49028 },
-    dark_conviction                 = {  1943, 5, 48987, 49477, 49478, 49479, 49480 },
-    death_rune_mastery              = {  2086, 3, 49467, 50033, 50034 },
-    deathchill                      = {  1980, 1, 49796 },
-    desecration                     = {  2226, 2, 55666, 55667 },
-    desolation                      = {  2285, 5, 66799, 66814, 66815, 66816, 66817 },
-    dirge                           = {  2011, 2, 49223, 49599 },
-    ebon_plaguebringer              = {  2043, 3, 51099, 51160, 51161 },
-    endless_winter                  = {  1971, 2, 49137, 49657 },
-    epidemic                        = {  1963, 2, 49036, 49562 },
-    frigid_dreadplate               = {  1990, 3, 49186, 51108, 51109 },
-    frost_strike                    = {  1975, 1, 49143 },
-    ghoul_frenzy                    = {  2085, 1, 63560 },
-    glacier_rot                     = {  2030, 3, 49471, 49790, 49791 },
-    guile_of_gorefiend              = {  2040, 3, 50187, 50190, 50191 },
-    heart_strike                    = {  1957, 1, 55050 },
-    howling_blast                   = {  1989, 1, 49184 },
-    hungering_cold                  = {  1999, 1, 49203 },
-    icy_reach                       = {  2035, 2, 55061, 55062 },
-    icy_talons                      = {  2042, 5, 50880, 50884, 50885, 50886, 50887 },
-    improved_blood_presence         = {  1936, 2, 50365, 50371 },
-    improved_death_strike           = {  2259, 2, 62905, 62908 },
-    improved_frost_presence         = {  2029, 2, 50384, 50385 },
-    improved_icy_talons             = {  2223, 1, 55610 },
-    improved_icy_touch              = {  2031, 3, 49175, 50031, 51456 },
-    improved_rune_tap               = {  1942, 3, 48985, 49488, 49489 },
-    improved_unholy_presence        = {  2013, 2, 50391, 50392 },
-    impurity                        = {  2005, 5, 49220, 49633, 49635, 49636, 49638 },
-    killing_machine                 = {  2044, 5, 51123, 51127, 51128, 51129, 51130 },
-    lichborne                       = {  2215, 1, 49039 },
-    magic_suppression               = {  2009, 3, 49224, 49610, 49611 },
-    mark_of_blood                   = {  1949, 1, 49005 },
-    master_of_ghouls                = {  1984, 1, 52143 },
-    merciless_combat                = {  1993, 2, 49024, 49538 },
-    might_of_mograine               = {  1958, 3, 49023, 49533, 49534 },
-    morbidity                       = {  1933, 3, 48963, 49564, 49565 },
-    necrosis                        = {  2047, 5, 51459, 51462, 51463, 51464, 51465 },
-    nerves_of_cold_steel            = {  2022, 3, 49226, 50137, 50138 },
-    night_of_the_dead               = {  2225, 2, 55620, 55623 },
-    on_a_pale_horse                 = {  2039, 2, 49146, 51267 },
-    outbreak                        = {  2008, 3, 49013, 55236, 55237 },
-    rage_of_rivendare               = {  2036, 5, 50117, 50118, 50119, 50120, 50121 },
-    ravenous_dead                   = {  1934, 3, 48965, 49571, 49572 },
-    reaping                         = {  2001, 3, 49208, 56834, 56835 },
-    rime                            = {  1992, 3, 49188, 56822, 59057 },
-    rune_tap                        = {  1941, 1, 48982 },
-    runic_power_mastery             = {  2020, 2, 49455, 50147 },
-    scent_of_blood                  = {  1948, 3, 49004, 49508, 49509 },
-    scourge_strike                  = {  2216, 1, 55090 },
-    spell_deflection                = {  2018, 3, 49145, 49495, 49497 },
-    subversion                      = {  1945, 3, 48997, 49490, 49491 },
-    sudden_doom                     = {  1955, 3, 49018, 49529, 49530 },
-    summon_gargoyle                 = {  2000, 1, 49206 },
-    threat_of_thassarian            = {  2284, 3, 65661, 66191, 66192 },
-    toughness                       = {  1968, 5, 49042, 49786, 49787, 49788, 49789 },
-    tundra_stalker                  = {  1998, 5, 49202, 50127, 50128, 50129, 50130 },
-    twohanded_weapon_specialization = {  2217, 2, 55107, 55108 },
-    unbreakable_armor               = {  1979, 1, 51271 },
-    unholy_blight                   = {  1996, 1, 49194 },
-    unholy_command                  = {  2025, 2, 49588, 49589 },
-    unholy_frenzy                   = {  1954, 1, 49016 },
-    vampiric_blood                  = {  2019, 1, 55233 },
-    vendetta                        = {  1953, 3, 49015, 50154, 55136 },
-    veteran_of_the_third_war        = {  1950, 3, 49006, 49526, 50029 },
-    vicious_strikes                 = {  2082, 2, 51745, 51746 },
-    virulence                       = {  1932, 3, 48962, 49567, 49568 },
-    wandering_plague                = {  2003, 3, 49217, 49654, 49655 },
-    will_of_the_necropolis          = {  1959, 3, 49189, 50149, 50150 },
+    abominations_might = { 10281, 2, 53137, 53138 },
+    annihilation = { 2048, 3, 51468, 51472, 51473 },
+    anti_magic_zone = { 2221, 1, 51052 },
+    blade_barrier = { 2017, 3, 49182, 49500, 49501 },
+    bladed_armor = { 1938, 3, 48978, 49390, 49391 },
+    blood_caked_blade = { 5457, 3, 49219, 49627, 49628 },
+    blood_parasite = { 1960, 2, 49027, 49542 },
+    bone_shield = { 6703, 1, 49222 },
+    brittle_bones = { 1980, 2, 81327, 81328 },
+    butchery = { 5372, 2, 48979, 49483 },
+    chilblains = { 2260, 2, 50040, 50041 },
+    chill_of_the_grave = { 1981, 2, 49149, 50115 },
+    contagion = { 12119, 2, 91316, 91319 },
+    crimson_scourge = { 10289, 2, 81135, 81136 },
+    dancing_rune_weapon = { 5426, 1, 49028 },
+    dark_transformation = { 2085, 1, 63560 },
+    death_advance = { 15322, 2, 96269, 96270 },
+    desecration = { 5467, 2, 55666, 55667 },
+    ebon_plaguebringer = { 5489, 2, 51099, 51160 },
+    endless_winter = { 1971, 2, 49137, 49657 },
+    epidemic = { 1963, 3, 49036, 49562, 81334 },
+    hand_of_doom = { 11270, 2, 85793, 85794 },
+    howling_blast = { 1989, 1, 49184 },
+    hungering_cold = { 1999, 1, 49203 },
+    icy_reach = { 10147, 2, 55061, 55062 },
+    improved_blood_presence = { 5410, 2, 50365, 50371 },
+    improved_blood_tap = { 12223, 2, 94553, 94555 },
+    improved_death_strike = { 5412, 3, 62905, 62908, 81138 },
+    improved_frost_presence = { 2029, 2, 50384, 50385 },
+    improved_icy_talons = { 2223, 1, 55610 },
+    improved_unholy_presence = { 2013, 2, 50391, 50392 },
+    killing_machine = { 2044, 3, 51123, 51127, 51128 },
+    lichborne = { 2215, 1, 49039 },
+    magic_suppression = { 5469, 3, 49224, 49610, 49611 },
+    mangle = { 5499, 1, 33917 },
+    merciless_combat = { 1993, 2, 49024, 49538 },
+    might_of_the_frozen_wastes = { 7571, 3, 81330, 81332, 81333 },
+    morbidity = { 5443, 3, 48963, 49564, 49565 },
+    nerves_of_cold_steel = { 2022, 3, 49226, 50137, 50138 },
+    on_a_pale_horse = { 11275, 1, 51986 },
+    pillar_of_frost = { 1979, 1, 51271 },
+    rage_of_rivendare = { 5435, 3, 51745, 51746, 91323 },
+    resilient_infection = { 7572, 2, 81338, 81339 },
+    rime = { 1992, 3, 49188, 56822, 59057 },
+    rune_tap = { 5384, 1, 48982 },
+    runic_corruption = { 5451, 2, 51459, 51462 },
+    runic_power_mastery = { 2031, 3, 49455, 50147, 91145 },
+    sanguine_fortitude = { 10299, 2, 81125, 81127 },
+    scarlet_fever = { 10285, 2, 81131, 81132 },
+    scent_of_blood = { 5380, 3, 49004, 49508, 49509 },
+    shadow_infusion = { 5447, 3, 48965, 49571, 49572 },
+    sudden_doom = { 5414, 3, 49018, 49529, 49530 },
+    summon_gargoyle = { 5495, 1, 49206 },
+    threat_of_thassarian = { 2284, 3, 65661, 66191, 66192 },
+    toughness = { 5431, 3, 49042, 49786, 49787 },
+    unholy_blight = { 5461, 1, 49194 },
+    unholy_command = { 5445, 2, 49588, 49589 },
+    unholy_frenzy = { 5408, 1, 49016 },
+    vampiric_blood = { 5416, 1, 55233 },
+    virulence = { 1932, 3, 48962, 49567, 49568 },
+    will_of_the_necropolis = { 1959, 3, 52284, 81163, 81164 },
 } )
 
 
 -- Glyphs
+-- TODO Glyphs
 spec:RegisterGlyphs( {
     [58623] = "antimagic_shell",
     [59332] = "blood_strike",
@@ -629,6 +607,12 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
+    -- proc for blood boil
+    crimson_scourge = {
+        id = 81141,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Increases disease damage taken.
     crypt_fever = {
         id = 50508,
@@ -667,25 +651,12 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1
     },
-    -- Your next Icy Touch, Howling Blast, Frost Strike or Obliterate has a 100% chance to critically hit.
-    deathchill = {
-        id = 49796,
-        duration = 30,
-        max_stack = 1,
-    },
     -- Standing upon unholy ground.   Movement speed is reduced by $s1%.
     desecration = {
         id = 68766,
         duration = 20,
         max_stack = 1,
         copy = { 68766, 55741 },
-    },
-    -- Damage dealt is increased by $s1%.
-    desolation = {
-        id = 66803,
-        duration = 20,
-        max_stack = 1,
-        copy = { 66803, 66802, 66801, 66800, 63583 },
     },
     -- Crypt Fever, improved by Ebon Plaguebringer.
     ebon_plague = {
@@ -772,15 +743,10 @@ spec:RegisterAuras( {
     -- Immune to Charm, Fear and Sleep.  Undead.
     lichborne = {
         id = 49039,
-        duration = 10,
+        duration = 10,  
         max_stack = 1,
     },
-    -- Hits by this target restore $s2% health.
-    mark_of_blood = {
-        id = 49005,
-        duration = 20,
-        max_stack = 1,
-    },
+
     mind_freeze = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=47528)
         id = 47528,
         duration = 4,
@@ -882,49 +848,17 @@ spec:RegisterAuras( {
     }
 } )
 
-local dodged_or_parried = 0
-
-local misses = {
-    DODGE = true,
-    PARRY = true
-}
-
-spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
-    local _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, missType, _, _, _, _, _, critical = CombatLogGetCurrentEventInfo()
-
-    if destGUID == state.GUID and subtype:match( "_MISSED$" ) and misses[ missType ] then
-        dodged_or_parried = GetTime()
-    end
-end )
-
-local finish_rune_strike = setfenv( function()
-    spend( 20, "runic_power" )
-end, state )
-
-spec:RegisterStateFunction( "start_rune_strike", function()
-    removeBuff( "rune_strike_usable" )
-    applyBuff( "rune_strike", swings.time_to_next_mainhand )
-    state:QueueAuraExpiration( "rune_strike", finish_rune_strike, buff.rune_strike.expires )
-end )
-
 local GetRuneType, IsCurrentSpell = _G.GetRuneType, _G.IsCurrentSpell
 
 spec:RegisterPet( "ghoul", 26125, "raise_dead", 3600 )
 
-spec:RegisterHook( "reset_precast", function ()
-    for i = 1, 6 do
-        if GetRuneType( i ) == 4 then
-            applyBuff( "death_rune_" .. i )
-        end
-    end
-
-    if IsCurrentSpell( class.abilities.rune_strike.id ) then
-        start_rune_strike()
-        Hekili:Debug( "Starting Rune Strike, next swing in %.2f...", buff.rune_strike.remains )
-    elseif IsUsableSpell( class.abilities.rune_strike.id ) and dodged_or_parried > 0 and now - dodged_or_parried < 5 then
-        applyBuff( "rune_strike_usable", dodged_or_parried + 5 - now )
-    end
-end )
+-- spec:RegisterHook( "reset_precast", function ()
+--     for i = 1, 6 do
+--         if GetRuneType( i ) == 4 then
+--             applyBuff( "death_rune_" .. i )
+--         end
+--     end
+-- end )
 
 
 -- Abilities
@@ -976,7 +910,7 @@ spec:RegisterAbilities( {
     army_of_the_dead = {
         id = 42650,
         cast = 0,
-        cooldown = function() return 600 - ( 120 * talent.night_of_the_dead.rank ) end,
+        cooldown = 600,
         gcd = "spell",
 
         spend = 1,
@@ -999,7 +933,7 @@ spec:RegisterAbilities( {
         end,
 
         start = function ()
-            gain( 15, "runic_power" )
+            gain( 30, "runic_power" )
             applyBuff( "army_of_the_dead" )
         end,
     },
@@ -1007,18 +941,24 @@ spec:RegisterAbilities( {
 
     -- Boils the blood of all enemies within 10 yards, dealing 180 to 220 Shadow damage.  Deals additional damage to targets infected with Blood Plague or Frost Fever.
     blood_boil = {
-        id = 49941,
+        id = 48721,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
+        spend = function ()
+            return buff.crimson_scourge.up and 0 or 1
+        end,
         spendType = "blood_runes",
+
+        gain = 10,
+        gainType = "runic_power",
 
         startsCombat = true,
         texture = 237513,
 
         handler = function ()
+            removeBuff( "crimson_scourge" )
         end,
 
         copy = { 49939, 49940, 49941 }
@@ -1062,14 +1002,6 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 135772,
-
-        handler = function ()
-            if talent.reaping.rank == 3 then
-                if blood_runes.current == 0 then applyBuff( "death_rune_1")
-                else applyBuff( "death_rune_2" ) end
-            end
-            if talent.desolation.enabled then applyBuff( "desolation" ) end
-        end,
 
         copy = { 49926, 49927, 49928, 49929, 49930 }
     },
@@ -1142,28 +1074,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-    -- Cause a corpse to explode for 166 Shadow damage to all enemies within 10 yards.  Will use a nearby corpse if the target is not a corpse.  Does not affect mechanical or elemental corpses.
-    corpse_explosion = {
-        id = 49158,
-        cast = 0,
-        cooldown = 5,
-        gcd = "spell",
-
-        spend = 40,
-        spendType = "runic_power",
-
-        talent = "corpse_explosion",
-        startsCombat = false,
-        texture = 132099,
-
-        -- TODO:  Determine if I can rely on the UI for usability of Corpse Explosion.
-
-        handler = function ()
-        end,
-    },
-
-
     -- Summons a second rune weapon that fights on its own for 12 sec, doing the same attacks as the Death Knight but for 50% reduced damage.
     dancing_rune_weapon = {
         id = 49028,
@@ -1209,17 +1119,13 @@ spec:RegisterAbilities( {
     death_and_decay = {
         id = 43265,
         cast = 0,
-        cooldown = function () return 30 - ( 5 * talent.morbidity.rank ) end,
+        cooldown = 30,
         gcd = "spell",
 
         spend = 1,
         spendType = "unholy_runes",
-        spend2 = 1,
-        spend2Type = "blood_runes",
-        spend3 = 1,
-        spend3Type = "frost_runes",
 
-        gain = 15,
+        gain = 10,
         gainType = "runic_power",
 
         startsCombat = false,
@@ -1313,8 +1219,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-    -- A deadly attack that deals 75% weapon damage plus 223 and heals the Death Knight for 5% of her maximum health for each of her diseases on the target.
+    -- TODO this changed in cata. now heals based on % of damage lost
     death_strike = {
         id = 49998,
         cast = 0,
@@ -1326,18 +1231,16 @@ spec:RegisterAbilities( {
         spend2 = 1,
         spend2Type = "unholy_runes",
 
-        gain = function() return 15 + ( 2.5 * talent.dirge.rank ) end,
+        gain = 20,
         gainType = "runic_power",
 
         startsCombat = true,
         texture = 237517,
 
         healing = function()
-            local base = ( 0.05 + ( 0.0125 * talent.improved_death_strike.rank ) ) * health.max
-            local amt = 0
-            if dot.frost_fever.ticking then amt = amt + base end
-            if dot.blood_plague.ticking then amt = amt + base end
-            if dot.crypt_fever.ticking then amt = amt + base end
+            -- TODO needs damage taken code?
+            local base = ( 0.07) * health.max
+            local amt = base * ( 1 + (.15 * talent.improved_death_strike.rank ))
             return amt
         end,
 
@@ -1347,24 +1250,6 @@ spec:RegisterAbilities( {
         copy = { 49999, 45463, 49923, 49924 }
     },
 
-
-    -- When activated, makes your next Icy Touch, Howling Blast, Frost Strike or Obliterate a critical hit if used within 30 sec.
-    deathchill = {
-        id = 49796,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-
-        talent = "deathchill",
-        startsCombat = false,
-        texture = 136213,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "deathchill" )
-        end,
-    },
 
 
     -- Empower your rune weapon, immediately activating all your runes and generating 25 runic power.
@@ -1428,7 +1313,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "killing_machine" )
-            removeBuff( "deathchill" )
         end,
     },
 
@@ -1473,8 +1357,6 @@ spec:RegisterAbilities( {
 
         gain = 10,
         gainType = "runic_power",
-
-        talent = "heart_strike",
         startsCombat = true,
         texture = 135675,
 
@@ -1486,7 +1368,7 @@ spec:RegisterAbilities( {
 
     -- The Death Knight blows the Horn of Winter, which generates 10 runic power and increases total Strength and Agility of all party or raid members within 30 yards by 155.  Lasts 2 min.
     horn_of_winter = {
-        id = 57623,
+        id = 57330,
         cast = 0,
         cooldown = 20,
         gcd = "spell",
@@ -1529,7 +1411,6 @@ spec:RegisterAbilities( {
         texture = 135833,
 
         handler = function ()
-            removeBuff( "deathchill" )
             removeBuff( "freezing_fog" )
             removeStack( "killing_machine" )
 
@@ -1568,10 +1449,10 @@ spec:RegisterAbilities( {
     icebound_fortitude = {
         id = 48792,
         cast = 0,
-        cooldown = 120,
+        cooldown = 180,
         gcd = "off",
 
-        spend = 20,
+        spend = 0,
         spendType = "runic_power",
 
         startsCombat = false,
@@ -1630,27 +1511,6 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Place a Mark of Blood on an enemy.  Whenever the marked enemy deals damage to a target, that target is healed for 4% of its maximum health.  Lasts for 20 sec or up to 20 hits.
-    mark_of_blood = {
-        id = 49005,
-        cast = 0,
-        cooldown = 180,
-        gcd = "spell",
-
-        spend = 1,
-        spendType = "blood_runes",
-
-        talent = "mark_of_blood",
-        startsCombat = true,
-        texture = 132205,
-
-        toggle = "defensives",
-
-        handler = function ()
-            applyDebuff( "target", "mark_of_blood", nil, 20 )
-        end,
-    },
-
 
     -- Smash the target's mind with cold, interrupting spellcasting and preventing any spell in that school from being cast for 4 sec.
     mind_freeze = {
@@ -1695,7 +1555,6 @@ spec:RegisterAbilities( {
         texture = 135771,
 
         handler = function ()
-            removeBuff( "deathchill" )
             if talent.annihilation.rank < 3 then
                 removeDebuff( "target", "frost_fever" )
                 removeDebuff( "target", "blood_plague" )
@@ -1751,11 +1610,6 @@ spec:RegisterAbilities( {
                 active_dot.blood_plague = active_enemies
                 if glyph.disease.enabled then applyDebuff( "target", "blood_plague" ) end
             end
-
-            if talent.reaping.rank == 3 then
-                if blood_runes.current == 0 then applyBuff( "death_rune_1" )
-                else applyBuff( "death_rune_2" ) end
-            end
         end,
     },
 
@@ -1770,7 +1624,7 @@ spec:RegisterAbilities( {
         spend = 1,
         spendType = "unholy_runes",
 
-        gain = function() return 10 + ( 2.5 * talent.dirge.rank ) end,
+        gain = 10,
         gainType = "runic_power",
 
         startsCombat = true,
@@ -1778,7 +1632,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "blood_plague" )
-            -- TODO: talent.desecration effect?
         end,
 
         copy = { 49917, 49918, 49919, 49920, 49921 }
@@ -1834,25 +1687,17 @@ spec:RegisterAbilities( {
     },
 
 
-    -- On next attack..
     rune_strike = {
         id = 56815,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 20,
+        spend = 30,
         spendType = "runic_power",
 
         startsCombat = true,
         texture = 237518,
-
-        buff = "rune_strike_usable",
-        nobuff = "rune_strike",
-
-        handler = function()
-            start_rune_strike()
-        end
     },
 
 
@@ -1860,7 +1705,7 @@ spec:RegisterAbilities( {
     rune_tap = {
         id = 48982,
         cast = 0,
-        cooldown = function () return 60 - ( talent.improved_rune_tap.rank * 10 ) end,
+        cooldown = 30,
         gcd = "off",
 
         spend = 1,
@@ -1873,7 +1718,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            gain( ( 0.1 + 0.33 * talent.improved_rune_tap.rank ) * health.max, "health" )
+            gain((0.1  * health.max), "health" )
         end,
     },
 
@@ -1890,7 +1735,7 @@ spec:RegisterAbilities( {
         spend2 = 1,
         spend2Type = "unholy_runes",
 
-        gain = function() return 15 + ( 2.5 * talent.dirge.rank ) end,
+        gain = 20,
         gainType = "runic_power",
 
         talent = "scourge_strike",
@@ -1952,31 +1797,6 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Reinforces your armor with a thick coat of ice, increasing your armor by 25% and increasing your Strength by 20% for 20 sec.
-    unbreakable_armor = {
-        id = 51271,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-
-        spend = 1,
-        spendType = "frost_runes",
-
-        gain = 10,
-        gainType = "runic_power",
-
-        talent = "unbreakable_armor",
-        startsCombat = false,
-        texture = 132388,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "unbreakable_armor" )
-        end,
-    },
-
-
     -- Induces a friendly unit into a killing frenzy for 30 sec.  The target is Enraged, which increases their physical damage by 20%, but causes them to lose health equal to 1% of their maximum health every second.
     unholy_frenzy = {
         id = 49016,
@@ -2025,11 +1845,8 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "off",
 
-        spend = 1,
-        spendType = "blood_runes",
-
-        gain = 10,
-        gainType = "runic_power",
+        spend = 0,
+        spendType = "runic_power",
 
         talent = "vampiric_blood",
         startsCombat = true,
@@ -2062,7 +1879,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Blood (IV)", 20230411, [[Hekili:vEvBVTjsq4FlrvkXUoMaoV0xKDQUEN0PK7uQuDuV7taRH1MvgZYblX1vw7V9Bgadl4DDB(sIHz25LNzMNzX1X9z35Heb19Pj2tU2(ghhlhBhNjV3DUyxk1DEkjynzf8JeYg4VFoMZdL(dE4Bdrz7I5Kq0g58ISaqEKqKM)XRUA72TwSGDJFHYsYTc4BUAlxeVECqmjpNfC1c0oJdPer041jSvrIXcsY6XPVqhNXfebJNmoGZJd5BtYhtwWIzcgn3D(IcwS4He3f6d87GyjLg4(e8JiwyiTstAEG78NJy5s)0mgpJj2j9XNwqYPqcXtK(IiQ0)HaqW3WOw6VQGfsTCNhZYf5yws4u4FpvIAKamgrtd5Ghjj0lKgq25oNMqwetdD)SRacou123mpa8mnJrGZXfwlZ45cVL0xOzwcwWAwYkP)5sFuwjc5Lgtwvq7iCG0h99luVEMq6pQJivli9Ncjywb1RwbAcDdGNs)3k9Ni9h2MqP0CblMMaLtibUUxcCqlO46j4fbrQ50zvHUM0c0Axqm1tqYwrbWeWqW43yW4vXSxUiJTMQXb6Wg9E4wJ4FeLelISsdes)7L(3z3dCBaO7lbO97L(G3feazewWHZe1XNvT57aIvr4colgJI7mgf9DguLUU1kQUbTZ7mANSIewGxkFla5H0LSaMO0ytS73Pguftc85LKIyXrD0ByqZ8Ymk9h0xr382eL4MNL4Xx6TLLaY11g1EsbBtv35K(r6QmwQUUe91WPZWIyFB0ID3QMIf5upWiBY7LG31rPKiE8oejs(r)5AZvcnTpoaNeehbceOBmpuY8Q(ThsWurZ4vrZIenG2V)KShgziosygfsI8i0ovDY)mYhvzkh2ejXhmgNMzeQcKkbauqZTWobGtXBd57LneRcc1X3GOO9pZH6zi0ZVGg0XObRS0VqewPOInnpTu33guKb9wIgEBEILAxlYYexIuGRQpsPN1uK(v2EyE2WX84jqiUkExAuTffK0w(oSaQHgDyzuOIBnjkmJA3hXatwgd3Oo7HNRH)VZKNtNb5omK9u0mR7RMT8jN3P61oL6EE18m7adGYOUJbQVVMcQNGH95lPBkZLs982sjPWllP4tZOWDVwqAj513JxSCPfOBooqB1LlVk0oiS0SGHHEUCumE7Rj2FyYDwq4SLKLa9zaP6)8BF9PhE6p)O0x6)mETkgeHzqOVKdxt5cGE7cPFg9)kyzyJuoh3bqke8nWv6GxeerswbPS8X)MLaIUfS0VZtaVwk(I61W)lyfbx55d9MW7h489HW5Lp(qPRXJD9HXmPF5v6aXqEwiG1vUZBV4hcB8LmKU7nVr6xFL3)a7hK()v5LvXBa3O)q5JOE49qhBFZyhh0Rvok3QPcmA2vDHYlzlNDmWRCw4ekRIvFD39ROHQoARgTBqrPiV10jhlVQdg1ODmE6mygwrZMvLDEP6Qrvb9wQDjUoBguUVSAb4mh0zDxrEVJQbAxSuLw6PYo)uR42V3a745Ny1MAm0SRbdHZmyS97nS7AkSvOtgPUSPXIAxERCkvkMYof9RH67md11AQJrNylZ02nmhHtgrDJboqQJUFGHDh7332WD)D2dpxdX4m7EnwhWWotck8)hJdi7nggA47NoX2eCxno)8x(JV8rCShMW2uscvZa81c8HCMOO8RuTQu3q3ZN(0NuDJgI6syst6psZoHr62hmeNSBjCGHTM8V5Rs7l(4PSxt5(8b1tW9o4iLxREUPA(WZ3ozy)GQf468LCvCgMgdpkZ6mTzYqNSjU2sTFcxxcsOFTbaoqHnz)(Z08PHhLIQcpMjC616lJNUnUCHS7)p]] )
+spec:RegisterPack( "Blood (wowtbc.gg)", 20230411, [[Hekili:TEvBVTTnq4FlbfinUUwXY2jDRWUbRRadjBifOoOBFss0u0wewMutKkUUWG)23Ds2suYsoRy7lj28E)5U7H0EUEp5npKOzEpoA4OjdVz4ih33nzY4B9MR3LW8MNqORjRGpiiBG)(XyPm0eC19FThkBxSKeI(qjZsPG8iTor9(RVE72ToC6UbpZ4cLdvU56TsD86b0yIsXPxVa9ZGqgrhnyTGVkspqteRhK8mBqQut0CPyavkJdLBfQbKf8yUMZuEZxKXJ13l8wyL4JhoX1fsIeg17ri1J4HHScvykQ38NI4ktqskxMY17mb43wqumOsKctGoIzcUNcc(kMUMGvz8qMJ38yUsRWYJizW)EmhUium5qxdjVpre6hYOKDEZzcYIywO3h90qwHQwDYCkezwkNa2j1oltLkT)s2ZSuhnNUMlwzcU0eGYYHg)KyYQmwnHxzcWy)mZVHlmb9RjY2dMGPqbMMX8pOatW2aaPj4nMGrMGEvfuctP5Xmb0hHcyCNfWff5zl1qLVGEVVwMrJad3rJz(As6kgaMagcoFYr0uxlgLzsEQ7R0P81SwcDBqe62B6mNJyKyDKtcvBc(Gj42Hnq0subqRj1qfWYuDvQ0sXC7)9OcchxlQfv4cjpgJW76mcPzco1prUfAcHSLCkhc10zqRDyLZaLkbtWB)u7GFLtxKTCPd81nkPWxrHv7vmNSKoYonUkSKKfRpzfzdh2owMYyFN9dSESvyH(YuHVCP)wUaKF(5snFtX4(OMlPRs5jhh7E5ofcF3oSPpQWVBSlXmfZhCYgvJc82AkjIKX7qKq89MefD3BBzibj5G8GQrG2U)6x8zFKXQG3YVGWgzUo0Z7MoQtkNteMYGIqfH(XeSFFNmbLwBlZY4UyD(5)NyDqaA4l5RwPr6GecDO7ln(qZsHwSUKpwkCShECq1Ybhyi9GjBiFRvS6FZTcDpI62C)QnQGxKgjNfb92y7H56eI1MLD7Ebdi9kkbmdu1qQIY(0ZpS10qqVMR4Sn55DUE(BzKe4WCwPKug8WJfKkEPUz7aDv4mOtD6NIu7OWC3cog6pkuS1tp2ssfqhbyb(ZF5lpE)J)27nbMGNWhwWH8lfs8Ls4I6xd7JV2eKY(7mEk((dLejTizA5g41mWb0iIyfuWMh(dUaeDd4PFvkGyMl(1AcSSOD(lWlAP13DouCW5x5(TEG9MhUpp0OzJpoqAcYFudigbi5soUl(Qxzco8YUpHtsMGFp)nz4d9kFwupZdOEynpy4KbUUyekCQYPeR7p766G2B5lNDkeBzlyH19e2hxN8hDuHPvAurVJsXlaMo6u5fZQOgv08tNb3gBPzjpETdT5TTf0GX9Tix7mO1(2c25zUyWQZF)bxBhuX6vuwTVGF554F3VVdoJlpdVRDouYwIPWfD4S97TxpregSXhyTMUIgwRISPll9yR3SyzvH8kJS5iotW6OVEGKO)z4ENwX7Eco1jQ3zIRj5dExTkExsKt5zh3f3VVAG7d3oS3LTqboByJbRJyyTnblo3tXbk8qmmnAHfF6OHDb3fRZp95p953JR9Wg2MCcNdmaFjd)IIRZY)XyofQ3X0ZD3DNDyAHsohMAP873c7F)2y(7HB2veoWYwz9x(BWAk(0TSFK29LxDydUHH9To22UPT8ZSEZOEntQkGR2pMOGZOR1WtQSABBD5OZoeFWtvVLVobjmVwcahPWgTF)fhUVXEI8Ks0w4PmHth3EB88JXWLYzA4gbV5vxjLFDS3)a]] )
 
 spec:RegisterPack( "Frost DK (IV)", 20221001, [[Hekili:DAvxVrQnu0FlRwP08XczystAsvsEOQQsjRuEzQ2hbBGldwdyJSndAQI8V9ETjDgddKnPVKmCTVN7X3po2XrX)D8QCQgIFz5ILlJwSikm6MLrxFx8k9UgiEvdnBdDn(doTg)7FjfkTH8NF3qo9PFCMD9DvcAUfhLOvMH7PuRBu)(Lx211fYY2fSfyCvyMO(YoHUAtqwfvPyzxwyXkihO6YGnC26s8JgvqZwiqk0untWdYeIQCrhxfqtzvmnduXRsBzv6N4XPtW9OBrI0azXVCdYewEo0VpqLnG9nsMqY07mKuQcYneb3qEkd)(hw6(lgY6wwoeINqPOGvHNRV(vd5)qWsAd57owBtf7D8mZZ29zzuq0IGfrMNnptZShgvyJeW0qkvFXdxMwje5jOffWZGP3tPqYtefjDmUgKFJv8qABrr4qZH28Jxuq)Qz88Kcja)d4BglgjArBwPfPVKl0HUsqsbSfHrZY2W4R9DOu0vHMssXkM2606QDnLHdmhcCAAfKFYhbWMk66wirPLSnWEw8wQWT2KEbknwbW0K1LzcZjZH0jwG2cjJ87cpZ(UD)YZ1sKJVTmWHASPZNoT8ujq3yp1juzTq6VypuAAJRA5(q2YbS)VvkbU((L(7wKI90GeBIN)82NZZzkaBu3NT)0zHth7HeWoevPfUxF9i38w9mFUb1nIoq6oujDaTrWN5KErFWgARLxkQ2nkLC1GSRcsWCs9GuEgTQkP)ZKkg2lAvJEGkGVzBLY0pezjXWs2Jr(i0tMdnEUbPnSkxJCnnRKXHW2M3T735JBSYAUqSEKd9jH(ymxS9Ldq(pomJx0PoMqXX5CiJUZnYul2AlOfwTNejutrzNhrzpSOQqx7LdxC3YBcJIx1rLCC3OQ5tyLtQTsDxzi9rXqSjtvO554vUFzLXXaJ)7f3vd9Bdfs95y8Q3AcJ)Jyngn7gpyzvM02sZOXR(IH0Zvd5edzaFnKhnKBpeGrNtexT1ybTTsFeB8K3(mCzMrMd4UxF0c1vZc17ic6oOFKqnmHIH7x)zmFQH6d4nqy1I31ZI3CY0wQpRASDXP1rnKlgSKV7gY94vHgY5gYeAQESFVGNL634xRpsSDuf)3M9CoHKupFoa(EXAls36h2dcZJI3D)K2Ir607ZQ)VY4NESVE6YgYRVobad2XzZLKJw85sCyrEc9CN9P00Dz6Roe8jU2WXIbZ17L(hLZJMFSEyhLtvbf96VuWQASh7X3G0l4L0)QwRKND7ZpZpZ1fhW3xJ3H18d0tDnY7OmeDTFoY)oMXPPbdodi0GnQTVP9ThzEK26WNL(HLxN7DP(Nl)fD0ajcTvxANPXhqh4E)SZC8)c]] )
 
