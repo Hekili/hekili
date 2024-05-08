@@ -683,167 +683,1190 @@ do
 
                 filterCasts = true,
                 castFilters = {
-                    [122973] = {
-                        [253517] = "Mending Word",
-                        [258653] = "Bulwark of Juju",
-                        desc = "Atal'Dazar - Dazar'ai Confessor",
+                    [75713] = {
+                        desc = "Shadowmoon Burial Grounds - Shadowmoon Bone-Mender",
+                        [152818] = "Shadow Mend",
                     },
-                    [127879] = {
-                        [258653] = "Bulwark of Juju",
-                        desc = "Atal'Dazar - Shieldbearer of Zul",
+                    [76057] = {
+                        desc = "Shadowmoon Burial Grounds - Carrion Worm",
+                        [153395] = "Body Slam",
                     },
-                    [135989] = {
-                        [258653] = "Bulwark of Juju",
-                        desc = "Atal'Dazar - Shieldbearer of Zul",
+                    [75459] = {
+                        desc = "Shadowmoon Burial Grounds - Plagued Bat",
+                        [153524] = "Plague Spit",
                     },
-                    [122969] = {
-                        [252781] = "Unstable Hex",
-                        desc = "Atal'Dazar - Zanchuli Witch-Doctor",
-                    },
-                    [128434] = {
-                        [255041] = "Terrifying Screech",
-                        desc = "Atal'Dazar - Feasting Skyscreamer",
-                    },
-                    [122965] = {
-                        [259572] = "Noxious Stench",
-                        desc = "Atal'Dazar - Vol'kaal (Boss)",
-                    },
-                    [95769] = {
-                        [200630] = "Unnerving Screech",
-                        [200631] = "Unnerving Screech",
-                        desc = "Darkheart Thicket - Mindshattered Screecher",
-                    },
-                    [101991] = {
-                        [204243] = "Tormenting Eye",
-                        desc = "Darkheart Thicket - Nightmare Dweller",
-                    },
-                    [113398] = {
-                        [225562] = "Blood Metamorphosis",
-                        desc = "Darkheart Thicket - Bloodtainted Fury (small ones)",
-                    },
-                    [100527] = {
-                        [201399] = "Dread Inferno",
-                        [201400] = "Dread Inferno",
-                        desc = "Darkheart Thicket - Dreadfire Imp",
-                    },
-                    [131685] = {
-                        [264390] = "Spellbind",
-                        desc = "Waycrest Manor - Runic Disciple",
-                    },
-                    [135049] = {
-                        [265346] = "Pallid Glare",
-                        desc = "Waycrest Manor - Dreadwing Raven",
-                    },
-                    [131812] = {
-                        [263959] = "Soul Volley",
-                        desc = "Waycrest Manor - Heartsbane Soulcharmer",
-                    },
-                    [137830] = {
-                        [271174] = "Retch",
-                        desc = "Waycrest Manor - Palid Gorger",
-                    },
-                    [134024] = {
-                        [278444] = "Infest",
-                        [278456] = "Infest",
-                        desc = "Waycrest Manor - Devouring Maggot",
-                    },
-                    [142587] = {
-                        [278444] = "Infest",
-                        [278456] = "Infest",
-                        desc = "Waycrest Manor - Devouring Maggot",
-                    },
-                    [135365] = {
-                        [265876] = "Ruinous Volley",
-                        desc = "Waycrest Manor - Alma",
-                    },
-                    [131821] = {
-                        [264407] = "Horrific Visage",
-                        desc = "Waycrest Manor - Faceless Maiden",
-                    },
-                    [131864] = {
-                        [266225] = "Darkened Lightning",
-                        desc = "Waycrest Manor - Gorak Tul",
-                    },
-                    [206140] = {
-                        [415770] = "Infinite Bolt Volley",
-                        desc = "Galakrond's Fall - Coalesced Time",
-                    },
-                    [206066] = {
-                        [415437] = "Enervate",
-                        [415439] = "Enervate",
-                        desc = "Galakrond's Fall - Timestream Leech",
-                    },
-                    [199748] = {
-                        [417481] = "Displace Chronosequence",
-                        desc = "Murozond's Rise - Timeline Marauder",
-                    },
-                    [208698] = {
-                        [418200] = "Infinite Burn",
-                        desc = "Murozond's Rise - Infinite Riftmage",
-                    },
-                    [201223] = {
-                        [413606] = "Corroding Volley",
-                        [413607] = "Corroding Volley",
-                        [400180] = "Corroding Volley",
-                        desc = "Murozond's Rise - Infinite Twilight Magus",
-                    },
-                    [205363] = {
-                        [411300] = "Fish Bolt Volley",
-                        desc = "Murozond's Rise - Waveshaper",
-                    },
-                    [205337] = {
-                        [412378] = "Dizzying Sands",
-                        desc = "Murozond's Rise - Infinite Timebender",
-                    },
-                    [205727] = {
-                        [412233] = "Rocket Bolt Volley",
-                        desc = "Murozond's Rise - Time-Lost Rocketeer",
-                    },
-                    [204206] = {
-                        [407891] = "Healing Wave",
-                        desc = "Murozond's Rise - Horde Farseer",
-                    },
-                    [98280] = {
-                        [200248] = "Arcane Blitz",
-                        desc = "Black Rook Hold - Risen Arcanist",
-                    },
-                    [102788] = {
-                        [227913] = "Felfrenzy",
-                        desc = "Black Rook Hold - Felspite Dominator",
-                    },
-                    [81819] = {
-                        [164965] = "Choking Vines",
-                        desc = "Everbloom - Everbloom Mender",
+                    [76446] = {
+                        desc = "Shadowmoon Burial Grounds - Shadowmoon Dominator",
+                        [156776] = "Rending Voidlash",
                     },
                     [81820] = {
+                        desc = "The Everbloom - Everbloom Mender",
+                        [164887] = "Healing Waters",
                         [164965] = "Choking Vines",
-                        desc = "Everbloom - Everbloom Mender",
+                    },
+                    [81819] = {
+                        desc = "The Everbloom - Everbloom Naturalist",
+                        [164965] = "Choking Vines",
                     },
                     [81985] = {
+                        desc = "The Everbloom - Everbloom Cultivator",
                         [165213] = "Enraged Growth",
-                        desc = "Everbloom - Everbloom Cultivator",
-                    },
-                    [84957] = {
-                        [169839] = "Pyroblast",
-                        desc = "Everbloom - Putrid Pyromancer",
                     },
                     [83892] = {
+                        desc = "The Everbloom - Life Warden Gola",
                         [168082] = "Revitalize",
-                        desc = "Everbloom - Gola (Boss)",
+                    },
+                    [84957] = {
+                        desc = "The Everbloom - Putrid Pyromancer",
+                        [169839] = "Pyroblast",
+                    },
+                    [97197] = {
+                        desc = "Halls of Valor - Valarjar Purifier",
+                        [192563] = "Cleansing Flames",
+                    },
+                    [95769] = {
+                        desc = "Darkheart Thicket - Mindshattered Screecher",
+                        [200630] = "Unnerving Screech",
+                    },
+                    [100527] = {
+                        desc = "Darkheart Thicket - Dreadfire Imp",
+                        [201399] = "Dread Inferno",
+                    },
+                    [91006] = {
+                        desc = "Neltharion's Lair - Rockback Gnasher",
+                        [202181] = "Stone Gaze",
+                    },
+                    [101991] = {
+                        desc = "Darkheart Thicket - Nightmare Dweller",
+                        [204243] = "Tormenting Eye",
+                    },
+                    [104274] = {
+                        desc = "Court of Stars - Baalgar the Watchful",
+                        [207980] = "Disintegration Beam",
+                    },
+                    [104247] = {
+                        desc = "Court of Stars - Duskwatch Arcanist",
+                        [209410] = "Nightfall Orb",
+                    },
+                    [104270] = {
+                        desc = "Court of Stars - Guardian Construct",
+                        [209413] = "Suppress",
+                        [225100] = "Charging Station",
+                    },
+                    [104295] = {
+                        desc = "Court of Stars - Blazing Imp",
+                        [211401] = "Drifting Embers",
+                    },
+                    [104300] = {
+                        desc = "Court of Stars - Shadow Mistress",
+                        [211470] = "Bewitch",
+                    },
+                    [95834] = {
+                        desc = "Halls of Valor - Valarjar Mystic",
+                        [215433] = "Holy Radiance",
+                    },
+                    [100532] = {
+                        desc = "Darkheart Thicket - Bloodtainted Burster",
+                        [225562] = "Blood Metamorphosis",
+                    },
+                    [102788] = {
+                        desc = "Black Rook Hold - Felspite Dominator",
+                        [227913] = "Felfrenzy",
+                    },
+                    [122986] = {
+                        desc = "Atal'Dazar - Wild Skyscreamer",
+                        [255041] = "Terrifying Screech",
+                    },
+                    [128434] = {
+                        desc = "Atal'Dazar - Feasting Skyscreamer",
+                        [255041] = "Terrifying Screech",
+                    },
+                    [129788] = {
+                        desc = "Freehold - Irontide Bonesaw",
+                        [257397] = "Healing Balm",
+                    },
+                    [126919] = {
+                        desc = "Freehold - Irontide Stormcaller",
+                        [257736] = "Thundering Squall",
+                    },
+                    [129600] = {
+                        desc = "Freehold - Bilge Rat Brinescale",
+                        [257784] = "Frost Blast",
+                    },
+                    [122965] = {
+                        desc = "Atal'Dazar - Vol'kaal",
+                        [259572] = "Noxious Stench",
+                    },
+                    [133379] = {
+                        desc = "Temple of Sethraliss - Adderis",
+                        [263365] = "A Peal of Thunder",
+                    },
+                    [131812] = {
+                        desc = "Waycrest Manor - Heartsbane Soulcharmer",
+                        [263959] = "Soul Volley",
+                    },
+                    [131685] = {
+                        desc = "Waycrest Manor - Runic Disciple",
+                        [264390] = "Spellbind",
+                    },
+                    [131821] = {
+                        desc = "Waycrest Manor - Faceless Maiden",
+                        [264407] = "Horrific Visage",
+                    },
+                    [131492] = {
+                        desc = "The Underrot - Devout Blood Priest",
+                        [265089] = "Dark Reconstitution",
+                        [265091] = "Gift of G'huun",
+                    },
+                    [135049] = {
+                        desc = "Waycrest Manor - Dreadwing Raven",
+                        [265346] = "Pallid Glare",
+                    },
+                    [133912] = {
+                        desc = "The Underrot - Bloodsworn Defiler",
+                        [265433] = "Withering Curse",
+                        [265523] = "Summon Spirit Drain Totem",
+                    },
+                    [134112] = {
+                        desc = "Waycrest Manor - Matron Christiane",
+                        [265876] = "Ruinous Volley",
+                    },
+                    [135365] = {
+                        desc = "Waycrest Manor - Matron Alma",
+                        [265876] = "Ruinous Volley",
+                    },
+                    [133835] = {
+                        desc = "The Underrot - Feral Bloodswarmer",
+                        [266106] = "Sonic Screech",
+                    },
+                    [134284] = {
+                        desc = "The Underrot - Fallen Deathspeaker",
+                        [266209] = "Wicked Frenzy",
+                        [272183] = "Raise Dead",
+                    },
+                    [131864] = {
+                        desc = "Waycrest Manor - Gorak Tul",
+                        [266225] = "Darkened Lightning",
+                    },
+                    [137830] = {
+                        desc = "Waycrest Manor - Pallid Gorger",
+                        [271174] = "Retch",
+                    },
+                    [134024] = {
+                        desc = "Waycrest Manor - Devouring Maggot",
+                        [278444] = "Infest",
+                    },
+                    [142587] = {
+                        desc = "Waycrest Manor - Devouring Maggot",
+                        [278444] = "Infest",
+                    },
+                    [133685] = {
+                        desc = "The Underrot - Befouled Spirit",
+                        [278755] = "Harrowing Despair",
+                    },
+                    [122969] = {
+                        desc = "Atal'Dazar - Zanchuli Witch-Doctor",
+                        [279118] = "Unstable Hex",
+                    },
+                    [170044] = {
+                        desc = "Maldraxxus - Venthyr Apprentice",
+                        [345202] = "Absolution",
+                    },
+                    [185529] = {
+                        desc = "Brackenhide Hollow - Bracken Warscourge",
+                        [367500] = "Hideous Cackle",
+                    },
+                    [193178] = {
+                        desc = "The Azure Span - Blightfur",
+                        [367500] = "Hideous Cackle",
+                    },
+                    [195135] = {
+                        desc = "Brackenhide Hollow - Bracken Warscourge",
+                        [367500] = "Hideous Cackle",
+                    },
+                    [186191] = {
+                        desc = "Brackenhide Hollow - Decay Speaker",
+                        [367503] = "Withering Burst",
+                        [382474] = "Decay Surge",
+                    },
+                    [184132] = {
+                        desc = "Uldaman - Earthen Warder",
+                        [369365] = "Curse of Stone",
+                    },
+                    [184301] = {
+                        desc = "Uldaman - Cavern Seeker",
+                        [369411] = "Sonic Burst",
+                    },
+                    [186420] = {
+                        desc = "Uldaman - Earthen Weaver",
+                        [369465] = "Hail of Stone",
+                    },
+                    [184580] = {
+                        desc = "Uldaman - Olaf",
+                        [369602] = "Defensive Bulwark",
+                    },
+                    [204046] = {
+                        desc = "Valdrakken - Olaf",
+                        [369602] = "Defensive Bulwark",
+                    },
+                    [184022] = {
+                        desc = "Uldaman - Stonevault Geomancer",
+                        [369675] = "Chain Lightning",
+                    },
+                    [186658] = {
+                        desc = "Uldaman - Stonevault Geomancer",
+                        [369675] = "Chain Lightning",
+                    },
+                    [189265] = {
+                        desc = "Neltharus - Qalashi Bonetender",
+                        [372223] = "Mending Clay",
+                    },
+                    [189470] = {
+                        desc = "Neltharus - Lava Flare",
+                        [372538] = "Melt",
+                    },
+                    [186220] = {
+                        desc = "Brackenhide Hollow - Brackenhide Shaper",
+                        [372711] = "Infuse Corruption",
+                    },
+                    [188067] = {
+                        desc = "Ruby Life Pools - Flashfrost Chillweaver",
+                        [372743] = "Ice Shield",
+                    },
+                    [189886] = {
+                        desc = "Ruby Life Pools - Blazebound Firestorm",
+                        [373017] = "Roaring Blaze",
+                    },
+                    [193462] = {
+                        desc = "The Nokhud Offensive - Batak",
+                        [373395] = "Bloodcurdling Shout",
+                    },
+                    [199717] = {
+                        desc = "The Nokhud Offensive - Nokhud Defender",
+                        [373395] = "Bloodcurdling Shout",
+                    },
+                    [190342] = {
+                        desc = "Halls of Infusion - Containment Apparatus",
+                        [374045] = "Expulse",
+                    },
+                    [190345] = {
+                        desc = "Halls of Infusion - Primalist Geomancer",
+                        [374066] = "Earth Shield",
+                    },
+                    [190348] = {
+                        desc = "Halls of Infusion - Primalist Ravager",
+                        [374080] = "Blasting Gust",
+                    },
+                    [190340] = {
+                        desc = "Halls of Infusion - Refti Defender",
+                        [374339] = "Demoralizing Shout",
+                    },
+                    [186226] = {
+                        desc = "Brackenhide Hollow - Fetid Rotsinger",
+                        [374544] = "Burst of Decay",
+                    },
+                    [190362] = {
+                        desc = "Halls of Infusion - Dazzling Dragonfly",
+                        [374563] = "Dazzle",
+                    },
+                    [190368] = {
+                        desc = "Halls of Infusion - Flamecaller Aymi",
+                        [374699] = "Cauterize",
+                        [374706] = "Pyretic Burst",
+                    },
+                    [191164] = {
+                        desc = "The Azure Vault - Arcane Tender",
+                        [375596] = "Erratic Growth",
+                    },
+                    [196115] = {
+                        desc = "The Azure Vault - Arcane Tender",
+                        [375596] = "Erratic Growth",
+                    },
+                    [190377] = {
+                        desc = "Halls of Infusion - Primalist Icecaller",
+                        [376171] = "Refreshing Tides",
+                    },
+                    [189901] = {
+                        desc = "Neltharus - Warlord Sargha",
+                        [376780] = "Magma Shield",
+                    },
+                    [190407] = {
+                        desc = "Halls of Infusion - Aqua Rager",
+                        [377341] = "Tidal Divergence",
+                    },
+                    [192333] = {
+                        desc = "Algeth'ar Academy - Alpha Eagle",
+                        [377389] = "Call of the Flock",
+                    },
+                    [190405] = {
+                        desc = "Halls of Infusion - Infuser Sariya",
+                        [377402] = "Aqueous Barrier",
+                    },
+                    [187155] = {
+                        desc = "The Azure Vault - Rune Seal Keeper",
+                        [377488] = "Icy Bindings",
+                    },
+                    [184335] = {
+                        desc = "Uldaman - Infinite Agent",
+                        [377500] = "Hasten",
+                    },
+                    [186125] = {
+                        desc = "Brackenhide Hollow - Tricktotem",
+                        [377950] = "Greater Healing Rapids",
+                    },
+                    [192788] = {
+                        desc = "Neltharus - Qalashi Thaumaturge",
+                        [378282] = "Molten Core",
+                    },
+                    [184300] = {
+                        desc = "Uldaman - Ebonstone Golem",
+                        [381593] = "Thunderous Clap",
+                    },
+                    [185528] = {
+                        desc = "Brackenhide Hollow - Trickclaw Mystic",
+                        [382249] = "Earth Bolt",
+                    },
+                    [185656] = {
+                        desc = "Brackenhide Hollow - Filth Caller",
+                        [382474] = "Decay Surge",
+                    },
+                    [187315] = {
+                        desc = "Brackenhide Hollow - Disease Slasher",
+                        [382787] = "Decay Claws",
+                    },
+                    [194467] = {
+                        desc = "Brackenhide Hollow - Brackenhide Slasher",
+                        [382787] = "Decay Claws",
+                    },
+                    [193944] = {
+                        desc = "Neltharus - Qalashi Lavamancer",
+                        [382791] = "Molten Barrier",
+                    },
+                    [189464] = {
+                        desc = "Neltharus - Qalashi Irontorch",
+                        [384161] = "Mote of Combustion",
+                    },
+                    [190207] = {
+                        desc = "Ruby Life Pools - Primalist Cinderweaver",
+                        [384194] = "Cinderbolt",
+                    },
+                    [191847] = {
+                        desc = "The Nokhud Offensive - Nokhud Plainstomper",
+                        [384365] = "Disruptive Shout",
+                    },
+                    [192800] = {
+                        desc = "The Nokhud Offensive - Nokhud Lancemaster",
+                        [384365] = "Disruptive Shout",
+                    },
+                    [197650] = {
+                        desc = "Ohn'ahran Plains - Tarolekk, the Stomper",
+                        [384365] = "Disruptive Shout",
+                    },
+                    [186116] = {
+                        desc = "Brackenhide Hollow - Gutshot",
+                        [384633] = "Master's Call",
+                    },
+                    [186339] = {
+                        desc = "The Nokhud Offensive - Teera",
+                        [384808] = "Guardian Wind",
+                    },
+                    [186246] = {
+                        desc = "Brackenhide Hollow - Fleshripper Vulture",
+                        [385029] = "Screech",
+                    },
+                    [194894] = {
+                        desc = "The Nokhud Offensive - Primalist Stormspeaker",
+                        [386015] = "Summon Squall",
+                        [386024] = "Tempest",
+                        [386025] = "Tempest",
+                    },
+                    [186741] = {
+                        desc = "The Azure Vault - Arcane Elemental",
+                        [386546] = "Waking Bane",
+                    },
+                    [195696] = {
+                        desc = "The Nokhud Offensive - Primalist Thunderbeast",
+                        [387125] = "Thunderstrike",
+                    },
+                    [195927] = {
+                        desc = "The Nokhud Offensive - Soulharvester Galtmaa",
+                        [387411] = "Death Bolt Volley",
+                    },
+                    [195928] = {
+                        desc = "The Nokhud Offensive - Soulharvester Duuren",
+                        [387411] = "Death Bolt Volley",
+                    },
+                    [195929] = {
+                        desc = "The Nokhud Offensive - Soulharvester Tumen",
+                        [387411] = "Death Bolt Volley",
+                    },
+                    [195930] = {
+                        desc = "The Nokhud Offensive - Soulharvester Mandakh",
+                        [387411] = "Death Bolt Volley",
+                    },
+                    [196102] = {
+                        desc = "The Azure Vault - Conjured Lasher",
+                        [387564] = "Mystic Vapors",
+                    },
+                    [195877] = {
+                        desc = "The Nokhud Offensive - Risen Mystic",
+                        [387596] = "Swift Wind",
+                    },
+                    [196203] = {
+                        desc = "Algeth'ar Academy - Ethereal Restorer",
+                        [387955] = "Celestial Shield",
+                    },
+                    [196044] = {
+                        desc = "Algeth'ar Academy - Unruly Textbook",
+                        [388392] = "Monotonous Lecture",
+                    },
+                    [196045] = {
+                        desc = "Algeth'ar Academy - Corrupted Manafiend",
+                        [388862] = "Surge",
+                        [388863] = "Mana Void",
+                    },
+                    [197985] = {
+                        desc = "Ruby Life Pools - Flame Channeler",
+                        [392451] = "Flashfire",
+                    },
+                    [197535] = {
+                        desc = "Ruby Life Pools - High Channeler Ryvati",
+                        [392924] = "Shock Blast",
+                    },
+                    [189235] = {
+                        desc = "Neltharus - Overseer Lahar",
+                        [395427] = "Burning Roar",
+                    },
+                    [199037] = {
+                        desc = "Halls of Infusion - Primalist Shocktrooper",
+                        [395694] = "Elemental Focus",
+                    },
+                    [59555] = {
+                        desc = "Temple of the Jade Serpent - Haunting Sha",
+                        [395859] = "Haunting Scream",
+                    },
+                    [59546] = {
+                        desc = "Temple of the Jade Serpent - The Talking Fish",
+                        [395872] = "Sleepy Soliloquy",
+                    },
+                    [59552] = {
+                        desc = "Temple of the Jade Serpent - The Crybaby Hozen",
+                        [396018] = "Fit of Rage",
+                    },
+                    [59544] = {
+                        desc = "Temple of the Jade Serpent - The Nodding Tiger",
+                        [396073] = "Cat Nap",
+                    },
+                    [196548] = {
+                        desc = "Algeth'ar Academy - Ancient Branch",
+                        [396640] = "Healing Touch",
+                    },
+                    [196576] = {
+                        desc = "Algeth'ar Academy - Spellbound Scepter",
+                        [396812] = "Mystic Blast",
+                    },
+                    [193373] = {
+                        desc = "The Nokhud Offensive - Nokhud Thunderfist",
+                        [397394] = "Deadly Thunder",
+                    },
+                    [200126] = {
+                        desc = "Temple of the Jade Serpent - Fallen Waterspeaker",
+                        [397889] = "Tidal Burst",
+                    },
+                    [200137] = {
+                        desc = "Temple of the Jade Serpent - Depraved Mistweaver",
+                        [397914] = "Defiling Mist",
+                    },
+                    [75979] = {
+                        desc = "Shadowmoon Burial Grounds - Exhumed Spirit",
+                        [398206] = "Death Blast",
+                    },
+                    [204206] = {
+                        desc = "Dawn of the Infinite - Horde Farseer",
+                        [407891] = "Healing Wave",
+                    },
+                    [45912] = {
+                        desc = "The Vortex Pinnacle - Wild Vortex",
+                        [410870] = "Cyclone",
+                    },
+                    [205363] = {
+                        desc = "Dawn of the Infinite - Time-Lost Waveshaper",
+                        [411300] = "Fish Bolt Volley",
+                    },
+                    [205727] = {
+                        desc = "Dawn of the Infinite - Time-Lost Rocketeer",
+                        [412233] = "Rocket Bolt Volley",
+                    },
+                    [205337] = {
+                        desc = "Dawn of the Infinite - Infinite Timebender",
+                        [412378] = "Dizzying Sands",
+                    },
+                    [205158] = {
+                        desc = "Dawn of the Infinite - Spurlok, Timesworn Sentinel",
+                        [412922] = "Binding Grasp",
+                    },
+                    [138187] = {
+                        desc = "The Underrot - Grotesque Horror",
+                        [413044] = "Dark Echoes",
+                    },
+                    [201223] = {
+                        desc = "Dawn of the Infinite - Infinite Twilight Magus",
+                        [413607] = "Corroding Volley",
+                    },
+                    [206066] = {
+                        desc = "Dawn of the Infinite - Timestream Leech",
+                        [415437] = "Enervate",
+                    },
+                    [206140] = {
+                        desc = "Dawn of the Infinite - Coalesced Time",
+                        [415770] = "Infinite Bolt Volley",
+                    },
+                    [199000] = {
+                        desc = "Dawn of the Infinite - Chrono-Lord Deios",
+                        [416139] = "Temporal Breath",
+                    },
+                    [199748] = {
+                        desc = "Dawn of the Infinite - Timeline Marauder",
+                        [417481] = "Displace Chronosequence",
+                    },
+                    [208698] = {
+                        desc = "Dawn of the Infinite - Infinite Riftmage",
+                        [418200] = "Infinite Burn",
                     },
                     [83893] = {
-                        [427459] = "Toxic Bloom",
-                        desc = "Everbloom - Telu (Boss)",
+                        desc = "The Everbloom - Earthshaper Telu",
+                        [427460] = "Toxic Bloom",
                     },
-                    [41096] = {
-                        [76813] = "Healing Wave",
-                        desc = "Throne of the Tides - Naz'jar Oracle",
+                    [40943] = {
+                        desc = "Throne of the Tides - Gilgoblin Aquamage",
+                        [429176] = "Aquablast",
+                    },[75713] = {
+                        desc = "Shadowmoon Burial Grounds - Shadowmoon Bone-Mender",
+                        [152818] = "Shadow Mend",
                     },
-                    -- TEST
-                    [195064] = {
-                        [3722351] = "Healing Wave",
-                        desc = "Test Mob - Please Ignore"
-                    }
+                    [76057] = {
+                        desc = "Shadowmoon Burial Grounds - Carrion Worm",
+                        [153395] = "Body Slam",
+                    },
+                    [75459] = {
+                        desc = "Shadowmoon Burial Grounds - Plagued Bat",
+                        [153524] = "Plague Spit",
+                    },
+                    [76446] = {
+                        desc = "Shadowmoon Burial Grounds - Shadowmoon Dominator",
+                        [156776] = "Rending Voidlash",
+                    },
+                    [81820] = {
+                        desc = "The Everbloom - Everbloom Mender",
+                        [164887] = "Healing Waters",
+                        [164965] = "Choking Vines",
+                    },
+                    [81819] = {
+                        desc = "The Everbloom - Everbloom Naturalist",
+                        [164965] = "Choking Vines",
+                    },
+                    [81985] = {
+                        desc = "The Everbloom - Everbloom Cultivator",
+                        [165213] = "Enraged Growth",
+                    },
+                    [83892] = {
+                        desc = "The Everbloom - Life Warden Gola",
+                        [168082] = "Revitalize",
+                    },
+                    [84957] = {
+                        desc = "The Everbloom - Putrid Pyromancer",
+                        [169839] = "Pyroblast",
+                    },
+                    [97197] = {
+                        desc = "Halls of Valor - Valarjar Purifier",
+                        [192563] = "Cleansing Flames",
+                    },
+                    [95769] = {
+                        desc = "Darkheart Thicket - Mindshattered Screecher",
+                        [200630] = "Unnerving Screech",
+                    },
+                    [100527] = {
+                        desc = "Darkheart Thicket - Dreadfire Imp",
+                        [201399] = "Dread Inferno",
+                    },
+                    [91006] = {
+                        desc = "Neltharion's Lair - Rockback Gnasher",
+                        [202181] = "Stone Gaze",
+                    },
+                    [101991] = {
+                        desc = "Darkheart Thicket - Nightmare Dweller",
+                        [204243] = "Tormenting Eye",
+                    },
+                    [104274] = {
+                        desc = "Court of Stars - Baalgar the Watchful",
+                        [207980] = "Disintegration Beam",
+                    },
+                    [104247] = {
+                        desc = "Court of Stars - Duskwatch Arcanist",
+                        [209410] = "Nightfall Orb",
+                    },
+                    [104270] = {
+                        desc = "Court of Stars - Guardian Construct",
+                        [209413] = "Suppress",
+                        [225100] = "Charging Station",
+                    },
+                    [104295] = {
+                        desc = "Court of Stars - Blazing Imp",
+                        [211401] = "Drifting Embers",
+                    },
+                    [104300] = {
+                        desc = "Court of Stars - Shadow Mistress",
+                        [211470] = "Bewitch",
+                    },
+                    [95834] = {
+                        desc = "Halls of Valor - Valarjar Mystic",
+                        [215433] = "Holy Radiance",
+                    },
+                    [100532] = {
+                        desc = "Darkheart Thicket - Bloodtainted Burster",
+                        [225562] = "Blood Metamorphosis",
+                    },
+                    [102788] = {
+                        desc = "Black Rook Hold - Felspite Dominator",
+                        [227913] = "Felfrenzy",
+                    },
+                    [122986] = {
+                        desc = "Atal'Dazar - Wild Skyscreamer",
+                        [255041] = "Terrifying Screech",
+                    },
+                    [128434] = {
+                        desc = "Atal'Dazar - Feasting Skyscreamer",
+                        [255041] = "Terrifying Screech",
+                    },
+                    [129788] = {
+                        desc = "Freehold - Irontide Bonesaw",
+                        [257397] = "Healing Balm",
+                    },
+                    [126919] = {
+                        desc = "Freehold - Irontide Stormcaller",
+                        [257736] = "Thundering Squall",
+                    },
+                    [129600] = {
+                        desc = "Freehold - Bilge Rat Brinescale",
+                        [257784] = "Frost Blast",
+                    },
+                    [122965] = {
+                        desc = "Atal'Dazar - Vol'kaal",
+                        [259572] = "Noxious Stench",
+                    },
+                    [133379] = {
+                        desc = "Temple of Sethraliss - Adderis",
+                        [263365] = "A Peal of Thunder",
+                    },
+                    [131812] = {
+                        desc = "Waycrest Manor - Heartsbane Soulcharmer",
+                        [263959] = "Soul Volley",
+                    },
+                    [131685] = {
+                        desc = "Waycrest Manor - Runic Disciple",
+                        [264390] = "Spellbind",
+                    },
+                    [131821] = {
+                        desc = "Waycrest Manor - Faceless Maiden",
+                        [264407] = "Horrific Visage",
+                    },
+                    [131492] = {
+                        desc = "The Underrot - Devout Blood Priest",
+                        [265089] = "Dark Reconstitution",
+                        [265091] = "Gift of G'huun",
+                    },
+                    [135049] = {
+                        desc = "Waycrest Manor - Dreadwing Raven",
+                        [265346] = "Pallid Glare",
+                    },
+                    [133912] = {
+                        desc = "The Underrot - Bloodsworn Defiler",
+                        [265433] = "Withering Curse",
+                        [265523] = "Summon Spirit Drain Totem",
+                    },
+                    [134112] = {
+                        desc = "Waycrest Manor - Matron Christiane",
+                        [265876] = "Ruinous Volley",
+                    },
+                    [135365] = {
+                        desc = "Waycrest Manor - Matron Alma",
+                        [265876] = "Ruinous Volley",
+                    },
+                    [133835] = {
+                        desc = "The Underrot - Feral Bloodswarmer",
+                        [266106] = "Sonic Screech",
+                    },
+                    [134284] = {
+                        desc = "The Underrot - Fallen Deathspeaker",
+                        [266209] = "Wicked Frenzy",
+                        [272183] = "Raise Dead",
+                    },
+                    [131864] = {
+                        desc = "Waycrest Manor - Gorak Tul",
+                        [266225] = "Darkened Lightning",
+                    },
+                    [137830] = {
+                        desc = "Waycrest Manor - Pallid Gorger",
+                        [271174] = "Retch",
+                    },
+                    [134024] = {
+                        desc = "Waycrest Manor - Devouring Maggot",
+                        [278444] = "Infest",
+                    },
+                    [142587] = {
+                        desc = "Waycrest Manor - Devouring Maggot",
+                        [278444] = "Infest",
+                    },
+                    [133685] = {
+                        desc = "The Underrot - Befouled Spirit",
+                        [278755] = "Harrowing Despair",
+                    },
+                    [122969] = {
+                        desc = "Atal'Dazar - Zanchuli Witch-Doctor",
+                        [279118] = "Unstable Hex",
+                    },
+                    [170044] = {
+                        desc = "Maldraxxus - Venthyr Apprentice",
+                        [345202] = "Absolution",
+                    },
+                    [185529] = {
+                        desc = "Brackenhide Hollow - Bracken Warscourge",
+                        [367500] = "Hideous Cackle",
+                    },
+                    [193178] = {
+                        desc = "The Azure Span - Blightfur",
+                        [367500] = "Hideous Cackle",
+                    },
+                    [195135] = {
+                        desc = "Brackenhide Hollow - Bracken Warscourge",
+                        [367500] = "Hideous Cackle",
+                    },
+                    [186191] = {
+                        desc = "Brackenhide Hollow - Decay Speaker",
+                        [367503] = "Withering Burst",
+                        [382474] = "Decay Surge",
+                    },
+                    [184132] = {
+                        desc = "Uldaman - Earthen Warder",
+                        [369365] = "Curse of Stone",
+                    },
+                    [184301] = {
+                        desc = "Uldaman - Cavern Seeker",
+                        [369411] = "Sonic Burst",
+                    },
+                    [186420] = {
+                        desc = "Uldaman - Earthen Weaver",
+                        [369465] = "Hail of Stone",
+                    },
+                    [184580] = {
+                        desc = "Uldaman - Olaf",
+                        [369602] = "Defensive Bulwark",
+                    },
+                    [204046] = {
+                        desc = "Valdrakken - Olaf",
+                        [369602] = "Defensive Bulwark",
+                    },
+                    [184022] = {
+                        desc = "Uldaman - Stonevault Geomancer",
+                        [369675] = "Chain Lightning",
+                    },
+                    [186658] = {
+                        desc = "Uldaman - Stonevault Geomancer",
+                        [369675] = "Chain Lightning",
+                    },
+                    [189265] = {
+                        desc = "Neltharus - Qalashi Bonetender",
+                        [372223] = "Mending Clay",
+                    },
+                    [189470] = {
+                        desc = "Neltharus - Lava Flare",
+                        [372538] = "Melt",
+                    },
+                    [186220] = {
+                        desc = "Brackenhide Hollow - Brackenhide Shaper",
+                        [372711] = "Infuse Corruption",
+                    },
+                    [188067] = {
+                        desc = "Ruby Life Pools - Flashfrost Chillweaver",
+                        [372743] = "Ice Shield",
+                    },
+                    [189886] = {
+                        desc = "Ruby Life Pools - Blazebound Firestorm",
+                        [373017] = "Roaring Blaze",
+                    },
+                    [193462] = {
+                        desc = "The Nokhud Offensive - Batak",
+                        [373395] = "Bloodcurdling Shout",
+                    },
+                    [199717] = {
+                        desc = "The Nokhud Offensive - Nokhud Defender",
+                        [373395] = "Bloodcurdling Shout",
+                    },
+                    [190342] = {
+                        desc = "Halls of Infusion - Containment Apparatus",
+                        [374045] = "Expulse",
+                    },
+                    [190345] = {
+                        desc = "Halls of Infusion - Primalist Geomancer",
+                        [374066] = "Earth Shield",
+                    },
+                    [190348] = {
+                        desc = "Halls of Infusion - Primalist Ravager",
+                        [374080] = "Blasting Gust",
+                    },
+                    [190340] = {
+                        desc = "Halls of Infusion - Refti Defender",
+                        [374339] = "Demoralizing Shout",
+                    },
+                    [186226] = {
+                        desc = "Brackenhide Hollow - Fetid Rotsinger",
+                        [374544] = "Burst of Decay",
+                    },
+                    [190362] = {
+                        desc = "Halls of Infusion - Dazzling Dragonfly",
+                        [374563] = "Dazzle",
+                    },
+                    [190368] = {
+                        desc = "Halls of Infusion - Flamecaller Aymi",
+                        [374699] = "Cauterize",
+                        [374706] = "Pyretic Burst",
+                    },
+                    [191164] = {
+                        desc = "The Azure Vault - Arcane Tender",
+                        [375596] = "Erratic Growth",
+                    },
+                    [196115] = {
+                        desc = "The Azure Vault - Arcane Tender",
+                        [375596] = "Erratic Growth",
+                    },
+                    [190377] = {
+                        desc = "Halls of Infusion - Primalist Icecaller",
+                        [376171] = "Refreshing Tides",
+                    },
+                    [189901] = {
+                        desc = "Neltharus - Warlord Sargha",
+                        [376780] = "Magma Shield",
+                    },
+                    [190407] = {
+                        desc = "Halls of Infusion - Aqua Rager",
+                        [377341] = "Tidal Divergence",
+                    },
+                    [192333] = {
+                        desc = "Algeth'ar Academy - Alpha Eagle",
+                        [377389] = "Call of the Flock",
+                    },
+                    [190405] = {
+                        desc = "Halls of Infusion - Infuser Sariya",
+                        [377402] = "Aqueous Barrier",
+                    },
+                    [187155] = {
+                        desc = "The Azure Vault - Rune Seal Keeper",
+                        [377488] = "Icy Bindings",
+                    },
+                    [184335] = {
+                        desc = "Uldaman - Infinite Agent",
+                        [377500] = "Hasten",
+                    },
+                    [186125] = {
+                        desc = "Brackenhide Hollow - Tricktotem",
+                        [377950] = "Greater Healing Rapids",
+                    },
+                    [192788] = {
+                        desc = "Neltharus - Qalashi Thaumaturge",
+                        [378282] = "Molten Core",
+                    },
+                    [184300] = {
+                        desc = "Uldaman - Ebonstone Golem",
+                        [381593] = "Thunderous Clap",
+                    },
+                    [185528] = {
+                        desc = "Brackenhide Hollow - Trickclaw Mystic",
+                        [382249] = "Earth Bolt",
+                    },
+                    [185656] = {
+                        desc = "Brackenhide Hollow - Filth Caller",
+                        [382474] = "Decay Surge",
+                    },
+                    [187315] = {
+                        desc = "Brackenhide Hollow - Disease Slasher",
+                        [382787] = "Decay Claws",
+                    },
+                    [194467] = {
+                        desc = "Brackenhide Hollow - Brackenhide Slasher",
+                        [382787] = "Decay Claws",
+                    },
+                    [193944] = {
+                        desc = "Neltharus - Qalashi Lavamancer",
+                        [382791] = "Molten Barrier",
+                    },
+                    [189464] = {
+                        desc = "Neltharus - Qalashi Irontorch",
+                        [384161] = "Mote of Combustion",
+                    },
+                    [190207] = {
+                        desc = "Ruby Life Pools - Primalist Cinderweaver",
+                        [384194] = "Cinderbolt",
+                    },
+                    [191847] = {
+                        desc = "The Nokhud Offensive - Nokhud Plainstomper",
+                        [384365] = "Disruptive Shout",
+                    },
+                    [192800] = {
+                        desc = "The Nokhud Offensive - Nokhud Lancemaster",
+                        [384365] = "Disruptive Shout",
+                    },
+                    [197650] = {
+                        desc = "Ohn'ahran Plains - Tarolekk, the Stomper",
+                        [384365] = "Disruptive Shout",
+                    },
+                    [186116] = {
+                        desc = "Brackenhide Hollow - Gutshot",
+                        [384633] = "Master's Call",
+                    },
+                    [186339] = {
+                        desc = "The Nokhud Offensive - Teera",
+                        [384808] = "Guardian Wind",
+                    },
+                    [186246] = {
+                        desc = "Brackenhide Hollow - Fleshripper Vulture",
+                        [385029] = "Screech",
+                    },
+                    [194894] = {
+                        desc = "The Nokhud Offensive - Primalist Stormspeaker",
+                        [386015] = "Summon Squall",
+                        [386024] = "Tempest",
+                        [386025] = "Tempest",
+                    },
+                    [186741] = {
+                        desc = "The Azure Vault - Arcane Elemental",
+                        [386546] = "Waking Bane",
+                    },
+                    [195696] = {
+                        desc = "The Nokhud Offensive - Primalist Thunderbeast",
+                        [387125] = "Thunderstrike",
+                    },
+                    [195927] = {
+                        desc = "The Nokhud Offensive - Soulharvester Galtmaa",
+                        [387411] = "Death Bolt Volley",
+                    },
+                    [195928] = {
+                        desc = "The Nokhud Offensive - Soulharvester Duuren",
+                        [387411] = "Death Bolt Volley",
+                    },
+                    [195929] = {
+                        desc = "The Nokhud Offensive - Soulharvester Tumen",
+                        [387411] = "Death Bolt Volley",
+                    },
+                    [195930] = {
+                        desc = "The Nokhud Offensive - Soulharvester Mandakh",
+                        [387411] = "Death Bolt Volley",
+                    },
+                    [196102] = {
+                        desc = "The Azure Vault - Conjured Lasher",
+                        [387564] = "Mystic Vapors",
+                    },
+                    [195877] = {
+                        desc = "The Nokhud Offensive - Risen Mystic",
+                        [387596] = "Swift Wind",
+                    },
+                    [196203] = {
+                        desc = "Algeth'ar Academy - Ethereal Restorer",
+                        [387955] = "Celestial Shield",
+                    },
+                    [196044] = {
+                        desc = "Algeth'ar Academy - Unruly Textbook",
+                        [388392] = "Monotonous Lecture",
+                    },
+                    [196045] = {
+                        desc = "Algeth'ar Academy - Corrupted Manafiend",
+                        [388862] = "Surge",
+                        [388863] = "Mana Void",
+                    },
+                    [197985] = {
+                        desc = "Ruby Life Pools - Flame Channeler",
+                        [392451] = "Flashfire",
+                    },
+                    [197535] = {
+                        desc = "Ruby Life Pools - High Channeler Ryvati",
+                        [392924] = "Shock Blast",
+                    },
+                    [189235] = {
+                        desc = "Neltharus - Overseer Lahar",
+                        [395427] = "Burning Roar",
+                    },
+                    [199037] = {
+                        desc = "Halls of Infusion - Primalist Shocktrooper",
+                        [395694] = "Elemental Focus",
+                    },
+                    [59555] = {
+                        desc = "Temple of the Jade Serpent - Haunting Sha",
+                        [395859] = "Haunting Scream",
+                    },
+                    [59546] = {
+                        desc = "Temple of the Jade Serpent - The Talking Fish",
+                        [395872] = "Sleepy Soliloquy",
+                    },
+                    [59552] = {
+                        desc = "Temple of the Jade Serpent - The Crybaby Hozen",
+                        [396018] = "Fit of Rage",
+                    },
+                    [59544] = {
+                        desc = "Temple of the Jade Serpent - The Nodding Tiger",
+                        [396073] = "Cat Nap",
+                    },
+                    [196548] = {
+                        desc = "Algeth'ar Academy - Ancient Branch",
+                        [396640] = "Healing Touch",
+                    },
+                    [196576] = {
+                        desc = "Algeth'ar Academy - Spellbound Scepter",
+                        [396812] = "Mystic Blast",
+                    },
+                    [193373] = {
+                        desc = "The Nokhud Offensive - Nokhud Thunderfist",
+                        [397394] = "Deadly Thunder",
+                    },
+                    [200126] = {
+                        desc = "Temple of the Jade Serpent - Fallen Waterspeaker",
+                        [397889] = "Tidal Burst",
+                    },
+                    [200137] = {
+                        desc = "Temple of the Jade Serpent - Depraved Mistweaver",
+                        [397914] = "Defiling Mist",
+                    },
+                    [75979] = {
+                        desc = "Shadowmoon Burial Grounds - Exhumed Spirit",
+                        [398206] = "Death Blast",
+                    },
+                    [204206] = {
+                        desc = "Dawn of the Infinite - Horde Farseer",
+                        [407891] = "Healing Wave",
+                    },
+                    [45912] = {
+                        desc = "The Vortex Pinnacle - Wild Vortex",
+                        [410870] = "Cyclone",
+                    },
+                    [205363] = {
+                        desc = "Dawn of the Infinite - Time-Lost Waveshaper",
+                        [411300] = "Fish Bolt Volley",
+                    },
+                    [205727] = {
+                        desc = "Dawn of the Infinite - Time-Lost Rocketeer",
+                        [412233] = "Rocket Bolt Volley",
+                    },
+                    [205337] = {
+                        desc = "Dawn of the Infinite - Infinite Timebender",
+                        [412378] = "Dizzying Sands",
+                    },
+                    [205158] = {
+                        desc = "Dawn of the Infinite - Spurlok, Timesworn Sentinel",
+                        [412922] = "Binding Grasp",
+                    },
+                    [138187] = {
+                        desc = "The Underrot - Grotesque Horror",
+                        [413044] = "Dark Echoes",
+                    },
+                    [201223] = {
+                        desc = "Dawn of the Infinite - Infinite Twilight Magus",
+                        [413607] = "Corroding Volley",
+                    },
+                    [206066] = {
+                        desc = "Dawn of the Infinite - Timestream Leech",
+                        [415437] = "Enervate",
+                    },
+                    [206140] = {
+                        desc = "Dawn of the Infinite - Coalesced Time",
+                        [415770] = "Infinite Bolt Volley",
+                    },
+                    [199000] = {
+                        desc = "Dawn of the Infinite - Chrono-Lord Deios",
+                        [416139] = "Temporal Breath",
+                    },
+                    [199748] = {
+                        desc = "Dawn of the Infinite - Timeline Marauder",
+                        [417481] = "Displace Chronosequence",
+                    },
+                    [208698] = {
+                        desc = "Dawn of the Infinite - Infinite Riftmage",
+                        [418200] = "Infinite Burn",
+                    },
+                    [83893] = {
+                        desc = "The Everbloom - Earthshaper Telu",
+                        [427460] = "Toxic Bloom",
+                    },
+                    [40943] = {
+                        desc = "Throne of the Tides - Gilgoblin Aquamage",
+                        [429176] = "Aquablast",
+                    },
+
+                    [187771] = {
+                        desc = "Vault of the Incarnates - Kadros Icewrath",
+                        [372315] = "Frost Spike",
+                    },
+                    [187768] = {
+                        desc = "Vault of the Incarnates - Dathea Stormlash",
+                        [372394] = "Lightning Bolt",
+                    },
+                    [190686] = {
+                        desc = "Vault of the Incarnates - Frozen Destroyer",
+                        [374623] = "Frost Binds",
+                    },
+                    [191232] = {
+                        desc = "Vault of the Incarnates - Drakonid Stormbringer",
+                        [375653] = "Static Jolt",
+                    },
+                    [191206] = {
+                        desc = "Vault of the Incarnates - Primalist Mage",
+                        [375716] = "Ice Barrage",
+                    },
+                    [194647] = {
+                        desc = "Vault of the Incarnates - Thunder Caller",
+                        [384273] = "Storm Bolt",
+                    },
+                    [194990] = {
+                        desc = "Vault of the Incarnates - Stormseeker Acolyte",
+                        [385553] = "Storm Bolt",
+                    },
+                    [199233] = {
+                        desc = "Vault of the Incarnates - Flamescale Captain",
+                        [396040] = "Pyroblast",
+                    },
+                    [199703] = {
+                        desc = "Aberrus, the Shadowed Crucible - Magma Mystic",
+                        [397386] = "Lava Bolt",
+                    },
+                    [202971] = {
+                        desc = "Aberrus, the Shadowed Crucible - Null Glimmer",
+                        [404754] = "Blasting Scream",
+                    },
+                    [201288] = {
+                        desc = "Aberrus, the Shadowed Crucible - Sundered Champion",
+                        [406911] = "Brutal Cauterization",
+                    },
+                    [205619] = {
+                        desc = "Aberrus, the Shadowed Crucible - Sarek Cinderbreath",
+                        [406911] = "Brutal Cauterization",
+                    },
+                    [202969] = {
+                        desc = "Aberrus, the Shadowed Crucible - Empty Recollection",
+                        [411302] = "Cosmic Volley",
+                    },
+                    [210290] = {
+                        desc = "Amirdrassil, the Dream's Hope - Firelands Flameguard",
+                        [425381] = "Blazing Pulse",
+                    },
+                    [211904] = {
+                        desc = "Amirdrassil, the Dream's Hope - Tainted Treant",
+                        [425816] = "Blazing Pollen",
+                    },
+                    [210423] = {
+                        desc = "Amirdrassil, the Dream's Hope - Keeper of the Dream",
+                        [425995] = "Tranquility",
+                    },
+                    [208459] = {
+                        desc = "Amirdrassil, the Dream's Hope - Fiery Treant",
+                        [426524] = "Fiery Flourish",
+                    },
                 },
 
                 iconStore = {
@@ -8297,7 +9320,7 @@ do
 
                         filterCasts  ={
                             type = "toggle",
-                            name = format( "%s Filter M+ Interrupts (DF Season 3)", NewFeature ),
+                            name = format( "%s Filter M+ Interrupts (DF Season 4)", NewFeature ),
                             desc = format( "If checked, low-priority enemy casts will be ignored when your target may use an ability that should be interrupted.\n\n"
                                 .. "Example:  In Everbloom, Earthshaper Telu's |W%s|w will be ignored and |W%s|w will be interrupted.", ( GetSpellInfo( 168040 ) or "Nature's Wrath" ),
                                 ( GetSpellInfo( 427459 ) or "Toxic Bloom" ) ),
