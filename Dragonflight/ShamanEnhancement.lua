@@ -705,11 +705,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 vesper_damage = 3
                 vesper_used = 0
             end
-
-        -- For any Maelstrom Weapon changes, force an immediate update for responsiveness.
-        elseif spellID == 344179 then
-            Hekili:ForceUpdate( subtype, true )
-
         elseif state.talent.alpha_wolf.enabled and ( spellID == 187874 or spellID == 188443 ) then
             local expires = GetTime() + 8
 
