@@ -13,20 +13,19 @@ actions+=/run_action_list,name=cat_aoe,if=buff.cat_form.up&active_enemies>2
 actions+=/run_action_list,name=cat,if=buff.cat_form.up
 actions+=/cat_form,if=!up
 
-actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<60-(buff.clearcasting.up&15|0)
-actions.cat+=/faerie_fire_feral,if=ff_now
-#actions.cat+=/faerie_fire_feral,if=glyph.omen_of_clarity.enabled&!buff.clearcasting.up&(target.outside2|buff.berserk.up&ff_during_berserk|!buff.berserk.up&energy.current<87)&(!rip_now|energy.current<action.rip.spend)&can_spend_ff
+actions.cat+=/tigers_fury,use_off_gcd=1,if=try_tigers_fury
+actions.cat+=/berserk,use_off_gcd=1,if=try_berserk
+actions.cat+=/bear_form,if=emergency_bearweave
+actions.cat+=/faerie_fire_feral,if=ff_now&target.outside2
 actions.cat+=/feral_charge_cat,if=target.outside7
-actions.cat+=/berserk,use_off_gcd=1,if=!wait_for_tf&debuff.rip.up&!buff.clearcasting.up
-actions.cat+=/ravage,if=energy.current<=energy.max-energy.regen*(1+latency)&!buff.clearcasting.up
+actions.cat+=/ravage,if=energy.current<=energy.max-energy.regen*(1+latency)&!buff.clearcasting.up|buff.stampede_cat.remains<1
 actions.cat+=/shred,if=rip_now&(glyph.bloodletting.enabled&debuff.rip.up&rip_tracker[target.unit].extension<6)
 actions.cat+=/rip,if=rip_now
 actions.cat+=/savage_roar,if=roar_now
 actions.cat+=/ferocious_bite,if=bite_now
 actions.cat+=/mangle_cat,if=mangle_now
-
 actions.cat+=/rake,if=rake_now
-actions.cat+=/feral_charge_cat,if=!aggro&!buff.clearcasting.up&energy.current<=70&(!debuff.rip.up|debuff.rip.remains>3)&(!debuff.rake.up|debuff.rip.remains>3)
+actions.cat+=/feral_charge_cat,if=should_leaveweave
 actions.cat+=/bear_form,if=should_bearweave
 actions.cat+=/mark_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
 actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current=energy.max)
@@ -41,10 +40,12 @@ actions.cat_aoe+=/swipe_cat,if=excess_e>=action.swipe_cat.spend|buff.clearcastin
 actions.cat_aoe+=/mark_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<45
 actions.cat_aoe+=/faerie_fire_feral,if=ff_now
 
-actions.bearweave+=/cat_form,if=should_cat
-actions.bearweave+=/enrage,use_off_gcd=1,if=cooldown.mangle_bear.up
-actions.bearweave+=/maul,use_off_gcd=1,if=!up&!buff.clearcasting.up&rage.current>=action.maul.spend+(cooldown.mangle_bear.up&action.mangle_bear.spend|0)
+actions.bearweave+=/enrage,use_off_gcd=1,if=!should_cat
+actions.bearweave+=/lacerate,if=emergency_lacerate
+actions.bearweave+=/cat_form,if=should_cat&!emergency_lacerate
+actions.bearweave+=/lacerate,if=lacerateNow
 actions.bearweave+=/mangle_bear
+actions.bearweave+=/lacerate
 
 actions.bear_tank_init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 actions.bear_tank_init+=/variable,name=build_lacerate,value=!debuff.lacerate.up|debuff.lacerate.stack<5
