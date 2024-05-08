@@ -642,7 +642,7 @@ all:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
 
-        item = 193732,
+        item = 212683,
 
         -- usable = function() return active_dot.skewering_cold > 0, "requires skewering_cold stacks" end,
         handler = function()
