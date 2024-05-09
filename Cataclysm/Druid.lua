@@ -345,7 +345,7 @@ spec:RegisterStateExpr("can_bite", function()
         return not rip_tf_snapshot
     end 
 
-    return debuff.rip.remains >= settings.min_bite_sr_remains
+    return debuff.rip.remains >= settings.min_bite_rip_remains
 end)
 
 spec:RegisterStateExpr("bite_before_rip", function()
@@ -613,7 +613,7 @@ spec:RegisterStateExpr("clip_mangle", function()
     --end
 
     if mangle_refresh_pending then
-        return (ttd + 5 > debuff.mangle.remains) and (ttd -5 < debuff.mangle_cat.duration)
+        return (ttd + 5 > debuff.mangle.remains) and (ttd -5 < debuff.mangle_cat.duration) and not buff.clearcasting.up
     end
 
     return false
@@ -3777,33 +3777,33 @@ spec:RegisterSetting( "druid_feral_description", nil, {
     name = strformat( "These settings will change the %s behavior when using the default |cFF00B4FFFeral|r priority.\n\n", Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ) )
 } )
 
----- TODO:
---spec:RegisterSetting( "min_roar_offset", 24, {
---    type = "range",
---    name = strformat( "Minimum %s before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
---    desc = strformat( "Sets the minimum number of seconds over the current %s duration required for %s recommendations.\n\n"..
---        "Recommendation:\n - 34 with T8-4PC\n - 24 without T8-4PC\n\n"..
---        "Default: 24", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
---    width = "full",
---    min = 0,
---    softMax = 42,
---    step = 1,
---} )
 
---spec:RegisterSetting( "rip_leeway", 3, {
---    type = "range",
---    name = strformat( "%s Leeway", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
---    desc = "Sets the leeway allowed when deciding whether to recommend clipping Savage Roar.\n\nThere are cases where Rip falls "..
---        "very shortly before Roar and, due to default priorities and player reaction time, Roar falls off before the player is able "..
---        "to utilize their combo points. This leads to Roar being cast instead and having to rebuild 5CP for Rip."..
---        "This setting helps address that by widening the rip/roar clipping window.\n\n"..
---        "Recommendation: 3\n\n"..
---        "Default: 3",
---    width = "full",
---    min = 1,
---    softMax = 10,
---    step = 0.1,
---} )
+spec:RegisterSetting( "min_roar_offset", 29, {
+    type = "range",
+    name = strformat( "Minimum %s before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
+    desc = strformat( "Sets the minimum number of seconds over the current %s duration required for %s recommendations.\n\n"..
+        --"Recommendation:\n - 34 with T8-4PC\n - 24 without T8-4PC\n\n"..
+        "Default: 29", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
+    width = "full",
+    min = 0,
+    softMax = 42,
+    step = 1,
+} )
+
+spec:RegisterSetting( "rip_leeway", 1, {
+    type = "range",
+    name = strformat( "%s Leeway", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
+    desc = "Sets the leeway allowed when deciding whether to recommend clipping Savage Roar.\n\nThere are cases where Rip falls "..
+        "very shortly before Roar and, due to default priorities and player reaction time, Roar falls off before the player is able "..
+        "to utilize their combo points. This leads to Roar being cast instead and having to rebuild 5CP for Rip."..
+        "This setting helps address that by widening the rip/roar clipping window.\n\n"..
+        "Recommendation: 3\n\n"..
+        "Default: 3",
+    width = "full",
+    min = 1,
+    softMax = 10,
+    step = 0.1,
+} )
 
 --spec:RegisterSetting( "max_ff_delay", 0.1, {
 --    type = "range",
@@ -3865,24 +3865,24 @@ spec:RegisterSetting( "ferociousbite_enabled", true, {
     width = "full",
 } )
 
-spec:RegisterSetting( "min_bite_sr_remains", 4, {
+spec:RegisterSetting( "min_bite_sr_remains", 11, {
     type = "range",
     name = strformat( "Minimum %s before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
     desc = strformat( "If set above zero, %s will not be recommended unless %s has this much time remaining.\n\n" ..
-        "Recommendation: 4-8, depending on character gear level\n\n" ..
-        "Default: 4", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
+        --"Recommendation: 4-8, depending on character gear level\n\n" ..
+        "Default: 11", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.savage_roar.id ) ),
     width = "full",
     min = 0,
     softMax = 14,
     step = 1
 } )
 
-spec:RegisterSetting( "min_bite_rip_remains", 4, {
+spec:RegisterSetting( "min_bite_rip_remains", 11, {
     type = "range",
     name = strformat( "Minimum %s before %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ) ),
     desc = strformat( "If set above zero, %s will not be recommended unless %s has this much time remaining.\n\n" ..
-        "Recommendation: 4-8, depending on character gear level\n\n" ..
-        "Default: 4", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
+        --"Recommendation: 4-8, depending on character gear level\n\n" ..
+        "Default: 11", Hekili:GetSpellLinkWithTexture( spec.abilities.ferocious_bite.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.rip.id ) ),
     width = "full",
     min = 0,
     softMax = 14,
