@@ -18,8 +18,8 @@ actions.cat+=/berserk,use_off_gcd=1,if=try_berserk
 actions.cat+=/bear_form,if=emergency_bearweave
 actions.cat+=/faerie_fire_feral,if=ff_now&target.outside2
 actions.cat+=/feral_charge_cat,if=target.outside7
-actions.cat+=/ravage,if=energy.current<=energy.max-energy.regen*(1+latency)&!buff.clearcasting.up|buff.stampede_cat.remains<1
-actions.cat+=/shred,if=rip_now&(glyph.bloodletting.enabled&debuff.rip.up&rip_tracker[target.unit].extension<6)
+actions.cat+=/ravage,if=buff.stampede_cat.remains<1.5
+actions.cat+=/shred,if=debuff.rip.remains<1.5&rip_canextend
 actions.cat+=/rip,if=rip_now
 actions.cat+=/savage_roar,if=roar_now
 actions.cat+=/ferocious_bite,if=bite_now
@@ -27,6 +27,7 @@ actions.cat+=/mangle_cat,if=mangle_now
 actions.cat+=/rake,if=rake_now
 actions.cat+=/feral_charge_cat,if=should_leaveweave
 actions.cat+=/bear_form,if=should_bearweave
+actions.cat+=/ravage
 actions.cat+=/mark_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
 actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current=energy.max)
 
