@@ -18,8 +18,8 @@ actions.cat+=/berserk,use_off_gcd=1,if=try_berserk
 actions.cat+=/bear_form,if=emergency_bearweave
 actions.cat+=/faerie_fire_feral,if=ff_now&target.outside2
 actions.cat+=/feral_charge_cat,if=target.outside7
-actions.cat+=/ravage,if=energy.current<=energy.max-energy.regen*(1+latency)&!buff.clearcasting.up|buff.stampede_cat.remains<1
-actions.cat+=/shred,if=rip_now&(glyph.bloodletting.enabled&debuff.rip.up&rip_tracker[target.unit].extension<6)
+actions.cat+=/ravage,if=buff.stampede_cat.remains<1.5
+actions.cat+=/shred,if=debuff.rip.remains<1.5&rip_canextend
 actions.cat+=/rip,if=rip_now
 actions.cat+=/savage_roar,if=roar_now
 actions.cat+=/ferocious_bite,if=bite_now
@@ -27,6 +27,7 @@ actions.cat+=/mangle_cat,if=mangle_now
 actions.cat+=/rake,if=rake_now
 actions.cat+=/feral_charge_cat,if=should_leaveweave
 actions.cat+=/bear_form,if=should_bearweave
+actions.cat+=/ravage
 actions.cat+=/mark_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<42
 actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current=energy.max)
 
@@ -43,16 +44,15 @@ actions.cat_aoe+=/faerie_fire_feral,if=ff_now
 actions.bearweave+=/enrage,use_off_gcd=1,if=!should_cat
 actions.bearweave+=/lacerate,if=emergency_lacerate
 actions.bearweave+=/cat_form,if=should_cat&!emergency_lacerate
-actions.bearweave+=/lacerate,if=lacerateNow
+actions.bearweave+=/lacerate,if=lacerate_now
 actions.bearweave+=/mangle_bear
 actions.bearweave+=/lacerate
 
-actions.bear_tank_init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 actions.bear_tank_init+=/variable,name=build_lacerate,value=!debuff.lacerate.up|debuff.lacerate.stack<5
 actions.bear_tank_init+=/variable,name=build_lacerate_cost,op=setif,if=variable.build_lacerate,value=action.lacerate.spend*(5-debuff.lacerate.stack),value_else=0
-actions.bear_tank_init+=/variable,name=maintain_lacerate,value=!variable.build_lacerate&debuff.lacerate.remains<8&debuff.lacerate.remains<variable.time_to_die
+actions.bear_tank_init+=/variable,name=maintain_lacerate,value=!variable.build_lacerate&debuff.lacerate.remains<8&debuff.lacerate.remains<ttd
 actions.bear_tank_init+=/variable,name=maintain_lacerate_cost,op=setif,if=variable.maintain_lacerate,value=action.lacerate.spend,value_else=0
-actions.bear_tank_init+=/variable,name=emergency_lacerate,value=debuff.lacerate.up&debuff.lacerate.remains<4.5&debuff.lacerate.remains<variable.time_to_die
+actions.bear_tank_init+=/variable,name=emergency_lacerate,value=debuff.lacerate.up&debuff.lacerate.remains<4.5&debuff.lacerate.remains<ttd
 
 actions.bear_tank+=/call_action_list,name=bear_tank_init
 actions.bear_tank+=/enrage,use_off_gcd=1,if=time<10
