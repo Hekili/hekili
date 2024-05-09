@@ -1049,8 +1049,8 @@ end)
 -- Calculate if we should Leaveweave/Meleeweave (run out and feral_charge_cat in for stampede)
 spec:RegisterStateExpr("should_leaveweave", function()
     -- Estimate time to run out and charge back in
-    local run_out_time = (action.feral_charge_cat.minRange + 1 - target.distance) / movement_speed + latency
-    local charge_in_time = (action.feral_charge_cat.minRange + 1) / 80 + latency
+    local run_out_time = (action.feral_charge_cat.real_minRange + 1 - target.distance) / movement_speed + latency
+    local charge_in_time = (action.feral_charge_cat.real_minRange + 1) / 80 + latency
     local weave_duration = run_out_time + charge_in_time
     local weave_energy = energy.max - (weave_duration * energy.regen)
 
@@ -1069,7 +1069,7 @@ spec:RegisterStateExpr("should_leaveweave", function()
     -- Also add an end-of-fight condition to make sure we can spend down our Energy post-weave before the encounter ends.
     local energy_to_dump = energy.current + weave_duration * energy.regen
     local time_to_dump = floor(energy_to_dump / action.shred.cost)
-    return weave_end + time_to_dump < ttd
+    return weave_duration + time_to_dump < ttd
 end)
 
 spec:RegisterStateExpr("bear_mode_tank_enabled", function()
@@ -2316,7 +2316,8 @@ spec:RegisterAbilities( {
         spend = 10, 
         spendType = "energy",
 
-        minRange = 8,
+        minRange = function() return leaveweaving_enabled and 0 or 8 end, -- we need to set this to 0 to indicate leaveweaving
+        real_minRange = 8, -- we still need the real value for leaveweave calculations
         maxRange = 25,
 
         startsCombat = true,
