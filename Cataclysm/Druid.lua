@@ -528,7 +528,7 @@ spec:RegisterStateExpr("ff_now", function()
 end)
 
 spec:RegisterStateFunction("calc_tf_energy_thresh", function(leeway)
-    local delayTime = leeway + (buff.clearcasting.up and 1 or 0)
+    local delayTime = leeway + (buff.clearcasting.up and 1 or 0) + (buff.stampede_cat.up and 1 or 0)
     return (40.0 - delayTime *  energy.regen)
 end)
 
