@@ -43,16 +43,15 @@ actions.cat_aoe+=/faerie_fire_feral,if=ff_now
 actions.bearweave+=/enrage,use_off_gcd=1,if=!should_cat
 actions.bearweave+=/lacerate,if=emergency_lacerate
 actions.bearweave+=/cat_form,if=should_cat&!emergency_lacerate
-actions.bearweave+=/lacerate,if=lacerateNow
+actions.bearweave+=/lacerate,if=lacerate_now
 actions.bearweave+=/mangle_bear
 actions.bearweave+=/lacerate
 
-actions.bear_tank_init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 actions.bear_tank_init+=/variable,name=build_lacerate,value=!debuff.lacerate.up|debuff.lacerate.stack<5
 actions.bear_tank_init+=/variable,name=build_lacerate_cost,op=setif,if=variable.build_lacerate,value=action.lacerate.spend*(5-debuff.lacerate.stack),value_else=0
-actions.bear_tank_init+=/variable,name=maintain_lacerate,value=!variable.build_lacerate&debuff.lacerate.remains<8&debuff.lacerate.remains<variable.time_to_die
+actions.bear_tank_init+=/variable,name=maintain_lacerate,value=!variable.build_lacerate&debuff.lacerate.remains<8&debuff.lacerate.remains<ttd
 actions.bear_tank_init+=/variable,name=maintain_lacerate_cost,op=setif,if=variable.maintain_lacerate,value=action.lacerate.spend,value_else=0
-actions.bear_tank_init+=/variable,name=emergency_lacerate,value=debuff.lacerate.up&debuff.lacerate.remains<4.5&debuff.lacerate.remains<variable.time_to_die
+actions.bear_tank_init+=/variable,name=emergency_lacerate,value=debuff.lacerate.up&debuff.lacerate.remains<4.5&debuff.lacerate.remains<ttd
 
 actions.bear_tank+=/call_action_list,name=bear_tank_init
 actions.bear_tank+=/enrage,use_off_gcd=1,if=time<10
