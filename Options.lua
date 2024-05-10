@@ -8644,16 +8644,20 @@ do
 
                 for i = 1, GetNumTalentTabs() do
                     for n = 1, GetNumTalents( i ) do
-                        local talentID = tonumber( GetTalentLink( i, n ):match( "talent:(%d+)" ) )
-                        local name, _, _, _, _, ranks = GetTalentInfo( i, n )
-                        local key = key( name )
+                        local link = GetTalentLink( i, n )
 
-                        insert( talents, { name = key, talent = talentID, ranks = ranks } )
+                        if link then
+                            local talentID = tonumber( link:match( "talent:(%d+)" ) )
+                            local name, _, _, _, _, ranks = GetTalentInfo( i, n )
+                            local key = key( name )
 
-                        local tToS = ns.TalentToSpellID[ talentID ]
+                            insert( talents, { name = key, talent = talentID, ranks = ranks } )
 
-                        for rank, spell in ipairs( tToS ) do
-                            EmbedSpellData( spell, key, true, rank )
+                            local tToS = ns.TalentToSpellID[ talentID ]
+
+                            for rank, spell in ipairs( tToS ) do
+                                EmbedSpellData( spell, key, true, rank )
+                            end
                         end
                     end
                 end
