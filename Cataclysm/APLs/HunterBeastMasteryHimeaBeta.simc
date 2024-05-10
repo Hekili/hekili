@@ -34,8 +34,8 @@ actions.aoe+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launche
 actions.aoe+=/explosive_trap
 actions.aoe+=/multishot
 actions.aoe+=/kill_shot,if=target.health.pct<20
-actions.aoe+=/cobra_shot,if=!moving&level>80
-actions.aoe+=/steady_shot,if=!moving&level<81
+actions.aoe+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.aoe+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.aoe+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Cleave
@@ -54,8 +54,8 @@ actions.cleave+=/kill_shot,if=target.health.pct<20
 actions.cleave+=/focus_fire,if=buff.focus_fire.down&buff.frenzy_effect.stack=5
 actions.cleave+=/wait,sec=cooldown.kill_command.remains,if=cooldown.kill_command.remains>0&cooldown.kill_command.remains<1&focus>=40
 actions.cleave+=/arcane_shot,if=focus>65
-actions.cleave+=/cobra_shot,if=!moving&level>80
-actions.cleave+=/steady_shot,if=!moving&level<81
+actions.cleave+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.cleave+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.cleave+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Single
@@ -75,6 +75,6 @@ actions.single+=/kill_shot,if=target.health.pct<20
 actions.single+=/focus_fire,if=buff.focus_fire.down&buff.frenzy_effect.stack=5
 actions.single+=/wait,sec=cooldown.kill_command.remains,if=cooldown.kill_command.remains>0&cooldown.kill_command.remains<1&focus>=40
 actions.single+=/arcane_shot,if=focus>65
-actions.single+=/cobra_shot,if=!moving&level>80
-actions.single+=/steady_shot,if=!moving&level<81
+actions.single+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.single+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.single+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect

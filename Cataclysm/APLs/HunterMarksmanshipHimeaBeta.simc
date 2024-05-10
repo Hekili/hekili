@@ -37,7 +37,7 @@ actions.aoe+=/multishot
 actions.aoe+=/steady_shot,if=buff.improved_steady_shot.down|buff.improved_steady_shot.remains<1.5
 actions.aoe+=/aimed_shot,if=buff.fire.up
 actions.aoe+=/kill_shot,if=target.health.pct<20
-actions.aoe+=/steady_shot,if=!moving&level<81
+actions.aoe+=/steady_shot,if=!moving|buff.aspect_of_the_fox.up
 actions.aoe+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Cleave
@@ -56,7 +56,7 @@ actions.cleave+=/aimed_shot,if=buff.fire.up
 actions.cleave+=/kill_shot,if=target.health.pct<20
 actions.cleave+=/aimed_shot,if=target.health.pct>90
 actions.cleave+=/arcane_shot,if=focus>75
-actions.cleave+=/steady_shot
+actions.cleave+=/steady_shot,if=!moving|buff.aspect_of_the_fox.up
 actions.cleave+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Single
@@ -75,5 +75,5 @@ actions.single+=/aimed_shot,if=buff.fire.up
 actions.single+=/kill_shot,if=target.health.pct<20
 actions.single+=/aimed_shot,if=target.health.pct>90
 actions.single+=/arcane_shot,if=focus>75
-actions.single+=/steady_shot
+actions.single+=/steady_shot,if=!moving|buff.aspect_of_the_fox.up
 actions.single+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect

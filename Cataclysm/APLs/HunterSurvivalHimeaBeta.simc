@@ -34,8 +34,8 @@ actions.aoe+=/explosive_trap
 actions.aoe+=/multishot
 actions.aoe+=/explosive_shot,cycle_targets=2,max_cycle_targets=2,if=buff.lock_and_load.up&debuff.explosive_shot.down
 actions.aoe+=/kill_shot,if=target.health.pct<20
-actions.aoe+=/cobra_shot,if=!moving&level>80
-actions.aoe+=/steady_shot,if=!moving&level<81
+actions.aoe+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.aoe+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.aoe+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Cleave
@@ -49,8 +49,8 @@ actions.cleave+=/kill_shot,if=target.health.pct<20
 actions.cleave+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
 actions.cleave+=/explosive_trap
 actions.cleave+=/arcane_shot,if=focus>80
-actions.cleave+=/cobra_shot,cycle_targets=1,max_cycle_targets=2,if=!moving&level>80
-actions.cleave+=/steady_shot,if=!moving&level<81
+actions.cleave+=/cobra_shot,cycle_targets=1,max_cycle_targets=2,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.cleave+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.cleave+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Single
@@ -64,6 +64,6 @@ actions.single+=/kill_shot,if=target.health.pct<20
 actions.single+=/hunters_mark,if=debuff.hunters_mark.down
 actions.single+=/black_arrow,if=debuff.black_arrow.down
 actions.single+=/arcane_shot,if=focus>80
-actions.single+=/cobra_shot,if=!moving&level>80
-actions.single+=/steady_shot,if=!moving&level<81
+actions.single+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.single+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.single+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
