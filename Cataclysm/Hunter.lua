@@ -248,15 +248,15 @@ hunter:RegisterAuras( {
     },
     -- Untargetable by ranged attacks. Reducing the range at which enemy creatures will detect you.
     camouflage = {
-    id = 51755,
-    duration = 60,
-    max_stack = 1
+        id = 51755,
+        duration = 60,
+        max_stack = 1
     },
     -- Deflecting melee attacks, ranged attacks, and spells. Damage taken reduced by 30%.
     deterrence = {
-    id = 19263,
-    duration = 5,
-    max_stack = 1
+        id = 19263,
+        duration = 5,
+        max_stack = 1
     },
     -- You attempt to disengage from combat, leaping backwards.
     disengage = {
@@ -295,24 +295,20 @@ hunter:RegisterAuras( {
         tick_time = 2,
         max_stack = 1,
         generate = function( t )
-            local name, _, count, _, duration, expires, caster
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", class.auras.mend_pet.id )
 
-            for i, spell in ipairs( class.auras.mend_pet.copy ) do
-                name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", spell )
-
-                if name then
-                    fs.count = 1
-                    fs.applied = expires - duration
-                    fs.expires = expires
-                    fs.caster = "pet"
-                    return
-                end
+            if name then
+                t.count = 1
+                t.applied = expires - duration
+                t.expires = expires
+                t.caster = "pet"
+                return
             end
 
-            fs.count = 0
-            fs.applied = 0
-            fs.expires = 0
-            fs.caster = "nobody"
+            t.count = 0
+            t.applied = 0
+            t.expires = 0
+            t.caster = "nobody"
         end,
     },
     -- Redirecting threat.
@@ -496,6 +492,7 @@ hunter:RegisterAuras( {
         end,
         duration = 8,
         max_stack = 1,
+        copy = { 94006, 94007 }
     },
     -- While your pet is active, you and your pet will regenerate 1/2% of total health every 10 sec.
     spirit_bond = {
@@ -504,7 +501,8 @@ hunter:RegisterAuras( {
             if talent.spirit_bond.rank == 2 then return 24529 end
         end,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        copy = { 19579, 24529 }
     },
     -- Enraged.
     the_beast_within = {
@@ -556,6 +554,7 @@ hunter:RegisterAuras( {
         end,
         duration = 20,
         max_stack = 1,
+        copy = { 35098, 35099 }
     },
     rapid_recuperation = {
         id = function()
@@ -564,6 +563,7 @@ hunter:RegisterAuras( {
         end,
         duration = 15,
         max_stack = 1,
+        copy = { 53230, 54227 }
     },
     -- Next Kill Command on your marked target refunds 100% of the Focus cost.
     resistance_is_futile = {
@@ -579,6 +579,7 @@ hunter:RegisterAuras( {
         end,
         duration = 12,
         max_stack = 1,
+        copy = { 83359, 89388 }
     },
     -- Increases melee attack power by 20% and ranged attack power by 10%.
     trueshot_aura = {
@@ -594,7 +595,6 @@ hunter:RegisterAuras( {
         id = 63468,
         duration = 8,
         max_stack = 1,
-
         copy = { 63468, 413848 }
     },
     -- Dazed.
@@ -650,6 +650,7 @@ hunter:RegisterAuras( {
         end,
         duration = 15,
         max_stack = 1,
+        copy = { 64418, 64419, 64420 }
     },
 
     -- Survival Debuffs
@@ -678,6 +679,7 @@ hunter:RegisterAuras( {
             if talent.entrapment.rank == 2 then return 4 end
         end,
         max_stack = 1,
+        copy = { 19185, 64803 }
     },
     -- Taking 411 Fire damage every second.
     explosive_shot = {
@@ -2128,7 +2130,6 @@ hunter:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            removeDebuff( "target", "stings" )
             applyDebuff( "target", "wyvern_sting" )
         end,
     },
