@@ -1066,10 +1066,7 @@ hunter:RegisterAbilities( {
     -- Place a fire trap that explodes when an enemy approaches, causing Fire damage and burning all enemies for 290 additional
     -- Fire damage over 20 sec to all within 10 yards. Trap will exist for 1 min.
     explosive_trap = {
-        id = function()
-            if buff.trap_launcher.up then return 82939
-            else return 13813 end
-        end,
+        id = 13813,
         cast = 0,
         cooldown = function()
             if talent.resourcefulness.rank == 1 then
