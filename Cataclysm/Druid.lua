@@ -1121,7 +1121,14 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 } )
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.ComboPoints )
-spec:RegisterResource( Enum.PowerType.Energy )
+spec:RegisterResource( Enum.PowerType.Energy, {
+    primal_madness = {
+        aura = "primal_madness",
+
+        last = function() return max(state.buff.berserk.expires, state.buff.tigers_fury.expires) end,
+
+        value = -10 * state.talent.primal_madness.rank
+    }})
 
 
 -- Talents
@@ -1598,6 +1605,12 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
     },
+    -- Total Energy increased by 20.
+    primal_madness = {
+        id = 80886,
+        duration = function() return max(buff.berserk.remains, buff.tigers_fury.remains) end,
+        max_stack = 1,
+    },
     -- Stealthed.  Movement speed slowed by $s2%.
     prowl = {
         id = 5215,
@@ -1971,6 +1984,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
         handler = function()
             applyBuff( "berserk" )
+            applyBuff("primal_madness", buff.berserk.duration)
         end,
     },
     --When you Ferocious Bite a target at or below 25% health, you have a chance to instantly refresh the duration of your Rip on the target. Requires Druid.
@@ -3668,6 +3682,8 @@ spec:RegisterAbilities( {
 
         form = "cat_form",
         handler = function()
+            applyBuff("tigers_fury")
+            applyBuff("primal_madness", buff.tigers_fury.duration)
             gain( 20 * talent.king_of_the_jungle.rank, "energy" )
         end,
 
