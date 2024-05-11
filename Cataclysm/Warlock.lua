@@ -10,7 +10,7 @@ local spec = Hekili:NewSpecialization( 9 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
 
--- Talents Updated for Cataclysm Classic
+-- Talents
 spec:RegisterTalents( {
     aftermath = { 11197, 2, 85113, 85114 },
     amplify_curse = { 6542, 1, 18288 },
@@ -28,7 +28,7 @@ spec:RegisterTalents( {
     cremation = { 11199, 2, 85103, 85104 },
     curse_of_exhaustion = { 18223, 1, 18223 },
     dark_arts = { 10992, 3, 18694, 85283, 85284 },
-    death's_embrace = { 11142, 3, 47198, 47199, 47200 },
+    deaths_embrace = { 11142, 3, 47198, 47199, 47200 },
     decimation = { 11034, 2, 63156, 63158 },
     demonic_aegis = { 11190, 2, 30143, 30144 },
     demonic_brutality = { 3059, 3, 18705, 18706, 18707 },
@@ -55,7 +55,7 @@ spec:RegisterTalents( {
     fel_vitality = { 3005, 3, 18731, 18743, 18744 },
     fire_and_brimstone = { 1890, 5, 47266, 47267, 47268, 47269, 47270 },
     grim_reach = { 6544, 2, 18218, 18219 },
-    hand_of_gul'dan = { 11201, 1, 71521 },
+    hand_of_guldan = { 11201, 1, 71521 },
     haunt = { 11152, 1, 48181 },
     impending_doom = { 11198, 3, 85106, 85107, 85108 },
     improved_corruption = { 6528, 5, 17810, 17811, 17812, 17813, 17814 },
@@ -98,7 +98,7 @@ spec:RegisterTalents( {
     soul_link = { 3065, 1, 19028 },
     soul_siphon = { 11112, 2, 17804, 17805 },
     soul_swap = { 11366, 1, 86121 },
-    soulburn:seed_of_corruption = { 11419, 1, 86664 },
+    soulburn_seed_of_corruption = { 11419, 1, 86664 },
     summon_felguard = { 3095, 1, 30146 },
     unholy_power = { 3071, 5, 18769, 18770, 18771, 18772, 18773 },
     unstable_affliction = { 6572, 1, 30108 },
