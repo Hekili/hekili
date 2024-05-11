@@ -6,6 +6,7 @@ local class, state = Hekili.Class, Hekili.State
 local currentBuild = select( 4, GetBuildInfo() )
 
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
+local FindUnitBuffByID = ns.FindUnitBuffByID
 local round = ns.round
 
 local strformat = string.format
@@ -71,22 +72,35 @@ end )
 
 -- Glyph of Shred helper
 local tracked_rips = {}
+local rip_extension = 6
 Hekili.TR = tracked_rips;
 
-local function NewRip( target )
+local function NewRip( target, tfactive )
     tracked_rips[ target ] = {
-        extension = 0,
-        applications = 0
+        --extension = 0,
+        --applications = 0,
+        tf_snapshot = true--tfactive
+    }
+    rip_extension = 0
+end
+local function DummyRip( target )
+    tracked_rips[ target ] = {
+        --extension = 0,
+        --applications = 0,
+        tf_snapshot = false
     }
 end
 
-local function RipShred( target )
+local function RipShred( target) -- called on shreded targets having rip
     if not tracked_rips[ target ] then
-        NewRip( target )
+        DummyRip( target )
     end
-    if tracked_rips[ target ].applications < 3 then
-        tracked_rips[ target ].extension = tracked_rips[ target ].extension + 2
-        tracked_rips[ target ].applications = tracked_rips[ target ].applications + 1
+    --if tracked_rips[ target ].applications < 3 then
+    --    tracked_rips[ target ].extension = tracked_rips[ target ].extension + 2
+    --    tracked_rips[ target ].applications = tracked_rips[ target ].applications + 1
+    --end
+    if rip_extension < 6 then
+        rip_extension = rip_extension + 2
     end
 end
 
@@ -94,11 +108,14 @@ local function RemoveRip( target )
     tracked_rips[ target ] = nil
 end
 
-local function GetTrackedRip( target )
+local function GetTrackedRip( target ) 
     if not tracked_rips[ target ] then
-        NewRip( target )
+        DummyRip( target ) -- I think this is just to avoid "nullpointer" - dont want to reset extension, so will add dummy
     end
-    return tracked_rips[ target ]
+    -- Rip-Extends are shared across all targets, so we override here
+    local tr = tracked_rips[ target ]
+    tr.extension = rip_extension
+    return tr
 end
 
 
@@ -141,33 +158,40 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
             eclipse_solar_last_applied = GetTime()
         end
     end
+    
+    -- track buffed rips using rip_tracker as well
+    if attack_events[subtype] then
+        if spellID == 1079 then -- Spell is rip
+            local tf_up = not( FindUnitBuffByID( "player", 5217 ) == nil) -- if buff is not active, will eval to nil
+            NewRip( destGUID, tf_up)
+        end
+    end
 
     if state.glyph.bloodletting.enabled then
         if attack_events[subtype] then
             -- Track rip time extension from Glyph of Rip
-            local rip = FindUnitDebuffByID( "target", 49800 )
-            if rip and spellID == 48572 then
+            if spellID == 5221 and not( FindUnitDebuffByID( "target", 1079 ) == nil) then -- Spell is Shred and rip is active on target
                 RipShred( destGUID )
             end
         end
 
         if application_events[subtype] then
             -- Remove previously tracked rip
-            if spellID == 49800 then
+            if spellID == 1079 then
                 RemoveRip( destGUID )
             end
         end
 
         if removal_events[subtype] then
             -- Remove previously tracked rip
-            if spellID == 49800 then
+            if spellID == 1079 then
                 RemoveRip( destGUID )
             end
         end
 
         if death_events[subtype] then
             -- Remove previously tracked rip
-            if spellID == 49800 then
+            if spellID == 1079 then
                 RemoveRip( destGUID )
             end
         end
@@ -183,9 +207,9 @@ local LastSeenCp = 0
 local CurrentCp = 0
 local DruidFinishers = {
     [52610] = true,
-    [48577] = true,
-    [49800] = true,
-    [49802] = true
+    [22568] = true,
+    [1079] = true,
+    [22570] = true
 }
 
 spec:RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function(event, unit, _, spellID )
@@ -211,7 +235,7 @@ spec:RegisterStateTable( "rip_tracker", setmetatable( {
         if not t.cache[k] then
             local tr = GetTrackedRip( k )
             if tr then
-                t.cache[k] = { extension = tr.extension }
+                t.cache[k] = { extension = tr.extension, tf_snapshot = tr.tf_snapshot}
             end
         end
         return t.cache[k]
@@ -236,23 +260,17 @@ spec:RegisterStateFunction("set_last_finisher_cp", function(val)
     lastfinishercp = val
 end)
 
-local riptfsnapshot = nil
+spec:RegisterStateExpr("pseudo_rip_tf_snapshot", function()
+    if tracked_rips[ target.unit ] then
+       return tracked_rips[ target.unit ].tf_snapshot 
+    end
+    return "leer"
+end)
+
 spec:RegisterStateExpr("rip_tf_snapshot", function()
-    return riptfsnapshot
+    return rip_tracker[target.unit].tf_snapshot
 end)
 
-spec:RegisterStateFunction("set_rip_tf_snapshot", function(val)
-    riptfsnapshot = val
-end)
-
-local rip_extend_counter = 0
-spec:RegisterStateExpr("rip_extend_count", function()
-    return rip_extend_counter
-end)
-
-spec:RegisterStateFunction("set_rip_extend_count", function(val)
-    rip_extend_counter = val
-end)
 
 local training_dummy_cache = {}
 local avg_rage_amount = rage_amount()
@@ -260,7 +278,6 @@ spec:RegisterHook( "reset_precast", function()
     stat.spell_haste = stat.spell_haste * ( 1 + ( 0.01 * talent.celestial_focus.rank ) + ( buff.natures_grace.up and 0.2 or 0 ) + ( buff.moonkin_form.up and ( talent.improved_moonkin_form.rank * 0.01 ) or 0 ) )
 
     rip_tracker:reset()
-    set_rip_extend_count(0) 
     set_last_finisher_cp(LastFinisherCp)
 
     if IsCurrentSpell( class.abilities.maul.id ) then
@@ -283,14 +300,14 @@ spec:RegisterStateExpr("rage_gain", function()
 end)
 
 spec:RegisterStateExpr("rip_canextend", function()
-    return debuff.rip.up and glyph.bloodletting.enabled and rip_extend_count > 0
+    return debuff.rip.up and glyph.bloodletting.enabled and rip_tracker[target.unit].extension < 6
 end)
 
 spec:RegisterStateExpr("rip_maxremains", function()
     if debuff.rip.remains == 0 then
         return 0
     else
-        return debuff.rip.remains + ((debuff.rip.up and glyph.bloodletting.enabled and (rip_extend_count)) or 0)
+        return debuff.rip.remains + ((debuff.rip.up and glyph.bloodletting.enabled and (6 - rip_tracker[target.unit].extension)) or 0)
     end
 end)
 
@@ -1121,14 +1138,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 } )
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.ComboPoints )
-spec:RegisterResource( Enum.PowerType.Energy, {
-    primal_madness = {
-        aura = "primal_madness",
-
-        last = function() return max(state.buff.berserk.expires, state.buff.tigers_fury.expires) end,
-
-        value = -10 * state.talent.primal_madness.rank
-    }})
+spec:RegisterResource( Enum.PowerType.Energy)
 
 
 -- Talents
@@ -1608,7 +1618,7 @@ spec:RegisterAuras( {
     -- Total Energy increased by 20.
     primal_madness = {
         id = 80886,
-        duration = function() return max(buff.berserk.remains, buff.tigers_fury.remains) end,
+        remains = function() return max(buff.berserk.remains, buff.tigers_fury.remains) end,
         max_stack = 1,
     },
     -- Stealthed.  Movement speed slowed by $s2%.
@@ -1650,7 +1660,7 @@ spec:RegisterAuras( {
     },
     -- Bleed damage every $t1 seconds.
     rip = {
-        id = 49800,
+        id = 1079,
         duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7feral_2pc == 1 and 4) or 0) end,
         tick_time = 2,
         max_stack = 1,
@@ -3227,9 +3237,9 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "rip" )
             removeBuff( "clearcasting" )
             set_last_finisher_cp(combo_points.current)
-            set_rip_tf_snapshot(buff.tigers_fury.up) -- FIXME: is there no better way to bind the information on each active rip? This will be a bottleneck on multi-rips
             spend( combo_points.current, "combo_points" )
-            set_rip_extend_count(6)
+            rip_tracker[target.unit].extension = 0
+            rip_tracker[target.unit].tf_snapshot = buff.tigers_fury.up 
         end,
 
     },
@@ -3315,8 +3325,8 @@ spec:RegisterAbilities( {
         cost = function () return max( 40, class.abilities.shred.spend ) end,
 
         handler = function ()
-            if glyph.bloodletting.enabled and debuff.rip.up and rip_extend_count > 0 then
-                set_rip_extend_count(rip_extend_count - 2)
+            if rip_canextend then
+                rip_tracker[target.unit].extension = rip_tracker[target.unit].extension + 2
                 applyDebuff( "target", "rip", debuff.rip.remains + 2)
             end
             gain( 1, "combo_points" )
@@ -3683,7 +3693,7 @@ spec:RegisterAbilities( {
         form = "cat_form",
         handler = function()
             applyBuff("tigers_fury")
-            applyBuff("primal_madness", buff.tigers_fury.duration)
+            applyBuff("primal_madness", aura.tigers_fury.duration)
             gain( 20 * talent.king_of_the_jungle.rank, "energy" )
         end,
 
