@@ -79,19 +79,21 @@ local function NewRip( target, tfactive )
     tracked_rips[ target ] = {
         --extension = 0,
         --applications = 0,
-        tf_snapshot = true--tfactive
+        tf_snapshot = tfactive
     }
     rip_extension = 0
 end
 local function DummyRip( target )
-    tracked_rips[ target ] = {
-        --extension = 0,
-        --applications = 0,
-        tf_snapshot = false
-    }
+    if not tracked_rips[ target ] then
+        tracked_rips[ target ] = {
+            --extension = 0,
+            --applications = 0,
+            tf_snapshot = false
+        }
+    end
 end
 
-local function RipShred( target) -- called on shreded targets having rip
+local function RipShred( target ) -- called on shreded targets having rip
     if not tracked_rips[ target ] then
         DummyRip( target )
     end
@@ -175,12 +177,12 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
             end
         end
 
-        if application_events[subtype] then
-            -- Remove previously tracked rip
-            if spellID == 1079 then
-                RemoveRip( destGUID )
-            end
-        end
+        --if application_events[subtype] then
+        --    -- Remove previously tracked rip
+        --    if spellID == 1079 then
+        --        RemoveRip( destGUID )
+        --    end
+        --end
 
         if removal_events[subtype] then
             -- Remove previously tracked rip
