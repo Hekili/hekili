@@ -40,12 +40,10 @@ actions.battle_stance+=/mortal_strike,if=target.health.pct>20
 actions.battle_stance+=/berserker_stance,if=buff.taste_for_blood.down
 
 actions.aoe+=/sweeping_strikes,if=active_enemies=2
-actions.aoe+=/run_action_list,name=st,if=active_enemies=2
 actions.aoe+=/cleave,if=active_enemies=2&buff.sweeping_strikes.down
 actions.aoe+=/rend,if=talent.blood_and_thunder.enabled&active_enemies>=3
 actions.aoe+=/thunder_clap,if=talent.blood_and_thunder.enabled&active_enemies>=3
 actions.aoe+=/bladestorm,if=active_enemies>=3
 actions.aoe+=/sweeping_strikes,if=active_enemies>=3
-actions.aoe+=/run_action_list,name=st,if=active_enemies>=3
 actions.aoe+=/cleave,if=active_enemies>=3&buff.sweeping_strikes.down
 actions.aoe+=/whirlwind,if=active_enemies>=4
