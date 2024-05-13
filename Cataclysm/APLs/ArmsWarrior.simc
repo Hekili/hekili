@@ -5,13 +5,11 @@ actions.precombat+=/commanding_shout,if=assigned_shout.commanding_shout&buff.my_
 actions.precombat+=/battle_shout,if=assigned_shout.battle_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
 
 actions+=/run_action_list,name=aoe,if=active_enemies>2
-actions+=/run_action_list,name=st
 actions+=/call_action_list,name=init
 actions+=/sunder_armor,if=variable.should_sunder&variable.emergency_sunder
 actions+=/pummel
 actions+=/run_action_list,name=berserker_stance,if=buff.berserker_stance.up
 actions+=/run_action_list,name=battle_stance,if=buff.battle_stance.up
-actions+=/run_action_list,name=defensive_stance,if=buff.defensive_stance.up
 
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 actions.init+=/variable,name=execute_phase,value=target.health.pct<20
