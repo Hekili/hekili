@@ -290,7 +290,8 @@ spec:RegisterHook( "reset_precast", function()
     set_last_finisher_cp(LastFinisherCp)
 
     if buff.primal_madness.up then
-        state:QueueAuraExpiration( "primal_madness", ExpirePrimalMadness, max(buff.tigers_fury.expires, buff.berserk.expires))
+        buff.primal_madness.expires = max(buff.tigers_fury.expires, buff.berserk.expires)
+        state:QueueAuraExpiration( "primal_madness", ExpirePrimalMadness, buff.primal_madness.expires)
     end
     
     --if IsCurrentSpell( class.abilities.maul.id ) then
@@ -1631,8 +1632,7 @@ spec:RegisterAuras( {
     -- Total Energy increased by 20.
     primal_madness = {
         id = 80886,
-        remains = function() return max(buff.berserk.remains, buff.tigers_fury.remains) end,
-        expires= function() return max(buff.tigers_fury.expires, buff.berserk.expires) end,
+        duration = 20,
         max_stack = 1,
     },
     -- Stealthed.  Movement speed slowed by $s2%.
@@ -2008,11 +2008,14 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
         handler = function()
             applyBuff( "berserk" )
-            if talent.primal_madness.enabled and not buff.primal_madness.up then
+            if talent.primal_madness.enabled then
+                if not buff.primal_madness.up then
+                    energy.max = energy.max + 10 * talent.primal_madness.rank
+                    gain(10 * talent.primal_madness.rank, "energy")
+                end
                 applyBuff("primal_madness", buff.berserk.duration)
-                energy.max = energy.max + 10 * talent.primal_madness.rank
-                gain(10 * talent.primal_madness.rank, "energy")
-                state:QueueAuraExpiration( "primal_madness", ExpirePrimalMadness, max(buff.tigers_fury.expires, buff.berserk.expires))                
+                buff.primal_madness.expires = buff.berserk.expires
+                state:QueueAuraExpiration( "primal_madness", ExpirePrimalMadness, buff.primal_madness.expires)                
             end
         end,
     },
@@ -3712,11 +3715,12 @@ spec:RegisterAbilities( {
         form = "cat_form",
         handler = function()
             applyBuff("tigers_fury")
-            if talent.primal_madness.enabled and not buff.primal_madness.up then
+            if talent.primal_madness.enabled then -- we dont need to check on primal_madness.up since TF cant be casted during active berserk
                 applyBuff("primal_madness", aura.tigers_fury.duration)
                 energy.max = energy.max + 10 * talent.primal_madness.rank
                 gain(10 * talent.primal_madness.rank, "energy")
-                state:QueueAuraExpiration( "primal_madness", ExpirePrimalMadness, max(buff.tigers_fury.expires, buff.berserk.expires))
+                buff.primal_madness.expires = buff.tigers_fury.expires
+                state:QueueAuraExpiration( "primal_madness", ExpirePrimalMadness, buff.primal_madness.expires) 
             end
             gain( 20 * talent.king_of_the_jungle.rank, "energy" )
         end,
