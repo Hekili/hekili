@@ -570,15 +570,22 @@ all:RegisterAbilities( {
         gcd = "off",
 
         item = 193718,
-        usable = function() return group and active_dot.coached == 0, "requires an ally" end,
+        usable = function() return group, "requires an ally" end,
+        nobuff = "coaching",
 
         handler = function()
+            applyBuff( "coaching" )
             active_dot.coached = 1
         end,
 
         proc = "mastery",
 
         auras = {
+            coaching = {
+                id = 389581,
+                duration = 3600,
+                max_stack = 1,
+            },
             coached = {
                 id = 386578,
                 duration = 3600,
