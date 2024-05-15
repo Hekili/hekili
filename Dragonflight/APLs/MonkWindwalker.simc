@@ -493,6 +493,7 @@ actions.sef_trinkets+=/use_item,slot=trinket1,if=trinket.1.has_use_buff&!(trinke
 actions.sef_trinkets+=/use_item,slot=trinket1,if=!trinket.1.has_use_buff&!(trinket.1.is.horn_of_valor|trinket.1.is.manic_grieftorch|trinket.1.is.algethar_puzzle_box)&(cooldown.invoke_xuen_the_white_tiger.remains>cooldown%%120|cooldown<=60&variable.hold_xuen|!talent.invoke_xuen_the_white_tiger)|boss&fight_remains<30
 actions.sef_trinkets+=/use_item,slot=trinket2,if=trinket.2.has_use_buff&!(trinket.2.is.horn_of_valor|trinket.2.is.manic_grieftorch|trinket.2.is.algethar_puzzle_box)&(cooldown.invoke_xuen_the_white_tiger.remains>cooldown%%120|cooldown<=60&variable.hold_xuen|cooldown<=60&buff.storm_earth_and_fire.remains>10|!talent.invoke_xuen_the_white_tiger)|boss&fight_remains<30
 actions.sef_trinkets+=/use_item,slot=trinket2,if=!trinket.2.has_use_buff&!(trinket.2.is.horn_of_valor|trinket.2.is.manic_grieftorch|trinket.2.is.algethar_puzzle_box)&(cooldown.invoke_xuen_the_white_tiger.remains>cooldown%%120|cooldown<=60&variable.hold_xuen|!talent.invoke_xuen_the_white_tiger)|boss&fight_remains<30
+actions.sef_trinkets+=/use_items,if=cooldown.invoke_xuen_the_white_tiger.remains>cooldown%%120|cooldown<=60&variable.hold_xuen|!talent.invoke_xuen_the_white_tiger
 
 # Serenity Trinkets
 actions.serenity_trinkets+=/horn_of_valor,if=pet.xuen_the_white_tiger.active|!talent.invoke_xuen_the_white_tiger&buff.storm_earth_and_fire.up|boss&fight_remains<30
