@@ -2298,4 +2298,26 @@ all:RegisterAbilities( {
 
         copy = { "fyralath_the_dream_render", "rage_of_fyralath_417131" }
     },
+
+    -- Missed items?
+    granyths_enduring_scale = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 212757,
+        toggle = "defensives",
+
+        handler = function()
+            applyBuff( "granyths_enduring_scale" )
+        end,
+
+        auras = {
+            granyths_enduring_scale = {
+                id = 434064,
+                duration = 20,
+                max_stack = 20
+            }
+        }
+    }
 } )
