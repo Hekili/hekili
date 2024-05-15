@@ -1,6 +1,6 @@
 # Paladin: Retribution
 # Himea's Beta APL - Discord: himea.saito
-# April 2024
+# May 2024
 
 ## Precombat
 actions.precombat+=/retribution_aura,if=!buff.aura.up&settings.maintain_aura&assigned_aura.retribution_aura
@@ -10,7 +10,7 @@ actions.precombat+=/devotion_aura,if=!buff.aura.up&settings.maintain_aura&assign
 actions.precombat+=/resistance_aura,if=!buff.aura.up&settings.maintain_aura&assigned_aura.resistance_aura
 actions.precombat+=/blessing_of_kings,if=!buff.blessing.up&settings.maintain_blessing&assigned_blessing.blessing_of_kings
 actions.precombat+=/blessing_of_might,if=!buff.blessing.up&settings.maintain_blessing&assigned_blessing.blessing_of_might
-actions.precombat+=/seal_of_truth,if=buff.seal.remains<360
+actions.precombat+=/seal_of_truth,if=buff.seal.remains<300
 actions.precombat+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
 actions.precombat+=/judgement
 
@@ -27,10 +27,11 @@ actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|ta
 
 ## Cleave
 actions.cleave+=/seal_of_righteousness,if=buff.seal_of_righteousness.down&active_enemies>=settings.seal_of_righteousness
-actions.cleave+=/judgement,if=mana.percent<settings.mana_judgement_threshold&buff.judgements_of_the_bold.down&buff.judgements_of_the_wise.down
+actions.cleave+=/judgement,if=(mana.percent<settings.mana_judgement_threshold)&buff.judgements_of_the_bold.down
 actions.cleave+=/guardian_of_ancient_kings,if=cooldown.zealotry.remains<10
-actions.cleave+=/zealotry,if=cooldown.guardian_of_ancient_kings.remains>0&cooldown.guardian_of_ancient_kings.remains<292&(holy_power=3|buff.divine_purpose.up)
-actions.cleave+=/avenging_wrath,if=buff.zealotry.up&!settings.zealotry_macro
+actions.cleave+=/zealotry,use_off_gcd=1,if=((buff.ancient_power.stacks=20&buff.guardian_of_ancient_kings.remains<21)|(cooldown.guardian_of_ancient_kings.remains>120&buff.guardian_of_ancient_kings.down))&(holy_power=3|buff.divine_purpose.up)&level=85
+actions.cleave+=/zealotry,use_off_gcd=1,if=(holy_power=3|buff.divine_purpose.up)&level<85
+actions.cleave+=/avenging_wrath,use_off_gcd=1,if=(buff.zealotry.up&!settings.zealotry_macro)|!talent.zealotry.enabled
 actions.cleave+=/judgement,if=mana.percent<settings.mana_judgement_threshold&buff.judgements_of_the_bold.down
 actions.cleave+=/divine_storm,if=active_enemies>=settings.divine_storm_threshold
 actions.cleave+=/inquisition,if=(buff.inquisition.down|buff.inquisition.remains<3)&(holy_power=3|buff.divine_purpose.up)&active_enemies<6
@@ -49,13 +50,12 @@ actions.cleave+=/holy_wrath
 actions.cleave+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
 
 ## Single
-actions.single+=/seal_of_truth,if=(buff.seal.down)
-actions.single+=/zealotry,if=((variable.time_to_die*0.9-20)>action.zealotry.cooldown)&(!buff.seal_of_truth.up|dot.censure.stack>4)&(holy_power=3|buff.divine_purpose.up)
-actions.single+=/avenging_wrath,if=((variable.time_to_die*0.9-20)>action.avenging_wrath.cooldown)&(!buff.seal_of_truth.up|dot.censure.stack>4)&!settings.zealotry_macro
-actions.single+=/judgement,if=(mana.percent<settings.mana_judgement_threshold&buff.judgements_of_the_bold.down)
+actions.single+=/seal_of_truth,if=buff.seal.down|(buff.seal_of_righteousness.up&active_enemies=1)
+actions.single+=/judgement,if=(mana.percent<settings.mana_judgement_threshold)&buff.judgements_of_the_bold.down
 actions.single+=/guardian_of_ancient_kings,if=cooldown.zealotry.remains<10
-actions.single+=/zealotry,if=cooldown.guardian_of_ancient_kings.remains>0&cooldown.guardian_of_ancient_kings.remains<292&(holy_power=3|buff.divine_purpose.up)
-actions.single+=/avenging_wrath,if=buff.zealotry.up&!settings.zealotry_macro
+actions.single+=/zealotry,use_off_gcd=1,if=((buff.ancient_power.stacks=20&buff.guardian_of_ancient_kings.remains<21)|(cooldown.guardian_of_ancient_kings.remains>120&buff.guardian_of_ancient_kings.down))&(holy_power=3|buff.divine_purpose.up)&level=85
+actions.single+=/zealotry,use_off_gcd=1,if=(holy_power=3|buff.divine_purpose.up)&level<85
+actions.single+=/avenging_wrath,use_off_gcd=1,if=(buff.zealotry.up&!settings.zealotry_macro)|!talent.zealotry.enabled
 actions.single+=/crusader_strike,if=holy_power<3
 actions.single+=/judgement,if=buff.zealotry.down&holy_power<3
 actions.single+=/inquisition,if=(buff.inquisition.down|buff.inquisition.remains<3)&(holy_power=3|buff.divine_purpose.up)

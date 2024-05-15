@@ -1,6 +1,6 @@
-# Hunter: Survival
+# Hunter: Beast Mastery
 # Himea's Beta APL - Discord: himea.saito
-# Modified from WoWTBC Cata Guides - https://wowtbc.gg/cata/class-guides/survival-hunter/
+# Modified from WoWTBC Cata Guides - https://wowtbc.gg/cata/class-guides/beast-mastery-hunter/
 # May 2024
 
 ## Precombat
@@ -10,6 +10,7 @@ actions.precombat+=/aspect_of_the_cheetah,if=!buff.aspect.up&settings.maintain_a
 actions.precombat+=/aspect_of_the_pack,if=!buff.aspect.up&settings.maintain_aspect&assigned_aspect.aspect_of_the_pack
 actions.precombat+=/aspect_of_the_wild,if=!buff.aspect.up&settings.maintain_aspect&assigned_aspect.aspect_of_the_wild
 actions.precombat+=/hunters_mark,if=debuff.hunters_mark.down
+actions.precombat+=/misdirection,if=settings.opener_misdirect_only
 
 ## Default
 actions+=/call_action_list,name=init
@@ -17,46 +18,63 @@ actions+=/use_items
 actions+=/potion
 actions+=/hyperspeed_acceleration,use_off_gcd=1
 actions+=/run_action_list,name=aoe,if=active_enemies>2
-actions+=/run_action_list,name=cleave,if=active_enemies>1
+actions+=/run_action_list,name=cleave,if=active_enemies=2
 actions+=/run_action_list,name=single
 
 ## Init Parameters
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 
 ## AoE
+actions.aoe+=/misdirection,if=settings.recommend_misdirection&pet.alive
 actions.aoe+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.aspect_of_the_hawk&!moving
+actions.aoe+=/bestial_wrath,if=focus>80
 actions.aoe+=/rapid_fire,if=cooldown.call_of_the_wild.up
 actions.aoe+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
 actions.aoe+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
-actions.aoe+=/explosive_trap,cycle_targets=2,max_cycle_targets=2
+actions.aoe+=/explosive_trap
 actions.aoe+=/multishot
-actions.aoe+=/explosive_shot,if=buff.lock_and_load.up&debuff.explosive_shot.down
 actions.aoe+=/kill_shot,if=target.health.pct<20
-actions.aoe+=/cobra_shot,if=!moving
+actions.aoe+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.aoe+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.aoe+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Cleave
+actions.cleave+=/misdirection,if=settings.recommend_misdirection
 actions.cleave+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.aspect_of_the_hawk&!moving
+actions.cleave+=/bestial_wrath,if=focus>80&debuff.serpent_sting.remains>12
 actions.cleave+=/rapid_fire,if=cooldown.call_of_the_wild.up
 actions.cleave+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
+actions.cleave+=/fervor,if=focus<50
 actions.cleave+=/serpent_sting,cycle_targets=1,max_cycle_targets=2,if=debuff.serpent_sting.down
-actions.cleave+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=debuff.explosive_shot.down
+actions.cleave+=/arcane_shot,if=buff.the_beast_within.up
+actions.cleave+=/cobra_shot,if=cooldown.bestial_wrath.remains=0&level>80
+actions.cleave+=/steady_shot,if=cooldown.bestial_wrath.remains=0&level<81
+actions.cleave+=/kill_commandif=pet.alive
 actions.cleave+=/kill_shot,if=target.health.pct<20
-actions.cleave+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
-actions.cleave+=/explosive_trap
-actions.cleave+=/arcane_shot,if=focus>80
-actions.cleave+=/cobra_shot,cycle_targets=1,max_cycle_targets=2,if=!moving
+actions.cleave+=/focus_fire,if=buff.focus_fire.down&buff.frenzy_effect.stack=5
+actions.cleave+=/wait,sec=cooldown.kill_command.remains,if=cooldown.kill_command.remains>0&cooldown.kill_command.remains<1&focus>=40
+actions.cleave+=/arcane_shot,if=focus>65
+actions.cleave+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.cleave+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.cleave+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
 
 ## Single
+actions.single+=/misdirection,if=settings.recommend_misdirection
 actions.single+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.aspect_of_the_hawk&!moving
+actions.single+=/hunters_mark,if=debuff.hunters_mark.down
+actions.single+=/bestial_wrath,if=focus>80&debuff.serpent_sting.remains>12
 actions.single+=/rapid_fire,if=cooldown.call_of_the_wild.up
 actions.single+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
+actions.single+=/fervor,if=focus<50
 actions.single+=/serpent_sting,if=debuff.serpent_sting.down&!prev_gcd.1.serpent_sting
-actions.single+=/explosive_shot,if=debuff.explosive_shot.down&(buff.lock_and_load.up|!prev_gcd.1.explosive_shot)
+actions.single+=/arcane_shot,if=buff.the_beast_within.up
+actions.single+=/cobra_shot,if=cooldown.bestial_wrath.remains=0&level>80
+actions.single+=/steady_shot,if=cooldown.bestial_wrath.remains=0&level<81
+actions.single+=/kill_command,if=pet.alive
 actions.single+=/kill_shot,if=target.health.pct<20
-actions.single+=/hunters_mark,if=debuff.hunters_mark.down
-actions.single+=/black_arrow,if=debuff.black_arrow.down
-actions.single+=/arcane_shot,if=focus>80
-actions.single+=/cobra_shot,if=!moving
+actions.single+=/focus_fire,if=buff.focus_fire.down&buff.frenzy_effect.stack=5
+actions.single+=/wait,sec=cooldown.kill_command.remains,if=cooldown.kill_command.remains>0&cooldown.kill_command.remains<1&focus>=40
+actions.single+=/arcane_shot,if=focus>65
+actions.single+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.single+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
 actions.single+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
