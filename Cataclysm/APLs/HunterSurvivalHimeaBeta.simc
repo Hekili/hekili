@@ -32,7 +32,7 @@ actions.aoe+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_w
 actions.aoe+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
 actions.aoe+=/explosive_trap
 actions.aoe+=/multishot
-actions.aoe+=/explosive_shot,cycle_targets=2,max_cycle_targets=2,if=buff.lock_and_load.up&debuff.explosive_shot.down
+actions.aoe+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=buff.lock_and_load.up&debuff.explosive_shot.down
 actions.aoe+=/kill_shot,if=target.health.pct<20
 actions.aoe+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
 actions.aoe+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81

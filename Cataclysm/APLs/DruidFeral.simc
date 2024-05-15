@@ -15,6 +15,7 @@ actions+=/cat_form,if=!up
 
 actions.cat+=/tigers_fury,use_off_gcd=1,if=try_tigers_fury
 actions.cat+=/berserk,use_off_gcd=1,if=try_berserk
+actions.cat+=/cancel_buff,buff_name=primal_madness,if=buff.primal_madness.up & energy.current <= 20
 actions.cat+=/bear_form,if=emergency_bearweave
 actions.cat+=/faerie_fire_feral,if=ff_now&target.outside2
 actions.cat+=/feral_charge_cat,if=target.outside7
@@ -48,23 +49,27 @@ actions.bearweave+=/lacerate,if=lacerate_now
 actions.bearweave+=/mangle_bear
 actions.bearweave+=/lacerate
 
-actions.bear_tank_init+=/variable,name=build_lacerate,value=!debuff.lacerate.up|debuff.lacerate.stack<5
-actions.bear_tank_init+=/variable,name=build_lacerate_cost,op=setif,if=variable.build_lacerate,value=action.lacerate.spend*(5-debuff.lacerate.stack),value_else=0
-actions.bear_tank_init+=/variable,name=maintain_lacerate,value=!variable.build_lacerate&debuff.lacerate.remains<8&debuff.lacerate.remains<ttd
-actions.bear_tank_init+=/variable,name=maintain_lacerate_cost,op=setif,if=variable.maintain_lacerate,value=action.lacerate.spend,value_else=0
-actions.bear_tank_init+=/variable,name=emergency_lacerate,value=debuff.lacerate.up&debuff.lacerate.remains<4.5&debuff.lacerate.remains<ttd
-
-actions.bear_tank+=/call_action_list,name=bear_tank_init
-actions.bear_tank+=/enrage,use_off_gcd=1,if=time<10
+actions.bear_tank+=/enrage,use_off_gcd=1,if=time<10&rage<80
+actions.bear_tank+=/feral_charge_bear,if=target.outside7
+actions.bear_tank+=/maul,use_off_gcd=1,if=rage.current>55&gcd.remains
 actions.bear_tank+=/berserk
-actions.bear_tank+=/maul,use_off_gcd=1,if=rage.current>action.maul.spend+variable.build_lacerate_cost+variable.maintain_lacerate_cost+action.mangle_bear.spend
-actions.bear_tank+=/lacerate,if=variable.emergency_lacerate
+actions.bear_tank+=/pulverize,if=debuff.lacerate.stack=3&buff.pulverize.remains<3
+actions.bear_tank+=/lacerate,if=debuff.lacerate.up&debuff.lacerate.remains<1.5+latency&debuff.lacerate.remains<ttd&debuff.lacerate.remains<cooldown.pulverize.remains
 actions.bear_tank+=/mangle_bear
+actions.bear_tank+=/thrash
+actions.bear_tank+=/lacerate,if=!debuff.lacerate.up
 actions.bear_tank+=/faerie_fire_feral
-actions.bear_tank+=/lacerate,if=variable.build_lacerate|variable.maintain_lacerate
-actions.bear_tank+=/swipe_bear,if=rage.current>60
+actions.bear_tank+=/lacerate,if=debuff.lacerate.stack<3
+actions.bear_tank+=/swipe_bear
 
-actions.bear_tank_aoe+=/enrage,use_off_gcd=1,if=time<10
+
+actions.bear_tank_aoe+=/enrage,use_off_gcd=1,if=time<10&rage<80
+actions.bear_tank_aoe+=/feral_charge_bear,if=target.outside7
+actions.bear_tank_aoe+=/maul,use_off_gcd=1,if=rage.current>55&gcd.remains
 actions.bear_tank_aoe+=/berserk
-actions.bear_tank_aoe+=/maul,cycle_targets=1,use_off_gcd=1,if=rage.current>60
-actions.bear_tank_aoe+=/swipe_bear,cycle_targets=1
+actions.bear_tank_aoe+=/mangle_bear,if=buff.berserk.up
+actions.bear_tank_aoe+=/thrash
+actions.bear_tank_aoe+=/swipe_bear
+actions.bear_tank_aoe+=/pulverize,if=debuff.lacerate.stack=3&buff.pulverize.remains<3
+actions.bear_tank_aoe+=/mangle_bear
+actions.bear_tank_aoe+=/lacerate,if=debuff.lacerate.stack<3
