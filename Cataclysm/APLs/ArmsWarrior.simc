@@ -19,7 +19,7 @@ actions+=/run_action_list,name=defensive_stance,if=buff.defensive_stance.up
 
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 
-actions.berserker_stance+=/rend,if=debuff.rend.down
+actions.berserker_stance+=/battle_stance,if=debuff.rend.down
 actions.berserker_stance+=/shattering_throw
 actions.berserker_stance+=/blood_fury,if=target.health.pct<20
 actions.berserker_stance+=/inner_rage,if=rage>50
@@ -27,7 +27,7 @@ actions.berserker_stance+=/deadly_calm,if=rage<30
 actions.berserker_stance+=/recklessness
 actions.berserker_stance+=/heroic_strike,if=buff.battle_trance.up&buff.deadly_calm.up|rage>60
 actions.berserker_stance+=/execute,if=target.health.pct<20
-actions.berserker_stance+=/slam
+actions.berserker_stance+=/slam,if=rage>90
 actions.berserker_stance+=/battle_shout,if=rage<30
 actions.berserker_stance+=/commanding_shout,if=rage<30
 actions.berserker_stance+=/battle_stance,if=buff.taste_for_blood.up&time>4
