@@ -471,7 +471,7 @@ spec:RegisterAuras( {
     },
     -- Bleeding for $s1 plus a percentage of weapon damage every $t1 seconds.  If used while the victim is above $s2% health, Rend does $s3% more damage.
     rend = {
-        id = 47465,
+        id = 94009,
         duration = function() return glyph.rending.enabled and 21 or 27 end,
         tick_time = 3,
         max_stack = 1,
@@ -1260,7 +1260,7 @@ spec:RegisterAbilities( {
 
     -- On next attack...
     heroic_strike = {
-        id = 47450,
+        id = 78,
         cast = 0,
         cooldown = 0,
         gcd = "off",
@@ -1628,7 +1628,7 @@ spec:RegisterAbilities( {
 
     -- Wounds the target causing them to bleed for 380 damage plus an additional 780 (based on weapon damage) over 15 sec.  If used while your target is above 75% health, Rend does 35% more damage.
     rend = {
-        id = 772,
+        id = 94009,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
