@@ -1306,7 +1306,6 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
 
-        gag_order_rank = GetTalentRank("gag_order"),
 
     handler = function(self)
         applyBuff("heroic_throw")
@@ -1543,7 +1542,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132938,
 
-        gag_order_rank = GetTalentRank("gag_order"),
 
     handler = function(self)
         applyBuff("pummel")
@@ -1792,7 +1790,7 @@ spec:RegisterAbilities( {
 
         buff = "defensive_stance",
 
-        shield_mastery_rank = GetTalentRank("shield_mastery"),
+
 
         handler = function(self)
         -- Reduce cooldown based on Shield Mastery rank
