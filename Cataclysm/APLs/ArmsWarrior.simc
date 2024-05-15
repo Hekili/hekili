@@ -1,24 +1,24 @@
 Smufrik Arms warrior
 
-actions.precombat+=/berserker_stance
+Smufrik Arms warrior
+
+actions.precombat+=/battle_stance,if=buff.battle_stance.down&buff.berserker_stance.down
+actions.precombat+=/berserker_stance,if=buff.stance.down
 actions.precombat+=/commanding_shout,if=assigned_shout.commanding_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
 actions.precombat+=/battle_shout,if=assigned_shout.battle_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
 
 actions+=/run_action_list,name=aoe,if=active_enemies>2
+actions+=/run_action_list,name=st
 actions+=/call_action_list,name=init
-actions+=/sunder_armor,if=variable.should_sunder&variable.emergency_sunder
+actions+=/sunder_armor,if=settings.debuff_sunder_enabled&variable.time_to_die>((5-debuff.sunder_armor.stack)*(1.5+latency))+3
 actions+=/pummel
+actions+=/run_action_list,name=battle_stance,if=buff.battle_stance.down&buff.berserker_stance.down
 actions+=/run_action_list,name=berserker_stance,if=buff.berserker_stance.up
 actions+=/run_action_list,name=battle_stance,if=buff.battle_stance.up
+actions+=/run_action_list,name=defensive_stance,if=buff.defensive_stance.up
 
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
-actions.init+=/variable,name=execute_phase,value=target.health.pct<20
-actions.init+=/variable,name=should_sunder,value=settings.debuff_sunder_enabled&variable.time_to_die>((5-debuff.sunder_armor.stack)*(1.5+latency))+3
-actions.init+=/variable,name=build_sunder,value=!debuff.major_armor_reduction.up|(debuff.sunder_armor.up&debuff.sunder_armor.stack<5)
-actions.init+=/variable,name=maintain_sunder,value=!variable.build_sunder&debuff.sunder_armor.stack=5&debuff.sunder_armor.remains<7&cooldown.bloodthirst.remains&cooldown.whirlwind.remains&!buff.bloodsurge.up
-actions.init+=/variable,name=emergency_sunder,value=debuff.sunder_armor.up&debuff.sunder_armor.remains<1.5
 
-actions.berserker_stance+=/sunder_armor,if=debuff.sunder_armor.stack<3
 actions.berserker_stance+=/rend,if=debuff.rend.down
 actions.berserker_stance+=/shattering_throw
 actions.berserker_stance+=/blood_fury,if=target.health.pct<20
@@ -40,10 +40,12 @@ actions.battle_stance+=/mortal_strike,if=target.health.pct>20
 actions.battle_stance+=/berserker_stance,if=buff.taste_for_blood.down
 
 actions.aoe+=/sweeping_strikes,if=active_enemies=2
+actions.aoe+=/run_action_list,name=st,if=active_enemies=2
 actions.aoe+=/cleave,if=active_enemies=2&buff.sweeping_strikes.down
 actions.aoe+=/rend,if=talent.blood_and_thunder.enabled&active_enemies>=3
 actions.aoe+=/thunder_clap,if=talent.blood_and_thunder.enabled&active_enemies>=3
 actions.aoe+=/bladestorm,if=active_enemies>=3
 actions.aoe+=/sweeping_strikes,if=active_enemies>=3
+actions.aoe+=/run_action_list,name=st,if=active_enemies>=3
 actions.aoe+=/cleave,if=active_enemies>=3&buff.sweeping_strikes.down
 actions.aoe+=/whirlwind,if=active_enemies>=4
