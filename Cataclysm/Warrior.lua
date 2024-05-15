@@ -22,20 +22,6 @@ local function rage_amount( isOffhand )
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) * ( state.buff.defensive_stance.up and 0.95 or 1 )
 end
 
-    -- Get the player's talents
-    local talents = {}
-    for i = 1, GetNumTalentTabs() do
-        for j = 1, GetNumTalents(i) do
-            local name, _, _, _, rank = GetTalentInfo(i, j)
-            if name == talentName then
-                return rank
-            end
-        end
-    end
-
-    return 0
-end
-
 spec:RegisterResource( Enum.PowerType.Rage, {
     anger_management = {
         talent = "anger_management",
