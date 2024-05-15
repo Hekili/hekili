@@ -22,6 +22,7 @@ local function rage_amount( isOffhand )
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) * ( state.buff.defensive_stance.up and 0.95 or 1 )
 end
 
+
 spec:RegisterResource( Enum.PowerType.Rage, {
     anger_management = {
         talent = "anger_management",
@@ -1968,7 +1969,7 @@ spec:RegisterAbilities( {
                 active_dot.rend = active_enemies
             end
         end,
-    }
+    },
 
 
     -- Instantly attack the target causing (Attack power * 56 / 100) damage and healing you for 20% of your maximum health.  Can only be used within 20 sec after you kill an enemy that yields experience or honor.
@@ -2018,11 +2019,9 @@ spec:RegisterAbilities( {
                 -- Apply Vigilance buff
                 applyBuff("vigilance", self.duration, target)
         
-                        -- Gain Vengeance
-                        local vengeance = event.damage * 0.20
-                        applyBuff("vengeance", vengeance)
-                    end
-                end)
+                -- Gain Vengeance
+                local vengeance = event.damage * 0.20
+                applyBuff("vengeance", vengeance)
             end
         },
 
