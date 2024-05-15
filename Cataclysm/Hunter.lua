@@ -2173,6 +2173,8 @@ hunter:RegisterAbilities( {
             if buff.the_beast_within.up then
                 cost = cost * 0.5
             end
+
+            return cost
         end,
         spendType = "focus",
 
