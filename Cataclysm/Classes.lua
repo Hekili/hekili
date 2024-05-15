@@ -5,7 +5,7 @@ if not Hekili.IsCataclysm() then return end
 
 local class, state = Hekili.Class, Hekili.State
 
-local RegisterEvent = ns.RegisterEvent
+local getSpecializationKey, RegisterEvent = ns.getSpecializationKey, ns.RegisterEvent
 
 function ns.updateTalents()
     for _, tal in pairs( state.talent ) do
@@ -43,12 +43,23 @@ function ns.updateTalents()
     end
 
     local spec = state.spec.id or select( 3, UnitClass( "player" ) )
-    if not Hekili.DB.profile.specs[ spec ].usePackSelector then return end
-
     -- Swap priorities if needed.
-    local tab1 = select( 5, GetTalentTabInfo(1) )
-    local tab2 = select( 5, GetTalentTabInfo(2) )
-    local tab3 = select( 5, GetTalentTabInfo(3) )
+    local main, tabs = 0, {}
+
+    for i = 1, 3 do
+        local id, _, _, _, tab, _, _, isMain = GetTalentTabInfo( i )
+
+        tabs[i] = tab
+
+        if isMain then
+            main = i
+            state.spec[ getSpecializationKey( id ) ] = true
+        else
+            state.spec[ getSpecializationKey( id ) ] = nil
+        end
+    end
+
+    if not Hekili.DB.profile.specs[ spec ].usePackSelector then return end
 
     local fromPackage = Hekili.DB.profile.specs[ spec ].package
 
@@ -57,7 +68,7 @@ function ns.updateTalents()
 
         if not rawget( Hekili.DB.profile.packs, toPackage ) then toPackage = "none" end
 
-        if type( selector.condition ) == "function" and selector.condition( tab1, tab2, tab3 ) or
+        if type( selector.condition ) == "function" and selector.condition( tabs[1], tabs[2], tabs[3], main ) or
             type( selector.condition ) == "number" and
                 ( selector.condition == 1 and tab1 > max( tab2, tab3 ) or
                   selector.condition == 2 and tab2 > max( tab1, tab3 ) or
@@ -112,7 +123,6 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", ns.updateGlyphs )
 
 all = class.specs[ 0 ]
 
-
 all:RegisterAuras({
     -- Phase 4
     -- Death's Verdict/Choice Buffs
@@ -135,7 +145,7 @@ all:RegisterAuras({
         aliasMode = "latest",
         aliasType = "buff",        
     },
-    
+
     -- DBW Buffs
     aim_of_the_iron_dwarves = {
         -- crit: DK, Hunter, Paladin

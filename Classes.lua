@@ -2463,7 +2463,8 @@ all:RegisterAuras( {
     }
 } )
 
-
+-- TODO: Needs Catalcysm potions
+-- TODO: Something about potions is not currently working, needs investigation.
 all:RegisterPotions( {
     speed = {
         item = 40211,

@@ -1313,7 +1313,7 @@ spec:RegisterAuras( {
         id = 5487,
         duration = 3600,
         max_stack = 1,
-        copy = { 5487, 9634 }
+        copy = { 5487, 9634, "dire_bear_form" }
     },
     -- Immune to Fear effects.
     berserk = {
@@ -1995,6 +1995,7 @@ spec:RegisterAbilities( {
             swap_form( "bear_form" )
         end,
 
+        copy = "dire_bear_form"
     },
     --Your Lacerate periodic damage has a 50% chance to refresh the cooldown of your Mangle (Bear) ability and make it cost no rage.  In addition, when activated this ability causes your Mangle (Bear) ability to hit up to 3 targets and have no cooldown, and reduces the energy cost of all your Cat Form abilities by 50%.  Lasts 15 sec.  You cannot use Tiger's Fury while Berserk is active.
     berserk = {

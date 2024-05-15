@@ -1,0 +1,69 @@
+# Hunter: Survival
+# Himea's Beta APL - Discord: himea.saito
+# Modified from WoWTBC Cata Guides - https://wowtbc.gg/cata/class-guides/survival-hunter/
+# May 2024
+
+## Precombat
+actions.precombat+=/aspect_of_the_hawk,if=!buff.aspect.up&settings.maintain_aspect&assigned_aspect.aspect_of_the_hawk
+actions.precombat+=/aspect_of_the_fox,if=!buff.aspect.up&settings.maintain_aspect&assigned_aspect.aspect_of_the_fox
+actions.precombat+=/aspect_of_the_cheetah,if=!buff.aspect.up&settings.maintain_aspect&assigned_aspect.aspect_of_the_cheetah
+actions.precombat+=/aspect_of_the_pack,if=!buff.aspect.up&settings.maintain_aspect&assigned_aspect.aspect_of_the_pack
+actions.precombat+=/aspect_of_the_wild,if=!buff.aspect.up&settings.maintain_aspect&assigned_aspect.aspect_of_the_wild
+actions.precombat+=/hunters_mark,if=debuff.hunters_mark.down
+actions.precombat+=/misdirection,if=settings.opener_misdirect_only
+
+## Default
+actions+=/call_action_list,name=init
+actions+=/use_items
+actions+=/potion
+actions+=/hyperspeed_acceleration,use_off_gcd=1
+actions+=/run_action_list,name=aoe,if=active_enemies>2
+actions+=/run_action_list,name=cleave,if=active_enemies=2
+actions+=/run_action_list,name=single
+
+## Init Parameters
+actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
+
+## AoE
+actions.aoe+=/misdirection,if=settings.recommend_misdirection
+actions.aoe+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.aspect_of_the_hawk&!moving
+actions.aoe+=/rapid_fire,if=cooldown.call_of_the_wild.up
+actions.aoe+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
+actions.aoe+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
+actions.aoe+=/explosive_trap
+actions.aoe+=/multishot
+actions.aoe+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=buff.lock_and_load.up&debuff.explosive_shot.down
+actions.aoe+=/kill_shot,if=target.health.pct<20
+actions.aoe+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.aoe+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
+actions.aoe+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
+
+## Cleave
+actions.cleave+=/misdirection,if=settings.recommend_misdirection
+actions.cleave+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.aspect_of_the_hawk&!moving
+actions.cleave+=/rapid_fire,if=cooldown.call_of_the_wild.up
+actions.cleave+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
+actions.cleave+=/serpent_sting,cycle_targets=1,max_cycle_targets=2,if=debuff.serpent_sting.down
+actions.cleave+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=debuff.explosive_shot.down
+actions.cleave+=/kill_shot,if=target.health.pct<20
+actions.cleave+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
+actions.cleave+=/explosive_trap
+actions.cleave+=/arcane_shot,if=focus>80
+actions.cleave+=/cobra_shot,cycle_targets=1,max_cycle_targets=2,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.cleave+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
+actions.cleave+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
+
+## Single
+actions.single+=/misdirection,if=settings.recommend_misdirection
+actions.single+=/aspect_of_the_hawk,if=settings.maintain_aspect&assigned_aspect.aspect_of_the_hawk&!moving
+actions.single+=/rapid_fire,if=cooldown.call_of_the_wild.up
+actions.single+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro
+actions.single+=/serpent_sting,if=debuff.serpent_sting.down&!prev_gcd.1.serpent_sting
+actions.single+=/explosive_shot,if=debuff.explosive_shot.down&(buff.lock_and_load.up|!prev_gcd.1.explosive_shot)
+actions.single+=/kill_shot,if=target.health.pct<20
+actions.single+=/hunters_mark,if=debuff.hunters_mark.down
+actions.single+=/black_arrow,if=debuff.black_arrow.down
+actions.single+=/arcane_shot,if=focus>80
+actions.single+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)&level>80
+actions.single+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&level<81
+actions.single+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
