@@ -22,7 +22,6 @@ local function rage_amount( isOffhand )
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) * ( state.buff.defensive_stance.up and 0.95 or 1 )
 end
 
-function GetTalentRank(talentName)
     -- Get the player's talents
     local talents = {}
     for i = 1, GetNumTalentTabs() do
@@ -636,43 +635,43 @@ spec:RegisterAuras( {
 
 -- Glyphs
 spec:RegisterGlyphs( {
-    [58095] = "Battle",
-    [58096] = "Berserker_Rage",
-    [63324] = "Bladestorm",
-    [58367] = "Bloodthirst",
-    [58369] = "Bloody_Healing",
-    [58366] = "Cleaving",
-    [89003] = "Colossus_Smash",
-    [68164] = "Command",
-    [94374] = "Death_Wish",
-    [58099] = "Demoralizing_Shout",
-    [58388] = "Devastate",
-    [58104] = "Enduring_Victory",
-    [63326] = "Furious_Sundering",
-    [58357] = "Heroic_Throw",
-    [94372] = "Intercept",
-    [58377] = "Intervene",
-    [63327] = "Intimidating_Shout",
-    [58097] = "Long_Charge",
-    [58368] = "Mortal_Strike",
-    [58386] = "Overpower",
-    [58372] = "Piercing_Howl",
-    [58370] = "Raging_Blow",
-    [58355] = "Rapid_Charge",
-    [58356] = "Resonating_Power",
-    [58364] = "Revenge",
-    [58375] = "Shield_Slam",
-    [63329] = "Shield_Wall",
-    [63325] = "Shockwave",
-    [58385] = "Slam",
-    [63328] = "Spell_Reflection",
-    [58387] = "Sunder_Armor",
-    [58384] = "Sweeping_Strikes",
-    [58098] = "Thunder_Clap",
-    [58382] = "Victory_Rush",
-    [12297] = "anticipation",
-    [12320] = "cruelty",
-    [58365] = "barbaric_insults",
+    [58095] = battle,
+    [58096] = berserker_rage,
+    [63324] = bladestorm,
+    [58367] = bloodthirst,
+    [58369] = bloody_healing,
+    [58366] = cleaving,
+    [89003] = colossus_smash,
+    [68164] = command,
+    [94374] = death_wish,
+    [58099] = demoralizing_shout,
+    [58388] = devastate,
+    [58104] = enduring_victory,
+    [63326] = furious_sundering,
+    [58357] = heroic_throw,
+    [94372] = intercept,
+    [58377] = intervene,
+    [63327] = intimidating_shout,
+    [58097] = long_charge,
+    [58368] = mortal_strike,
+    [58386] = overpower,
+    [58372] = piercing_howl,
+    [58370] = raging_blow,
+    [58355] = rapid_charge,
+    [58356] = resonating_power,
+    [58364] = revenge,
+    [58375] = shield_slam,
+    [63329] = shield_wall,
+    [63325] = shockwave,
+    [58385] = slam,
+    [63328] = spell_reflection,
+    [58387] = sunder_armor,
+    [58384] = sweeping_strikes,
+    [58098] = thunder_clap,
+    [58382] = victory_rush,
+    [12297] = anticipation,
+    [12320] = cruelty,
+    [58365] = barbaric_insults,
 } )
 
 
@@ -1810,7 +1809,7 @@ spec:RegisterAbilities( {
 
         handler = function(self)
         -- Reduce cooldown based on Shield Mastery rank
-        if self.shield_mastery_rank > 0 then
+        if talent.shield_mastery.enabled then
             self.cooldown = self.cooldown - 180
         end
 
@@ -1867,7 +1866,7 @@ spec:RegisterAbilities( {
     spell_reflection = {
         id = 23920,
         cast = 0,
-        cooldown = function() return glyph.spell_reflection.enabled and 25 or 20 end,
+        cooldown = function() return 300 - ( glyph.shield_wall.enabled and 180 or 0 ) - ( talent.shield_mastery.enabled and 180 or 0 ) end,
         gcd = "off",
 
         spend = 15,
@@ -1911,7 +1910,7 @@ spec:RegisterAbilities( {
 
             if sunder_armor_stacks < max_sunder_armor_stacks then
                 sunder_armor_stacks = sunder_armor_stacks + 1
-                apply_sunder_armor_effect(sunder_armor_effect)
+                pplyDebuff( "target", "sunder_armor", nil, min( 3, debuff.sunder_armor.stack + 1 ) )
             end
         end,
     },
@@ -1979,16 +1978,11 @@ spec:RegisterAbilities( {
 
         handler = function()
             local targets = getTargets()
-            if isTalentActive("blood_and_thunder") then 
-                for i, target in ipairs(targets) do
-                    if isAffectedByRend(target) then
-                        applyRendToAllTargets() 
-                        break
-                    end
-                end
+            if active_dot.rend > 0 and talent.blood_and_thunder.enabled then
+                active_dot.rend = active_enemies
             end
         end,
-    },
+    }
 
 
     -- Instantly attack the target causing (Attack power * 56 / 100) damage and healing you for 20% of your maximum health.  Can only be used within 20 sec after you kill an enemy that yields experience or honor.
@@ -2013,7 +2007,7 @@ spec:RegisterAbilities( {
             local healing = maxHealth * 20 / 100
 
             InstantlyAttackTarget(damage)
-            HealPlayer(healing)
+            gain( 0.2 * health.max, "health" )
         end
     },
 
@@ -2037,12 +2031,6 @@ spec:RegisterAbilities( {
         
                 -- Apply Vigilance buff
                 applyBuff("vigilance", self.duration, target)
-        
-                -- Set up event listener for target being hit
-                addEventListener("target_hit", function(event)
-                    if event.target == self.target then
-                        -- Refresh Taunt cooldown
-                        taunt.cooldown = 0
         
                         -- Gain Vengeance
                         local vengeance = event.damage * 0.20
