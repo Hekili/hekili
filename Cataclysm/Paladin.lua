@@ -23,13 +23,6 @@ paladin:RegisterGear( "tier7ret", 43794, 43796, 43801, 43803, 43805, 40574, 4057
 paladin:RegisterGear( "tier10ret", 50324, 50325, 50326, 50327, 50328, 51160, 51161, 51162, 51163, 51164, 51275, 51276, 51277, 51278, 51279 )
 
 -- Hooks
-local LastConsecrationCast = 0
-paladin:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if sourceGUID ~= state.GUID then
-        return
-    end
-end, false )
-
 local aura_assigned
 local blessing_assigned
 paladin:RegisterHook( "reset_precast", function()
@@ -45,6 +38,7 @@ paladin:RegisterHook( "reset_precast", function()
         blessing_assigned = true
     end
 end )
+
 
 -- Talents
 paladin:RegisterTalents( {
@@ -896,11 +890,10 @@ paladin:RegisterAbilities( {
         id = 35395,
         cast = 0,
         cooldown = function()
-            local base_cooldown = 4
-            local haste_multiplier = 1 + (min(state.haste, 100) / 100)
+            local base_cooldown = 4.5
 
             if talent.sanctity_of_battle.enabled then
-                return base_cooldown * haste_multiplier
+                return base_cooldown * state.haste
             else
                 return base_cooldown
             end
@@ -921,6 +914,7 @@ paladin:RegisterAbilities( {
             gain( 1, "holy_power" )
             if buff.zealotry.up then gain( 3, "holy_power" ) end
             if talent.vindication.enabled then applyDebuff( "target", "vindication" ) end
+            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Gives 0 additional armor to party and raid members within 40 yards.  Players may only have one Aura on them per time per Paladin at any one time.
@@ -1055,6 +1049,7 @@ paladin:RegisterAbilities( {
             if glyph.exoricism.enabled then applyDebuff( "target", "exorcism" ) end
             if talent.denounce.rank == 1 and rng.roll(0.5) then applyDebuff( "target", "denounce" ) end
             if talent.denounce.rank == 2 then applyDebuff( "target", "denounce" ) end
+            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- A quick, expensive heal that heals a friendly target for 7024.
@@ -1151,6 +1146,7 @@ paladin:RegisterAbilities( {
         end,
         
         handler = function ()
+            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Places a Hand on the friendly target, granting immunity to movement impairing effects for 6 sec. Players may only have one Hand on them per Paladin at any one time.
@@ -1385,6 +1381,7 @@ paladin:RegisterAbilities( {
             if talent.judgements_of_the_wise.enabled then applyBuff( "judgements_of_the_wise" ) end
             if talent.judgements_of_the_bold.enabled then applyBuff( "judgements_of_the_bold" ) end
             if talent.judgements_of_the_just.enabled then applyDebuff( "target", "judgements_of_the_just" ) end
+            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Heals a friendly target for an amount equal to your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 1 min.
@@ -1612,6 +1609,7 @@ paladin:RegisterAbilities( {
             else
                 gain( -state.holy_power.current, "holy_power" )
             end
+            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- The targeted undead or demon enemy will be compelled to flee for up to 20 sec. Damage caused may interrupt the effect. Only one target can be turned at a time.
@@ -1881,9 +1879,8 @@ paladin:RegisterAbilities( {
         texture = 236250,
 
         handler = function ()
-            if active_enemies >= 4 then
-                gain( 1, "holy_power" )
-            end
+            if active_enemies >= 4 then gain( 1, "holy_power" ) end
+            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Puts the enemy target in a state of meditation, incapacitating them for up to 1 min. Any damage from sources other than Censure will awaken the target. Usable against Demons, Dragonkin, Giants, Humanoids and Undead.
@@ -1936,6 +1933,7 @@ paladin:RegisterAbilities( {
             else
                 gain( -state.holy_power.current, "holy_power" )
             end
+            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Your Crusader Strike generates 3 charges of Holy Power per strike for the next 20 sec.  Requires 3 Holy Power to use, but does not consume Holy Power.
@@ -1958,46 +1956,68 @@ paladin:RegisterAbilities( {
 } )
 
 
-paladin:RegisterStateTable("assigned_aura", setmetatable( {}, {
+paladin:RegisterStateTable( "assigned_aura", setmetatable( {}, {
     __index = function( t, k )
         return settings.assigned_aura == k
     end
 }))
 
-paladin:RegisterStateTable("assigned_blessing", setmetatable( {}, {
+paladin:RegisterStateTable( "assigned_blessing", setmetatable( {}, {
     __index = function( t, k )
         return settings.assigned_blessing == k
     end
 }))
 
-paladin:RegisterStateExpr("ttd", function()
+paladin:RegisterStateExpr( "ttd", function()
     if is_training_dummy then
         return Hekili.Version:match( "^Dev" ) and settings.dummy_ttd or 300
     end
 
     return target.time_to_die
-end)
+end )
 
--- TODO: Can these be removed? What was their purpose?
--- paladin:RegisterStateExpr("next_primary_at", function()
---     return min(cooldown.crusader_strike.remains, cooldown.divine_storm.remains, cooldown.judgement_of_light.remains)
--- end)
+-- Zealotry and Inquisition optimizations for Retribution
+-- Returns the expected amount of seconds until we want to use Zealotry
+paladin:RegisterStateExpr( "time_until_zealotry", function()
+    local time_until_zealotry = cooldown.zealotry.remains
+    if buff.guardian_of_ancient_kings.up and not buff.zealotry.up then
+        time_until_zealotry = buff.guardian_of_ancient_kings.remains - 20
+    end
+    return time_until_zealotry
+end )
+-- Returns time time it would take to get to 3 holy power if intend to use another spender first
+paladin:RegisterStateExpr( "time_to_generate_holy_power", function()
+    local needed_holy_power = function()
+        if holy_power.current > 0 then
+            return 3 + 3 - holy_power.current
+        else
+            return 3
+        end
+    end
+    return needed_holy_power() * cooldown.crusader_strike.duration
+end )
+-- Returns the time it would take to get to 3 holy power from zero
+paladin:RegisterStateExpr( "time_to_three_holy_power", function()
+    return 3 * cooldown.crusader_strike.duration
+end )
+-- We want to use Zealotry 20 seconds until Guardian of Ancient Kings expires
+-- We don't want to spend Holy Power if we're about to use Zealotry
+-- Returns true if it's safe to spend Holy Power before Zealotry is ready to be used
+paladin:RegisterStateExpr( "can_spend_holy_power", function()
+    -- Only consider waiting for Zealotry if cooldowns are enabled
+    -- TODO: It's probably better to also consider if the player has disabled Zealotry in their custom settings as well
+    if toggle.cooldowns then
+        if time_to_generate_holy_power <= time_until_zealotry then
+            return true
+        else
+            return false
+        end
+    else
+        return true
+    end
+end )
 
--- paladin:RegisterStateExpr("should_hammer", function()
---     local hammercd = cooldown.hammer_of_the_righteous.remains
---     local shieldcd = cooldown.shield_of_righteousness.remains
 
---     return (hammercd <settings.max_wait_for_six) 
---     and (shieldcd < (settings.min_six_delay-settings.max_wait_for_six))
--- end)
-
--- paladin:RegisterStateExpr("should_shield", function()
---     local hammercd = cooldown.hammer_of_the_righteous.remains
---     local shieldcd = cooldown.shield_of_righteousness.remains
-
---     return (shieldcd <settings.max_wait_for_six) 
---     and (hammercd < (settings.min_six_delay-settings.max_wait_for_six))
--- end)
 
 
 paladin:RegisterSetting( "paladin_description", nil, {
@@ -2146,9 +2166,9 @@ paladin:RegisterSetting( "seal_of_righteousness", 4, {
     type = "range",
     name = "Seal of Righteousness Threshold",
     desc = "Select the minimum number of enemies before Seal of Righteousness will be prioritized higher.\n\n"..
-        "Recommended: 4",
+        "Recommended: 3",
     width = "full",
-    min = 0,
+    min = 2,
     softMax = 10,
     step = 1,
     set = function( _, val )
@@ -2174,6 +2194,15 @@ paladin:RegisterSetting( "zealotry_macro", false, {
     width = "single",
     set = function( _, val )
         Hekili.DB.profile.specs[ 2 ].settings.zealotry_macro = val
+    end
+})paladin:RegisterSetting( "zealotry_save", false, {
+    type = "toggle",
+    name = "Save for Zealotry",
+    desc = "Enable if you want Holy Power to be saved for Zealotry when it's going to be recommended soon.\n\n"..
+        "This setting will enable prediction for how long it will take to rebuild 3 Holy Power and hold off on spenders if needed.",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 2 ].settings.zealotry_save = val
     end
 })
 paladin:RegisterSetting( "retribution_footer", nil, {
@@ -2308,7 +2337,7 @@ paladin:RegisterOptions( {
 } )
 
 
-paladin:RegisterPack( "Retribution (Himea Beta)", 20240507, [[Hekili:TVvBpUTns4FlloahBCP(8l7lPf2bOnf4Ac6fuuhG7BsIwI2M3kj6JIYB3dg63(nK0IIsIuY76nBbUlFilSfhoZZmC4ZmI0XBQ3x8wfH4yVppBYSRNCZK7gpz2KVF2TER4pUh7TApk8E0w4dPOe4V)oMZiRZ5eAArWWFHKGrfb)eMJgje9XykksOYmAoleeFfjjpgjK(dm0gErWHRNp77M5TADojM)XuV12n)Cqf7XHWJ9wTJefHvsIZc9w9LDKSIaX)atFcEfb0nW3dv4kMKXHH3qzfb)c(EsmzmGogDdjgW0FPi43qXOis6puey6pFcgr6rVjt5tfb)4V9RfbFxrWptYcPSiyc7ecmodr4u5e(hOhlceGV4tW3f6MHdPjRr8IpPWt249Lp6VU8VXQmOpkNHElzZYRwNVzZyX3gNVFqgMZjPBZgNGiPC4Fs5gGYYiBtXrYVnUPASBSqAAioLZqxQ5ARihgKLNHIWSlYwM6WUzIWhOxQlvthUwRYGmje46xIHAOf7MADmgMu6wF6g)7fQSYyLdz3GLJwzuT8T0z)MoHSDh)f20sDA30zyuSqeolNVtywPvfpfIAc7KTy(KjoYbihiPy)9Xy5ctckfnEpMjstxOXQHq(8DWkXoACKD99VYJ2ItGzxUr(NXBq5XvixKEJIJ9vF1xqY8wbP4sskPMu5zyFchNKz(W9ufht1t2b8RmGLtKNegIJXQDxVvmD6Mn(BdJwo1CcS802gpeCTdyreqm0bSpofNqWzVV)PkwGIXLU7hfEbWmYGH4aWQIsc)d0XbeJGGfw1K5apOpN6hrWV9akohVCyewU8bSeWmG1(O8KKhfPoWA4OJh5i2wmFSXeln9hK(qLbv(Kr(btKcHP5zPqAvT8KwJooI(q6GgXIL6ecRZXIL1zdcRn0EYL4P(AbRYVgnqcp9izYu8Dy)1WGs8zXGBZrSickvilWvqeAuteesHzcZB8)bGpLZEuV9y6el6QuQ6PsspzOI)6Kb2tFaZgdKtH3NTC2efUDIeTrNnfwohQbvVt49t7x3cnnA0GHqa8rfUwo)4r5Kk3eNZ2tZWqc1ObX4d44LV7MNMZ)e09cR6g(B6wrQ9dWE1DwSGuN6fji1)kD2s5t9tqHmkeaVIJIb)VsCCQy7vuFzJpTKXNtU4PGsgNYsSWSSSj9QuqB8RAnss)35KmIKFthNmEOejNwsmFSUkWzNzuhRlU1cyEa6Kteg2gtH0enCYWXBIlzqoB7zWSOMU)oy9eZoJWALbwmVfJ1YRTObOnSmC4P6ecGRTou)LYW(Mc4NqpixZHun4JGyJgCQ9fLTmfwKR2acwbqzVzzq7N3J7XlwytfqHX9XiwM)bmqfeY105TcUhpAUe8ND4ywF7lRV3xwgYm2yz64)GYcjzj6zl2yIyCrY5digacltAhkjbwaeIijHkNBDUjz47ufxrcj8K9H8f96eqeeOgsZZG60y205(Z2h6NanNGh0IBRhVRrUInxrOajCDVB5z1FNQTIvN6VPu1Q(D6UTtfp0Wo6VOvMXYPJSyJxRgi0g8fObcTU()XgiohN)jO7fw19RCdeA72dVDF5VNn1ME6VAf8Ty7x567A7E5v20Q6PuzqpPlRYGnEGx4sdUshT5lwknOh8skn0glFvBIWeBV)UjgPts77RwiQnnVvq(tM4d6df1BfSOlEN6mVv)ZF83)8h)8F)hkckc(YoCrajzpLXpDCNVrv)8nfbmmSRIbSbbz0eqmuoNMG4IheUdLUfNnU4t)keIkcMof02hOmgouoomtumH)OqsC49GQz0eq3lxc6LtfFc(WWP)XOXIATFucaXeVPXzWcd7Ts(j5HclDz4tFwESZNyR8(jVvHmchZiiX5cBwjUi44rWqfbDwpUiyGYUv1KlcwcUvrWiVvkabw3SOVhxC0YUabyqZ1TIGfqqSVI2GXKaPVs3vislKanZDIgN1UL4A6Kkf6S4OWax3L7wgITvxxglb6bTZ1B5AjWMnvgroTaE(16lcEp4vNN9u5iJkd9GDQiEKWEUca2zHlNMSETu83DtvWSmA7TYOkTi1fIL30vS8cGWIZhc32feAYhlTXvgjX17LqVqbI4ONIkqvVAInODNtOzgAaFDELwBurqOM31njrT2rKoOBTxBN233BKRzFkgRGw6vrzSNFoyfmnuUaOWw7(qATEAE(qqonxD6uHVAnwjrype5wSLahnrxLfA2cL0iUjQT3AuL6kBJsQg3mS27ssH1wDkPi3myDB02L0wUjBD3fvfHxZDUNzI9ujTKRDugWri7TMYw1TvtXCVx2DfsRDEvzmJHLMW9(8HgkTRMX0KxQwYktOVQSOM1wZKIu3jGcp3nPXEHoAtthPnFQyLyvK6QJS1QJEsnUkjvFs(QBzxCJl6wukNH(ALASgn3ui11m1qcz2ydE6Q1E7xdvdv4UIxZgVevVR0EJlEQMxQAv1wXSZz2N6MugV13Jxxr8MxzU63taJSxnS(I8nDoDkK6cFRNBu7sFvnH25D03DtNxKPAF)81spBowN9BEzaX8Y7TqgvAE3eKxK5RDP(guo1ECNPZxK5BCv)M5E1hOZg4kHW6QBF3bmkLOouw78haqfGApuNnU9vbsYFya2HKAO(Bc08NkGQ24eJkZTELp3T(9IvnBIjBCv55ASP8tm8wiRO7LTiuPIYBDx8P4CSSOORlAxgZf)Gjk7NV9vUlv4jguZhlb1jc5Z7f0B)M46gXBvsyzTUlTm32Rz1h(BVU(3ED9V966V2VU(Zzx1ZFlLBQ(o5tS)BqOfbTC8URb8NZR)BLXeu5TvUW)lDUanFxwNfmU29syhNiWx)xz0Y77CTZ3fSRtD4SIelQR92Nswhh1Wl4rW0jd6RFaFwhbC3mT1PzFQhByhhfYt6yO6PJ2N2XqvzdBNcLBQUVINc1SADa39PqnBQPSopfQzU3V)c13US9xe8wcuGwt()ba5J8(Vd]] )
+paladin:RegisterPack( "Retribution (Himea Beta)", 20240516, [[Hekili:TR16oUTnw4NLbfW1UBQRVmZK0c7aSj5hnbBlcQ6VLeTeTnB0fxskp7SWqp77HuwuusKs2J9K2uemymSfp35HFNdjL7u3F31jeXXU)6SjZUDYDtVF8KzZNC7uxh(J7WUo7qbFcTb(sckg(83WCkzvgNKMK7p8NjXyuU)BWC0ibPpgLIcfIKLMrdaYDiXzrib1VLIwZZ93F78zF)mxNvzKi(7tCxzq9Z(Xz3bIyhoaESRZwsyiUGsmlW1533sy5(I)bvF08Y9txd)oOWUIimom86uAU)pJ)ejImgSoA6AseytFtU)hrrOqsYpL7R7pFagr6rFlRWNY9)3F8)K7)95(VJWcsPHadBfemMHi8ujd)c6XCFHXN)b43cztXbPXRq88puypSX7kF0)A5pqRuOhkJIEbz9YBwLTE9yXVgNTBadZ5KKnSXXisch(xs3aeJr2KGdL)ACtXywzbPjb4eofDPQRTGSOqAgdfIPxKU0LHz1eI3NEPUunzyBUIbzsiW1Vef1qkMv1QimWuYgV01EFsiYkLvoKzfwoALsv03sM9R6yYMT8RSQLY0SQzyuKGeonJVvOwPwfpfIAc9WwmFYel5aK9KeS3UiSCIjgLGgVdtfPPlu2QgrE8TWmX20OqZY7pYc3GJbUlxi)o8AuwuLLlsVrrrEf)0taY8cbO4sscPgvzmShHJJz6pCxAbgt1t2c4RuaLtKNeeGJWfRUEHG901R92eeUCQod0SK2kpaCT9yreqm0EShobhtWSx3pRIjOiCP7(EHxaiJuyioyyvrjH)bYypIsqWeBbZCah0JN6fsWVypkkdVCyiwo9bOeahWCFywC8JIuhyoC0HdCeDdMpwJXsv)wPpuPWcFsl)GksHWPzSeiTQwEsRrhhM(qYGgXILQecJ8yqZQSbH2gAo5s8upfHv5xJginp1imzk(wS3kyqP9zqHBYq0qckrqlGvqesubeeKcCc8n()bMFkN(OA5X0jgKvjv1tLuXnRQsj1zthme8Kh92L(aMUC(HdsglxnLr3LYWWm7Obr494OLV6UZYkohzVWOSHpt2iYXEaw0S1GgKYufTGCWButBLp1lgfqtHeZB4OiiguroorKNh2xAX5Lv8uskoguy8uASHL4lBIZjj0eqNsIKK)mJWisGgvCs7Hsl5WHHLRsfYc7vnF9DtgF)9JEDl2oM5m6uZBgga5Fa4xsOMWHPI2ZsmWWhzWtEa6hted3eLc5yvycrRJuWaNOXOHouWT3wq7y6vWkBodwjMfZBHsDRbbaDEXWbhlniMXu6gk5MsXE6e4fNUxMDb2i8vGSrdo2XsHQ0jwSQOHfy0akBhJbDC(jCpoXctIaQfUlcrzE7XaWtaVkZR1KXHd6tzxJ8KpRbWz9HzuhxsMKQhnnWo()MsdiSyf3cqdeLlY9FarbJWatBrXXWuMGejazjV1XnLX7JLLfz8Wt2fWx0Rtarqa2kjJbfZX0PZ9MTlWlg6GbpOfUBpExJSltUIqasZ1(YRNutGf9E4CSjOsrx0uu39MEeJSJMqALzSC6id64ZvxgkfEf6YqjR)s7Y4eSIZr2lmk7pZDzO0BpqU9LiDYymk2)IVRaLN836Ucuw5Fffevk)CkOOy6YkOyc(4kxrX2Iht(IHkkQbVKkkTTLN1Ep0TTx)YjAjSs97vmruJnxhiJJj(I6axDDGjDX(1zUoVpExkLdys(3140uhN)bxheujmL66ipKuxh5aYt7vQp4B)Q88KpcS5(gxNakHJPeK4aF1REM7F4qU)WC)oRHM7pOWmQQJM7Vm3FAU)iWAck8OAfQD5IZm2MrakupOL7Vi3V3cTGYKgsFLBRSifrcRzUvRXA9wPDnDsLaTwlvOGB7oM3BDyP2Mnv6JqaQA5LmwpVyQYm4uzOrwdvs(RURYQlDlxhTkNICeWOVRR5OlWewC6MW9DzcnrDK64gTSL613LwHWibsSuNVYOQJzAY0EPvttp0a(68kP2a3tiMx1DMrTweKoODPxlL(h7nY1S3b16DBDqK7)D5(IUiKrYxBqmQS1rxsMkWMPcOQjpZLrRH3OzuIGbSoThmpTEpUet3w)ixl)QwRtspZoA(q7gRqHTDVRw0VzRtsd1oIV5gCQexzZqsXyhQ2CVof2DR(Dkau1GVB08Kux2rTT3luvzOMitN4c3PsyxBigAMJG271PTQNPMKzhRYEPwJ9pvPmTHLQWoo2qnH2vlvQmSIgRkZhV5y40CdwssQ7eaW0lN0y1yhnBPI06pvmt4ewC5sM6zsXuJlBQOHlVI7HxCNmQEDk5qDXtnMJMRtuXfr1Gcz2yJ6qvZ9MVOQgIWEf9MDWbbrnP34QPQ5LfNZJPI1Nc3hBlvgVv30xxr8MxQEXBCaLSRyy1v9R7CQuOIReUEUrTRfUOB2oVf)U7E9Iuv7BWVw6zZX6SX1lZq0VEFdGrLQ3oa5fP(Ax7VgKtTh3z68fP(gVma65E1hOZgulnHvv3pVfZOKI6MYkRVIavgu7H6SX0Nfts(Qdy2KkgQ)MC1FzckQnorRYCR9oAV12Rw1Sj6OXvLNRHMYvyFN2MQBV7zv3MTqFxwRvsd82o8uF4VUf7VUf7tZe(ICl2pL03NEURD4Rox4A(c)Bb6ihVBCTVULDdiQ)dCl7n3IO1Id3AplQJnA)8VtmdBJ4wRBXQRnZFsrIf1LE7dxRJDW)3SthPZcbF(N0M1XKM9cg1RwCUNyzhNsXzDcr90S55Dcrv6W0bezhX(z8aIMvR50UpGOzt1P16benZoMXvQLA(XJdXqRYP7KHRkolFjwfFlkdlxcy79wvg4eV)XLDE0(nyvkWJh3G(J5Q)C))]] )
 
 paladin:RegisterPack( "Protection (Himea Beta)", 20240502, [[Hekili:TR1wVTTnu4FlfdWlbl1XxsCxkCkWslWAdw7kGlqFZs0s02SrsuJKkEbWq)23Hu3iLjvIDU8Y6lbo8Y57WdjpFNpcnF48VnFwisGN)LrdgD2GZhmQ)WZhC(4rZNjUlfpFwkk4g0k4hjOy4VFLrf4abHMK7FXez33frrHsZWPzSayiRfIu(Bp90n0nIfb9xT60aKaDAqeIZF9QmsiMFAATzEDkkcfssoD(SfzKiXNsMVyxx6SZV48HaeP4aOzadsyiUyKyEGPB91cdM7dTHkAAjLL7)r8nKis)C)RqCCyUVSdWh5KyEUFeDfj4eyo4LOabLjhGAwxm5IjnMA(SicxWvlxsYQim8RVOcI4e0IiC48RMplGreygbbUjgfjw3pfdbMerU)0CFowiGzY7hJ(bL5fIxIt4KBH4gkOeb0DE0eV1OKq(CHC5(ey(C)E5(lYwUSpIbrorrpHyw)q6MKgWxLb9tqjE0LEOKaICO3inO0tg)06joXQLp1YJLEYzhKNu7dEI1mmFnnkSXBQ7Sf6WOUZJVMGJcLiF(lhYHKBjjyVM7ks8N8CJVQ96jMXXEv7t74z1Da(1BC6xkm4GZ1A5jBsU1lyzI1st87stuVPFlozf4cEByiOBntdJ8cNGv74bOubIK4bzTyKauldJzCT90HdChuL7(P0nyivWL5(dY93Un3pgLGCeOl3ZIWOMq9UBPq3kG7i1HjWJvBlDTfVHUYgIBOSqzuEveLDNcZoYN0ctT9kvSsTBTg7XiRwlW0mvsHHDKvqZEtnSxalJJG7YECbJCdwzNZ2z7xBxYC)FO7BHceBfw0VksfueLgnq7cnkgotixlfhTK2BIo2)ilCfogcWTr9n6JkGMWXbSsAbZbACswffSCkwijVwIYIe2irQHbff5v8pEsUNcgiVc2yscrutrund5vwiAeZB5vJ1huk1IFR2bKtNUeoWeek9QMLbuoadiGXHG7eGJWwx6U3yK2bY)GtWXemW4(UCFnRZYsCUkdGBl3ITL87Hm7sEAv8oLHdOXlqDgXRpD7TmdUYOQWGrsl68ZO7KNMgD2oz4mNwrUUozVFvfHCgd1pl1mVBmK7Qi)f0RQlO6jYQez0xoEggU4SitTKLnO5(T7PtI7hLtaxbK5Hkoi0YnS0xN82pohPkDslFWO5opD(OGpeFl1siWS5o5UFuWd58HJ7qfu4Doky2rN00vUa0dxENXTBunctxPEEv)qMHTO0XAhA3UQO9F5CPy59u7UurxDwFrtXmmSeDEbZ2KYcdEW160rjhhb88TiopOQoY9p2mAXqaLkqINc5GzhsnjhvUajj)tgHtKtVSKX61UEx6rOjvEJ16AUpxuZQnLW0jvwhvLCFG1QYZ6stoiJH)xklGWJVNQwUpZyROv3ztSBnMTkCu0ILeS)uk7b7j)uk7)lKYUhNnCFjWnF3dM94c98FDQu(NsBVpPTT5wmKj1Ov0u3BRG8ElDvRkzNIin0K6sezlrPoKUkkLkAjdpnvXx0yIBrqad6v(ROmSI1peRoAcvZdMboPfMfhFxv1yJhmqrUlp9uQ(wqIHRNuVqIYmSsPy6nxs9CleOKWkFR3Xdho6S(GOWniwsrHJFkoLYeYhJ9COUoLhM7REc2(5xl1ZrxsKU6Vu)SVVf(vZJbFn0Xhbur)kugYvybu(8F81)k3)15(FGWdGdqW4xlhqFoIiOQj8zAizjr9cWmACU)3PF)Bx9(C)3JKZ)pvVGTYeh4lDxasLqY8RH)x6)vAtZVUyHY7xlx93U8ut5LNqwEPlvNoMFlzHsl8kDnh9SR3Ox36oTd2UI)oq421qoauxP3HILUnSdJHIUdegdB4AVYq32bculRyhQfTvK1a2IgvxwaSQ3EpabG3p0kLxpXqRSPDOniuRVlPlRBkiPB7wtczhNjA49Kw6OgMMPJ3UvNoDA3uPh3ZED72HvJ2sbRvHzLRalIYMo54EnE6LJ3lSluCzVpZQrKU2(y5k5s778AX5UVtVM209ezv5P)qXB2wBiz2NwVr7js6UlLmU6JQ(Dz1BSvOeAXX7SEI27YE5q9j06XplaVqsNC5i7Q5DxF39p1IhmTA5(j5QaixzqxqTuA3LLRpWgv1lumznk(tu1pC5rUkEOhu4WXB3UBjdvq)E1AObWI1eaPEf1YLOzTJtDkxBxl5u32Ey2Eo1IAbWwdBVHPBHMwautZxxGzrvvpBkQ2fGDK29Sct16)jaKEwvg(SECRdEhxNxmsN2r4VK(rlN(G9I9XIPn0x1Y4J75kkyiwZIvBrCPBtBhFTlaZvKQHcWYi0fB56MIRWCndrvYPzQSKvJREtFpZPC(GgSkY7(uCER2s7JR8ysVvd4lv6TAaFUsVvdWZB6T2W8cMERg6hCsPMDzhjLmhGJYXA9Hz0ri)PlLwTPFstP1ebT)1r4o9w9mB9DqyoJP2MHZ0Cnxjm)(gK2CNpkIPJSL4rlj3UEQ1KNM3dlFFQfYVVU)oX8RYBYfZNHGdyu28zQxKr9(pZ)V)]] )
 
