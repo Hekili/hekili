@@ -295,7 +295,7 @@ paladin:RegisterAuras( {
     guardian_of_ancient_kings = {
         id = 86669,
         duration = function()
-            if state.spec.protection then
+            if state.spec.name == "protection" then
                 return 12
             else
                 return 30
@@ -1096,11 +1096,11 @@ paladin:RegisterAbilities( {
         cooldown = 300,
         gcd = "spell",
 
-        startsCombat = function() if state.spec.retribution then return true else return false end end,
+        startsCombat = function() if state.spec.name == "retribution" then return true else return false end end,
         texture = 135919,
 
         toggle = function()
-            if state.spec.protection then
+            if state.spec.name == "protection" then
                 return "defensives"
             else
                 return "cooldowns"
@@ -1109,7 +1109,7 @@ paladin:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "guardian_of_ancient_kings" )
-            if state.spec.retribution then applyBuff( 'ancient_power' ) end
+            if state.spec.name == "retribution" then applyBuff( 'ancient_power' ) end
         end,
     },
     -- Stuns the target for 6 sec.

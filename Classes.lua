@@ -6895,11 +6895,18 @@ function Hekili:SpecializationChanged()
 
     local specs = { 0 }
 
-    if Hekili.IsClassic() then
+    if Hekili.IsWrath() then
         specs[ 2 ] = currentID
         state.spec.id = currentID
         state.spec.name = currentClass
         state.spec.key = currentClass:lower()
+        state.role.attack = true
+        state.spec[ state.spec.key ] = true
+    elseif Hekili.IsCataclysm() then
+        specs[ 2 ] = currentID
+        state.spec.id = currentID
+        state.spec.name = select( 2, GetTalentTabInfo( GetPrimaryTalentTree() ) )
+        state.spec.key = state.spec.name:lower()
         state.role.attack = true
         state.spec[ state.spec.key ] = true
     else
