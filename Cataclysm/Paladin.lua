@@ -289,7 +289,7 @@ paladin:RegisterAuras( {
     guardian_of_ancient_kings = {
         id = 86669,
         duration = function()
-            if state.spec.name == "protection" then
+            if talent.ardent_defender.enabled then
                 return 12
             else
                 return 30
@@ -914,7 +914,7 @@ paladin:RegisterAbilities( {
             gain( 1, "holy_power" )
             if buff.zealotry.up then gain( 3, "holy_power" ) end
             if talent.vindication.enabled then applyDebuff( "target", "vindication" ) end
-            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
+            if talent.templars_verdict.enabled and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Gives 0 additional armor to party and raid members within 40 yards.  Players may only have one Aura on them per time per Paladin at any one time.
@@ -1049,7 +1049,7 @@ paladin:RegisterAbilities( {
             if glyph.exoricism.enabled then applyDebuff( "target", "exorcism" ) end
             if talent.denounce.rank == 1 and rng.roll(0.5) then applyDebuff( "target", "denounce" ) end
             if talent.denounce.rank == 2 then applyDebuff( "target", "denounce" ) end
-            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
+            if talent.templars_verdict.enabled and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- A quick, expensive heal that heals a friendly target for 7024.
@@ -1091,11 +1091,11 @@ paladin:RegisterAbilities( {
         cooldown = 300,
         gcd = "spell",
 
-        startsCombat = function() if state.spec.name == "retribution" then return true else return false end end,
+        startsCombat = function() if talent.templars_verdict.enabled then return true else return false end end,
         texture = 135919,
 
         toggle = function()
-            if state.spec.name == "protection" then
+            if talent.ardent_defender.enabled then
                 return "defensives"
             else
                 return "cooldowns"
@@ -1104,7 +1104,7 @@ paladin:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "guardian_of_ancient_kings" )
-            if state.spec.name == "retribution" then applyBuff( 'ancient_power' ) end
+            if talent.templars_verdict.enabled then applyBuff( 'ancient_power' ) end
         end,
     },
     -- Stuns the target for 6 sec.
@@ -1146,7 +1146,7 @@ paladin:RegisterAbilities( {
         end,
         
         handler = function ()
-            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
+            if talent.templars_verdict.enabled and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Places a Hand on the friendly target, granting immunity to movement impairing effects for 6 sec. Players may only have one Hand on them per Paladin at any one time.
@@ -1381,7 +1381,7 @@ paladin:RegisterAbilities( {
             if talent.judgements_of_the_wise.enabled then applyBuff( "judgements_of_the_wise" ) end
             if talent.judgements_of_the_bold.enabled then applyBuff( "judgements_of_the_bold" ) end
             if talent.judgements_of_the_just.enabled then applyDebuff( "target", "judgements_of_the_just" ) end
-            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
+            if talent.templars_verdict.enabled and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Heals a friendly target for an amount equal to your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 1 min.
@@ -1609,7 +1609,7 @@ paladin:RegisterAbilities( {
             else
                 gain( -state.holy_power.current, "holy_power" )
             end
-            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
+            if talent.templars_verdict.enabled and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- The targeted undead or demon enemy will be compelled to flee for up to 20 sec. Damage caused may interrupt the effect. Only one target can be turned at a time.
@@ -1880,7 +1880,7 @@ paladin:RegisterAbilities( {
 
         handler = function ()
             if active_enemies >= 4 then gain( 1, "holy_power" ) end
-            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
+            if talent.templars_verdict.enabled and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Puts the enemy target in a state of meditation, incapacitating them for up to 1 min. Any damage from sources other than Censure will awaken the target. Usable against Demons, Dragonkin, Giants, Humanoids and Undead.
@@ -1933,7 +1933,7 @@ paladin:RegisterAbilities( {
             else
                 gain( -state.holy_power.current, "holy_power" )
             end
-            if state.spec.name == "retribution" and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
+            if talent.templars_verdict.enabled and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
     },
     -- Your Crusader Strike generates 3 charges of Holy Power per strike for the next 20 sec.  Requires 3 Holy Power to use, but does not consume Holy Power.
