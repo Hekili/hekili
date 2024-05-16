@@ -465,7 +465,7 @@ hunter:RegisterAuras( {
             local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 19615 )
 
             if name then
-                t.count = 1
+                t.count = count
                 t.applied = expires - duration
                 t.expires = expires
                 t.caster = "pet"
@@ -1068,10 +1068,7 @@ hunter:RegisterAbilities( {
     -- Place a fire trap that explodes when an enemy approaches, causing Fire damage and burning all enemies for 290 additional
     -- Fire damage over 20 sec to all within 10 yards. Trap will exist for 1 min.
     explosive_trap = {
-        id = function()
-            if buff.trap_launcher.up then return 82939
-            else return 13813 end
-        end,
+        id = 13813,
         cast = 0,
         cooldown = function()
             if talent.resourcefulness.rank == 1 then
@@ -1363,7 +1360,7 @@ hunter:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        spend = 20,
+        spend = function() if buff.bestial_wrath.up then return 10 else return 20 end end,
         spendType = "focus",
 
         startsCombat = false,
@@ -1592,7 +1589,7 @@ hunter:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 25,
+        spend = function() if buff.the_beast_within.up then return 13 else return 25 end end,
         spendType = "focus",
 
         startsCombat = true,
@@ -1626,7 +1623,7 @@ hunter:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 25,
+        spend = function() if buff.the_beast_within.up then return 13 else return 25 end end,
         spendType = "focus",
 
         startsCombat = true,
@@ -1643,7 +1640,7 @@ hunter:RegisterAbilities( {
         cooldown = 8,
         gcd = "spell",
 
-        spend = 20,
+        spend = function() if buff.the_beast_within.up then return 10 else return 20 end end,
         spendType = "focus",
 
         startsCombat = true,
@@ -1665,7 +1662,7 @@ hunter:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 15,
+        spend = function() if buff.the_beast_within.up then return 8 else return 15 end end,
         spendType = "focus",
 
         startsCombat = true,
@@ -1702,15 +1699,21 @@ hunter:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
+            local cost = 25
+
             if talent.efficiency.rank == 1 then
-                return 24
+                cost = cost - 1
             elseif talent.efficiency.rank == 2 then
-                return 23
+                cost = cost - 2
             elseif talent.efficiency.rank == 3 then
-                return 22
-            else
-                return 25
+                cost = cost -3
             end
+
+            if buff.the_beast_within.up then
+                cost = cost * 0.5
+            end
+
+            return cost
         end,
         spendType = "focus",
 
@@ -1718,7 +1721,7 @@ hunter:RegisterAbilities( {
         texture = 132218,
 
         handler = function ()
-            if buff.repid_killing.up then
+            if buff.rapid_killing.up then
                 removeBuff( "rapid_killing" )
             end
         end,
@@ -1805,7 +1808,19 @@ hunter:RegisterAbilities( {
         cooldown = 40,
         gcd = "spell",
 
-        spend = function() return buff.bombardment.up and 35 or 40 end,
+        spend = function() 
+            local cost = 40
+
+            if buff.bombardment.up then
+                cost = cost - ( cost * 0.25 )
+            end
+
+            if buff.the_beast_within.up then
+                cost = cost * 0.5
+            end
+
+            return cost
+        end,
         spendType = "focus",
 
         startsCombat = true,
@@ -1924,6 +1939,10 @@ hunter:RegisterAbilities( {
                 cost = cost - 3
             end
 
+            if buff.the_beast_within.up then
+                cost = cost * 0.5
+            end
+
             return cost
         end,
         spendType = "focus",
@@ -1969,7 +1988,10 @@ hunter:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            resetCooldowns()
+            -- TODO: Can't get these to work for some reason, needs to be fixed
+            -- setCooldown( "rapid_fire", 0 )
+            -- setCooldown( "chimera_shot", 0 )
+            -- setcooldown( "kill_shot", 0 )
         end,
     },
 
@@ -2001,7 +2023,7 @@ hunter:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 50,
+        spend = function() if buff.the_beast_within.up then return 25 else return 50 end end,
         spendType = "focus",
 
         talent = "aimed_shot",
@@ -2027,15 +2049,21 @@ hunter:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
+            local cost = 50
+
             if talent.efficiency.rank == 1 then
-                return 48
+                cost = cost - 2
             elseif talent.efficiency.rank == 2 then
-                return 46
+                cost = cost - 4
             elseif talent.efficiency.rank == 3 then
-                return 44
-            else
-                return 50
+                cost = cost - 6
             end
+
+            if buff.the_beast_within.up then
+                cost = cost * 0.5
+            end
+
+            return cost
         end,
         spendType = "focus",
 
@@ -2048,9 +2076,6 @@ hunter:RegisterAbilities( {
         end,
 
         impact = function ()
-            if FindUnitDebuffByID("target", 1978) then
-                refreshDebuff( "target", "serpent_sting" )
-            end
             if talent.concussive_barrage.enabled then applyDebuff( "target", "concussive_barrage" ) end
         end,
     },
@@ -2074,7 +2099,7 @@ hunter:RegisterAbilities( {
         end,
         gcd = "spell",
 
-        spend = 35,
+        spend = function() if buff.the_beast_within.up then return 18 else return 35 end end,
         spendType = "focus",
 
         talent = "black_arrow",
@@ -2092,7 +2117,7 @@ hunter:RegisterAbilities( {
         cooldown = function() return glyph.wyvern_sting.enabled and 54 or 60 end,
         gcd = "spell",
 
-        spend = 10,
+        spend = function() if buff.the_beast_within.up then return 10 else return 20 end end,
         spendType = "focus",
 
         talent = "wyvern_sting",
@@ -2121,7 +2146,6 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             gain( 50, "focus" )
-            gain( 50, "pet_focus" )
         end,
     },
 
@@ -2136,17 +2160,21 @@ hunter:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            if buff.lock_and_load.up then
-                return 0
-            elseif talent.efficiency.rank == 1 then
-                return 48
+            local cost = 50
+
+            if talent.efficiency.rank == 1 then
+                cost = cost - 2
             elseif talent.efficiency.rank == 2 then
-                return 46
+                cost = cost - 4
             elseif talent.efficiency.rank == 3 then
-                return 44
-            else
-                return 50
+                cost = cost - 6
             end
+
+            if buff.the_beast_within.up then
+                cost = cost * 0.5
+            end
+
+            return cost
         end,
         spendType = "focus",
 
@@ -2256,10 +2284,29 @@ hunter:RegisterSetting( "trap_launcher_macro", nil, {
         Hekili.DB.profile.specs[ 3 ].settings.trap_launcher_macro = val
     end
 })
+hunter:RegisterSetting( "recommend_misdirection" , nil, {
+    type = "toggle",
+    name = "Recommend Misdirection",
+    desc = "Check on if you want the addon to recommend casting Misdirection on another target.\n\n"..
+        "You will likely want to set up a macro for this!\n\n"..
+        "This will override the Misdirection Only setting.",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 3 ].settings.recommend_misdirection = val
+    end
 
-hunter:RegisterSetting( "survival_header", nil, {
-    type = "header",
-    name = "Survival"
+})
+hunter:RegisterSetting( "opener_misdirect_only" , nil, {
+    type = "toggle",
+    name = "Opener Misdirection Only",
+    desc = "Check on if you want the addon to recommend casting Misdirection only on your opener.\n\n"..
+        "You will likely want to set up a macro for this!\n\n"..
+        "This will be overridden by Recommend Misdirection.",
+    width = "single",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 3 ].settings.opener_misdirect_only = val
+    end
+
 })
 hunter:RegisterSetting( "call_of_the_wild_macro", false, {
     type = "toggle",
@@ -2270,10 +2317,6 @@ hunter:RegisterSetting( "call_of_the_wild_macro", false, {
     set = function( _, val )
         Hekili.DB.profile.specs[ 3 ].settings.call_of_the_wild_macro = val
     end
-})
-hunter:RegisterSetting( "survival_footer", nil, {
-    type = "description",
-    name = "\n\n\n"
 })
 
 if (Hekili.Version:match( "^Dev" )) then
@@ -2319,30 +2362,31 @@ hunter:RegisterOptions( {
 
     potion = "speed",
 
-    package = "Beast Mastery (wowtbc.gg)",
+    package = "Beast Mastery (Himea Beta)",
     usePackSelector = true
 } )
 
--- TODO: Update for Cataclysm
--- hunter:RegisterPack( "Beast Mastery (wowtbc.gg)", 20230211, [[Hekili:fs1YUTnmqWpMCPfTr2YjTnPajhYHced0CrbO3O0kPvseMIuGKYQ(c)27sjeBkzB0l6b5SdN9Xqwm7Dwsjyr2BBwV5U1BIJJw)W3Em(owI9qhYs6GIDqn9HeAPNVGGX6Y(n9e1hCzFAqnyZlIQR)Sh7bHck9CAu96ccFJ12z(5QvhHrFzf7wviaJ526EEjAwL7j922joVTPxsVxXsY75c7Rsw(LLiDiDyb7nsQn8YsCciAkyjV3WnUSonxP5wsL()Ybdw6YusxMTbDzhvKl7pAW24YgvtelrWnwZyHbRGEHL(8TXcfuy5kjDUCbkl4Y6utJYYsqjKlWs2lmljspYtRKuqsa1CWtxEFvvubLNuSr9DNyKlT8woLL()S(C6QKOgKNIBQwzsBb9oFC3hktn0XltR4ACHe)wiQcqisvvPurjDGlkxG97HyZrs6GiDWxWwa8hHa3XjsluTTGCjHpeIRtn9EgIhdr0BWuk3BnlafV(SZ7cnJ44)x3ySxyIMxwnOUdL20Xnh556DvlORrB0a32WLKQosc(3oHYW3JPwQtmYYDHAULgT4xsZ3F1ZYhkXhkXwosZ0p7Y2CIW9kHapmsXSomOlajEXYZSUlz)GYdxah9BNgP2zoCUza8Uq7htqLAOwjBGHDlPGizpnQ6JXBK3eVEnP9bql9nawYRTDkT1Br34YMi3LnAfJCB9cqvr2owYn34YwCl0w)AXXUSFH56EWFVK)Qc3w32jImrh1)xEA11uCaEc1CtE4oHM1VYRE6mFDi4qh6iyAqlC)tM0WvxAkd3BMjmCJqtx46tMSWvoAQol8L56mNqqYgyBcHpFM3JFH9ie8rdq4ItdX(iNpS)8MqubJ0ZuB4em0BBuAAe7Jl6hhcz)l]] )
 
--- hunter:RegisterPack( "Marksmanship", 20230226, [[Hekili:TA12UnUnq0)gJDrxO6ljoDbI9dfOaDdW6x0(mLOLgBrejsbsQ4AGa(T3HuXwu0sYPa9flBZzoCUCMZiYcYViX5unq2TC(YvZxUCD0INw89vprI1NRbsCnn7v6r8lCAf(5pPYxvvuUQGvBp8CPGMBbrjAKzObK49nSs9p4K9dJ8JOT1qgz3ksCblphATeuz9r3Kw0W1G0KwlzcjtF2KEqG)8VHxzLmsCjtPv2RMka8XoxUaC6(siN8NK4m0hqYOyMqLhbD0jMUGXX7NMPzcoA8)uxkuS3GeTKwt0yO6W7JJRAk1mvHq7dR2g4JDrwpr0aouXaLjD7gt6QoaFtuwcNTq8WOqKd7BoCisPz8JQOCXjEN)kqwdCDI7qlmp6hUzfSkqstUnI1wypqX0z660qH)YUlq2WtA)EIT232bsA5f2EWL6Nh2Fgxv62qu9jIobpIAzp6eXHeDbK8gRgKrAmZtumEgysF2KU2KoZK6QJdzDtT78mHO0wFJ8lCrsOIY42K3Ko3R0RbA(52A7a5Px)dr0bpsJPr41LHDmhAl9yE9dRCj9OGxqp9600R(SH2Xdvsfo0mnNYvjqgolp5atcbSQUdUsPghLmAz5LW(eRmpaRWJTiU2NKwl(y0ZFG6jFlAuqcELvQaJ(dFJkqTjjwdHCKwLbLy7BaC)UVlOOr5aZg7wm))NzXfl(CdJ7w0tKHI2LpOzJZd(Ih51RT2rDX52fpo3K((73Zst6hIJUriTijNHZqF9ZoG03UUCzSXijofX4Gs5YWh6viKzuomyLyCoPc0TnhvZXJakP0jPBvzgxOFX67JPDc(iKyF0QCmWC9ZBMAW25L766rX9ftcfQRLqMOApTtm8UAg9RwtlnnQ8H7YFd)d7HxxztIprLCB1Ge)JQAHud5M0hmPTOysDlHJmVydCXbwjC5curxZKFBZVpwSBEziR9dTVXoSXPPEXs88GTjFZUhzdUbYAB)DyB3S8UoQ0Mx6IdLna8AqxW8UBEEE9Sj24mBYHPTZdcGXQxxQgZ8zHBx(yG7twaBnPtnWAWqBicCiuA)QBdUsiW5wz)G)8QsFy0pS4EGvx1Zd7D(cZUK)gv8WmZRJe2hUQOfw(UiKzVHVmHg72nOs87VpLf3Qa)17rxMnHM7TKPoL1Gt6RlAtLjfuNKK6y69G4g9ZES2N3CdT1BSZFKeNShmw7)A9H2F9T3dpO9TWhsRyvOP)N4sTU0FXpTrxiKK4Fva)vLcVwk3P0s(3)]] )
+hunter:RegisterPack( "Beast Mastery (Himea Beta)", 20240509, [[Hekili:DR1EVTnos8plblGBl2uhzNK20I4a029WUTy3GIZ5q)pjrlrztujrDIu2nlc0N9Bi1dkjtkl74K7UIG8WKZBoZVHpI9e77SN7J4y7BNAn9cRlNynEY5wV16k7587tW2ZtqEFhTe(Jyue8ZpIrmEU7Fb)eNEFU7l)dsegL7(rmh9kb13hsr(cPYOzPEahR48e27p7Sn0n8fEJxU8mpehDMxiIXE9YmIpMD2cHuFDuHqF9QSy43NzpFrgjK)5y7f6TXZTNJY4ROP2ZLwbOlIVpUGEmZZE(DRiSCxX3Gjw6j5U0a4ZECcno3nKW4W0b00C3)a)Dsizm4fP0asiy7)cmO0yEVWdB55FrmNqRVGv495UF4R)zU7RZD)ncZJM6d8SsqWygIWPsg(lQpjGG9bfMsJYD)g9B39XpL7(jKG)FxgmKI4GdAfQbbRmIyv(xGpdd81uShnAbIN)LchNnoPAOFD2ziwc2J7qdC4RWoRqB((PKGzNSiliyCXCJZsgXWCojEjBCeIeZHVDkMBeytKLXy)YppEBXne1gq)XruRG0gIs9wHHLUvhrfxkXHOCrc5ruZcXne1UHe6FevRqC6vBrkjZjcLk9tFSuJnhESpDtSEUJimFc8zXmcURnpAcogN6upVdno8(Qm9FdhGYcv55GG8qHHofF0ruUFQajBgjM0IQmg2HWXrSMdMqLOengzfakMc(ViA45HdXPiPbkyNge4S0ZF2KMmKMfVTYruSWLeJVg7aUtebZUz6o5ZleJwRH1z7Mvge7cXvHPpl8E3VIsHPelgQLarCbKXAukbTiexWmhWXC4uhFc(01OWm8SxwUyYtHefq0o(zrr3lsJo3Y6vp8ahLUeZh3GXkv)b6)qPniq03sTmDich770KKrjGKrHG)3vq6bYoWeBb7JojIUg4TRIwGzCck0zdS8lrpcOEzSBUYQlHPOeIVtay6cQ8O0qrg)yzozJciiW1LZUK0IFLyfH8tQ9WUmbfzEP0UIgw0sCcrzXayvAl5I)rsiLjYSe00w2T4sVGBZ(wlZqHjHTIY7ob02n0rmHWwkZCwHrH8vJt84xpDROQhDrkQMJxwUi9Wdnq0A0iaCJxnkeVghQzbc6EI8V)aK11xnP)0VYgAfYtHUUfroSniZOVvLnFsw6R0ybuW(x8Orcpdvn16YyHZOsafgofW35omHYbFqOD2ntMQrwhsTvnZpjLx1spaNUMMw7FxFPLgIA5QN6DpmHtr2pB2KtJq)WP9ytB0eTDyQDxu1cBQhkgxNBxaydMUCNJGdWxrIneDAvGvhxAT6vT4mZstXLYjBxFnmr1Q2Qwusycronkg2g9mnDbAt6WquuRzIvQ60jzWsnKmepQyWuC8FFVdoiqK9Z4W2UMDPg5Tb22)PmSNYNB6avUCRGIocUXAuVZF9Krf1qZUqNx1jhOG03OZEpkGQMw3hU40V2)ucToVCRrvkTyRspgO1Aj8maTwRR9F721SEeqLRL1HGkxZ8tcQCT07dvUMO2OY9H4o6e48kRfB5F8K2tRltyFXIvXKhlwSY1E0yX1IQjs0P6bJBt7WaJvlvhhW4A59FvWytjbBdgByrF4ONdAHF4It)I)tbyS981akfONQB5Z6D2Z3GsfhUKzp)BF4FE7NV93FFUBU7DRW5UKOeAkV8M7ErrFIxK7MI)3zqgIFUlJgbKHY40iexmG3ku8smBC(x(tsmm1KjG0(xXSSeHKeuu4OG4mTtJxmw0Z4Zrvm8MoxKimT9CH7yF752ZLdjVkuzGd(RBL33kowCYAF7pAp3lLaGZeeqt)9wSNJk)DRr5q0A3ISBFp3rGDVZwnsYoj3TyHvzaBtPWmo3OzyQpKsInNsiRlmklzftU7n5UqEUW(6R)KKUjtv6PfoNqrxAur913sjqvhjH0EZULwRwyvb4D0itPUUZlu6B3vS66C3lTuYOOhOGZR21kMMZyuAXM67Put7HbT9oJAZuRWgzCkytHOMyT7aT2wA5UZYDlYBKOBLjsncW1OUs9yUADF1dSiC1KgrhfESurMRHRHEum3eCsYT5sVTA2kTKPwDewTDyUWtxhyPdAQlSmgCzJ8UAELAQBLh0AUruvxRvLOe9Y1UyOJn5ACXAXoOdImtK0vbYaoWfwsR1CLTcq6nxAoH1Cr6lBaXM7(WdLbuDTKZDF1WtDnxCF4AChjXMRWRu2OgyD63EqBA2Alc6BbbmBlmba3sE5)6A02ccT4dYlhVOlTtXJBkU776wQvCu)WanLxvdVkIkEOGouiRMA8WacRs1Zt)dj0reMBqjKJ6baKPdn6015jaA5Li6o6w1v0ZgSOl2gMU2sdH7YTjjxkRFjO(wm1Ste5d)MsskiO(HqB6EN0kJVQp8JCZs9VtSJUkfP89wn0Z(Xo6gt5tEAYGQMU3n2D0nkXRHAYIKZ1B11r3CKBxZG5uTvoZvK7)wOn3XP)3rvjXoNZGxaC8yodJmmPzdn)F3jAAEkeLu260fMZ2pKtxmGZQC8pDXaosZwpz4wkwZdhQ0ARjRZCRMTTW70C8QMuw)4IDiY8Us23nhB(uhh(wQo0ZFC4A8GpjYZ1M4k3dXJbO5NeOfPmFCxWXp1qq76comTh0oxzrRhzvUh9TE6v75t10oE77hPgvsR9U3x0HzSR99(h6hN54DFk7aDzsteBtxYAha8EGK2xeCZLDh7R3OBD3)BF9gMRRh21ByUe9W7t1Fg7tXfQSJCxZ11pxDgLxpHM(I0ez7lf)v)Z7j(RWmSmOy6)xpPjDULLmyicxB)FUNuGLNrV5W86VS)p]] )
+
+hunter:RegisterPack( "Marksmanship (Himea Beta)", 20240509, [[Hekili:TR1ERXnoq8plHd2lHl1X7Mxxkzd0hhxB4APGl0)Z2k2A3veBlJL2DBGG)SFJKFjBlTpsDB6FekPelnV0Oz(nJKI7y3V66eI4y3ppXEYz2Np22A8P2xC6LUo8hsXUoPOG7rZHFjbfd))Nqz3ZIrjSfK0C)d)ajgJY9FlMJosq7druuOqMm6YSaG(fCEk71NCYA6A(DbwZNFsaIJojicXyVA(ssiMDsSImF1ILjCC2jUo3TKeX)yI7D6nWZDDql5lOzUosJaufjmexqpMf4681fewUV4hWclxg5(0zW3bCcnj3pIW4W0ZOz5(FaFpjIyblIm6msey6)bmO0yEDUFRL9TIze68pzfl9C)38L)l3)v5(VNWcOzHahleeyXqeovYWNOHKzeCiOUmACU)3OF7RV9D5(Vdj4)FLEcPiEQEScTGEi3x4OYVf(gg4lz4aA8DiE(TfRAMvA1q)10tqSuCa3JoZJVa7TaT((JjZMEWDlNnZQyoRLPJyyoNKmNzfJijC4hVI5gbMezEcoS8BR(IBxu7m63hqTcsBxuAWcmSZTyavCPe3fLlIghqnle3UO21KOWbuTcXPxTfHKmprCQqHHyPgvh2kKUorp3Xewib(wmJG7AZJMItWzE1Z7rtIEOks)94zOLrnX5GGcqrrEfF6jY1pwGHnLKqAr1sg2JWXXm1btPsicLrwaWHzW6x4nccWr4mK0afStNnZBEq40XQmKTmPVYruSyjjgFf2dwoXem7MjBLVGimALgwNUDwzGVlcx5M(Oy17)fugmLyZOzlq4xazScLrq3fHlyMdWyECQxibF8ku0s80dl3m5zqGciAVWLXXpicJo12(OhFKJYMJ5wkmwP63q)NgTbocqzmogf(GhBbLlwBhkLmjgWGxb(zLzLHlp(O55ZWIGx21JTo)Orq00kXgI1ylfA6QCJXzYyXyCsONkjDzxp25tmxsW(OdIPRaE7QOmukj0BgyhcfeqPrcNHLm6wjvuSfi9pn03jjRqCD5RLqv4fe3b1RMUmb5Wbz0Ewk4RjjygZKml3LU5c7UScHtPErOLjamAwl2XFpnIYeX8cAABwT4sVn1M9EXaaKbrxWrNiZbjWSxeeKJe2wfLE(Uuc9Mevtyzg2cmkIVWknGF9KEUZoMFzKvPD2RGPgnQTeDHuAQx0Jip2AK56jvabVtcM1OXcWTNp4GA9)KreQLWVaqHADT)vzRzDWGuQL4pfuLg79PaS0ewHZGoh4qacO1JdEaMWRijInD8XXOV71ESjkEZw8AAX)ZfSOXhlourgYu07A4WghZWbk7Nkmuj72B4Ai4g7rBC(RhpAgnyj7MPNPZzVlGA1eVh4AguqpMU5kTmLfGsW1CvSaUuNt(ha50akWWcE6u2oxLslAV75d8Sw)pzWZAj8la8Swx7p4znRdg4zTe)PaE2yVpfWZMWQwGNBcyC0bQXkQtV9O1bjyvNNvlKz90pRqMnX97aKznX7bKPbfSziZgM2gKPP9Y9bY0qU)Waz66ScYLb9uD5H2x56SgLjo2kZ15JXP0mU4k5UOZDcALFRRJqeUF(uxh5qYl1uASWV9z59MIteNto09TUobzea2GGCDom3FZXY5(p(4MOPmKj3)6CFrmT)r5(JY91dd76uy3GTPmihwVgnWTal3iXwJYfEITkYULSeg(2rPLKDqUFXUDJb0NsHzCMrZWeeEJevNsiRZnkRnHQlTxDi7nkQzcHAUy7QPfiFLdzlq9nQR78cLE5EP06OUBGSbBLfsvTdHi)7T5610SC5sXuLbLa4wddA7kJABqtWmMcn2wya1UyfyDvZsqyx0aOGIAeKMccnYvubsFGNg2KBp2sF6wOtS2K0jHTb(MM7FMT0AndnOw5rjnSU4HKDZWa9QRinJjkrt11UKsYCMSgjbl8RSnAuMtKRw)5(xQSvRuBtYV5m0ACjLWkDL0mhgzorSsWJus11xIRnn9kZPhXey2vycq2P8QX1v4QfcsXhYRoUOQNxXJ(jUz46IkvCuFT5DYgovLOIRrVdfY9DLRnxyvnq06VM9oIW8(TqonxpUCJFIcCw7liV1Qer3cyDxrpDNfDXbd1HkVlCx22HCRS(Ds20MPMcNY3enJKwqq9Ze2jsxj6UQm0pyT9n3lYGRsri)gZg2qxmdUXu(GGMmOQP3ypndUrjERqtwKCUnMDn4MJSBfdMtvNmMZi3)o(mdgV5xz01uBX8cGJxotWVNNjyq7JFhoUWW3h)(D4HDQp(D4Ob9E0TERfnp9wJ6AnPB1rhQMTTW7uA)kvkRFEUUTCBV5MyhQmnJ5s965Fp7I2CU4(2f9glO9d26Q58QFvTUw250lWR)EcVU)fG3bm0HaQE)qnhiO6DaxDFHQ7ELl1XETVeLwVFP88u9EvtxNjA256FJn1yWpNORVC1l6kA8YvVSN1VE(V6f5vNOP6fnvIH3WF1F2DIFlAjwwvZ0FPDst6uBBzHkHRP)FZDsbwE)bQdZR)N7))d]])
 
 -- TODO: Currently there is a problem with this APL not recomending serpent sting or explosive shot at the correct time if the player doesn't press any other button for their duration
-hunter:RegisterPack( "Survival (Himea Beta)", 20240505, [[Hekili:TN12UTnoq0VLGfWBc2u5lnPnBrDb6LfBBWUfbWbOVjjAjABIijkqrz3aeWV9DgkRRMu2jWjyFOp06yroNZqQ5mCgA3XU36olKiPUFFYOjxm6Yrx6mz0O3CXBDNjVpL6olLeChzj8hjKy4)NLlwZwtIu(N(vwmLO8)evsodN39rCsiIxgpxeaZDLuMM9UHd3W3iNh4SC5WaIKmmiIKL9QL5SqA2WST49Qv5jsQyO7S55Si53sCNB2XUeWpLg4(9xdeWcdPfZKMf4o72vSmLFQGXfm59kF8BZjz0qLppr5lxrv(voJY)hcICLYx7joUZIyzYmT)ZswgrH)676ThAczEen09tUZcaCPcgbMdvkHPL5etyjs4FEe0TKk)bkFy9XwMqd3(mNIp84l8axWBfzZD6PDIYpMVgqXDgjqY4jWN7mtxjSdy1nc48Oq(MeNasuuPzByrHo5P1OkiPSqVfmbfr717hTAdaCk91QLCxU8IjbcEnDDhhj9cRKgsNNVyHtgvKstKEzihoOxuYBQGU2BzqOZ42tQMW2pgy7Y9Xg9NPr8m2AQx2kUSMUtHagC8iEWDEKKqpmMwVh8WdDDM2yO8pR2HApe6rVXQhjjILuPZkkjsUYjfdHEVYFYOA0UJb7NLa929T0keszWlfXD6fwnqnhcX6Q9H18icUpie8nDGQXiis)PvKwWdYbz4hu(x1yjrebKK6DNXJSAVbrsaFUGuBRDrAHH6xSvbVTvyl4)0lBdjT9C6OPTjpbJDrxa2TwqYJKMYy0stu8fpmrtr6gVIKQSeMSsNxArEg1dwiXznXRu(woPu(2aUMZqR1qZ5lwGXQOxvhdaz1fWYaZofeqJOqsWDHWUacXbIRPj0ygT4f7KgzAYtSUkjCA)kbdqp(WGoiIswtnjpoeR3MVx)Qe03b845KEFzAilT(eiblTyc)l5Eucp5IorYAr12dfY7pO7apiP)Jho6uIH89Qg650LJUZeSIc1ESYMdvoCVN(C0DkSEjBEKESEvxhD3rF(Rf3P8Sz7kYh9rkYcz(VkD6fP0PksRR3qc8BIy85ErK8eqvi6YARbnfGgt(PxW9qwwVIQvGZKAK0Vn7GB1AMWRGYySsdIHdlz6ZVBFQJ9ABSuugSiTxqNjhSSOb7v(8ilhZEHp7VWf7f98sv4Y2Zn)LC9zuUwo3o9U0rKm2Mi7aAuYKI1sO)tNwtcSxM(AE2YYDvZCsDtI1kX0XU9gdjeEcVzQvv))OniDBmgYLWt1zrQTFnb8lyu8VIYHpoTkpoS5dWKS0lmpo((Y3XVE0iO)6IMW3gxjzXW(c3lKPHrSTw(Mpww4wRH6tqARUij3zBicKeyd9BXPCHeVHO3azZ0(NYxFtqoQRbpoxUIlCNPVRlS7a(cg63)MY)R6kFENYV6kXUgFkoXFpR4AXu(F8M)r5)kL)xyzbCrim7v4eCYimjxBW)YdzlyOdSqWJv()G)JB)0Nv(FMG2)36BjtdXt520kyOSze11W3HhCtzpoQRlwXzovT98hthUBM5ZzlMEs76shylkzWbCKWbqleuDezfq7qiDBhdhrI3I4Hqo2CWrKzeUdHw8yRJiTiCMPTzNciH26TOmk9lfxQsfyaeDVeLZrn)umTtZzvDXjnFyXfL08jwUiKZBCXjth30GoxHqb5q3o4IbFE9vx8Hj71UIkVmy6(PS46kk3M(gU69VHiGHWnY6nFCFbWOmzBHXnYpEUo570tTL5DaK19ShEy38TLu)r(FvZgSryn3XtmwcnFWjBp9Qdr11THe0xXHDTS7uAzFRYbhCYEkeSl0TQWOfU7u6sdSnu0sxGBB(5Tkky6KZ3PqHPt6Iqvlx2HghfDAJ9AnONloVdIvL1HGTtvGVFYODEJuvfKorK5x4gpEOyQd2tvnwZLvgi)zTySMXcX5lt4CfxpLi6kJFwcQRqVvlhDI(gBk6Rr(Dd)Uo7sqNGWhhd9gswrXJiQSYMNb9SHLmoFtXE19qGuRB04dxzYnBOFoWDo7rHpNYSzBp4QK0IdYEzKzvC9uKzvg)SiZQqVTmRpj0GtS9JIAa2DZWBx4m4uJz)F4HtS(dFEMbkFeITkBo86d3X0g)yKnSS7pEPPaV9PXQFZ3)zuwcLpo6hDBSU)3d]] )
+-- This is done to solve the problem of recommending serpent sting or explosive shot for a brief period while the shot is still traveling to the target
+hunter:RegisterPack( "Survival (Himea Beta)", 20240509, [[Hekili:TRvAVTnoq0FlblG3eSPk2o9iTOUa9yX2gSTOaUa9BsIwI2MisIcuu21ag63(od19bLDCvc2c0p0MysoV3WJ5ndzS5eZVzo3LiPMFz64PpD8ZMm2yY1JF2tnNl3fsnNhsCUJSc(LaIp8)ZJfByBiEj2N)rMpLKy)oQKCboUDECIlcxepw4aJDTugg9QRUAlFRCHJXQvx5qKKRC8irrpzvmZLgDvugEpzDCGKkUYC(IyMN8tbMl60VU(ga)qQJ5xUgiG56sthjnYXC(3wZIsSdfmUGj3LyJFAbjI6MyZdsSLRPj2fotI93fe56eBLNyyo3JfjJu(plyLhf(TVOwDObKfEuxZ3zo3bWLkyeymuPegwKHG6W99PbUw(Sixg8rjJhyoNK9ZATkHzZHH0NWcKW)Si4mvMypkXgwYyRcOUzTzK(dl(slywzTMS9o1WolX2NVbqP0bAps0nUwRB4W5EU8TbgoepVCZ2Y8CnIdlrvqczUwlHzgI2tpmALga4K7Rft5MCz5tCe8s6A2ps6Z0sQlDr8YLgrurinqAfHCyGEroVHc6gRvoUgtQpOscR3mW2ZpeB0Fe6XJyBOwrR5Ys6ohodI97XDUZIaNtWWe1AW(9nDM6yKyFrPdvVl0JEHwpsseROsJ1uINCTriEe61j2thxI2Dmy9mhOBo0uln2mc2ue3PMyLavTleRxEiSw4rW1bHGVTbuv6brAYyTqTK7edH2VjX(MkZjIWHeuU8mrFW75vcus3guUw9iLL8FO2LUqTl6r3q9ArPdFHGuYO(y7tNryJ7MjvoxkPe3DLuQpooNSrvcZAXNv0wsy9X0q9rNqcySj6cW(6ssSNSl5YArVPFWcvzt1ATsZOWcyYcHXClIJOwWeXpQkE5Yw5dkKNfAuDekPi0C(YLyuf6vLNwHuAcyAG6OooupkKbOne6fwqCGiqAa1NrtpboTIMyCG2zjHt7xfPj0ZoAOD8OKn0UueogRZs2P2kdvjZwq6DZSJ8jQ0Vcwy6a(mzhk2m9PvNENv7eFEkGFYuE9NpDWPepY3B0qpzvhCNXznfk8ATohkV7Etop4ofwSOops1xVrxdU7OQuqJ7KxfXbZRFps(PpJCXKGdvvqfL1kAXd82zQRArzQWXVRe9x1krliTS8njWFxeJTB5rIdGqxrtwR1zXX28ERdEJSzVO6i9Hm1mvXd1huZsaBJCQro7GSnwP1xgHhHM7t(Hv9wNpT6kGMAFHjV(6M7VqY7z1T9uh5Pxvw)1b(qu55bQduFW8JvDGzLH8BTQFT0Qkoqv)EWnc0NC4aDTx6URSShP(YXtRgvKhH7i)GjX)YJwIFWVQCh6ANWwZPl2L6U9RRD6O))(RuRUsChcP8qLExP9BiGFb9I)MxmvTOKfqahtaycwz5g77Vl)041JhRwmWLRSiajZh2a5wUmfmIS7fwTzzQBTbQ1fPn7fzh)sZ5BjcKeyN)t(HCHeFQ1Nd6Uk)dwWXNu1i5wWJJLR5cZ5QhngVPjFjd97)iX(JQQOFvIDXBlFl2koW)mk99LtSF7x)3e7NKy)bwKdx4cJEnoaJictYvg8zUlBjdDGLcUFI935F)BV79j2VNG2)pQNBwbXP8S0PmKFX2KBHpdn8187lNCB6moYO4k0)1SRANd5s2YzNv)ooJ0Dkz0rK86iOfounGScODmKMD7ZbK4mepgYXlAoGmJWDm0IjyhqAr46M2Q36eju39u726QvwHw3)ntZpP)H0h5RasaOMpQ3LOUXmu6Q6OkEiVQnM(WDvBrZdZDzLhYB2KQg04jTsjhURmoLW2lFkT3m9G2Lw6ABtNDyttF(S8LPpHZE7Vseqx4Mr5waUUayKlyNACfn2lvc4ZoxN69iq5(I97BRzNt9B5)DjBWcrFB1Dx9DtZ7w(6epoJMp6SSeOniQSixKG(QKUPLnhsn7Rv78OZoqvZnHUw5y1WTvDEvWUJk8AcCDZBTNLFbD9MH9EzT6UMn9Yw1IbTboDN3(Eup)fRAWArnWiyTkz(1th3AhPOIr0IZZ2X3VxBTzxmsvv2BUPfuvQl7(H1RVzs)NLZYjMI3OdukNwb88iV3Rupkzmvn5Nj(RaHhHqWcUoLOWcJFqcelqV2DkBC0FIUJ(6)Ja3MGEdUoed9ggvqX9isQWMhanOoMY1LHkp7vEhrKA1fjRfLwU5xgZFKRChFSC3momsdAcZgw1H5zfiKtAAbd)mQdfi8iOouW1POouy8dI6qb61vh6lYF0z6(IF0bSn0e6nEF05DMOD)(Z0(L74IoO8EOruyZ9)2afMw5lCrflB(f0ORdEhsAOCNFikhOCNEqc71e)mmH9QxkX8)c]] )
 
--- TODO: Update for Cataclysm
--- hunter:RegisterPackSelector( "beast_mastery", "Beast Mastery (wowtbc.gg)", "|T132164:0|t Beast Mastery",
---     "If you have spent more points in |T132164:0|t Beast Mastery than in any other tree, this priority will be automatically selected for you.",
---     function( tab1, tab2, tab3 )
---         return tab1 > max( tab2, tab3 )
---     end )
 
--- hunter:RegisterPackSelector( "marksmanship", "Marksmanship (wowtbc.gg)", "|T132222:0|t Marksmanship",
---     "If you have spent more points in |T132222:0|t Marksmanship than in any other tree, this priority will be automatically selected for you.",
---     function( tab1, tab2, tab3 )
---         return tab2 > max( tab1, tab3 )
---     end )
+hunter:RegisterPackSelector( "beast_mastery", "Beast Mastery (Himea Beta))", "|T132164:0|t Beast Mastery",
+    "If you have spent more points in |T132164:0|t Beast Mastery than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab1 > max( tab2, tab3 )
+    end )
+
+hunter:RegisterPackSelector( "marksmanship", "Marksmanship (Himea Beta)", "|T132222:0|t Marksmanship",
+    "If you have spent more points in |T132222:0|t Marksmanship than in any other tree, this priority will be automatically selected for you.",
+    function( tab1, tab2, tab3 )
+        return tab2 > max( tab1, tab3 )
+    end )
 
 hunter:RegisterPackSelector( "survival", "Survival (Himea Beta)", "|T132215:0|t Survival",
     "If you have spent more points in |T132215:0|t Survival than in any other tree, this priority will be automatically selected for you.",
