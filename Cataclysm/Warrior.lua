@@ -1959,14 +1959,12 @@ spec:RegisterAbilities( {
         handler = function( rank )
             applyDebuff( "target", "thunder_clap" )
             active_dot.thunder_clap = min( active_enemies, 4 + active_dot.thunder_clap )
-        end,
-
-        handler = function()
             local targets = getTargets()
             if active_dot.rend > 0 and talent.blood_and_thunder.enabled then
-                active_dot.rend = active_enemies
+            active_dot.rend = active_enemies
             end
         end,
+
     },
 
 
