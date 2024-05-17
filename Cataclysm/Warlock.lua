@@ -90,7 +90,7 @@ spec:RegisterTalents( {
     ruin = { 967, 5, 17959, 59738, 59739, 59740, 59741 },
     shadow_and_flame = { 10936, 3, 17793, 17796, 17801 },
     shadow_embrace = { 11124, 3, 32385, 32387, 32392 },
-    shadow_mastery = { 6558, 5, 18271, 18272, 18273, 18274, 18275 },
+    shadow_mastery = { 6558, 5, 18271, 18272, 18273, 18274, 18275 }, --TODO: this is wrong
     shadowburn = { 10948, 1, 17877 },
     shadowfury = { 10980, 1, 30283 },
     siphon_life = { 11420, 2, 63108, 86667 },
@@ -126,6 +126,28 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 34939, 34938, 34936, 34935 },
     },
+    -- $o1 Shadow damage over $d.
+    bane_of_agony = {
+        id = 47864,
+        duration = function() return glyph.bane_of_agony.enabled and 28 or 24 end,
+        tick_time = 2,
+        max_stack = 1,
+        copy = { 980, 1014, 6217, 11711, 11712, 11713, 27218, 47863, 47864 },
+    },
+    -- Causes $s1 Shadow damage after $d.
+    bane_of_doom = {
+        id = 47867,
+        duration = 60,
+        tick_time = 60,
+        max_stack = 1,
+        copy = { 603, 30910, 47867 },
+    },
+    -- Receiving 15% of all damage done by the Warlock to other targets.
+    bane_of_havoc = {
+        id = 80240,
+        duration = 300,
+        max_stack = 1,
+    },
     -- Invulnerable, but unable to act.
     banish = {
         id = 18647,
@@ -152,22 +174,6 @@ spec:RegisterAuras( {
         tick_time = function() return ( 3 * haste)	end,
         max_stack = 1,
         copy = { 172, 6222, 6223, 7648, 11671, 11672, 25311, 27216, 47812, 47813 },
-    },
-    -- $o1 Shadow damage over $d.
-    curse_of_agony = {
-        id = 47864,
-        duration = function() return glyph.curse_of_agony.enabled and 28 or 24 end,
-        tick_time = 2,
-        max_stack = 1,
-        copy = { 980, 1014, 6217, 11711, 11712, 11713, 27218, 47863, 47864 },
-    },
-    -- Causes $s1 Shadow damage after $d.
-    curse_of_doom = {
-        id = 47867,
-        duration = 60,
-        tick_time = 60,
-        max_stack = 1,
-        copy = { 603, 30910, 47867 },
     },
     -- Movement speed slowed by $s1%.
     curse_of_exhaustion = {
@@ -339,11 +345,11 @@ spec:RegisterAuras( {
     },
     -- Damages self and all nearby enemies.
     hellfire = {
-        id = 47823,
+        id = 5857,
         duration = 15,
         tick_time = 1,
         max_stack = 1,
-        copy = { 1949, 11683, 11684, 27213, 47823 },
+
     },
     -- Fleeing in terror.
     howl_of_terror = {
@@ -574,7 +580,7 @@ spec:RegisterAuras( {
     },
 
     my_curse = {
-        alias = { "curse_of_the_elements", "curse_of_doom", "curse_of_agony", "curse_of_weakness", "curse_of_tongues", "curse_of_exhaustion" },
+        alias = { "curse_of_the_elements", "bane_of_doom", "bane_of_agony", "curse_of_weakness", "curse_of_tongues", "curse_of_exhaustion" },
         aliasMode = "first",
         aliasType = "debuff",
     },
@@ -589,13 +595,14 @@ spec:RegisterAuras( {
 
 -- Glyphs
 spec:RegisterGlyphs( {
+    [56241] = "bane_of_agony",
     [63304] = "chaos_bolt",
     [56235] = "conflagrate",
     [56218] = "corruption",
-    [56241] = "curse_of_agony",
-    [58080] = "curse_of_exhausion",
+    [58080] = "curse_of_exhaustion",
     [56232] = "death_coil",
     [63309] = "demonic_circle",
+    [58081] = "eye_of_kilrogg",
     [56244] = "fear",
     [56246] = "felguard",
     [56249] = "felhunter",
@@ -606,20 +613,18 @@ spec:RegisterGlyphs( {
     [56228] = "immolate",
     [56248] = "imp",
     [56242] = "incinerate",
-    [58081] = "kilrogg",
+    [70947] = "lash_of_pain",
     [63320] = "life_tap",
     [63303] = "metamorphosis",
-    [70947] = "quick_decay",
-    [56226] = "searing_pain",
+    [58094] = "ritual_of_souls",
+    [56250] = "seduction",
     [56240] = "shadow_bolt",
     [56229] = "shadowburn",
     [63310] = "shadowflame",
-    [56216] = "siphon_life",
     [63312] = "soul_link",
-    [58094] = "souls",
+    [56226] = "soul_swap",
     [56231] = "soulstone",
     [58107] = "subjugate_demon",
-    [56250] = "succubus",
     [58079] = "unending_breath",
     [56233] = "unstable_affliction",
     [56247] = "voidwalker",
@@ -632,7 +637,8 @@ spec:RegisterPet( "felhunter", 417, "summon_felhunter", 3600 )
 spec:RegisterPet( "succubus", 1863, "summon_succubus", 3600 )
 spec:RegisterPet( "incubus", 185317, "summon_incubus", 3600 )
 spec:RegisterPet( "felguard", 17252, "summon_felguard", 3600 )
-spec:RegisterPet( "infernal", 89, "inferno", 60 )
+spec:RegisterPet( "doomguard", 11859, "summon_doomguard", 45 )
+spec:RegisterPet( "infernal", 89, "summon_inferno", 60 )
 
 local cataclysm_reduction = {
     [0] = 1,
@@ -645,10 +651,6 @@ local mod_cataclysm = setfenv( function( base )
     return base * cataclysm_reduction[ talent.cataclysm.rank ]
 end, state )
 
-
-local mod_suppression = setfenv( function( base )
-    return base * ( 1 - 0.02 * talent.suppression.rank )
-end, state )
 
 
 local finish_shadow_cleave = setfenv( function()
@@ -664,7 +666,7 @@ end )
 spec:RegisterStateExpr( "persistent_multiplier", function( action )
     local mult = 1
     if action == "corruption" then
-        if talent.deaths_embrace.enabled and target.health.pct < 35 then
+        if talent.deaths_embrace.enabled and target.health.pct < 25 then
             mult = mult * ( 1 + 0.04 * talent.deaths_embrace.rank )
         end
 
@@ -707,14 +709,14 @@ spec:RegisterStateExpr( "soul_shards", function()
 end )
 
 spec:RegisterHook( "reset_precast", function()
-    if settings.solo_curse == "curse_of_doom" and target.time_to_die < 65 then
-        class.abilities.solo_curse = class.abilities.curse_of_agony
+    if settings.solo_curse == "bane_of_doom" and target.time_to_die < 65 then
+        class.abilities.solo_curse = class.abilities.bane_of_agony
     else
-        class.abilities.solo_curse = class.abilities[ settings.solo_curse or "curse_of_agony" ]
+        class.abilities.solo_curse = class.abilities[ settings.solo_curse or "bane_of_agony" ]
     end
 
-    if settings.group_curse == "curse_of_doom" and target.time_to_die < 65 then
-        class.abilities.group_curse = class.abilities.curse_of_agony
+    if settings.group_curse == "bane_of_doom" and target.time_to_die < 65 then
+        class.abilities.group_curse = class.abilities.bane_of_agony
     else
         class.abilities.group_curse = class.abilities[ settings.group_curse or "curse_of_the_elements" ]
     end
@@ -760,863 +762,699 @@ end)
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- Banishes the enemy target, preventing all action but making it invulnerable for up to 20 sec.  Only one target can be banished at a time.  Casting Banish on a banished target will cancel the spell.  Only works on Demons and Elementals.
-    banish = {
-        id = 710,
-        cast = function()
-            return ( 1.5 * haste)
-        end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136135,
-
-        handler = function( rank )
-            applyDebuff( "target", "banish" )
-        end,
-
-        copy = { 18647 },
-    },
-
-
-    -- Taunts all enemies within 10 yards for 6 sec.
-    challenging_howl = {
-        id = 59671,
-        cast = 0,
-        cooldown = 15,
-        gcd = "spell",
-
-        spend = 0,
-        spendType = "rage",
-
-        startsCombat = true,
-        texture = 136088,
-
-        buff = "metamorphosis",
-
-        handler = function ()
-            applyDebuff( "target", "challenging_howl" )
-        end,
-    },
-
-
-    -- Sends a bolt of chaotic fire at the enemy, dealing 864 to 1089 Fire damage. Chaos Bolt cannot be resisted, and pierces through all absorption effects.
-    chaos_bolt = {
-        id = 50796,
-        cast =  function()
-            return ( 2.5 * haste)
-        end,
-        cooldown = function() return ( glyph.chaos_bolt.enabled and 10 or 12 ) - 0.1 * talent.bane.rank end,
-        gcd = "spell",
-
-        spend = function() return mod_cataclysm( 0.07 ) end,
-        spendType = "mana",
-
-        talent = "chaos_bolt",
-        startsCombat = true,
-        texture = 236291,
-
-        handler = function ()
-        end,
-    },
-
-
-    -- Consumes an Immolate or Shadowflame effect on the enemy target to instantly deal damage equal to 60% of your Immolate or Shadowflame, and causes an additional 40% damage over 6 sec.
-    conflagrate = {
-        id = 17962,
-        cast = 0,
-        cooldown = 10,
-        gcd = "spell",
-
-        spend = function() return mod_cataclysm( 0.16 ) end,
-        spendType = "mana",
-
-        talent = "conflagrate",
-        startsCombat = true,
-        texture = 135807,
-
-        debuff = function()
-            return debuff.immolate.up and "immolate" or "shadowflame"
-        end,
-
-        handler = function ()
-            if not glyph.conflagrate.enabled then
-                if debuff.immolate.up then removeDebuff( "target", "immolate" )
-                elseif debuff.shadowflame.up then removeDebuff( "target", "shadowflame" ) end
-            end
-            if talent.aftermath.rank == 2 then applyDebuff( "target", "aftermath" ) end
-            if talent.backdraft.enabled then applyBuff( "backdraft", nil, 3 ) end
-        end,
-    },
-
-
-    -- Corrupts the target, causing 40 Shadow damage over 12 sec.
-    corruption = {
-        id = 172,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return mod_suppression( 0.09 ) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136118,
-
-		cycle = "corruption",
-
-        handler = function( rank )
-            applyDebuff( "target", "corruption" )
-            debuff.corruption.pmultiplier = persistent_multiplier
-        end,
-
-        copy = { 6222, 6223, 7648, 11671, 11672, 25311, 27216, 47812, 47813 },
-    },
-
-
-    -- While applied to target weapon it increases damage dealt by direct spells by 1% and spell critical strike rating by 7.  Lasts for 1 hour.
-    create_firestone = {
-        id = 6366,
-        cast = function()
-            return ( 3 * haste)
-        end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.54,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 132386,
-
-        handler = function ()
-        end,
-
-        copy = { 17951, 17952, 17953, 27250, 60219, 60220 },
-    },
-
-
-    -- Creates a Minor Healthstone that can be used to instantly restore 100 health.    Conjured items disappear if logged out for more than 15 minutes.
-    create_healthstone = {
-        id = 6201,
-        cast = function()
-            return ( 3 * haste)
-        end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.53,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135230,
-
-        handler = function ()
-        end,
-
-        copy = { 6202, 5699, 11729, 11730, 27230, 47871, 47878 },
-    },
-
-
-    -- Creates a Minor Soulstone.  The Soulstone can be used to store one target's soul.  If the target dies while their soul is stored, they will be able to resurrect with 400 health and 700 mana.    Conjured items disappear if logged out for more than 15 minutes.
-    create_soulstone = {
-        id = 693,
-        cast = function()
-            return ( 3 * haste)
-        end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.68,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136210,
-
-        handler = function ()
-        end,
-
-        copy = { 20752, 20755, 20756, 20757, 27238, 47884 },
-    },
-
-
-    -- While applied to target weapon it increases damage dealt by periodic spells by 1% and spell haste rating by 10.  Lasts for 1 hour.
-    create_spellstone = {
-        id = 2362,
-        cast = function()
-            return ( 5 * haste)
-        end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.45,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 134131,
-
-        handler = function ()
-        end,
-
-        copy = { 17727, 17728, 28172, 47886, 47888 },
-    },
-
-
-    -- Curses the target with agony, causing 84 Shadow damage over 24 sec.  This damage is dealt slowly at first, and builds up as the Curse reaches its full duration.  Only one Curse per Warlock can be active on any one target.
-    curse_of_agony = {
+    --Banes the target with agony, causing 1536 Shadow damage over 24 sec.  This damage is dealt slowly at first, and builds up as the Curse reaches its full duration.  Only one Bane per Warlock can be active on any one target.
+    bane_of_agony = {
         id = 980,
         cast = 0,
         cooldown = 0,
         gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = function() return mod_suppression( 0.1 ) end,
+
+        spend = 0.1, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136139,
 
-        handler = function ()
-            applyDebuff( "target", "curse_of_agony" )
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=980/bane-of-agony"
+            applyDebuff( "target", "bane_of_agony" )
         end,
 
-        copy = { 1014, 6217, 11711, 11712, 11713, 27218, 47863, 47864 },
     },
-
-
-    -- Curses the target with impending doom, causing 3200 Shadow damage after 1 min.  If the target yields experience or honor when it dies from this damage, a Doomguard will be summoned.  Cannot be cast on players.
-    curse_of_doom = {
+    --Banes the target with impending doom, causing 1948 Shadow damage every 15 sec.  When Bane of Doom deals damage, it has a 20% chance to summon a Demon guardian. Only one target can have Bane of Doom at a time, only one Bane per Warlock can be active on any one target. Lasts for 1 min.
+    bane_of_doom = {
         id = 603,
-        cast = 0,
-        cooldown = 60,
-        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
-
-        spend = function() return mod_suppression( 0.15 ) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136122,
-
-        usable = function() return target.time_to_die > 65, "target must survive long enough for curse_of_doom to expire" end,
-
-        handler = function( rank )
-            applyDebuff( "target", "curse_of_doom" )
-        end,
-
-        copy = { 30910, 47867 },
-    },
-
-
-    -- Reduces the target's movement speed by 30% for 12 sec.  Only one Curse per Warlock can be active on any one target.
-    curse_of_exhaustion = {
-        id = 18223,
         cast = 0,
         cooldown = 0,
         gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = function() return mod_suppression( 0.06 ) end,
+
+        spend = 0.15, 
         spendType = "mana",
 
-        talent = "curse_of_exhaustion",
         startsCombat = true,
-        texture = 136162,
+        texture = 136122,
+        
+        handler = function()
+            --"/cata/spell=603/bane-of-doom"
+            applyDebuff( "target", "bane_of_doom" )
+        end,
 
-        handler = function ()
-            applyDebuff( "target", "curse_of_exhaustion" )
-        end
     },
+        --Banes the target for 5 min, causing 15% of all damage done by the Warlock to other targets to also be dealt to the baned target. Only one target can have Bane of Havoc at a time, and only one Bane per Warlock can be active on any one target.
+    bane_of_havoc = {
+        id = 80240,
+        cast = 0,
+        cooldown = 0,
+        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
+
+        startsCombat = true,
+        texture = 460695,
+
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=80240/bane-of-havoc"
+            applyDebuff( "target", "bane_of_havoc")
+        end,
+
+    },
+    --Banishes the enemy target, preventing all action but making it invulnerable for up to 30 sec.  Only one target can be banished at a time.  Casting Banish on a banished target will cancel the spell.  Only works on Demons and Elementals.
+    banish = {
+        id = 710,
+        cast = 1.5,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.08, 
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136135,
+
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=710/banish"
+            applyDebuff( "target", "banish")
+        end,
+
+    },
+    --Sends a bolt of chaotic fire at the enemy, dealing 1312 to 1665 Fire damage. Chaos Bolt cannot be resisted, and pierces through all absorption effects.
+    chaos_bolt = {
+        id = 50796,
+        cast = 2.5,
+        cooldown = function() return ( glyph.chaos_bolt.enabled and 10 or 12 ) - talent.bane.enabled and (0.2 * talent.bane.rank - 0.1) end,
+        gcd = "spell",
+
+        spend = function() return mod_cataclysm( 0.07 ) end,
+        spendType = "mana",
+        talent = "chaos_bolt",
+        startsCombat = true,
+        texture = 236291,
+
+        handler = function()
+            --"/cata/spell=50796/chaos-bolt"
+        end,
+
+    },
+    --Instantly deals fire damage equal to 60% of your Immolate's periodic damage on the target. In the Warlock Talents category. Learn how to use this in our class guide.
+    conflagrate = {
+        id = 17962,
+        cast = 0,
+        cooldown = 10 - glyph.conflagrate.enabled and 2 or 0,
+        gcd = "spell",
+
+        spend = function() return mod_cataclysm( 0.16 ) end, 
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135807,
+        talent = "conflagrate",
+
+        debuff = "immolate",
+
+        handler = function()
+            removeDebuff( "target", "immolate" )
+            if talent.aftermath.rank == 2 then applyDebuff( "target", "aftermath" ) end
+            if talent.backdraft.enabled then applyBuff( "backdraft", nil, 3 ) end
+        end,
+
+    },
+    --Corrupts the target, causing 882 Shadow damage over 18 sec. In the Affliction Abilities category. Requires Warlock. Learn how to use this in our class guide.
+    corruption = {
+        id = 172,
+        cast = 0,
+        cooldown = 0,
+        gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
 
-    -- Curses the target for 5 min, reducing Arcane, Fire, Frost, Nature, and Shadow resistances by 45 and increasing magic damage taken by 6%.  Only one Curse per Warlock can be active on any one target.
+        spend = 0.06, 
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136118,
+
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=172/corruption"
+            applyDebuff( "target", "corruption")
+            debuff.corruption.pmultiplier = persistent_multiplier
+        end,
+
+    },
+    --Creates a Healthstone that can be consumed to restore 45% health.Conjured items disappear if logged out for more than 15 minutes. Requires Warlock.
+    create_healthstone = {
+        id = 6201,
+        cast = 3,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() return mod_cataclysm( 0.53 ) end, 
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135230,
+
+        handler = function()
+            --"/cata/spell=6201/create-healthstone"
+        end,
+
+    },
+    --Creates a Soulstone. When cast on live targets, the soul of the target is stored and they will be able to resurrect upon death. If cast on a dead target, they are instantly resurrected. Targets resurrect with 30% health and 30% mana.Conjured items disappear if logged out for more than 15 minutes.
+    create_soulstone = {
+        id = 693,
+        cast = 3,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() return mod_cataclysm( 0.68 ) end,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136210,
+
+        handler = function()
+            --"/cata/spell=693/create-soulstone"
+        end,
+
+    },
+    -- Reduces the target's movement speed by 30% for 12 sec.  Only one Curse per Warlock can be active on any one target.
+    --curse_of_exhaustion = {
+    --    id = 18223,
+    --    cast = 0,
+    --    cooldown = 0,
+    --    gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
+--
+    --    spend = function() return mod_suppression( 0.06 ) end,
+    --    spendType = "mana",
+--
+    --    talent = "curse_of_exhaustion",
+    --    startsCombat = true,
+    --    texture = 136162,
+--
+    --    handler = function ()
+    --        applyDebuff( "target", "curse_of_exhaustion" )
+    --    end
+    --},
+    --Curses the target for 5 min, reducing Arcane, Fire, Frost, Nature, and Shadow resistances by 184 and increasing magic damage taken by 8%.  Only one Curse per Warlock can be active on any one target.
     curse_of_the_elements = {
         id = 1490,
         cast = 0,
         cooldown = 0,
         gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = function() return mod_suppression( 0.1 ) end,
+
+        spend = 0.1, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136130,
 
-        handler = function ()
+        handler = function()
+            --"/cata/spell=1490/curse-of-the-elements"
             applyDebuff( "target", "curse_of_the_elements" )
         end,
 
-        copy = { 11721, 11722, 27228, 47865 },
     },
-
-
-    -- Forces the target to speak in Demonic, increasing the casting time of all spells by 25%.  Only one Curse per Warlock can be active on any one target.  Lasts 30 sec.
+    --Forces the target to speak in Demonic, increasing the casting time of all spells by 30%.  Only one Curse per Warlock can be active on any one target.  Lasts 30 sec.
     curse_of_tongues = {
         id = 1714,
         cast = 0,
         cooldown = 0,
         gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = function() return mod_suppression( 0.04 ) end,
+
+        spend = 0.04, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136140,
 
-        handler = function ()
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=1714/curse-of-tongues"
             applyDebuff( "target", "curse_of_tongues" )
         end,
 
-        copy = { 11719 },
     },
-
-
-    -- Target's melee attack power is reduced by 21 and armor is reduced by 5% for 2 min.  Only one Curse per Warlock can be active on any one target.
+    --Target's physical damage done is reduced by 10% for 2 min.  Only one Curse per Warlock can be active on any one target.
     curse_of_weakness = {
         id = 702,
         cast = 0,
         cooldown = 0,
         gcd = function() return talent.amplify_curse.enabled and "totem" or "spell" end,
 
-        spend = function() return mod_suppression( 0.01 ) end,
+        spend = 0.1, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136138,
 
-        handler = function ()
-            applyBuff( "curse_of_weakness" )
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=702/curse-of-weakness"
             applyDebuff( "target", "curse_of_weakness" )
         end,
 
-        copy = { 1108, 6205, 7646, 11707, 11708, 27224, 30909, 50511 },
     },
-
-
-    -- Drains 305 of your summoned demon's Mana, returning 100% to you.
-    dark_pact = {
-        id = 59092,
+    --You link yourself with the targeted friendly target, increasing both of your haste by 3%. When you or the linked target gains a critical periodic damage or healing effect, the other gains increased periodic damage and healing lasting for 7 sec.  You gain 3%, while the target gains 1%.  Stacks up to 3 times. Dark Intent lasts for 30 min.
+    dark_intent = {
+        id = 80398,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        talent = "dark_pact",
-        startsCombat = false,
-        texture = 136141,
+        spend = 0.06, 
+        spendType = "mana",
 
-        pet_cost = {
-            [18220] = 305,
-            [18937] = 440,
-            [18938] = 545,
-            [27265] = 700,
-            [59092] = 1200
-        },
+        startsCombat = true,
+        texture = 463285,
 
-        usable = function() return pet.mana_current > 150 + ( class.abilities.dark_pact.pet_cost[ class.abilities.dark_pact.id ] or 1200 ), "requires pet mana" end,
-
+        
         handler = function()
-            gain( class.abilities.dark_pact.pet_cost[ class.abilities.dark_pact.id ] or 1200, "mana" )
+            --"/cata/spell=85767/dark-intent"
+            applyBuff("dark_intent") --TODO: add aura 85767
         end,
 
-        copy = { 18220, 18937, 18938, 27265 }
     },
-
-
-    -- Causes the enemy target to run in horror for 3 sec and causes 257 Shadow damage.  The caster gains 300% of the damage caused in health.
+    --Causes the enemy target to run in horror for 3 sec and causes 754 Shadow damage.  The caster gains 300% of the damage caused in health. Requires Warlock.
     death_coil = {
         id = 6789,
         cast = 0,
-        cooldown = 120,
+        cooldown = 2,
         gcd = "spell",
 
-        spend = function() return mod_suppression( 0.23 ) end,
+        spend = 0.23, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136145,
 
         toggle = "defensives",
-
-        handler = function ()
+        
+        handler = function()
+            --"/cata/spell=6789/death-coil"
             applyDebuff( "target", "death_coil" )
         end,
 
-        copy = { 17925, 17926, 27223, 47859, 47860 },
     },
-
-
-    -- Protects the caster, increasing armor by 465, and increasing the amount of health generated through spells and effects by 20%. Only one type of Armor spell can be active on the Warlock at any time.  Lasts 30 min.
+    --Protects the caster, increasing armor by 2345, and increasing the amount of health generated through spells and effects by (20)%. Only one type of Armor spell can be active on the Warlock at any time.
     demon_armor = {
-        id = 706,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.31,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136185,
-        essential = true,
-
-        handler = function ()
-            applyBuff( "demon_armor" )
-        end,
-
-        copy = { 1086, 11733, 11734, 11735, 27260, 47793, 47889 },
-    },
-
-
-    -- Charge an enemy, stunning it for 3 sec.
-    demon_charge = {
-        id = 54785,
-        cast = 0,
-        cooldown = 45,
-        gcd = "spell",
-
-        startsCombat = true,
-        texture = 132368,
-
-        buff = "metamorphosis",
-
-        usable = function() return target.distance > 8, "target must be out of range" end,
-
-        handler = function ()
-            setDistance( 7.5 )
-        end,
-    },
-
-
-    -- Protects the caster, increasing armor by 90, and increasing the amount of health generated through spells and effects by 20%. Only one type of Armor spell can be active on the Warlock at any time.  Lasts 30 min.
-    demon_skin = {
         id = 687,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.31,
-        spendType = "mana",
 
         startsCombat = false,
         texture = 136185,
-        essential = true,
 
-        handler = function ()
-            applyDebuff( "target", "demon_skin" )
+        handler = function()
+            applyBuff( "demon_armor" )
         end,
 
-        copy = { 696 },
     },
+    --Leap through the air 16 yards in front of you, slamming down on all enemies within 5 yards of the target area, causing 2419 Shadow damage and stunning them for 2 sec.
+    demon_leap = {
+        id = 54785,
+        cast = 0,
+        cooldown = 45,
+        gcd = "spell",
 
+        
 
-    -- You summon a Demonic Circle at your feet, lasting 6 min. You can only have one Demonic Circle active at a time.
+        startsCombat = true,
+        texture = 132368,
+
+        buff = "metamorphosis",
+        handler = function()
+            --"/cata/spell=54786/demon-leap"
+            applyDebuff("taget", "demon_leap") --TODO: add demon_leap debuff
+        end,
+
+    },
+    --You and your summoned demon fuse souls, granting the Warlock a temporary power depending on the demon currently enslaved.Imp - Critical strike chance of your cast time Destruction spells increased by 30% for 20 sec. Voidwalker - All threat generated by you transferred to your Voidwalker for 15 sec.Succubus - Shadow Bolt damage increased by 10% for 20 sec.Felhunter - Periodic shadow damage increased by 20% for 20 sec.Felguard - Spell haste increased by 15% and fire and shadow damage done increased by 10% for 20 sec.
+    demon_soul = {
+        id = 77801,
+        cast = 0,
+        cooldown = 2,
+        gcd = "off",
+
+        spend = 0.15, 
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 463284,
+
+        --fix:
+        
+        handler = function() -- TODO: implement handler for demon_soul on different demons
+            --"/cata/spell=77801/demon-soul" 
+            
+        end,
+
+    },
+    --You summon a Demonic Circle at your feet, lasting 6 min. You can only have one Demonic Circle active at a time. In the Demonology Abilities category.
     demonic_circle_summon = {
         id = 48018,
         cast = 0.5,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.15,
+        spend = 0.15, 
         spendType = "mana",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 237559,
 
-        handler = function ()
+        handler = function()
         end,
+
     },
-
-
-    -- Teleports you to your Demonic Circle and removes all snare effects.
+    --Teleports you to your Demonic Circle and removes all snare effects.SoulburnSoulburn: Movement speed increased by 50% for 8 sec. Requires Warlock.
     demonic_circle_teleport = {
         id = 48020,
         cast = 0,
         cooldown = function() return glyph.demonic_circle.enabled and 26 or 30 end,
         gcd = "spell",
 
-        spend = 100,
+        spend = 100, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 237560,
 
-        handler = function ()
+        handler = function()
+            --"/cata/spell=79438/soulburn-demonic-circle"
+            if buff.soulburn.up then
+                applyBuff("soulburn_demonic_circle") --TODO: implement aura 79438 soulburn_demonic_circle
+            end
+
         end,
+
     },
-
-
-    -- Grants the Warlock's summoned demon Empowerment.    Imp - Increases the Imp's spell critical strike chance by 20% for 30 sec.    Voidwalker - Increases the Voidwalker's health by 20%, and its threat generated from spells and attacks by 20% for 20 sec.    Succubus and Incubus - Instantly vanishes, causing the demon to go into an improved Invisibility state. The vanish effect removes all stuns, snares and movement impairing effects from the demon.    Felhunter - Dispels all magical effects from the Felhunter.    Felguard - Increases the Felguard's attack speed by 20% and breaks all stun, snare and movement impairing effects and makes your Felguard immune to them for 15 sec.
-    demonic_empowerment = {
-        id = 47193,
+    
+    
+    --If your summoned demon dies, you gain the Demonic Rebirth effect reducing the cast time of your next summon demon spell. Lasts for 10 sec. This effect has a 2 min cooldown.
+    demonic_rebirth = { --TODO: find out if this spell really exists
+        id = 88448,
         cast = 0,
-        cooldown = function() return 60 * ( 1 - ( 0.1 * talent.nemesis.rank ) ) end,
+        cooldown = 3,
         gcd = "off",
 
-        spend = 0.06,
-        spendType = "mana",
+        
 
-        talent = "demonic_empowerment",
-        startsCombat = false,
-        texture = 236292,
+        startsCombat = true,
+        texture = 136082,
 
-        toggle = "cooldowns",
-
-        usable = function() return pet.up, "requires pet" end,
-
-        handler = function ()
-            applyBuff( "demonic_empowerment" )
+        --fix:
+        
+        handler = function() --TODO: implement casttime-reduction if spell exists
+            --"/cata/spell=88448/demonic-rebirth"
         end,
+
     },
-
-
-    -- Allows the friendly target to detect lesser invisibility for 10 min.
-    detect_invisibility = {
-        id = 132,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136153,
-
-        handler = function ()
-            applyBuff( "detect_invisibility" )
-        end
-    },
-
-
-    -- Transfers 10 health every 1 sec from the target to the caster.  Lasts 5 sec.
+    --Drains the life from the target, causing 82 Shadow damage and restoring 2% of the caster's total health every 1 sec. Lasts 3 sec.SoulburnSoulburn: Cast time reduced by 50%.
     drain_life = {
         id = 689,
-        cast = function() return ( 5 * haste) end,
+        cast = function () return 3 * haste * (buff.soulburn.up and 0.5 or 1) end,
         cooldown = 0,
-        gcd = "spell",
-		channeled = true,
+        channeled = true,
         breakable = true,
-        spend = function() return mod_suppression( 0.17 ) end,
+        gcd = "spell",
+
+        spend = 0.12, 
         spendType = "mana",
+
         startsCombat = true,
         texture = 136169,
         aura = "drain_life",
 		tick_time = function () return class.auras.drain_life.tick_time end,
         start = function( rank )
             applyDebuff( "target", "drain_life" )
-            if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
+            if talent.everlasting_affliction.rank == 3 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
             -- TODO: Decide whether to model health gains; Soul Siphon.
         end,
 		tick = function () end,
 		breakchannel = function ()
             removeDebuff( "target", "drain_life" )
         end,
-
-		handler = function ()
+        
+        handler = function()
+            --"/cata/spell=689/drain-life"
+            removeBuff("soulburn")
         end,
-
-        copy = { 699, 709, 7651, 11699, 11700, 27219, 27220, 47857 },
+        copy = {689, 89420}
     },
-
-
-    -- Transfers 3% of target's maximum mana every 1 sec from the target to the caster (up to a maximum of 6% of the caster's maximum mana every 1 sec).  Lasts 5 sec.
-    drain_mana = {
-        id = 5138,
-        cast = function() return ( 5 * haste) end,
-        cooldown = 0,
-        gcd = "spell",
-		channeled = true,
-        breakable = true,
-        spend = function() return mod_suppression( 0.17 ) end,
-        spendType = "mana",
-        startsCombat = true,
-        texture = 136208,
-        aura = "drain_mana",
-		tick_time = function () return class.auras.drain_mana.tick_time end,
-        start = function( rank )
-            applyDebuff( "target", "drain_mana" )
-        end,
-
-		tick = function () end,
-		breakchannel = function ()
-		   removeDebuff( "target", "drain_mana" )
-        end,
-		handler = function ()
-        end,
-    },
-
-
-    -- Drains the soul of the target, causing 55 Shadow damage over 15 sec.  If the target is at or below 25% health, Drain Soul causes four times the normal damage. If the target dies while being drained, and yields experience or honor, the caster gains a Soul Shard.  Each time the Drain Soul damages the target, it also has a chance to generate a Soul Shard.  Soul Shards are required for other spells.
+    --Drains the soul of the target, causing 385 Shadow damage over 15 sec.  If the target is at or below 25% health, Drain Soul causes double the normal damage. If the target dies while being drained, and yields experience or honor, the caster gains 3 Soul ShardsGlyph of Drain Souland 10% of  his total mana Soul Shards are required for Soulburn.
     drain_soul = {
         id = 1120,
-        cast = function() return ( 15 * haste) end,
+        cast = 15,
         cooldown = 0,
         gcd = "spell",
-		channeled = true,
+        channeled = true,
         breakable = true,
-        spend = function() return mod_suppression( 0.14 ) end,
+        spend = 0.14, 
         spendType = "mana",
+
         startsCombat = true,
         texture = 136163,
-        aura = "drain_soul",
-		tick_time = function () return class.auras.drain_soul.tick_time end,
+        tick_time = function () return class.auras.drain_soul.tick_time end,
         start = function( rank )
             applyDebuff( "target", "drain_soul" )
-            if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
+            if talent.everlasting_affliction.rank == 3 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
         end,
 		tick = function () end,
 
 		 breakchannel = function ()
             removeDebuff( "target", "drain_soul" )
         end,
-
-		handler = function ()
+        handler = function()
+            --"/cata/spell=1120/drain-soul"
         end,
 
-        copy = { 8288, 8289, 11675, 27217, 47855 },
     },
-
-
-    -- Summons an Eye of Kilrogg and binds your vision to it.  The eye moves quickly but is very fragile.
+    
+    --Summons an Eye of Kilrogg and binds your vision to it.  The eye moves quickly but is very fragile. In the Demonology Abilities category. Requires Warlock.
     eye_of_kilrogg = {
         id = 126,
         cast = 5,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.04,
+        spend = 0.04, 
         spendType = "mana",
 
         startsCombat = false,
         texture = 136155,
 
-        handler = function ()
+
+        handler = function()
+            --"/cata/spell=126/eye-of-kilrogg"
             applyBuff( "eye_of_kilrogg" )
-        end
-    },
-
-
-    -- Strikes fear in the enemy, causing it to run in fear for up to 10 sec.  Damage caused may interrupt the effect.  Only 1 target can be feared at a time.
-    fear = {
-        id = 6215,
-        cast = function()
-            return ( 1.5 * haste)
         end,
+
+    },
+    --Strikes fear in the enemy, causing it to Glyph of Feartremble in placerun in fear for up to 20 sec.  Damage caused may interrupt the effect.  Only 1 target can be feared at a time.
+    fear = {
+        id = 5782,
+        cast = 1.7,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return mod_suppression( 0.12 ) end,
+        spend = 0.12, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136183,
 
+        --fix:
+        
         handler = function()
+            --"/cata/spell=5782/fear"
             applyDebuff( "target", "fear" )
         end,
 
-        copy = { 5782, 6213 },
     },
-
-
-    -- Surrounds the caster with fel energy, increasing spell power by 50 plus additional spell power equal to 30% of your Spirit. In addition, you regain 2% of your maximum health every 5 sec. Only one type of Armor spell can be active on the Warlock at any time.  Lasts 30 min.
+    --Surrounds the caster with fel energy, increasing spell power by 638 and causes you to be healed for 3% of any single-target spell damage you deal.Only one type of Armor spell can be active on the Warlock at any time.
     fel_armor = {
-        id = 47893,
+        id = 28176,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.28,
-        spendType = "mana",
+        
 
         startsCombat = false,
         texture = 136156,
-        essential = true,
 
-        handler = function ()
+        handler = function()
             applyBuff( "fel_armor" )
         end,
 
-        copy = { 28176, 28189, 47892 },
     },
-
-
-    -- Your next Imp, Voidwalker, Succubus, Incubus, Felhunter or Felguard Summon spell has its casting time reduced by 5.5 sec and its Mana cost reduced by 50%.
-    fel_domination = {
-        id = 18708,
-        cast = 0,
-        cooldown = function() return 180 * ( 1 - ( 0.1 * talent.nemesis.rank ) ) end,
-        gcd = "off",
-
-        talent = "fel_domination",
-        startsCombat = false,
-        texture = 136082,
-
-        usable = function() return not pet.alive, "not used with an active pet" end,
-
-        handler = function ()
-            applyBuff( "fel_domination" )
-        end
-    },
-
-
-    -- You send a ghostly soul into the target, dealing 405 to 473 Shadow damage and increasing all damage done by your Shadow damage-over-time effects on the target by 20% for 12 sec. When the Haunt spell ends or is dispelled, the soul returns to you, healing you for 100% of the damage it did to the target.
-    haunt = {
-        id = 48181,
-        cast = function()
-            return ( 1.5 * haste)
-        end,
-
-        cooldown = 8,
-        gcd = "spell",
-
-        spend = 0.12,
-        spendType = "mana",
-
-		velocity = 6,
-		impact = function() end,
-
-        talent = "haunt",
-        startsCombat = true,
-        texture = 236298,
-
-        handler = function ()
-            applyDebuff( "target", "haunt" )
-            if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
-            if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
-        end,
-    },
-
-
-    -- Gives 12 health to the caster's pet every second for 10 sec as long as the caster channels.
-    health_funnel = {
-        id = 47856,
+    --Deals 238.5 Shadowflame damage to an enemy target, increasing the duration of Immolate or Unstable Affliction by 6 sec. In the Destruction Abilities category.
+    fel_flame = {
+        id = 77799,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
+        spend = 0.06, 
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135795,
+
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=77799/fel-flame"
+            if dot.immolate.ticking then dot.immolate.expires = dot.immolate.expires + 6 end
+            if dot.unstable_affliction.ticking then dot.unstable_affliction.expires = dot.unstable_affliction.expires + 6 end
+        end,
+
+    },
+    --You send a ghostly soul into the target, dealing [((Spell power * 0.5577) * 1.25) +  922] Shadow damage and increasing all damage done by your Shadow damage-over-time effects on the target by 20% for 12 sec. When the Haunt spell ends or is dispelled, the soul returns to you, healing you for 100% of the damage it did to the target.
+    haunt = {
+        id = 48181,
+        cast = 0,
+        cooldown = 8,
+        gcd = "spell",
+
+        spend = 0.12, 
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 236298,
+
+        handler = function()
+            applyDebuff( "target", "haunt" )
+            if talent.everlasting_affliction.rank == 3 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
+        end,
+
+    },
+    --Sacrifices 1% of your total health to restore 6% of your summoned Demon's total health every 1 sec. Lasts for 3 sec. In the Demonology Abilities category.
+    health_funnel = {
+        id = 755,
+        cast = 3,
+        cooldown = 0,
+        gcd = "spell",
+        channeled = true,
+        breakable = true,
+
         spend = function()
-            return ( ability.health_cost[ ability.id ] or 520 ) * ( 1 + 0.1 * talent.improved_health_funnel.rank )
+            return ( health.total / 100 ) 
         end,
         spendType = "health",
 
-        health_cost = {
-            [755]  = 12,
-            [3698] = 24,
-            [3699] = 43,
-            [3700] = 64,
-            [11693] = 89,
-            [11694] = 119,
-            [11695] = 153,
-            [27259] = 188,
-            [47856] = 520,
-        },
-
         startsCombat = false,
         texture = 136168,
-        aura = "health_funnel",
 
+        aura = "health_funnel",
+        
         start = function( rank )
             applyBuff( "health_funnel" )
         end,
 
-        copy = { 755, 3698, 3699, 3700, 11693, 11694, 11695, 27259 },
     },
-
-
-    -- Ignites the area surrounding the caster, causing 87 Fire damage to herself and 87 Fire damage to all nearby enemies every 1 sec.  Lasts 15 sec.
+    --Ignites the area surrounding the caster, causing 319 Fire damage to himself and 319 Fire damage to all nearby enemies every 1 sec.  Lasts 15 sec.
     hellfire = {
-        id = 47823,
-        cast = 0,
+        id = 1949,
+        cast = 15,
         cooldown = 0,
         gcd = "spell",
+        channeled = true,
+        beakable = true,
 
-        spend = function() return mod_cataclysm( 0.64 ) end,
+        spend = function() return mod_cataclysm( 0.64 ) end, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 135818,
 
-        aura = "hellfire",
-
-        start = function( rank )
-            applyBuff( "hellfire" )
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=5857/hellfire"
         end,
-
-        copy = { 1949, 11683, 11684, 27213 },
+        copy = {1949, 85403}
     },
-
-
-    -- Howl, causing 5 enemies within 10 yds to flee in terror for 6 sec.  Damage caused may interrupt the effect.
+    
+    --Howl, causing 5 enemies within 10 yds to flee in terror for 8 sec.  Damage caused may interrupt the effect. In the Affliction Abilities category.
     howl_of_terror = {
-        id = 17928,
+        id = 5484,
         cast = function() return 1.5 * ( 1 - 0.5 * talent.improved_howl_of_terror.rank ) end,
         cooldown = function() return glyph.howl_of_terror.enabled and 32 or 40 end,
         gcd = "spell",
 
-        spend = function() return mod_suppression( 0.08 ) end,
+        spend = 0.08, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136147,
 
-        handler = function( rank )
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=5484/howl-of-terror"
             applyDebuff( "target", "howl_of_terror" )
         end,
 
-        copy = { 5484 },
     },
-
-
-    -- Burns the enemy for 10 Fire damage and then an additional 20 Fire damage over 15 sec.
+    --Burns the enemy for 596 Fire damage and then an additional 1890 Fire damage over 15 sec.Unstable AfflictionOnly one Unstable Affliction or Immolate per Warlock can be active on any one target
     immolate = {
         id = 348,
-        cast = function() return ( 2 - 0.1 * talent.bane.rank ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) ) end,
+        cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return mod_cataclysm( 0.17 ) end,
+        spend =function() return mod_cataclysm( 0.08 ) end, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 135817,
-		cycle = "immolate",
-
+        cycle = "immolate", -- why?
+        
         handler = function()
+            --"/cata/spell=348/immolate"
             removeDebuff( "target", "unstable_affliction" )
             applyDebuff( "target", "immolate" )
-            removeStack( "backdraft" )
         end,
 
-        copy = { 707, 1094, 2941, 11665, 11667, 11668, 25309, 27215, 47810, 47811 },
     },
-
-
-    -- Ignites the area surrounds you, causing 481 Fire damage to all nearby enemies every 0.9 sec.  Lasts 13.45 sec.
+    
+    --Ignites the area surrounding you, causing 567 Fire damage to all nearby enemies every 1 sec.  Lasts 15 sec. In the Demonology Abilities category.
     immolation_aura = {
         id = 50589,
         cast = 0,
         cooldown = 30,
         gcd = "spell",
 
-        spend = 0.64,
+        spend = 0.64, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 135818,
 
+        --fix:
         buff = "metamorphosis",
-
-        handler = function ()
+        handler = function()
+            --"/cata/spell=50590/immolation"
             applyBuff( "immolation_aura" )
         end,
+
     },
-
-
-    -- Deals 416 to 480 Fire damage to your target and an additional 104 to 120 Fire damage if the target is affected by an Immolate spell.
+    --Deals 551.5 Fire damage to your target and an additional 91.9 Fire damage if the target is affected by an Immolate spell. In the Destruction Abilities category.
     incinerate = {
-        id = 47838,
+        id = 29722,
         cast = function()
             if buff.backlash.up then return 0 end
             return ( 2.5 - 0.05 * talent.emberstorm.rank ) * ( 1 - 0.1 * ( buff.molten_core.up and talent.molten_core.rank or 0 ) ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) )
@@ -1624,73 +1462,46 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return mod_cataclysm( 0.14 ) end,
+        spend = function() return mod_cataclysm( 0.14 ) end, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 135789,
-
-        handler = function ()
+       
+        handler = function()
             removeBuff( "backlash" )
             removeStack( "molten_core", 1 )
             removeStack( "backdraft" )
         end,
 
-        copy = { 29722, 32231, 47837 },
     },
-
-
-    -- Converts 286 health into 40 mana.  Spell power increases the amount of mana returned.
+    --You Life Tap for 15% of your total health, converting [(120)]% of that into mana. In the Affliction Abilities category. Requires Warlock. A spell.
     life_tap = {
-        id = 57946,
+        id = 1454,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function()
-            if ability.id == 57946 then return 2000 + stat.spirit * 1.5 end
-            if ability.id == 27222 then return 1164 + stat.spirit * 1.5 end
-            if ability.id == 11689 then return  867 + stat.spirit * 1.5 end
-            if ability.id == 11688 then return  346 + stat.spirit * 1.5 end
-            if ability.id == 11687 then return  249 + stat.spirit * 1.5 end
-            if ability.id ==  1456 then return  159 + stat.spirit * 1.5 end
-            if ability.id ==  1455 then return   86 + stat.spirit * 1.5 end
-            if ability.id ==  1454 then return   41 + stat.spirit * 1.5 end
-            return 2000 + stat.spirit * 1.5
-        end,
+        spend = function() return health.total * 0.15 end,
         spendType = "health",
 
         startsCombat = false,
         texture = 136126,
 
-        handler = function ()
-            local amt = 2000
-
-            if     ability.id == 57946 then amt = 2000
-            elseif ability.id == 27222 then amt = 1164
-            elseif ability.id == 11689 then amt =  867
-            elseif ability.id == 11688 then amt =  346
-            elseif ability.id == 11687 then amt =  249
-            elseif ability.id ==  1456 then amt =  159
-            elseif ability.id ==  1455 then amt =   86
-            elseif ability.id ==  1454 then amt =   41 end
-
-            amt = amt + stat.spell_power * 0.5
-            amt = amt * ( 1 + 0.1 * talent.improved_life_tap.rank )
-
-            gain( amt, "mana" )
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=1454/life-tap"
+            gain( action.life_tap.spend * (1.2 + 0.1 * talent.improved_life_tap.rank), "mana")
             if glyph.life_tap.enabled then applyBuff( "life_tap" ) end
         end,
 
-        copy = { 1454, 1455, 1456, 11687, 11688, 11689, 27222 },
     },
-
-
-    -- You transform into a Demon for 30 sec.  This form increases your armor contribution from items by 600%, damage by 20%, reduces the chance you'll be critically hit by melee attacks by 6% and reduces the duration of stun and snare effects by 50%.  You gain some unique demon abilities in addition to your normal abilities.
+    --You transform into a Demon for 30 sec.  This form increases your armor by 600%, damage by 20%, reduces the chance you'll be critically hit by melee attacks by 6% and reduces the duration of stun and snare effects by 50%.  You gain some unique demon abilities in addition to your normal abilities. 3 minute cooldown.
     metamorphosis = {
-        id = 47241,
+        id = 59672,
         cast = 0,
-        cooldown = function() return 180 * ( 1 - ( 0.1 * talent.nemesis.rank ) ) end,
+        cooldown = function() return 180 * ( 1 - ( 0.15 * talent.nemesis.rank ) ) end,
         gcd = "off",
 
         startsCombat = false,
@@ -1698,20 +1509,42 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        handler = function ()
+        handler = function()
             applyBuff( "metamorphosis" )
         end,
+
     },
-
-
-    -- Calls down a fiery rain to burn enemies in the area of effect for 246 Fire damage over 8 sec.
-    rain_of_fire = {
-        id = 5740,
+    --Absorbs [3551 + (Spell power * 0.807)] spell damage.  Lasts 30 sec. In the Destruction Abilities category. Requires Warlock. Learn how to use this in our class guide.
+    nether_ward = {
+        id = 91711,
         cast = 0,
-        cooldown = 0,
+        cooldown = 30,
         gcd = "spell",
 
-        spend = function() return mod_cataclysm( 0.57 ) end,
+        spend = 0.12, 
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135796,
+
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=91711/nether-ward"
+            applyBuff("nether_ward") --TODO: implement aura 91711 nether_ward
+        end,
+
+    },
+    --Calls down a fiery rain to burn enemies in the area of effect for (767 * 4) Fire damage over 8 sec. In the Destruction Abilities category. Requires Warlock.
+    rain_of_fire = {
+        id = 5740,
+        cast = 8,
+        cooldown = 0,
+        gcd = "spell",
+        channeled = true,
+        breakable = true,
+
+        spend =function() return mod_cataclysm( 0.57 ) end, 
         spendType = "mana",
 
         startsCombat = true,
@@ -1723,149 +1556,133 @@ spec:RegisterAbilities( {
             applyBuff( "rain_of_fire" )
         end,
 
-        copy = { 6219, 11677, 11678, 27212, 47819, 47820 },
     },
-
-
-    --[[ Begins a ritual that creates a Soulwell.  Raid members can click the Soulwell to acquire a Master Healthstone.  The Soulwell lasts for 3 min or 25 charges.  Requires the caster and 2 additional party members to complete the ritual.  In order to participate, all players must right-click the soul portal and not move until the ritual is complete.
+    --Begins a ritual that creates a Soulwell.  Raid members can click the Soulwell to acquire a Healthstone.  The Soulwell lasts for 3 min or 25 charges.  Requires the caster and 2 additional party members to complete the ritual.  In order to participate, all players must right-click the soul portal and not move until the ritual is complete.
     ritual_of_souls = {
         id = 29893,
-        cast = 0,
+        cast = 60,
         cooldown = 300,
         gcd = "spell",
+        channeled = true,
+        breakable = true,
 
-        spend = function() return 0.8 * ( glyph.souls.enabled and 0.3 or 1 ) end,
+        spend = 0.27, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136194,
 
-        handler = function ()
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=29893/ritual-of-souls"
         end,
 
-        copy = { 58887 },
-    }, ]]
-
-
-    --[[ Begins a ritual that creates a summoning portal.  The summoning portal can be used by 2 party or raid members to summon a targeted party or raid member.  The ritual portal requires the caster and 2 additional party or raid members to complete.  In order to participate, all players must be out of combat and right-click the portal and not move until the ritual is complete.
+    },
+    --Begins a ritual that creates a summoning portal.  The summoning portal can be used by 2 party or raid members to summon a targeted party or raid member.  The ritual portal requires the caster and 2 additional party or raid members to complete.  In order to participate, all players must be out of combat and right-click the portal and not move until the ritual is complete.
     ritual_of_summoning = {
         id = 698,
-        cast = 0,
+        cast = 120,
         cooldown = 120,
         gcd = "spell",
+        channeled = true,
+        breakable = true,
 
-        spend = 0,
+        spend = 0.12, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136223,
 
-        handler = function ()
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=698/ritual-of-summoning"
         end,
-    }, ]]
 
-
-    -- Inflict searing pain on the enemy target, causing 38 to 47 Fire damage.  Causes a high amount of threat.
+    },
+    --Inflict searing pain on the enemy target, causing 310 Fire damage.  Causes a high amount of threat.SoulburnSoulburn: Increases the critical effect chance of your next Searing Pain by 100%, and your subsequent Searing Pain casts by 50% for 6 sec.
     searing_pain = {
         id = 5676,
-        cast = function() return 1.5 * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) ) end,
+        cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return mod_cataclysm( 0.08 ) end,
+        spend = function() return mod_cataclysm( 0.12 ) end, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 135827,
-
-        handler = function ()
-            removeStack( "backdraft" )
+       
+        handler = function()
+            --"/cata/spell=5676/searing-pain"
+            if buff.soulburn.up then
+                applyBuff("soulburn_searing_pain") --TODO: implement 79440 soulburn_searing_pain
+                removeBuff("soulburn")
+            end
         end,
 
-        copy = { 17919, 17920, 17921, 17922, 17923, 27210, 30459, 47814, 47815 },
     },
-
-
-    -- Imbeds a demon seed in the enemy target, causing 1044 Shadow damage over 18 sec.  When the target takes 1044 total damage or dies, the seed will inflict 1110 to 1290 Shadow damage to all enemies within 15 yards of the target.  Only one Corruption spell per Warlock can be active on any one target.
+    --Imbeds a demon seed in the enemy target, causing 1746 Shadow damage over 18 sec.  When the target takes 2033 total damage or dies, the seed will inflict 737 Shadow damage to all enemies within 15 yards of the target.  Only one Corruption spell per Warlock can be active on any one target.Soulburn: Seed of CorruptionSoulburn: Your Seed of Corruption detonation effect will afflict Corruption on all enemy targets. The Soul Shard will be refunded if the detonation is successful.
     seed_of_corruption = {
         id = 27243,
-        cast = function()
-            return ( 2 * haste)
-        end,
+        cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return mod_suppression( 0.34 ) end,
+        spend = 0.34, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136193,
 
         cycle = "seed_of_corruption",
-
+        
         handler = function()
-            applyDebuff( "target", "seed_of_corruption" )
+            --"/cata/spell=27243/seed-of-corruption"
+            removeBuff("target","corruption")
+            if buff.soulburn.up then
+                applyDebuff("target","soulburn_seed_of_corruption") --TODO: add 86664 soulburn_seed_of_corruption and aura expiry 
+            else
+                applyDebuff( "target", "seed_of_corruption" )
+            end
         end,
 
-        copy = { 47835, 47836 },
     },
-
-
-    --[[ Shows the location of all nearby demons on the minimap until cancelled.  Only one form of tracking can be active at a time.
-    sense_demons = {
-        id = 5500,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        startsCombat = true,
-        texture = 136172,
-
-        handler = function ()
-        end,
-    }, ]]
-
-
-    -- Sends a shadowy bolt at the enemy, causing 13 to 18 Shadow damage.
+    --Sends a shadowy bolt at the enemy, causing 596.5 Shadow damage. In the Destruction Abilities category. Requires Warlock. Learn how to use this in our class guide.
     shadow_bolt = {
-        id = 47809,
+        id = 686,
         cast = function()
             if buff.backlash.up then return 0 end
             if buff.shadow_trance.up then return 0 end
-            return ( 1.7 - 0.1 * talent.bane.rank ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) * haste )
+            return ( 1.7 - talent.bane.enabled and (0.2 * talent.bane.rank - 0.1) ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) * haste )
         end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return mod_cataclysm( 0.1 ) * ( glyph.shadow_bolt.enabled and 0.9 or 1 ) end,
+        spend = function() return mod_cataclysm( 0.1 ) * ( glyph.shadow_bolt.enabled and 0.85 or 1 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 136197,
 
-		cycle = "shadow_bolt",
+        cycle = "shadow_bolt",
 
 		velocity = 6,
-		impact = function()
-            if talent.improved_shadow_bolt.rank == 5 then applyDebuff( "target", "shadow_mastery", nil, debuff.shadow_mastery.stack + 1 ) end
-        end,
-
-        handler = function ()
+        
+        handler = function()
+            --"/cata/spell=686/shadow-bolt"
             -- TODO: Confirm order in which Backlash vs. Shadow Trace would be consumed.
             if buff.backlash.up then removeBuff( "backlash" )
             elseif buff.shadow_trance.up then removeBuff( "shadow_trance" ) end
             if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
-            if talent.everlasting_affliction.rank == 5 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
+            if talent.everlasting_affliction.rank == 3 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
             removeStack( "backdraft" )
         end,
 
-        copy = { 686, 695, 705, 1088, 1106, 7641, 11659, 11660, 11661, 25307, 27209, 47808 },
     },
-
-
-
     -- Inflicts 110 Shadow damage to an enemy target and nearby allies, affecting up to 3 targets.
-    shadow_cleave = {
+    shadow_cleave = { --TODO: check if spell still exists (update for cata)
         id = 50581,
         cast = 0,
         cooldown = 6,
@@ -1886,32 +1703,30 @@ spec:RegisterAbilities( {
             start_shadow_cleave()
         end,
     },
-
-
-    -- Absorbs 290 shadow damage.  Lasts 30 sec.
+    --Absorbs [3551 + (Spell power * 0.807)] shadow damage.  Lasts 30 sec. In the Demonology Abilities category. Requires Warlock. Learn how to use this in our class guide.
     shadow_ward = {
         id = 6229,
         cast = 0,
         cooldown = 30,
         gcd = "spell",
 
-        spend = 0.12,
+        spend = 0.12, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136121,
 
-        handler = function ()
+        --fix:
+        
+        handler = function()
+            --"/cata/spell=6229/shadow-ward"
             applyBuff( "shadow_ward" )
         end,
 
-        copy = { 11739, 11740, 28610, 47890, 47891 },
     },
-
-
     -- Instantly blasts the target for 91 to 104 Shadow damage.  If the target dies within 5 sec of Shadowburn, and yields experience or honor, the caster gains a Soul Shard.
     shadowburn = {
-        id = 47827,
+        id = 17877,
         cast = 0,
         cooldown = 15,
         gcd = "spell",
@@ -1922,40 +1737,37 @@ spec:RegisterAbilities( {
         talent = "shadowburn",
         startsCombat = true,
         texture = 136191,
-
-        usable = function() return soul_shards > 0, "requires a soul_shard" end,
-
+        usable = function() return target.health.pct < 20 end,
         handler = function ()
             applyDebuff( "target", "shadowburn" )
-            soul_shards = max( 0, soul_shards - 1 )
+            soul_shards = soul_shards +3 --TODO: only if the target dies within 5 sec of Shadowburn, and yields experience or honor, the caster gains a Soul Shard.
         end,
-
-        copy = { 17877, 18867, 18868, 18869, 18870, 18871, 27263, 30546, 47826 }
     },
-
-
-    -- Targets in a cone in front of the caster take 530 to 578 Shadow damage and an additional 544 Fire damage over 8 sec.
+    --Targets in a cone in front of the caster take 700 Shadow damage and an additional 489 Fire damage over 6 sec.Glyph of ShadowflameAlso reduces movement speed by 70% to afflicted targets
     shadowflame = {
         id = 47897,
         cast = 0,
-        cooldown = 15,
+        cooldown = 12,
         gcd = "spell",
 
-        spend = 0.25,
+        spend = function() return mod_cataclysm( 0.25 ) end,
         spendType = "mana",
 
         startsCombat = true,
         texture = 236302,
-		cycle = "shadowflame",
-        handler = function ()
+
+        cycle = "shadowflame",
+        
+        handler = function()
+            --"/cata/spell=47897/shadowflame"
             applyDebuff( "target", "shadowflame" )
+            if glyph.shadowflame.enabled then
+                applyDebuff( "target", "glyph_of_shadowflame" ) --TODO: implement aura 63310/glyph-of-shadowflame
+            end
         end,
-
-        copy = { 61290 },
+        copy = {47897, 47960}
     },
-
-
-    -- Shadowfury is unleashed, causing 357 to 422 Shadow damage and stunning all enemies within 8 yds for 3 sec.
+    --Shadowfury is unleashed, causing 688 to 819 Shadow damage and stunning all enemies within 8 yds for 3 sec. In the Warlock Talents category. A spell.
     shadowfury = {
         id = 30283,
         cast = 0,
@@ -1969,39 +1781,60 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136201,
 
-        handler = function ()
+        handler = function()
+            --"/cata/spell=30283/shadowfury"
             applyDebuff( "target", "shadowfury" )
         end,
+
     },
-
-
-    -- Burn the enemy's soul, causing 640 to 801 Fire damage.
+    --Burn the enemy's soul, causing 2447 Fire damage.SoulburnSoulburn: Instant cast. In the Destruction Abilities category. Requires Warlock. A spell.
     soul_fire = {
-        id = 47824,
-        cast = function() return ( 6 - 0.4 * talent.bane.rank ) * ( 1 - 0.2 * ( buff.decimation.up and talent.decimation.rank or 0 ) ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) ) end,
+        id = 6353,
+        cast = function() return (buff.soulburn.up or buff.chaotic_mind.up or buff.decimate.up) and 0 or 4 end, --TODO: implement 47271/decimate and 61188/chaotic-mind
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return mod_cataclysm( 0.09 ) end,
+        spend = function() return mod_cataclysm( 0.09 ) end, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 135808,
 
-        usable = function() return buff.decimation.up or soul_shards > 0, "requires decimation or a soul_shard" end,
-
-        handler = function( rank )
-            if buff.decimation.down then
-                soul_shards = max( 0, soul_shards - 1 )
+        handler = function()
+            applyDebuff( "target", "soul_fire" )
+            if buff.chaotic_mind.up then
+                removeBuff("chaotic_mind")
+            elseif buff.decimate.up then
+                removeBuff("decimate")
+            else
+                removeBuff("soulburn")
             end
-            removeStack( "molten_core", 1 )
-            removeStack( "backdraft" )
         end,
 
-        copy = { 6353, 17924, 27211, 30545 },
     },
+    --You seek out nearby wandering souls, regenerating 45% health and 3 soul shards over 9 sec.  Cannot be cast when in combat. In the Demonology Abilities category.
+    soul_harvest = {
+        id = 79268,
+        cast = 9,
+        cooldown = 30,
+        gcd = "spell",
+        channeled = true,
+        breakable = true,
 
+        
 
+        startsCombat = false,
+        texture = 236223,
+
+        --fix:
+        
+        handler = function() --TODO: make effect tick-wise
+            --"/cata/spell=79268/soul-harvest"
+            gain(0.45*health.total, "health")
+            soul_shards = soul_shards + 3
+        end,
+
+    },
     -- When active, 20% of all damage taken by the caster is taken by your Imp, Voidwalker, Succubus, Felhunter, Felguard, or subjugated demon instead.  That damage cannot be prevented. Lasts as long as the demon is active and controlled.
     soul_link = {
         id = 19028,
@@ -2024,287 +1857,343 @@ spec:RegisterAbilities( {
             applyBuff( "soul_link" )
         end
     },
+    --You instantly deal 167 damage, and remove your Shadow damage-over-time effects from the target.For 20 sec afterwards, the next target you cast Soul Swap: Exhale on will be afflicted by the Shadow damage-over-time effects and suffer 167 damage.You cannot Soul Swap to the same target.
+    soul_swap_exhale = {
+        id = 86213,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
 
+        spend = 0.06, 
+        spendType = "mana",
 
-    -- Reduces threat by 50% for all enemies within 50 yards.
+        startsCombat = true,
+        texture = 132291,
+
+        
+        handler = function() --TODO: remove all shadow dots from taget a and recast on target b to apply them again 
+            --"/cata/spell=86213/soul-swap-exhale"
+            
+        end,
+
+    },
+    --Consumes a Soul Shard, allowing you to use the secondary effects on some of your spells.Drain LifeSummon Imp, Voidwalker, Succubus, Felhunter, FelguardDemonic Circle: TeleportSoul FireHealthstoneSearing PainSoulburn: Seed of CorruptionSeed of Corruption
+    soulburn = {
+        id = 74434,
+        cast = 0,
+        cooldown = 45,
+        gcd = "off",
+
+        spend = 1, 
+        spendType = "shards",
+
+        startsCombat = true,
+        texture = 463286,
+
+        usable = function() return soul_shards > 0, "requires a soul_shard" end,
+
+        handler = function ()
+            applyBuff( "soulburn" )
+            soul_shards = max( 0, soul_shards - 1 )
+        end,
+
+    },
+    --Reduces threat by 90% for all enemies within 50 yards. In the Demonology Abilities category. Requires Warlock. Learn how to use this in our class guide.
     soulshatter = {
         id = 29858,
         cast = 0,
-        cooldown = 180,
+        cooldown = 2,
         gcd = "spell",
 
-        spend = 573,
+        spend = 0.08, 
         spendType = "health",
 
         startsCombat = true,
         texture = 135728,
 
-        usable = function() return soul_shards > 0, "requires a soul_shard" end,
-
+        --usable = function() return soul_shards > 0, "requires a soul_shard" end,
+        
         handler = function()
-            soul_shards = max( 0, soul_shards - 1 )
-        end
+            --Threat reduce not important
+            --soul_shards = max( 0, soul_shards - 1 )
+        end,
+
     },
-
-
-    -- Subjugates the target demon, up to level 45, forcing it to do your bidding.  While subjugated, the time between the demon's attacks is increased by 30% and its casting speed is slowed by 20%.  Lasts up to 5 min.
+    --Enslaves the target demon, forcing it to do your bidding.  While enslaved, the time between the demon's attacks is increased by 30% and its casting speed is slowed by 20%.  Lasts up to 5 min.
     subjugate_demon = {
-        id = 61191,
+        id = 1098,
         cast = function() return glyph.subjugate_demon.enabled and 1.5 or 3 end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.27,
+        spend = 0.27, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136154,
 
         usable = function() return not pet.exists, "cannot have a pet" end,
-
+        
         handler = function( rank )
             applyDebuff( "target", "enslave_demon" )
             summonPet( "controlled_demon" )
         end,
 
-        copy = { 1098, 11725, 11726 },
     },
-
-
-    -- Summons a Felguard under the command of the Warlock.
-    summon_felguard = {
-        id = 30146,
-        cast = function() return 10 - ( 2 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
-        spendType = "mana",
-
-        talent = "summon_felguard",
-        startsCombat = false,
-        texture = 136216,
-        essential = true,
-
-        usable = function() return soul_shards > 0, "requires a soul_shard" end,
-
-        handler = function()
-            dismissPet( "imp" )
-            dismissPet( "voidwalker" )
-            dismissPet( "felhunter" )
-            dismissPet( "succubus" )
-            summonPet( "felguard" )
-			dismissPet( "infernal" )
-            soul_shards = max( 0, soul_shards - 1 )
-        end
-    },
-
-	inferno = {
-        id = 1122,
-        cast = function() return (1.5 * haste) end,
+    --Summons a Doomguard to fight beside you for 45 sec.The Doomguard will assist you by attacking the target which is afflicted by your Bane of Doom or Bane of Agony spell.
+    summon_doomguard = {
+        id = 18540,
+        cast = 0,
         cooldown = 600,
         gcd = "spell",
 
-        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
+        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.5 * talent.master_summoner.rank ) end,
         spendType = "mana",
-		toggle = "cooldown",
-        startsCombat = false,
-        texture = 136219,
-        essential = true,
 
+        startsCombat = false,
+        texture = 236418,
+
+        --fix:
+        
         handler = function()
             dismissPet( "imp" )
             dismissPet( "voidwalker" )
             dismissPet( "felhunter" )
             dismissPet( "succubus" )
             dismissPet( "felguard" )
-			summonPet( "infernal" )
-        end
+            summonPet( "doomguard" )
+			dismissPet( "infernal" )
+        end,
+
     },
-
-
-    -- Summons a Felhunter under the command of the Warlock.
-    summon_felhunter = {
-        id = 691,
-        cast = function() return 10 - ( 2 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
+    --Summons a Felguard under the command of the Warlock.SoulburnSoulburn: Instant cast. In the Warlock Talents category. Learn how to use this in our class guide.
+    summon_felguard = {
+        id = 30146,
+        cast = function() return 6 - ( 1 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
+        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.5 * talent.master_summoner.rank ) end,  
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136216,
+        talent = "summon_felguard",
+
+        usable = function() return soul_shards > 0, "requires a soul_shard" end,
+
+        handler = function()
+            dismissPet( "imp" )
+            dismissPet( "voidwalker" )
+            dismissPet( "felhunter" )
+            dismissPet( "succubus" )
+            dismissPet( "doomguard" )
+            summonPet( "felguard" )
+			dismissPet( "infernal" )
+        end,
+
+    },
+    --Summons a Felhunter under the command of the Warlock.SoulburnSoulburn: Instant cast. In the Demonology Abilities category. Learn how to use this in our class guide.
+    summon_felhunter = {
+        id = 691,
+        cast = function() return 6 - ( 1 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.5 * talent.master_summoner.rank ) end, 
         spendType = "mana",
 
         startsCombat = false,
         texture = 136217,
-        essential = true,
 
         usable = function() return soul_shards > 0, "requires a soul_shard" end,
 
+        
         handler = function()
             dismissPet( "imp" )
             dismissPet( "voidwalker" )
             summonPet( "felhunter" )
             dismissPet( "succubus" )
             dismissPet( "felguard" )
+            dismissPet( "doomguard" )
 			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
-        end
+        end,
+
     },
-
-
-    -- Summons an Imp under the command of the Warlock.
+    --Summons an Imp under the command of the Warlock.SoulburnSoulburn: Instant cast. In the Demonology Abilities category. Learn how to use this in our class guide.
     summon_imp = {
         id = 688,
-        cast = function() return 10 - ( 2 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
+        cast = function() return 6 - ( 1 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.64 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
+        spend = function() return 0.64 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.5 * talent.master_summoner.rank ) end, 
         spendType = "mana",
-        essential = true,
 
         startsCombat = false,
         texture = 136218,
-
+        
         handler = function()
             summonPet( "imp" )
             dismissPet( "voidwalker" )
             dismissPet( "felhunter" )
             dismissPet( "succubus" )
             dismissPet( "felguard" )
+            dismissPet( "doomguard" )
 			dismissPet( "infernal" )
-        end
+        end,
+
     },
-
-
-    -- Summons an Incubus under the command of the Warlock.
+    --Summons an Incubus under the command of the Warlock.SoulburnSoulburn: Instant cast. In the Demonology Abilities category. Learn how to use this in our class guide.
     summon_incubus = {
         id = 713,
-        cast = function() return 10 - ( 2 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
+        cast = function() return 6 - ( 1 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.80 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
+        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.5 * talent.master_summoner.rank ) end, 
         spendType = "mana",
 
         startsCombat = false,
         texture = 4352492,
-        essential = true,
-
+        usable = function() return soul_shards > 0, "requires a soul_shard" end,
+        
         handler = function()
             dismissPet( "imp" )
             dismissPet( "voidwalker" )
             dismissPet( "felhunter" )
             summonPet( "succubus" )
             dismissPet( "felguard" )
+            dismissPet( "doomguard" )
 			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
-        end
+        end,
+
     },
+    --Summons a meteor from the Twisting Nether, causing 466.5 Fire damage and stunning all enemy targets in the area for 2 sec.  An Infernal rises from the crater, under the command of the caster for 45 sec.The Infernal deals strong area of effect damage, and will be drawn to attack targets afflicted by your Bane of Agony or Bane of Doom spells.
+    summon_infernal = {
+        id = 1122,
+        cast = 1.5,
+        cooldown = 600,
+        gcd = "spell",
 
+        spend = 0.8, 
+        spendType = "mana",
 
-    -- Summons a Succubus under the command of the Warlock.
+        startsCombat = true,
+        texture = 136219,
+
+        
+        handler = function()
+            dismissPet( "imp" )
+            dismissPet( "voidwalker" )
+            dismissPet( "felhunter" )
+            dismissPet( "succubus" )
+            dismissPet( "felguard" )
+            dismissPet( "doomguard" )
+			summonPet( "infernal" )
+        end,
+
+    },
+    --Summons a Succubus under the command of the Warlock.SoulburnSoulburn: Instant cast. In the Demonology Abilities category. Learn how to use this in our class guide.
     summon_succubus = {
         id = 712,
-        cast = function() return 10 - ( 2 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
+        cast = function() return 6 - ( 1 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.80 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
+        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.5 * talent.master_summoner.rank ) end,  
         spendType = "mana",
 
         startsCombat = false,
         texture = 136220,
-        essential = true,
 
+        usable = function() return soul_shards > 0, "requires a soul_shard" end,
+        
         handler = function()
             dismissPet( "imp" )
             dismissPet( "voidwalker" )
             dismissPet( "felhunter" )
             summonPet( "succubus" )
             dismissPet( "felguard" )
+            dismissPet( "doomguard" )
 			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
-        end
+        end,
+
     },
-
-
-    -- Summons a Voidwalker under the command of the Warlock.
+    --Summons a Voidwalker under the command of the Warlock.SoulburnSoulburn: Instant cast. In the Demonology Abilities category. Learn how to use this in our class guide.
     summon_voidwalker = {
         id = 697,
-        cast = function() return 10 - ( 2 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
+        cast = function() return 6 - ( 1 * talent.master_summoner.rank ) - ( buff.fel_domination.up and 5.5 or 0 ) end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.80 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.2 * talent.master_summoner.rank ) end,
+        spend = function() return 0.8 * ( buff.fel_domination.up and 0.5 or 1 ) * ( 1 - 0.5 * talent.master_summoner.rank ) end,  
         spendType = "mana",
 
         startsCombat = false,
         texture = 136221,
-        essential = true,
 
         usable = function() return soul_shards > 0, "requires a soul_shard" end,
-
+        
         handler = function()
             dismissPet( "imp" )
             summonPet( "voidwalker" )
             dismissPet( "felhunter" )
             dismissPet( "succubus" )
             dismissPet( "felguard" )
+            dismissPet( "doomguard" )
 			dismissPet( "infernal" )
             soul_shards = max( 0, soul_shards - 1 )
-        end
+        end,
+
     },
-
-
-    -- Allows the target to breathe underwater for 10 min.
+    --Allows the target to breathe underwater for 10 minGlyph of Unending Breathand increases swim speed by 20%. In the Demonology Abilities category.
     unending_breath = {
         id = 5697,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.02,
+        spend = 0.02, 
         spendType = "mana",
 
         startsCombat = false,
         texture = 136148,
 
-        handler = function ()
+        handler = function()
             applyBuff( "unending_breath" )
-        end
-    },
-
-
-    -- Shadow energy slowly destroys the target, causing 550 damage over 15 sec.  In addition, if the ` Affliction is dispelled it will cause 990 damage to the dispeller and silence them for 5 sec. Only one Unstable Affliction or Immolate per Warlock can be active on any one target.
-    unstable_affliction = {
-        id = 47843,
-        cast = function()
-            return ( glyph.unstable_affliction.enabled and 1.3 or 1.5 ) * haste
-        end,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.15,
-        spendType = "mana",
-
-        talent = "unstable_affliction",
-        startsCombat = true,
-        texture = 136228,
-
-		cycle = "unstable_affliction",
-        handler = function ()
-            removeDebuff( "target", "immolate" )
-            applyDebuff( "target", "unstable_affliction" )
         end,
 
-        copy = { 30108, 30404, 30405, 47841 }
     },
-} )
+        --Shadow energy slowly destroys the target, causing 1115 damage over 15 sec.  In addition, if the Unstable Affliction is dispelled it will cause 2007 damage to the dispeller and silence them for 4 sec.  Only one Unstable Affliction or Immolate per Warlock can be active on any one target.
+        unstable_affliction = {
+            id = 30108,
+            cast = function()
+                return ( glyph.unstable_affliction.enabled and 1.3 or 1.5 ) * haste
+            end,
+            cooldown = 0,
+            gcd = "spell",
+    
+            spend = 0.15, 
+            spendType = "mana",
+            talent = "unstable_affliction",
+            startsCombat = true,
+            texture = 136228,
 
-
+            cycle = "unstable_affliction",
+            handler = function()
+                removeDebuff( "target", "immolate" )
+                applyDebuff( "target", "unstable_affliction" )
+            end,
+    
+        },
+})
 local curses = {}
 
-spec:RegisterSetting( "solo_curse", "curse_of_agony", {
+spec:RegisterSetting( "solo_curse", "bane_of_agony", {
     type = "select",
     name = "Preferred Curse when Solo",
     desc = "Select the Curse you'd like to use when playing solo.  It is referenced as |cff00ccff[Solo Curse]|r in your priority.\n\n"
@@ -2313,9 +2202,9 @@ spec:RegisterSetting( "solo_curse", "curse_of_agony", {
     values = function()
         table.wipe( curses )
 
-        curses.curse_of_agony = class.abilityList.curse_of_agony
+        curses.bane_of_agony = class.abilityList.bane_of_agony
         curses.curse_of_the_elements = class.abilityList.curse_of_the_elements
-        curses.curse_of_doom = class.abilityList.curse_of_doom
+        curses.bane_of_doom = class.abilityList.bane_of_doom
         curses.curse_of_exhaustion = class.abilityList.curse_of_exhaustion
         curses.curse_of_tongues = class.abilityList.curse_of_tongues
         curses.curse_of_weakness = class.abilityList.curse_of_weakness
@@ -2337,9 +2226,9 @@ spec:RegisterSetting( "group_curse", "curse_of_the_elements", {
     values = function()
         table.wipe( curses )
 
-        curses.curse_of_agony = class.abilityList.curse_of_agony
+        curses.bane_of_agony = class.abilityList.bane_of_agony
         curses.curse_of_the_elements = class.abilityList.curse_of_the_elements
-        curses.curse_of_doom = class.abilityList.curse_of_doom
+        curses.bane_of_doom = class.abilityList.bane_of_doom
         curses.curse_of_exhaustion = class.abilityList.curse_of_exhaustion
         curses.curse_of_tongues = class.abilityList.curse_of_tongues
         curses.curse_of_weakness = class.abilityList.curse_of_weakness
