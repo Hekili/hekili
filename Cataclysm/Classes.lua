@@ -69,9 +69,9 @@ function ns.updateTalents()
 
         if type( selector.condition ) == "function" and selector.condition( tabs[1], tabs[2], tabs[3], main ) or
             type( selector.condition ) == "number" and
-                ( selector.condition == 1 and tab1 > max( tab2, tab3 ) or
-                  selector.condition == 2 and tab2 > max( tab1, tab3 ) or
-                  selector.condition == 3 and tab3 > max( tab1, tab2 ) ) then
+                ( selector.condition == 1 and tabs[1] > max( tabs[2], tabs[3] ) or
+                  selector.condition == 2 and tabs[2] > max( tabs[1], tabs[3] ) or
+                  selector.condition == 3 and tabs[3] > max( tabs[1], tabs[2] ) ) then
 
             if toPackage ~= "none" and fromPackage ~= toPackage then
                 Hekili.DB.profile.specs[ spec ].package = toPackage
