@@ -1,41 +1,40 @@
 Smufrik Arms warrior
 
-Smufrik Arms warrior
 
-actions.precombat+=/battle_stance,if=buff.battle_stance.down&buff.berserker_stance.down
-actions.precombat+=/berserker_stance,if=buff.stance.down
+actions.precombat+=/battle_stance
 actions.precombat+=/commanding_shout,if=assigned_shout.commanding_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
 actions.precombat+=/battle_shout,if=assigned_shout.battle_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
 
 actions+=/run_action_list,name=aoe,if=active_enemies>2
+actions+=/run_action_list,name=st
 actions+=/call_action_list,name=init
 actions+=/sunder_armor,if=settings.debuff_sunder_enabled&variable.time_to_die>((5-debuff.sunder_armor.stack)*(1.5+latency))+3
 actions+=/pummel
-actions+=/run_action_list,name=battle_stance,if=buff.battle_stance.down&buff.berserker_stance.down
-actions+=/run_action_list,name=berserker_stance,if=buff.berserker_stance.up
-actions+=/run_action_list,name=battle_stance,if=buff.battle_stance.up
 
 actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
 
-actions.berserker_stance+=/battle_stance,if=debuff.rend.down
-actions.berserker_stance+=/shattering_throw
-actions.berserker_stance+=/blood_fury,if=target.health.pct<20
-actions.berserker_stance+=/inner_rage,if=rage>50
-actions.berserker_stance+=/deadly_calm,if=rage<30
-actions.berserker_stance+=/recklessness
-actions.berserker_stance+=/heroic_strike,if=buff.battle_trance.up&buff.deadly_calm.up|rage>60
-actions.berserker_stance+=/execute,if=target.health.pct<20
-actions.berserker_stance+=/slam,if=rage>90
-actions.berserker_stance+=/battle_shout,if=rage<30
-actions.berserker_stance+=/commanding_shout,if=rage<30
-actions.berserker_stance+=/battle_stance,if=buff.taste_for_blood.up&time>4
+actions.st+=/battle_stance,use_off_gcd=1,if=!dot.rend.ticking
+actions.st+=/mortal_strike,if=target.health_pct<=20&(dot.rend.remains<3|buff.wrecking_crew.down|rage<=25|rage>=35)
+actions.st+=/overpower,if=buff.taste_for_blood.up|buff.overpower.up
+actions.st+=/colossus_smash,if=buff.colossus_smash.remains<=1.5
+actions.st+=/colossus_smash,if=buff.taste_for_blood.up
+actions.st+=/mortal_strike,if=target.health.pct>20
+actions.st+=/berserker_stance,use_off_gcd=1,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75
 
-actions.battle_stance+=/rend,if=debuff.rend.down
-actions.battle_stance+=/overpower,if=buff.taste_for_blood.up&target.health.pct>20
-actions.battle_stance+=/colossus_smash,if=debuff.colossus_smash.down
-actions.battle_stance+=/colossus_smash,if=buff.taste_for_blood.up
-actions.battle_stance+=/mortal_strike,if=target.health.pct>20
-actions.battle_stance+=/berserker_stance,if=buff.taste_for_blood.down
+actions.st+=/battle_stance,use_off_gcd=1,if=(buff.taste_for_blood.up|buff.overpower.up)&rage<=75&cooldown.mortal_strike.remains>=1.5
+actions.st+=/shattering_throw
+actions.st+=/blood_fury,if=target.health.pct<20
+actions.st+=/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
+actions.st+=/deadly_calm,if=rage<30
+actions.st+=/recklessness,use_off_gcd=1,if=target.health_pct>90|target.health_pct<=20
+actions.st+=/heroic_strike,use_off_gcd=1,if=buff.deadly_calm.up
+actions.st+=/heroic_strike,use_off_gcd=1,if=rage>85
+actions.st+=/heroic_strike,use_off_gcd=1,if=buff.inner_rage.up&target.health_pct>20&(rage>=60|(set_bonus.tier13_2pc_melee&rage>=50))
+actions.st+=/heroic_strike,use_off_gcd=1,if=buff.inner_rage.up&target.health_pct<=20&((rage>=60|(set_bonus.tier13_2pc_melee&rage>=50))|buff.battle_trance.up)
+actions.st+=/execute,if=target.health.pct<20
+actions.st+=/slam,if=(rage>=35|buff.battle_trance.up|buff.deadly_calm.up)
+actions.st+=/battle_shout,if=rage<30
+actions.st+=/commanding_shout,if=rage<30
 
 actions.aoe+=/sweeping_strikes,if=active_enemies=2
 actions.aoe+=/run_action_list,name=st,if=active_enemies=2
