@@ -1372,7 +1372,7 @@ end
         copy = { 2070, 6770, 11297, 51724 },
     },
 
-    smoke_omb = {
+    smoke_bomb = {
         id = 76577,
         cast = 0,
         cooldown = 180,
