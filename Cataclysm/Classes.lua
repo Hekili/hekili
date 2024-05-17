@@ -44,15 +44,14 @@ function ns.updateTalents()
 
     local spec = state.spec.id or select( 3, UnitClass( "player" ) )
     -- Swap priorities if needed.
-    local main, tabs = 0, {}
+    local main, tabs = GetPrimaryTalentTree(), {}
 
     for i = 1, 3 do
-        local id, _, _, _, tab, _, _, isMain = GetTalentTabInfo( i )
+        local id, _, _, _, tab = GetTalentTabInfo( i )
 
-        tabs[i] = tab
+        tabs[ i ] = tab
 
-        if isMain then
-            main = i
+        if i == main then
             state.spec[ getSpecializationKey( id ) ] = true
         else
             state.spec[ getSpecializationKey( id ) ] = nil
