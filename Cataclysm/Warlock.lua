@@ -90,7 +90,7 @@ spec:RegisterTalents( {
     ruin = { 967, 5, 17959, 59738, 59739, 59740, 59741 },
     shadow_and_flame = { 10936, 3, 17793, 17796, 17801 },
     shadow_embrace = { 11124, 3, 32385, 32387, 32392 },
-    shadow_mastery = { 6558, 5, 18271, 18272, 18273, 18274, 18275 }, --TODO: this is wrong
+    shadow_mastery = { 6558, 5, 18271, 18272, 18273, 18274, 18275 }, --does not exists anymore?
     shadowburn = { 10948, 1, 17877 },
     shadowfury = { 10980, 1, 30283 },
     siphon_life = { 11420, 2, 63108, 86667 },
@@ -865,7 +865,7 @@ spec:RegisterAbilities( {
     conflagrate = {
         id = 17962,
         cast = 0,
-        cooldown = 10 - glyph.conflagrate.enabled and 2 or 0,
+        cooldown = function() return 10 - glyph.conflagrate.enabled and 2 or 0 end,
         gcd = "spell",
 
         spend = function() return mod_cataclysm( 0.16 ) end, 
