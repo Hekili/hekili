@@ -1328,16 +1328,26 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
 
-        handler = function ()
-            local comboPoints = GetComboPoints("player", "target")
-            if comboPoints > 0 then
-            for i = 1, comboPoints do
-                ComboPointUnit("target", i)
-            end
-            
-          end
-        
-        end,
+function castSpell(spellId, target)
+    -- If we have a current target and it's not the same as the new target
+    if currentTarget and currentTarget ~= target then
+        -- Transfer combo points to new target
+        applyComboPoints(target, comboPoints)
+        -- Reset combo points on old target
+        comboPoints = 0
+    end
+
+    -- Cast the spell
+    -- ...
+
+    -- Update current target
+    currentTarget = target
+end
+
+function applyComboPoints(target, points)
+    -- Apply points to target
+    -- ...
+end
     },
 
     -- Incapacitates the target for up to 45 sec.  Must be stealthed.  Only works on Humanoids that are not in combat.  Any damage caused will revive the target.  Only 1 target may be sapped at a time.
@@ -1362,16 +1372,12 @@ spec:RegisterAbilities( {
         copy = { 2070, 6770, 11297, 51724 },
     },
 
-    smokeBomb = {
+    smoke_omb = {
         id = 76577,
         cast = 0,
         cooldown = 180,
         radius = 8,
         duration = 5,
-        handler = function ()
-            local smokeCloud = CreateSmokeCloud(8, 5) -- Create a smoke cloud with a radius of 8 yards that lasts for 5 seconds
-            smokeCloud:SetPreventTargeting(true) -- Prevent enemies from targeting into or out of the smoke cloud
-        end,
     
     },
     -- Enter the Shadow Dance for 6 sec, allowing the use of Sap, Garrote, Ambush, Cheap Shot, Premeditation, Pickpocket and Disarm Trap regardless of being stealthed.
@@ -1429,8 +1435,7 @@ spec:RegisterAbilities( {
         texture = 135428,
 
         handler = function ()
-            dispelEnrageEffectsOnTarget()
-            gain( 1, "combo_points" )
+           removeDebuff( "target", "dispellable_enrage" )
         end,
     },
 
@@ -1443,10 +1448,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
 
         spend = function()
-            if talent.improved_sinister_strike.rank == 2 then return 39 end
-            if talent.improved_sinister_strike.rank == 2 then return 41 end
-            if talent.improved_sinister_strike.rank == 1 then return 43 end
-            return 45
+return 45 - ( 3 * talent.improved_sinister_strike.rank )
         end,
         spendType = "energy",
 
@@ -1620,24 +1622,27 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Assassination (wowtbc.gg)", 20230126, [[Hekili:TAvBVTTnq4FmfiVG1i)wR3wwsa6(Yqcg8aQsr)WqLiTeTeHPi1iPIRbc4V9DhLSLKR0YA2qacK5D85EUJhFognl6XOWuQLfTA(05lMoB(YG5tF)YflIcT7lzrHL0KT0m4djTa()hmgQXWLulxjDKl2P2zxNeKLDj66EHIMIqAuv6eW9CRT0C9KjhDd(Yk2ojraOCvwfpLzMq7I5vAvwfBsu46kUWEVmADhcoF20zlb0lzjrREhappnLv7cZKef(yo34iLAUsZT7De8xRPgwQJuvI81MZCKJKXr(SMAZDeprcGmqR2WfaVFZBCKts1pI8Y9aAz2sh5psSQ1mTJG0Y9G7bAc6NjOuZsufRP2F42jwnpzRjwTjgcCSvttzVLV52mTQQC4DuQ8rBqBglJka6oOXmQwRSE4nkHQdJaJBbA093gbpHftLPXPWh4EwxTztq)Ldsv7K9XHMQzsQGlzX6ktoUr04tSyMKvWzM7M1191ciHJ3iQ069VKVBOsSoTvcEyg25UURRkTvAp1TubtAdYRKzmD8gLoETqPsdaMUwWspZNAFJvm5olL5n2u7As42GC6MowOgeTEf4CkSubtK2HHQNy6TCHOpZoU6Py8evYRRXVU9)VQ5d8JjFIjvfOnSBsfxQ4sRjiLTHNWT3oToojkrAt22F)TgghIVJ4DZ8ZUO5CPXtFM98ZqNGoBFGLxazJkUG(1BoXpnRGYLMl7gTIklxqRVymu4UBAuiubnG7DLy2r1sUmZef(5p8Xv3V63U2rCKhr5dErPsBDe403rohGHwjSN7iA2FvX1OwJrva(rRSQciYWcj5uOHXe4E43H7ooY7b0(K0uvIiHouZxaUExdopaB6piQ5LMQ10k4OWeOF1ardzYWsepbK50C5wgKKiPV3wVjVyrbtMIb0MtHLzqMVVNGPmrubAPGjo01OVgia5kh5p)KHHiXkmF5TGcAopjVR3u5(2O6isfc(xlfyfw0IBk(vJk8HG(locW9MW8yneGe7xqqt7U08orEh0W3jJAG0EWvF1WVKSQauP9hkcLfQN3xCOMpVTSl4gSy9quiCOLR0W5)HzerHEJ(5K1h1WNR8ZnR3DuiQUgf2CPm6xJSqJeAVDLWeitHJgkowByH2w46BerBXOO1xK0rUdQCTiDICnc17ELq1vkhX59VsC61FJaTCuGEbDDh5my4(4QXO5H03X1TuDgZg0yUzwYjhdnRIC8h)Npnhm(TaDQzeXF6LY6t16BZ2E69D6AooXbX)N)Fh)6Pri2ZMok4(zlT7zGjqEaMnkadPq7i36itBjyVbrTbRziGpaJF9B8a0IuBa8Gn(TVHb7gV0cW2lo2a2DqMJ88ZG443mmZVXHhO5ixoCEo(T5HP2D9YZdJgbOS4BFBEm5r9T)dhXZ7Qpw)M2tuix01JMx2EIlJND4lCB3DZ1BFAu)x0F)d]] )
+`
+spec:RegisterPack( "Assassination", 20240517, [[Hekili:1I12UnUnq0VL8IZUOPUYxu2KT2gy7dTnbf5H6SOpuSsIwI2IWsKQKu5cGH(27musru3sYIIIfjXMC4zgEMl8G1BM39EBJiAQ3DZDMV0XD2NMoB5SRCw6Tv)Cg1BBgj8i5a8bojf(9xukIsX4entWlcW9ForqIqCuICziyJ32D5Se9nCVDdd(CW2mAO3DGxIzrr0slPQqVT3hZufb4pKIGkNxei2dFpS0NjmLg2EVqwe870JSe2uVTMfXGGiOWFUZCXOCYUeAK3V4TnuY0ujJ4T9SIG8mWodAqGKWcP(eEKFe8bpneRJE0qr6oHFMGX1QPH5sjLRlcwxe40GxAUMLG3zaPfMaQAJ9eUVyV)ro7bQY2bA4FWLFpjpr)6Hoc1duFkNMYOafSPiWTXbYCUF5N9r2OKt8ltBiRmWv79CuLUmcvVrWTlF)(PTzZPrIh5VjvxV9rw4X28sjb(kEttjj64P25ZdePuus)lh90adkp8mqGqUZ1TiysrGDUTiyfSXcZ6AI8avpnU0tzHAdTVWD4mU77Q2P0Xln4hrnxfzEMoxsNkPPeghJGIG52jiZ2OlU815KDjcrusUsdSsrWPtVCd0SuQVwaCpTeDRI2DuPIkpY4hqp8P)h8qmmmrcn90iOqlKMqLMjiO7UAu3neUi57yyUHk4WiQpPAxF8aLhr1Ac65RFxzRMoDt5sJVPCamrAl4dfjr(ggcDWmN3LhSRh(WlrFDK(cnxTUw8ele8bjI2Dlvoqy4ug0gUQv10SIGp2eNvXUjihVNUUpboUBjPFwnV)sRxRLfpGLrjjTPCcNPInUA8zRVJAOdjIDKeFDmvMc)vrYGAk)Wy8Kg0hFCHDd)Lod1WxZ)d0VVQD)(o4rjLMSZ4YUZyQnktis8L06NePpPLeFsQiNdJsVgUuWZx(CyzCKk(RV)jh23PRDgo1(gdlAQG7Hy1yXVVXFZgF0Xy86a5I1TEwZ(6m(Ocf0PaJVutXcEn8Jp9PmHI2d(2DZlT8JXEFImvilFXltsXtsWh(ml8irYrN4T9V(YFE3n39BFUiOi4(yWlS0mHuxPk5CL(8Iaj9FYzsAurGsKcMqY1IuGOGfGAw(bQAAXT)bJdBDfa0x5Q8mee0GAToNxpe4CWwJJ2lssepcrbcOKa01JujSEUcphdoJgnZwSe2BQRTJlmrzoVL1rrOXGwnYoII(5IBlc(riUBpoPAvR5pvRuhKWxVTu)wMuSNLqlfYLYqfJhq8YSyPdy5gleauY4hPqQbzZB0LhYW9PiWryqsGLPWWLNrSzciV)mg)Hj5rOsikdNkuh3)9xXe)nAAQ6Bxax8ywyST1e(ZnETIsG0p8uctN0GRndv70Fg0IkRDZ9LqaZw)gcAK9sZT88JWerRBufK6AtnSHzjEEk8uSPKjrOHu(nP1vel6iag2eQDZ1Xq162FvCaerJJDk5DVTqB5Ej7iCO2c2LId5yA72sWu)W6FQJ4VlqzFRbbJxW2VUTIZnUV55GQTgWHxja7A)enI6ysf7CquqyNLQu31asZZqTnSEQeAz5yTnRDDNypjy16ft6nvAZc3oivjIabY(0BwVCYWA3wnVdcnQREjUT1qD6u)3(wn3PdiJiG6)aI1DTie9TFZcNjdRWQ71Uh33ObQlPvp8fYft6(auBmQ2yiw)d91hD60GAJEz5r0fTA2h7YjgPknfnRCDMCwNkTQfSK60Ti9v0Pmmz3p5ulYWU(9sN21Vl7x(UQx5BlHixuR6y9SlSLKS(6U()v4)6WP3zS756KDNy1d(o65S8(qxXw0W6Eh26HCeHXKgmz4kZL2dWGXGdob7m7KEPr23(HqETt3t0()rauHH3)c]] )
 
-spec:RegisterPack( "Combat", 20230211, [[Hekili:Dw1Y2TTnq0VfTrBQRI1d300ALfnBI9cVHoztpbeqGdLWrKa8aaAfTbF7DgsjtqgkDS7cjboZCVdMh8k2C2ZSKmHhypT42flVDX85ZMVC5NUBblXFScyjvc5EXw8GwuIF)ft5gHNmFSWiYi4otTvIUyjBQvf(h0SnJZjgAfizpTILStLLbTbcojl55DkxGtFeb(Pug4MC8zPxz0bEHY5r35gBG)vyVQqnJL0yKUdcdG)8ut5aAXMciJ9pSePv5bRsGbG08cKcAOubipFoWNh4tB5p2X9b(Y2WnASIkezqAErT1EK5Xc69KGiEYf6utE6EngJJiA5aIu5tyj1vDiCfkjKk0zPz4bcYQMc9SBLgRDWM68w1EiMlm07OqL4OYKwzuAVBMeRaqJdU764aEr5KGLMu9G7PPsUOUW)Ap9mK9k5(b56YTKn155Z6xhZYmh0xRih2x6yBR1e3FWYwU3rnv)oi1BX50)NM0OPAsGxx1SDmwpmWxh4rTrBDLV22K9)4IuI7f2Th7OaxZwfXHidnlkuAi1w72rC9XR3xhGywCVz4w7F(EPQP2B8ftvVCGVbIi2M6QSa0U0GNKTYdx9vX32GCr8GSYCAJnE(D5vfNPW0bERWAn(27iElFbSoYER4085FKLCqy1yT4oRdvzn5QcOvqQu5W9OTbURUQYy9N0G2stuLmWX7VEpGRhbEG)GVfutNOe0zqggXobAgWeFK4wzWlkEsPLf1zKwbOWs3(xHhd8FpW)3V5aIjO09JBc8d7uYDXrl0h7YAGRne5)ScFvs5l64nJorjh6s6FJAQ2ZP55wkqHWFqKMfBAruMpGt6Ok6eL(ZH20nAmPRl3awkXUcJFw4XhkPggzy5aHC0joGQ97mwwY3Xfa63tT9Zto3SxxO(T1FyK1KBu5RBwMcpogI2LMX9DANGyGwwWwYRHH)vcgq8EpfvF59ppFAFd3VCib9u8hHHFbqFTqeXK1Xv2PG6ROn0DNI(nJPCT(oQqFfecG0ZJF(xUeRVKiEmQ30S5k3E01jruc2K6QPx623byGOfbSVg79R6f)Wb6Lu(61CIK4UcMPJQusInS)7p]] )
+spec:RegisterPack( "Combat", 20240517, [[Hekili:1IvxVTTnu0Fl5fNvSmp5VAB6Sdq3lBjyipmNI9WqLeT012ewIuJKkPbiq)239sjzrjlL4IHHIKytE55E55(bpO(t8FWFDmZa(3p1B6CVft(W4jZNoD(m)1MNZa)1zSOdSD4heSu83FwRzAnxWmCPOiK2)5ejlMWrlZvrOn(R3KZtm3k830d4t(O3u02miY)(5(R3ZJJHslbDK)6h2Z1fH0pSIWkNxek3IFpQ0NjCTb3ERuve(7WbEcFS)A7IuqWKa(N7TxmqW2KaX()Q)6if3akoZF9ffH5zODw0WajHhbbmrCqm(bFdgRdE0iz6gzqMKlm6Xr5kfimfHRkc9AWln3WtO7mI0mBavTXwMiqUn4GG)iODDGb)hE53YYtmVEOtq9ieaciLdifCtr4IghOYfbLFoGyJsojOmTrSspxTZ5OAtzeQFJGBt(2TJBZMJJLpjEtQUE7d8OdT5Lsc8v8MbyjM9JDZN7ykLSK(Np4PrguT7zKaXC3IffHJkcDZTfHlXnMzx3Wu7aZ49LEklYyP9zl6pJV4SQDkD8Cl(XG9QOYZm5kyScszCbfbfHtDtq2Tjx8(xNt2KiLXj5AdYkfHV8YXBGHNcbgjY9qj6ofTBaLguh4IDKh(W)dEypomrHn9qmwOfbjGYobHC3hh0D9Hlr(EwMRVcokIoLuDRpEeeXGXWipF9zLTA60TLln(geiyY0wWhjtIdSme5GjENLhCRh(HJrFDKEKMRw3i)gpc9blg6ULohjmAkdzJq3QAAsr47AIZQy3gKd3tx3NGhFrjPFrnVFS1R1YYhPYOKK2uotW17TUA4zRNrn0Ue5gwsGzpOsX)Qzzynvq0E6Kw0hECHBd)796RHVM)7PFFz7(9n4JsAdBJ1LDNXuBuMuMeOG6NeHVzuSawQmxGJsVgVu4ZxbcCzAKk9RV)jhU3PR96p1(gdlAQGpbXQXIFFJ)Mm8OJH41EYfRA9SM71z4rfAStbhFPhtf8g8Na4BzsnCc8T7MN74hR9bmvQuv(IxMcOtYOh(Sl8etjiN4V(V(8FE)T3)BFQiSi8H9Ox4PzsLPsvYLAZLfHk4FY5kiUiultrty5gzksu4cynRyhOhxC3FWf4wFeb6lcDEgbczqTwNlRhcCjAR1rBLjjYNWOGauXq66jqHRNRPZXXZyiZCflr9MMA7esBuMlAzDCmzmQvJTHPHpvCxr4pHXD7XjvR6m)PAL6Ge)6DL63YuYT8eOuixkNumUJWlZHL2rLB8ieqfxCaWudXM3AkpKL7tjGJPGKHld4WLNjS5smV)mf)rj5XKsiGttfQJ7)(luI)wdKQ)6v4fFppAVR1mXZnETIsW0p(uc3K0GRldv70Fb1IQQDZdLqGZw)kbAS7stD88t4erNBufKMAtTSHDjrEk(uSTKjrAWu(TP1veZ6iag3eRDZn7XQ11yt4wf)avYA59JRGhQTGDLCxoL2URem9pU6N7i(7ks23kuW4v8TRAR48MfV55WQTgWXxjq7A)enH6qsf7CqsqyNLQu31asZZqTnSEQezz5yTBwTyXi3jblxnB0jtLUz2IoivjIGaY903SA(O(1UTCAheAuxDmUD1q9YlN(23YPEDazabu)hqSURLG4u7VzM3O(vy19AFc33ObQlPvp8fZfJ6(auBmQ2Opw)hovF0lV0R2OJlpGUOLtExxoXkvPPOz5cVrx0PsRAbhPoDlsFfDk9t2NMCQfz4w)(EV21VZpT8D5jLVTeICvTQJvtUYvsYQR76)xH)RdNtoJBpxNS7iNEWZONZX79DfBrdRo5WopKtimK0Gr9xzo3DagogS3jyx4M0lnY923hYR86EI2)pcqkm8)3]] )
 
+spec:RegisterPack( "Subtlety", 20240517, [[Hekili:LIvZYTTnq4NfFX5qDzLCSCCsJ8mTxATp4dHUtp0jKeKeseJijyXpsvZ4bp7DbaPijeeLD8bNqdS4B)b7UFlC08ONJcZrcC0txp76BMTy(NcMFZ1F8JFokuSVbhf2GY2GwdFuJQG)nuMkkXI96n2xsr5Aa4ujld2mkmvskfpuhL6h17azBWzrpDtuybjphBLeZZIcFUGWvj6FqQKwTQsORGFptqO1QKscxaBVIYuj)jEdPKeaMbJUIuQTSk5kgzJk5B01s4KDwQ6r1Jwe4)0YFjdvwgB)1ynExPDRLKAI48srBW1y2vKvlfi2ASiqqQWXcACobF)SlViNkcyYgHKHHTY2qQxpeuMS(ym5Ib2xG2oaj3IyeuAj2kslKXvisTa(5QTOsjEzgTkLg3qHf5bzsgdxlwU4Yu5QvbviUaZIPRI5TrHazZzudElHNHzWTwSKJNwjx0D0axJ7C(cot2yvIJ7ySBD8fcSKSyqq6wmBFqoD35aDfPopEhgTPgZ5XOMMY9dbDlQMWlGaWlVy(DEbcanohvNHnHLE4T3WGcem4(JRdGIc4kMHYXEKIxsYWXiq75Wh6ed)XlphTHQxWA)2VpOmAz8wcZN6eyuPOWhAmCfoNiqMcfpN04YW5B8SjQkvY9HA7D7BYVkWvugRqx7E8MPqvnxGspfIF9M3rq2M5pwANSNEp7qA4BeVXPlCX4O0ROQWCKJDPZB7wDnYU7v3XvvohesqAqmN0dZotMPBT2b1lA1Aks33fOU)UzELxNS17zJl5U07L)IJT5(K6dqD2Q5ryyZThfS80TW5q95W6dMJn6PFrFxm9nphPRX9uDotx1WKA)c7EbDchi5AKDv))1q5qQddoQ(uCSqaSp8GU0HyReEd83VeyJHETCaVde23gfUdXQ1Gef(3)23E6HN(JVOsujpxaCRKQgkt0sf)bDt5pOsy4)vsy4CvcNwbcHKcAf46WczfO61yEG6rZXxrllP700JGqmeWPVdZG1HyeimK8Mi0IzDrlVVkjvk6KRMA0TSEK055AHHXoqPio(lqHAYpRsoMsrxbBh2OD2b7uhveo3ysCzZaVBTgasgOegPEdgcB6OWdc7H0ywvHRZ1gUOablJn6aWMqzey8dWcZkLWmoWweWszDw2)8xqkbGeUI)9RaxRGKvmuAu9(ET260W1i0KGik7XDymOtP)km4eRtnpBHqLm)7AqZhU01d08osz5apQfsrNOMOHzPAzvk2ErxcJ8OE8bt6GEHBCMwd2mk08LEorB)x4RNmZDALeg084wqrH4ADEEE0VhjGKsT49ReMbojCRGGV8KqRswQsw0J)4(QA8(OdEwg4U)3HjUhOwXe65xhy)T8Yo28IHImQxMJG3ocRdnpDK6tdLY2wZrI7ExbPwklnqFEOQ6Bh5OU5ZEJ67Rq6rpUDn0mqn)ncL20vjxQBk4N3CQl)5)iztNuBYMbXWd8WGEe6h2Scjlfhs4hOZUJ4(sdB1sS9Xw6gRtN(F8druj3RsMzm3lGUHh)KKxPUBRv9uS0NXuFYtZf2iGXd84(uiQbKu9G1rzQ)cMC)1Dv49zogSAnd35W8fmF3MceMp5GFdnMXdd4lYEEtzQxjnYXpEIWdTTE7k8WmxQKxEPRmy8CxdvUNjSSzdCV5c9zZteg90M60vf)iDfCVl8zvEcQ(R9hZpmy47P4iopn4TN0ghptUPhWDZCzvSxwhitMi05mtTol)K90x4L8As(OxFsLF(ZooQPVU8Lg6YGonpM)r)9Ynonl2jEqqps9R3ZqDetPd)7PZyVOBkm3NnCst3TXqpwN6PetKuC)Yrm9dFCITpqJziZuKUDGzb4PcfWMD)n8mlg9)]])
+`
 
-spec:RegisterPackSelector( "assassination", "Assassination (wowtbc.gg)", "|T132292:0|t Assassination",
+spec:RegisterPackSelector( "|T132292:0|t Assassination",
     "If you have spent more points in |T132292:0|t Assassination than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
-spec:RegisterPackSelector( "combat", "Combat", "|T132090:0|t Combat",
+spec:RegisterPackSelector( "|T132090:0|t Combat",
     "If you have spent more points in |T132090:0|t Combat than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
-spec:RegisterPackSelector( "subtlety", nil, "|T132320:0|t Subtlety",
+spec:RegisterPackSelector( "|T132320:0|t Subtlety",
     "If you have spent more points in |T132320:0|t Subtlety than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
