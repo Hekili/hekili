@@ -2138,8 +2138,6 @@ spec:RegisterAbilities( {
         end
     },
 
-    },
-}
 } )
 
 spec:RegisterStateTable( "assigned_shout", setmetatable( {}, {
