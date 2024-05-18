@@ -3,13 +3,15 @@ if UnitClassBase( 'player' ) ~= 'WARRIOR' then return end
 local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
-local FindUnitDebuffByID = ns.FindUnitDebuffByID
+local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 
 local IsCurrentSpell = _G.IsCurrentSpell
+local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 1 )
 
 
+-- TODO: Revisit Rage Generation for Cataclysm.
 local function rage_amount( isOffhand )
     local d
     if isOffhand then d = select( 3, UnitDamage( "player" ) ) * 0.7
@@ -19,7 +21,7 @@ local function rage_amount( isOffhand )
     local f = isOffhand and 1.75 or 3.5
     local s = isOffhand and ( select( 2, UnitAttackSpeed( "player" ) ) or 2.5 ) or UnitAttackSpeed( "player" )
 
-    return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) * ( state.buff.defensive_stance.up and 0.95 or 1 )
+    return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) -- * ( state.buff.defensive_stance.up and 0.95 or 1 )
 end
 
 
@@ -37,8 +39,6 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         interval = 3,
         value = 1
     },
-
-
 
     second_wind = {
         aura = "second_wind",
@@ -93,76 +93,76 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
 -- Talents
 spec:RegisterTalents( {
-    anger_management = {137, 1, 12296},
-    bastion_of_defense = {1652, 2, 29593, 29594},
-    battle_trance = {159, 3, 12322, 85741, 85742},
-    bladestorm = {1863, 1, 46924},
-    blitz = {6091, 2, 80976, 80977},
-    blood_and_thunder = {10480, 2, 84614, 84615},
-    blood_craze = {661, 3, 16489, 16487, 16492},
-    blood_frenzy = {1664, 2, 29859, 29836},
-    bloodsurge = {1866, 3, 46913, 46914, 46915},
-    bloodthirst = {167, 1, 23881},
-    booming_voice = {158, 2, 12321, 12835},
-    concussion_blow = {1, 12809},
-    cruelty = {152, 2, 12852, 12320},
-    deadly_calm = {11223, 1, 85730},
-    death_wish = {165, 1, 12292},
-    deep_wounds = {121, 3, 12834, 12867, 12849},
-    devastate = {1666, 1, 20243},
-    die_by_the_sword = {6022, 2, 81913, 81914},
-    drums_of_war = {131, 2, 12963, 12290},
-    dual_wield_specialization = {1581, 1, 23588},
-    enrage = {155, 3, 12317, 13045, 13046},
-    executioner = {1542, 2, 20502, 20503},
-    field_dressing = {11163, 2, 84580, 84579},
-    flurry = {156, 3, 12971, 12319, 12972},
-    furious_attacks = {1865, 1, 46910},
-    gag_order = {149, 2, 12958, 12311},
-    heavy_repercussions = {10484, 2, 86894, 86896},
-    heroic_fury = {1868, 1, 60970},
-    hold_the_line = {11170, 2, 84604, 84621},
-    impale = {662, 2, 16493, 16494},
-    impending_victory = {5976, 2, 80129, 80128},
-    improved_hamstring = {129, 2, 12289, 12668},
-    improved_revenge = {147, 2, 12799, 12797},
-    improved_slam = {2233, 2, 12330, 86655},
-    incite = {144, 3, 50685, 50687, 50686},
-    intensify_rage = {1864, 2, 46909, 46908},
-    juggernaut = {2283,1, 64976},
-    lambs_to_the_slaughter = {10520, 3, 84583, 84587, 84588},
-    last_stand = {153, 1, 12975},
-    meat_cleaver = {166, 2, 12329, 12950},
-    mortal_strike = {135, 1, 12294},
-    piercing_howl = {160, 1, 12323},
-    precision = {1657, 1, 29592},
-    raging_blow = {11208, 1, 85288},
-    rampage = {1659, 1, 29801},
-    rude_interruption = {2250, 2, 61216, 61221},
-    safeguard = {1870, 2, 46949, 46945},
-    second_wind = {1663, 2, 29838, 29834},
-    sentinel = {1653, 1, 29144},
-    shield_mastery = {10472, 3, 84608, 29598, 84607},
-    shield_slam = {10456, 1, 23922},
-    shield_specialization = {1601, 3, 12724, 12725, 12298},
-    shockwave = {1872, 1, 46968},
-    single_minded_fury = {6012, 1, 81099},
-    skirmisher = {1543, 2, 29888, 29889},
-    sudden_death = {1662, 2, 29723, 29725},
-    sweep_and_clear = {6149, 1, 80981},
-    sweeping_strikes = {133, 1, 12328},
-    sword_and_board = {1871, 3, 46952, 46951, 46953},
-    tactical_mastery = {128, 2, 12676, 12295},
-    taste_for_blood = {2232, 3, 56636, 56638, 56637},
-    throwdown = {11167, 1, 85388},
-    thunderstruck = {6149, 2, 80979, 80980},
-    titan_grip = {1867, 1, 46917},
-    toughness = {140, 3, 12761, 12762, 12299},
-    two_handed_weapon_specialization = {136, 1, 12712},
-    vigilance = {148, 1, 50720},
-    war_academy = {10134, 84571, 84572, 84570},
-    warbringer = {2236, 1, 57499},
-    wrecking_crew = {2231, 3, 46867, 56611, 56612}
+    anger_management                 = { 137  , 1    , 12296               },
+    bastion_of_defense               = { 1652 , 2    , 29593, 29594        },
+    battle_trance                    = { 159  , 3    , 12322, 85741, 85742 },
+    bladestorm                       = { 1863 , 1    , 46924               },
+    blitz                            = { 6091 , 2    , 80976, 80977        },
+    blood_and_thunder                = { 10480, 2    , 84614, 84615        },
+    blood_craze                      = { 661  , 3    , 16489, 16487, 16492 },
+    blood_frenzy                     = { 1664 , 2    , 29859, 29836        },
+    bloodsurge                       = { 1866 , 3    , 46913, 46914, 46915 },
+    bloodthirst                      = { 167  , 1    , 23881               },
+    booming_voice                    = { 158  , 2    , 12321, 12835        },
+    concussion_blow                  = { 1    , 12809                      },
+    cruelty                          = { 152  , 2    , 12852, 12320        },
+    deadly_calm                      = { 11223, 1    , 85730               },
+    death_wish                       = { 165  , 1    , 12292               },
+    deep_wounds                      = { 121  , 3    , 12834, 12867, 12849 },
+    devastate                        = { 1666 , 1    , 20243               },
+    die_by_the_sword                 = { 6022 , 2    , 81913, 81914        },
+    drums_of_war                     = { 131  , 2    , 12963, 12290        },
+    dual_wield_specialization        = { 1581 , 1    , 23588               },
+    enrage                           = { 155  , 3    , 12317, 13045, 13046 },
+    executioner                      = { 1542 , 2    , 20502, 20503        },
+    field_dressing                   = { 11163, 2    , 84580, 84579        },
+    flurry                           = { 156  , 3    , 12971, 12319, 12972 },
+    furious_attacks                  = { 1865 , 1    , 46910               },
+    gag_order                        = { 149  , 2    , 12958, 12311        },
+    heavy_repercussions              = { 10484, 2    , 86894, 86896        },
+    heroic_fury                      = { 1868 , 1    , 60970               },
+    hold_the_line                    = { 11170, 2    , 84604, 84621        },
+    impale                           = { 662  , 2    , 16493, 16494        },
+    impending_victory                = { 5976 , 2    , 80129, 80128        },
+    improved_hamstring               = { 129  , 2    , 12289, 12668        },
+    improved_revenge                 = { 147  , 2    , 12799, 12797        },
+    improved_slam                    = { 2233 , 2    , 12330, 86655        },
+    incite                           = { 144  , 3    , 50685, 50687, 50686 },
+    intensify_rage                   = { 1864 , 2    , 46909, 46908        },
+    juggernaut                       = { 2283 , 1    , 64976               },
+    lambs_to_the_slaughter           = { 10520, 3    , 84583, 84587, 84588 },
+    last_stand                       = { 153  , 1    , 12975               },
+    meat_cleaver                     = { 166  , 2    , 12329, 12950        },
+    mortal_strike                    = { 135  , 1    , 12294               },
+    piercing_howl                    = { 160  , 1    , 12323               },
+    precision                        = { 1657 , 1    , 29592               },
+    raging_blow                      = { 11208, 1    , 85288               },
+    rampage                          = { 1659 , 1    , 29801               },
+    rude_interruption                = { 2250 , 2    , 61216, 61221        },
+    safeguard                        = { 1870 , 2    , 46949, 46945        },
+    second_wind                      = { 1663 , 2    , 29838, 29834        },
+    sentinel                         = { 1653 , 1    , 29144               },
+    shield_mastery                   = { 10472, 3    , 84608, 29598, 84607 },
+    shield_slam                      = { 10456, 1    , 23922               },
+    shield_specialization            = { 1601 , 3    , 12724, 12725, 12298 },
+    shockwave                        = { 1872 , 1    , 46968               },
+    single_minded_fury               = { 6012 , 1    , 81099               },
+    skirmisher                       = { 1543 , 2    , 29888, 29889        },
+    sudden_death                     = { 1662 , 2    , 29723, 29725        },
+    sweep_and_clear                  = { 6149 , 1    , 80981               },
+    sweeping_strikes                 = { 133  , 1    , 12328               },
+    sword_and_board                  = { 1871 , 3    , 46952, 46951, 46953 },
+    tactical_mastery                 = { 128  , 2    , 12676, 12295        },
+    taste_for_blood                  = { 2232 , 3    , 56636, 56638, 56637 },
+    throwdown                        = { 11167, 1    , 85388               },
+    thunderstruck                    = { 6149 , 2    , 80979, 80980        },
+    titan_grip                       = { 1867 , 1    , 46917               },
+    toughness                        = { 140  , 3    , 12761, 12762, 12299 },
+    two_handed_weapon_specialization = { 136  , 1    , 12712               },
+    vigilance                        = { 148  , 1    , 50720               },
+    war_academy                      = { 10134, 84571, 84572, 84570        },
+    warbringer                       = { 2236 , 1    , 57499               },
+    wrecking_crew                    = { 2231 , 3    , 46867, 56611, 56612 }
 } )
 
 
@@ -254,10 +254,6 @@ spec:RegisterAuras( {
         duration = 1.5,
         max_stack = 1,
     },
-    cleave = {
-        duration = function () return swings.mainhand_speed end,
-        max_stack = 1,
-    },
     my_commanding_shout = {
         duration = function() return 120 * ( 1 + talent.booming_voice.rank * 0.25 ) end,
         max_stack = 1,
@@ -331,7 +327,7 @@ spec:RegisterAuras( {
     },
     -- Physical damage increased by $s1%.
     enrage = {
-        id = 57522,
+        id = 12880,
         duration = 12,
         max_stack = 1,
         copy = { 12880, 14201, 14202, 14203, 14204, 57514, 57516, 57518, 57519, 57520, 57521, 57522 },
@@ -362,21 +358,10 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 2,
     },
-    -- Glyph.
-    glyph_of_revenge = {
-        id = 58363,
-        duration = 10,
-        max_stack = 1,
-    },
     -- Movement slowed by $s1%.
     hamstring = {
         id = 1715,
         duration = 15,
-        max_stack = 1,
-    },
-    heroic_strike = {
-        id = 78,
-        duration = function () return swings.mainhand_speed end,
         max_stack = 1,
     },
     -- Leap through the air towards a location, slamming down with both weapons to cause $s1 damage.
@@ -486,8 +471,8 @@ spec:RegisterAuras( {
     -- Counterattacking all melee attacks.
     retaliation = {
         id = 20230,
-        duration = function() return 15 end,
-        max_stack = 1,
+        duration = 12,
+        max_stack = 20,
     },
     revenge_stun = {
         id = 12798,
@@ -519,9 +504,7 @@ spec:RegisterAuras( {
     -- All damage taken reduced by $s1%.
     shield_wall = {
         id = 871,
-        duration = function() 
-            return 10 + (talent.improved_shield_wall.rank == 3 and 180 or talent.improved_shield_wall.rank == 2 and 120 or talent.improved_shield_wall.rank == 1 and 60 or 0) 
-        end,
+        duration = function() return 12 + ( set_bonus.tier11_4pc > 0 and 6 or 0 ) end,
         max_stack = 1,
     },
     -- Stunned.
@@ -543,6 +526,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = "bloodsurge"
     },
+    spell_block = {
+        id = 29598,
+        duration = 6,
+        max_stack = 1,
+    },
     -- Reflects the next spell cast on you.
     spell_reflection = {
         id = 23920,
@@ -558,8 +546,8 @@ spec:RegisterAuras( {
     -- Your next $n melee attacks strike an additional nearby opponent.
     sweeping_strikes = {
         id = 12328,
-        duration = 30,
-        max_stack = 5,
+        duration = 10,
+        max_stack = 1,
     },
     -- Shield Slam rage cost reduced by $s1%.
     sword_and_board = {
@@ -590,6 +578,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         shared = "target",
         copy = { 6343, 8198, 8204, 8205, 11580, 11581, 13532, 25264, 47501, 47502 },
+    },
+    thunderstruck = {
+        id = 87096,
+        duration = 20,
+        max_stack = 3
     },
     -- Bleed effects cause an additional $s1% damage.
     trauma = {
@@ -635,43 +628,43 @@ spec:RegisterAuras( {
 
 -- Glyphs
 spec:RegisterGlyphs( {
-    [58095] = battle,
-    [58096] = berserker_rage,
-    [63324] = bladestorm,
-    [58367] = bloodthirst,
-    [58369] = bloody_healing,
-    [58366] = cleaving,
-    [89003] = colossus_smash,
-    [68164] = command,
-    [94374] = death_wish,
-    [58099] = demoralizing_shout,
-    [58388] = devastate,
-    [58104] = enduring_victory,
-    [63326] = furious_sundering,
-    [58357] = heroic_throw,
-    [94372] = intercept,
-    [58377] = intervene,
-    [63327] = intimidating_shout,
-    [58097] = long_charge,
-    [58368] = mortal_strike,
-    [58386] = overpower,
-    [58372] = piercing_howl,
-    [58370] = raging_blow,
-    [58355] = rapid_charge,
-    [58356] = resonating_power,
-    [58364] = revenge,
-    [58375] = shield_slam,
-    [63329] = shield_wall,
-    [63325] = shockwave,
-    [58385] = slam,
-    [63328] = spell_reflection,
-    [58387] = sunder_armor,
-    [58384] = sweeping_strikes,
-    [58098] = thunder_clap,
-    [58382] = victory_rush,
-    [12297] = anticipation,
-    [12320] = cruelty,
-    [58365] = barbaric_insults,
+    [58095] = "battle",
+    [58096] = "berserker_rage",
+    [63324] = "bladestorm",
+    [58367] = "bloodthirst",
+    [58369] = "bloody_healing",
+    [58366] = "cleaving",
+    [89003] = "colossus_smash",
+    [68164] = "command",
+    [94374] = "death_wish",
+    [58099] = "demoralizing_shout",
+    [58388] = "devastate",
+    [58104] = "enduring_victory",
+    [63326] = "furious_sundering",
+    [58357] = "heroic_throw",
+    [94372] = "intercept",
+    [58377] = "intervene",
+    [63327] = "intimidating_shout",
+    [58097] = "long_charge",
+    [58368] = "mortal_strike",
+    [58386] = "overpower",
+    [58372] = "piercing_howl",
+    [58370] = "raging_blow",
+    [58355] = "rapid_charge",
+    [58356] = "resonating_power",
+    [58364] = "revenge",
+    [58375] = "shield_slam",
+    [63329] = "shield_wall",
+    [63325] = "shockwave",
+    [58385] = "slam",
+    [63328] = "spell_reflection",
+    [58387] = "sunder_armor",
+    [58384] = "sweeping_strikes",
+    [58098] = "thunder_clap",
+    [58382] = "victory_rush",
+    [12297] = "anticipation",
+    [12320] = "cruelty",
+    [58365] = "barbaric_insults",
 } )
 
 
@@ -738,83 +731,87 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
     end
 
     if sourceGUID == state.GUID then
-        local is_rend = state.class.auras[actionType] and state.class.auras[actionType].id == 47465
-        if attack_events[subtype] then
+        local is_rend = state.class.auras[ actionType ] and state.class.auras[ actionType ].id == 47465
+        if attack_events[ subtype ] then
         end
 
-        if application_events[subtype] then
+        if application_events[ subtype ] then
 
             if is_rend then
-                ApplyRend(destGUID, GetTime())
+                ApplyRend( destGUID, GetTime() )
             end
             if actionType == 60503 then
-                ApplyTFB(GetTime())
+                ApplyTFB( GetTime() )
             end
         end
 
-        if tick_events[subtype] then
+        if tick_events[ subtype ] then
         end
 
-        if removal_events[subtype] then
+        if removal_events[ subtype ] then
             if is_rend then
-                RemoveRend(destGUID)
+                RemoveRend( destGUID )
             end
         end
 
-        if death_events[subtype] then
+        if death_events[ subtype ] then
             if is_rend then
-                RemoveRend(destGUID)
+                RemoveRend( destGUID )
             end
         end
     end
 end )
 
-function ApplyRend(destGUID, time)
-    if not rend_tracker.target[destGUID] then
-        rend_tracker.target[destGUID] = {
+function ApplyRend( destGUID, time )
+    if not rend_tracker.target[ destGUID ] then
+        rend_tracker.target[ destGUID ] = {
             ticks = {}
         }
     else
-        RemoveRend(destGUID)
+        RemoveRend( destGUID )
     end
-    for i=time+3,time+state.debuff.rend.duration,state.debuff.rend.tick_time do
-        rend_tracker.target[destGUID].ticks[tostring(i)] = i
+    for i = time + 3, time + state.debuff.rend.duration, state.debuff.rend.tick_time do
+        rend_tracker.target[ destGUID ].ticks[ tostring(i) ] = i
     end
     AssessNextTFB()
 end
-function RemoveRend(destGUID, time)
-    if not rend_tracker.target[destGUID] then
+
+function RemoveRend( destGUID, time )
+    if not rend_tracker.target[ destGUID ] then
         return
     end
     if not time then
-        table.wipe(rend_tracker.target[destGUID].ticks)
+        table.wipe( rend_tracker.target[ destGUID ].ticks )
     else
         time = time - 3
-        for i,v in pairs(rend_tracker.target[destGUID].ticks) do
+        for i, v in pairs( rend_tracker.target[ destGUID ].ticks ) do
             if v <= time then
-                rend_tracker.target[destGUID].ticks[i] = nil
+                rend_tracker.target[ destGUID ].ticks[ i ] = nil
             end
         end
     end
 end
-function ApplyTFB(time)
+
+function ApplyTFB( time )
     rend_tracker.tfb.lastApplied = time
     AssessNextTFB()
 end
+
 function AssessNextTFB()
-    rend_tracker.tfb.next = GetNextTFB(GetTime(), rend_tracker.tfb.lastApplied)
+    rend_tracker.tfb.next = GetNextTFB( GetTime(), rend_tracker.tfb.lastApplied )
 end
-function GetNextTFB(time, lastApplied)
+
+function GetNextTFB( time, lastApplied )
     if not time then
         return
     end
 
-    local next_possible_tfb = ((lastApplied or 0) == 0 and time) or (lastApplied + 6)
+    local next_possible_tfb = ( (lastApplied or 0 ) == 0 and time ) or ( lastApplied + 6 )
     local next_prediction = 0
-    for i,v in pairs(rend_tracker.target) do
-        for i2,v2 in pairs(rend_tracker.target[i].ticks) do
-            local tick_after_next_possible = tonumber(v2) + rend_tracker.buffer >= tonumber(next_possible_tfb)
-            local lowest_match = next_prediction == 0 or tonumber(v2) <= tonumber(next_prediction)
+    for i, v in pairs( rend_tracker.target ) do
+        for i2, v2 in pairs( v.ticks) do
+            local tick_after_next_possible = tonumber(v2) + rend_tracker.buffer >= tonumber( next_possible_tfb )
+            local lowest_match = next_prediction == 0 or tonumber( v2 ) <= tonumber( next_prediction )
             if tick_after_next_possible and lowest_match then
                 next_prediction = v2
             end
@@ -824,18 +821,17 @@ function GetNextTFB(time, lastApplied)
     return next_prediction
 end
 
-local avg_rage_amount = rage_amount()+rage_amount(true)
-spec:RegisterStateExpr("rage_gain", function()
-    return avg_rage_amount
-end)
+spec:RegisterStateExpr( "rage_gain", function()
+    return rage_amount() + rage_amount( true )
+end )
 
-spec:RegisterStateExpr("rend_tracker", function()
+spec:RegisterStateExpr( "rend_tracker", function()
     return rend_tracker
-end)
+end )
 
-spec:RegisterStateExpr("next_tfb", function()
+spec:RegisterStateExpr( "next_tfb", function()
     return rend_tracker.tfb.next
-end)
+end )
 
 
 spec:RegisterStateFunction( "swap_stance", function( stance )
@@ -853,44 +849,31 @@ spec:RegisterStateFunction( "swap_stance", function( stance )
 end )
 
 
-local finish_heroic_strike = setfenv( function()
-    spend( 30, "rage" )
-end, state )
-
-spec:RegisterStateFunction( "start_heroic_strike", function()
-    applyBuff( "heroic_strike", swings.time_to_next_mainhand )
-    state:QueueAuraExpiration( "heroic_strike", finish_heroic_strike, buff.heroic_strike.expires )
-end )
-
-
-local finish_cleave = setfenv( function()
-    spend( 20, "rage" )
-end, state )
-
-spec:RegisterStateFunction( "start_cleave", function()
-    applyBuff( "cleave", swings.time_to_next_mainhand )
-    state:QueueAuraExpiration( "cleave", finish_cleave, buff.cleave.expires )
-end )
-
-
 local apply_tfb = setfenv( function()
-    applyBuff("taste_for_blood")
+    applyBuff( "taste_for_blood" )
 end, state )
 
-spec:RegisterStateFunction( "start_tfb_prediction", function(time_to_tfb)
-    applyBuff("taste_for_blood_prediction", time_to_tfb)
+spec:RegisterStateFunction( "start_tfb_prediction", function( time_to_tfb )
+    applyBuff( "taste_for_blood_prediction", time_to_tfb )
     state:QueueAuraExpiration( "taste_for_blood_prediction", apply_tfb, buff.taste_for_blood_prediction.expires )
 end )
 
 
 local shout_spell_assigned = false
 local main_gcd_spell_assigned = false
+
+local start_tfb_prediction = setfenv( function( time_to_tfb )
+    applyBuff( "taste_for_blood_prediction", time_to_tfb )
+    state:QueueAuraExpiration( "taste_for_blood_prediction", apply_tfb, buff.taste_for_blood_prediction.expires )
+end, state )
+
 spec:RegisterHook( "reset_precast", function()
     if not main_gcd_spell_assigned then
         class.abilityList.main_gcd_spell = "|cff00ccff[Main GCD]|r"
         class.abilities.main_gcd_spell = class.abilities[ settings.main_gcd_spell or "slam" ]
         main_gcd_spell_assigned = true
     end
+
     if not shout_spell_assigned then
         class.abilityList.shout_spell = "|cff00ccff[Assigned Shout]|r"
         class.abilities.shout_spell = class.abilities[ settings.shout_spell or "commanding_shout" ]
@@ -903,58 +886,40 @@ spec:RegisterHook( "reset_precast", function()
     elseif form == 3 then applyBuff( "berserker_stance" )
     else removeBuff( "stance" ) end
 
-    local last_heroic_strike = 0
-    local last_cleave = 0
-    local shared_GCD = 3
-    
-    if IsCurrentSpell( class.abilities.heroic_strike.id ) and (GetTime() - last_heroic_strike >= shared_GCD) then
-        start_heroic_strike()
-        Hekili:Debug( "Starting Heroic Strike, next available in %.2f...", shared_GCD )
-        last_heroic_strike = GetTime()
-    end
-    
-    if IsCurrentSpell( class.abilities.cleave.id ) and (GetTime() - last_cleave >= shared_GCD) then
-        start_cleave()
-        Hekili:Debug( "Starting Cleave, next available in %.2f...", shared_GCD )
-        last_cleave = GetTime()
-    end
-
-    local rend_tracker = {
+    rend_tracker = {
         tfb = {
             next = 0,
         },
     }
 
-    local function start_tfb_prediction(time_to_tfb)
-        applyBuff("taste_for_blood_prediction", time_to_tfb)
-        state:QueueAuraExpiration( "taste_for_blood_prediction", apply_tfb, buff.taste_for_blood_prediction.expires )
+    if IsUsableSpell( class.abilities.overpower.id ) then
+        if enemy_dodged > 0 and now - enemy_dodged < 6 then
+            applyBuff( "overpower_ready", enemy_dodged + 5 - now )
+        else
+            applyBuff( "overpower_ready" )
+        end
+    end
+    if IsUsableSpell( class.abilities.revenge.id ) then
+        if enemy_revenge_trigger > 0 and now - enemy_revenge_trigger < 5 then
+            applyBuff( "revenge_usable", enemy_revenge_trigger + 5 - now )
+        else
+            applyBuff( "revenge_usable" )
+        end
+    end
+    if IsUsableSpell( class.abilities.victory_rush.id ) then
+        applyBuff( "victory_rush" )
     end
 
-    if now == query_time then
-        if IsUsableSpell( class.abilities.overpower.id ) then
-            if enemy_dodged > 0 and now - enemy_dodged < 6 then
-                applyBuff( "overpower", enemy_dodged + 5 - now )
-            else
-                applyBuff( "overpower" )
-            end
+    if settings.predict_tfb and talent.taste_for_blood.rank == 3 and rend_tracker.tfb.next > 0 then
+        local time_to_tfb = max( rend_tracker.tfb.next - now, 0 )
+        if time_to_tfb > 0 then
+            start_tfb_prediction( time_to_tfb )
         end
-        if IsUsableSpell( class.abilities.revenge.id ) then
-            if enemy_revenge_trigger > 0 and now - enemy_revenge_trigger < 5 then
-                applyBuff( "revenge_usable", enemy_revenge_trigger + 5 - now )
-            else
-                applyBuff( "revenge_usable" )
-            end
-        end
-        if IsUsableSpell( class.abilities.victory_rush.id ) then
-            applyBuff( "victory_rush" )
-        end
+    end
 
-        if settings.predict_tfb and talent.taste_for_blood.rank == 3 and rend_tracker.tfb.next > 0 then
-            local time_to_tfb = max(rend_tracker.tfb.next - now, 0)
-            if time_to_tfb > 0 then
-                start_tfb_prediction(time_to_tfb)
-            end
-        end
+    if buff.spell_reflection.up then
+        -- Fake an interrupt so we don't try to waste the reflect.
+        interrupt()
     end
 end)
 
@@ -963,33 +928,23 @@ spec:RegisterAbilities( {
     
     -- The warrior shouts, increasing attack power of all raid and party members within 30 yards by 550.  Lasts 2 min.
     battle_shout = {
-        id = 47436,
+        id = 6673,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return (10 - talent.focused_rage.rank) end,
+        spend = function() return -20 - 5 * talent.booming_voice.rank end,
         spendType = "rage",
 
         startsCombat = false,
         texture = 132333,
 
         usable = function()
-            if talent.commanding_presence.rank < 5 then return not (buff.blessing_of_might.up or buff.greater_blessing_of_might.up) , "BoM might be skilled, can't overbuff" end
-            return (buff.blessing_of_might.remains + buff.greater_blessing_of_might.remains) <= buff.battle_shout.duration, "BoM duration currently greater battle_shout duration"
+            if talent.commanding_presence.rank < 5 then return not ( buff.blessing_of_might.up or buff.greater_blessing_of_might.up ), "BoM might be skilled, can't overbuff" end
+            return ( buff.blessing_of_might.remains + buff.greater_blessing_of_might.remains ) <= buff.battle_shout.duration, "BoM duration currently greater battle_shout duration"
         end,
 
         handler = function( rank )
-            local last_battle_shout = 0
-            local battle_shout_cooldown = 60 -- 1 minute cooldown
-            local rage_generated = 20
-
-            local currentTime = GetTime()
-            if currentTime - last_battle_shout >= battle_shout_cooldown then
-                generate_rage(rage_generated)
-                last_battle_shout = currentTime
-            end
-
             if buff.my_commanding_shout.up then
                 removeBuff( "commanding_shout" )
                 removeBuff( "my_commanding_shout" )
@@ -1018,8 +973,7 @@ spec:RegisterAbilities( {
         texture = 132349,
 
         nobuff = "battle_stance",
-
-        timeToReady = function () return max(cooldown.berserker_stance.remains, cooldown.battle_stance.remains, cooldown.defensive_stance.remains) end,
+        timeToReady = function () return max( cooldown.berserker_stance.remains, cooldown.battle_stance.remains, cooldown.defensive_stance.remains ) end,
 
         handler = function()
             swap_stance( "battle_stance" )
@@ -1034,7 +988,7 @@ spec:RegisterAbilities( {
         cooldown = function() return 30 * ( 1 - 0.11 * talent.intensify_rage.rank ) end,
         gcd = "spell",
 
-        spend = 0,
+        spend = function() return 0 - 10 * talent.improved_berserker_rage.rank end,
         spendType = "rage",
 
         startsCombat = false,
@@ -1044,9 +998,6 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyBuff( "berserker_rage" )
-            if talent.improved_berserker_rage.enabled then
-                gain( 10 * talent.improved_berserker_rage.rank, "rage" )
-            end
         end
     },
 
@@ -1066,7 +1017,7 @@ spec:RegisterAbilities( {
 
         nobuff = "berserker_stance",
 
-        timeToReady = function () return max(cooldown.berserker_stance.remains, cooldown.battle_stance.remains, cooldown.defensive_stance.remains) end,
+        timeToReady = function () return max( cooldown.berserker_stance.remains, cooldown.battle_stance.remains, cooldown.defensive_stance.remains ) end,
 
         handler = function()
             swap_stance( "berserker_stance" )
@@ -1113,7 +1064,6 @@ spec:RegisterAbilities( {
 
         handler = function( rank )
             applyBuff( "bloodthirst", nil, 5 )
-            -- TODO: if glyph.bloodthirst.enabled then [double health gain] end
         end,
     },
 
@@ -1141,195 +1091,323 @@ spec:RegisterAbilities( {
 
     -- Charge an enemy, generate 15 rage, and stun it for 1.50 sec.  Cannot be used in combat.
     charge = {
-        id = 11578,
+        id = 100,
         cast = 0,
-        cooldown = function() return 15 * ( glyph.rapid_charge.enabled and 0.93 or 1 ) end,
+        cooldown = function() return 15 + ( glyph.rapid_charge.enabled and -1 or 0 ) + ( talent.juggernaut.enabled and -2 or 0 ) end,
         gcd = "off",
-        spend = function() return -15 - 5 * talent.improved_charge.rank + ( talent.juggernaut.enabled and 5 or 0 ) end,
+
+        spend = function() return -15 - 5 * talent.blitz.rank end,
         spendType = "rage",
+
         startsCombat = true,
         texture = 132337,
+
         buff = function ()
             if talent.warbringer.enabled then return end
             return "battle_stance"
         end,
         usable = function()
             if talent.juggernaut.enabled then return target.minR > 7, "target must be outside your deadzone" end
-            return (talent.warbringer.enabled or not combat) and target.minR > 7, "cannot be in combat; target must be outside your deadzone"
+            return ( talent.warbringer.enabled or not combat ) and target.minR > 7, "cannot be in combat; target must be outside your deadzone"
         end,
+
         handler = function( rank )
             setDistance( 7 )
             if not target.is_boss then applyDebuff( "target", "charge_stun" ) end
-            applyBuff( "juggernaut" )
+            if talent.juggernaut.enabled then applyBuff( "juggernaut" ) end
         end,
     },
 
-        -- On next attack...
-        cleave = {
-            id = 47520,
-            cast = 0,
-            cooldown = 0,
-            gcd = 3,
+    cleave = {
+        id = 845,
+        cast = 0,
+        cooldown = function() return 3 * ( buff.inner_rage.up and 0.5 or 1 ) end,
+        gcd = "spell",
 
-            spend = function() return 20 - talent.focused_rage.rank end,
-            spendType = "rage",
+        spend = 30,
+        spendType = "rage",
 
-            startsCombat = true,
-            texture = 132338,
+        startsCombat = true,
+        texture = 132338,
 
-            nobuff = "cleave",
-
-            usable = function()
-                local currentTime = GetTime()
-                local effective_GCD = inner_rage_active and shared_GCD / 2 or shared_GCD
-                return (currentTime - last_heroic_strike >= effective_GCD) and (currentTime - last_cleave >= effective_GCD)
-            end,
-           
-            copy = { 845, 7369, 11608, 11609, 20569, 25231 }
-        },
-
-
-        -- Increases maximum health of all party and raid members within 30 yards by 2255.  Lasts 2 min.
-        commanding_shout = {
-            id = 47440,
-            cast = 0,
-            cooldown = 0,
-            gcd = "spell",
-
-            spend = function() return 10 - talent.focused_rage.rank end,
-            spendType = "rage",
-
-            startsCombat = false,
-            texture = 132351,
-
-            handler = function()
-                local last_commanding_shout = 0
-                local commanding_shout_cooldown = 60 -- 1 minute cooldown
-                local rage_generated = 20
-
-                local currentTime = GetTime()
-                if currentTime - last_commanding_shout >= commanding_shout_cooldown then
-                    generate_rage(rage_generated)
-                    last_commanding_shout = currentTime
-                end
+        handler = function()
+            if talent.meat_cleaver.enabled then
+                addStack( "meat_cleaver" )
             end
-        },
+        end,
+
+        copy = { 845, 7369, 11608, 11609, 20569, 25231 }
+    },
 
     -- Smashes the enemy's armor, dealing (181.5% of Attack power) Physical damage, and increasing damage you deal to them by 30% for 10 sec.
     colossus_smash = {
-        id = 167105,
+        id = 86346,
         cast = 0,
         cooldown = 20,
         gcd = "spell",
+
         spend = 30,
         spendType = "rage",
+
         startsCombat = true,
         texture = 451161,
         toggle = "cooldowns",
+
         handler = function()
             applyDebuff( "target", "colossus_smash" )
-            increaseDamageTaken(0.3, 10) -- Increase damage taken by 30% for 10 seconds
+            if glyph.colossus_smash.enabled then
+                applyDebuff( "target", "sunder_armor", nil, min( 5, debuff.sunder_armor.stack + 1 ) )
+            end
         end
     },
+
+    -- Increases maximum health of all party and raid members within 30 yards by 2255.  Lasts 2 min.
+    commanding_shout = {
+        id = 469,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = function() return -20 - talent.booming_voice.rank end,
+        spendType = "rage",
+
+        startsCombat = false,
+        texture = 132351,
+
+        handler = function( rank )
+            if buff.my_battle_shout.up then
+                removeBuff( "battle_shout" )
+                removeBuff( "my_battle_shout" )
+                removeBuff( "shout" )
+            end
+            applyBuff( "commanding_shout" )
+            applyBuff( "my_commanding_shout" )
+            applyBuff( "shout" )
+        end,
+    },
+
+    concussion_blow = {
+        id = 12809,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+
+        spend = 15,
+        spendType = "rage",
+
+        talent = "concussion_blow",
+        startsCombat = true,
+        texture = 132325,
+
+        handler = function ()
+        end,
+    },
+
     -- For the next 10 sek, none of your abilities cost rage.
     deadly_calm = {
         id = 85730,
         cast = 0,
         cooldown = 180,
         gcd = "spell",
+
         spend = 0,
         spendType = "rage",
+
         startsCombat = true,
         texture = 298660,
         toggle = "cooldowns",
+
         handler = function()
-            applyBuff("deadly_calm")
+            applyBuff( "deadly_calm" )
         end
     },
+
+    -- When activated you become Enraged, increasing your physical damage by 20% but increasing all damage taken by 20%.  Lasts 30 sec.
+    death_wish = {
+        id = 12292,
+        cast = 0,
+        cooldown = 180,
+        gcd = "off",
+
+        spend = 10,
+        spendType = "rage",
+
+        talent = "death_wish",
+        startsCombat = true,
+        texture = 136146,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "enrage" )
+            applyBuff( "death_wish" )
+        end,
+    },
+
+    -- A defensive combat stance.  Decreases damage taken by 10%.  Significantly increases threat generation.
+    defensive_stance = {
+        id = 71,
+        cast = 0,
+        cooldown = 1,
+        gcd = "off",
+
+        spend = 0,
+        spendType = "rage",
+
+        startsCombat = false,
+        texture = 132341,
+
+        nobuff = "defensive_stance",
+
+        timeToReady = function () return max( cooldown.berserker_stance.remains, cooldown.battle_stance.remains, cooldown.defensive_stance.remains ) end,
+
+        handler = function()
+            swap_stance( "defensive_stance" )
+        end
+    },
+
+    -- Reduces the physical damage caused by all enemies within 10 yards by 10% for 30 sec.
+    demoralizing_shout = {
+        id = 1160,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 10,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132366,
+
+        handler = function ()
+            applyDebuff( "target", "demoralizing_shout" )
+        end,
+    },
+
+    devastate = {
+        id = 20243,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 15,
+        spendType = "rage",
+
+        talent = "devastate",
+        startsCombat = true,
+        texture = 135291,
+
+        handler = function ()
+        end,
+    },
+
+    -- Disarm the enemy's main hand and ranged weapons for 10 sec.
+    disarm = {
+        id = 676,
+        cast = 0,
+        cooldown = 60,
+        gcd = "spell",
+
+        spend = 15,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132343,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+        end,
+    },
+
+    -- You regenerate 30% of your total health over 10 sec. Can only be used while Enraged, and new Enrage effects may not be gained while active.
+    enraged_regeneration = {
+        id = 55694,
+        cast = 0,
+        cooldown = 180,
+        gcd = "spell",
+
+        spend = 15,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132345,
+
+        toggle = "cooldowns",
+        buff = "enrage",
+
+        handler = function ()
+        end,
+    },
+
     -- Attempts to finish off a foe, causing up to [2.0 * (107.415% of Attack power)] Physical damage based on Rage spent. Only usable on enemies that have less than 20% health0
     execute = {
         id = 5308,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
-        requiresMeleeWeapon = true,
-        requiresStance = { "battle_stance", "berserker_stance" },
-        usable = function()
-            return target.health < 20
-        end,
+
         spend = function()
             return 10 - talent.focused_rage.rank
         end,
         spendType = "rage",
+
         startsCombat = true,
         texture = 132345,
+
+        buff = function()
+            return buff.battle_stance.up and "battle_stance" or "berserker_stance"
+        end,
+
+        usable = function()
+            return target.health < 20, "target must have less than 20% health"
+        end,
+
         handler = function()
-            local baseDamage = 10 + AttackPower() * 0.437
-            local additionalDamage = (AttackPower() * 0.874 - 1) * (20 - self.spend) / 20
-            local totalDamage = baseDamage + additionalDamage
-            DealDamage(target, totalDamage)
+            if rage.current > 0 then
+                spend( min( rage.current, 20 ), "rage" )
+            end
+
+            if talent.executioner.rank > 1 then addStack( "executioner" ) end
         end
     },
 
-    -- On next attack...
-    heroic_strike = {
-        id = 78,
+    -- Maims the enemy, reducing movement speed by 50% for 15 sec.
+    hamstring = {
+        id = 1715,
         cast = 0,
         cooldown = 0,
-        gcd = "off",
+        gcd = "spell",
 
-        spend = function()
-            if buff.glyph_of_revenge.up then return 0 end
-            return 15 - talent.focused_rage.rank - talent.improved_heroic_strike.rank
-        end,
-
+        spend = 10,
         spendType = "rage",
 
         startsCombat = true,
-        texture = 132282,
+        texture = 132316,
 
-        nobuff = "heroic_strike",
-
-        usable = function()
-            return (not buff.heroic_strike.up) and (not buff.cleave.up)
+        handler = function ()
+            applyDebuff( "target", "hamstring" )
         end,
-
-        handler = function( rank )
-            gain( 15 - talent.focused_rage.rank - talent.improved_heroic_strike.rank, "rage" )
-            start_heroic_strike()
-        end,
-
-        copy = { 78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286, 29707, 30324 }
     },
 
-
-    -- Throws your weapon at the enemy causing 1104 damage (based on attack power).  This ability causes high threat.
-    heroic_throw = {
-        id = 57755,
+    heroic_fury = {
+        id = 60970,
         cast = 0,
-        cooldown = 60,
+        cooldown = 30,
         gcd = "spell",
 
         spend = 0,
         spendType = "rage",
 
-        startsCombat = true,
-        texture = 132453,
+        talent = "heroic_fury",
+        startsCombat = false,
+        texture = 460958,
 
-        toggle = "cooldowns",
-
-
-
-    handler = function(self)
-        applyBuff("heroic_throw")
-
-        -- Apply silence effect and reduce cooldown if Gag Order is learned
-        if self.gag_order_rank > 0 then
-            applyBuff("silence", 3) -- Silence for 3 seconds
-            self.cooldown = self.cooldown - 30
-        end
-    end
+        handler = function ()
+            setCooldown( "intercept", 0 )
+        end,
     },
+
     -- Leap through the air to a target location.
     heroic_leap = {
         id = 6544,
@@ -1344,15 +1422,53 @@ spec:RegisterAbilities( {
         texture = 132091,
 
         handler = function()
-            applyBuff( "heroic_leap" )
-            local attackPower = UnitAttackPower("player")
-            local damage = 1 + 0.5 * attackPower
-            local enemies = GetEnemiesWithinRange(8)
-            for _, enemy in ipairs(enemies) do
-                DealDamage(enemy, damage)
-            end
+            setDistance( 7 )
         end
     },
+
+    -- On next attack...
+    heroic_strike = {
+        id = 78,
+        cast = 0,
+        cooldown = function() return 3 * ( buff.inner_rage.up and 0.5 or 1 ) end,
+        gcd = "spell",
+
+        spend = 30,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132282,
+
+        handler = function( rank )
+            -- Could model Incite.
+
+        end,
+
+        copy = { 78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286, 29707, 30324 }
+    },
+
+
+    -- Throws your weapon at the enemy causing 1104 damage (based on attack power).  This ability causes high threat.
+    heroic_throw = {
+        id = 57755,
+        cast = 0,
+        cooldown = function() return 60 - 15 * talent.gag_order.rank end,
+        gcd = "spell",
+
+        spend = 0,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132453,
+
+        toggle = "cooldowns",
+
+        handler = function(self)
+            if glyph.heroic_throw.enabled then applyDebuff( "target", "sunder_armor", nil, min( 5, debuff.sunder_armor.stack + 1 ) ) end
+            if talent.gag_order.rank > 1 then applyDebuff( "target", "silenced_gag_order" ) end
+        end
+    },
+
     -- Reduces the cooldown of Heroic Strike and Cleave by 50% for 15 sec.
     inner_rage = {
         id = 1134,
@@ -1363,10 +1479,8 @@ spec:RegisterAbilities( {
         spend = 0,
         spendType = "rage",
 
-        startsCombat = true,
+        startsCombat = false,
         texture = 132345,
-
-        toggle = "cooldowns",
 
         handler = function ()
             applyBuff( "inner_rage" )
@@ -1377,10 +1491,10 @@ spec:RegisterAbilities( {
     intercept = {
         id = 20252,
         cast = 0,
-        cooldown = function() return 30 - (talent.skirmisher.enabled and 10 or 0) end,
+        cooldown = function() return 30 - 5 * talent.skirmisher.rank end,
         gcd = "off",
 
-        spend = function() return 10 - talent.focused_rage.rank end,
+        spend = 10,
         spendType = "rage",
 
         startsCombat = true,
@@ -1391,7 +1505,7 @@ spec:RegisterAbilities( {
             return "berserker_stance"
         end,
 
-        handler = function( rank )
+        handler = function()
             setDistance( 7 )
             applyDebuff( "target", "intercept_stun" )
         end,
@@ -1417,13 +1531,7 @@ spec:RegisterAbilities( {
         end,
     
         handler = function()
-            local intercepts = 1
-            if glyph.glyph_of_intervene.enabled then
-                intercepts = intercepts + 1
-            end
-            for i = 1, intercepts do
-                applyBuff( "intervene" )
-            end
+            active_dot.intervene = 1
         end
     },
 
@@ -1435,13 +1543,11 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "spell",
 
-        spend = function() return 25 - talent.focused_rage.rank end,
+        spend = function() return 25 * ( 1 - 0.5 * talent.drums_of_war.rank ) end,
         spendType = "rage",
 
         startsCombat = true,
         texture = 132154,
-
-        toggle = "cooldowns",
 
         handler = function()
             applyDebuff( "target", "intimidating_shout" )
@@ -1455,25 +1561,20 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 180,
         gcd = "off",
+
         startsCombat = false,
         toggle = "defensives",
-        buff_start_time = 0,
+
         handler = function(self)
-            applyBuff("last_stand")
-            self.buff_start_time = os.time()
-            health.max = health.max * 1.3
-            gain(health.current * 0.3, "health")
-        end,
-        update = function(self)
-            if os.time() - self.buff_start_time >= 20 then
-                health.max = health.max / 1.3
-                lose(health.current * 0.3, "health")
-                self.buff_start_time = 0
-            end
-        end
+            applyBuff( "last_stand" )
+
+            local amount = health.max * 0.3
+            health.max = health.max + amount
+            gain( amount, "health" )
+
+            -- Could queue an aura expiration effect to remove the bonus health but (1) it'll update naturally and (2) won't impact recommendations so why bother?
+       end,
     },
-
-
 
     -- A vicious strike that deals weapon damage plus 85 and wounds the target, reducing the effectiveness of any healing by 50% for 10 sec.
     mortal_strike = {
@@ -1482,7 +1583,7 @@ spec:RegisterAbilities( {
         cooldown = function() return 6 - 0.3 * talent.improved_mortal_strike.rank end,
         gcd = "spell",
 
-        spend = function() return 30 - talent.focused_rage.rank end,
+        spend = function() return 20 - talent.focused_rage.rank end,
         spendType = "rage",
 
         talent = "mortal_strike",
@@ -1503,7 +1604,7 @@ spec:RegisterAbilities( {
         cooldown = 5,
         gcd = "spell",
 
-        spend = function() return 5 - talent.focused_rage.rank end,
+        spend = 5,
         spendType = "rage",
 
         startsCombat = true,
@@ -1555,15 +1656,12 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132938,
 
+        readyTime = state.timeToInterrupt,
 
-    handler = function(self)
-        applyBuff("pummel")
-
-        -- Apply silence effect if Gag Order is learned
-        if self.gag_order_rank > 0 then
-            applyBuff("silence", 3) -- Silence for 3 seconds
+        handler = function(self)
+            interrupt()
+            if talent.gag_order.rank > 1 then applyDebuff( "target", "silenced_gag_order" ) end
         end
-    end
     },
 
     -- A mighty blow that deals 100% weapon damage from both melee weapons.  Can only be used while Enraged.
@@ -1572,19 +1670,18 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 6,
         gcd = "spell",
+
         spend = 20,
+        spendType = "rage",
 
         talent = "raging_blow",
         startsCombat = true,
 
-        usable = function()
-            return buff.enrage.up, "requires enrage"
-        end,
+        buff = "enrage",
 
-        handler = function( rank )
+        handler = function()
             removeBuff( "enrage" )
         end,
-        requiresEnrage = true,
     },
 
     -- Raid-wide defensive cooldown increasing the maximum health of all raid members within 30 yards by 20% for 10 seconds, on a 3-minute cooldown. Similarly to other Raid cooldowns, this is necessary to survive certain mechanics.
@@ -1602,25 +1699,19 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         handler = function()
-            -- Increase maximum health of all raid members within 30 yards by 20% for 10 seconds
-            local raidMembers = GetNumGroupMembers()
-            for i = 1, raidMembers do
-                local unit = "raid" .. i
-                if UnitExists(unit) and UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) then
-                    local maxHealth = UnitHealthMax(unit)
-                    local increasedHealth = maxHealth * 0.2
-                    local newMaxHealth = maxHealth + increasedHealth
-                    UnitHealthMax(unit, newMaxHealth)
-                    UnitHealth(unit, newMaxHealth)
-                end
-            end
+            applyBuff( "rallying_cry" )
+
+            local amount = health.max * 0.2
+            health.max = health.max + amount
+            gain( amount, "health" )
         end
     },
+
     -- Your next 3 special ability attacks have an additional 100% to critically hit but all damage taken is increased by 20%.  Lasts 12 sec.
     recklessness = {
         id = 1719,
         cast = 0,
-        cooldown = function() return 300 * ( 1 - 0.11 * talent.intensify_rage.rank ) - 30 * talent.improved_disciplines.rank end,
+        cooldown = function() return 300 * ( 1 - 0.1 * talent.intensify_rage.rank ) end,
         gcd = "spell",
 
         spend = 0,
@@ -1631,8 +1722,6 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        buff = "berserker_stance",
-
         handler = function ()
             applyBuff( "recklessness" )
         end,
@@ -1641,7 +1730,7 @@ spec:RegisterAbilities( {
 
     -- Wounds the target causing them to bleed for 380 damage plus an additional 780 (based on weapon damage) over 15 sec.  If used while your target is above 75% health, Rend does 35% more damage.
     rend = {
-        id = 94009,
+        id = 772,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1652,8 +1741,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132155,
 
+        buff = function() return buff.battle_stance.up and "battle_stance" or "defensive_stance" end,
 
-        handler = function( rank )
+        handler = function()
             applyDebuff( "target", "rend" )
         end,
     },
@@ -1663,7 +1753,7 @@ spec:RegisterAbilities( {
     retaliation = {
         id = 20230,
         cast = 0,
-        cooldown = function() return 300 - 30 * talent.improved_disciplines.rank end,
+        cooldown = 300,
         gcd = "spell",
 
         spend = 0,
@@ -1672,19 +1762,18 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 132336,
 
-        toggle = "cooldowns",
+        toggle = "defensives",
 
         buff = "battle_stance",
 
         handler = function()
-            applyBuff( "retaliation" )
+            applyBuff( "retaliation", nil, 20 )
         end
     },
 
-
     -- Instantly counterattack an enemy for 2313 to 2675 damage.   Revenge is only usable after the warrior blocks, dodges or parries an attack.
     revenge = {
-        id = 57823,
+        id = 6572,
         cast = 0,
         cooldown = 5,
         gcd = "spell",
@@ -1702,7 +1791,6 @@ spec:RegisterAbilities( {
 
         handler = function( rank )
             removeBuff( "revenge_usable" )
-            if glyph.revenge.enabled then applyBuff( "glyph_of_revenge" ) end
         end,
     },
 
@@ -1727,9 +1815,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-
-
     -- Increases your chance to block and block value by 100% for 10 sec.
     shield_block = {
         id = 2565,
@@ -1746,31 +1831,21 @@ spec:RegisterAbilities( {
         buff = "defensive_stance",
 
         handler = function(self)
-            -- Reduce cooldown based on Shield Mastery rank
-            if self.shield_mastery_rank > 0 then
-                self.cooldown = self.cooldown - 30
-            end
-    
-            applyBuff("shield_block")
-    
-            -- Apply magic damage reduction if Shield Mastery is learned
-            if self.shield_mastery_rank > 0 then
-                applyBuff("shield_block_magic_reduction")
-            end
+            applyBuff( "shield_block" )
+            if talent.shield_mastery.enabled then applyBuff( "spell_block" ) end
         end
     },
 
-
     -- Slam the target with your shield, causing 990 to 1040 damage, modified by your shield block value, and dispels 1 magic effect on the target.  Also causes a high amount of threat.
     shield_slam = {
-        id = 47488,
+        id = 23922,
         cast = 0,
         cooldown = 6,
         gcd = "spell",
 
         spend = function()
             if buff.sword_and_board.up then return 0 end
-            return 20 - talent.focused_rage.rank
+            return 20
         end,
         spendType = "rage",
 
@@ -1790,7 +1865,7 @@ spec:RegisterAbilities( {
     shield_wall = {
         id = 871,
         cast = 0,
-        cooldown = function() return ( glyph.shield_wall.enabled and 180 or 300 ) end,
+        cooldown = function() return ( glyph.shield_wall.enabled and 420 or 300 ) - ( 60 * talent.shield_mastery.rank ) end,
         gcd = "off",
 
         spend = 0,
@@ -1801,18 +1876,9 @@ spec:RegisterAbilities( {
 
         toggle = "defensives",
 
-        buff = "defensive_stance",
-
-
-
-        handler = function(self)
-        -- Reduce cooldown based on Shield Mastery rank
-        if talent.shield_mastery.enabled then
-            self.cooldown = self.cooldown - 180
+        handler = function()
+            applyBuff( "shield_wall" )
         end
-
-        applyBuff("shield_wall")
-    end
     },
 
 
@@ -1831,6 +1897,7 @@ spec:RegisterAbilities( {
         texture = 236312,
 
         handler = function ()
+            removeBuff( "thunderstruck" )
             applyDebuff( "target", "shockwave" )
             if not target.is_boss then interrupt() end
         end,
@@ -1839,15 +1906,18 @@ spec:RegisterAbilities( {
 
     -- Slams the opponent, causing weapon damage plus 250.
     slam = {
-        id = 47475,
+        id = 1464,
         cast = function()
             if buff.bloodsurge.up then return 0 end
-            return 1.5 - 0.5 * talent.improved_slam.rank
+            return haste * ( 1.5 - 0.5 * talent.improved_slam.rank )
         end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 15 - talent.focused_rage.rank end,
+        spend = function()
+            if buff.bloodsurge.up then return 0 end
+            return 15
+        end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1859,12 +1929,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     -- Raise your shield, reflecting the next spell cast on you.  Lasts 5 sec.
     spell_reflection = {
         id = 23920,
         cast = 0,
-        cooldown = function() return 300 - ( glyph.shield_wall.enabled and 180 or 0 ) - ( talent.shield_mastery.enabled and 180 or 0 ) end,
+        cooldown = function() return 25 - ( glyph.spell_reflection.enabled and 5 or 0 ) end,
         gcd = "off",
 
         spend = 15,
@@ -1878,15 +1947,30 @@ spec:RegisterAbilities( {
         equipped = "shield",
         readyTime = state.timeToInterrupt,
 
-        usable = function()
-            return UnitIsUnit("targettarget","player")
-        end,
+        buff = function() return buff.battle_stance.up and "battle_stance" or "defensive_stance" end,
 
         handler = function()
+            interrupt()
             applyBuff( "spell_reflection" )
         end
     },
 
+    -- A simple strike that deals 19 to 26 damage.  Use once you have sufficient rage.
+    strike = {
+        id = 88161,
+        cast = 0,
+        cooldown = 3,
+        gcd = "spell",
+
+        spend = 20,
+        spendType = "rage",
+
+        startsCombat = true,
+        texture = 132392,
+
+        handler = function ()
+        end,
+    },
 
     -- Sunders the target's armor, reducing it by 4% per Sunder Armor and causes a high amount of threat.  Threat increased by attack power.  Can be applied up to 5 times.  Lasts 30 sec.
     sunder_armor = {
@@ -1895,30 +1979,22 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 15 - talent.focused_rage.rank - talent.puncture.rank end,
+        spend = function() return 15 - talent.puncture.rank end,
         spendType = "rage",
 
         startsCombat = true,
         texture = 132363,
 
-        handler = function( rank )
-            local sunder_armor_stacks = 0
-            local max_sunder_armor_stacks = 3
-            local sunder_armor_effect = 0.04 -- 4% per stack
-
-            if sunder_armor_stacks < max_sunder_armor_stacks then
-                sunder_armor_stacks = sunder_armor_stacks + 1
-                pplyDebuff( "target", "sunder_armor", nil, min( 3, debuff.sunder_armor.stack + 1 ) )
-            end
+        handler = function()
+            applyDebuff( "target", "sunder_armor", nil, min( 5, debuff.sunder_armor.stack + 1 ) )
         end,
     },
-
 
     -- Your next 5 melee attacks strike an additional nearby opponent.
     sweeping_strikes = {
         id = 12328,
         cast = 0,
-        cooldown = 30,
+        cooldown = 60,
         gcd = "off",
 
         spend = function() return glyph.sweeping_strikes.enabled and 0 or 30 end,
@@ -1931,10 +2007,9 @@ spec:RegisterAbilities( {
         nobuff = "defensive_stance",
 
         handler = function()
-            applyBuff( "sweeping_strikes", nil, 10 )
+            applyBuff( "sweeping_strikes" )
         end
     },
-
 
     -- Taunts the target to attack you, but has no effect if the target is already attacking you.
     taunt = {
@@ -1953,15 +2028,33 @@ spec:RegisterAbilities( {
         end
     },
 
+    throwdown = {
+        id = 85388,
+        cast = 0,
+        cooldown = 45,
+        gcd = "spell",
+
+        spend = 15,
+        spendType = "rage",
+
+        talent = "throwdown",
+        startsCombat = true,
+        texture = 133542,
+
+        handler = function ()
+            applyDebuff( "target", "throwdown" )
+        end,
+    },
 
     -- Blasts nearby enemies increasing the time between their attacks by 10% for 30 sec and doing 300 damage to them.  Damage increased by attack power.  This ability causes additional threat.
     thunder_clap = {
+        id = 6343,
         id = 6343,
         cast = 0,
         cooldown = 6,
         gcd = "spell",
 
-        spend = function() return 20 - ( glyph.resonating_power.enabled and 5 or 0 ) - talent.focused_rage.rank - ( talent.improved_thunder_clap.rank == 3 and 4 or talent.improved_thunder_clap.rank == 2 and 2 or talent.improved_thunder_clap.rank == 1 and 1 or 0 ) end,
+        spend = function() return 20 - ( glyph.resonating_power.enabled and 5 or 0 ) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -1972,12 +2065,15 @@ spec:RegisterAbilities( {
         handler = function( rank )
             applyDebuff( "target", "thunder_clap" )
             active_dot.thunder_clap = min( active_enemies, 4 + active_dot.thunder_clap )
-            local targets = getTargets()
             if active_dot.rend > 0 and talent.blood_and_thunder.enabled then
-            active_dot.rend = active_enemies
+                active_dot.rend = active_enemies
+            end
+
+            if talent.thunderstruck.enabled then
+                addStack( "thunderstruck" )
             end
         end,
-
+    },
 
     -- Instantly attack the target causing (Attack power * 56 / 100) damage and healing you for 20% of your maximum health.  Can only be used within 20 sec after you kill an enemy that yields experience or honor.
     victory_rush = {
@@ -1995,51 +2091,39 @@ spec:RegisterAbilities( {
         buff = "victory_rush",
 
         handler = function()
-            local attackPower = GetAttackPower()
-            local damage = attackPower * 56 / 100
-            local maxHealth = GetMaxHealth()
-            local healing = maxHealth * 20 / 100
-
-            InstantlyAttackTarget(damage)
+            removeBuff( "victory_rush" )
             gain( 0.2 * health.max, "health" )
         end
     },
 
 
+    vigilance = {
+        id = 50720,
+        cast = 0,
+        cooldown = 0,
+        gcd = "off",
 
-        vigilance = {
-            id = 50720,
-            cast = 0,
-            cooldown = 0,
-            gcd = "off",
-            spend = 0,
-            spendType = "rage",
-            startsCombat = false,
-            texture = 132333,
-            range = 30,
-            duration = 1800,
-            target = nil,
-        
-            handler = function(self, target)
-                self.target = target
-        
-                -- Apply Vigilance buff
-                applyBuff("vigilance", self.duration, target)
-        
-                -- Gain Vengeance
-                local vengeance = event.damage * 0.20
-                applyBuff("vengeance", vengeance)
-            end
-        },
+        spend = 0,
+        spendType = "rage",
+
+        startsCombat = false,
+        texture = 132333,
+
+        usable = function() return active_dot.vigilance == 0, "vigilance already active" end,
+
+        handler = function()
+            active_dot.vigilance = 1
+        end
+    },
 
     -- In a whirlwind of steel you attack up to 4 enemies within 8 yards, causing weapon damage from both melee weapons to each enemy.
     whirlwind = {
         id = 1680,
         cast = 0,
-        cooldown = function() return 10 - talent.improved_whirlwind.rank - ( glyph.of_whirlwind.enabled and 2 or 0 ) end,
+        cooldown = function() return ( active_enemies > 3 and 4 or 10 ) end,
         gcd = "spell",
 
-        spend = function() return 25 - talent.focused_rage.rank end,
+        spend = function() return 25 - ( talent.improved_whirlwind.enabled and 3 or 0 ) end,
         spendType = "rage",
 
         startsCombat = true,
@@ -2047,61 +2131,68 @@ spec:RegisterAbilities( {
 
         buff = "berserker_stance",
 
+        handler = function()
+            if talent.meat_cleaver.enabled then
+                addStack( "meat_cleaver" )
+            end
+        end
+    },
 
     },
 }
 } )
 
-spec:RegisterStateTable("assigned_shout", setmetatable( {}, {
+spec:RegisterStateTable( "assigned_shout", setmetatable( {}, {
     __index = function( t, k )
         return settings.shout_spell == k
     end
-}))
+} ) )
 
-spec:RegisterStateExpr("main_gcd_spell_slam", function()
+spec:RegisterStateExpr( "main_gcd_spell_slam", function()
     return settings.main_gcd_spell == "slam"
-end)
+end )
 
-spec:RegisterStateExpr("main_gcd_spell_bt", function()
+spec:RegisterStateExpr( "main_gcd_spell_bt", function()
     return settings.main_gcd_spell == "bloodthirst"
-end)
+end )
 
-spec:RegisterStateExpr("main_gcd_spell_ww", function()
+spec:RegisterStateExpr( "main_gcd_spell_ww", function()
     return settings.main_gcd_spell == "whirlwind"
-end)
+end )
 
-spec:RegisterStateExpr("rend_may_tick", function()
+spec:RegisterStateExpr( "rend_may_tick", function()
     if not debuff.rend.up then
         return false
     end
 
     local current_tick = dot.rend.next_tick
-end)
+    -- TODO: Explain purpose of this expression; currently doesn't return a value when Rend is up.
+end )
 
-spec:RegisterSetting("warrior_description", nil, {
+spec:RegisterSetting( "warrior_description", nil, {
     type = "description",
     name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
         "to determine the optimal values for these settings for your specific character."
-})
+} )
 
-spec:RegisterSetting("warrior_description_footer", nil, {
+spec:RegisterSetting( "warrior_description_footer", nil, {
     type = "description",
     name = "\n\n"
-})
+} )
 
-spec:RegisterSetting("general_header", nil, {
+spec:RegisterSetting( "general_header", nil, {
     type = "header",
     name = "General"
-})
+} )
 
 local main_gcd_spell = {}
-spec:RegisterSetting("main_gcd_spell", "slam", {
+spec:RegisterSetting( "main_gcd_spell", "slam", {
     type = "select",
     name = "Main GCD Spell",
     desc = "Select which ability should be top priority",
     width = "full",
     values = function()
-        table.wipe(main_gcd_spell)
+        table.wipe( main_gcd_spell )
         main_gcd_spell.slam = class.abilityList.slam
         main_gcd_spell.bloodthirst = class.abilityList.bloodthirst
         main_gcd_spell.whirlwind = class.abilityList.whirlwind
@@ -2111,16 +2202,16 @@ spec:RegisterSetting("main_gcd_spell", "slam", {
         Hekili.DB.profile.specs[ 1 ].settings.main_gcd_spell = val
         class.abilities.main_gcd_spell = class.abilities[ val ]
     end
-})
+} )
 
 local shout_spells = {}
-spec:RegisterSetting("shout_spell", "commanding_shout", {
+spec:RegisterSetting( "shout_spell", "commanding_shout", {
     type = "select",
     name = "Preferred Shout",
     desc = "Select which shout should be recommended",
     width = "full",
     values = function()
-        table.wipe(shout_spells)
+        table.wipe( shout_spells )
         shout_spells.commanding_shout = class.abilityList.commanding_shout
         shout_spells.battle_shout = class.abilityList.battle_shout
         return shout_spells
@@ -2129,12 +2220,12 @@ spec:RegisterSetting("shout_spell", "commanding_shout", {
         Hekili.DB.profile.specs[ 1 ].settings.shout_spell = val
         class.abilities.shout_spell = class.abilities[ val ]
     end
-})
+} )
 
-spec:RegisterSetting("queueing_threshold", 60, {
+spec:RegisterSetting( "queueing_threshold", 60, {
     type = "range",
     name = "Queue Rage Threshold",
-    desc = "Select the rage threshold after which heroic strike / cleave will be recommended",
+    desc = strformat( "Select the rage threshold after which %s or %s may be recommended.", Hekili:GetSpellLinkWithTexture( spec.abilities.heroic_strike.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.cleave.id ) ),
     width = "full",
     min = 0,
     softMax = 100,
@@ -2142,9 +2233,9 @@ spec:RegisterSetting("queueing_threshold", 60, {
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.queueing_threshold = val
     end
-})
+} )
 
-spec:RegisterSetting("predict_tfb", true, {
+spec:RegisterSetting( "predict_tfb", true, {
     type = "toggle",
     name = "Predict Taste For Blood",
     desc = "When enabled, Taste For Blood procs will be predicted and displayed in future recommendations",
@@ -2152,138 +2243,138 @@ spec:RegisterSetting("predict_tfb", true, {
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.predict_tfb = val
     end
-})
+} )
 
-spec:RegisterSetting("optimize_overpower", false, {
+spec:RegisterSetting( "optimize_overpower", false, {
     type = "toggle",
-    name = "Optimize Overpower",
-    desc = "When enabled, Overpower will be deprioritized until the GCD before a subsequent Taste For Blood proc.\n\nApplies to Arms only.",
+    name = strformat( "Optimize %s", Hekili:GetSpellLinkWithTexture( spec.abilities.overpower.id ) ),
+    desc = strformat( "When enabled, %s will be deprioritized until the GCD before a subsequent Taste For Blood proc.\n\nApplies to Arms only.", Hekili:GetSpellLinkWithTexture( spec.abilities.overpower.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.optimize_overpower = val
     end
-})
+} )
 
-spec:RegisterSetting("general_footer", nil, {
+spec:RegisterSetting( "general_footer", nil, {
     type = "description",
     name = "\n\n\n"
-})
+} )
 
-spec:RegisterSetting("debuffs_header", nil, {
+spec:RegisterSetting( "debuffs_header", nil, {
     type = "header",
     name = "Debuffs"
-})
+} )
 
-spec:RegisterSetting("debuffs_description", nil, {
+spec:RegisterSetting( "debuffs_description", nil, {
     type = "description",
     name = "Debuffs settings will change which debuffs are recommended"
-})
+} )
 
-spec:RegisterSetting("debuff_sunder_enabled", true, {
+spec:RegisterSetting( "debuff_sunder_enabled", true, {
     type = "toggle",
-    name = "Maintain Sunder Armor",
-    desc = "When enabled, recommendations will include sunder armor",
+    name = strformat( "Maintain %s", Hekili:GetSpellLinkWithTexture( spec.abilities.sunder_armor.id ) ),
+    desc = strformat( "When enabled, %s may be recommended.", Hekili:GetSpellLinkWithTexture( spec.abilities.sunder_armor.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.debuff_sunder_enabled = val
     end
-})
+} )
 
-spec:RegisterSetting("debuff_demoshout_enabled", false, {
+spec:RegisterSetting( "debuff_demoshout_enabled", false, {
     type = "toggle",
-    name = "Maintain Demoralizing Shout",
-    desc = "When enabled, recommendations will include demoralizing shout",
+    name = strformat( "Maintain %s", Hekili:GetSpellLinkWithTexture( spec.abilities.demoralizing_shout.id ) ),
+    desc = strformat( "When enabled, %s may be recommended.", Hekili:GetSpellLinkWithTexture( spec.abilities.demoralizing_shout.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.debuff_demoshout_enabled = val
     end
-})
+} )
 
-spec:RegisterSetting("debuffs_footer", nil, {
+spec:RegisterSetting( "debuffs_footer", nil, {
     type = "description",
     name = "\n\n\n"
-})
+} )
 
-spec:RegisterSetting("execute_header", nil, {
+spec:RegisterSetting( "execute_header", nil, {
     type = "header",
     name = "Execute"
-})
+} )
 
-spec:RegisterSetting("execute_description", nil, {
+spec:RegisterSetting( "execute_description", nil, {
     type = "description",
     name = "Execute settings will change recommendations only during execute phase"
-})
+} )
 
-spec:RegisterSetting("execute_queueing_enabled", true, {
+spec:RegisterSetting( "execute_queueing_enabled", true, {
     type = "toggle",
-    name = "Queue During Execute",
-    desc = "When enabled, recommendations will include heroic strike or cleave during the execute phase",
+    name = "Queue During Execute", -- TODO: Outdated?  These are instants now.
+    desc = strformat( "When enabled, recommendations will include %s or %s during the %s phase.", Hekili:GetSpellLinkWithTexture( spec.abilities.heroic_strike.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.cleave.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.execute.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.execute_queueing_enabled = val
     end
-})
+} )
 
-spec:RegisterSetting("execute_bloodthirst_enabled", true, {
+spec:RegisterSetting( "execute_bloodthirst_enabled", true, {
     type = "toggle",
-    name = "Bloodthirst During Execute",
-    desc = "When enabled, recommendations will include bloodthirst during the execute phase",
+    name = strformat( "%s During %s", Hekili:GetSpellLinkWithTexture( spec.abilities.bloodthirst.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.execute.id ) ),
+    desc = strformat( "When enabled, %s may be recommended during %s phase.", Hekili:GetSpellLinkWithTexture( spec.abilities.bloodthirst.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.execute.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.execute_bloodthirst_enabled = val
     end
-})
+} )
 
-spec:RegisterSetting("execute_whirlwind_enabled", true, {
+spec:RegisterSetting( "execute_whirlwind_enabled", true, {
     type = "toggle",
-    name = "Whirlwind During Execute",
-    desc = "When enabled, recommendations will include whirlwind during the execute phase",
+    name = strformat( "%s During %s", Hekili:GetSpellLinkWithTexture( spec.abilities.whirlwind.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.execute.id ) ),
+    desc = strformat( "When enabled, %s may be recommended during %s phase.", Hekili:GetSpellLinkWithTexture( spec.abilities.whirlwind.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.execute.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.execute_whirlwind_enabled = val
     end
-})
+} )
 
-spec:RegisterSetting("execute_slam_prio", true, {
+spec:RegisterSetting( "execute_slam_prio", true, {
     type = "toggle",
-    name = "Slam Over Execute",
-    desc = "When enabled, recommendations will prioritize slam over execute during the execute phase",
+    name = strformat( "%s Over %s", Hekili:GetSpellLinkWithTexture( spec.abilities.slam.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.execute.id ) ),
+    desc = strformat( "When enabled, %s may be recommended over %s.", Hekili:GetSpellLinkWithTexture( spec.abilities.slam.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.execute.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.execute_slam_prio = val
     end
-})
+} )
 
-spec:RegisterSetting("execute_footer", nil, {
+spec:RegisterSetting( "execute_footer", nil, {
     type = "description",
     name = "\n\n\n"
-})
+} )
 
-spec:RegisterSetting("weaving_header", nil, {
+spec:RegisterSetting( "weaving_header", nil, {
     type = "header",
     name = "Weaving"
-})
+} )
 
-spec:RegisterSetting("weaving_description", nil, {
+spec:RegisterSetting( "weaving_description", nil, {
     type = "description",
     name = "Enabling weaving will cause Hekili to recommend the player swaps into battle stance and rends/overpowers the target under "..
         "certain conditions.\n\nApplies to Fury only"
-})
+} )
 
-spec:RegisterSetting("weaving_enabled", false, {
+spec:RegisterSetting( "weaving_enabled", false, {
     type = "toggle",
     name = "Enabled",
-    desc = "When enabled, recommendations will include battle stance swapping under certain conditions",
+    desc = "When enabled, recommendations will include battle stance swapping under certain conditions.",
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.weaving_enabled = val
     end
-})
+} )
 
-spec:RegisterSetting("weave_rage_threshold", 100, {
+spec:RegisterSetting( "weave_rage_threshold", 100, {
     type = "range",
     name = "Maximum Rage",
-    desc = "Select the maximum rage at which weaving will be recommended",
+    desc = "Select the maximum rage at which weaving will be recommended.",
     width = "full",
     min = 0,
     softMax = 100,
@@ -2291,12 +2382,12 @@ spec:RegisterSetting("weave_rage_threshold", 100, {
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.weave_rage_threshold = val
     end
-})
+} )
 
-spec:RegisterSetting("weave_health_threshold", 20, {
+spec:RegisterSetting( "weave_health_threshold", 20, {
     type = "range",
     name = "Minimum Target Health",
-    desc = "Select the minimum target health at which weaving will be recommended",
+    desc = "Select the minimum target health at which weaving will be recommended.",
     width = "full",
     min = 0,
     max = 100,
@@ -2306,10 +2397,10 @@ spec:RegisterSetting("weave_health_threshold", 20, {
     end
 })
 
-spec:RegisterSetting("weave_cooldown_threshold", 1.5, {
+spec:RegisterSetting( "weave_cooldown_threshold", 1.5, {
     type = "range",
     name = "Cooldown Threshold",
-    desc = "Select the minimum time left allowed on bloodthirst and whirlwind before weaving can be recommended",
+    desc = "Select the minimum time left allowed on bloodthirst and whirlwind before weaving can be recommended.",
     width = "full",
     min = 0,
     softMax = 8,
@@ -2319,10 +2410,10 @@ spec:RegisterSetting("weave_cooldown_threshold", 1.5, {
     end
 })
 
-spec:RegisterSetting("rend_refresh_time", 0, {
+spec:RegisterSetting( "rend_refresh_time", 0, {
     type = "range",
-    name = "Refresh Time",
-    desc = "Select the time left on an existing rend debuff at which rendweaving can be recommended",
+    name = strformat( "%s Refresh Time", Hekili:GetSpellLinkWithTexture( spec.abilities.rend.id ) ),
+    desc = strformat( "Select the time left on an existing %s at which refreshing may be recommended.", Hekili:GetSpellLinkWithTexture( spec.abilities.rend.id ) ),
     width = "full",
     min = 0,
     softMax = 21,
@@ -2330,12 +2421,12 @@ spec:RegisterSetting("rend_refresh_time", 0, {
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.rend_refresh_time = val
     end
-})
+} )
 
-spec:RegisterSetting("weaving_footer", nil, {
+spec:RegisterSetting( "weaving_footer", nil, {
     type = "description",
     name = "\n\n\n"
-})
+} )
 
 
 spec:RegisterOptions( {
