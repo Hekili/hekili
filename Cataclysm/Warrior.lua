@@ -430,7 +430,7 @@ spec:RegisterAuras( {
         copy = { 12294, 21551, 21552, 21553, 25248, 27580, 30330, 47485, 47486, 65926, 71552 },
     },
     -- Allows the use of Overpower.
-    overpower = {
+    overpower_ready = {
         id = 68051,
         duration = 6,
         max_stack = 1,
@@ -1613,12 +1613,12 @@ spec:RegisterAbilities( {
         buff = "battle_stance",
 
         usable = function()
-            return buff.taste_for_blood.up or buff.overpower.up, "only usable after dodging or with taste_for_blood"
+            return buff.taste_for_blood.up or buff.overpower_ready.up, "only usable after dodging or with taste_for_blood"
         end,
 
         handler = function( rank )
             removeBuff( "taste_for_blood" )
-            removeBuff( "overpower" )
+            removeBuff( "overpower_ready" )
         end,
     },
 
