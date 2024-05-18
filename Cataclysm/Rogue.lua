@@ -6,6 +6,8 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 4 )
 
+local strformat = string.format
+
 
 -- TODO:  Check gains from Cold Blood, Seal Fate; i.e., guaranteed crits.
 
@@ -15,126 +17,125 @@ spec:RegisterResource( Enum.PowerType.Energy )
 
 -- Talents
 spec:RegisterTalents( {
-adrenaline_rush             = {   205, 1, 13750 },
-aggression                  = {  1122, 3, 18427, 18428, 18429 },
-ambidexterity               = {  5686, 1, 13852 },
-bandits_guile               = {  11174, 3, 84652, 84653, 84654 },
-blackjack                   = {  6515, 2, 79123, 79125 },
-blade_flurry                = {  5170, 1, 13877 },
-blade_twisting              = {  1706, 2, 31124, 31126 },
-cheat_death                 = {  1722, 3, 31228, 31229, 31230 },
-cold_blood                  = {  280,  1, 14177 },
-combat_potency              = {  1825, 3, 35541, 35550, 35551 },
-coup_de_grace               = {  276,  3, 14162, 14163, 14164 },
-cut_to_the_chase            = {  2070, 3, 51664, 51665, 51667 },
-deadened_nerves             = {  1723, 3, 31380, 31382, 31383 },
-deadliness                  = {  1702, 5, 30902, 30903, 30904, 30905, 30906 },
-deadly_brew                 = {  2065, 2, 51625, 51626 },
-deadly_momentum             = {  6514, 2, 79121, 79122 },
-deflection                  = {  5690, 3, 13713, 13853, 13854 },
-dirty_deeds                 = {  5654, 2, 14082, 14083 },
-elusiveness                 = {  247,  2, 13981, 14066 },
-energetic_recovery          = {  11665, 3, 79150, 79151, 79152 },
-enveloping_shadows          = {  1711, 3, 31211, 31212, 31213 },
-filthy_tricks               = {  2079, 2, 58414, 58415 },
-find_weakness               = {  6519, 2, 51632, 91023 },
-heightened_senses           = {  1701, 2, 30894, 30895 },
-hemorrhage                  = {  681,  1, 16511 },
-honor_among_thieves         = {  2078, 3, 51698, 51700, 51701 },
-improved_ambush             = {  261,  3, 14079, 14080, 84661 },
-improved_expose_armor       = {  278,  2, 14168, 14169 },
-improved_gouge              = {  203,  2, 13741, 13793 },
-improved_kick               = {  206,  2, 13754, 13867 },
-improved_poisons            = {  5758, 5, 14113, 14114, 14115, 14116, 14117 },
-improved_recuperate         = {  6395, 2, 79007, 79008 },
-improved_sinister_strike    = {  201,  3, 13732, 13863, 79004 },
-improved_slice_and_dice     = {  1827, 2, 14165, 14166 },
-improved_sprint             = {  222,  2, 13743, 13875 },
-initiative                  = {  245,  2, 13976, 13979 },
-killing_spree               = {  2076, 1, 51690 },
-lethality                   = {  269,  3, 14128, 14132, 14135 },
-lightning_reflexes          = {  186,  3, 13712, 13788, 13789 },
-malice                      = {  5742, 5, 14138, 14139, 14140, 14141, 14142 },
-master_of_subtlety          = {  10054,1, 31223 },
-master_poisoner             = {  1715, 1, 58410 },
-murderous_intent            = {  6516, 2, 14158, 14159 },
-mutilate                    = {  1719, 1, 1329 },
-nerves_of_steel             = {  5722, 2, 31130, 31131 },
-nightstalker                = {  244,  2, 13975, 14062 },
-opportunity                 = {  261,  3, 14057, 14072, 79141 },
-overkill                    = {  281,  1, 58426 },
-precision                   = {  181,  3, 13705, 13832, 13843 },
-premeditation               = {  381,  1, 14183 },
-preparation                 = {  284,  1, 14185 },
-prey_on_the_weak            = {  5734, 5, 51685, 51686, 51687, 51688, 51689 },
-puncturing_wounds           = {  5748, 3, 13733, 13865, 13866 },
-quickening                  = {  5760, 2, 31208, 31209 },
-reinforced_leather          = {  6511, 2, 79077, 79079 },
-relentless_strikes          = {  2244, 3, 14179, 58422, 58423 },
-remorseless_attacks         = {  272,  2, 14144, 14148 },
-restless_blades             = {  5740, 2, 79095, 79096 },
-revealing_strike            = {  11171,1, 84617 },
-riposte                     = {  5696, 1, 14251 },
-ruthlessness                = {  1744, 3, 14156, 14160, 14161 },
-sanguinary_vein             = {  10074,2, 79146, 79147 },
-savage_combat               = {  10898,2, 51682, 58413 },
-seal_fate                   = {  283,  2, 14186, 14190 },
-serrated_blades             = {  1123, 2, 14171, 14172 },
-setup                       = {  5644, 3, 13983, 14070, 14071 },
-shadow_dance                = {  5680, 1, 51713 },
-shadowstep                  = {  10072, 1, 36554 },
-sinister_calling            = {  1712, 1, 31220 },
-slaughter_from_the_shadows  = {  2080, 3, 51708, 51709, 51710 },
-surprise_attacks            = {  5730, 1, 32601 },
-throwing_specialization     = {  9944, 2, 5952, 51679 },
-unfair_advantage            = {  2073, 2, 51672, 51674 },
-vendetta                    = {  2071, 1, 79140 },
-venomous_wounds             = {  6517, 2, 79133, 79134 },
-vile_poisons                = {  5756, 3, 16513, 16514, 16515 },
-vitality                    = {  1705, 1, 61329 },
-waylay                      = {  2077, 2, 51692, 51696 },
-
+    adrenaline_rush             = {   205, 1, 13750 },
+    aggression                  = {  1122, 3, 18427, 18428, 18429 },
+    ambidexterity               = {  5686, 1, 13852 },
+    bandits_guile               = {  11174, 3, 84652, 84653, 84654 },
+    blackjack                   = {  6515, 2, 79123, 79125 },
+    blade_flurry                = {  5170, 1, 13877 },
+    blade_twisting              = {  1706, 2, 31124, 31126 },
+    cheat_death                 = {  1722, 3, 31228, 31229, 31230 },
+    cold_blood                  = {  280,  1, 14177 },
+    combat_potency              = {  1825, 3, 35541, 35550, 35551 },
+    coup_de_grace               = {  276,  3, 14162, 14163, 14164 },
+    cut_to_the_chase            = {  2070, 3, 51664, 51665, 51667 },
+    deadened_nerves             = {  1723, 3, 31380, 31382, 31383 },
+    deadliness                  = {  1702, 5, 30902, 30903, 30904, 30905, 30906 },
+    deadly_brew                 = {  2065, 2, 51625, 51626 },
+    deadly_momentum             = {  6514, 2, 79121, 79122 },
+    deflection                  = {  5690, 3, 13713, 13853, 13854 },
+    dirty_deeds                 = {  5654, 2, 14082, 14083 },
+    elusiveness                 = {  247,  2, 13981, 14066 },
+    energetic_recovery          = {  11665, 3, 79150, 79151, 79152 },
+    enveloping_shadows          = {  1711, 3, 31211, 31212, 31213 },
+    filthy_tricks               = {  2079, 2, 58414, 58415 },
+    find_weakness               = {  6519, 2, 51632, 91023 },
+    heightened_senses           = {  1701, 2, 30894, 30895 },
+    hemorrhage                  = {  681,  1, 16511 },
+    honor_among_thieves         = {  2078, 3, 51698, 51700, 51701 },
+    improved_ambush             = {  261,  3, 14079, 14080, 84661 },
+    improved_expose_armor       = {  278,  2, 14168, 14169 },
+    improved_gouge              = {  203,  2, 13741, 13793 },
+    improved_kick               = {  206,  2, 13754, 13867 },
+    improved_poisons            = {  5758, 5, 14113, 14114, 14115, 14116, 14117 },
+    improved_recuperate         = {  6395, 2, 79007, 79008 },
+    improved_sinister_strike    = {  201,  3, 13732, 13863, 79004 },
+    improved_slice_and_dice     = {  1827, 2, 14165, 14166 },
+    improved_sprint             = {  222,  2, 13743, 13875 },
+    initiative                  = {  245,  2, 13976, 13979 },
+    killing_spree               = {  2076, 1, 51690 },
+    lethality                   = {  269,  3, 14128, 14132, 14135 },
+    lightning_reflexes          = {  186,  3, 13712, 13788, 13789 },
+    malice                      = {  5742, 5, 14138, 14139, 14140, 14141, 14142 },
+    master_of_subtlety          = {  10054,1, 31223 },
+    master_poisoner             = {  1715, 1, 58410 },
+    murderous_intent            = {  6516, 2, 14158, 14159 },
+    mutilate                    = {  1719, 1, 1329 },
+    nerves_of_steel             = {  5722, 2, 31130, 31131 },
+    nightstalker                = {  244,  2, 13975, 14062 },
+    opportunity                 = {  261,  3, 14057, 14072, 79141 },
+    overkill                    = {  281,  1, 58426 },
+    precision                   = {  181,  3, 13705, 13832, 13843 },
+    premeditation               = {  381,  1, 14183 },
+    preparation                 = {  284,  1, 14185 },
+    prey_on_the_weak            = {  5734, 5, 51685, 51686, 51687, 51688, 51689 },
+    puncturing_wounds           = {  5748, 3, 13733, 13865, 13866 },
+    quickening                  = {  5760, 2, 31208, 31209 },
+    reinforced_leather          = {  6511, 2, 79077, 79079 },
+    relentless_strikes          = {  2244, 3, 14179, 58422, 58423 },
+    remorseless_attacks         = {  272,  2, 14144, 14148 },
+    restless_blades             = {  5740, 2, 79095, 79096 },
+    revealing_strike            = {  11171,1, 84617 },
+    riposte                     = {  5696, 1, 14251 },
+    ruthlessness                = {  1744, 3, 14156, 14160, 14161 },
+    sanguinary_vein             = {  10074,2, 79146, 79147 },
+    savage_combat               = {  10898,2, 51682, 58413 },
+    seal_fate                   = {  283,  2, 14186, 14190 },
+    serrated_blades             = {  1123, 2, 14171, 14172 },
+    setup                       = {  5644, 3, 13983, 14070, 14071 },
+    shadow_dance                = {  5680, 1, 51713 },
+    shadowstep                  = {  10072, 1, 36554 },
+    sinister_calling            = {  1712, 1, 31220 },
+    slaughter_from_the_shadows  = {  2080, 3, 51708, 51709, 51710 },
+    surprise_attacks            = {  5730, 1, 32601 },
+    throwing_specialization     = {  9944, 2, 5952, 51679 },
+    unfair_advantage            = {  2073, 2, 51672, 51674 },
+    vendetta                    = {  2071, 1, 79140 },
+    venomous_wounds             = {  6517, 2, 79133, 79134 },
+    vile_poisons                = {  5756, 3, 16513, 16514, 16515 },
+    vitality                    = {  1705, 1, 61329 },
+    waylay                      = {  2077, 2, 51692, 51696 },
 } )
 
 -- Glyphs
-spec:RegisterGlyphs({
-    [56807] = "hemorrhage",
-    [63269] = "cloak_of_shadows",
-    [91299] = "blind",
-    [56818] = "blade_flurry",
-    [56800] = "backstab",
-    [56801] = "rupture",
-    [56799] = "evasion",
-    [63254] = "fan_of_knives",
-    [56814] = "revealing_strike",
-    [63249] = "vendetta",
-    [63268] = "mutilate",
-    [89758] = "vanish",
-    [56804] = "feint",
+spec:RegisterGlyphs( {
     [56808] = "adrenaline_rush",
-    [56819] = "preparation",
-    [58038] = "poisons",
-    [56811] = "sprint",
     [56813] = "ambush",
-    [56809] = "gouge",
-    [56810] = "slice_and_dice",
+    [56800] = "backstab",
+    [56818] = "blade_flurry",
+    [91299] = "blind",
+    [58039] = "blurred_speed",
+    [63269] = "cloak_of_shadows",
+    [56820] = "crippling_poison",
+    [56806] = "deadly_throw",
+    [58032] = "distract",
+    [56799] = "evasion",
+    [56802] = "eviscerate",
     [56803] = "expose_armor",
+    [63254] = "fan_of_knives",
+    [56804] = "feint",
+    [56812] = "garrote",
+    [56809] = "gouge",
+    [56807] = "hemorrhage",
+    [56805] = "kick",
+    [63252] = "killing_spree",
+    [63268] = "mutilate",
+    [58027] = "pick_lock",
+    [58017] = "pick_pocket",
+    [58038] = "poisons",
+    [56819] = "preparation",
+    [56814] = "revealing_strike",
+    [56801] = "rupture",
+    [58033] = "safe_fall",
+    [56798] = "sap",
     [63253] = "shadow_dance",
     [56821] = "sinister_strike",
-    [58017] = "pick_pocket",
-    [56802] = "eviscerate",
-    [56806] = "deadly_throw",
-    [58039] = "blurred_speed",
-    [63252] = "killing_spree",
+    [56810] = "slice_and_dice",
+    [56811] = "sprint",
     [63256] = "tricks_of_the_trade",
-    [56805] = "kick",
-    [56812] = "garrote",
-    [56820] = "crippling_poison",
-    [58027] = "pick_lock",
-    [58033] = "safe_fall",
-    [58032] = "distract",
-    [56798] = "sap"
-})
+    [89758] = "vanish",
+    [63249] = "vendetta",
+} )
 
 
 -- Auras
@@ -332,7 +333,7 @@ spec:RegisterAuras( {
     bandits_guile = {
         id = 84654,
         max_stack = 1,
-        
+
     },
     -- Sapped.
     sap = {
@@ -373,7 +374,7 @@ spec:RegisterAuras( {
     -- Melee attack speed increased by $s2%.
     slice_and_dice = {
         id = 6774,
-        duration = function() return ( ( glyph.slice_and_dice.enabled and 9 or 6 ) + ( 3 * combo_points.current ) ) * ( 1 + 0.25 * talent.improved_slice_and_dice.rank ) end,
+        duration = function() return ( ( glyph.slice_and_dice.enabled and 12 or 6  ) + ( 3 * combo_points.current ) ) * ( 1 + 0.25 * talent.improved_slice_and_dice.rank ) end,
         max_stack = 1,
         copy = { 5171, 6434, 6774, 60847 },
     },
@@ -394,7 +395,7 @@ spec:RegisterAuras( {
         id = 76577,
         duration = 5,
         max_stack = 1,
-    
+
     },
     -- $s1% increased critical strike chance with combo moves.
     turn_the_tables = {
@@ -424,7 +425,7 @@ spec:RegisterAuras( {
     },
     -- Bleeding for $s1 damage every $t1 seconds.
     pounce_bleed = {
-        id = 49804,
+        id = 9007,
         duration = 18,
         tick_time = 3,
         max_stack = 1,
@@ -432,18 +433,16 @@ spec:RegisterAuras( {
     },
     -- Bleeding for $s2 damage every $t2 seconds.
     rake = {
-        id = 48574,
-        duration = function() return 9 + ((set_bonus.tier9_2pc == 1 and 3) or 0) end,
+        id = 1822,
+        duration = function() return 9 + ( set_bonus.tier9_2pc == 1 and 3 or 0) end,
         max_stack = 1,
         copy = { 1822, 1823, 1824, 9904, 27003, 48573, 48574, 59881, 59882, 59883, 59884, 59885, 59886 },
     },
-    -- Bleed damage every $t1 seconds.
-    rip = {
-        id = 49800,
-        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7_2pc == 1 and 4) or 0) end,
-        tick_time = 2,
+    -- redirect
+    redirect = {
+        id = 73981,
         max_stack = 1,
-        copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
+
     },
     rend = {
         id = 47465,
@@ -454,17 +453,35 @@ spec:RegisterAuras( {
     },
     -- Revealing Strike logic
     revealing_strike = {
-       id = 84617,
-       duration = 15,
-       max_stack = 1,
-        
-    },
-     -- redirect
-     redirect = {
-        id = 73981,
+        id = 84617,
+        duration = 15,
         max_stack = 1,
-         
-     },
+    },
+    -- Bleed damage every $t1 seconds.
+    rip = {
+        id = 1079,
+        duration = function() return 16 + ( set_bonus.tier7_2pc == 1 and 4 or 0 ) end,
+        tick_time = 2,
+        max_stack = 1,
+        copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
+    },
+    tricks_of_the_trade = {
+        id = 57934,
+        duration = 20,
+        max_stack = 1
+    },
+    tricks_of_the_trade_rogue = {
+        id = 59628,
+        duration = 6,
+        max_stack = 1
+    },
+    tricks_of_the_trade_threat = {
+        id = 396937,
+        duration = 6,
+        max_stack = 1,
+        dot = "buff",
+    },
+
     -- Bleeding for $s1 damage every $t1 seconds.
     deep_wound = {
         id = 43104,
@@ -585,7 +602,7 @@ end )
 spec:RegisterHook( "reset_precast", function()
     if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
 
-    local mh, mh_expires, _, mh_id, oh, oh_expires, _, oh_id = GetWeaponEnchantInfo()
+    -- local mh, mh_expires, _, mh_id, oh, oh_expires, _, oh_id = GetWeaponEnchantInfo()
 
 end )
 
@@ -1011,7 +1028,7 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Increases dodge by 15% for 7-11 seconds.
+    --[[ Increases dodge by 15% for 7-11 seconds.
     ghostly_strike = {
         id = 14278,
         cast = 0,
@@ -1030,7 +1047,7 @@ spec:RegisterAbilities( {
             gain( 1, "combo_points" )
             removeBuff( "remorseless" )
         end,
-    },
+    }, ]]
 
 
     -- Causes 79 damage, incapacitating the opponent for 4 sec, and turns off your attack.  Target must be facing you.  Any damage caused will revive the target.  Awards 1 combo point.
@@ -1040,10 +1057,10 @@ spec:RegisterAbilities( {
         cooldown = 10,
         gcd = "totem",
         requiresFacing = function() return not glyph.gouge.enabled end,
-        
+
         spendType = "energy",
         startsCombat = true,
-    
+
         handler = function ()
             applyDebuff( "target", "gouge" )
             gain( 1, "combo_points" )
@@ -1075,7 +1092,7 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Enrages you, increasing all damage caused by 5%.  Requires a bleed effect to be active on the target.  Lasts 1 min.
+    --[[ Enrages you, increasing all damage caused by 5%.  Requires a bleed effect to be active on the target.  Lasts 1 min.
     hunger_for_blood = {
         id = 63848,
         cast = 0,
@@ -1096,7 +1113,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "hunger_for_blood" )
         end,
-    },
+    }, ]]
 
 
     -- A quick kick that interrupts spellcasting and prevents any spell in that school from being cast for 5 sec.
@@ -1288,21 +1305,24 @@ spec:RegisterAbilities( {
 
         copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671, 48672 },
     },
-    
+
     recuperate = {
-        id = 73651, 
-        duration = function() return 6 * combo_points.current end,
-        tick_time = 3,
-        max_stack = 1,
+        id = 73651,
+        cast = 0,
+        cooldown = 0,
+        gcd = "totem",
+
         spend = 30,
         spendType = "energy",
 
-        healthRestorePercentage = 0.035,
+        usable = function() return combo_points.current > 0, "requires combo_points" end,
+
         handler = function ()
-        local totalHealthRestore = max_health * healthRestorePercentage
-        local healthRestorePerTick = totalHealthRestore / (duration() / tick_time)
+            applyBuff( "recuperate" )
+            spend( combo_points.current, "combo_points" )
         end,
     },
+
     revealing_strike = {
         id = 84617,
         cast = 0,
@@ -1327,22 +1347,11 @@ spec:RegisterAbilities( {
         range = 40,
         cast = 0,
         cooldown = 60,
-
-        handler = function ()
-            local comboPoints = GetComboPoints("player", "target")
-            if comboPoints > 0 then
-            for i = 1, comboPoints do
-                ComboPointUnit("target", i)
-            end
-            
-          end
-        
-        end,
     },
 
     -- Incapacitates the target for up to 45 sec.  Must be stealthed.  Only works on Humanoids that are not in combat.  Any damage caused will revive the target.  Only 1 target may be sapped at a time.
     sap = {
-        id = 2070,
+        id = 6770,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1362,18 +1371,13 @@ spec:RegisterAbilities( {
         copy = { 2070, 6770, 11297, 51724 },
     },
 
-    smokeBomb = {
+    smoke_bomb = {
         id = 76577,
         cast = 0,
         cooldown = 180,
-        radius = 8,
-        duration = 5,
-        handler = function ()
-            local smokeCloud = CreateSmokeCloud(8, 5) -- Create a smoke cloud with a radius of 8 yards that lasts for 5 seconds
-            smokeCloud:SetPreventTargeting(true) -- Prevent enemies from targeting into or out of the smoke cloud
-        end,
-    
+        gcd = "spell"
     },
+
     -- Enter the Shadow Dance for 6 sec, allowing the use of Sap, Garrote, Ambush, Cheap Shot, Premeditation, Pickpocket and Disarm Trap regardless of being stealthed.
     shadow_dance = {
         id = 51713,
@@ -1429,8 +1433,7 @@ spec:RegisterAbilities( {
         texture = 135428,
 
         handler = function ()
-            dispelEnrageEffectsOnTarget()
-            gain( 1, "combo_points" )
+           removeDebuff( "target", "dispellable_enrage" )
         end,
     },
 
@@ -1442,12 +1445,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
 
-        spend = function()
-            if talent.improved_sinister_strike.rank == 2 then return 39 end
-            if talent.improved_sinister_strike.rank == 2 then return 41 end
-            if talent.improved_sinister_strike.rank == 1 then return 43 end
-            return 45
-        end,
+        spend = function() return 45 - ( 3 * talent.improved_sinister_strike.rank ) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1539,6 +1537,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "tricks_of_the_trade" )
+            active_dot.tricks_of_the_trade_threat = 1
         end,
     },
 
@@ -1563,45 +1562,41 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 1856, 1857, 26889 },
-
     },
 } )
 
-spec:RegisterSetting("rogue_description", nil, {
+spec:RegisterSetting( "rogue_description", nil, {
     type = "description",
-    name = "Adjust the settings below according to your playstyle preference. It is always recommended that you use a simulator "..
+    name = "Adjust the settings below according to your playstyle preference.  It is always recommended that you use a simulator "..
         "to determine the optimal values for these settings for your specific character."
-})
+} )
 
-spec:RegisterSetting("rogue_description_footer", nil, {
+spec:RegisterSetting( "rogue_description_footer", nil, {
     type = "description",
     name = "\n\n"
-})
+} )
 
-spec:RegisterSetting("rogue_general", nil, {
+spec:RegisterSetting( "rogue_general", nil, {
     type = "header",
     name = "General"
-})
+} )
 
-spec:RegisterSetting("rogue_general_description", nil, {
+spec:RegisterSetting( "rogue_general_description", nil, {
     type = "description",
     name = "General settings will change the parameters used in the core rotation.\n\n"
-})
+} )
 
 spec:RegisterSetting("maintain_expose", false, {
     type = "toggle",
-    name = "Maintain Expose Armor",
-    desc = "When enabled, expose armor will be recommended when there is no major armor debuff up on the boss",
+    name = strformat( "Maintain %s", Hekili:GetSpellLinkWithTexture( spec.abilities.expose_armor.id ) ),
+    desc = strformat( "When enabled, %s may be recommended when there is no major armor debuff up on your target.", Hekili:GetSpellLinkWithTexture( spec.abilities.expose_armor.id ) ),
     width = "full",
-    set = function( _, val )
-        Hekili.DB.profile.specs[ 4 ].settings.maintain_expose = val
-    end
-})
+} )
 
-spec:RegisterSetting("rogue_general_footer", nil, {
+spec:RegisterSetting( "rogue_general_footer", nil, {
     type = "description",
     name = "\n\n"
-})
+} )
 
 
 spec:RegisterOptions( {
@@ -1615,29 +1610,31 @@ spec:RegisterOptions( {
     damage = false,
     damageExpiration = 6,
 
-    package = "Assassination (wowtbc.gg)",
+    package = "Assassination",
     usePackSelector = true
 } )
 
 
-spec:RegisterPack( "Assassination (wowtbc.gg)", 20230126, [[Hekili:TAvBVTTnq4FmfiVG1i)wR3wwsa6(Yqcg8aQsr)WqLiTeTeHPi1iPIRbc4V9DhLSLKR0YA2qacK5D85EUJhFognl6XOWuQLfTA(05lMoB(YG5tF)YflIcT7lzrHL0KT0m4djTa()hmgQXWLulxjDKl2P2zxNeKLDj66EHIMIqAuv6eW9CRT0C9KjhDd(Yk2ojraOCvwfpLzMq7I5vAvwfBsu46kUWEVmADhcoF20zlb0lzjrREhappnLv7cZKef(yo34iLAUsZT7De8xRPgwQJuvI81MZCKJKXr(SMAZDeprcGmqR2WfaVFZBCKts1pI8Y9aAz2sh5psSQ1mTJG0Y9G7bAc6NjOuZsufRP2F42jwnpzRjwTjgcCSvttzVLV52mTQQC4DuQ8rBqBglJka6oOXmQwRSE4nkHQdJaJBbA093gbpHftLPXPWh4EwxTztq)Ldsv7K9XHMQzsQGlzX6ktoUr04tSyMKvWzM7M1191ciHJ3iQ069VKVBOsSoTvcEyg25UURRkTvAp1TubtAdYRKzmD8gLoETqPsdaMUwWspZNAFJvm5olL5n2u7As42GC6MowOgeTEf4CkSubtK2HHQNy6TCHOpZoU6Py8evYRRXVU9)VQ5d8JjFIjvfOnSBsfxQ4sRjiLTHNWT3oToojkrAt22F)TgghIVJ4DZ8ZUO5CPXtFM98ZqNGoBFGLxazJkUG(1BoXpnRGYLMl7gTIklxqRVymu4UBAuiubnG7DLy2r1sUmZef(5p8Xv3V63U2rCKhr5dErPsBDe403rohGHwjSN7iA2FvX1OwJrva(rRSQciYWcj5uOHXe4E43H7ooY7b0(K0uvIiHouZxaUExdopaB6piQ5LMQ10k4OWeOF1ardzYWsepbK50C5wgKKiPV3wVjVyrbtMIb0MtHLzqMVVNGPmrubAPGjo01OVgia5kh5p)KHHiXkmF5TGcAopjVR3u5(2O6isfc(xlfyfw0IBk(vJk8HG(locW9MW8yneGe7xqqt7U08orEh0W3jJAG0EWvF1WVKSQauP9hkcLfQN3xCOMpVTSl4gSy9quiCOLR0W5)HzerHEJ(5K1h1WNR8ZnR3DuiQUgf2CPm6xJSqJeAVDLWeitHJgkowByH2w46BerBXOO1xK0rUdQCTiDICnc17ELq1vkhX59VsC61FJaTCuGEbDDh5my4(4QXO5H03X1TuDgZg0yUzwYjhdnRIC8h)Npnhm(TaDQzeXF6LY6t16BZ2E69D6AooXbX)N)Fh)6Pri2ZMok4(zlT7zGjqEaMnkadPq7i36itBjyVbrTbRziGpaJF9B8a0IuBa8Gn(TVHb7gV0cW2lo2a2DqMJ88ZG443mmZVXHhO5ixoCEo(T5HP2D9YZdJgbOS4BFBEm5r9T)dhXZ7Qpw)M2tuix01JMx2EIlJND4lCB3DZ1BFAu)x0F)d]] )
+spec:RegisterPack( "Assassination", 20240517, [[Hekili:1I12UnUnq0VL8IZUOPUYxu2KT2gy7dTnbf5H6SOpuSsIwI2IWsKQKu5cGH(27musru3sYIIIfjXMC4zgEMl8G1BM39EBJiAQ3DZDMV0XD2NMoB5SRCw6Tv)Cg1BBgj8i5a8bojf(9xukIsX4entWlcW9ForqIqCuICziyJ32D5Se9nCVDdd(CW2mAO3DGxIzrr0slPQqVT3hZufb4pKIGkNxei2dFpS0NjmLg2EVqwe870JSe2uVTMfXGGiOWFUZCXOCYUeAK3V4TnuY0ujJ4T9SIG8mWodAqGKWcP(eEKFe8bpneRJE0qr6oHFMGX1QPH5sjLRlcwxe40GxAUMLG3zaPfMaQAJ9eUVyV)ro7bQY2bA4FWLFpjpr)6Hoc1duFkNMYOafSPiWTXbYCUF5N9r2OKt8ltBiRmWv79CuLUmcvVrWTlF)(PTzZPrIh5VjvxV9rw4X28sjb(kEttjj64P25ZdePuus)lh90adkp8mqGqUZ1TiysrGDUTiyfSXcZ6AI8avpnU0tzHAdTVWD4mU77Q2P0Xln4hrnxfzEMoxsNkPPeghJGIG52jiZ2OlU815KDjcrusUsdSsrWPtVCd0SuQVwaCpTeDRI2DuPIkpY4hqp8P)h8qmmmrcn90iOqlKMqLMjiO7UAu3neUi57yyUHk4WiQpPAxF8aLhr1Ac65RFxzRMoDt5sJVPCamrAl4dfjr(ggcDWmN3LhSRh(WlrFDK(cnxTUw8ele8bjI2Dlvoqy4ug0gUQv10SIGp2eNvXUjihVNUUpboUBjPFwnV)sRxRLfpGLrjjTPCcNPInUA8zRVJAOdjIDKeFDmvMc)vrYGAk)Wy8Kg0hFCHDd)Lod1WxZ)d0VVQD)(o4rjLMSZ4YUZyQnktis8L06NePpPLeFsQiNdJsVgUuWZx(CyzCKk(RV)jh23PRDgo1(gdlAQG7Hy1yXVVXFZgF0Xy86a5I1TEwZ(6m(Ocf0PaJVutXcEn8Jp9PmHI2d(2DZlT8JXEFImvilFXltsXtsWh(ml8irYrN4T9V(YFE3n39BFUiOi4(yWlS0mHuxPk5CL(8Iaj9FYzsAurGsKcMqY1IuGOGfGAw(bQAAXT)bJdBDfa0x5Q8mee0GAToNxpe4CWwJJ2lssepcrbcOKa01JujSEUcphdoJgnZwSe2BQRTJlmrzoVL1rrOXGwnYoII(5IBlc(riUBpoPAvR5pvRuhKWxVTu)wMuSNLqlfYLYqfJhq8YSyPdy5gleauY4hPqQbzZB0LhYW9PiWryqsGLPWWLNrSzciV)mg)Hj5rOsikdNkuh3)9xXe)nAAQ6Bxax8ywyST1e(ZnETIsG0p8uctN0GRndv70Fg0IkRDZ9LqaZw)gcAK9sZT88JWerRBufK6AtnSHzjEEk8uSPKjrOHu(nP1vel6iag2eQDZ1Xq162FvCaerJJDk5DVTqB5Ej7iCO2c2LId5yA72sWu)W6FQJ4VlqzFRbbJxW2VUTIZnUV55GQTgWHxja7A)enI6ysf7CquqyNLQu31asZZqTnSEQeAz5yTnRDDNypjy16ft6nvAZc3oivjIabY(0BwVCYWA3wnVdcnQREjUT1qD6u)3(wn3PdiJiG6)aI1DTie9TFZcNjdRWQ71Uh33ObQlPvp8fYft6(auBmQ2yiw)d91hD60GAJEz5r0fTA2h7YjgPknfnRCDMCwNkTQfSK60Ti9v0Pmmz3p5ulYWU(9sN21Vl7x(UQx5BlHixuR6y9SlSLKS(6U()v4)6WP3zS756KDNy1d(o65S8(qxXw0W6Eh26HCeHXKgmz4kZL2dWGXGdob7m7KEPr23(HqETt3t0()rauHH3)c]] )
 
-spec:RegisterPack( "Combat", 20230211, [[Hekili:Dw1Y2TTnq0VfTrBQRI1d300ALfnBI9cVHoztpbeqGdLWrKa8aaAfTbF7DgsjtqgkDS7cjboZCVdMh8k2C2ZSKmHhypT42flVDX85ZMVC5NUBblXFScyjvc5EXw8GwuIF)ft5gHNmFSWiYi4otTvIUyjBQvf(h0SnJZjgAfizpTILStLLbTbcojl55DkxGtFeb(Pug4MC8zPxz0bEHY5r35gBG)vyVQqnJL0yKUdcdG)8ut5aAXMciJ9pSePv5bRsGbG08cKcAOubipFoWNh4tB5p2X9b(Y2WnASIkezqAErT1EK5Xc69KGiEYf6utE6EngJJiA5aIu5tyj1vDiCfkjKk0zPz4bcYQMc9SBLgRDWM68w1EiMlm07OqL4OYKwzuAVBMeRaqJdU764aEr5KGLMu9G7PPsUOUW)Ap9mK9k5(b56YTKn155Z6xhZYmh0xRih2x6yBR1e3FWYwU3rnv)oi1BX50)NM0OPAsGxx1SDmwpmWxh4rTrBDLV22K9)4IuI7f2Th7OaxZwfXHidnlkuAi1w72rC9XR3xhGywCVz4w7F(EPQP2B8ftvVCGVbIi2M6QSa0U0GNKTYdx9vX32GCr8GSYCAJnE(D5vfNPW0bERWAn(27iElFbSoYER4085FKLCqy1yT4oRdvzn5QcOvqQu5W9OTbURUQYy9N0G2stuLmWX7VEpGRhbEG)GVfutNOe0zqggXobAgWeFK4wzWlkEsPLf1zKwbOWs3(xHhd8FpW)3V5aIjO09JBc8d7uYDXrl0h7YAGRne5)ScFvs5l64nJorjh6s6FJAQ2ZP55wkqHWFqKMfBAruMpGt6Ok6eL(ZH20nAmPRl3awkXUcJFw4XhkPggzy5aHC0joGQ97mwwY3Xfa63tT9Zto3SxxO(T1FyK1KBu5RBwMcpogI2LMX9DANGyGwwWwYRHH)vcgq8EpfvF59ppFAFd3VCib9u8hHHFbqFTqeXK1Xv2PG6ROn0DNI(nJPCT(oQqFfecG0ZJF(xUeRVKiEmQ30S5k3E01jruc2K6QPx623byGOfbSVg79R6f)Wb6Lu(61CIK4UcMPJQusInS)7p]] )
+spec:RegisterPack( "Combat", 20240517, [[Hekili:1IvxVTTnu0Fl5fNvSmp5VAB6Sdq3lBjyipmNI9WqLeT012ewIuJKkPbiq)239sjzrjlL4IHHIKytE55E55(bpO(t8FWFDmZa(3p1B6CVft(W4jZNoD(m)1MNZa)1zSOdSD4heSu83FwRzAnxWmCPOiK2)5ejlMWrlZvrOn(R3KZtm3k830d4t(O3u02miY)(5(R3ZJJHslbDK)6h2Z1fH0pSIWkNxek3IFpQ0NjCTb3ERuve(7WbEcFS)A7IuqWKa(N7TxmqW2KaX()Q)6if3akoZF9ffH5zODw0WajHhbbmrCqm(bFdgRdE0iz6gzqMKlm6Xr5kfimfHRkc9AWln3WtO7mI0mBavTXwMiqUn4GG)iODDGb)hE53YYtmVEOtq9ieaciLdifCtr4IghOYfbLFoGyJsojOmTrSspxTZ5OAtzeQFJGBt(2TJBZMJJLpjEtQUE7d8OdT5Lsc8v8MbyjM9JDZN7ykLSK(Np4PrguT7zKaXC3IffHJkcDZTfHlXnMzx3Wu7aZ49LEklYyP9zl6pJV4SQDkD8Cl(XG9QOYZm5kyScszCbfbfHtDtq2Tjx8(xNt2KiLXj5AdYkfHV8YXBGHNcbgjY9qj6ofTBaLguh4IDKh(W)dEypomrHn9qmwOfbjGYobHC3hh0D9Hlr(EwMRVcokIoLuDRpEeeXGXWipF9zLTA60TLln(geiyY0wWhjtIdSme5GjENLhCRh(HJrFDKEKMRw3i)gpc9blg6ULohjmAkdzJq3QAAsr47AIZQy3gKd3tx3NGhFrjPFrnVFS1R1YYhPYOKK2uotW17TUA4zRNrn0Ue5gwsGzpOsX)Qzzynvq0E6Kw0hECHBd)796RHVM)7PFFz7(9n4JsAdBJ1LDNXuBuMuMeOG6NeHVzuSawQmxGJsVgVu4ZxbcCzAKk9RV)jhU3PR96p1(gdlAQGpbXQXIFFJ)Mm8OJH41EYfRA9SM71z4rfAStbhFPhtf8g8Na4BzsnCc8T7MN74hR9bmvQuv(IxMcOtYOh(Sl8etjiN4V(V(8FE)T3)BFQiSi8H9Ox4PzsLPsvYLAZLfHk4FY5kiUiultrty5gzksu4cynRyhOhxC3FWf4wFeb6lcDEgbczqTwNlRhcCjAR1rBLjjYNWOGauXq66jqHRNRPZXXZyiZCflr9MMA7esBuMlAzDCmzmQvJTHPHpvCxr4pHXD7XjvR6m)PAL6Ge)6DL63YuYT8eOuixkNumUJWlZHL2rLB8ieqfxCaWudXM3AkpKL7tjGJPGKHld4WLNjS5smV)mf)rj5XKsiGttfQJ7)(luI)wdKQ)6v4fFppAVR1mXZnETIsW0p(uc3K0GRldv70Fb1IQQDZdLqGZw)kbAS7stD88t4erNBufKMAtTSHDjrEk(uSTKjrAWu(TP1veZ6iag3eRDZn7XQ11yt4wf)avYA59JRGhQTGDLCxoL2URem9pU6N7i(7ks23kuW4v8TRAR48MfV55WQTgWXxjq7A)enH6qsf7CqsqyNLQu31asZZqTnSEQezz5yTBwTyXi3jblxnB0jtLUz2IoivjIGaY903SA(O(1UTCAheAuxDmUD1q9YlN(23YPEDazabu)hqSURLG4u7VzM3O(vy19AFc33ObQlPvp8fZfJ6(auBmQ2Opw)hovF0lV0R2OJlpGUOLtExxoXkvPPOz5cVrx0PsRAbhPoDlsFfDk9t2NMCQfz4w)(EV21VZpT8D5jLVTeICvTQJvtUYvsYQR76)xH)RdNtoJBpxNS7iNEWZONZX79DfBrdRo5WopKtimK0Gr9xzo3DagogS3jyx4M0lnY923hYR86EI2)pcqkm8)3]] )
+
+spec:RegisterPack( "Subtlety", 20240517, [[Hekili:LIvZYTTnq4NfFX5qDzLCSCCsJ8mTxATp4dHUtp0jKeKeseJijyXpsvZ4bp7DbaPijeeLD8bNqdS4B)b7UFlC08ONJcZrcC0txp76BMTy(NcMFZ1F8JFokuSVbhf2GY2GwdFuJQG)nuMkkXI96n2xsr5Aa4ujld2mkmvskfpuhL6h17azBWzrpDtuybjphBLeZZIcFUGWvj6FqQKwTQsORGFptqO1QKscxaBVIYuj)jEdPKeaMbJUIuQTSk5kgzJk5B01s4KDwQ6r1Jwe4)0YFjdvwgB)1ynExPDRLKAI48srBW1y2vKvlfi2ASiqqQWXcACobF)SlViNkcyYgHKHHTY2qQxpeuMS(ym5Ib2xG2oaj3IyeuAj2kslKXvisTa(5QTOsjEzgTkLg3qHf5bzsgdxlwU4Yu5QvbviUaZIPRI5TrHazZzudElHNHzWTwSKJNwjx0D0axJ7C(cot2yvIJ7ySBD8fcSKSyqq6wmBFqoD35aDfPopEhgTPgZ5XOMMY9dbDlQMWlGaWlVy(DEbcanohvNHnHLE4T3WGcem4(JRdGIc4kMHYXEKIxsYWXiq75Wh6ed)XlphTHQxWA)2VpOmAz8wcZN6eyuPOWhAmCfoNiqMcfpN04YW5B8SjQkvY9HA7D7BYVkWvugRqx7E8MPqvnxGspfIF9M3rq2M5pwANSNEp7qA4BeVXPlCX4O0ROQWCKJDPZB7wDnYU7v3XvvohesqAqmN0dZotMPBT2b1lA1Aks33fOU)UzELxNS17zJl5U07L)IJT5(K6dqD2Q5ryyZThfS80TW5q95W6dMJn6PFrFxm9nphPRX9uDotx1WKA)c7EbDchi5AKDv))1q5qQddoQ(uCSqaSp8GU0HyReEd83VeyJHETCaVde23gfUdXQ1Gef(3)23E6HN(JVOsujpxaCRKQgkt0sf)bDt5pOsy4)vsy4CvcNwbcHKcAf46WczfO61yEG6rZXxrllP700JGqmeWPVdZG1HyeimK8Mi0IzDrlVVkjvk6KRMA0TSEK055AHHXoqPio(lqHAYpRsoMsrxbBh2OD2b7uhveo3ysCzZaVBTgasgOegPEdgcB6OWdc7H0ywvHRZ1gUOablJn6aWMqzey8dWcZkLWmoWweWszDw2)8xqkbGeUI)9RaxRGKvmuAu9(ET260W1i0KGik7XDymOtP)km4eRtnpBHqLm)7AqZhU01d08osz5apQfsrNOMOHzPAzvk2ErxcJ8OE8bt6GEHBCMwd2mk08LEorB)x4RNmZDALeg084wqrH4ADEEE0VhjGKsT49ReMbojCRGGV8KqRswQsw0J)4(QA8(OdEwg4U)3HjUhOwXe65xhy)T8Yo28IHImQxMJG3ocRdnpDK6tdLY2wZrI7ExbPwklnqFEOQ6Bh5OU5ZEJ67Rq6rpUDn0mqn)ncL20vjxQBk4N3CQl)5)iztNuBYMbXWd8WGEe6h2Scjlfhs4hOZUJ4(sdB1sS9Xw6gRtN(F8druj3RsMzm3lGUHh)KKxPUBRv9uS0NXuFYtZf2iGXd84(uiQbKu9G1rzQ)cMC)1Dv49zogSAnd35W8fmF3MceMp5GFdnMXdd4lYEEtzQxjnYXpEIWdTTE7k8WmxQKxEPRmy8CxdvUNjSSzdCV5c9zZteg90M60vf)iDfCVl8zvEcQ(R9hZpmy47P4iopn4TN0ghptUPhWDZCzvSxwhitMi05mtTol)K90x4L8As(OxFsLF(ZooQPVU8Lg6YGonpM)r)9Ynonl2jEqqps9R3ZqDetPd)7PZyVOBkm3NnCst3TXqpwN6PetKuC)Yrm9dFCITpqJziZuKUDGzb4PcfWMD)n8mlg9)]])
 
 
-spec:RegisterPackSelector( "assassination", "Assassination (wowtbc.gg)", "|T132292:0|t Assassination",
+spec:RegisterPackSelector( "assassination", "Assassination", "T132292:0|t Assassination",
     "If you have spent more points in |T132292:0|t Assassination than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
     end )
 
-spec:RegisterPackSelector( "combat", "Combat", "|T132090:0|t Combat",
+spec:RegisterPackSelector( "combat", "Combat", "T132090:0|t Combat",
     "If you have spent more points in |T132090:0|t Combat than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
     end )
 
-spec:RegisterPackSelector( "subtlety", nil, "|T132320:0|t Subtlety",
+spec:RegisterPackSelector( "subtlety", "Subtlety", "T132320:0|t Subtlety",
     "If you have spent more points in |T132320:0|t Subtlety than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )

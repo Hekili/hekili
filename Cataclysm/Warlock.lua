@@ -12,96 +12,96 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    aftermath = { 11197, 2, 85113, 85114 },
-    amplify_curse = { 6542, 1, 18288 },
-    ancient_grimoire = { 11188, 2, 85109, 85110 },
-    aura_of_foreboding = { 11814, 2, 89604, 89605 },
-    backdraft = { 10978, 3, 47258, 47259, 47260 },
-    backlash = { 10958, 3, 34935, 34938, 34939 },
-    bane = { 10938, 3, 17788, 17789, 17790 },
-    bane_of_havoc = { 10962, 1, 80240 },
-    burning_embers = { 11182, 2, 85112, 91986 },
-    cataclysm = { 941, 3, 17778, 17779, 17780 },
-    chaos_bolt = { 10986, 1, 50796 },
-    conflagrate = { 968, 1, 17962 },
-    contagion = { 6562, 5, 30060, 30061, 30062, 30063, 30064 },
-    cremation = { 11199, 2, 85103, 85104 },
-    curse_of_exhaustion = { 18223, 1, 18223 },
-    dark_arts = { 10992, 3, 18694, 85283, 85284 },
-    deaths_embrace = { 11142, 3, 47198, 47199, 47200 },
-    decimation = { 11034, 2, 63156, 63158 },
-    demonic_aegis = { 11190, 2, 30143, 30144 },
-    demonic_brutality = { 3059, 3, 18705, 18706, 18707 },
-    demonic_embrace = { 10994, 3, 18697, 18698, 18699 },
-    demonic_empowerment = { 3047, 2, 47193, 54509 },
-    demonic_knowledge = { 3031, 3, 35691, 35692, 35693 },
-    demonic_pact = { 11042, 1, 47236 },
-    demonic_power = { 983, 2, 18126, 18127 },
-    demonic_quickness = { 3089, 2, 80228, 80229 },
-    demonic_rebirth = { 11713, 2, 88446, 88447 },
-    demonic_resilience = { 3027, 3, 30319, 30320, 30321 },
-    demonic_tactics = { 3033, 5, 30242, 30245, 30246, 30247, 30248 },
-    designer_notes = { 7451, 1, 80557 },
-    destructive_reach = { 964, 2, 17917, 17918 },
-    doom_and_gloom = { 11100, 2, 18827, 18829 },
-    emberstorm = { 11181, 2, 17954, 17955 },
-    empowered_corruption = { 1764, 3, 32381, 32382, 32383 },
-    empowered_imp = { 10982, 2, 47220, 47221 },
-    eradication = { 11134, 3, 47195, 47196, 47197 },
-    everlasting_affliction = { 11150, 3, 47201, 47202, 47203 },
-    fel_concentration = { 6540, 3, 17783, 17784, 17785 },
-    fel_domination = { 1226, 1, 18708 },
-    fel_synergy = { 11206, 2, 47230, 47231 },
-    fel_vitality = { 3005, 3, 18731, 18743, 18744 },
-    fire_and_brimstone = { 1890, 5, 47266, 47267, 47268, 47269, 47270 },
-    grim_reach = { 6544, 2, 18218, 18219 },
-    hand_of_guldan = { 11201, 1, 71521 },
-    haunt = { 11152, 1, 48181 },
-    impending_doom = { 11198, 3, 85106, 85107, 85108 },
-    improved_corruption = { 6528, 5, 17810, 17811, 17812, 17813, 17814 },
-    improved_curse_of_weakness = { 6530, 2, 18179, 18180 },
-    improved_demonic_tactics = { 3037, 3, 54347, 54348, 54349 },
-    improved_fear = { 11114, 2, 53754, 53759 },
-    improved_health_funnel = { 10998, 2, 18703, 18704 },
-    improved_howl_of_terror = { 11140, 2, 30054, 30057 },
-    improved_immolate = { 961, 3, 17815, 17833, 17834 },
-    improved_imp = { 3051, 2, 18695, 18696 },
-    improved_life_tap = { 11110, 2, 18182, 18183 },
-    improved_sayaad = { 3063, 3, 18754, 18755, 18756 },
-    improved_searing_pain = { 11196, 2, 17927, 17929 },
-    improved_soul_fire = { 10940, 2, 18119, 18120 },
-    improved_soul_leech = { 1889, 1, 54118 },
-    inferno = { 11189, 1, 85105 },
-    intensity = { 985, 2, 18135, 18136 },
-    jinx = { 11214, 2, 18179, 85479 },
-    malediction = { 6568, 3, 32477, 32483, 32484 },
-    mana_feed = { 11020, 2, 30326, 85175 },
-    master_conjuror = { 3077, 2, 18767, 18768 },
-    master_demonologist = { 3079, 5, 23785, 23822, 23823, 23824, 23825 },
-    master_summoner = { 11014, 2, 18709, 18710 },
-    metamorphosis = { 11044, 1, 59672 },
-    molten_core = { 11024, 3, 47245, 47246, 47247 },
-    molten_skin = { 1887, 3, 63349, 63350, 63351 },
-    nemesis = { 3097, 2, 63117, 63121 },
-    nether_protection = { 10964, 2, 30299, 30301 },
-    nether_ward = { 12120, 1, 91713 },
-    nightfall = { 11122, 2, 18094, 18095 },
-    pandemic = { 11200, 2, 85099, 85100 },
-    ruin = { 967, 5, 17959, 59738, 59739, 59740, 59741 },
-    shadow_and_flame = { 10936, 3, 17793, 17796, 17801 },
-    shadow_embrace = { 11124, 3, 32385, 32387, 32392 },
-    shadow_mastery = { 6558, 5, 18271, 18272, 18273, 18274, 18275 }, --does not exists anymore?
-    shadowburn = { 10948, 1, 17877 },
-    shadowfury = { 10980, 1, 30283 },
-    siphon_life = { 11420, 2, 63108, 86667 },
-    soul_leech = { 10970, 2, 30293, 30295 },
-    soul_link = { 3065, 1, 19028 },
-    soul_siphon = { 11112, 2, 17804, 17805 },
-    soul_swap = { 11366, 1, 86121 },
-    soulburn_seed_of_corruption = { 11419, 1, 86664 },
-    summon_felguard = { 3095, 1, 30146 },
-    unholy_power = { 3071, 5, 18769, 18770, 18771, 18772, 18773 },
-    unstable_affliction = { 6572, 1, 30108 },
+    aftermath                   = { 11197, 2, 85113, 85114                      },
+    amplify_curse               = { 6542 , 1, 18288                             },
+    ancient_grimoire            = { 11188, 2, 85109, 85110                      },
+    aura_of_foreboding          = { 11814, 2, 89604, 89605                      },
+    backdraft                   = { 10978, 3, 47258, 47259, 47260               },
+    backlash                    = { 10958, 3, 34935, 34938, 34939               },
+    bane                        = { 10938, 3, 17788, 17789, 17790               },
+    bane_of_havoc               = { 10962, 1, 80240                             },
+    burning_embers              = { 11182, 2, 85112, 91986                      },
+    cataclysm                   = { 941  , 3, 17778, 17779, 17780               },
+    chaos_bolt                  = { 10986, 1, 50796                             },
+    conflagrate                 = { 968  , 1, 17962                             },
+    contagion                   = { 6562 , 5, 30060, 30061, 30062, 30063, 30064 },
+    cremation                   = { 11199, 2, 85103, 85104                      },
+    curse_of_exhaustion         = { 18223, 1, 18223                             },
+    dark_arts                   = { 10992, 3, 18694, 85283, 85284               },
+    deaths_embrace              = { 11142, 3, 47198, 47199, 47200               },
+    decimation                  = { 11034, 2, 63156, 63158                      },
+    demonic_aegis               = { 11190, 2, 30143, 30144                      },
+    demonic_brutality           = { 3059 , 3, 18705, 18706, 18707               },
+    demonic_embrace             = { 10994, 3, 18697, 18698, 18699               },
+    demonic_empowerment         = { 3047 , 2, 47193, 54509                      },
+    demonic_knowledge           = { 3031 , 3, 35691, 35692, 35693               },
+    demonic_pact                = { 11042, 1, 47236                             },
+    demonic_power               = { 983  , 2, 18126, 18127                      },
+    demonic_quickness           = { 3089 , 2, 80228, 80229                      },
+    demonic_rebirth             = { 11713, 2, 88446, 88447                      },
+    demonic_resilience          = { 3027 , 3, 30319, 30320, 30321               },
+    demonic_tactics             = { 3033 , 5, 30242, 30245, 30246, 30247, 30248 },
+    designer_notes              = { 7451 , 1, 80557                             },
+    destructive_reach           = { 964  , 2, 17917, 17918                      },
+    doom_and_gloom              = { 11100, 2, 18827, 18829                      },
+    emberstorm                  = { 11181, 2, 17954, 17955                      },
+    empowered_corruption        = { 1764 , 3, 32381, 32382, 32383               },
+    empowered_imp               = { 10982, 2, 47220, 47221                      },
+    eradication                 = { 11134, 3, 47195, 47196, 47197               },
+    everlasting_affliction      = { 11150, 3, 47201, 47202, 47203               },
+    fel_concentration           = { 6540 , 3, 17783, 17784, 17785               },
+    fel_domination              = { 1226 , 1, 18708                             },
+    fel_synergy                 = { 11206, 2, 47230, 47231                      },
+    fel_vitality                = { 3005 , 3, 18731, 18743, 18744               },
+    fire_and_brimstone          = { 1890 , 5, 47266, 47267, 47268, 47269, 47270 },
+    grim_reach                  = { 6544 , 2, 18218, 18219                      },
+    hand_of_guldan              = { 11201, 1, 71521                             },
+    haunt                       = { 11152, 1, 48181                             },
+    impending_doom              = { 11198, 3, 85106, 85107, 85108               },
+    improved_corruption         = { 6528 , 5, 17810, 17811, 17812, 17813, 17814 },
+    improved_curse_of_weakness  = { 6530 , 2, 18179, 18180                      },
+    improved_demonic_tactics    = { 3037 , 3, 54347, 54348, 54349               },
+    improved_fear               = { 11114, 2, 53754, 53759                      },
+    improved_health_funnel      = { 10998, 2, 18703, 18704                      },
+    improved_howl_of_terror     = { 11140, 2, 30054, 30057                      },
+    improved_immolate           = { 961  , 3, 17815, 17833, 17834               },
+    improved_imp                = { 3051 , 2, 18695, 18696                      },
+    improved_life_tap           = { 11110, 2, 18182, 18183                      },
+    improved_sayaad             = { 3063 , 3, 18754, 18755, 18756               },
+    improved_searing_pain       = { 11196, 2, 17927, 17929                      },
+    improved_soul_fire          = { 10940, 2, 18119, 18120                      },
+    improved_soul_leech         = { 1889 , 1, 54118                             },
+    inferno                     = { 11189, 1, 85105                             },
+    intensity                   = { 985  , 2, 18135, 18136                      },
+    jinx                        = { 11214, 2, 18179, 85479                      },
+    malediction                 = { 6568 , 3, 32477, 32483, 32484               },
+    mana_feed                   = { 11020, 2, 30326, 85175                      },
+    master_conjuror             = { 3077 , 2, 18767, 18768                      },
+    master_demonologist         = { 3079 , 5, 23785, 23822, 23823, 23824, 23825 },
+    master_summoner             = { 11014, 2, 18709, 18710                      },
+    metamorphosis               = { 11044, 1, 59672                             },
+    molten_core                 = { 11024, 3, 47245, 47246, 47247               },
+    molten_skin                 = { 1887 , 3, 63349, 63350, 63351               },
+    nemesis                     = { 3097 , 2, 63117, 63121                      },
+    nether_protection           = { 10964, 2, 30299, 30301                      },
+    nether_ward                 = { 12120, 1, 91713                             },
+    nightfall                   = { 11122, 2, 18094, 18095                      },
+    pandemic                    = { 11200, 2, 85099, 85100                      },
+    ruin                        = { 967  , 5, 17959, 59738, 59739, 59740, 59741 },
+    shadow_and_flame            = { 10936, 3, 17793, 17796, 17801               },
+    shadow_embrace              = { 11124, 3, 32385, 32387, 32392               },
+    shadow_mastery              = { 6558 , 5, 18271, 18272, 18273, 18274, 18275 }, --does not exists anymore?
+    shadowburn                  = { 10948, 1, 17877                             },
+    shadowfury                  = { 10980, 1, 30283                             },
+    siphon_life                 = { 11420, 2, 63108, 86667                      },
+    soul_leech                  = { 10970, 2, 30293, 30295                      },
+    soul_link                   = { 3065 , 1, 19028                             },
+    soul_siphon                 = { 11112, 2, 17804, 17805                      },
+    soul_swap                   = { 11366, 1, 86121                             },
+    soulburn_seed_of_corruption = { 11419, 1, 86664                             },
+    summon_felguard             = { 3095 , 1, 30146                             },
+    unholy_power                = { 3071 , 5, 18769, 18770, 18771, 18772, 18773 },
+    unstable_affliction         = { 6572 , 1, 30108                             },
 } )
 
 
@@ -128,19 +128,19 @@ spec:RegisterAuras( {
     },
     -- $o1 Shadow damage over $d.
     bane_of_agony = {
-        id = 47864,
+        id = 980,
         duration = function() return glyph.bane_of_agony.enabled and 28 or 24 end,
         tick_time = 2,
         max_stack = 1,
-        copy = { 980, 1014, 6217, 11711, 11712, 11713, 27218, 47863, 47864 },
+        copy = { "curse_of_agony", 980, 1014, 6217, 11711, 11712, 11713, 27218, 47863, 47864 },
     },
     -- Causes $s1 Shadow damage after $d.
     bane_of_doom = {
-        id = 47867,
+        id = 603,
         duration = 60,
         tick_time = 60,
         max_stack = 1,
-        copy = { 603, 30910, 47867 },
+        copy = { "curse_of_doom", 603, 30910, 47867 },
     },
     -- Receiving 15% of all damage done by the Warlock to other targets.
     bane_of_havoc = {
@@ -150,7 +150,7 @@ spec:RegisterAuras( {
     },
     -- Invulnerable, but unable to act.
     banish = {
-        id = 18647,
+        id = 710,
         duration = 30,
         max_stack = 1,
         copy = { 710, 18647 },
@@ -169,7 +169,7 @@ spec:RegisterAuras( {
     },
     -- $s1 Shadow damage every $t1 seconds.
     corruption = {
-        id = 47813,
+        id = 172,
         duration = function() return ( 18 * haste)	end,
         tick_time = function() return ( 3 * haste)	end,
         max_stack = 1,
@@ -184,7 +184,7 @@ spec:RegisterAuras( {
     },
     -- Reduces Arcane, Fire, Frost, Nature and Shadow resistances by $s1.  Increases magic damage taken by $s2%.
     curse_of_the_elements = {
-        id = 47865,
+        id = 1490,
         duration = 300,
         max_stack = 1,
         copy = { 1490, 11721, 11722, 27228, 47865 },
@@ -192,7 +192,7 @@ spec:RegisterAuras( {
     },
     -- Speaking Demonic increasing casting time by $s1%.
     curse_of_tongues = {
-        id = 11719,
+        id = 1714,
         duration = 30,
         max_stack = 1,
         copy = { 1714, 11719 },
@@ -200,7 +200,7 @@ spec:RegisterAuras( {
     },
     -- Melee attack power reduced by $s1, and armor is reduced by $s2%.
     curse_of_weakness = {
-        id = 50511,
+        id = 702,
         duration = 120,
         max_stack = 1,
         copy = { 702, 1108, 6205, 7646, 11707, 11708, 27224, 30909, 50511 },
@@ -208,7 +208,7 @@ spec:RegisterAuras( {
     },
     -- Horrified.
     death_coil = {
-        id = 47860,
+        id = 6789,
         duration = function() return glyph.death_coil.enabled and 3.5 or 3 end,
         max_stack = 1,
         copy = { 6789, 17925, 17926, 27223, 47859, 47860, 52375, 59134, 65820 },
@@ -222,7 +222,7 @@ spec:RegisterAuras( {
     },
     -- Increases armor by $s1, and amount of health generated through spells and effects by $s2%
     demon_armor = {
-        id = 47889,
+        id = 687,
         duration = 1800,
         max_stack = 1,
         copy = { 706, 1086, 11733, 11734, 11735, 27260, 47793, 47889 },
@@ -233,12 +233,11 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    -- Increases armor by $s1, and amount of health generated through spells and effects by $s2%
+    -- Increases the caster's armor and speeds its health regeneration for 30 min.
     demon_skin = {
-        id = 696,
+        id = 20798,
         duration = 1800,
         max_stack = 1,
-        copy = { 687, 696 },
     },
     -- Demonic Circle Summoned.
     demonic_circle_summon = {
@@ -256,24 +255,17 @@ spec:RegisterAuras( {
     },
     -- Drains $s1 health every $t1 sec to the caster.
     drain_life = {
-        id = 47857,
-        duration = function () return (5 * haste ) end,
-        tick_time = function () return (1 * haste ) end,
+        id = 689,
+        duration = function () return ( 5 * haste ) end,
+        tick_time = function () return ( 1 * haste ) end,
         max_stack = 1,
         copy = { 689, 699, 709, 7651, 11699, 11700, 27219, 27220, 47857, 358742 },
     },
-    -- Drains $m1% mana each second to the caster.
-    drain_mana = {
-        id = 5138,
-		duration = function () return (5 * haste ) end,
-        tick_time = function () return (1 * haste ) end,
-        max_stack = 1,
-    },
     -- $s2 Shadow damage every $t2 seconds.
     drain_soul = {
-        id = 47855,
-		tick_time = function() return (3 * haste) end,
-        duration = function () return (15 * haste) end,
+        id = 1120,
+        duration = function () return ( 15 * haste ) end,
+		tick_time = function() return ( 3 * haste ) end,
         max_stack = 1,
         copy = { 1120, 8288, 8289, 11675, 27217, 47855 },
     },
@@ -304,14 +296,14 @@ spec:RegisterAuras( {
     },
     -- Feared.
     fear = {
-        id = 6215,
+        id = 5782,
         duration = 20,
         max_stack = 1,
         copy = { 5782, 6213, 6215, 65809 },
     },
     -- Increases spell power by $s3 plus additional spell power equal to $s1% of your Spirit. Also regenerate $s2% of maximum health every 5 sec.
     fel_armor = {
-        id = 47893,
+        id = 28176,
         duration = 1800,
         max_stack = 1,
         copy = { 28176, 28189, 44520, 44977, 47892, 47893 },
@@ -330,15 +322,15 @@ spec:RegisterAuras( {
     },
     -- Damage taken from Shadow damage-over-time effects increased by $s3%.
     haunt = {
-        id = 59164,
+        id = 48181,
         duration = 12,
         max_stack = 1,
         copy = { 48181, 59161, 59163, 59164 },
     },
     -- Transferring Life.
     health_funnel = {
-        id = 47856,
-        duration = 10,
+        id = 755,
+        duration = 3,
         tick_time = 1,
         max_stack = 1,
         copy = { 755, 3698, 3699, 3700, 11693, 11694, 11695, 27259, 47856 },
@@ -349,18 +341,17 @@ spec:RegisterAuras( {
         duration = 15,
         tick_time = 1,
         max_stack = 1,
-
     },
     -- Fleeing in terror.
     howl_of_terror = {
-        id = 17928,
+        id = 5484,
         duration = 8,
         max_stack = 1,
         copy = { 5484, 17928, 50577 },
     },
     -- $s1 Fire damage every $t1 seconds.
     immolate = {
-        id = 47811,
+        id = 348,
         duration = function() return 15 + ( 3 * talent.molten_core.rank ) end,
         tick_time = 3,
         max_stack = 1,
@@ -435,16 +426,9 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 60946 }
     },
-    -- Fire and Shadow damage increased by $s1%.
-    pyroclasm = {
-        id = 63244,
-        duration = 10,
-        max_stack = 1,
-        copy = { 63244, 63243, 18093 },
-    },
     -- $47818s1 Fire damage every $47818t1 seconds.
     rain_of_fire = {
-        id = 47820,
+        id = 5740,
         duration = 8,
         max_stack = 1,
         copy = { 5740, 6219, 11677, 11678, 19474, 27212, 39273, 47819, 47820 },
@@ -467,7 +451,7 @@ spec:RegisterAuras( {
     },
     -- Causes $s1 Shadow damage every $t1 sec.  After taking $s2 total damage or dying, Seed of Corruption deals $47834s1 Shadow damage to the caster's enemies within $47834a1 yards.
     seed_of_corruption = {
-        id = 47836,
+        id = 27243,
         duration = 18,
         tick_time = 3,
         max_stack = 1,
@@ -479,13 +463,14 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    shadow_cleave = {
-        duration = function () return swings.mainhand_speed end,
-        max_stack = 1,
+    soulburn = {
+        id = 74434,
+        duration = 15,
+        max_stack = 1
     },
     -- Periodic shadow damage taken increased by $s1%, and periodic healing received reduced by $60468s1%.
     shadow_embrace = {
-        id = 32391,
+        id = 32386,
         duration = 12,
         max_stack = 3,
         copy = { 32391, 32390, 32389, 32388, 32386 },
@@ -498,7 +483,7 @@ spec:RegisterAuras( {
     },
     -- Absorbs Shadow damage.
     shadow_ward = {
-        id = 47891,
+        id = 6229,
         duration = 30,
         max_stack = 1,
         copy = { 6229, 11739, 11740, 28610, 47890, 47891 },
@@ -510,21 +495,21 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     shadowflame = {
-        id = 61291,
+        id = 47960,
         duration = 8,
         max_stack = 1,
         copy = { 47960 }
     },
     -- Stunned.
     shadowfury = {
-        id = 47847,
+        id = 30283,
         duration = 3,
         max_stack = 1,
         copy = { 30283, 30413, 30414, 47846, 47847 },
     },
     -- Enslaved.
     subjugate_demon = {
-        id = 61191,
+        id = 1098,
         duration = 300,
         max_stack = 1,
         copy = { 1098, 11725, 11726, 61191 },
@@ -572,13 +557,14 @@ spec:RegisterAuras( {
     },
     -- $s1 Shadow damage every $t1 sec.  If dispelled, will cause $*9;s1 damage to the dispeller and silence them for $31117d.
     unstable_affliction = {
-        id = 47843,
+        id = 30108,
         duration = 15,
         tick_time = 3,
         max_stack = 1,
         copy = { 30108, 30404, 30405, 43522, 47841, 47843, 65812 },
     },
 
+    -- TODO: Separate Banes from Curses?
     my_curse = {
         alias = { "curse_of_the_elements", "bane_of_doom", "bane_of_agony", "curse_of_weakness", "curse_of_tongues", "curse_of_exhaustion" },
         aliasMode = "first",
@@ -653,14 +639,14 @@ end, state )
 
 
 
-local finish_shadow_cleave = setfenv( function()
+--[[ local finish_shadow_cleave = setfenv( function()
     spend( class.abilities.shadow_cleave.spend * mana.modmax, "mana" )
 end, state )
 
 spec:RegisterStateFunction( "start_shadow_cleave", function()
     applyBuff( "shadow_cleave", swings.time_to_next_mainhand )
     state:QueueAuraExpiration( "shadow_cleave", finish_shadow_cleave, buff.shadow_cleave.expires )
-end )
+end ) ]]
 
 
 spec:RegisterStateExpr( "persistent_multiplier", function( action )
@@ -733,14 +719,10 @@ spec:RegisterHook( "reset_precast", function()
 
     soul_shards = nil
 
-    if IsCurrentSpell( class.abilities.shadow_cleave.id ) then
+    --[[ if IsCurrentSpell( class.abilities.shadow_cleave.id ) then
         start_shadow_cleave()
         Hekili:Debug( "Starting Shadow cleave, next swing in %.2f...", buff.shadow_cleave.remains )
-    end
-end )
-
-spec:RegisterStateExpr( "soul_shards", function()
-    return GetItemCount( 6265 )
+    end ]]
 end )
 
 spec:RegisterStateExpr( "curse_grouped", function()
@@ -755,7 +737,7 @@ spec:RegisterHook( "runHandler", function( action )
     end
 end )
 
-spec:RegisterStateExpr("inferno_enabled", function()
+spec:RegisterStateExpr( "inferno_enabled", function()
     return settings.inferno_enabled
 end)
 
@@ -783,6 +765,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "bane_of_agony" )
         end,
 
+        copy = "curse_of_agony",
     },
     --Banes the target with impending doom, causing 1948 Shadow damage every 15 sec.  When Bane of Doom deals damage, it has a 20% chance to summon a Demon guardian. Only one target can have Bane of Doom at a time, only one Bane per Warlock can be active on any one target. Lasts for 1 min.
     bane_of_doom = {
@@ -803,6 +786,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "bane_of_doom" )
         end,
 
+        copy = "curse_of_doom",
     },
         --Banes the target for 5 min, causing 15% of all damage done by the Warlock to other targets to also be dealt to the baned target. Only one target can have Bane of Havoc at a time, and only one Bane per Warlock can be active on any one target.
     bane_of_havoc = {
@@ -1221,21 +1205,25 @@ spec:RegisterAbilities( {
         gcd = "spell",
         channeled = true,
         breakable = true,
+
         spend = 0.14, 
         spendType = "mana",
 
         startsCombat = true,
         texture = 136163,
         tick_time = function () return class.auras.drain_soul.tick_time end,
+
         start = function( rank )
             applyDebuff( "target", "drain_soul" )
             if talent.everlasting_affliction.rank == 3 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
         end,
-		tick = function () end,
 
-		 breakchannel = function ()
+        tick = function () end,
+
+		breakchannel = function ()
             removeDebuff( "target", "drain_soul" )
         end,
+
         handler = function()
             --"/cata/spell=1120/drain-soul"
         end,
@@ -1482,7 +1470,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return health.total * 0.15 end,
+        spend = function() return health.max * 0.15 end,
         spendType = "health",
 
         startsCombat = false,
@@ -1492,7 +1480,7 @@ spec:RegisterAbilities( {
         
         handler = function()
             --"/cata/spell=1454/life-tap"
-            gain( action.life_tap.spend * (1.2 + 0.1 * talent.improved_life_tap.rank), "mana")
+            gain( action.life_tap.spend * ( 1.2 + 0.1 * talent.improved_life_tap.rank ), "mana" )
             if glyph.life_tap.enabled then applyBuff( "life_tap" ) end
         end,
 
@@ -1655,7 +1643,7 @@ spec:RegisterAbilities( {
         cast = function()
             if buff.backlash.up then return 0 end
             if buff.shadow_trance.up then return 0 end
-            return ( 1.7 - talent.bane.enabled and (0.2 * talent.bane.rank - 0.1) ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) * haste )
+            return ( 1.7 - 0.1 * talent.bane.rank ) * ( 1 - 0.1 * ( buff.backdraft.up and talent.backdraft.rank or 0 ) * haste )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1681,7 +1669,7 @@ spec:RegisterAbilities( {
         end,
 
     },
-    -- Inflicts 110 Shadow damage to an enemy target and nearby allies, affecting up to 3 targets.
+    --[[ Inflicts 110 Shadow damage to an enemy target and nearby allies, affecting up to 3 targets.
     shadow_cleave = { --TODO: check if spell still exists (update for cata)
         id = 50581,
         cast = 0,
@@ -1702,7 +1690,7 @@ spec:RegisterAbilities( {
         handler = function ()
             start_shadow_cleave()
         end,
-    },
+    }, ]]
     --Absorbs [3551 + (Spell power * 0.807)] shadow damage.  Lasts 30 sec. In the Demonology Abilities category. Requires Warlock. Learn how to use this in our class guide.
     shadow_ward = {
         id = 6229,
@@ -1790,7 +1778,7 @@ spec:RegisterAbilities( {
     --Burn the enemy's soul, causing 2447 Fire damage.SoulburnSoulburn: Instant cast. In the Destruction Abilities category. Requires Warlock. A spell.
     soul_fire = {
         id = 6353,
-        cast = function() return (buff.soulburn.up or buff.chaotic_mind.up or buff.decimate.up) and 0 or 4 end, --TODO: implement 47271/decimate and 61188/chaotic-mind
+        cast = function() return buff.soulburn.up and 0 or 4 end, --TODO: implement 47271/decimate and 61188/chaotic-mind
         cooldown = 0,
         gcd = "spell",
 
@@ -1802,15 +1790,8 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "soul_fire" )
-            if buff.chaotic_mind.up then
-                removeBuff("chaotic_mind")
-            elseif buff.decimate.up then
-                removeBuff("decimate")
-            else
-                removeBuff("soulburn")
-            end
+            removeBuff("soulburn")
         end,
-
     },
     --You seek out nearby wandering souls, regenerating 45% health and 3 soul shards over 9 sec.  Cannot be cast when in combat. In the Demonology Abilities category.
     soul_harvest = {
@@ -1884,10 +1865,7 @@ spec:RegisterAbilities( {
         cooldown = 45,
         gcd = "off",
 
-        spend = 1, 
-        spendType = "shards",
-
-        startsCombat = true,
+        startsCombat = false,
         texture = 463286,
 
         usable = function() return soul_shards > 0, "requires a soul_shard" end,

@@ -44,15 +44,14 @@ function ns.updateTalents()
 
     local spec = state.spec.id or select( 3, UnitClass( "player" ) )
     -- Swap priorities if needed.
-    local main, tabs = 0, {}
+    local main, tabs = GetPrimaryTalentTree(), {}
 
     for i = 1, 3 do
-        local id, _, _, _, tab, _, _, isMain = GetTalentTabInfo( i )
+        local id, _, _, _, tab = GetTalentTabInfo( i )
 
-        tabs[i] = tab
+        tabs[ i ] = tab
 
-        if isMain then
-            main = i
+        if i == main then
             state.spec[ getSpecializationKey( id ) ] = true
         else
             state.spec[ getSpecializationKey( id ) ] = nil
@@ -70,9 +69,9 @@ function ns.updateTalents()
 
         if type( selector.condition ) == "function" and selector.condition( tabs[1], tabs[2], tabs[3], main ) or
             type( selector.condition ) == "number" and
-                ( selector.condition == 1 and tab1 > max( tab2, tab3 ) or
-                  selector.condition == 2 and tab2 > max( tab1, tab3 ) or
-                  selector.condition == 3 and tab3 > max( tab1, tab2 ) ) then
+                ( selector.condition == 1 and tabs[1] > max( tabs[2], tabs[3] ) or
+                  selector.condition == 2 and tabs[2] > max( tabs[1], tabs[3] ) or
+                  selector.condition == 3 and tabs[3] > max( tabs[1], tabs[2] ) ) then
 
             if toPackage ~= "none" and fromPackage ~= toPackage then
                 Hekili.DB.profile.specs[ spec ].package = toPackage
