@@ -34,7 +34,7 @@ actions.battle_stance+=/battle_stance,if=!buff.battle_stance.up
 actions.battle_stance+=/rend,if=!up
 actions.battle_stance+=/shattering_throw
 actions.battle_stance+=/overpower
-actions.battle_stance+=/berserker_stance,if=!buff.berserker_stance.up
+actions.battle_stance+=/berserker_stance,if=!buff.berserker_stance.up&buff.taste_for_blood_prediction.remains>1.5
 
 ## Berserker_stance
 actions.berserker_stance+=/mortal_strike,if=(target.health.pct>20|buff.slaughter.remains<=1.5|talent.lambs_to_the_slaughter&dot.rend.ticking&dot.rend.remains<3|talent.wrecking_crew.enabled&!buff.enrage.up)
