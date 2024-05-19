@@ -1555,7 +1555,7 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         startsCombat = false,
-        texture = 236283,
+        texture = 458726,
 
         toggle = "cooldowns",
 
