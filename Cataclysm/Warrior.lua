@@ -1144,7 +1144,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = true,
-        texture = 451161,
+        texture = 464973,
         toggle = "cooldowns",
 
         handler = function()
@@ -1348,7 +1348,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = true,
-        texture = 132345,
+        texture = 135358,
 
         buff = function()
             return buff.battle_stance.up and "battle_stance" or "berserker_stance"
@@ -1414,7 +1414,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = false,
-        texture = 132091,
+        texture = 236171,
 
         handler = function()
             setDistance( 7 )
@@ -2102,7 +2102,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = false,
-        texture = 132333,
+        texture = 236318,
 
         usable = function() return active_dot.vigilance == 0, "vigilance already active" end,
 
