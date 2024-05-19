@@ -5,7 +5,7 @@ actions+=/run_action_list,name=st
 
 actions.st+=/slice_and_dice,if=buff.slice_and_dice.down
 actions.st+=/kick
-actions.st+=/garrote,if=buff.stealth.up
+actions.st+=/garrote,if=buff.stealth.up | buff.vanish.up
 actions.st+=/mutilate,if=energy>=55&combo_points<=3&target.health.pct>35
 actions.st+=/rupture,if=combo_points>=4&debuff.rupture.remains<2
 actions.st+=/berserking,if=buff.bloodlust.up|target.time_to_die<20
