@@ -1492,12 +1492,11 @@ all:RegisterAuras( {
         shared = "target",
     },
 
-    acid_spit = {
-        id = 55754,
+    corrosive_spit = {
+        id = 35387,
         duration = 30,
-        max_stack = 2,
+        max_stack = 3,
         shared = "target",
-        copy = { 55749, 55750, 55751, 55752, 55753, 55754 }
     },
 
     -- Armor decreased by $s1%.
@@ -1506,7 +1505,6 @@ all:RegisterAuras( {
         duration = 30,
         max_stack = 5,
         shared = "target",
-        copy = { 7405, 8380, 11596, 11597, 25225, 47467, 58567, 65936, 71554 },
     },
 
     -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
@@ -1519,49 +1517,84 @@ all:RegisterAuras( {
     },
 
     major_armor_reduction = {
-        alias = { "faerie_fire","sunder_armor", "acid_spit", "expose_armor" },
+        alias = { "faerie_fire","sunder_armor", "corrosive_spit", "expose_armor" },
         aliasType = "debuff",
         aliasMode = "longest"
     },
 
-    -- Reduces melee attack power by $s1.
+    -- Reduces physical damage caused by 10%.
     demoralizing_shout = {
-        id = 47437,
-        duration = function() return 30 * ( 1 + talent.booming_voice.rank * 0.25 ) end,
-        max_stack = 1,
-        no_ticks = true,
-        shared = "target",
-        copy = { 1160, 6190, 11554, 11555, 11556, 25202, 25203, 27579, 47437 },
-    },
-
-    -- Decreases melee attack power by $s1.
-    demoralizing_roar = {
-        id = 48560,
+        id = 1160,
         duration = 30,
         max_stack = 1,
         shared = "target",
-        copy = { 99, 1735, 9490, 9747, 9898, 26998, 48559, 48560 },
     },
 
-    -- Attack power reduced by $s1.
-    vindication = {
-        id = 26017,
+    -- Reduces physical damage caused by 10%.
+    demoralizing_roar = {
+        id = 99,
+        duration = 30,
+        max_stack = 1,
+        shared = "target",
+    },
+    -- Physical damage reduced by 10%.
+    demoralizing_roar_pet = {
+        id = 50256,
+        duration = 15,
+        max_stack = 1,
+        shared = "target",
+    },
+
+    -- Physical damage reduced by 10%.
+    demoralizing_screech_pet = {
+        id = 24423,
         duration = 10,
         max_stack = 1,
         shared = "target",
-        copy = { 67, 26017 },
+    },
+
+     -- Physical damage dealt reduced by 10%.
+    scarlet_fever = {
+        id = 81130,
+        duration = 21,
+        max_stack = 1,
+        shared = "target",
+    },
+
+    -- Physical damage done reduced by 10%
+    vindication = {
+        id = 26017,
+        duration = 30,
+        max_stack = 1,
+        shared = "target",
+    },
+
+    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
+    curse_of_weakness = {
+        id = 702,
+        duration = 120,
+        max_stack = 1,
+        shared = "target",
     },
 
     ap_reduction = {
-        alias = { "demoralizing_shout", "curse_of_weakness", "demoralizing_roar", "vindication" },
+        alias = { "demoralizing_shout", "curse_of_weakness", "demoralizing_roar", "scarlet_fever", "vindication", "demoralizing_roar_pet", "demoralizing_screech_pet" },
         aliasType = "debuff",
         aliasMode = "longest"
+    },
+
+    -- Time between attacks increased by 20%.
+    earth_shock = {
+        id = 8042,
+        duration = 8,
+        max_stack = 1,
+        shared = "target",
     },
 
     -- Deals Frost damage over $d.  Reduces melee and ranged attack speed.
     frost_fever = {
-        id = 55095,
-        duration = function () return 15 + ( 3 * talent.epidemic.rank ) end,
+        id = 59921,
+        duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
         tick_time = 3,
         max_stack = 1,
         shared = "target",
@@ -1569,33 +1602,31 @@ all:RegisterAuras( {
 
     -- Movement speed slowed by $s1% and attack speed slowed by $s2%.
     infected_wounds = {
-        id = 58181,
+        id = 48484,
         duration = 12,
         max_stack = 1,
         shared = "target",
-        copy = { 58181, 58180, 58179 },
+        copy = { 48484, 48483 },
     },
 
     -- Reduces melee attack speed.
     judgements_of_the_just = {
-        id = 68055,
+        id = 53696,
         duration = 20,
         max_stack = 1,
         shared = "target",
-        copy = { 68055 },
     },
 
     -- Attack speed reduced by $s2%.
     thunder_clap = {
-        id = 47502,
+        id = 6343,
         duration = 30,
         max_stack = 1,
         shared = "target",
-        copy = { 6343, 8198, 8204, 8205, 11580, 11581, 13532, 25264, 47501, 47502 },
     },
 
     attack_speed_reduction = {
-        alias = { "frost_fever", "infected_wounds", "judgements_of_the_just", "thunder_clap" },
+        alias = { "earth_shock", "frost_fever", "infected_wounds", "judgements_of_the_just", "thunder_clap" },
         aliasType = "debuff",
         aliasMode = "longest"
     },
@@ -1636,51 +1667,66 @@ all:RegisterAuras( {
 
     -- All bleed effects cause $s2% additional damage.
     trauma = {
-        id = 46855,
+        id = 46857,
         duration = 60,
         max_stack = 1,
         shared = "target",
-        copy = { 46855, 46856, 46854, 46857 },
     },
 
     -- All bleed effects cause $s2% additional damage.
     stampede = {
-        id = 57393,
-        duration = 12,
+        id = 57386,
+        duration = 30,
         max_stack = 1,
         shared = "target",
-        copy = { 57393, 57392, 57391, 57390, 57389, 57386 },
+    },
+    -- Increases damage taken from Bleed effects by 30%.
+    hemorrhage = {
+        id = 16511,
+        duration = 60,
+        max_stack = 1,
+        shared = "target",
     },
 
     mangle = {
-        alias = { "mangle_bear", "mangle_cat", "trauma", "stampede" },
+        alias = { "mangle_bear", "mangle_cat", "trauma", "stampede", "hemorrhage" },
         aliasType = "debuff",
         aliasMode = "longest"
     },
 
-
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    curse_of_weakness = {
-        id = 50511,
-        duration = 120,
-        max_stack = 1,
+    -- Increases physical damage taken by $s1%.
+    acid_spit = {
+        id = 55749,
+        duration = 30,
+        max_stack = 2,
         shared = "target",
-        copy = { 50511, 30909, 27224, 11708, 11707, 7646, 6205, 1108, 702 },
+        copy = { 55749, 55750, 55751, 55752, 55753, 55754 }
     },
 
-    -- Decreases armor by $s1%.  Cannot stealth or turn invisible.
-    sting = {
-        id = 56631,
-        duration = 20,
+    blood_frenzy = {
+        id = 29859,
+        duration = 3600,
         max_stack = 1,
-        shared = "target",
-        copy = { 56631, 56630, 56629, 56628, 56627, 56626 },
     },
 
-    armor_reduction = {
-        alias = { "curse_of_weakness", "sting" },
+    brittle_bones = {
+        id = 81328,
+        duration = 3600,
+        max_stack = 1,
+    },
+
+    savage_combat = {
+        id = 58684,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 58683, 58684 },
+    },
+
+    -- Alias-Aura collecting all physical-vulnerability debuffs
+    phys_vuln = {
+        alias = { "acid_spit", "blood_frenzy", "brittle_bones", "savage_combat"},
         aliasType = "debuff",
-        aliasMode = "first"
+        aliasMode = "longest"
     },
 
     -- Increases armor by $s1.
@@ -1704,7 +1750,7 @@ all:RegisterAuras( {
     -- Expose Armor.
     expose_armor = {
         id = 8647,
-        duration = function() return 6 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
+        duration = function() return 10 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
         max_stack = 1,
         shared = "target",
     },
@@ -1761,38 +1807,22 @@ all:RegisterAuras( {
         shared = "player"
     },
 
-    -- Increases stats by $s1%.
+    -- Places a Blessing on the friendly target, increasing Strength, Agility, Stamina, and Intellect by 5%, and all magical resistances by 97, for 1 hour.  
+    -- If target is in your party or raid, all party and raid members will be affected. Players may only have one Blessing on them per Paladin at any one time.
     blessing_of_kings = {
-        id = 79063,
-        duration = 600,
+        id = 20217,
+        duration = 3600,
         max_stack = 1,
         shared = "player"
     },
 
-    -- Increases attack power by $s1.
+    -- Places a Blessing on the friendly target, increasing melee attack power by 20%, increasing ranged attack power by 10%, and restoring 0 mana every 5 seconds for 1 hour.  
+    -- If target is in your party or raid, all party and raid members will be affected. Players may only have one Blessing on them per Paladin at any one time.
     blessing_of_might = {
-        id = 48932,
-        duration = function() return glyph.blessing_of_might.enabled and 1800 or 600 end,
-        max_stack = 1,
-        shared = "player",
-        copy = { 19740, 19834, 19835, 19836, 19837, 19838, 25291, 27140, 48931, 48932, 56520 },
-    },
-
-    -- Damage taken reduced by up to $s1%, strength and stamina increased by $s2%, and blocked, parried, and dodged melee attacks cause a gain $57319s1% of maximum displayed mana.
-    blessing_of_sanctuary = {
-        id = 20911,
-        duration = 600,
+        id = 19740,
+        duration = 3600,
         max_stack = 1,
         shared = "player"
-    },
-
-    -- Restores $s1 mana every 5 seconds.
-    blessing_of_wisdom = {
-        id = 48936,
-        duration = function() return glyph.blessing_of_wisdom.enabled and 1800 or 600 end,
-        max_stack = 1,
-        shared = "player",
-        copy = { 19742, 19850, 19852, 19853, 19854, 25290, 27142, 48935, 48936 },
     },
 
     -- Reduces casting or channeling time lost when damaged by $s1%.
@@ -1829,38 +1859,10 @@ all:RegisterAuras( {
         copy = { 19888, 19897, 19898, 27152, 48945 },
     },
 
-    -- Increases stats by $s1%.
-    greater_blessing_of_kings = {
-        id = 25898,
-        duration = 1800,
-        max_stack = 1,
-        shared = "player"
-    },
-
-    -- Increases attack power by $s1.
-    greater_blessing_of_might = {
-        id = 48934,
-        duration = 1800,
-        max_stack = 1,
-        shared = "player",
-        copy = { 25782, 25916, 27141, 48933, 48934 },
-    },
-
-    -- Damage taken reduced by up to $s1%, strength and stamina increased by $s2%, and blocked, parried, and dodged melee attacks cause a gain $57319s1% of maximum displayed mana.
-    greater_blessing_of_sanctuary = {
-        id = 25899,
-        duration = 1800,
-        max_stack = 1,
-        shared = "player"
-    },
-
-    -- Restores $s1 mana every 5 seconds.
-    greater_blessing_of_wisdom = {
-        id = 48938,
-        duration = 1800,
-        max_stack = 1,
-        shared = "player",
-        copy = { 25894, 25918, 27143, 48937, 48938 },
+    stat_buff = {
+        alias = { "blessing_of_kings", "mark_of_the_wild" },
+        aliasMode = "longest",
+        aliasType = "buff"
     },
 
     -- Does $s1 Holy damage to anyone who strikes you.

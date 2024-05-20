@@ -234,13 +234,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 16491, 16490, 16488 },
     },
-    -- Increases physical damage taken by $s1%.
-    blood_frenzy = {
-        id = 30070,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 30069, 30070 },
-    },
     
     -- Taunted.
     challenging_shout = {
@@ -577,25 +570,10 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    -- Attack speed reduced by $s2%.
-    thunder_clap = {
-        id = 47502,
-        duration = 30,
-        max_stack = 1,
-        shared = "target",
-        copy = { 6343, 8198, 8204, 8205, 11580, 11581, 13532, 25264, 47501, 47502 },
-    },
     thunderstruck = {
         id = 87096,
         duration = 20,
         max_stack = 3
-    },
-    -- Bleed effects cause an additional $s1% damage.
-    trauma = {
-        id = 46857,
-        duration = 60,
-        max_stack = 1,
-        copy = { 46856, 46857 },
     },
     victory_rush = {
         duration = 25,
