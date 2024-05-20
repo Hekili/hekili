@@ -1455,6 +1455,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 458972,
 
+        usable = function () return not buff.deadly_calm.up end,
+
         handler = function ()
             applyBuff( "inner_rage" )
         end,
@@ -1628,6 +1630,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132938,
+        toggle = "interrupts",
 
         readyTime = state.timeToInterrupt,
 
