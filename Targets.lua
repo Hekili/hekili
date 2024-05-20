@@ -344,7 +344,7 @@ do
             return lastCount, lastStationary
         end
 
-        local debugging = Hekili.ActiveDebug
+        local debugging = true
         local details = nil
         local showNPs = GetCVar( "nameplateShowEnemies" ) == "1" and GetCVar( "nameplateShowAll" ) == "1"
 
@@ -413,6 +413,8 @@ do
                                 local _, maxR = RC:GetRange( unit )
                                 excluded = maxR and maxR > checkPlates
 
+                                range = maxR
+
                                 if debugging and excluded then
                                     details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
                                 end
@@ -479,6 +481,8 @@ do
                                 if not excluded and checkPlates then
                                     local _, maxR = RC:GetRange( unit )
                                     excluded = maxR and maxR > checkPlates
+
+                                    range = maxR
 
                                     if debugging and excluded then
                                         details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
@@ -602,7 +606,9 @@ do
             if Hekili:GetToggleState( "mode" ) == "reactive" then HekiliDisplayAOE:UpdateAlpha() end
         end
 
-        Hekili.TargetDebug = details
+        if details then
+            Hekili.TargetDebug = details
+        end
 
         return count, stationary
     end
