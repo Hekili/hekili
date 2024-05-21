@@ -1,4 +1,4 @@
-actions.precombat+=/mark_of_the_wild,if=!up&!buff.mark_of_the_wild.up
+actions.precombat+=/mark_of_the_wild,if=!buff.stat_buff.up
 actions.precombat+=/thorns,if=!up
 actions.precombat+=/bear_form,if=!up
 actions.precombat+=/potion
@@ -16,8 +16,8 @@ actions.bear_tank+=/survival_instincts,if=health.pct<40
 actions.bear_tank+=/feral_charge_bear,if=target.outside7
 actions.bear_tank+=/maul,if=rage.current>55
 actions.bear_tank+=/pulverize,if=dot.lacerate.ticking&dot.lacerate.stack=3&dot.lacerate.remains<4
-actions.bear_tank+=/faerie_fire_feral,if=debuff.major_armor_reduction.down|(debuff.faerie_fire.up&debuff.faerie_fire.remains<6)
-actions.bear_tank+=/demoralizing_roar,if=debuff.ap_reduction.down|(debuff.demoralizing_roar.up&debuff.demoralizing_roar.remains<4)
+actions.bear_tank+=/faerie_fire_feral,if=settings.maintain_ff&(debuff.major_armor_reduction.down|(debuff.faerie_fire.up&debuff.faerie_fire.remains<6))
+actions.bear_tank+=/demoralizing_roar,if=settings.maintain_roar&(debuff.ap_reduction.down|(debuff.demoralizing_roar.up&debuff.demoralizing_roar.remains<4))
 actions.bear_tank+=/berserk,if=dot.lacerate.ticking
 actions.bear_tank+=/enrage,if=rage.current<80
 #actions.bear_tank+=/synapse_springs
@@ -29,15 +29,13 @@ actions.bear_tank+=/pulverize,if=dot.lacerate.ticking&dot.lacerate.stack=3&(!buf
 actions.bear_tank+=/lacerate,if=dot.lacerate.stack<3
 actions.bear_tank+=/maul
 
-
-
 actions.bear_tank_aoe+=/frenzied_regeneration,if=health.pct<30
 actions.bear_tank_aoe+=/survival_instincts,if=health.pct<40
 actions.bear_tank_aoe+=/feral_charge_bear,if=target.outside7
 actions.bear_tank_aoe+=/maul,if=rage.current>55
 actions.bear_tank_aoe+=/pulverize,if=dot.lacerate.ticking&dot.lacerate.stack=3&dot.lacerate.remains<4
-actions.bear_tank_aoe+=/faerie_fire_feral,if=debuff.major_armor_reduction.down|(debuff.faerie_fire.up&debuff.faerie_fire.remains<6)
-actions.bear_tank_aoe+=/demoralizing_roar,if=debuff.ap_reduction.down|(debuff.demoralizing_roar.up&debuff.demoralizing_roar.remains<4)
+actions.bear_tank_aoe+=/faerie_fire_feral,if=settings.maintain_ff&(debuff.major_armor_reduction.down|(debuff.faerie_fire.up&debuff.faerie_fire.remains<6))
+actions.bear_tank_aoe+=/demoralizing_roar,if=settings.maintain_roar&(debuff.ap_reduction.down|(debuff.demoralizing_roar.up&debuff.demoralizing_roar.remains<4))
 actions.bear_tank_aoe+=/berserk,if=dot.lacerate.ticking
 actions.bear_tank_aoe+=/enrage,if=rage.current<80
 #actions.bear_tan_aoek+=/synapse_springs
