@@ -73,7 +73,7 @@ spec:RegisterTalents( {
     celestial_harmony             = { 80582, 343655, 1 }, -- While active, Yu'lon and Chi'Ji heal up to $s3 nearby targets with Enveloping Breath when you cast Enveloping Mist, healing for ${$325209s1*$325209d/$325209t1} over $325209d, and increasing the healing they receive from you by $325209s3%.; When activated, Yu'lon and Chi'Ji apply Chi Cocoons to $406139s3 targets within $406139r yds, absorbing $<newshield> damage for $406139d.
     chrysalis                     = { 80583, 202424, 1 }, -- Reduces the cooldown of Life Cocoon by ${$m1/-1000} sec.
     clouded_focus                 = { 80598, 388047, 1 }, -- Healing with Enveloping Mists or Vivify while channeling Soothing Mists increases their healing done by $388048m1% and reduces their mana cost by $388048m2%. Stacks up to $388048u times.; When your Soothing Mists channel ends, this effect is cancelled.
-    dampen_harm                   = { 80704, 122278, 1 }, -- Reduces all damage you take by $m2% to $m3% for $d, with larger attacks being reduced by more.
+    dampen_harm                   = { 95171, 122278, 1 }, -- Reduces all damage you take by $m2% to $m3% for $d, with larger attacks being reduced by more.
     dance_of_the_wind             = { 80704, 414132, 1 }, -- Your dodge chance is increased by $s1%.
     dancing_mists                 = { 80587, 388701, 2 }, -- Renewing Mist has a $s1% chance to immediately spread to an additional target when initially cast or when traveling to a new target.
     echoing_reverberation         = { 80564, 388604, 1 }, -- Zen Pulse triggers a second time at $s1% effectiveness if cast on targets with Enveloping Mist.
