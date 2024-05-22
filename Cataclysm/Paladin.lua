@@ -133,11 +133,6 @@ paladin:RegisterAuras( {
         aliasMode = "first",
         aliasType = "buff",
     },
-    stat_buff = {
-        alias = { "blessing_of_kings", "mark_of_the_wild" },
-        aliasMode = "first",
-        aliasType = "buff"
-    },
     blessing = {
         alias = { "blessing_of_might", "blessing_of_kings" },
         aliasMode = "first",
@@ -651,20 +646,6 @@ paladin:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
-    -- Attack speed slowed.
-    judgements_of_the_just = {
-        id = 68055,
-        duration = 20,
-        max_stack = 1
-    },
-    -- Physical damage done reduced by 10%.
-    vindication = {
-        id = 26017,
-        duration = 10,
-        max_stack = 1,
-        shared = "target"
-    },
-
     -- Retribution Debuffs
 
     -- Incapacitated.

@@ -175,13 +175,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 974, 32593, 32594, 49283, 49284 },
     },
-    -- Time between attacks increased by $w1%.
-    earth_shock = {
-        id = 49231,
-        duration = 8,
-        max_stack = 1,
-        copy = { 8042, 8044, 8045, 8046, 10412, 10413, 10414, 25454, 49230, 49231 },
-    },
     -- Increases your chance to get a critical strike with melee attacks by $s1%.
     elemental_devastation = {
         id = 30165,
