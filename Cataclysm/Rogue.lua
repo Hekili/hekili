@@ -261,13 +261,6 @@ spec:RegisterAuras( {
         duration = function() return 4 + 2 * talent.improved_gouge.rank end,
         max_stack = 1,
     },
-    -- Increases damage taken by $s3.
-    hemorrhage = {
-        id = 16511,
-        duration = 15,
-        max_stack = 1,
-        copy = { 16511, 17347, 17348, 26864, 48660 },
-    },
     hunger_for_blood = {
         id = 63848,
         duration = 60,
@@ -341,13 +334,6 @@ spec:RegisterAuras( {
         duration = function() return glyph.sap.enabled and 80 or 60 end,
         max_stack = 1,
         copy = { 2070, 6770, 11297, 51724 },
-    },
-    -- Increases physical damage taken by $s1%.
-    savage_combat = {
-        id = 58684,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 58683, 58684 },
     },
     -- Can use opening abilities without being stealthed.
     shadow_dance = {
