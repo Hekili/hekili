@@ -10,7 +10,7 @@ actions.st+=/adrenaline_rush,if=energy<20
 actions.st+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1|solo)&!buff.deep_insight.up&!buff.blade_flurry.up&!buff.adrenaline_rush.up&time_to_die>12&!buff.bloodlust.up
 actions.st+=/revealing_strike,if=combo_points<4&buff.revealing_strike.down&buff.slice_and_dice.remains>5
 actions.st+=/eviscerate,if=combo_points=5
-actions.st+=/gouge,if=combo_points<4&energy<40
+actions.st+=/gouge,if=combo_points<4&buff.revealing_strike.up&debuff.gouge.down
 actions.st+=/recuperate,if=health.pct<30&combo_points>=3
 
 
