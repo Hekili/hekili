@@ -1,0 +1,30 @@
+## Blood Death Knight (Beta)
+## 2024-05-23
+
+actions+=/mind_freeze
+actions+=/horn_of_winter,if=down
+actions+=/bone_shield
+actions+=/dancing_rune_weapon
+actions+=/death_strike,if=health.pct<=70
+
+actions+=/use_items
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>1
+actions+=/outbreak,if=!dot.blood_plague.ticking & dot.blood_plague.refreshable | !dot.frost_fever.ticking & dot.frost_fever.refreshable
+actions+=/icy_touch,if=!dot.frost_fever.ticking
+actions+=/plague_strike,if=!dot.blood_plague.ticking
+actions+=/death_strike,if=health.current + action.death_strike.healing < health.max & dot.frost_fever.ticking & dot.blood_plague.ticking
+actions+=/rune_strike,if=runic_power.deficit < 20
+actions+=/empower_rune_weapon,if=( blood_runes.current + frost_runes.current + unholy_runes.current ) < 2
+actions+=/blood_boil,if=buff.crimson_scourge.up
+actions+=/heart_strike
+
+actions.aoe+=/death_and_decay
+actions.aoe+=/outbreak,if=!dot.blood_plague.ticking & dot.blood_plague.refreshable | !dot.frost_fever.ticking & dot.frost_fever.refreshable
+actions.aoe+=/pestilence,if=dot.frost_fever.ticking & dot.blood_plague.ticking & ( active_dot.frost_fever + active_dot.blood_plague < true_active_enemies * 2 )
+actions.aoe+=/icy_touch,if=!dot.frost_fever.ticking
+actions.aoe+=/plague_strike,if=!dot.blood_plague.ticking
+actions.aoe+=/empower_rune_weapon,if=( blood_runes.current + frost_runes.current + unholy_runes.current ) < 2
+actions.aoe+=/rune_strike,if=runic_power.deficit < 20
+actions.aoe+=/blood_boil,if=buff.crimson_scourge.up
+actions.aoe+=/blood_boil,if=health.pct > 60 & ( active_enemies > 3 )
+actions.aoe+=/heart_strike
