@@ -189,6 +189,7 @@ spec:RegisterResource( Enum.PowerType.RuneFrost, {
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
+            t.expiry[ i ] = ready and 0 or start + duration
             t.cooldown = duration
         end
 
@@ -329,6 +330,7 @@ spec:RegisterResource( Enum.PowerType.RuneUnholy, {
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
+            t.expiry[ i - 2 ] = ready and 0 or start + duration
             t.cooldown = duration
         end
 
