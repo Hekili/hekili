@@ -1,0 +1,47 @@
+# Arms Warrior
+
+## Opener
+actions.precombat+=/battle_stance
+actions.precombat+=/commanding_shout,if=assigned_shout.commanding_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
+actions.precombat+=/battle_shout,if=assigned_shout.battle_shout&buff.my_battle_shout.down&buff.my_commanding_shout.down
+actions.precombat+=/charge
+
+## Default
+actions+=/sunder_armor,if=(!glyph.colossus_smash.enabled|cooldown.colossus_smash.remains)&(settings.debuff_sunder_enabled&target.time_to_die>((3-debuff.sunder_armor.stack)*(1.5+latency))+3&(!debuff.major_armor_reduction.up|(debuff.sunder_armor.up&debuff.sunder_armor.stack<3)|debuff.sunder_armor.remains<1.5))
+actions+=/colossus_smash,if=glyph.colossus_smash.enabled&(settings.debuff_sunder_enabled&target.time_to_die>((3-debuff.sunder_armor.stack)*(1.5+latency))+3&(!debuff.major_armor_reduction.up|(debuff.sunder_armor.up&debuff.sunder_armor.stack<3)|debuff.sunder_armor.remains<1.5))
+actions+=/pummel
+actions+=/call_action_list,name=spread_rend,if=active_enemies>2&talent.blood_and_thunder.enabled
+actions+=/bladestorm,if=active_enemies>2
+actions+=/sweeping_strikes,if=active_enemies>1
+actions+=/blood_fury,if=time<119|(time>=119&target.time_to_die>130)|(target.time_to_die<130&target.health.pct)
+actions+=/recklessness,if=dot.rend.ticking
+actions+=/inner_rage,if=dot.rend.ticking
+actions+=/deadly_calm,if=dot.rend.ticking&(time<119|(time>=119&target.time_to_die>130)|(target.time_to_die<130&target.health.pct))
+actions+=/potion,if=target.health.pct<20
+actions+=/heroic_strike,if=(active_enemies=1|buff.sweeping_strikes.up)&(rage.current>=settings.queueing_threshold|buff.deadly_calm.up|buff.battle_trance.up|(cooldown.deadly_calm.remains<1&!cooldown.recklessness.remains<1&rage.current>30&!target.time_to_die<130))
+actions+=/cleave,if=active_enemies>1&!buff.sweeping_strikes.up&(rage.current>=settings.queueing_threshold|buff.deadly_calm.up|buff.battle_trance.up|(cooldown.deadly_calm.remains<1&!cooldown.recklessness.remains<1&rage.current>30&!target.time_to_die<130))
+#maybe implement heroic_leap here?
+actions+=/call_action_list,name=battle_stance,if=(settings.macro_stance_dance|buff.battle_stance.up)|!dot.rend.ticking|(buff.taste_for_blood.remains<=5.5&target.health.pct>20)|(buff.taste_for_blood.up&!cooldown.mortal_strike.up&!cooldown.colossus_smash.up&rage.current>=5|buff.overpower_ready.up)
+actions+=/call_action_list,name=berserker_stance,if=(settings.macro_stance_dance|buff.berserker_stance.up)
+
+## Spread Rend in AoE
+actions.spread_rend+=/battle_stance,if=!settings.macro_stance_dance&!up&!dot.rend.ticking
+actions.spread_rend+=/rend,if=!up
+actions.spread_rend+=/thunder_clap,if=dot.rend.ticking
+
+## Battle_Stance
+actions.battle_stance+=/battle_stance,if=!settings.macro_stance_dance&!buff.battle_stance.up
+actions.battle_stance+=/rend,if=!up
+actions.battle_stance+=/shattering_throw
+actions.battle_stance+=/overpower
+actions.battle_stance+=/berserker_stance,if=!settings.macro_stance_dance&!buff.berserker_stance.up&buff.taste_for_blood_prediction.remains>1.5
+
+## Berserker_stance
+actions.berserker_stance+=/mortal_strike,if=(target.health.pct>20|buff.slaughter.remains<=1.5|talent.lambs_to_the_slaughter&dot.rend.ticking&dot.rend.remains<3|talent.wrecking_crew.enabled&!buff.enrage.up)
+actions.berserker_stance+=/whirlwind,if=active_enemies>=4
+actions.berserker_stance+=/colossus_smash,if=!buff.colossus_smash.up
+actions.berserker_stance+=/execute,if=target.health.pct<20
+actions.berserker_stance+=/colossus_smash,if=target.time_to_die<=1.5
+actions.berserker_stance+=/slam
+actions.berserker_stance+=/battle_shout,if=assigned_shout.battle_shout&rage<30
+actions.berserker_stance+=/commanding_shout,if=assigned_shout.commanding_shout&rage<30

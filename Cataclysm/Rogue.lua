@@ -337,13 +337,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 2070, 6770, 11297, 51724 },
     },
-    -- Increases physical damage taken by $s1%.
-    savage_combat = {
-        id = 58684,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 58683, 58684 },
-    },
     -- Can use opening abilities without being stealthed.
     shadow_dance = {
         id = 51713,

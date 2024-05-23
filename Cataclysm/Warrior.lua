@@ -99,36 +99,36 @@ spec:RegisterTalents( {
     bladestorm                       = { 1863 , 1    , 46924               },
     blitz                            = { 6091 , 2    , 80976, 80977        },
     blood_and_thunder                = { 10480, 2    , 84614, 84615        },
-    blood_craze                      = { 661  , 3    , 16489, 16487, 16492 },
-    blood_frenzy                     = { 1664 , 2    , 29859, 29836        },
+    blood_craze                      = { 661  , 3    , 16487, 16489, 16492 },
+    blood_frenzy                     = { 1664 , 2    , 29836, 29859        },
     bloodsurge                       = { 1866 , 3    , 46913, 46914, 46915 },
     bloodthirst                      = { 167  , 1    , 23881               },
     booming_voice                    = { 158  , 2    , 12321, 12835        },
-    concussion_blow                  = { 1    , 12809                      },
-    cruelty                          = { 152  , 2    , 12852, 12320        },
+    concussion_blow                  = { 10478, 1    , 12809               },
+    cruelty                          = { 152  , 2    , 12320, 12852        },
     deadly_calm                      = { 11223, 1    , 85730               },
     death_wish                       = { 165  , 1    , 12292               },
-    deep_wounds                      = { 121  , 3    , 12834, 12867, 12849 },
+    deep_wounds                      = { 121  , 3    , 12834, 12849, 12867 },
     devastate                        = { 1666 , 1    , 20243               },
     die_by_the_sword                 = { 6022 , 2    , 81913, 81914        },
-    drums_of_war                     = { 131  , 2    , 12963, 12290        },
+    drums_of_war                     = { 131  , 2    , 12290, 12963        },
     dual_wield_specialization        = { 1581 , 1    , 23588               },
     enrage                           = { 155  , 3    , 12317, 13045, 13046 },
     executioner                      = { 1542 , 2    , 20502, 20503        },
-    field_dressing                   = { 11163, 2    , 84580, 84579        },
-    flurry                           = { 156  , 3    , 12971, 12319, 12972 },
+    field_dressing                   = { 11163, 2    , 84579, 84580        },
+    flurry                           = { 156  , 3    , 12319, 12971, 12972 },
     furious_attacks                  = { 1865 , 1    , 46910               },
-    gag_order                        = { 149  , 2    , 12958, 12311        },
+    gag_order                        = { 149  , 2    , 12311 , 12958       },
     heavy_repercussions              = { 10484, 2    , 86894, 86896        },
     heroic_fury                      = { 1868 , 1    , 60970               },
     hold_the_line                    = { 11170, 2    , 84604, 84621        },
     impale                           = { 662  , 2    , 16493, 16494        },
-    impending_victory                = { 5976 , 2    , 80129, 80128        },
+    impending_victory                = { 5976 , 2    , 80128, 80129        },
     improved_hamstring               = { 129  , 2    , 12289, 12668        },
-    improved_revenge                 = { 147  , 2    , 12799, 12797        },
+    improved_revenge                 = { 10470, 2    , 12797, 12799        },
     improved_slam                    = { 2233 , 2    , 12330, 86655        },
-    incite                           = { 144  , 3    , 50685, 50687, 50686 },
-    intensify_rage                   = { 1864 , 2    , 46909, 46908        },
+    incite                           = { 144  , 3    , 50685, 50686, 50687 },
+    intensify_rage                   = { 1864 , 2    , 46908, 46909        },
     juggernaut                       = { 2283 , 1    , 64976               },
     lambs_to_the_slaughter           = { 10520, 3    , 84583, 84587, 84588 },
     last_stand                       = { 153  , 1    , 12975               },
@@ -139,30 +139,30 @@ spec:RegisterTalents( {
     raging_blow                      = { 11208, 1    , 85288               },
     rampage                          = { 1659 , 1    , 29801               },
     rude_interruption                = { 2250 , 2    , 61216, 61221        },
-    safeguard                        = { 1870 , 2    , 46949, 46945        },
-    second_wind                      = { 1663 , 2    , 29838, 29834        },
+    safeguard                        = { 1870 , 2    , 46945, 46949        },
+    second_wind                      = { 1663 , 2    , 29834, 29838        },
     sentinel                         = { 1653 , 1    , 29144               },
-    shield_mastery                   = { 10472, 3    , 84608, 29598, 84607 },
+    shield_mastery                   = { 10472, 3    , 29598, 84607, 84608 },
     shield_slam                      = { 10456, 1    , 23922               },
-    shield_specialization            = { 1601 , 3    , 12724, 12725, 12298 },
+    shield_specialization            = { 1601 , 3    , 12298, 12724, 12725 },
     shockwave                        = { 1872 , 1    , 46968               },
     single_minded_fury               = { 6012 , 1    , 81099               },
     skirmisher                       = { 1543 , 2    , 29888, 29889        },
     sudden_death                     = { 1662 , 2    , 29723, 29725        },
     sweep_and_clear                  = { 6149 , 1    , 80981               },
     sweeping_strikes                 = { 133  , 1    , 12328               },
-    sword_and_board                  = { 1871 , 3    , 46952, 46951, 46953 },
-    tactical_mastery                 = { 128  , 2    , 12676, 12295        },
-    taste_for_blood                  = { 2232 , 3    , 56636, 56638, 56637 },
+    sword_and_board                  = { 1871 , 3    , 46951, 46952, 46953 },
+    tactical_mastery                 = { 128  , 2    , 12295, 12676        },
+    taste_for_blood                  = { 2232 , 3    , 56636, 56637, 56638 },
     throwdown                        = { 11167, 1    , 85388               },
     thunderstruck                    = { 6149 , 2    , 80979, 80980        },
     titan_grip                       = { 1867 , 1    , 46917               },
-    toughness                        = { 140  , 3    , 12761, 12762, 12299 },
+    toughness                        = { 140  , 3    , 12299, 12761, 12762 },
     two_handed_weapon_specialization = { 136  , 1    , 12712               },
     vigilance                        = { 148  , 1    , 50720               },
-    war_academy                      = { 10134, 84571, 84572, 84570        },
+    war_academy                      = { 10134, 3    , 84570, 84571, 84572 },
     warbringer                       = { 2236 , 1    , 57499               },
-    wrecking_crew                    = { 2231 , 3    , 46867, 56611, 56612 }
+    wrecking_crew                    = { 8194 , 2    , 46867, 56611        }
 } )
 
 
@@ -202,6 +202,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+
+    battle_trance = {
+        id = 85742,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Immune to Fear, Sap and Incapacitate effects.  Generating extra rage when taking damage.
     berserker_rage = {
         id = 18499,
@@ -227,13 +233,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1,
         copy = { 16491, 16490, 16488 },
-    },
-    -- Increases physical damage taken by $s1%.
-    blood_frenzy = {
-        id = 30070,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 30069, 30070 },
     },
     
     -- Taunted.
@@ -451,7 +450,7 @@ spec:RegisterAuras( {
     -- Special ability attacks have an additional $s1% chance to critically hit but all damage taken is increased by $s2%.
     recklessness = {
         id = 1719,
-        duration = function() return 15 end,
+        duration = 12,
         max_stack = 1,
     },
     -- Bleeding for $s1 plus a percentage of weapon damage every $t1 seconds.  If used while the victim is above $s2% health, Rend does $s3% more damage.
@@ -460,7 +459,7 @@ spec:RegisterAuras( {
         duration = function() return glyph.rending.enabled and 21 or 27 end,
         tick_time = 3,
         max_stack = 1,
-        copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208, 46845, 47465 },
+        copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208, 46845, 47465, 94009 },
     },
     -- Counterattacking all melee attacks.
     retaliation = {
@@ -520,6 +519,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = "bloodsurge"
     },
+    -- Your Execute, Overpower, Slam and Mortal Strike will cause 10% more damage.
+    slaughter = {
+        id = 84586,
+        duration = 15,
+        max_stack = function() return talent.lambs_to_the_slaughter.rank end,
+    },
     spell_block = {
         id = 29598,
         duration = 6,
@@ -565,25 +570,10 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    -- Attack speed reduced by $s2%.
-    thunder_clap = {
-        id = 47502,
-        duration = 30,
-        max_stack = 1,
-        shared = "target",
-        copy = { 6343, 8198, 8204, 8205, 11580, 11581, 13532, 25264, 47501, 47502 },
-    },
     thunderstruck = {
         id = 87096,
         duration = 20,
         max_stack = 3
-    },
-    -- Bleed effects cause an additional $s1% damage.
-    trauma = {
-        id = 46857,
-        duration = 60,
-        max_stack = 1,
-        copy = { 46856, 46857 },
     },
     victory_rush = {
         duration = 25,
@@ -598,6 +588,7 @@ spec:RegisterAuras( {
         friendly = true,
         dot = "buff",
     },
+
 
     -- Aliases / polybuffs.
     stance = {
@@ -718,7 +709,7 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
     end
 
     if sourceGUID == state.GUID then
-        local is_rend = state.class.auras[ actionType ] and state.class.auras[ actionType ].id == 47465
+        local is_rend = state.class.auras[ actionType ] and state.class.auras[ actionType ].name == "Rend"
         if attack_events[ subtype ] then
         end
 
@@ -795,12 +786,15 @@ function GetNextTFB( time, lastApplied )
 
     local next_possible_tfb = ( (lastApplied or 0 ) == 0 and time ) or ( lastApplied + 6 )
     local next_prediction = 0
-    for i, v in pairs( rend_tracker.target ) do
-        for i2, v2 in pairs( v.ticks) do
-            local tick_after_next_possible = tonumber(v2) + rend_tracker.buffer >= tonumber( next_possible_tfb )
-            local lowest_match = next_prediction == 0 or tonumber( v2 ) <= tonumber( next_prediction )
-            if tick_after_next_possible and lowest_match then
-                next_prediction = v2
+    -- Ensure rend_tracker.target is a table
+    if type(rend_tracker.target) == "table" then
+        for i, v in pairs( rend_tracker.target ) do
+            for i2, v2 in pairs( v.ticks) do
+                local tick_after_next_possible = tonumber(v2) + rend_tracker.buffer >= tonumber( next_possible_tfb )
+                local lowest_match = next_prediction == 0 or tonumber( v2 ) <= tonumber( next_prediction )
+                if tick_after_next_possible and lowest_match then
+                    next_prediction = v2
+                end
             end
         end
     end
@@ -826,7 +820,7 @@ spec:RegisterStateFunction( "swap_stance", function( stance )
     removeBuff( "defensive_stance" )
     removeBuff( "berserker_stance" )
 
-    local swap = rage.current - ( ( IsSpellKnown( 12678 ) and 10 or 0 ) + 5 * talent.tactical_mastery.rank )
+    local swap = rage.current - ( ( IsSpellKnown( 12678 ) and 25 or 0 ) + 25 * talent.tactical_mastery.rank )
     if swap > 0 then
         spend( swap, "rage" )
     end
@@ -849,10 +843,6 @@ end )
 local shout_spell_assigned = false
 local main_gcd_spell_assigned = false
 
-local start_tfb_prediction = setfenv( function( time_to_tfb )
-    applyBuff( "taste_for_blood_prediction", time_to_tfb )
-    state:QueueAuraExpiration( "taste_for_blood_prediction", apply_tfb, buff.taste_for_blood_prediction.expires )
-end, state )
 
 spec:RegisterHook( "reset_precast", function()
     if not main_gcd_spell_assigned then
@@ -873,11 +863,6 @@ spec:RegisterHook( "reset_precast", function()
     elseif form == 3 then applyBuff( "berserker_stance" )
     else removeBuff( "stance" ) end
 
-    rend_tracker = {
-        tfb = {
-            next = 0,
-        },
-    }
 
     if IsUsableSpell( class.abilities.overpower.id ) then
         if enemy_dodged > 0 and now - enemy_dodged < 6 then
@@ -981,7 +966,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136009,
 
-        buff = "berserker_stance",
+        buff = function() if settings.macro_stance_dance then return end return "berserker_stance" end,
 
         handler = function()
             applyBuff( "berserker_rage" )
@@ -1137,7 +1122,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = true,
-        texture = 451161,
+        texture = 464973,
         toggle = "cooldowns",
 
         handler = function()
@@ -1201,8 +1186,9 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = true,
-        texture = 136224,
+        texture = 298660,
         toggle = "cooldowns",
+        usable = function () return not buff.inner_rage.up end,
 
         handler = function()
             applyBuff( "deadly_calm" )
@@ -1340,14 +1326,14 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = true,
-        texture = 132345,
+        texture = 135358,
 
         buff = function()
-            return buff.battle_stance.up and "battle_stance" or "berserker_stance"
+            if settings.macro_stance_dance then return end return buff.battle_stance.up and "battle_stance" or "berserker_stance"
         end,
 
         usable = function()
-            return target.health < 20, "target must have less than 20% health"
+            return target.health.pct < 20, "target must have less than 20% health"
         end,
 
         handler = function()
@@ -1406,7 +1392,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = false,
-        texture = 132091,
+        texture = 236171,
 
         handler = function()
             setDistance( 7 )
@@ -1467,7 +1453,9 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = false,
-        texture = 132345,
+        texture = 458972,
+
+        usable = function () return not buff.deadly_calm.up end,
 
         handler = function ()
             applyBuff( "inner_rage" )
@@ -1489,7 +1477,7 @@ spec:RegisterAbilities( {
 
         buff = function ()
             if talent.warbringer.enabled then return end
-            return "berserker_stance"
+            if settings.macro_stance_dance then return end return "berserker_stance"
         end,
 
         handler = function()
@@ -1597,7 +1585,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132223,
 
-        buff = "battle_stance",
+        buff = function() if settings.macro_stance_dance then return end return "battle_stance" end,
 
         usable = function()
             return buff.taste_for_blood.up or buff.overpower_ready.up, "only usable after dodging or with taste_for_blood"
@@ -1642,6 +1630,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132938,
+        toggle = "interrupts",
 
         readyTime = state.timeToInterrupt,
 
@@ -1728,7 +1717,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132155,
 
-        buff = function() return buff.battle_stance.up and "battle_stance" or "defensive_stance" end,
+        buff = function() if settings.macro_stance_dance then return end return buff.battle_stance.up and "battle_stance" or "defensive_stance" end,
 
         handler = function()
             applyDebuff( "target", "rend" )
@@ -1751,7 +1740,7 @@ spec:RegisterAbilities( {
 
         toggle = "defensives",
 
-        buff = "battle_stance",
+        buff = function() if settings.macro_stance_dance then return end return "battle_stance" end,
 
         handler = function()
             applyBuff( "retaliation", nil, 20 )
@@ -1934,7 +1923,7 @@ spec:RegisterAbilities( {
         equipped = "shield",
         readyTime = state.timeToInterrupt,
 
-        buff = function() return buff.battle_stance.up and "battle_stance" or "defensive_stance" end,
+        buff = function() if settings.macro_stance_dance then return end return buff.battle_stance.up and "battle_stance" or "defensive_stance" end,
 
         handler = function()
             interrupt()
@@ -2046,7 +2035,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 136105,
 
-        nobuff = "berserker_stance",
+        buff = function() if settings.macro_stance_dance then return end return buff.battle_stance.up and "battle_stance" or "defensive_stance" end,
 
         handler = function( rank )
             applyDebuff( "target", "thunder_clap" )
@@ -2093,7 +2082,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = false,
-        texture = 132333,
+        texture = 236318,
 
         usable = function() return active_dot.vigilance == 0, "vigilance already active" end,
 
@@ -2115,7 +2104,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132369,
 
-        buff = "berserker_stance",
+        buff = function() if settings.macro_stance_dance then return end return "berserker_stance" end,
 
         handler = function()
             if talent.meat_cleaver.enabled then
@@ -2226,6 +2215,16 @@ spec:RegisterSetting( "predict_tfb", true, {
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.predict_tfb = val
+    end
+} )
+
+spec:RegisterSetting( "macro_stance_dance", false, {
+    type = "toggle",
+    name = strformat( "Hide Stance Swaps" ),
+    desc = strformat( "When enabled, will expect Stance-Dance done by Macro and not propose any stance-changes."),
+    width = "full",
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 1 ].settings.macro_stance_dance = val
     end
 } )
 
@@ -2433,7 +2432,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Arms", 20230226, [[Hekili:fN1wVTTnu4Fl5fd5MunFPoPfioaBypS2h6lEy7njXirhZfDBKuj1fg63(oK6gjfPS7wrhqtJnpKNZhp3pHbld(9GDjioo4ZRwSA9IvRU1F5DlVlyh)yjoyxjk(z0tWhYrzW))Z0mwDK3h)J5cshtlqjcgWkQOXa5GDpwrs5Fmp4rBC92nFa2Bjoo4Zld2DGKKGB2jMf3X7)erPKcADuP4xe(X6O9IV(B4NjPeqQ0I9KuqwOyoPiN5xsXXfzpI4xV9NEetzy6ZyAiJJYJX3q2V9XQ979B(QFsXR51FY2jHpKHYti5pfYouuXfNeXyKNYXjnR4BULzsoNDme4apf3UlHi6PyEKjaGktSiCvY)7fCVOf3yuAAyZxdtjm(ncl8wsoHRUlwvEcOor0ScQawVGOe0JPyFbBtb0jPpRFzCgM(eop(ylfvEvwLLHtvxHwLpgconIMe8RkppZAvrgCsD1lHnj494Cg5LrCYKGKzdwyH6e4zN6PHzCsgoKxeMqW38ckTcV1lbl5gNIGtagTeqvDe41S1lwm)0jocuQCFLdEgrG)coUIJdlpGyDcPLjhWOu(b)Yy(9RwCg2OzKBzddZ5aez(nyULyioxCSKbpbfW(GN3M32EfvDOeHLXpp)nEl93CDkKUa8BMp)61NbvICmgG6QwUNH(RIwMhsXjvs2a6XtN8SjFqb7ew3Vz(zWrgyS4WpgqPxdOIt3Yz7gR0Oyb7z3F3S4IIur4R)JPffj8dekJ3rEG4RW6PVsYt6jDvJRU4qSkW0R6N7WRXi4T9g9nO56qnyqvdd0I3e5Eoi8ffbrToLqkkgjb)E3hrEpOqPOBQy4WcWX7P4KTlf8qSQiqKet4pO6tBYJdyAbjg(oL8Sl(exrP4C(dd(5)DfUclck5hOyiIinzMqaqipohNrWSTlB11q68NtXmwo8Jqd5n4lOfqE6upZ7wVxiTXrZNq5LIrV8De(p8Jf(xyffpRHrNo1VSr03us8aSaM2QdkEDOmGWNkTccNuCNn2SrjBtExwiw3nDHvIWXqNnU9kHgTOqxrqTEuCmoftrtZtWaNiUdTiw81(aVb7Uyzih4EHrpuKm2ndlEbtllEflThEsM2VeWcuISuuJtchXa7n0swOu7beG6tEoibUq94POeab5RGtBhRpDY6XuYHmFcR6lKyEb9yiTIDyI0gwAMWIE7HLRuZZIGosbMNjUc9lBeEmH)2RyCPS1lzIg24qvZaWPs71HfxiFBZrvrDsvJl01TK614(acMiS2awRNq73EYFKa3TSGmjCuAR6292sWWgrPKVQ1LVz)mIDjj23stxZfJp)KUbArvJ9(N5iMzc)QuKuzEvwXlae0kWA4MlZsm4UkoLn3BLqTtNCLaudsJLJgkvXKzRXwIgd2bAdgS7(5eFxWUxrurpWSGDFmReSS4K6OBRJAyBDKOPCMF9Nc2j)KC(v8Euvkh(4NLZZ2A4c(LUPed2zoTtZPdBMQv0muahWGXHJH5pbnbcGP1Iu1rZQJCo6ZGWvl5jKZAHC6i2mvKQCHD8oNiX1Kqdm0yagTB6idaiRnNrwgZkDHcs9ucPC70sXYCuxMGmpyGWsURFYAB(egIUvGIyJbrAtr5294m)LcK(jnZNyzODnQwhCxXn2GCV30Lalvj)9dsQhUr5pYK0zdCQC1C(5MEptAcngGqrvjNXyA7M6Kd1rpuhTAHck7M4iyNsbCbwMuPR2goWZT1rt0kUurRx2TocoYsjHRAncMDEiO5jjBVsED0PtkI1vt61rZhUTAZgz7g7oL0)9B8d)FCJBMJY2v1DgXjQd4PGn1rwAGMRXw0qKzDIZKZuD8fjeMAegfPyqwiP70Qiv08BTksVxDh9t1ySPpOUjhZ1yCKLlCEjT00yD09QUxJMXrPMbqsYF3Po8AD2gpRJMVOLw0IM3yv9Myl9EStmbudxMAki4cdXg(BKIuXvPNfY74kv9U6GrMkB3PTSQSfXLRKxf7dhPtYiOD6IPlDNpXw2bf3xJPRSfaV0DeS9752U(lTnnsD019K1Ni5Yslz5(SwZyoitj4Vv1A2Yptd5D)qUGoHOw2aTXVmb6hCc0Zo4vxu4uJFnGIXKL1(DNEXw44mNb0oc9w5o9cG8Mb1u8DHj4A7WXmKyYMCMy2THeecxn3ZWPMzCimTV9iZU5S3xMCqjliTOuAovYb1goi(uAfwMR11BCi16RxSOpR64x7qYW2g(vx2sZDNhkJEhePku053Gq0IIT1V35fZ0VtI(OJQpSJi9GN8FGn9TdM0rpCGuF9g5oL2FigU9nuAkwixzT6TsRPfB90D(B1q4ORNAPVYO9NnqRrfl3P7L375QWwTBkBTNDrO2rVztdMTsW4ypQbG3zwKC0l1OVHrVwJwhhAVzJQMWO5rB9iEELX3ODXipJwuI5FXJ2barv8dqhS7(v8(IVixk4Fc]] )
+spec:RegisterPack( "Arms", 20240519.3, [[Hekili:TN1cpoUTr4FlghGp7CxC8J13L966TijTO9ouSfiElAbkIKOL4UIzPEesQZNbm0V9mKusMuIsEDXguG2aKSNS4Wzg(nCEkVfE37TncjWE3TC(YRMVEX1ZwC9vRxEL3wXHCS32Cu4tOhHhsrjWF)owcx(Yd0muKCZ8ScwiSW)mB)97cldgxgapULijBxbHk(yQ3ohYy18REpS7CCO3Dl82gtIIWAkX8qTCaoHymsgRmix(peXHYGhK)8VIFIqjGEWYEGqbP)QYa7D8PYp9k4L)9CCkg(fkuqYs5ZYz4WSKDiXB28nWFfuSpxGsdXUjbEibLgrsF0NhNviEl5HnioN8ykos)MzTjz8UIhEywYb)A2ROkkBFAZkT3IA1H1XEeU5YVScomgXEexdJ)j8dOcQOHuGaErAeM5JyjzmPMnz0J0d5XaEqZ48cUppbXJNHtr7O4OJhdZYOsX1Magobrs5thpHJfcq14ZIWsf2VscvCySqQqIzcsc2xK5hrW3ozYQVwt8mt1zgysdFA6xnzXS1VHcx8sdpmD6BwnEYOkQtq)CwfX(mCuH6unRi)4XjU4xr(4EfZnRME8ORvRoy3akX0PMiNnaiXUHqU))bxYlssWulKcrP(6F6tjCXBLXG2WH7POiq)sJuUeW6FgdWboHG53Ueaekof8nOzzr(W1DFrSs(1iQPe2rrq8grglXfRSUVVhJZvEocg5jm3b9lS5Su8puWoiPuADUzXIRbGu(4TBGNDz5wSA(ujnDw5gyL6neJrur8S8qHf(bEVprXCEk8)szgLjMjbjGnHpbAUjTKuiSOpdcSFokJaSMcHoq0exKoEYVvhn77gzYNuizBcVz5CtkJXSmsyLvsfyY2kTzXXJ6lLTmOWTziiKesMfwWGZO42nnUE)sbUaljweZWqStAufxmGhLFI6LvrGfmzMfT7tt4pZn04kmEuZ6MwrdcS0laVg5ghBfPHIrFg76M64r9Hb)pbe8Qe0HD4YassofNa0xguDVaqKC1pW)XZhPXQcb1DPg0ibfYYQwXps(x7dUEf5DQJhh12PbadfTcexG9HkA8vrlAoRBwpBDxpIBxQCGCUtWUDc)GOSqmWkBQ9sTYXaRzBTxxDkY(mMLNTxgJamwhKNJNbCHzCm7jytxgI1ABAHPl8yRkwFzWpcOhyotHY8Y(ZNQyXivq7c6KcF0acF8ijW0BKVwSUozdSP(iPklJFifL7oOQ(i99ATCBRYoTu(l)W48Ux)C355Pnr8y4fywLpF2((PS56YaNhhxoEohPUxog7YdWhSfreD9kvUr3cvy0a6TyJHE2AfqvT8FuxID5lwNgHIkEmgGPtEVGCpESQkekkzhxgDsedGrnTJ7KgT5f1Czvdl2lJhkncHm8(MYc1Wdov5)A6E66eTpMWO7jolyAZvdU1UvRQLCNijdYf8xWHfc8ztG)80ahb(3Om2dWfa7tgKGlPvljOFZQZP2xEVJv81Bl4pXbgB0X8sVT7rSuP3c0S939J39X7(lFOmOm4(yDIo4sBv3XVUT286Yag(xkiGlszaplb2aQqKLaTaaVaA1l9ri3F5N(BKuyPfaB)HSuqful)6QRH)lGlImJFxFveE)KfFz6mPV29XeUSBDvB5GAb)iHahAi8xaVi3qjFu2yoje4jeG5jSaKpCy(OqVjvNOqI7iPgiG4qLbyqHoyojasAiTaQEhwIaExSpakqWxxg8V)hCSKt4e(p92Ya4UFySj1O0dNKAzqAMK5FjNscjc6j(wLVriH3AH(hkduZwqjM71SaaSFsY0iZxT0qY7juQXjQILIAsvOH6vPfjGLtzJOq4GYp9rLvv(I1Geux1kdK5BLglVTQNudWr3Eo84DQb6uzy8(EVTHGAd4mYB7KYGraSpqRMLbhpcxhgUr9YGPQH8aSB4gtvu11tTm4w1MH)BLch7TdsLK(kfLsN7G3aNDDtRQvMQEZQALzudN6Rjw9XBIBjkxE8GkZnkHnvZLbASvrPsHLkP3wTDZBRjTEcWZUxl1W2OFh7VCS3glLO)kj6xVSEYdMwdGIR61(yNavbQlRq8HN8GHc1QaATZSVEgRg1vkvK1xKICsgNMTHKlV7s4YcJRTTAruYR33lVKx20gHfx3yZ1V82nvVT)RMq3Bnw5jUP6MkQoXKtfsyzYpn)fPg)T9QXTRe7ehmBdvYJR)pGhNMZIKdlM)SzrTR1)Tbulm1OXD1XP)KnoyfiOLZn85ut0rXM(JeorN2Z82P8qRpq9nbdJmuMn3QbSbgNHbxThPHXcThRrd0o0Wn0GSsNgzqPRXCyqAlDhIaoVMfdzhTTywtdtb2RUO4a1sSFS(3bADaD1O2uiC)jomZB3TJ3UN(tnYx7elZ02jsrfYm0iLa1gSjRLzgD7OltDyfRONXm1bCBpSPoe0TrrhG(gvjUnN)UJFYgShk7Pf2Pmi9Na95Bq6ogIlqJATzqPeYVDz1xBZvz7YpckJKRzU1x20idx7dA)XrptFNklIU(nhF(qRvD(jenl0YE5MsTEoQLPKF5ujZn3uxxJ(Q(mN2v(jSRaBWMQgDMlqAFHtEf9xPWfynvC0SofDDI9JZ9lvZHwQp6DUSEUMk7pyYPK0TNrMoCKQqDjrdoRmRoFCwMu7zNv3VGbRDodnRKBntsZYV2k62z8XAN(eoHxDItnJGBytvT60jQ5qnZ0FgNZxhw1K5gUrdN5b1wWH0R3z6QjhaxRwS6VpIZfzqAR0M5597P3Fr)pN4HofHJ4BI2(UVabmCweWlESIgltR587Qr4AABYm3IO(V7CjNyxzzh7Uwehd8xxYQ5vsNzEbdgQqeltLUTihZslu93j88(1]] )
 
 spec:RegisterPack( "Fury", 20230416, [[Hekili:fN1tpUoUn8pl5sGZ(EBAsM38MTatYHIIIU7H3LuGEZok2ktChh7uz5j7ueKp7LuYwwswYoE6GTa7FYikr(JuKuK0Hld)hHBtiCA4pwTy1dl(2YVpF5Qhx(q4w(7NPHBptIFL8c8JCYj4)(3QyVJl(EwbjbpBzrflgieUDFvAg)xZd37KHR(fyVNPXH)yz42JPjju5oPLXsUEB3)KWyPfSB7oJ)VuoS0b8p)70xtZsbPYkoKMbYIeZtlYlNFMrJloTNW)Y6)0EkRKYELYIk5K8y6xtpSEF1HdZL)58KIl53(nxNe(XjsEsA(lrLhlQ44jjLLPVKttKRm3EltfC(07rah4z06DHIqrX(i9aaDM4q46K)4cwjAuJjzzrY)mklTK)v8UDDAEkxFxLv5jG5KWovWqy9gHLs2NrNJSndqNG(u1Y0tu2l0843RPOZRZvNorZ0xHvL3fcEVeTjmV68WmR2ezXj9vVh2KqpqZltFRdNSjiyw7nmAobE2yEKmJNEIgXlIssPF9nswfDDqcvWnoJaNaU0sat17aVM(WIfZUELtaJkFU2bhqe0FNgxXPrNpskBesntosjz8JZphZFE1IbytZLCg5uuXBGHVMV1CCs71UU8UETKY5GAuQwxWbmI((e4(SIIe(Xugy)hRO0oBenhpsY9j0lWzYUKMNmArQo54eOmcPwAkMkDfQj2WW2amnFGnbbp(Z1Eo6XPy2U4xN9tblN)4xYGSWq44SzF5HbqfM62cutQ5(jY)QOM5rmAsLGnG751RbUKp436fwp)4SbWXjigGd)RfuuwaDC6xoRF0jngfzF5ZpnnUOidZkoxZHPHClr1vRI0ezge8qLvqeLE6dpbJw5eR1Ory5AqnCHEFUwxOK3AIs7tr3063josuZMJ4hzuGzzj9ylg1PH36EnJwwMd)RIbGc1UJekHFm6sA5rd6om41RzWs1QASbwJb1TmpUIXO58NxlHjUMge7KySJEjj1EK77saeztUe7NnfS1aBBwVCrZDpEq1DElwWLbMEabreMh4(GbM4(CXfLF39GLvlMgiGI6WGGjjVlI5LpvrkHmFqPzYeUaHHIRLMY8Il2z8qc4JEn56cSriQ4xVAVQcAZ0FX1UibS0keGO(91QsAubKC9L4K1lX3WfAn8gEACkFJ(ZHoyZrkRing(Bw6R(yLYaQuU)DfTIIAxR)gkdWsqZPNsPLRx6XBo4(FasjKAt4SEvK4mr2HpnnyZF4AWDwvAGZ3m08KSEQPFH2Mxbf5aVmoDI707xV2Zlw9kE86kLtpvAEX1Vll09gdA4cAJGehtZOmcU3rWbSWT2YMnYbJgpKdrGaGwjWDoTZfHDLJdhOwx2NJBvnY2cFpVxg3wANd2QiAZ0lx(OMM)OmdFckDVSqpGg5sq3hyBDOpcnvrz1jkkUy(IGdMFpMc)24bcvHOksw6)XOFE7sSXDjiQE5PjOT75hsIM9z2j1QY8REe04nl9dJATLP00cKvvY1lu02UBoJbBE3P76oynWzbJ4nTJkbXLnkXA5Iztd87sC96KoAYm)OvucfGPjAoAJV6iBU2wreWAojdW980tNzW6ALvmNrYFDZc9lk7U9h0EgUf4wjC26bHTA13c3EHWWM8ld3(RNoxW4q)I7((TDsHCBho1HY53(TWTIFjMnh9aPkJd)8hIz1v7Vg(xAgdw4w7X5ipDKCGDy9yHCadwhoMLI3peaMoFb92UP321(gUvFmTcx)XmuopGYPHOCSp6Yf2X38IeP7r3r90YqRj0yOP2heL1JdilRHbDNcs)uOu(E)sXXGIUpbzFWq8MCRA0HU8jSeDTaXi3wr6Yq539yGrHk8tK1d5yQKguDozsn3ylYkVP7bw6s(Zds6hwA8fHtoS7fWvkKpQ9OnHo4VGwEc3gCBNVr9jG0dlwCB3SB7UE92UUd9tWWA3c9LDC1nmu6017TDpFB3Qf6cXOQDxxfdlMj6jq0zNuj9pPqDC4Rmkxzs(8HKJjk6aCA7YvsNpFy1zQJoaLApUYqnmK6FOKMVoOpC6DBUTlq8ppEB3pR8572ZJWz)Ne7eNT1UVap)jhyPGYmXkp4Yvq(ceOvpnATAIcq(6EtAXdCd86q1E0PNf69mDyR3akI6F5JGANTZoeywlaJN9uxgLaYpj2vFtl0CdDghOG8K68QgfRRBjS65gng)5rBmg59IUAc(zgP4SlQbWZYfJgq9B22Swl(13Osh06(b4IRHUkIofrB67S7Wxn2NZRvdkwd)XGMrhJck69maxlGM5A0SIT64Hkhwc7r06kziUrX974F4Ut)ZiVCOjiYwUq3ruVDfPM6VLfhGg3JaZJ)f(XG5vsmhuFH1DSVYuIYsx6m6xRKDLwdOvG)Xx6GVbe3GuB9dnvsyAtrHelGQ6gxwxNzn9dxyTEtSg5EC1sUw3swK7V07ap5KBUsC2uUKKvqM0ZCwJ5ZFt6YtBeYR0Yz90cXwTEFrJxV1UdSVrsFOifvVt1bi(7OS)o8fP5w0YpDVwUdLSx3c9VNGGXR04S67q4Yq53bOBWApJMxC5IcSD88IsawoyU6ab5rvbQ9q7n8om(CjJZ14)DnEZ)p0y53vXLQ6330otLwnDbEl4ZifNv9ugiYEUm(NeYGfelTL(Q7slk2xnOTOQTAavxjwMm1wvF0dRXh9uFhYZx9WIf2vG7k3UrHoo(EhMDa5Tl127dGKRcE97pOpSFhGyp3k9sBdODkI1VqA)yaoeXLlTIWODYovrnOf8dyP6u2ZDzQ8Bu8N0XRrXN67pOoWDzV6bjUE0DM(JATPRecte52qvzTmCOxoWeiT6iRJL2Ur62Jp4hoXk9GZpFIE8VnzH89hqQUAARxR9c2OMTU5E5oMGAZt4(sG0TWgDdTGNKk(riN62)k9qXVlwk8)c]] )
 

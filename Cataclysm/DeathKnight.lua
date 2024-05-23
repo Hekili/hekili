@@ -670,8 +670,8 @@ spec:RegisterAuras( {
     },
     -- Deals Frost damage over $d.  Reduces melee and ranged attack speed.
     frost_fever = {
-        id = 55095,
-        duration = function () return 15 + ( 3 * talent.epidemic.rank ) end,
+        id = 59921,
+        duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
         tick_time = 3,
         max_stack = 1,
     },
