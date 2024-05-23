@@ -9,7 +9,6 @@ local spec = Hekili:NewSpecialization( 6 )
 -- TODO
 --- Unholy Presence reduces global cooldown by .5 seconds. (Unsure how to do this)
 --- Deathstrike healing calculation
---- Death Rune managemenet. afaik blood doesn't really use deathrunes outside of ocassionally bloodtap so they can get an addition deathstrike.
 
 spec:RegisterResource( Enum.PowerType.RunicPower )
 
@@ -45,10 +44,11 @@ spec:RegisterResource( Enum.PowerType.RuneBlood, {
     resource = "blood_runes",
 
     reset = function()
+
         local t = state.blood_runes
 
         for i = 1, 2 do
-            local start, duration, ready = GetRuneCooldown( i )
+            local start, duration, ready = GetRuneCooldown( i );
 
             start = start or 0
             duration = duration or ( 10 * state.haste )
@@ -329,7 +329,6 @@ spec:RegisterResource( Enum.PowerType.RuneUnholy, {
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
-            t.expiry[ i - 2 ] = ready and 0 or start + duration
             t.cooldown = duration
         end
 
@@ -437,67 +436,71 @@ spec:RegisterResource( Enum.PowerType.RuneUnholy, {
 
 -- Talents
 spec:RegisterTalents( {
-    abominations_might         = { 10281, 2, 53137, 53138        },
-    annihilation               = { 2048 , 3, 51468, 51472, 51473 },
-    anti_magic_zone            = { 2221 , 1, 51052               },
-    blade_barrier              = { 2017 , 3, 49182, 49500, 49501 },
-    bladed_armor               = { 1938 , 3, 48978, 49390, 49391 },
-    blood_caked_blade          = { 5457 , 3, 49219, 49627, 49628 },
-    blood_parasite             = { 1960 , 2, 49027, 49542        },
-    bone_shield                = { 6703 , 1, 49222               },
-    brittle_bones              = { 1980 , 2, 81327, 81328        },
-    butchery                   = { 5372 , 2, 48979, 49483        },
-    chilblains                 = { 2260 , 2, 50040, 50041        },
-    chill_of_the_grave         = { 1981 , 2, 49149, 50115        },
-    contagion                  = { 12119, 2, 91316, 91319        },
-    crimson_scourge            = { 10289, 2, 81135, 81136        },
-    dancing_rune_weapon        = { 5426 , 1, 49028               },
-    dark_transformation        = { 2085 , 1, 63560               },
-    death_advance              = { 15322, 2, 96269, 96270        },
-    desecration                = { 5467 , 2, 55666, 55667        },
-    ebon_plaguebringer         = { 5489 , 2, 51099, 51160        },
-    endless_winter             = { 1971 , 2, 49137, 49657        },
-    epidemic                   = { 1963 , 3, 49036, 49562, 81334 },
-    hand_of_doom               = { 11270, 2, 85793, 85794        },
-    howling_blast              = { 1989 , 1, 49184               },
-    hungering_cold             = { 1999 , 1, 49203               },
-    icy_reach                  = { 10147, 2, 55061, 55062        },
-    improved_blood_presence    = { 5410 , 2, 50365, 50371        },
-    improved_blood_tap         = { 12223, 2, 94553, 94555        },
-    improved_death_strike      = { 5412 , 3, 62905, 62908, 81138 },
-    improved_frost_presence    = { 2029 , 2, 50384, 50385        },
-    improved_icy_talons        = { 2223 , 1, 55610               },
-    improved_unholy_presence   = { 2013 , 2, 50391, 50392        },
-    killing_machine            = { 2044 , 3, 51123, 51127, 51128 },
-    lichborne                  = { 2215 , 1, 49039               },
-    magic_suppression          = { 5469 , 3, 49224, 49610, 49611 },
-    mangle                     = { 5499 , 1, 33917               },
-    merciless_combat           = { 1993 , 2, 49024, 49538        },
-    might_of_the_frozen_wastes = { 7571 , 3, 81330, 81332, 81333 },
-    morbidity                  = { 5443 , 3, 48963, 49564, 49565 },
-    nerves_of_cold_steel       = { 2022 , 3, 49226, 50137, 50138 },
-    on_a_pale_horse            = { 11275, 1, 51986               },
-    pillar_of_frost            = { 1979 , 1, 51271               },
-    rage_of_rivendare          = { 5435 , 3, 51745, 51746, 91323 },
-    resilient_infection        = { 7572 , 2, 81338, 81339        },
-    rime                       = { 1992 , 3, 49188, 56822, 59057 },
-    rune_tap                   = { 5384 , 1, 48982               },
-    runic_corruption           = { 5451 , 2, 51459, 51462        },
-    runic_power_mastery        = { 2031 , 3, 49455, 50147, 91145 },
-    sanguine_fortitude         = { 10299, 2, 81125, 81127        },
-    scarlet_fever              = { 10285, 2, 81131, 81132        },
-    scent_of_blood             = { 5380 , 3, 49004, 49508, 49509 },
-    shadow_infusion            = { 5447 , 3, 48965, 49571, 49572 },
-    sudden_doom                = { 5414 , 3, 49018, 49529, 49530 },
-    summon_gargoyle            = { 5495 , 1, 49206               },
-    threat_of_thassarian       = { 2284 , 3, 65661, 66191, 66192 },
-    toughness                  = { 5431 , 3, 49042, 49786, 49787 },
-    unholy_blight              = { 5461 , 1, 49194               },
-    unholy_command             = { 5445 , 2, 49588, 49589        },
-    unholy_frenzy              = { 5408 , 1, 49016               },
-    vampiric_blood             = { 5416 , 1, 55233               },
-    virulence                  = { 1932 , 3, 48962, 49567, 49568 },
-    will_of_the_necropolis     = { 1959 , 3, 52284, 81163, 81164 },
+    abominations_might = { 10281, 2, 53137, 53138 },
+    annihilation = { 2048, 3, 51468, 51472, 51473 },
+    anti_magic_zone = { 2221, 1, 51052 },
+    blade_barrier = { 2017, 3, 49182, 49500, 49501 },
+    bladed_armor = { 1938, 3, 48978, 49390, 49391 },
+    blood_caked_blade = { 5457, 3, 49219, 49627, 49628 },
+    blood_parasite = { 1960, 2, 49027, 49542 },
+    bone_shield = { 6703, 1, 49222 },
+    brittle_bones = { 1980, 2, 81327, 81328 },
+    butchery = { 5372, 2, 48979, 49483 },
+    chilblains = { 2260, 2, 50040, 50041 },
+    chill_of_the_grave = { 1981, 2, 49149, 50115 },
+    contagion = { 12119, 2, 91316, 91319 },
+    crimson_scourge = { 10289, 2, 81135, 81136 },
+    dancing_rune_weapon = { 5426, 1, 49028 },
+    dark_transformation = { 2085, 1, 63560 },
+    death_advance = { 15322, 2, 96269, 96270 },
+    desecration = { 5467, 2, 55666, 55667 },
+    ebon_plaguebringer = { 5489, 2, 51099, 51160 },
+    endless_winter = { 1971, 2, 49137, 49657 },
+    epidemic = { 1963, 3, 49036, 49562, 81334 },
+    hand_of_doom = { 11270, 2, 85793, 85794 },
+    howling_blast = { 1989, 1, 49184 },
+    hungering_cold = { 1999, 1, 49203 },
+    icy_reach = { 10147, 2, 55061, 55062 },
+    improved_blood_presence = { 5410, 2, 50365, 50371 },
+    improved_blood_tap = { 12223, 2, 94553, 94555 },
+    improved_death_strike = { 5412, 3, 62905, 62908, 81138 },
+    improved_frost_presence = { 2029, 2, 50384, 50385 },
+    improved_icy_talons = { 2223, 1, 55610 },
+    improved_unholy_presence = { 2013, 2, 50391, 50392 },
+    killing_machine = { 2044, 3, 51123, 51127, 51128 },
+    lichborne = { 2215, 1, 49039 },
+    magic_suppression = { 5469, 3, 49224, 49610, 49611 },
+    mangle = { 5499, 1, 33917 },
+    merciless_combat = { 1993, 2, 49024, 49538 },
+    might_of_the_frozen_wastes = { 7571, 3, 81330, 81332, 81333 },
+    morbidity = { 5443, 3, 48963, 49564, 49565 },
+    nerves_of_cold_steel = { 2022, 3, 49226, 50137, 50138 },
+    on_a_pale_horse = { 11275, 1, 51986 },
+    pillar_of_frost = { 1979, 1, 51271 },
+    rage_of_rivendare = { 5435, 3, 51745, 51746, 91323 },
+    resilient_infection = { 7572, 2, 81338, 81339 },
+    rime = { 1992, 3, 49188, 56822, 59057 },
+    rune_tap = { 5384, 1, 48982 },
+    runic_corruption = { 5451, 2, 51459, 51462 },
+    runic_power_mastery = { 2031, 3, 49455, 50147, 91145 },
+    sanguine_fortitude = { 10299, 2, 81125, 81127 },
+    scarlet_fever = { 10285, 2, 81131, 81132 },
+    scent_of_blood = { 5380, 3, 49004, 49508, 49509 },
+    shadow_infusion = { 5447, 3, 48965, 49571, 49572 },
+    sudden_doom = { 5414, 3, 49018, 49529, 49530 },
+    summon_gargoyle = { 5495, 1, 49206 },
+    threat_of_thassarian = { 2284, 3, 65661, 66191, 66192 },
+    toughness = { 5431, 3, 49042, 49786, 49787 },
+    unholy_blight = { 5461, 1, 49194 },
+    unholy_command = { 5445, 2, 49588, 49589 },
+    unholy_frenzy = { 5408, 1, 49016 },
+    vampiric_blood = { 5416, 1, 55233 },
+    virulence = { 1932, 3, 48962, 49567, 49568 },
+    will_of_the_necropolis = { 1959, 3, 52284, 81163, 81164 },
+
+
+    -- Blood Specific Talents
+    veteran_of_the_third_war = { 6713, 1, 50029 },
 } )
 
 
@@ -531,7 +534,7 @@ spec:RegisterGlyphs( {
     -- [58635] = "pillar_of_frost", -- cc immune unused.
     -- [58669] = "rune_strike", -- damage buff, unused
     -- [59327] = "rune_tap", -- %5 health to party unused.
-    -- [58618] = "strangulate", -- silence length, unused
+    -- [58618] = "strangulate", -- unused
 
 
 -- Auras
@@ -670,8 +673,8 @@ spec:RegisterAuras( {
     },
     -- Deals Frost damage over $d.  Reduces melee and ranged attack speed.
     frost_fever = {
-        id = 59921,
-        duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
+        id = 55095,
+        duration = function () return 15 + ( 3 * talent.epidemic.rank ) end,
         tick_time = 3,
         max_stack = 1,
     },
@@ -1573,7 +1576,7 @@ spec:RegisterAbilities( {
     outbreak = {
         id = 77575,
         cast = 0,
-        cooldown = function() return spec.blood and 30 or 60 end,
+        cooldown = function() return talent.veteran_of_the_third_war.rank > 0 and 30 or 60 end,
         gcd = "spell",
 
         startsCombat = true,
@@ -1896,12 +1899,12 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 6,
 
-    package = "Blood (IV)",
-    usePackSelector = true
+    package = "Blood (Beta)",
+    usePackSelector = true,
 } )
 
 
-spec:RegisterPack( "Blood (IV)", 20240506, [[Hekili:nFvyVTnop4FlddORzzXnoTPDRiPf3UbCO9o0bSuS7(KTvKvIfIJKpl5MLHa9B)iTtSLDSZ2H79dVFPnruKI8HKpKXZ17zVzHenZ7PrdhD1WXdV2Xf(V7yVz6TjmVzje6kYs4dcYA4VFmwkdnbN)Wx7HY2gljHOnuYSukipsRtu3EXfB2SXHt3o4fgxOCOY1xSrQJxnGgtuko9I5ODgeYi6ObRe8Lr6bAIy1GKxydsLAIMlfdOszCOCJqnGmNhZ1CMYB28mES(bH3Clh)YHx56corcJ6901GxWddzfxHPOEZEoIRmbjPCzkxV1eGFBorXGirkmb6iMj4bki4RO7AcwMXdzoEZI5kTcdpIKb)7PC4IqrNdnn48(erOFiJs26nJjiZJzHEF0tdE1H7RTfmJcoalLt8M9QqP2jhg8tIjlZyoAoDfxS0eCMj4iHPSfPmveAitWUDMGC9xKkvA)fSxyPhPUTmlTRcazMEEkJScD3lXiRv)8h9mDgcNBcWx6fMFdtyc6xtKTfmbtG8rAgZF)fyc2AiVBcERjyKjOxL7NWuAEmtaLDqaCvNbWRogo27Mv2ckv91YmAeO4wAmZxtsxYGCpKcbJpU9KzPNK76(kDkFfRLNUnicn71D6ZrmsSoYjHQnb3zcUEydeTeva06QAOcOzQUYvAjyU5)(RccVS2RweHZL8y8fEFNVqAMGt9tKBGKqiBbNYHNAYui1oSYyWLkbtWAF4h1jnpBXch4RRvsHVIcmrlzozjD4DASZDbjlwFuh9Ao0mdnkSVZAPBUR2Jncl0xMk8Ll83WfG8dnwh8(s)rIbyeNfh24DUQLBhseuOGXphw2Wij4H10ACNENMVUOLAutERLP8KF(AqmfDZWM2OkhDJnmMPy(GrwRA4MVV2LerY4TiAl(EtUZp0Pp1sHiY7d(bvJaNDnKFXN9rs8cQC)IzyizoE7HNURUKE8)hiTr)19)ruCOT6UG(uCwDW4HgS7bi7RJOzPqUwxs(lfo2vro41YrcOADVkRjFRvG5Nzeu31QUnhv0gVZpKZkNYcT2y7Q66SV1kQD7Utdyylcb0du1qQIW(4Z33(0qqVM96S15(DnUd0xU50L(weM)e8S5CQjPmylV5Kkw1U5QH7QW52o1jplI1dcZnlyyiHRqXw75THKkGumWV8N)YxE6HN(TBnbMGNXT44qaNciXcjSMXBGo93ycsz)Dgpfx2tjr6qsMwUgwDeoGgrelbe084FWfGOXGL(vPaEZCXVrtGfm0o)fyfT067o7do48ZD)wpqFZJpK)0OAxEOc3eKVbjigbi5coU(1RFTjy)A0Fclnnb)E(cW4w1L7G2Z8iEpmMhm8QbUU4luyuLtjw3F6f1bT3Xxm9yi2sxqdRPC2hxF0fAOcvRUr1GdukoAzYOJLxu8J3OAaYKPWUew3SCcrTdTNiylObx(7qw8PqQ9Df8(tDXhR(KH7CTnq1MIfHv7mgNDk67D76Ge6StWAB7dL0VOl01yGD7S73reg0XhObNSKgwlIS5FlTyRdMS0QqELs2KoN4X6iVUN1P)jiZNurKFeo1jQ3PJRj5fENVmEBsKt5zh6f3TRQG7URh27Sw4uNoSrH1bmSwNGfj(X4afyfr3OLXctgnSl4UOD(5p)PpFl22dDyRZjC2Za8Lm8lkUol)x(6uC9oQEU)(7TFMw44ZHPwc)(TmoPFBJs6HD2veoqZwz8x(dEBk(4US)nP7ZoFFhCdf7BDSTEtA5hj(2r9A6uvaxTFkubNrNBJ1mYQ1T1LHozr8ElvnyTobjuVwcahOWgTB3R2pVXUI8Oq0w4XmHtUS904PlJHHYzAyIG3SQrs5JJ9(Nd]] )
+spec:RegisterPack( "Blood (Beta)", 20240523, [[Hekili:nFvtVnUnq0FllwGIKUzvLSZxfiEpe0dnUa5Ic6rjstnYIWYKcuuRRlwWF7DOKIfLIuC822G9qIT5mZJZm8npkffe9uuycvdrpoZF2L(xnBUN)Tb((3gfQ3xarHfu2g6A8lc6w8)3NlLjgYz3dA65wR7ZL0elkLYkfd9ikCvfpx)GiA1iq7F9LZrFlaw0JxhfMXtsGgpHswu4tz8sdX(h1qA3AdrMI)MP5sHHKZl1O5uPYq(DydpN7ffwVOnjOsa)4X6YQjclYuDwmvKeNam6(OqqqxLdjr3hPXCZ6A3kHmfxdkonk8dgsIu7TYwXXf501vGNMZ2WfRnKFAeJkivbLzwOmKV9ndPfHuLSuhNcFfuVaaxBoX3L9Yk9kfq3yZ15tMRhBBMSioRPZ(viEaegYN6zYfbd5odrRQG4whabSLd4XYpBiZmKZ7s)cOuZZbbYmWc4YJ1ShPg6WIZ2hRLvSmluxDmOgRKDYR61Jl1k(M6u76jXdBrnyPQeqPhRsPaHUU)0KUVC9krMmF)qdNx33M1LeW2c5oqv7x8oGwGlIPYntMkOJCwCDqEjqkNX1ny63bAnyD11Ttc2QQ0up8NBlLI4sgo(Ug8Qk6qQPQxj55wG(1jbkdO56mVcgMmFXqU2FaZ6a7anoVh7O)oe47o2IOQ0pxi9Mz12z6uAvU(fZ6B54yoofb)n8MNZtK7eoBRujILPX74c0(HPUdzS02DZ4qEYGn4YEAoubd5B9oz77(08x325DlmKB8hQLnG1(SXQsigbzB5GTAA(0ihqbO6mcpZEE0Juf389yRwBJIBCZvcwn3xLO9JNq60C5twhQH0EQ19RiefeCmMHRstdmEU8cpRB1TguzOnKT0)A0o1B5EIPzFbtpu9DOufm91BV7sWbtFt1jkBgC1BwuRqbm52vuRSw9c7OkbEaGZZpGPPsdj1xV2aw7Jc5zwAJuMYTK9p(rdP9r0(n7HLH8hc(6mSYp7b2Ed5pbUO8CZsRF4tLn)Z(x95zZnlnlBaT8tl(fhnu3L7lmEbpDHv401dhTr3LhrlSNzhsLf1o5V7wCJF)u7GcN7Id0MUWQkTafLUOrhBrGf1(kDFjWfGNvgS(9H)TkvhBcBcDk385G(YHeAmaDcONgYRxfhVX)oRUm4K0TkMwdXnOrMGTb)FTKrpI(HjC7onHGqVzhNXEhgThYspCqC4fugA(hk6zBo19y9ncbFhN7))92hdt2tBE65k80NPAJ89Mq2UTN(WtBGNgBE0Go13ayiA9VwKwPXlBIcFsMKKxF)N92WO)5d]] )
 
 spec:RegisterPack( "Frost DK (IV)", 20221001, [[Hekili:DAvxVrQnu0FlRwP08XczystAsvsEOQQsjRuEzQ2hbBGldwdyJSndAQI8V9ETjDgddKnPVKmCTVN7X3po2XrX)D8QCQgIFz5ILlJwSikm6MLrxFx8k9UgiEvdnBdDn(doTg)7FjfkTH8NF3qo9PFCMD9DvcAUfhLOvMH7PuRBu)(Lx211fYY2fSfyCvyMO(YoHUAtqwfvPyzxwyXkihO6YGnC26s8JgvqZwiqk0untWdYeIQCrhxfqtzvmnduXRsBzv6N4XPtW9OBrI0azXVCdYewEo0VpqLnG9nsMqY07mKuQcYneb3qEkd)(hw6(lgY6wwoeINqPOGvHNRV(vd5)qWsAd57owBtf7D8mZZ29zzuq0IGfrMNnptZShgvyJeW0qkvFXdxMwje5jOffWZGP3tPqYtefjDmUgKFJv8qABrr4qZH28Jxuq)Qz88Kcja)d4BglgjArBwPfPVKl0HUsqsbSfHrZY2W4R9DOu0vHMssXkM2606QDnLHdmhcCAAfKFYhbWMk66wirPLSnWEw8wQWT2KEbknwbW0K1LzcZjZH0jwG2cjJ87cpZ(UD)YZ1sKJVTmWHASPZNoT8ujq3yp1juzTq6VypuAAJRA5(q2YbS)VvkbU((L(7wKI90GeBIN)82NZZzkaBu3NT)0zHth7HeWoevPfUxF9i38w9mFUb1nIoq6oujDaTrWN5KErFWgARLxkQ2nkLC1GSRcsWCs9GuEgTQkP)ZKkg2lAvJEGkGVzBLY0pezjXWs2Jr(i0tMdnEUbPnSkxJCnnRKXHW2M3T735JBSYAUqSEKd9jH(ymxS9Ldq(pomJx0PoMqXX5CiJUZnYul2AlOfwTNejutrzNhrzpSOQqx7LdxC3YBcJIx1rLCC3OQ5tyLtQTsDxzi9rXqSjtvO554vUFzLXXaJ)7f3vd9Bdfs95y8Q3AcJ)Jyngn7gpyzvM02sZOXR(IH0Zvd5edzaFnKhnKBpeGrNtexT1ybTTsFeB8K3(mCzMrMd4UxF0c1vZc17ic6oOFKqnmHIH7x)zmFQH6d4nqy1I31ZI3CY0wQpRASDXP1rnKlgSKV7gY94vHgY5gYeAQESFVGNL634xRpsSDuf)3M9CoHKupFoa(EXAls36h2dcZJI3D)K2Ir607ZQ)VY4NESVE6YgYRVobad2XzZLKJw85sCyrEc9CN9P00Dz6Roe8jU2WXIbZ17L(hLZJMFSEyhLtvbf96VuWQASh7X3G0l4L0)QwRKND7ZpZpZ1fhW3xJ3H18d0tDnY7OmeDTFoY)oMXPPbdodi0GnQTVP9ThzEK26WNL(HLxN7DP(Nl)fD0ajcTvxANPXhqh4E)SZC8)c]] )
 
@@ -1911,7 +1914,7 @@ spec:RegisterPack( "Unholy (IV)", 20220926.3, [[Hekili:TAv0Ujoou0Vf0if1oDskqNYqx
 
 
 
-spec:RegisterPackSelector( "blood", "Blood (IV)", "|T135770:0|t Blood",
+spec:RegisterPackSelector( "blood", "Blood (Beta)", "|T135770:0|t Blood",
     "If you have spent more points in |T135770:0|t Blood than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
