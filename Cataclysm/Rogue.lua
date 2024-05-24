@@ -273,11 +273,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 16511, 17347, 17348, 26864, 48660 },
     },
-    hunger_for_blood = {
-        id = 63848,
-        duration = 60,
-        max_stack = 1,
-    },
     -- Stunned.
     kidney_shot = {
         id = 8643,
@@ -1109,31 +1104,6 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 16511, 17347, 17348, 26864, 48660 }
-    },
-
-
-    -- Enrages you, increasing all damage caused by 5%.  Requires a bleed effect to be active on the target.  Lasts 1 min.
-    
-    hunger_for_blood = {
-        id = 63848,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = 15,
-        spendType = "energy",
-
-        talent = "hunger_for_blood",
-        startsCombat = true,
-        texture = 236276,
-
-        usable = function()
-            return debuff.bleed.up
-        end,
-
-        handler = function ()
-            applyBuff( "hunger_for_blood" )
-        end,
     },
 
 
