@@ -21,7 +21,7 @@ actions+=/potion,if=target.health.pct<20
 actions+=/heroic_strike,if=(active_enemies=1|buff.sweeping_strikes.up)&(rage.current>=settings.queueing_threshold|buff.deadly_calm.up|buff.battle_trance.up|(cooldown.deadly_calm.remains<1&!cooldown.recklessness.remains<1&rage.current>30&!target.time_to_die<130))
 actions+=/cleave,if=active_enemies>1&!buff.sweeping_strikes.up&(rage.current>=settings.queueing_threshold|buff.deadly_calm.up|buff.battle_trance.up|(cooldown.deadly_calm.remains<1&!cooldown.recklessness.remains<1&rage.current>30&!target.time_to_die<130))
 #maybe implement heroic_leap here?
-actions+=/call_action_list,name=battle_stance,if=(settings.macro_stance_dance|buff.battle_stance.up)|!dot.rend.ticking|(buff.taste_for_blood.remains<=5.5&target.health.pct>20)|(buff.taste_for_blood.up&!cooldown.mortal_strike.up&!cooldown.colossus_smash.up&rage.current>=5|buff.overpower_ready.up)
+actions+=/call_action_list,name=battle_stance,if=(settings.macro_stance_dance|buff.battle_stance.up)|(!dot.rend.ticking|overpower_now)
 actions+=/call_action_list,name=berserker_stance,if=(settings.macro_stance_dance|buff.berserker_stance.up)
 
 ## Spread Rend in AoE
@@ -31,10 +31,10 @@ actions.spread_rend+=/thunder_clap,if=dot.rend.ticking
 
 ## Battle_Stance
 actions.battle_stance+=/battle_stance,if=!settings.macro_stance_dance&!buff.battle_stance.up
+actions.battle_stance+=/shattering_throw,if=settings.debuff_shattering_throw
 actions.battle_stance+=/rend,if=!up
-actions.battle_stance+=/shattering_throw
-actions.battle_stance+=/overpower
-actions.battle_stance+=/berserker_stance,if=!settings.macro_stance_dance&!buff.berserker_stance.up&buff.taste_for_blood_prediction.remains>1.5
+actions.battle_stance+=/overpower,if=overpower_now
+actions.battle_stance+=/berserker_stance,if=!settings.macro_stance_dance&!buff.berserker_stance.up&(!buff.taste_for_blood_prediction.up|buff.taste_for_blood_prediction.remains>1.5)
 
 ## Berserker_stance
 actions.berserker_stance+=/mortal_strike,if=(target.health.pct>20|buff.slaughter.remains<=1.5|talent.lambs_to_the_slaughter&dot.rend.ticking&dot.rend.remains<3|talent.wrecking_crew.enabled&!buff.enrage.up)
