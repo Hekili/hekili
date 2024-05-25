@@ -21,6 +21,7 @@ actions.st+=/envenom,if=combo_points>=4&energy>=90
 actions.st+=/mutilate,if=buff.envenom.up&energy>=55&target.health.pct>35
 actions.st+=/envenom,if=target.health.pct<35&combo_points=5
 actions.st+=/expose_armor,if=settings.maintain_expose&combo_points.current>=4
+actions.st+=/recuperate,if=health.pct<30&combo_points>=3
 
 actions.aoe+=/slice_and_dice,if=!up
 actions.aoe+=/mutilate,if=combo_points.current=0
