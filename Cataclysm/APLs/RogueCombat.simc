@@ -1,19 +1,27 @@
 Smufriks Combat
 
-actions+=/run_action_list,name=st
+actions+=/shiv,if=debuff.dispellable_enrage.up
+actions+=/kick
+actions+=/call_action_list,name=cds
+actions+=/run_action_list,name=finish,if=combo_points=5
+actions+=/call_action_list,name=build
 actions+=/run_action_list,name=aoe,if=active_enemies>3
+actions+=/recuperate,if=health.pct<30&combo_points>=3
 
-actions.st+=/sinister_strike,if=combo_points<3|buff.slice_and_dice.down&combo_points=0
-actions.st+=/slice_and_dice,if=buff.slice_and_dice.remains<2|buff.slice_and_dice.down
-actions.st+=/killing_spree,if=energy<50&buff.deep_insight.up
-actions.st+=/adrenaline_rush,if=energy<20
-actions.st+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1|solo)&!buff.deep_insight.up&!buff.blade_flurry.up&!buff.adrenaline_rush.up&time_to_die>12&!buff.bloodlust.up
-actions.st+=/revealing_strike,if=combo_points<4&buff.revealing_strike.down&buff.slice_and_dice.remains>5
-actions.st+=/eviscerate,if=combo_points=5
-actions.st+=/gouge,if=combo_points<4&buff.revealing_strike.up&debuff.gouge.down
-actions.st+=/recuperate,if=health.pct<30&combo_points>=3
+actions.build+=/sinister_strike,strict=1,if=buff.slice_and_dice.down&combo_points=0
+actions.build+=/slice_and_dice,strict=1,if=buff.slice_and_dice.down&combo_points>0
+actions.build+=/revealing_strike,if=combo_points<4&buff.revealing_strike.down&buff.slice_and_dice.remains>5
+actions.build+=/gouge,if=combo_points<5&buff.revealing_strike.up&debuff.gouge.down
+actions.build+=/sinister_strike,if=combo_points<5
+actions.build+=/killing_spree,if=energy<50&buff.deep_insight.up
 
+actions.finish+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points<3|buff.slice_and_dice.down
+actions.finish+=/eviscerate,if=combo_points=5
+actions.finish+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1|solo)&!buff.deep_insight.up&!buff.blade_flurry.up&!buff.adrenaline_rush.up&time_to_die>12&!buff.bloodlust.up
 
+actions.cds+=/adrenaline_rush,if=energy<20&cooldown.killing_spree.remains>15
+actions.cds+=/blood_fury
+actions.cds+=/berserking
 
 actions.aoe+=/blade_flurry,if=active_enemies>1&!buff.blade_flurry.up
 actions.aoe+=/fan_of_knives,if=active_enemies>3&energy<50&buff.deep_insight.up
