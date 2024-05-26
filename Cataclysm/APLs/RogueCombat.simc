@@ -25,5 +25,5 @@ actions.cds+=/berserking
 
 actions.aoe+=/blade_flurry,if=active_enemies>1&!buff.blade_flurry.up
 actions.aoe+=/fan_of_knives,if=active_enemies>3&energy<50&buff.deep_insight.up
-actions.aoe+=/call_action_list,name=st
+actions.aoe+=/call_action_list,name=build
 actions.aoe+=/cancel_buff,name=blade_flurry,if=active_enemies=1&buff.blade_flurry.up
