@@ -10,8 +10,8 @@ actions+=/recuperate,if=health.pct<30&combo_points>=3
 
 actions.build+=/sinister_strike,strict=1,if=buff.slice_and_dice.down&combo_points=0
 actions.build+=/slice_and_dice,strict=1,if=buff.slice_and_dice.down&combo_points>0
-actions.build+=/revealing_strike,if=combo_points<4&buff.revealing_strike.down&buff.slice_and_dice.remains>5
-actions.build+=/gouge,if=combo_points<5&buff.revealing_strike.up&debuff.gouge.down
+actions.build+=/revealing_strike,if=combo_points<4&debuff.revealing_strike.down&buff.slice_and_dice.remains>5
+actions.build+=/gouge,if=combo_points<5&debuff.revealing_strike.up&debuff.gouge.down
 actions.build+=/sinister_strike,if=combo_points<5
 actions.build+=/killing_spree,if=energy<50&buff.deep_insight.up
 
