@@ -8,9 +8,10 @@ actions+=/potion
 actions+=/hyperspeed_acceleration,use_off_gcd=1
 actions+=/run_action_list,name=bear_tank_aoe,if=buff.bear_form.up&active_enemies>1
 actions+=/run_action_list,name=bear_tank,if=buff.bear_form.up
-actions+=/run_action_list,name=catweave,if=buff.cat_form.up&!aggro
+actions+=/run_action_list,name=cat,if=buff.cat_form.up&!aggro
 actions+=/bear_form,if=!up
 
+# Single Target
 actions.bear_tank+=/frenzied_regeneration,if=health.pct<30
 actions.bear_tank+=/survival_instincts,if=health.pct<40
 actions.bear_tank+=/feral_charge_bear,if=target.outside7
@@ -29,6 +30,7 @@ actions.bear_tank+=/pulverize,if=dot.lacerate.ticking&dot.lacerate.stack=3&(!buf
 actions.bear_tank+=/lacerate,if=dot.lacerate.stack<3
 actions.bear_tank+=/maul
 
+# Multi Target
 actions.bear_tank_aoe+=/frenzied_regeneration,if=health.pct<30
 actions.bear_tank_aoe+=/survival_instincts,if=health.pct<40
 actions.bear_tank_aoe+=/feral_charge_bear,if=target.outside7
@@ -49,20 +51,20 @@ actions.bear_tank_aoe+=/lacerate,if=dot.lacerate.stack<3
 actions.bear_tank_aoe+=/maul
 actions.bear_tank_aoe+=/lacerate,cycle_targets=1,if=!dot.lacerate.ticking|dot.lacerate.remains<5
 
-
-actions.catweave+=/tigers_fury,use_off_gcd=1,if=try_tigers_fury
-actions.catweave+=/berserk,use_off_gcd=1,if=try_berserk
-actions.catweave+=/bear_form,if=emergency_bearweave
-actions.catweave+=/faerie_fire_feral,if=ff_now&target.outside2
-actions.catweave+=/feral_charge_cat,if=target.outside7
-actions.catweave+=/ravage,if=buff.stampede_cat.remains<1.5
-actions.catweave+=/shred,if=debuff.rip.remains<1.5&rip_canextend
-actions.catweave+=/rip,if=rip_now
-actions.catweave+=/savage_roar,if=roar_now
-actions.catweave+=/ferocious_bite,if=bite_now
-actions.catweave+=/mangle_cat,if=mangle_now
-actions.catweave+=/rake,if=rake_now
-actions.catweave+=/feral_charge_cat,if=should_leaveweave
-actions.catweave+=/bear_form,if=should_bearweave
-actions.catweave+=/ravage
-actions.catweave+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current=energy.max)
+# Cat rotation if no aggro and cat_form active
+actions.cat+=/tigers_fury,use_off_gcd=1,if=try_tigers_fury
+actions.cat+=/berserk,use_off_gcd=1,if=try_berserk
+actions.cat+=/cancel_buff,buff_name=primal_madness,if=cancel_primal_madness&buff.primal_madness.up&energy.current<20
+actions.cat+=/faerie_fire_feral,if=ff_now&target.outside2
+actions.cat+=/feral_charge_cat,if=target.outside7
+actions.cat+=/mangle_cat,if=feral_t11_refresh_now
+actions.cat+=/rip,if=rip_now
+actions.cat+=/savage_roar,if=roar_now
+actions.cat+=/ferocious_bite,if=bite_now&(energy.current>=action.ferocious_bite.spend|!should_bearweave)
+actions.cat+=/mangle_cat,if=mangle_now
+actions.cat+=/rake,if=rake_now
+actions.cat+=/mangle_cat,if=feral_t11_build_now
+actions.cat+=/bear_form,if=should_bearweave
+actions.cat+=/feral_charge_cat,if=should_leaveweave
+actions.cat+=/ravage,if=ravage_now
+actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current>=energy.max-energy.regen*latency)

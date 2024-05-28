@@ -242,22 +242,6 @@ paladin:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
-    -- Places a Blessing on the friendly target, increasing Strength, Agility, Stamina, and Intellect by 5%, and all magical resistances by 97, for 1 hour.  
-    -- If target is in your party or raid, all party and raid members will be affected. Players may only have one Blessing on them per Paladin at any one time.
-    blessing_of_kings = {
-        id = 20217,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
-    -- Places a Blessing on the friendly target, increasing melee attack power by 20%, increasing ranged attack power by 10%, and restoring 0 mana every 5 seconds for 1 hour.  
-    -- If target is in your party or raid, all party and raid members will be affected. Players may only have one Blessing on them per Paladin at any one time.
-    blessing_of_might = {
-        id = 19740,
-        duration = 3600,
-        max_stack = 1,
-        shared = "player"
-    },
     -- Gaining 12% of total mana. Healing spells reduced by 50%.
     divine_plea = {
         id = 54428,
