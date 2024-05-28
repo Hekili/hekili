@@ -291,13 +291,16 @@ spec:RegisterAuras( {
         duration = 15,
 
     },
-        
-    -- Increases Nature damage taken from the Shaman by $s1%.
-    unleash_elements = {
-        id = 73680,
-        duration = 15,
-
-    },
+    unleash_flame = {
+        id = 73683,
+        duration = 8,
+        max_stack = 1,
+	},
+    unleash_wind = {
+        id = 73681,
+        duration = 12,
+        max_stack = 1,
+	},
     -- Increases the critical effect chance of your Healing Wave, Lesser Healing Wave and Chain Heal by $s1%. Each critical heal reduces the chance by 20%. Lasts $55166d.
     tidal_force = {
         id = 55198,
@@ -2344,6 +2347,24 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Focuses the elemental force imbued in the Shaman's weaponry, with the concentrated effects depending on the enchantment unleashed.
+    unleash_elements = {
+        id = 73680,
+        cast = 0,
+        cooldown = 15,
+        gcd = "spell",
+
+        spend = 0.016,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 237581,
+
+        handler = function ()
+            applyBuff( "unleash_flame" )
+            applyBuff( "unleash_wind" )
+        end,
+    },
 
     -- Allows the target to breathe underwater for 10 min.
     water_breathing = {
