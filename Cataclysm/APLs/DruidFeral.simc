@@ -39,7 +39,6 @@ actions.cat_aoe+=/mangle_cat,if=(set_bonus.idol_of_the_corruptor=1|set_bonus.ido
 actions.cat_aoe+=/shred,if=set_bonus.idol_of_mutilation=1&combo_points.current=0&buff.savage_roar.remains<=1&(ttd>buff.savage_roar.remains+1+latency)
 actions.cat_aoe+=/rake,if=!set_bonus.idol_of_mutilation=1&combo_points.current=0&buff.savage_roar.remains<=1&(ttd>buff.savage_roar.remains+1+latency)
 actions.cat_aoe+=/swipe_cat,if=excess_e>=action.swipe_cat.spend|buff.clearcasting.up
-actions.cat_aoe+=/mark_of_the_wild,if=should_flowerweave&mana.pct>settings.min_weave_mana&energy.current<45
 actions.cat_aoe+=/faerie_fire_feral,if=ff_now
 
 ##Bearweave: Use if bearweaving enabled and cat would be downtime
