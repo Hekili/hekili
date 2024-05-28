@@ -1,26 +1,26 @@
 Smufrik assassination rogue
-
+actions=stealth
 actions+=/run_action_list,name=aoe,if=active_enemies>5
 actions+=/run_action_list,name=st
 
 actions.st+=/slice_and_dice,if=buff.slice_and_dice.down
 actions.st+=/kick
 actions.st+=/garrote,if=buff.stealth.up
-actions.st+=/mutilate,if=energy>=55&combo_points<=3&target.health.pct>35
-actions.st+=/rupture,if=combo_points>=4&debuff.rupture.remains<2
+actions.st+=/mutilate,if=energy>55&combo_points<=3&target.health.pct>35
+actions.st+=/rupture,if=combo_points>4&dot.rupture.remains<2|dot.rupture.down
 actions.st+=/berserking,if=buff.bloodlust.up|target.time_to_die<20
 actions.st+=/hyperspeed_acceleration,if=buff.bloodlust.up|target.time_to_die<20
 actions.st+=/vendetta,if=target.time_to_die>30&buff.slice_and_dice.up&debuff.rupture.up
-actions.st+=/cold_blood,if=combo_points.current>=5&buff.envenom.up
-actions.st+=/envenom,if=combo_points>=4&(debuff.vendetta.up|debuff.toxic_blade.up|debuff.surge_of_toxins.remains<1)
-actions.st+=/vanish,if=energy<50&!buff.stealth.up&!buff.overkill.up
-actions.st+=/global_thermal_sapper_charge,if=target.time_to_die<20
-actions.st+=/backstab,if=energy>=60&combo_points<4&target.health.pct<35
+actions.st+=/cold_blood,if=combo_points.current>5&buff.envenom.up
+actions.st+=/envenom,if=combo_points>4&debuff.vendetta.up
+actions.st+=/vanish,if=time>30&energy<50&!buff.stealth.up&!buff.overkill.up
+actions.st+=/backstab,if=combo_points<5&target.health.pct<35
 actions.st+=/pool_resource,for_next=1,extra_amount=90
-actions.st+=/envenom,if=combo_points>=4&energy>=90
-actions.st+=/mutilate,if=buff.envenom.up&energy>=55&target.health.pct>35
-actions.st+=/envenom,if=target.health.pct<35&combo_points=5
+actions.st+=/envenom,if=combo_points>4&energy>80&buff.envenom.up|buff.envenom.down&enery>55|combo_points>2&buff.slice_and_dice.remains<3
+actions.st+=/mutilate,if=buff.envenom.up&energy>55&target.health.pct>35
+actions.st+=/envenom,if=target.health.pct<35&combo_points=5&energy>65
 actions.st+=/expose_armor,if=settings.maintain_expose&combo_points.current>=4
+actions.st+=/recuperate,if=health.pct<30&combo_points>=3
 
 actions.aoe+=/slice_and_dice,if=!up
 actions.aoe+=/mutilate,if=combo_points.current=0

@@ -9,7 +9,6 @@ local spec = Hekili:NewSpecialization( 6 )
 -- TODO
 --- Unholy Presence reduces global cooldown by .5 seconds. (Unsure how to do this)
 --- Deathstrike healing calculation
---- Death Rune managemenet. afaik blood doesn't really use deathrunes outside of ocassionally bloodtap so they can get an addition deathstrike.
 
 spec:RegisterResource( Enum.PowerType.RunicPower )
 
@@ -45,10 +44,11 @@ spec:RegisterResource( Enum.PowerType.RuneBlood, {
     resource = "blood_runes",
 
     reset = function()
+
         local t = state.blood_runes
 
         for i = 1, 2 do
-            local start, duration, ready = GetRuneCooldown( i )
+            local start, duration, ready = GetRuneCooldown( i );
 
             start = start or 0
             duration = duration or ( 10 * state.haste )
@@ -189,6 +189,7 @@ spec:RegisterResource( Enum.PowerType.RuneFrost, {
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
+            t.expiry[ i ] = ready and 0 or start + duration
             t.cooldown = duration
         end
 
@@ -498,6 +499,10 @@ spec:RegisterTalents( {
     vampiric_blood             = { 5416 , 1, 55233               },
     virulence                  = { 1932 , 3, 48962, 49567, 49568 },
     will_of_the_necropolis     = { 1959 , 3, 52284, 81163, 81164 },
+
+
+    -- Blood Specific Talents
+    veteran_of_the_third_war = { 6713, 1, 50029 },
 } )
 
 
@@ -531,7 +536,7 @@ spec:RegisterGlyphs( {
     -- [58635] = "pillar_of_frost", -- cc immune unused.
     -- [58669] = "rune_strike", -- damage buff, unused
     -- [59327] = "rune_tap", -- %5 health to party unused.
-    -- [58618] = "strangulate", -- silence length, unused
+    -- [58618] = "strangulate", -- unused
 
 
 -- Auras
@@ -1911,7 +1916,7 @@ spec:RegisterPack( "Unholy (IV)", 20220926.3, [[Hekili:TAv0Ujoou0Vf0if1oDskqNYqx
 
 
 
-spec:RegisterPackSelector( "blood", "Blood (IV)", "|T135770:0|t Blood",
+spec:RegisterPackSelector( "blood", "Blood (Beta)", "|T135770:0|t Blood",
     "If you have spent more points in |T135770:0|t Blood than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )

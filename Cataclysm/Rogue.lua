@@ -146,6 +146,11 @@ spec:RegisterAuras( {
         duration = function() return glyph.adrenaline_rush.enabled and 20 or 15 end,
         max_stack = 1,
     },
+    backstab = {
+        id = 53,
+        duration = 15,
+        max_stack = 1,
+    },
     -- Weapon attacks strike an additional nearby opponent.
     blade_flurry = {
         id = 13877,
@@ -261,10 +266,12 @@ spec:RegisterAuras( {
         duration = function() return 4 + 2 * talent.improved_gouge.rank end,
         max_stack = 1,
     },
-    hunger_for_blood = {
-        id = 63848,
-        duration = 60,
+    -- Increases damage taken by $s3.
+    hemorrhage = {
+        id = 16511,
+        duration = 15,
         max_stack = 1,
+        copy = { 16511, 17347, 17348, 26864, 48660 },
     },
     -- Stunned.
     kidney_shot = {
@@ -335,6 +342,13 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 2070, 6770, 11297, 51724 },
     },
+    -- Increases physical damage taken by $s1%.
+    savage_combat = {
+        id = 58684,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 58683, 58684 },
+    },
     -- Can use opening abilities without being stealthed.
     shadow_dance = {
         id = 51713,
@@ -351,10 +365,20 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
+    shallow_insight = {
+        id = 84745,
+        duration = 15,
+        max_stack = 1,
+    },
     -- Silenced.
     silenced_improved_kick = {
         id = 18425,
         duration = 2,
+        max_stack = 1,
+    },
+    sinister_strike = {
+        id = 1752,
+        duration = 15,
         max_stack = 1,
     },
     -- Melee attack speed increased by $s2%.
@@ -393,6 +417,12 @@ spec:RegisterAuras( {
     vanish = {
         id = 11327,
         duration = 10,
+        max_stack = 1,
+    },
+
+    vendetta = {
+        id = 79140,
+        duration = 30,
         max_stack = 1,
     },
     -- Time between melee and ranged attacks increased by $s1%.    Movement speed reduced by $s2%.
@@ -654,7 +684,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132090,
 
-        usable = function() return stealthed.all, "must be in stealth" end,
 
         handler = function ()
             if glyph.backstab.enabled and debuff.rupture.up then debuff.rupture.expires = debuff.rupture.expires + 2 end
@@ -1078,30 +1107,6 @@ spec:RegisterAbilities( {
     },
 
 
-    --[[ Enrages you, increasing all damage caused by 5%.  Requires a bleed effect to be active on the target.  Lasts 1 min.
-    hunger_for_blood = {
-        id = 63848,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = 15,
-        spendType = "energy",
-
-        talent = "hunger_for_blood",
-        startsCombat = true,
-        texture = 236276,
-
-        usable = function()
-            return debuff.bleed.up
-        end,
-
-        handler = function ()
-            applyBuff( "hunger_for_blood" )
-        end,
-    }, ]]
-
-
     -- A quick kick that interrupts spellcasting and prevents any spell in that school from being cast for 5 sec.
     kick = {
         id = 1766,
@@ -1300,6 +1305,8 @@ spec:RegisterAbilities( {
 
         spend = 30,
         spendType = "energy",
+
+        toggle = "defensives",
 
         usable = function() return combo_points.current > 0, "requires combo_points" end,
 
@@ -1527,7 +1534,21 @@ spec:RegisterAbilities( {
         end,
     },
 
+    vendetta = {
+        id = 79140,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
 
+        startsCombat = false,
+        texture = 458726,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "vendetta" )
+        end,
+    },
     -- Allows the rogue to vanish from sight, entering an improved stealth mode for 10 sec.  Also breaks movement impairing effects.  More effective than Vanish (Rank 2).
     vanish = {
         id = 1856,
@@ -1601,9 +1622,9 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Assassination", 20240517, [[Hekili:1I12UnUnq0VL8IZUOPUYxu2KT2gy7dTnbf5H6SOpuSsIwI2IWsKQKu5cGH(27musru3sYIIIfjXMC4zgEMl8G1BM39EBJiAQ3DZDMV0XD2NMoB5SRCw6Tv)Cg1BBgj8i5a8bojf(9xukIsX4entWlcW9ForqIqCuICziyJ32D5Se9nCVDdd(CW2mAO3DGxIzrr0slPQqVT3hZufb4pKIGkNxei2dFpS0NjmLg2EVqwe870JSe2uVTMfXGGiOWFUZCXOCYUeAK3V4TnuY0ujJ4T9SIG8mWodAqGKWcP(eEKFe8bpneRJE0qr6oHFMGX1QPH5sjLRlcwxe40GxAUMLG3zaPfMaQAJ9eUVyV)ro7bQY2bA4FWLFpjpr)6Hoc1duFkNMYOafSPiWTXbYCUF5N9r2OKt8ltBiRmWv79CuLUmcvVrWTlF)(PTzZPrIh5VjvxV9rw4X28sjb(kEttjj64P25ZdePuus)lh90adkp8mqGqUZ1TiysrGDUTiyfSXcZ6AI8avpnU0tzHAdTVWD4mU77Q2P0Xln4hrnxfzEMoxsNkPPeghJGIG52jiZ2OlU815KDjcrusUsdSsrWPtVCd0SuQVwaCpTeDRI2DuPIkpY4hqp8P)h8qmmmrcn90iOqlKMqLMjiO7UAu3neUi57yyUHk4WiQpPAxF8aLhr1Ac65RFxzRMoDt5sJVPCamrAl4dfjr(ggcDWmN3LhSRh(WlrFDK(cnxTUw8ele8bjI2Dlvoqy4ug0gUQv10SIGp2eNvXUjihVNUUpboUBjPFwnV)sRxRLfpGLrjjTPCcNPInUA8zRVJAOdjIDKeFDmvMc)vrYGAk)Wy8Kg0hFCHDd)Lod1WxZ)d0VVQD)(o4rjLMSZ4YUZyQnktis8L06NePpPLeFsQiNdJsVgUuWZx(CyzCKk(RV)jh23PRDgo1(gdlAQG7Hy1yXVVXFZgF0Xy86a5I1TEwZ(6m(Ocf0PaJVutXcEn8Jp9PmHI2d(2DZlT8JXEFImvilFXltsXtsWh(ml8irYrN4T9V(YFE3n39BFUiOi4(yWlS0mHuxPk5CL(8Iaj9FYzsAurGsKcMqY1IuGOGfGAw(bQAAXT)bJdBDfa0x5Q8mee0GAToNxpe4CWwJJ2lssepcrbcOKa01JujSEUcphdoJgnZwSe2BQRTJlmrzoVL1rrOXGwnYoII(5IBlc(riUBpoPAvR5pvRuhKWxVTu)wMuSNLqlfYLYqfJhq8YSyPdy5gleauY4hPqQbzZB0LhYW9PiWryqsGLPWWLNrSzciV)mg)Hj5rOsikdNkuh3)9xXe)nAAQ6Bxax8ywyST1e(ZnETIsG0p8uctN0GRndv70Fg0IkRDZ9LqaZw)gcAK9sZT88JWerRBufK6AtnSHzjEEk8uSPKjrOHu(nP1vel6iag2eQDZ1Xq162FvCaerJJDk5DVTqB5Ej7iCO2c2LId5yA72sWu)W6FQJ4VlqzFRbbJxW2VUTIZnUV55GQTgWHxja7A)enI6ysf7CquqyNLQu31asZZqTnSEQeAz5yTnRDDNypjy16ft6nvAZc3oivjIabY(0BwVCYWA3wnVdcnQREjUT1qD6u)3(wn3PdiJiG6)aI1DTie9TFZcNjdRWQ71Uh33ObQlPvp8fYft6(auBmQ2yiw)d91hD60GAJEz5r0fTA2h7YjgPknfnRCDMCwNkTQfSK60Ti9v0Pmmz3p5ulYWU(9sN21Vl7x(UQx5BlHixuR6y9SlSLKS(6U()v4)6WP3zS756KDNy1d(o65S8(qxXw0W6Eh26HCeHXKgmz4kZL2dWGXGdob7m7KEPr23(HqETt3t0()rauHH3)c]] )
+spec:RegisterPack( "Assassination", 20240527, [[Hekili:1E1sVnUnq4Fl5IV0ux5hA3STwgO9uZEyVOTNkQKOLOTjSePajvEayWF7DgrjlQxznqrrGDuOg(nV)MjrRI(EuygrtJ(2AV1B98x)5LRxV9Pn(rH63lPrHLK0lKtWdCsb89VRueLIXjAMGJV99CbjdrrjQKPGerHhQy56N5rhgd9QTR2gfsQ0NfYOWWIQJs2LOWZSSmQ9cuvAu43pZuMe8dXK0ybMeXr4VtrfBsYzkn86JcPj5pPxy5SLrH1hI2crqHF9TAVJYjhYPzr)ruyQKPPsgjk8btsvjixQ1nu5SuAmHNfNbpePbtE2RMkkoiIlfmUwTmTskPCTjjWK41HxrLMLJUoG0MAdQ5fhj8yXX4lC2luLRc0WpGZFKuLRVz63mpnLKRp3j)HrM4bxteV3l0ykNwWOquAVjXVdnzfp2(CmgWSHTyB6fdCT2SJ3FpxvPToHs)XH(dvhpUSFaFzM4v(pmB0(6lS0l9dDJS3HAZg)w6MYprKsHndTD2Bdrq5P3TbqFtYctIB23KSds7BQpxtKNO6LNTkQmvxFPn(txt4Fxvx1qSTg(mHEPSQuxjPlL0ccJJA3KS2KC9A)x3pw2CkQ0p9XbPd5crwELsdHjlQn(KMvqJ1cizqT60Pq)avQOYlm(judF()bnCgyHKQskndQ8sP5uPL6bu3tZQUPWfthE1bZPQarlcJZ06x2glDlyEHYZOAnb18xUR8xh7aw)0PAkhWsu0d9urEwCDacXFL3DPa3ceRH3AK9WUrF1apFFPwN5gKAl9H0HV9KhAJC36M6DS4fSqipVFqJWzQZ1A((yuTkCUwQD9BPoatguAsnB4Q54SkfI8yjTD8e9nTKetkevCGS6lqLgmdjMdhJKw4xZthmtS3HL4jVPsZ2I9EhIDP3UChddk3iTSE2QwxQGntNWNNQzKr23v8Nnl8beBRMNKzU05e0QbTLaoMZN8N2)MNZrbncaXKAjgJ0WNy6BLcfDKcD6tbnV1rp1YhtKfW2kOYMNXzOB5nHBHO7KLK00QsKoJAhCwchaYtW5N1hanukuYM9Naxn8vIKJ(u7ksLsXrwo1URubd3m7KjrvvwkK6M1JoHrrwkKkLm(fk4VMetYZA7LQvAbsBaT)6Ze4y6l1LKLsMa8p4jgpnVkd3KGY0NPYF18vtYpBs(7)cJMpRPfQ)5rtYRNzPNDLMWFVtRMeUab)TsOgMPZ7WndFcvoTtP)gSUNSvnF3cHjz1)GGM5E0Ahn)kq)44rnqQBfToAuFeVQaMCHkwLdJonF95cmGHhSzWoMWlHsPsAkUNqyt8(2QRGWUledkxCQIA(Qfcvqdx5Td(PGFzWoupIBpfa7D9i7yq)f327)dVNsdXOwHaMzqU(ueiQZTX1GlI7vn4OMLK6aPJ6VVGTCaOK2M29((lCl)3fSzXikG9B8hauZKxeh3BVF7IjwbA36RxhU6Za86wq5Mt4UgY1RJxvy3AVbGmZoi)hqSDoncXy53VXBX0lPSy0ckdaUBpIHHWwwU9(lgY83hIMxmvky0sgdDR6X91oLod9cBTWoFVfpmOaQ5aNTggM5AgUp0o25pUoA3O6OEt9FSDeFWQhDN)h8LH5L599MQ6N8gg9UED0G9AHXoGRx7HY6jZQTfZB(GEQb6Crxp2D0t54utf561Mg43I9NgbJZ0qeR5MVUyYQUGTd70Vn(dbZ1I86HW(GnUCCat5KKCp4wazfYnaoLnf4n8g9)3ZXHWr)7]] )
 
-spec:RegisterPack( "Combat", 20240517, [[Hekili:1IvxVTTnu0Fl5fNvSmp5VAB6Sdq3lBjyipmNI9WqLeT012ewIuJKkPbiq)239sjzrjlL4IHHIKytE55E55(bpO(t8FWFDmZa(3p1B6CVft(W4jZNoD(m)1MNZa)1zSOdSD4heSu83FwRzAnxWmCPOiK2)5ejlMWrlZvrOn(R3KZtm3k830d4t(O3u02miY)(5(R3ZJJHslbDK)6h2Z1fH0pSIWkNxek3IFpQ0NjCTb3ERuve(7WbEcFS)A7IuqWKa(N7TxmqW2KaX()Q)6if3akoZF9ffH5zODw0WajHhbbmrCqm(bFdgRdE0iz6gzqMKlm6Xr5kfimfHRkc9AWln3WtO7mI0mBavTXwMiqUn4GG)iODDGb)hE53YYtmVEOtq9ieaciLdifCtr4IghOYfbLFoGyJsojOmTrSspxTZ5OAtzeQFJGBt(2TJBZMJJLpjEtQUE7d8OdT5Lsc8v8MbyjM9JDZN7ykLSK(Np4PrguT7zKaXC3IffHJkcDZTfHlXnMzx3Wu7aZ49LEklYyP9zl6pJV4SQDkD8Cl(XG9QOYZm5kyScszCbfbfHtDtq2Tjx8(xNt2KiLXj5AdYkfHV8YXBGHNcbgjY9qj6ofTBaLguh4IDKh(W)dEypomrHn9qmwOfbjGYobHC3hh0D9Hlr(EwMRVcokIoLuDRpEeeXGXWipF9zLTA60TLln(geiyY0wWhjtIdSme5GjENLhCRh(HJrFDKEKMRw3i)gpc9blg6ULohjmAkdzJq3QAAsr47AIZQy3gKd3tx3NGhFrjPFrnVFS1R1YYhPYOKK2uotW17TUA4zRNrn0Ue5gwsGzpOsX)Qzzynvq0E6Kw0hECHBd)796RHVM)7PFFz7(9n4JsAdBJ1LDNXuBuMuMeOG6NeHVzuSawQmxGJsVgVu4ZxbcCzAKk9RV)jhU3PR96p1(gdlAQGpbXQXIFFJ)Mm8OJH41EYfRA9SM71z4rfAStbhFPhtf8g8Na4BzsnCc8T7MN74hR9bmvQuv(IxMcOtYOh(Sl8etjiN4V(V(8FE)T3)BFQiSi8H9Ox4PzsLPsvYLAZLfHk4FY5kiUiultrty5gzksu4cynRyhOhxC3FWf4wFeb6lcDEgbczqTwNlRhcCjAR1rBLjjYNWOGauXq66jqHRNRPZXXZyiZCflr9MMA7esBuMlAzDCmzmQvJTHPHpvCxr4pHXD7XjvR6m)PAL6Ge)6DL63YuYT8eOuixkNumUJWlZHL2rLB8ieqfxCaWudXM3AkpKL7tjGJPGKHld4WLNjS5smV)mf)rj5XKsiGttfQJ7)(luI)wdKQ)6v4fFppAVR1mXZnETIsW0p(uc3K0GRldv70Fb1IQQDZdLqGZw)kbAS7stD88t4erNBufKMAtTSHDjrEk(uSTKjrAWu(TP1veZ6iag3eRDZn7XQ11yt4wf)avYA59JRGhQTGDLCxoL2URem9pU6N7i(7ks23kuW4v8TRAR48MfV55WQTgWXxjq7A)enH6qsf7CqsqyNLQu31asZZqTnSEQezz5yTBwTyXi3jblxnB0jtLUz2IoivjIGaY903SA(O(1UTCAheAuxDmUD1q9YlN(23YPEDazabu)hqSURLG4u7VzM3O(vy19AFc33ObQlPvp8fZfJ6(auBmQ2Opw)hovF0lV0R2OJlpGUOLtExxoXkvPPOz5cVrx0PsRAbhPoDlsFfDk9t2NMCQfz4w)(EV21VZpT8D5jLVTeICvTQJvtUYvsYQR76)xH)RdNtoJBpxNS7iNEWZONZX79DfBrdRo5WopKtimK0Gr9xzo3DagogS3jyx4M0lnY923hYR86EI2)pcqkm8)3]] )
+spec:RegisterPack( "Combat", 20240527, [[Hekili:DEvtVnUnt4Fl5IWUOPU(ZDbAT8HwGIMCixC6PIvFyjklcttkqsL8Aad9B)DgrjlsjzLD3d7czYHpZ3pZKGfbVgSpnwtcEz58LRNVz5xMTC(QvR3eSxFPGeSVio5u8r4dE8z4)teNpeRRI0eLgV8cteNIGOeLYeqGG9hkPm9t8GdJG8YVU4lGSfKKGxwhSpNMMsmssujb7FnNQQIW)fxf1O5Qirg87envWRIyuLgUotiRI(hYjkJolyF9H1EcjlUKPHpFP2Zi84dmsAWFcgUKQjsAmk0HYSSzPuWmymuGqcxcAAwzrWEJIaBmN(wGgmEeN2dprtozJkC)QE6Pv0Kygl08Jq0(mwzytumvHVD9DTrmmlcleuo6T(vrB6qwwYVlWzuovLJyV5NXUWuxk(6VCxldF6ByeJCMsaBBxv0QVpBlwqqO)6DHoNeZ05ZksG6RTaSZRI8QICdf78D1hjPSGiXYmDawqchuxHckrBu5K1cJ4nlQ16dvr1vjhyXPKWmwPuEXP(W(IB1jFV6yvToGtKhVu7RBm(QPWKqkcPCf9yU2rLzX8qrw4joaN6NU2tPNU0RV563gsMoEKeZtiSquiSoklRTKYnoPnf)tMuSIllBRbeSuX78zqdpJYpgQGenzMKCogcuM0MvhsCQeageKeklnTdoTXhycrAywjyrJ0mFtkIurKNa15kLUTpzeNqPL0enEEhrc2scEwiE3jITJwhrvmAcjmMNgMcFmdDZrQ7HSW8XkZgtHoa(tQVDn6RFj29OOGC16AyAyxLK3iXMuvTB3PNXmc7ePntxpq(r4mXMQo9nWCklST2JIYJgtSt51Nngt6uA8(P9jjv)rzcCAdmLKnm)t2ynzOFBlT0aVco(61XtCUHSEvEtYko1eoYBuvslR(3DjOFBgh4U1WGAiav)ZpbMUqPmoX4SB4nkbtuf9zh2)EjGPMm4CxpcO2R10ZKqTaIoedN1YEic0sSsLBUwwwOlLMSmKNFpwYbpt1USuHuKrzeZwtNPkvTBRklkesDZIshX6lAcyask)erRMvfvf9K28O6rMNj8uskiroUDh0TiVGytfqWg(IYtyLPyaJq15e5Vx9Cv0Vwf9F)RIGiroR(2JvrVNttYTLoMFPtRvrCbc()RaQtOAwhUP4xOYjDk9pGf)KTQ5vdeqi7BiOP2hT0sZVdngwEudK6wrRJg1hXlpd87OIvmHEw1ZpDgdy4bB6TTjCjUyrDyoy)(ZLzqdn4m)Lzv4NRE2iU6x8)nCRXhPz(tTJPT84cL2)U)K7hXHO(WetBH6TKLrgt)pQB7Uc)nFm61dZ(q8HvPqWD7F2TY5D3wgdLSBBUTRM7zBu78xzf1MvRFm25Yy(Oz0M)ceS7X94GR)8ra15n)4yUBem7pmPFqF7AVPMc6nbn8Undvx9GOb6yJ39gS5nyO2hhRhG(WN4mZbFGzO12nZ9gLR0kdBQnhMnUtsOjwSDLtMy7QRxV7cmdvv3mKj6j6eVHLDOSEp0mlX7t4uKRxD7a8xC9ko54ZEpmwuO50EZkAoD4ucpRje7wS82R7MlyhwbAbWY7HIvMzj22n1IZ7wSPpADRgp4MBRdBBdaTq9R68VryjwmEyOpko)9nJr249rLCU4noDNspuUB)PlnmIt6o(l8gZBGj2L6CHmy)FloMs48651b)))]] )
 
 spec:RegisterPack( "Subtlety", 20240517, [[Hekili:LIvZYTTnq4NfFX5qDzLCSCCsJ8mTxATp4dHUtp0jKeKeseJijyXpsvZ4bp7DbaPijeeLD8bNqdS4B)b7UFlC08ONJcZrcC0txp76BMTy(NcMFZ1F8JFokuSVbhf2GY2GwdFuJQG)nuMkkXI96n2xsr5Aa4ujld2mkmvskfpuhL6h17azBWzrpDtuybjphBLeZZIcFUGWvj6FqQKwTQsORGFptqO1QKscxaBVIYuj)jEdPKeaMbJUIuQTSk5kgzJk5B01s4KDwQ6r1Jwe4)0YFjdvwgB)1ynExPDRLKAI48srBW1y2vKvlfi2ASiqqQWXcACobF)SlViNkcyYgHKHHTY2qQxpeuMS(ym5Ib2xG2oaj3IyeuAj2kslKXvisTa(5QTOsjEzgTkLg3qHf5bzsgdxlwU4Yu5QvbviUaZIPRI5TrHazZzudElHNHzWTwSKJNwjx0D0axJ7C(cot2yvIJ7ySBD8fcSKSyqq6wmBFqoD35aDfPopEhgTPgZ5XOMMY9dbDlQMWlGaWlVy(DEbcanohvNHnHLE4T3WGcem4(JRdGIc4kMHYXEKIxsYWXiq75Wh6ed)XlphTHQxWA)2VpOmAz8wcZN6eyuPOWhAmCfoNiqMcfpN04YW5B8SjQkvY9HA7D7BYVkWvugRqx7E8MPqvnxGspfIF9M3rq2M5pwANSNEp7qA4BeVXPlCX4O0ROQWCKJDPZB7wDnYU7v3XvvohesqAqmN0dZotMPBT2b1lA1Aks33fOU)UzELxNS17zJl5U07L)IJT5(K6dqD2Q5ryyZThfS80TW5q95W6dMJn6PFrFxm9nphPRX9uDotx1WKA)c7EbDchi5AKDv))1q5qQddoQ(uCSqaSp8GU0HyReEd83VeyJHETCaVde23gfUdXQ1Gef(3)23E6HN(JVOsujpxaCRKQgkt0sf)bDt5pOsy4)vsy4CvcNwbcHKcAf46WczfO61yEG6rZXxrllP700JGqmeWPVdZG1HyeimK8Mi0IzDrlVVkjvk6KRMA0TSEK055AHHXoqPio(lqHAYpRsoMsrxbBh2OD2b7uhveo3ysCzZaVBTgasgOegPEdgcB6OWdc7H0ywvHRZ1gUOablJn6aWMqzey8dWcZkLWmoWweWszDw2)8xqkbGeUI)9RaxRGKvmuAu9(ET260W1i0KGik7XDymOtP)km4eRtnpBHqLm)7AqZhU01d08osz5apQfsrNOMOHzPAzvk2ErxcJ8OE8bt6GEHBCMwd2mk08LEorB)x4RNmZDALeg084wqrH4ADEEE0VhjGKsT49ReMbojCRGGV8KqRswQsw0J)4(QA8(OdEwg4U)3HjUhOwXe65xhy)T8Yo28IHImQxMJG3ocRdnpDK6tdLY2wZrI7ExbPwklnqFEOQ6Bh5OU5ZEJ67Rq6rpUDn0mqn)ncL20vjxQBk4N3CQl)5)iztNuBYMbXWd8WGEe6h2Scjlfhs4hOZUJ4(sdB1sS9Xw6gRtN(F8druj3RsMzm3lGUHh)KKxPUBRv9uS0NXuFYtZf2iGXd84(uiQbKu9G1rzQ)cMC)1Dv49zogSAnd35W8fmF3MceMp5GFdnMXdd4lYEEtzQxjnYXpEIWdTTE7k8WmxQKxEPRmy8CxdvUNjSSzdCV5c9zZteg90M60vf)iDfCVl8zvEcQ(R9hZpmy47P4iopn4TN0ghptUPhWDZCzvSxwhitMi05mtTol)K90x4L8As(OxFsLF(ZooQPVU8Lg6YGonpM)r)9Ynonl2jEqqps9R3ZqDetPd)7PZyVOBkm3NnCst3TXqpwN6PetKuC)Yrm9dFCITpqJziZuKUDGzb4PcfWMD)n8mlg9)]])
 
