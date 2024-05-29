@@ -2368,6 +2368,7 @@ spec:RegisterAbilities( {
             set_last_finisher_cp(combo_points.current)
             spend( combo_points.current, "combo_points" )
             --spend( min( 30, energy.current ), "energy" )
+            if debuff.rip.up and talent.blood_in_the_water.rank == 2 and target.health.pct < 20 then applyDebuff( "target", "rip", debuff.rip.duration) end
         end,
 
     },

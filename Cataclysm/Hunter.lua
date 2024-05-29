@@ -5,6 +5,7 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
+local strformat = string.format
 
 
 local hunter = Hekili:NewSpecialization( 3 )
@@ -718,6 +719,16 @@ hunter:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
+
+
+    --Pseudo Auras
+
+    -- Glyph of kill shot tracking
+    glyph_of_kill_shot = {
+        --id = 90967, -- this might be the real id, but we treat it as pseudo for now
+        duration = 6,
+        max_stack = 1,
+    }
 } )
 
 
@@ -808,22 +819,22 @@ hunter:RegisterHook( "reset_precast", function()
     if IsUsableSpell( class.abilities.counterattack.id ) and last_parry > 0 and now - last_parry < 5 then applyBuff( "counterattack_usable", last_parry + 5 - now ) end
 end )
 
--- Logic to track the Kill Shot Glyph lockout
-hunter:RegisterStateExpr("kill_shot_glyph_cooldown", function()
-    local start = state.cooldown.kill_shot_glyph_start
-    if start > 0 then
-        return max(0, 6 - (query_time - start))
-    else
-        return 0
-    end
-end )
-
-hunter:RegisterStateExpr( "kill_shot_glyph_cooldown", function()
-    return max( 0, state.cooldown.kill_shot_glyph - (query_time - state.cooldown.kill_shot_glyph_start) )
-end )
-
--- TODO: Some work probably needs to be added for tracking target swapping with Explosive Shot and Serpent Sting
-
+---- Logic to track the Kill Shot Glyph lockout
+--hunter:RegisterStateExpr("kill_shot_glyph_cooldown", function()
+--    local start = state.cooldown.kill_shot_glyph_start
+--    if start > 0 then
+--        return max(0, 6 - (query_time - start))
+--    else
+--        return 0
+--    end
+--end )
+--
+--hunter:RegisterStateExpr( "kill_shot_glyph_cooldown", function()
+--    return max( 0, state.cooldown.kill_shot_glyph - (query_time - state.cooldown.kill_shot_glyph_start) )
+--end )
+--
+---- TODO: Some work probably needs to be added for tracking target swapping with Explosive Shot and Serpent Sting
+--
 -- Abilities
 hunter:RegisterAbilities( {
     -- Pets
@@ -1719,6 +1730,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132218,
+        velocity = 40,
 
         handler = function ()
             if buff.rapid_killing.up then
@@ -1755,6 +1767,7 @@ hunter:RegisterAbilities( {
 
         handler = function ()
             gain( 9, "focus" )
+            if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting", debuff.serpent_sting.remains + 6) end
         end,
     },
     -- A strike that becomes active after parrying an opponent's attack. This attack deals (Attack power * 0.2 + 321) damage and immobilizes the target for 5 sec.
@@ -1796,8 +1809,9 @@ hunter:RegisterAbilities( {
         end,
 
         impact = function ()
-            if glyph.kill_shot.enabled and kill_shot_glyph_cooldown == 0 then
-                state.cooldown.kill_shot_glyph_start = query_time
+            if glyph.kill_shot.enabled and not buff.glyph_of_kill_shot.up then
+                cooldown.kill_shot.expires = 0
+                applyBuff("player", "glyph_of_kill_shot")
             end
         end,
     },
@@ -2105,6 +2119,7 @@ hunter:RegisterAbilities( {
         talent = "black_arrow",
         startsCombat = true,
         texture = 136181,
+        velocity = 20,
 
         handler = function ()
             applyDebuff( "target", "black_arrow" )
@@ -2171,10 +2186,10 @@ hunter:RegisterAbilities( {
             end
 
             if buff.the_beast_within.up then
-                cost = cost * 0.5
+                cost = cost * 0.5 
             end
 
-            return cost
+            return buff.lock_and_load.up and 0 or (50 - talent.efficiency.rank * 2) * (buff.the_beast_within.up and 0.5 or 1)
         end,
         spendType = "focus",
 
@@ -2184,7 +2199,7 @@ hunter:RegisterAbilities( {
         velocity = 20,
 
         handler = function ()
-            removeStack( "lock_and_load" )
+            if buff.lock_and_load.up then removeStack( "lock_and_load" ) end
         end,
 
         impact = function()
@@ -2318,6 +2333,18 @@ hunter:RegisterSetting( "call_of_the_wild_macro", false, {
         Hekili.DB.profile.specs[ 3 ].settings.call_of_the_wild_macro = val
     end
 })
+hunter:RegisterSetting( "arcane_threshold", 80, {
+    type = "range",
+    name = "Arcane Shot Threshold",
+    desc = strformat( "Select the focus threshold after which %s may be recommended.", Hekili:GetSpellLinkWithTexture( hunter.abilities.arcane_shot.id )),
+    width = "full",
+    min = 0,
+    softMax = 120,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 3 ].settings.arcane_threshold = val
+    end
+} )
 
 if (Hekili.Version:match( "^Dev" )) then
     hunter:RegisterSetting("hunter_debug_header", nil, {
@@ -2350,7 +2377,7 @@ end
 hunter:RegisterOptions( {
     enabled = true,
 
-    aoe = 3,
+    aoe = 2,
 
     gcd = 1494,
 
@@ -2371,9 +2398,7 @@ hunter:RegisterPack( "Beast Mastery (Himea Beta)", 20240509, [[Hekili:DR1EVTnos8
 
 hunter:RegisterPack( "Marksmanship (Himea Beta)", 20240509, [[Hekili:TR1ERXnoq8plHd2lHl1X7Mxxkzd0hhxB4APGl0)Z2k2A3veBlJL2DBGG)SFJKFjBlTpsDB6FekPelnV0Oz(nJKI7y3V66eI4y3ppXEYz2Np22A8P2xC6LUo8hsXUoPOG7rZHFjbfd))Nqz3ZIrjSfK0C)d)ajgJY9FlMJosq7druuOqMm6YSaG(fCEk71NCYA6A(DbwZNFsaIJojicXyVA(ssiMDsSImF1ILjCC2jUo3TKeX)yI7D6nWZDDql5lOzUosJaufjmexqpMf4681fewUV4hWclxg5(0zW3bCcnj3pIW4W0ZOz5(FaFpjIyblIm6msey6)bmO0yEDUFRL9TIze68pzfl9C)38L)l3)v5(VNWcOzHahleeyXqeovYWNOHKzeCiOUmACU)3OF7RV9D5(Vdj4)FLEcPiEQEScTGEi3x4OYVf(gg4lz4aA8DiE(TfRAMvA1q)10tqSuCa3JoZJVa7TaT((JjZMEWDlNnZQyoRLPJyyoNKmNzfJijC4hVI5gbMezEcoS8BR(IBxu7m63hqTcsBxuAWcmSZTyavCPe3fLlIghqnle3UO21KOWbuTcXPxTfHKmprCQqHHyPgvh2kKUorp3Xewib(wmJG7AZJMItWzE1Z7rtIEOks)94zOLrnX5GGcqrrEfF6jY1pwGHnLKqAr1sg2JWXXm1btPsicLrwaWHzW6x4nccWr4mK0afStNnZBEq40XQmKTmPVYruSyjjgFf2dwoXem7MjBLVGimALgwNUDwzGVlcx5M(Oy17)fugmLyZOzlq4xazScLrq3fHlyMdWyECQxibF8ku0s80dl3m5zqGciAVWLXXpicJo12(OhFKJYMJ5wkmwP63q)NgTbocqzmogf(GhBbLlwBhkLmjgWGxb(zLzLHlp(O55ZWIGx21JTo)Orq00kXgI1ylfA6QCJXzYyXyCsONkjDzxp25tmxsW(OdIPRaE7QOmukj0BgyhcfeqPrcNHLm6wjvuSfi9pn03jjRqCD5RLqv4fe3b1RMUmb5Wbz0Ewk4RjjygZKml3LU5c7UScHtPErOLjamAwl2XFpnIYeX8cAABwT4sVn1M9EXaaKbrxWrNiZbjWSxeeKJe2wfLE(Uuc9Mevtyzg2cmkIVWknGF9KEUZoMFzKvPD2RGPgnQTeDHuAQx0Jip2AK56jvabVtcM1OXcWTNp4GA9)KreQLWVaqHADT)vzRzDWGuQL4pfuLg79PaS0ewHZGoh4qacO1JdEaMWRijInD8XXOV71ESjkEZw8AAX)ZfSOXhlourgYu07A4WghZWbk7Nkmuj72B4Ai4g7rBC(RhpAgnyj7MPNPZzVlGA1eVh4AguqpMU5kTmLfGsW1CvSaUuNt(ha50akWWcE6u2oxLslAV75d8Sw)pzWZAj8la8Swx7p4znRdg4zTe)PaE2yVpfWZMWQwGNBcyC0bQXkQtV9O1bjyvNNvlKz90pRqMnX97aKznX7bKPbfSziZgM2gKPP9Y9bY0qU)Waz66ScYLb9uD5H2x56SgLjo2kZ15JXP0mU4k5UOZDcALFRRJqeUF(uxh5qYl1uASWV9z59MIteNto09TUobzea2GGCDom3FZXY5(p(4MOPmKj3)6CFrmT)r5(JY91dd76uy3GTPmihwVgnWTal3iXwJYfEITkYULSeg(2rPLKDqUFXUDJb0NsHzCMrZWeeEJevNsiRZnkRnHQlTxDi7nkQzcHAUy7QPfiFLdzlq9nQR78cLE5EP06OUBGSbBLfsvTdHi)7T5610SC5sXuLbLa4wddA7kJABqtWmMcn2wya1UyfyDvZsqyx0aOGIAeKMccnYvubsFGNg2KBp2sF6wOtS2K0jHTb(MM7FMT0AndnOw5rjnSU4HKDZWa9QRinJjkrt11UKsYCMSgjbl8RSnAuMtKRw)5(xQSvRuBtYV5m0ACjLWkDL0mhgzorSsWJus11xIRnn9kZPhXey2vycq2P8QX1v4QfcsXhYRoUOQNxXJ(jUz46IkvCuFT5DYgovLOIRrVdfY9DLRnxyvnq06VM9oIW8(TqonxpUCJFIcCw7liV1Qer3cyDxrpDNfDXbd1HkVlCx22HCRS(Ds20MPMcNY3enJKwqq9Ze2jsxj6UQm0pyT9n3lYGRsri)gZg2qxmdUXu(GGMmOQP3ypndUrjERqtwKCUnMDn4MJSBfdMtvNmMZi3)o(mdgV5xz01uBX8cGJxotWVNNjyq7JFhoUWW3h)(D4HDQp(D4Ob9E0TERfnp9wJ6AnPB1rhQMTTW7uA)kvkRFEUUTCBV5MyhQmnJ5s965Fp7I2CU4(2f9glO9d26Q58QFvTUw250lWR)EcVU)fG3bm0HaQE)qnhiO6DaxDFHQ7ELl1XETVeLwVFP88u9EvtxNjA256FJn1yWpNORVC1l6kA8YvVSN1VE(V6f5vNOP6fnvIH3WF1F2DIFlAjwwvZ0FPDst6uBBzHkHRP)FZDsbwE)bQdZR)N7))d]])
 
--- TODO: Currently there is a problem with this APL not recomending serpent sting or explosive shot at the correct time if the player doesn't press any other button for their duration
--- This is done to solve the problem of recommending serpent sting or explosive shot for a brief period while the shot is still traveling to the target
-hunter:RegisterPack( "Survival (Himea Beta)", 20240509, [[Hekili:TRvAVTnoq0FlblG3eSPk2o9iTOUa9yX2gSTOaUa9BsIwI2MisIcuu21ag63(od19bLDCvc2c0p0MysoV3WJ5ndzS5eZVzo3LiPMFz64PpD8ZMm2yY1JF2tnNl3fsnNhsCUJSc(LaIp8)ZJfByBiEj2N)rMpLKy)oQKCboUDECIlcxepw4aJDTugg9QRUAlFRCHJXQvx5qKKRC8irrpzvmZLgDvugEpzDCGKkUYC(IyMN8tbMl60VU(ga)qQJ5xUgiG56sthjnYXC(3wZIsSdfmUGj3LyJFAbjI6MyZdsSLRPj2fotI93fe56eBLNyyo3JfjJu(plyLhf(TVOwDObKfEuxZ3zo3bWLkyeymuPegwKHG6W99PbUw(Sixg8rjJhyoNK9ZATkHzZHH0NWcKW)Si4mvMypkXgwYyRcOUzTzK(dl(slywzTMS9o1WolX2NVbqP0bAps0nUwRB4W5EU8TbgoepVCZ2Y8CnIdlrvqczUwlHzgI2tpmALga4K7Rft5MCz5tCe8s6A2ps6Z0sQlDr8YLgrurinqAfHCyGEroVHc6gRvoUgtQpOscR3mW2ZpeB0Fe6XJyBOwrR5Ys6ohodI97XDUZIaNtWWe1AW(9nDM6yKyFrPdvVl0JEHwpsseROsJ1uINCTriEe61j2thxI2Dmy9mhOBo0uln2mc2ue3PMyLavTleRxEiSw4rW1bHGVTbuv6brAYyTqTK7edH2VjX(MkZjIWHeuU8mrFW75vcus3guUw9iLL8FO2LUqTl6r3q9ArPdFHGuYO(y7tNryJ7MjvoxkPe3DLuQpooNSrvcZAXNv0wsy9X0q9rNqcySj6cW(6ssSNSl5YArVPFWcvzt1ATsZOWcyYcHXClIJOwWeXpQkE5Yw5dkKNfAuDekPi0C(YLyuf6vLNwHuAcyAG6OooupkKbOne6fwqCGiqAa1NrtpboTIMyCG2zjHt7xfPj0ZoAOD8OKn0UueogRZs2P2kdvjZwq6DZSJ8jQ0Vcwy6a(mzhk2m9PvNENv7eFEkGFYuE9NpDWPepY3B0qpzvhCNXznfk8ATohkV7Etop4ofwSOops1xVrxdU7OQuqJ7KxfXbZRFps(PpJCXKGdvvqfL1kAXd82zQRArzQWXVRe9x1krliTS8njWFxeJTB5rIdGqxrtwR1zXX28ERdEJSzVO6i9Hm1mvXd1huZsaBJCQro7GSnwP1xgHhHM7t(Hv9wNpT6kGMAFHjV(6M7VqY7z1T9uh5Pxvw)1b(qu55bQduFW8JvDGzLH8BTQFT0Qkoqv)EWnc0NC4aDTx6URSShP(YXtRgvKhH7i)GjX)YJwIFWVQCh6ANWwZPl2L6U9RRD6O))(RuRUsChcP8qLExP9BiGFb9I)MxmvTOKfqahtaycwz5g77Vl)041JhRwmWLRSiajZh2a5wUmfmIS7fwTzzQBTbQ1fPn7fzh)sZ5BjcKeyN)t(HCHeFQ1Nd6Uk)dwWXNu1i5wWJJLR5cZ5QhngVPjFjd97)iX(JQQOFvIDXBlFl2koW)mk99LtSF7x)3e7NKy)bwKdx4cJEnoaJictYvg8zUlBjdDGLcUFI935F)BV79j2VNG2)pQNBwbXP8S0PmKFX2KBHpdn8187lNCB6moYO4k0)1SRANd5s2YzNv)ooJ0Dkz0rK86iOfounGScODmKMD7ZbK4mepgYXlAoGmJWDm0IjyhqAr46M2Q36eju39u726QvwHw3)ntZpP)H0h5RasaOMpQ3LOUXmu6Q6OkEiVQnM(WDvBrZdZDzLhYB2KQg04jTsjhURmoLW2lFkT3m9G2Lw6ABtNDyttF(S8LPpHZE7Vseqx4Mr5waUUayKlyNACfn2lvc4ZoxN69iq5(I97BRzNt9B5)DjBWcrFB1Dx9DtZ7w(6epoJMp6SSeOniQSixKG(QKUPLnhsn7Rv78OZoqvZnHUw5y1WTvDEvWUJk8AcCDZBTNLFbD9MH9EzT6UMn9Yw1IbTboDN3(Eup)fRAWArnWiyTkz(1th3AhPOIr0IZZ2X3VxBTzxmsvv2BUPfuvQl7(H1RVzs)NLZYjMI3OdukNwb88iV3Rupkzmvn5Nj(RaHhHqWcUoLOWcJFqcelqV2DkBC0FIUJ(6)Ja3MGEdUoed9ggvqX9isQWMhanOoMY1LHkp7vEhrKA1fjRfLwU5xgZFKRChFSC3momsdAcZgw1H5zfiKtAAbd)mQdfi8iOouW1POouy8dI6qb61vh6lYF0z6(IF0bSn0e6nEF05DMOD)(Z0(L74IoO8EOruyZ9)2afMw5lCrflB(f0ORdEhsAOCNFikhOCNEqc71e)mmH9QxkX8)c]] )
+hunter:RegisterPack( "Survival", 20240529, [[Hekili:TRvBVTTnq4FlgdWiflqo2TPlTioa9LbSgS1vavG(njrlrftejrbsk7Aad9BF3P3LSOStIA2hArrtSfjV7HhV7HpKrwZT(QLPhrrT(8Ilw8QlUCXBmwm)s43wMQDXulZyI79K7GpercHFAMi2W2qcWg2fWjEObK8eHl04ALkw(2zZ2Y3kzHsJ7yQ1jRmy8zUefz26KifvmtwyIzwMRsybQpfzTQliaBgtDT(8lbJY88O5DHkDTm)6AMm1jwW4cMAxQd(Tvej1l1HhL6OwttD(g)BMaasD(a4x3GDYWuN39L)o1XNlsDkNdgwMbmPsMnfyr3fqHp95SqcnISkG6z9EltxWnubJa9HQuq3KgcQlpmKg5zhYKEm4RkgpYYKu87wpvbZQJBYqclsb)3MGtCvQZ0uhIuYUlI6v8mJ8FzZ9THjP9AY27Z62KuNq(gWk1a4WEIW4LAHHlNh4X3gz4scckh2wwGNrsCQZ(9qyLiUJQmuSqQTIB7XGO81ltDMFzTxfKyMNTpmZrV9QJ7T6bK5N85sviPlwSdjUc(WWzXf1WP74rqDPwq5rxL47BiPIyAKYwIyWarzjUIf0n2356zmVDNQDy7hdE71O3kB9Egah5AUQjaGo9hhds0VhhWLSn0SrdjFyUcKBFnKHKz7U9qjiBOb2yWjd8NbfiOHc4U3BtGSwSUTALT9uRTPsDEr9eODti0V6yqpVIxcRCI7ZcM1wRztOTEZXS1QaccFHGVTVyqZM7ga6lB5giB5QA40y4iAMFHw44ZDtK5JVkvLiCjrGTxlOqSbs1QReZBPmInxp7YznQKZxzYM2TlL95FpBHRXYIlFLGu7a9CnpmhuM2xeER9IX9rTwiLkkXBxna0ZYu66PnJCD9UTCljUDF6WnQJMdgSfcbiHXNKeOQiZl7EIKAdyju2PcuFiRiXznLeOwBeJ8YxJKmhHeQbNymVCtGS4ccbUVpwSHGRUAa2RvaZgKS31LgqfKIIUMavpLkAhOWKgrdzum7eqrdI5ei2L9zBCdV8T9SZ3qNWPdtm210lpzt7gqH6WkIWgw)ugDXoYzROXz74UIO6BdAuwGGfNBX)HSdxGw8QMtHjTs1l3R5jU37X2TvFw1OdhmZFWIIb26F0bJ7AkvrwRdqLnpy68OdkufRoeL12GLaJoCYKJOboLsv6wZ8u2CvVgJQjbhKUqf1cAT5rb7S0jPvLtC8l5Y)SkxUcu1QcbvxX9bm852bKKiO0xKJQAV2QXd0m3249jCUkhc2WN1J66Rofj4D1EEO7ZhK7oyln78GPmB)7qY3TB)uZfndtA0DdrOrqC)reQ(W07zPtq5yPy9rlOupDWZLGYcHm)IT7Nl2UQeY2h3)HZcm8DlO70PV(a6Wt9kegp(RrILs)ff8dBFK3CY7JmAN1VEpO(4n7HE9rSG8W4Cpc)5dZypAc8)3VraOdBa5WypACdZBjIi0AwMFkmMlu4niFz50l1j7QHnsVfp9j3Nbhf183sD(RmL1VT(sKtVfFkKNtsDo7JmPlx492143nKeMINh2mtGZ3hLiLzD3KfghW8zOh9f8Wgxy9gJlG)npRBvNLn9w47Wd(s5XGtVnhLsJQtg)7lNDiX(5m)LtAF0LP6cItpHDuob3cX8r0RG1ofNwCOYr0Xfw8uCoE(Xr0ZO5of3I7AnIUfnx)UT5HjrhQ74N9p6MYDWrp8bolZ0)y(v4vzsWqv3ExZhMF9AODp4Q6UEXf73F4ERxVCXLnTGMBE78g3u3Y5nhqN7S6C82Qwchggbb(867k7MfhDC5klpCOlp(qZVFSYa274)zD8hqZqr((vO2D49ZM8iZUWHpDsbDFhhvl0dDWqQn7F9C(LDTy3H2YUT0voDYruuQjf6IUUSL(Jw(7aHnn8zpsA6A42d)G14sjhDBOsQOE7HTEElTglNF(b6pwUaNn9Eo2PdQo86cDcd8hNQ7YwLIc0LNvKUSFVwrjVORfAO84unX0jf4SREMHRhk2Ml3(tpI4fTCYLvVFiJgO2J50cpLA4kl8mugx5RXSsUYOpRfZvET1z1o1QeTNZB6H(9MLVUh32tzBvBpUk3rRgTch)aO66zo2MTRUGOKWdDC2XZUzP2JM1x2unhZjgapfsK(sG(HqfPPSECzJmluwu60CLgpf2Okl8mWgv5RXKnQYOpRSrvETnB0Gmnt09EQ0Jz7HTPQToSnpDMKPN1RiI97NO91p5f9GRh(PrQgAJ3XJgJSN3RKYjJM3PKEzZVQVS96x(JhgDvD62tqsuD2ZpeQin10JdvKLz2R03)gv)ghM6CwX1S8E4K54FVIe1AUWYS4PnVLLS78X6)(d]] )
 
 
 hunter:RegisterPackSelector( "beast_mastery", "Beast Mastery (Himea Beta))", "|T132164:0|t Beast Mastery",
@@ -2388,7 +2413,7 @@ hunter:RegisterPackSelector( "marksmanship", "Marksmanship (Himea Beta)", "|T132
         return tab2 > max( tab1, tab3 )
     end )
 
-hunter:RegisterPackSelector( "survival", "Survival (Himea Beta)", "|T132215:0|t Survival",
+hunter:RegisterPackSelector( "survival", "Survival", "|T132215:0|t Survival",
     "If you have spent more points in |T132215:0|t Survival than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
