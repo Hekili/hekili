@@ -1523,8 +1523,9 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 135860,
+        velocity = 40,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "concussive_shot" )
         end,
     },
@@ -1538,8 +1539,9 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 135736,
+        velocity = 40,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "distracting_shot" )
         end,
     },
@@ -1552,6 +1554,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = false,
         texture = 135815,
+        velocity = 15,
 
         handler = function ()
         end,
@@ -1601,8 +1604,9 @@ hunter:RegisterAbilities( {
         talent = "scatter_shot",
         startsCombat = true,
         texture = 132153,
+        velocity = 60,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "scatter_shot" )
         end,
     },
@@ -1618,8 +1622,9 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132204,
+        velocity = 40,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "serpent_sting" )
         end,
     },
@@ -1635,12 +1640,13 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136020,
+        velocity = 40,
 
         debuff = function()
             return debuff.dispellable_enrage.up and "dispellable_enrage" or "dispellable_magic"
         end,
 
-        handler = function ()
+        impact = function ()
             removeDebuff( "target", "dispellable_enrage" )
             removeDebuff( "target", "dispellable_magic" )
         end,
@@ -1711,11 +1717,6 @@ hunter:RegisterAbilities( {
         texture = 132218,
         velocity = 40,
 
-        handler = function ()
-            if buff.rapid_killing.up then
-                removeBuff( "rapid_killing" )
-            end
-        end,
     },
     -- Automatically shoots the target until cancelled.
     auto_shot = {
@@ -1726,6 +1727,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = false, -- it kinda doesn't.
         -- texture = 132369,
+        velocity = 60, -- is this always the same?
 
         nobuff = "auto_shot",
 
@@ -1743,11 +1745,19 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 461114,
+        velocity = 40,
 
         handler = function ()
             gain( 9, "focus" )
+            if buff.rapid_killing.up then
+                removeBuff( "rapid_killing" )
+            end
+        end,
+
+        impact = function ()
             if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting", debuff.serpent_sting.remains + 6) end
         end,
+        
     },
     -- A strike that becomes active after parrying an opponent's attack. This attack deals (Attack power * 0.2 + 321) damage and immobilizes the target for 5 sec.
     -- Counterattack cannot be blocked, dodged, or parried.
@@ -1766,7 +1776,7 @@ hunter:RegisterAbilities( {
         usable = function() return target.distance < 10, "requires melee range" end,
 
         handler = function ()
-            removeBufF( "counterattack_usable" )
+            removeBuff( "counterattack_usable" )
             applyDebuff( "target", "counterattack" )
         end,
     },
@@ -1815,7 +1825,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132330,
-        velocity = 40,
+        velocity = 30,
 
         handler = function ()
         end,
@@ -1847,9 +1857,13 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132213,
+        velocity = 40,
 
         handler = function ()
             gain( 9, "focus" )
+            if buff.rapid_killing.up then
+                removeBuff( "rapid_killing" )
+            end
         end,
     },
 
@@ -1997,10 +2011,11 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132323,
+        velocity = 60,
 
         toggle = "interrupts",
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "silencing_shot" )
         end,
     },
@@ -2010,23 +2025,26 @@ hunter:RegisterAbilities( {
     -- A powerful aimed shot that deals 132% ranged weapon damage plus [(Ranged attack power * 0.724) + 777].
     aimed_shot = {
         id = 19434,
-        cast = 0,
+        cast = 2.9,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() if buff.the_beast_within.up then return 25 else return 50 end end,
+        spend = function() return buff.fire.up and 0 or (50 * buff.the_beast_within.up and 0.5 or 1) end,
         spendType = "focus",
 
         talent = "aimed_shot",
         startsCombat = true,
         texture = 135130,
+        velocity = 40,
 
         handler = function ()
             removeBuff( "fire" )
-
-            if talent.marked_for_death.rank == 1 and rng.roll(0.5) then
-                applyDebuff( "target", "marked_for_death" )
+            if buff.rapid_killing.up then
+                removeBuff( "rapid_killing" )
             end
+        end,
+
+        impact = function()
             if talent.marked_for_death.rank == 2 then
                 applyDebuff( "target", "marked_for_death" )
             end
@@ -2096,9 +2114,9 @@ hunter:RegisterAbilities( {
         talent = "black_arrow",
         startsCombat = true,
         texture = 136181,
-        velocity = 20,
+        velocity = 40,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "black_arrow" )
         end,
     },
@@ -2115,10 +2133,11 @@ hunter:RegisterAbilities( {
         talent = "wyvern_sting",
         startsCombat = true,
         texture = 135125,
+        velocity = 40,
 
         toggle = "cooldowns",
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "wyvern_sting" )
         end,
     },
@@ -2143,8 +2162,6 @@ hunter:RegisterAbilities( {
 
     -- Survival Damage Abilities
 
-    -- TODO: Fix explosive shot with lock and load, timeout is currently not working
-    -- You fire an explosive charge into the enemy target, dealing 191-219 Fire damage. The charge will blast the target every second for an additional 2 sec.
     explosive_shot = {
         id = 53301,
         cast = 0,
@@ -2158,7 +2175,7 @@ hunter:RegisterAbilities( {
         talent = "explosive_shot",
         startsCombat = true,
         texture = 236178,
-        velocity = 20,
+        velocity = 40,
 
         handler = function ()
             if buff.lock_and_load.up then removeStack( "lock_and_load" ) end
