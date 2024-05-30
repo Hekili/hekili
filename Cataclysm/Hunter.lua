@@ -2025,7 +2025,7 @@ hunter:RegisterAbilities( {
     -- A powerful aimed shot that deals 132% ranged weapon damage plus [(Ranged attack power * 0.724) + 777].
     aimed_shot = {
         id = 19434,
-        cast = 2.9,
+        cast = function() return buff.fire.up and 0 or 2.9 end,
         cooldown = 0,
         gcd = "spell",
 
