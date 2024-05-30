@@ -719,16 +719,6 @@ hunter:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
-
-
-    --Pseudo Auras
-
-    -- Glyph of kill shot tracking
-    glyph_of_kill_shot = {
-        --id = 90967, -- this might be the real id, but we treat it as pseudo for now
-        duration = 6,
-        max_stack = 1,
-    }
 } )
 
 
@@ -819,20 +809,7 @@ hunter:RegisterHook( "reset_precast", function()
     if IsUsableSpell( class.abilities.counterattack.id ) and last_parry > 0 and now - last_parry < 5 then applyBuff( "counterattack_usable", last_parry + 5 - now ) end
 end )
 
----- Logic to track the Kill Shot Glyph lockout
---hunter:RegisterStateExpr("kill_shot_glyph_cooldown", function()
---    local start = state.cooldown.kill_shot_glyph_start
---    if start > 0 then
---        return max(0, 6 - (query_time - start))
---    else
---        return 0
---    end
---end )
---
---hunter:RegisterStateExpr( "kill_shot_glyph_cooldown", function()
---    return max( 0, state.cooldown.kill_shot_glyph - (query_time - state.cooldown.kill_shot_glyph_start) )
---end )
---
+
 ---- TODO: Some work probably needs to be added for tracking target swapping with Explosive Shot and Serpent Sting
 --
 -- Abilities
@@ -1796,12 +1773,13 @@ hunter:RegisterAbilities( {
     kill_shot = {
         id = 53351,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return action.kill_shot.glyph_rdy and 0 or 10 end,
         gcd = "spell",
 
         startsCombat = true,
         texture = 236174,
         velocity = 40,
+        glyph_rdy = function() return glyph.kill_shot.enabled and (query_time - action.kill_shot.lastCast  > 6) end,
 
         usable = function() return target.health.pct < 20, "enemy health must be below 20 percent" end,
 
@@ -1809,10 +1787,6 @@ hunter:RegisterAbilities( {
         end,
 
         impact = function ()
-            if glyph.kill_shot.enabled and not buff.glyph_of_kill_shot.up then
-                cooldown.kill_shot.expires = 0
-                applyBuff("player", "glyph_of_kill_shot")
-            end
         end,
     },
     -- Fires several missiles, hitting your current target and all enemies within 8 yards of that target for 121% of weapon damage.
@@ -2002,10 +1976,10 @@ hunter:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            -- TODO: Can't get these to work for some reason, needs to be fixed
-            -- setCooldown( "rapid_fire", 0 )
-            -- setCooldown( "chimera_shot", 0 )
-            -- setcooldown( "kill_shot", 0 )
+            -- TODO: need further testing
+            setCooldown( "rapid_fire", 0 )
+            setCooldown( "chimera_shot", 0 )
+            setCooldown( "kill_shot", 0 )
         end,
     },
 
