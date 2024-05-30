@@ -371,7 +371,8 @@ hunter:RegisterAuras( {
         id = 1978,
         duration = 15,
         tick_time = 3,
-        max_stack = 1
+        max_stack = 1,
+        copy = { 1978, 88453, 88466, 97153}
     },
     -- Taming pet.
     tame_beast = {
@@ -1369,6 +1370,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = false,
         texture = 132369,
+        toggle = "defensives",
 
         nobuff = "deterrence",
 
@@ -1820,6 +1822,7 @@ hunter:RegisterAbilities( {
 
         impact = function ()
             if talent.concussive_barrage.enabled then applyDebuff( "target", "concussive_barrage" ) end
+            if talent.serpent_spread.enabled then applyDebuff("target", "serpent_sting", max(debuff.serpent_sting.remains, talent.serpent_spread.rank == 1 and 6 or 9)) end 
         end,
     },
     -- An attack that instantly deals your normal weapon damage plus 374.
@@ -2147,24 +2150,9 @@ hunter:RegisterAbilities( {
         cast = 0,
         cooldown = function() return buff.lock_and_load.up and 0 or 6 end,
         gcd = "spell",
+        clash = 0.25,
 
-        spend = function()
-            local cost = 50
-
-            if talent.efficiency.rank == 1 then
-                cost = cost - 2
-            elseif talent.efficiency.rank == 2 then
-                cost = cost - 4
-            elseif talent.efficiency.rank == 3 then
-                cost = cost - 6
-            end
-
-            if buff.the_beast_within.up then
-                cost = cost * 0.5 
-            end
-
-            return buff.lock_and_load.up and 0 or (50 - talent.efficiency.rank * 2) * (buff.the_beast_within.up and 0.5 or 1)
-        end,
+        spend = function() return buff.lock_and_load.up and 0 or (50 - talent.efficiency.rank * 2) * (buff.the_beast_within.up and 0.5 or 1) end,
         spendType = "focus",
 
         talent = "explosive_shot",
@@ -2193,6 +2181,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = false,
         texture = 236159,
+        toggle = "cooldowns",
 
         handler = function ()
             applyBuff( "call_of_the_wild" )
@@ -2372,7 +2361,7 @@ hunter:RegisterPack( "Beast Mastery (Himea Beta)", 20240509, [[Hekili:DR1EVTnos8
 
 hunter:RegisterPack( "Marksmanship (Himea Beta)", 20240509, [[Hekili:TR1ERXnoq8plHd2lHl1X7Mxxkzd0hhxB4APGl0)Z2k2A3veBlJL2DBGG)SFJKFjBlTpsDB6FekPelnV0Oz(nJKI7y3V66eI4y3ppXEYz2Np22A8P2xC6LUo8hsXUoPOG7rZHFjbfd))Nqz3ZIrjSfK0C)d)ajgJY9FlMJosq7druuOqMm6YSaG(fCEk71NCYA6A(DbwZNFsaIJojicXyVA(ssiMDsSImF1ILjCC2jUo3TKeX)yI7D6nWZDDql5lOzUosJaufjmexqpMf4681fewUV4hWclxg5(0zW3bCcnj3pIW4W0ZOz5(FaFpjIyblIm6msey6)bmO0yEDUFRL9TIze68pzfl9C)38L)l3)v5(VNWcOzHahleeyXqeovYWNOHKzeCiOUmACU)3OF7RV9D5(Vdj4)FLEcPiEQEScTGEi3x4OYVf(gg4lz4aA8DiE(TfRAMvA1q)10tqSuCa3JoZJVa7TaT((JjZMEWDlNnZQyoRLPJyyoNKmNzfJijC4hVI5gbMezEcoS8BR(IBxu7m63hqTcsBxuAWcmSZTyavCPe3fLlIghqnle3UO21KOWbuTcXPxTfHKmprCQqHHyPgvh2kKUorp3Xewib(wmJG7AZJMItWzE1Z7rtIEOks)94zOLrnX5GGcqrrEfF6jY1pwGHnLKqAr1sg2JWXXm1btPsicLrwaWHzW6x4nccWr4mK0afStNnZBEq40XQmKTmPVYruSyjjgFf2dwoXem7MjBLVGimALgwNUDwzGVlcx5M(Oy17)fugmLyZOzlq4xazScLrq3fHlyMdWyECQxibF8ku0s80dl3m5zqGciAVWLXXpicJo12(OhFKJYMJ5wkmwP63q)NgTbocqzmogf(GhBbLlwBhkLmjgWGxb(zLzLHlp(O55ZWIGx21JTo)Orq00kXgI1ylfA6QCJXzYyXyCsONkjDzxp25tmxsW(OdIPRaE7QOmukj0BgyhcfeqPrcNHLm6wjvuSfi9pn03jjRqCD5RLqv4fe3b1RMUmb5Wbz0Ewk4RjjygZKml3LU5c7UScHtPErOLjamAwl2XFpnIYeX8cAABwT4sVn1M9EXaaKbrxWrNiZbjWSxeeKJe2wfLE(Uuc9Mevtyzg2cmkIVWknGF9KEUZoMFzKvPD2RGPgnQTeDHuAQx0Jip2AK56jvabVtcM1OXcWTNp4GA9)KreQLWVaqHADT)vzRzDWGuQL4pfuLg79PaS0ewHZGoh4qacO1JdEaMWRijInD8XXOV71ESjkEZw8AAX)ZfSOXhlourgYu07A4WghZWbk7Nkmuj72B4Ai4g7rBC(RhpAgnyj7MPNPZzVlGA1eVh4AguqpMU5kTmLfGsW1CvSaUuNt(ha50akWWcE6u2oxLslAV75d8Sw)pzWZAj8la8Swx7p4znRdg4zTe)PaE2yVpfWZMWQwGNBcyC0bQXkQtV9O1bjyvNNvlKz90pRqMnX97aKznX7bKPbfSziZgM2gKPP9Y9bY0qU)Waz66ScYLb9uD5H2x56SgLjo2kZ15JXP0mU4k5UOZDcALFRRJqeUF(uxh5qYl1uASWV9z59MIteNto09TUobzea2GGCDom3FZXY5(p(4MOPmKj3)6CFrmT)r5(JY91dd76uy3GTPmihwVgnWTal3iXwJYfEITkYULSeg(2rPLKDqUFXUDJb0NsHzCMrZWeeEJevNsiRZnkRnHQlTxDi7nkQzcHAUy7QPfiFLdzlq9nQR78cLE5EP06OUBGSbBLfsvTdHi)7T5610SC5sXuLbLa4wddA7kJABqtWmMcn2wya1UyfyDvZsqyx0aOGIAeKMccnYvubsFGNg2KBp2sF6wOtS2K0jHTb(MM7FMT0AndnOw5rjnSU4HKDZWa9QRinJjkrt11UKsYCMSgjbl8RSnAuMtKRw)5(xQSvRuBtYV5m0ACjLWkDL0mhgzorSsWJus11xIRnn9kZPhXey2vycq2P8QX1v4QfcsXhYRoUOQNxXJ(jUz46IkvCuFT5DYgovLOIRrVdfY9DLRnxyvnq06VM9oIW8(TqonxpUCJFIcCw7liV1Qer3cyDxrpDNfDXbd1HkVlCx22HCRS(Ds20MPMcNY3enJKwqq9Ze2jsxj6UQm0pyT9n3lYGRsri)gZg2qxmdUXu(GGMmOQP3ypndUrjERqtwKCUnMDn4MJSBfdMtvNmMZi3)o(mdgV5xz01uBX8cGJxotWVNNjyq7JFhoUWW3h)(D4HDQp(D4Ob9E0TERfnp9wJ6AnPB1rhQMTTW7uA)kvkRFEUUTCBV5MyhQmnJ5s965Fp7I2CU4(2f9glO9d26Q58QFvTUw250lWR)EcVU)fG3bm0HaQE)qnhiO6DaxDFHQ7ELl1XETVeLwVFP88u9EvtxNjA256FJn1yWpNORVC1l6kA8YvVSN1VE(V6f5vNOP6fnvIH3WF1F2DIFlAjwwvZ0FPDst6uBBzHkHRP)FZDsbwE)bQdZR)N7))d]])
 
-hunter:RegisterPack( "Survival", 20240529, [[Hekili:TRvBVTTnq4FlgdWiflqo2TPlTioa9LbSgS1vavG(njrlrftejrbsk7Aad9BF3P3LSOStIA2hArrtSfjV7HhV7HpKrwZT(QLPhrrT(8Ilw8QlUCXBmwm)s43wMQDXulZyI79K7GpercHFAMi2W2qcWg2fWjEObK8eHl04ALkw(2zZ2Y3kzHsJ7yQ1jRmy8zUefz26KifvmtwyIzwMRsybQpfzTQliaBgtDT(8lbJY88O5DHkDTm)6AMm1jwW4cMAxQd(Tvej1l1HhL6OwttD(g)BMaasD(a4x3GDYWuN39L)o1XNlsDkNdgwMbmPsMnfyr3fqHp95SqcnISkG6z9EltxWnubJa9HQuq3KgcQlpmKg5zhYKEm4RkgpYYKu87wpvbZQJBYqclsb)3MGtCvQZ0uhIuYUlI6v8mJ8FzZ9THjP9AY27Z62KuNq(gWk1a4WEIW4LAHHlNh4X3gz4scckh2wwGNrsCQZ(9qyLiUJQmuSqQTIB7XGO81ltDMFzTxfKyMNTpmZrV9QJ7T6bK5N85sviPlwSdjUc(WWzXf1WP74rqDPwq5rxL47BiPIyAKYwIyWarzjUIf0n2356zmVDNQDy7hdE71O3kB9Egah5AUQjaGo9hhds0VhhWLSn0SrdjFyUcKBFnKHKz7U9qjiBOb2yWjd8NbfiOHc4U3BtGSwSUTALT9uRTPsDEr9eODti0V6yqpVIxcRCI7ZcM1wRztOTEZXS1QaccFHGVTVyqZM7ga6lB5giB5QA40y4iAMFHw44ZDtK5JVkvLiCjrGTxlOqSbs1QReZBPmInxp7YznQKZxzYM2TlL95FpBHRXYIlFLGu7a9CnpmhuM2xeER9IX9rTwiLkkXBxna0ZYu66PnJCD9UTCljUDF6WnQJMdgSfcbiHXNKeOQiZl7EIKAdyju2PcuFiRiXznLeOwBeJ8YxJKmhHeQbNymVCtGS4ccbUVpwSHGRUAa2RvaZgKS31LgqfKIIUMavpLkAhOWKgrdzum7eqrdI5ei2L9zBCdV8T9SZ3qNWPdtm210lpzt7gqH6WkIWgw)ugDXoYzROXz74UIO6BdAuwGGfNBX)HSdxGw8QMtHjTs1l3R5jU37X2TvFw1OdhmZFWIIb26F0bJ7AkvrwRdqLnpy68OdkufRoeL12GLaJoCYKJOboLsv6wZ8u2CvVgJQjbhKUqf1cAT5rb7S0jPvLtC8l5Y)SkxUcu1QcbvxX9bm852bKKiO0xKJQAV2QXd0m3249jCUkhc2WN1J66Rofj4D1EEO7ZhK7oyln78GPmB)7qY3TB)uZfndtA0DdrOrqC)reQ(W07zPtq5yPy9rlOupDWZLGYcHm)IT7Nl2UQeY2h3)HZcm8DlO70PV(a6Wt9kegp(RrILs)ff8dBFK3CY7JmAN1VEpO(4n7HE9rSG8W4Cpc)5dZypAc8)3VraOdBa5WypACdZBjIi0AwMFkmMlu4niFz50l1j7QHnsVfp9j3Nbhf183sD(RmL1VT(sKtVfFkKNtsDo7JmPlx492143nKeMINh2mtGZ3hLiLzD3KfghW8zOh9f8Wgxy9gJlG)npRBvNLn9w47Wd(s5XGtVnhLsJQtg)7lNDiX(5m)LtAF0LP6cItpHDuob3cX8r0RG1ofNwCOYr0Xfw8uCoE(Xr0ZO5of3I7AnIUfnx)UT5HjrhQ74N9p6MYDWrp8bolZ0)y(v4vzsWqv3ExZhMF9AODp4Q6UEXf73F4ERxVCXLnTGMBE78g3u3Y5nhqN7S6C82Qwchggbb(867k7MfhDC5klpCOlp(qZVFSYa274)zD8hqZqr((vO2D49ZM8iZUWHpDsbDFhhvl0dDWqQn7F9C(LDTy3H2YUT0voDYruuQjf6IUUSL(Jw(7aHnn8zpsA6A42d)G14sjhDBOsQOE7HTEElTglNF(b6pwUaNn9Eo2PdQo86cDcd8hNQ7YwLIc0LNvKUSFVwrjVORfAO84unX0jf4SREMHRhk2Ml3(tpI4fTCYLvVFiJgO2J50cpLA4kl8mugx5RXSsUYOpRfZvET1z1o1QeTNZB6H(9MLVUh32tzBvBpUk3rRgTch)aO66zo2MTRUGOKWdDC2XZUzP2JM1x2unhZjgapfsK(sG(HqfPPSECzJmluwu60CLgpf2Okl8mWgv5RXKnQYOpRSrvETnB0Gmnt09EQ0Jz7HTPQToSnpDMKPN1RiI97NO91p5f9GRh(PrQgAJ3XJgJSN3RKYjJM3PKEzZVQVS96x(JhgDvD62tqsuD2ZpeQin10JdvKLz2R03)gv)ghM6CwX1S8E4K54FVIe1AUWYS4PnVLLS78X6)(d]] )
+hunter:RegisterPack( "Survival", 20240530, [[Hekili:TRvBVXjoq4FlRoPvjQrSV0U5sRYgP(Yj1gDxVkrL63a8cMGvamY2SBxPi(TFJ5DyXSSjKCFOvvnjl2EEgBM5zEgR1yHX3n0DqcSXxxoF5BMV61Z1wSA(8Llm0f7JWg6ri77r3b)rika(PEmBlzlYxoWEFkYrAaonMzdd6jer83nB2o6oojGRDhr4fVrJqNzJeOzEXHcmBgp3eZm03et8fFj0ytNoXI)emDe224RVgSnXXbNntm32q)7EeEIveJqzeX(el5N2G4yNelAyILWdNy9d6p0b)iX6Ja82(75bjwV)B)DILlLLyvSv0m09jCbpDNqcVZhd)1xtpzWHOn(yhJpyOBdWGzeemhSqatJRXW20GaCOJzaH7qGpki0qdDu(VB8ubS5oUjdqKqb8FtKCJlsSMMyH4CYDHyN8NPL9ltQRjSjn9q7UpDAtsScOBbRu5ahotPB8ALUHnL67q3fQzJ89lw2oIVJwCuI1dpahRi2DyHMGeGnfuthcCkF96eRfRQqLHIioMUWoxI2BooAvlifNS9s5rsBFXmazZO97olNx5oTxV0PwP0PCWBIDD14yweouyYL(GM0ll8RigER5D2oAlAoPkaB(yaTlLOvm69eWD4EurDhaM0FEmxc)ZiFkNSfNUAi4tgRaX2xdriP2U9mem0wSVP8WjX6vW7OkNO5mLWF1XGpl5LdN(S7tpqQSw9HK26ThZwB8bsfteJr311(O(Wn2et7(n(nWB8RQCNAlx6nlMR0DCP2X8S1xgUHy2OqW2EmmC2aHlvztzJuCITqndXz1YgZcut32nthDP)mnC)8AHQ0nmufaQ5lonakcDZpERqr7(WgVi5cmYzFLdOMPOa6P1p5AJUjFhkQ5CAXVPIQcwSH0fGagxuSVOKqUy6XCSj4lb8wzrQpYYdC8WiFHNwKKB9AjrXrisQXRfrliYtpxKUa11vYfiDUQSbOSjd2nscBBBSpMHYt6Q7OQPfL2bsmXH4acwgDcErnY1y4Sl9VnLfTYkDzMvBgrX9tU120RhSPT9XqEyjzwnRpKvNxvn9nAuAvZnirxfz7PWvAzFgjkBc)dAV8L3Y3uF7nPrAqrTKNyT1(JQgDiLr(9Mu0t57r3zS9WybYtLdvmCVHZJUtjfKQYJshR3uGr3DsLuOWDkKB0oN5PuCvToHYnbfKFGzvIsnPH(7nujlvKrC8BjV)Qk5T0PQufcQUI6YXKp30hfhcP(SmVQc1gdEGU3MgVlXVLXqqbFshkKVAiYOBR98q4ZwK9EOKMz2HjpT(Da6NMnFQ(Y6htPjQ(uP0si8x26BXj04jqVF5QNMQpdvYkhlDRpAzLQjfEPKvMlN53CE)AX5vgq2SX9tNlO)BjqvpQxEaP4qVmGXJfBu5QuFPbpB1uE7GRPmA99xvpQl2ZoizFeVwonM3JWIEAg7rtJ))(TdatylinwoJ8loE5Bn03HyHsRzO)LGiktiVr4vfBVeR0R6vl5wWOXcpkZq)Zqmnk1r0JHw3dJ5WAtVk5)nS6cVtSolFIFaA65CzJSuxc0vR(FKy95ur6VR6oLtUv(0S5F2NiCBkZ5DEYpRXreb98M4LoDDsqKpXLiDyxgnO29xVvBo8VfPtRS13KBHpdp4BfDuNCB2MKRv2K9Rwp7WQdxqCxpPzxqtv9oy6aklnayHxzJiQG1gcO59NoIaNBXHaUSv0rezP5gcSYsFJiSsZ1nS17lvcOQoz7E111mjxD)9UweP)PSBdS0KGHkViW6pm7M6K29GB976LZF4HdlqF96LRQBbfxI3f1U0V1lQVGwx)1fYl(An0xT0jKpV6A3Uz5rxxM80dx66JV0SRAR4a790)Q68h8M(o57wMB7L3nBYJm6sU8PtYRw0cOk1Isa6tYA3VpxSQTfBV0g2TH40PtoISufHqZBdzd5lnW7aDr1WSdfrTnCZLFW74cflThOuVPA7jh9IgsvwV4IdKVSEPC30zlXt7vI515YmulV8vlo4fxPKejONLhW8Wdkv1CEBlut6YqnX0j5EABbr9NrKxOlZ(tpI6hLSYf5VFmLiOcXmIHNswCPfEbsKlXAmZLln6lA6CjQnA5BO5jkBxC6H4EZ6l7a2osClh7XL7oIzPLEYZaDxh7YMmEvPefKEsGt7W7M1k7URR4PkwMbEeoeAKUcHEwiJuKypU8r65QlkantTXtHpQ0cVa8rLynM8rLg9fLpQe1M8r9Y1mr1xDLomBh8nLJ1IVzC5skr507VOCP1(cGuBLD8LoPW1u8foPt25R6k2T6BgYPr(uf88eK4ufl8SqSOidDCiwsVfhJ)7p]] )
 
 
 hunter:RegisterPackSelector( "beast_mastery", "Beast Mastery (Himea Beta))", "|T132164:0|t Beast Mastery",

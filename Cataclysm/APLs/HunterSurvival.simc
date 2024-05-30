@@ -29,7 +29,7 @@ actions.aoe+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launche
 actions.aoe+=/explosive_trap
 actions.aoe+=/multishot
 actions.aoe+=/kill_shot
-actions.aoe+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=buff.lock_and_load.up&debuff.explosive_shot.remains<action.explosive_shot.travel_time
+actions.aoe+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=buff.lock_and_load.up&debuff.explosive_shot.remains<action.explosive_shot.travel_time+1
 actions.aoe+=/cobra_shot,if=(!moving|buff.aspect_of_the_fox.up)
 actions.aoe+=/steady_shot,if=(!moving|buff.aspect_of_the_fox.up)&!action.cobra_shot.known
 actions.aoe+=/aspect_of_the_fox,if=moving&settings.aspect_of_the_fox_swap&settings.maintain_aspect
@@ -41,7 +41,7 @@ actions.cleave+=/rapid_fire,if=cooldown.call_of_the_wild.up|target.time_to_die<=
 actions.cleave+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro|target.time_to_die<=20
 actions.cleave+=/serpent_sting,cycle_targets=1,max_cycle_targets=2,if=debuff.serpent_sting.down&target.time_to_die>=6
 actions.cleave+=/kill_shot
-actions.cleave+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=debuff.explosive_shot.remains<action.explosive_shot.travel_time
+actions.cleave+=/explosive_shot,cycle_targets=1,max_cycle_targets=2,if=debuff.explosive_shot.remains<action.explosive_shot.travel_time+1
 actions.cleave+=/trap_launcher,if=cooldown.explosive_trap.up&!settings.trap_launcher_macro
 actions.cleave+=/explosive_trap
 actions.cleave+=/multishot,if=focus>=settings.arcane_threshold
@@ -56,7 +56,7 @@ actions.single+=/rapid_fire,if=cooldown.call_of_the_wild.up|target.time_to_die<=
 actions.single+=/call_of_the_wild,if=cooldown.rapid_fire.up&!settings.call_of_the_wild_macro|target.time_to_die<=20
 actions.single+=/serpent_sting,if=debuff.serpent_sting.down&!prev_gcd.1.serpent_sting
 actions.single+=/kill_shot
-actions.single+=/explosive_shot,if=debuff.explosive_shot.remains<action.explosive_shot.travel_time&(buff.lock_and_load.up|!prev_gcd.1.explosive_shot)
+actions.single+=/explosive_shot,if=debuff.explosive_shot.remains<action.explosive_shot.travel_time+1
 actions.single+=/hunters_mark,if=debuff.hunters_mark.down
 actions.single+=/black_arrow,if=debuff.black_arrow.remains<action.black_arrow.travel_time&target.time_to_die>=8
 actions.single+=/arcane_shot,if=focus>=settings.arcane_threshold
