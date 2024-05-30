@@ -311,6 +311,8 @@ spec:RegisterAuras( {
         id = 43104,
         duration = 12,
         max_stack = 1,
+        shared = "target",
+        copy = {43104, 413764}
     },
     -- Disarmed!
     disarm = {

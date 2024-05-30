@@ -1307,14 +1307,14 @@ spec:RegisterAuras( {
     -- Increases spell damage taken by $s1%.
     earth_and_moon = {
         id = 60433,
-        duration = 12,
+        duration = 15,
         max_stack = 1,
         copy = { 60433, 60432, 60431 },
     },
     -- Starfire critical hit +40%.
     eclipse_lunar = {
         id = 48518,
-        duration = 15,
+        duration = 3600,
         max_stack = 1,
         last_applied = 0,
         copy = "lunar_eclipse",
@@ -1322,7 +1322,7 @@ spec:RegisterAuras( {
     -- Wrath damage bonus.
     eclipse_solar = {
         id = 48517,
-        duration = 15,
+        duration = 3600,
         max_stack = 1,
         last_applied = 0,
         copy = "eclipse_solar",
@@ -1348,7 +1348,7 @@ spec:RegisterAuras( {
     -- Rooted.  Causes $s2 Nature damage every $t2 seconds.
     entangling_roots = {
         id = 19975,
-        duration = 12,
+        duration = 27,
         max_stack = 1,
         copy = { 339, 1062, 5195, 5196, 9852, 9853, 19970, 19971, 19972, 19973, 19974, 19975, 26989, 27010, 53308, 53313, 65857, 66070 },
     },
@@ -1358,7 +1358,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     feral_aggression = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16862)
-        id = 16862,
+        id = 16858,
         duration = 3600,
         max_stack = 1,
         copy = { 16862, 16861, 16860, 16859, 16858 },
@@ -1388,7 +1388,7 @@ spec:RegisterAuras( {
     -- Converting rage into health.
     frenzied_regeneration = {
         id = 22842,
-        duration = 10,
+        duration = 20,
         tick_time = 1,
         max_stack = 1,
         copy = { 22842, 22895, 22896, 26999 },
@@ -1402,18 +1402,19 @@ spec:RegisterAuras( {
     -- Asleep.
     hibernate = {
         id = 2637,
-        duration = 20,
+        duration = 40,
         max_stack = 1,
         copy = { 2637, 18657, 18658 },
     },
     -- $42231s1 damage every $t3 seconds, and time between attacks increased by $s2%.$?$w1<0[ Movement slowed by $w1%.][]
     hurricane = {
         id = 16914,
-        duration = function() return 10 * haste end,
-        tick_time = function() return 1 * haste end,
+        duration = 10,
+        tick_time = 1,
         max_stack = 1,
         copy = { 16914, 17401, 17402, 27012, 48467 },
     },
+    -- TODO: remove 
     improved_moonfire = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16822)
         id = 16822,
         duration = 3600,
@@ -1428,7 +1429,7 @@ spec:RegisterAuras( {
     },
     -- Movement speed slowed by $s1% and attack speed slowed by $s2%.
     infected_wounds = {
-        id = 58181,
+        id = 58179,
         duration = 12,
         max_stack = 1,
         copy = { 58181, 58180, 58179 },
@@ -1443,14 +1444,14 @@ spec:RegisterAuras( {
     -- Chance to hit with melee and ranged attacks decreased by $s2% and $s1 Nature damage every $t1 sec.
     insect_swarm = {
         id = 5570,
-        duration = function() return 12 + (talent.natures_splendor.enabled and 2 or 0) end,
+        duration = 12,
         tick_time = 2,
         max_stack = 1,
         copy = { 5570, 24974, 24975, 24976, 24977, 27013, 48468 },
     },
     -- $s1 damage every $t sec
     lacerate = {
-        id = 48568,
+        id = 33745,
         duration = 15,
         tick_time = 3,
         max_stack = 3,
@@ -1459,24 +1460,25 @@ spec:RegisterAuras( {
     -- Heals $s1 every second and $s2 when effect finishes or is dispelled.
     lifebloom = {
         id = 33763,
-        duration = function() return glyph.lifebloom.enabled and 8 or 7 end,
+        duration = 10,
         tick_time = 1,
         max_stack = 3,
         copy = { 33763, 48450, 48451 },
     },
     living_spirit = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=34153)
-        id = 34153,
+        id = 34151,
         duration = 3600,
         max_stack = 1,
         copy = { 34153, 34152, 34151 },
     },
     mark_of_the_wild = {
         id = 79061,
-        duration = 6000,
+        duration = 36000,
         max_stack = 1,
         shared = "player",
         copy = { 1126, 5232, 5234, 6756, 8907, 9884, 9885, 16878, 24752, 26990, 39233, 48469 },
     },
+    -- TODO: remove
     maul = {
         duration = function() return swings.mainhand_speed end,
         max_stack = 1,
@@ -1484,7 +1486,7 @@ spec:RegisterAuras( {
     -- $s1 Arcane damage every $t1 seconds.
     moonfire = {
         id = 8921,
-        duration = function() return 9 + (talent.natures_splendor.enabled and 3 or 0) end,
+        duration = 12,
         tick_time = 3,
         max_stack = 1,
         copy = { 8921, 8924, 8925, 8926, 8927, 8928, 8929, 9833, 9834, 9835, 26987, 26988, 48462, 48463, 65856 },
@@ -1509,13 +1511,13 @@ spec:RegisterAuras( {
         copy = { 45281, 45282, 45283 },
     },
     natural_shapeshifter = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16835)
-        id = 16835,
+        id = 16833,
         duration = 6,
         max_stack = 1,
         copy = { 16835, 16834, 16833 },
     },
     naturalist = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=17073)
-        id = 17073,
+        id = 17069,
         duration = 3600,
         max_stack = 1,
         copy = { 17073, 17072, 17071, 17070, 17069 },
@@ -1523,7 +1525,7 @@ spec:RegisterAuras( {
     -- Spell casting speed increased by $s1%.
     natures_grace = {
         id = 16886,
-        duration = 3,
+        duration = 15,
         max_stack = 1,
     },
     -- Melee damage you take has a chance to entangle the enemy.
@@ -1547,14 +1549,14 @@ spec:RegisterAuras( {
     },
     -- Stunned.
     pounce = {
-        id = 49803,
+        id = 9005,
         duration = 3,
         max_stack = 1,
         copy = { 9005, 9823, 9827, 27006, 49803 },
     },
     -- Bleeding for $s1 damage every $t1 seconds.
     pounce_bleed = {
-        id = 49804,
+        id = 9007,
         duration = 18,
         tick_time = 3,
         max_stack = 1,
@@ -1597,14 +1599,14 @@ spec:RegisterAuras( {
     -- Heals $s2 every $t2 seconds.
     regrowth = {
         id = 8936,
-        duration = 21,
+        duration = 6,
         max_stack = 1,
         copy = { 8936, 8938, 8939, 8940, 8941, 9750, 9856, 9857, 9858, 26980, 48442, 48443, 66067 },
     },
     -- Heals $s1 damage every $t1 seconds.
     rejuvenation = {
         id = 774,
-        duration = 15,
+        duration = 12,
         tick_time = 3,
         max_stack = 1,
         copy = { 774, 1058, 1430, 2090, 2091, 3627, 8070, 8910, 9839, 9840, 9841, 25299, 26981, 26982, 48440, 48441 },
@@ -1612,7 +1614,7 @@ spec:RegisterAuras( {
     -- Bleed damage every $t1 seconds.
     rip = {
         id = 1079,
-        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7feral_2pc == 1 and 4) or 0) end,
+        duration = function() return 16 + ((set_bonus.tier7feral_2pc == 1 and 4) or 0) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
@@ -1630,29 +1632,10 @@ spec:RegisterAuras( {
             if combo_points.current == 0 then
                 return 0
             end
-            return 14 + (set_bonus.tier8feral_4pc == 1 and 8 or 0) + ((combo_points.current - 1) * 5)
+            return 9 + (set_bonus.tier8feral_4pc == 1 and 8 or 0) + ((combo_points.current) * 5)
         end,
         max_stack = 1,
         copy = { 52610 },
-    },
-    sharpened_claws = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16944)
-        id = 16944,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 16944, 16943, 16942 },
-    },
-    shredding_attacks = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16968)
-        id = 16968,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 16968, 16966 },
-    },
-    -- Reduced distance at which target will attack.
-    soothe_animal = {
-        id = 2908,
-        duration = 15,
-        max_stack = 1,
-        copy = { 2908, 8955, 9901, 26995 },
     },
     -- Melee haste increased by 15%.
     stampede_bear = {
@@ -1679,7 +1662,7 @@ spec:RegisterAuras( {
         copy = { 48505, 50286, 50288, 50294, 53188, 53189, 53190, 53191, 53194, 53195, 53196, 53197, 53198, 53199, 53200, 53201 },
     },
     starlight_wrath = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16818)
-        id = 16818,
+        id = 16814,
         duration = 3600,
         max_stack = 1,
         copy = { 16818, 16817, 16816, 16815, 16814 },
@@ -1693,7 +1676,7 @@ spec:RegisterAuras( {
     -- Health increased by 30% of maximum while in Bear Form, Cat Form, or Dire Bear Form.
     survival_instincts = {
         id = 61336,
-        duration = 20,
+        duration = 12,
         max_stack = 1,
     },
     -- Immune to Polymorph effects.  Movement speed increased by $40121s2% and allows you to fly.
@@ -1705,8 +1688,9 @@ spec:RegisterAuras( {
     -- Causes $s1 Nature damage to attackers.
     thorns = {
         id = 467,
-        duration = function() return glyph.thorns.enabled and 6000 or 600 end,
+        duration = 20,
         max_stack = 1,
+        shared = "target",
         copy = { 467, 782, 1075, 8914, 9756, 9910, 16877, 26992, 53307, 66068 },
     },
     -- Increases damage done by $s1.
@@ -1739,7 +1723,7 @@ spec:RegisterAuras( {
     -- Immune to Polymorph effects. Increases healing received by $34123s1% for all party and raid members within $34123a1 yards.
     tree_of_life = {
         id = 33891,
-        duration = 3600,
+        duration = 25,
         max_stack = 1,
     },
     -- Dazed.
@@ -1763,39 +1747,34 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 48438, 53248, 53249, 53251 },
     },
-    wrath_of_cenarius = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=33607)
-        id = 33607,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 33607, 33606, 33605, 33604, 33603 },
-    },
 
     rupture = {
-        id = 48672,
+        id = 1943,
         duration = 6,
         max_stack = 1,
         shared = "target",
         copy = { 1943, 8639, 8640, 11273, 11274, 11275, 26867, 48671 }
     },
     garrote = {
-        id = 48676,
+        id = 703,
         duration = 18,
         max_stack = 1,
         shared = "target",
         copy = { 703, 8631, 8632, 8633, 11289, 11290, 26839, 26884, 48675 }
     },
     rend = {
-        id = 47465,
+        id = 94009,
         duration = 15,
         max_stack = 1,
         shared = "target",
-        copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208 }
+        copy = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208, 94009 }
     },
     deep_wound = {
         id = 43104,
         duration = 12,
         max_stack = 1,
-        shared = "target"
+        shared = "target",
+        copy = {43104, 413764}
     },
     bleed = {
         alias = { "lacerate", "pounce_bleed", "rip", "rake", "deep_wound", "rend", "garrote", "rupture" },
@@ -3359,6 +3338,7 @@ spec:RegisterAbilities( {
         texture = 132163,
 
         handler = function()
+            removeDebuff( "target", "dispellable_enrage" )
         end,
 
     },
