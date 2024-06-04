@@ -26,7 +26,7 @@ actions.st+=/envenom,if=combo_points>4&energy>80&buff.envenom.up&variable.cold_b
 actions.st+=/fan_of_knives,target_if=!dot.deadly_poison_dot.ticking&(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking),if=variable.use_filler&spell_targets.fan_of_knives>=5
 actions.st+=/fan_of_knives,if=variable.use_filler&(!priority_rotation&spell_targets.fan_of_knives>=5)
 actions.st+=/mutilate,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&(combo_points.deficit>1|!variable.single_target)&spell_targets.fan_of_knives=2
-variable.use_filler&((target.health.pct>35)|(target.health.pct<35&!settings.backstab))
+actions.st+=/mutilate,if=variable.use_filler&((target.health.pct>35)|(target.health.pct<35&!settings.backstab))
 
 actions.st+=/backstab,if=settings.backstab&variable.use_filler&target.health.pct<35
 actions.st+=/envenom,if=target.health.pct<35&combo_points=5&energy>65
