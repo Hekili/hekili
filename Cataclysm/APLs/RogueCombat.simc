@@ -11,19 +11,21 @@ actions+=/recuperate,if=health.pct<30&combo_points>=3
 actions.build+=/sinister_strike,strict=1,if=buff.slice_and_dice.down&combo_points=0
 actions.build+=/slice_and_dice,strict=1,if=buff.slice_and_dice.down&combo_points>0
 actions.build+=/revealing_strike,if=combo_points<4&debuff.revealing_strike.down&buff.slice_and_dice.remains>5
-actions.build+=/gouge,if=combo_points<5&debuff.revealing_strike.up&debuff.gouge.down
+actions.build+=/gouge,if=combo_points<5&!debuff.revealing_strike.up
 actions.build+=/sinister_strike,if=combo_points<5
 actions.build+=/killing_spree,if=energy<50&buff.deep_insight.up
+actions.build+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points<3|buff.slice_and_dice.down
 
-actions.finish+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points<3|buff.slice_and_dice.down
 actions.finish+=/eviscerate,if=combo_points=5
 actions.finish+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1|solo)&!buff.deep_insight.up&!buff.blade_flurry.up&!buff.adrenaline_rush.up&time_to_die>12&!buff.bloodlust.up
+actions.finish+=/eviscerate,if=combo_points=5&target.time_to_die<12
 
-actions.cds+=/adrenaline_rush,if=energy<20&cooldown.killing_spree.remains>15
+actions.cds+=/adrenaline_rush,if=energy<80&cooldown.killing_spree.remains>15
 actions.cds+=/blood_fury
 actions.cds+=/berserking
 
 actions.aoe+=/blade_flurry,if=active_enemies>1&!buff.blade_flurry.up
 actions.aoe+=/fan_of_knives,if=active_enemies>3&energy<50&buff.deep_insight.up
-actions.aoe+=/call_action_list,name=build
 actions.aoe+=/cancel_buff,name=blade_flurry,if=active_enemies=1&buff.blade_flurry.up
+actions.aoe+=/call_action_list,name=build
+
