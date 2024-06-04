@@ -1,31 +1,41 @@
-Smufriks Combat
+Smufrik assassination rogue
+actions.precombat=apply_poison
 
-actions+=/shiv,if=debuff.dispellable_enrage.up
-actions+=/kick
-actions+=/call_action_list,name=cds
-actions+=/run_action_list,name=finish,if=combo_points=5
-actions+=/call_action_list,name=build
-actions+=/run_action_list,name=aoe,if=active_enemies>3
+actions=stealth,if=!stealthed.all
+actions+=/garrote,if=stealthed.all
+actions+=/slice_and_dice,if=!buff.slice_and_dice.up
+actions+=/call_action_list,name=st
+actions+=/variable,name=single_target,value=spell_targets.fan_of_knives<2
+actions+=/variable,name=cold_blood_casted,value=1,if=prev_gcd.1.cold_blood
+actions+=/variable,name=priority_rotation,value=priority_rotation
+actions+=/expose_armor,if=settings.maintain_expose&combo_points.current>=4
+actions+=/kick,if=!stealthed.all
+actions+=/envenom,if=talent.cut_to_the_chase&buff.slice_and_dice.up&buff.slice_and_dice.remains<5&combo_points>=2
 actions+=/recuperate,if=health.pct<30&combo_points>=3
+actions+=/call_action_list,name=cds
+actions+=/shiv,if=debuff.dispellable_enrage.up
+actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen_combined
 
-actions.build+=/sinister_strike,strict=1,if=buff.slice_and_dice.down&combo_points=0
-actions.build+=/slice_and_dice,strict=1,if=buff.slice_and_dice.down&combo_points>0
-actions.build+=/revealing_strike,if=combo_points<4&debuff.revealing_strike.down&buff.slice_and_dice.remains>5
-actions.build+=/gouge,if=combo_points<5&!debuff.revealing_strike.up
-actions.build+=/sinister_strike,if=combo_points<5
-actions.build+=/killing_spree,if=energy<50&buff.deep_insight.up
-actions.build+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points<3|buff.slice_and_dice.down
 
-actions.finish+=/eviscerate,if=combo_points=5
-actions.finish+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1|solo)&!buff.deep_insight.up&!buff.blade_flurry.up&!buff.adrenaline_rush.up&time_to_die>12&!buff.bloodlust.up
-actions.finish+=/eviscerate,if=combo_points=5&target.time_to_die<12
+actions.st+=/variable,name=use_filler,value=combo_points.deficit>1|!variable.single_target
+actions.st+=/garrote,if=stealthed.all
+actions.st+=/rupture,if=!dot.rupture.ticking&target.time_to_die-remains>6&dot.rupture.remains<2
+actions.st+=/berserking,if=buff.bloodlust.up|target.time_to_die<20
+actions.st+=/envenom,if=combo_points>4&debuff.vendetta.up
+actions.st+=/envenom,if=combo_points>4&energy>80&buff.envenom.up&variable.cold_blood_casted|buff.envenom.down&energy>55&variable.cold_blood_casted
+actions.st+=/fan_of_knives,target_if=!dot.deadly_poison_dot.ticking&(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking),if=variable.use_filler&spell_targets.fan_of_knives>=5
+actions.st+=/fan_of_knives,if=variable.use_filler&(!priority_rotation&spell_targets.fan_of_knives>=5)
+actions.st+=/mutilate,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&(combo_points.deficit>1|!variable.single_target)&spell_targets.fan_of_knives=2
+variable.use_filler&((target.health.pct>35)|(target.health.pct<35&!settings.backstab))
 
-actions.cds+=/adrenaline_rush,if=energy<80&cooldown.killing_spree.remains>15
-actions.cds+=/blood_fury
-actions.cds+=/berserking
+actions.st+=/backstab,if=settings.backstab&variable.use_filler&target.health.pct<35
+actions.st+=/envenom,if=target.health.pct<35&combo_points=5&energy>65
 
-actions.aoe+=/blade_flurry,if=active_enemies>1&!buff.blade_flurry.up
-actions.aoe+=/fan_of_knives,if=active_enemies>3&energy<50&buff.deep_insight.up
-actions.aoe+=/cancel_buff,name=blade_flurry,if=active_enemies=1&buff.blade_flurry.up
-actions.aoe+=/call_action_list,name=build
 
+actions.cds+=/cold_blood,if=combo_points=5
+actions.cds+=/vendetta,if=target.time_to_die>30&buff.slice_and_dice.up&debuff.rupture.up
+actions.cds+=/vanish,if=energy<50&!buff.stealth.up&!buff.overkill.up
+actions.cds+=/call_action_list,name=misc_cds
+
+actions.misc_cds+=/blood_fury,if=debuff.vendetta.up
+actions.misc_cds+=/berserking,if=debuff.vendetta.up
