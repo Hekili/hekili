@@ -19,10 +19,10 @@ actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen_combined
 
 actions.st+=/variable,name=use_filler,value=combo_points.deficit>1|!variable.single_target
 actions.st+=/garrote,if=stealthed.all
-actions.st+=/rupture,if=!debuff.rupture.ticking&target.time_to_die>6&debuff.rupture.remains<2
+actions.st+=/rupture,if=target.time_to_die-remains>6&dot.rupture.remains<2
 actions.st+=/berserking,if=buff.bloodlust.up|target.time_to_die<20
-actions.st+=/envenom,if=combo_points>4&debuff.vendetta.up
-actions.st+=/envenom,if=combo_points>4&energy>80&buff.envenom.up&variable.cold_blood_casted|buff.envenom.down&energy>55&variable.cold_blood_casted
+
+actions.st+=/envenom,if=target.health.pct > 35 & combo_points > 4 & energy > 80 & buff.envenom.up |target.health.pct > 35 & buff.envenom.down & energy > 55 & combo_points > 4
 actions.st+=/fan_of_knives,target_if=!dot.deadly_poison_dot.ticking&(!priority_rotation|dot.garrote.ticking|dot.rupture.ticking),if=variable.use_filler&spell_targets.fan_of_knives>=5
 actions.st+=/fan_of_knives,if=variable.use_filler&(!priority_rotation&spell_targets.fan_of_knives>=5)
 actions.st+=/mutilate,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&(combo_points.deficit>1|!variable.single_target)&spell_targets.fan_of_knives=2
