@@ -15,11 +15,12 @@ actions+=/recuperate,if=health.pct<30&combo_points>=3
 actions+=/call_action_list,name=cds
 actions+=/shiv,if=debuff.dispellable_enrage.up
 actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen_combined
+actions+=/redirect,if=target.time_to_die<5 & active_enemies>2
 
 
 actions.st+=/variable,name=use_filler,value=combo_points.deficit>1|!variable.single_target
 actions.st+=/garrote,if=stealthed.all
-actions.st+=/rupture,if=target.time_to_die-remains>6&dot.rupture.remains<2
+actions.st+=/rupture,if=!dot.rupture.ticking|target.time_to_die>6&dot.rupture.remains<2
 actions.st+=/berserking,if=buff.bloodlust.up|target.time_to_die<20
 
 actions.st+=/envenom,if=target.health.pct > 35 & combo_points > 4 & energy > 80 & buff.envenom.up |target.health.pct > 35 & buff.envenom.down & energy > 55 & combo_points > 4
