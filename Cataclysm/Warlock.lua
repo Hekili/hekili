@@ -364,6 +364,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    felstorm = {
+        id = 89751,
+        duration = 6,
+        tick_time = 1,
+        max_stack = 1,
+    },
     -- Damage taken from Shadow damage-over-time effects increased by $s3%.
     haunt = {
         id = 48181,
@@ -1413,6 +1419,35 @@ spec:RegisterAbilities( {
         end,
     },
 
+    felstorm = {
+        id = 89751,
+        cast = 0,
+        cooldown = 45,
+        gcd = "spell",
+
+        spend = function() return 0.02 * power.max end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 136121,
+        
+        handler = function()
+          
+            local damage = (power.spell * 0.5 * 2) * 0.33 + 130
+            local duration = 6
+            local targets = getEnemiesInRange(8)
+            
+            for _, target in ipairs(targets) do
+                applyDamage(target, damage)
+            end
+            
+            startTimer("felstorm", duration, function()
+                for _, target in ipairs(targets) do
+                    applyDamage(target, damage)
+                end
+            end)
+        end,
+    },
     -- Summons a falling meteor down upon the enemy target, dealing $71521s1 Shadowflame damage and erupts an aura of magic within $86000a1 yards, causing all targets within it to have a $86000s1% increased  chance to be critically hit by any Warlock demons. The aura lasts for $86041d.
     hand_of_guldan = {
         id = 71521,
