@@ -24,7 +24,7 @@ actions+=/incinerate,if=buff.molten_core.up
 actions+=/soul_fire,if=buff.decimation.up
 actions+=/shadow_bolt
 
-actions.aoe+=/=metamorphosis
+actions.aoe+=/metamorphosis
 actions.aoe+=/immolation_aura,if=buff.metamorphosis.up
 actions.aoe+=/shadowflame,if=target.in_melee_range
 actions.aoe+=/hellfire,if=spell_targets.hellfire>6
