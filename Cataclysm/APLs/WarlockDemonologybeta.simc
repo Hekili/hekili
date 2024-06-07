@@ -1,9 +1,6 @@
 Smufrik beta demo
-actions.precombat+=/flask,type=draconic_mind
-actions.precombat+=/food,type=seafood_magnifique_feast
-actions.precombat+=/summon_pet,if=pet.dead
-actions.precombat+=/snapshot_stats
-actions.precombat+=/potion,type=volcanic
+actions.precombat+=/summon_felguard,if=pet.dead
+actions.precombat+=/volcanic_potion
 actions.precombat+=/metamorphosis,if=talent.demonology.enabled
 actions.precombat+=/demon_soul,if=pet.felguard.active
 actions.precombat+=/hand_of_guldan
@@ -17,7 +14,7 @@ actions+=/corruption,if=!ticking
 actions+=/hand_of_guldan
 actions+=/bane_of_doom,if=!ticking
 actions+=/metamorphosis
-actions+=/potion,type=volcanic
+actions+=/volcanic_potion
 actions+=/immolation_aura,if=buff.metamorphosis.up
 actions+=/demon_soul,if=pet.felguard.active
 actions+=/shadowflame,if=target.in_melee_range
