@@ -4,6 +4,9 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local roundUp = ns.roundUp
+local strformat = string.format
+
 local spec = Hekili:NewSpecialization( 6 )
 
 -- TODO
@@ -12,6 +15,40 @@ local spec = Hekili:NewSpecialization( 6 )
 
 spec:RegisterResource( Enum.PowerType.RunicPower )
 
+local death_rune_tracker = { 0, 0, 0, 0, 0, 0}
+spec:RegisterStateExpr("get_death_rune_tracker", function()
+    return death_rune_tracker
+end)
+
+spec:RegisterStateTable( "death_runes", setmetatable( { onReset = function( self ) end },{
+    __index = function( t, k )
+        local currentRuneState = function()
+            local state_array = {}
+            for i = 1, 6 do
+                local start, duration, ready = GetRuneCooldown( i )
+                local type = GetRuneType( i )
+                state_array[i] = {type, start, duration, ready}
+            end
+            return state_array
+        end
+        local countDeathRunes = function()
+            local state_array = currentRuneState()
+            local count = 0
+            for i = 1, #state_array do
+                if state_array[i][1] == 4 and state_array[i][4] == true then
+                    count = count + 1
+                end
+            end
+            return count
+        end
+
+        if k == "state" then 
+            return currentRuneState()
+        elseif k == "current" then
+            return countDeathRunes()
+        end
+    end
+} ) )
 
 spec:RegisterResource( Enum.PowerType.RuneBlood, {
     rune_regen = {
@@ -49,6 +86,7 @@ spec:RegisterResource( Enum.PowerType.RuneBlood, {
 
         for i = 1, 2 do
             local start, duration, ready = GetRuneCooldown( i );
+            if GetRuneType( i ) == 4 then death_rune_tracker[ i ] = ready and 0 or start + duration else death_rune_tracker[ i ] = start + duration + 60 end
 
             start = start or 0
             duration = duration or ( 10 * state.haste )
@@ -1283,7 +1321,28 @@ spec:RegisterAbilities( {
             gain( 2, "unholy_runes" )
         end,
     },
+    --An instant attack that deals 150% weapon damage plus 560 and increases the duration of your Blood Plague, Frost Fever, and Chains of Ice effects on the target by up to 6 sec.
+    festering_strike = {
+        id = 85948,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
 
+        spend = 1, 
+        spendType = "frost_runes",
+        spend2 = 1, 
+        spend2Type = "unholy_runes",
+
+        startsCombat = true,
+        texture = 135371,
+
+        --fix:
+        stance = "None",
+        handler = function()
+            --"/cata/spell=85948/festering-strike"
+        end,
+
+    },
 
     -- The death knight takes on the presence of frost, increasing Stamina by 8%, armor contribution from cloth, leather, mail and plate items by 60%, and reducing damage taken by 8%.  Increases threat generated.  Only one Presence may be active at a time.
     frost_presence = {

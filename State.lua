@@ -1356,8 +1356,8 @@ do
 
         local timeout = FORECAST_DURATION * state.haste -- roundDown( FORECAST_DURATION * state.haste, 2 )
 
-        if state.class.file == "DEATHKNIGHT" then
-            timeout = max( timeout, 0.01 + 2 * ( 1 / state.blood_runes.regen ) )
+        if state.class.file == "DEATHKNIGHT" and (state.blood_runes or state.frost_runes or state.unholy_runes) then
+            timeout = max( timeout, 0.01 + 2 * state.blood_runes.cooldown )
         end
 
         timeout = timeout + state.gcd.remains
