@@ -46,6 +46,8 @@ spec:RegisterStateTable( "death_runes", setmetatable( { onReset = function( self
             return currentRuneState()
         elseif k == "current" then
             return countDeathRunes()
+        elseif k == "cooldown" then
+            return currentRuneState()[1][3]
         end
     end
 } ) )
@@ -86,7 +88,6 @@ spec:RegisterResource( Enum.PowerType.RuneBlood, {
 
         for i = 1, 2 do
             local start, duration, ready = GetRuneCooldown( i );
-            if GetRuneType( i ) == 4 then death_rune_tracker[ i ] = ready and 0 or start + duration else death_rune_tracker[ i ] = start + duration + 60 end
 
             start = start or 0
             duration = duration or ( 10 * state.haste )
@@ -221,13 +222,13 @@ spec:RegisterResource( Enum.PowerType.RuneFrost, {
     reset = function()
         local t = state.frost_runes
 
-        for i = 1, 2 do
-            local start, duration, ready = GetRuneCooldown( i + 4 )
+        for i = 5, 6 do
+            local start, duration, ready = GetRuneCooldown( i )
 
             start = start or 0
             duration = duration or ( 10 * state.haste )
 
-            t.expiry[ i ] = ready and 0 or start + duration
+            t.expiry[ i - 4 ] = ready and 0 or start + duration
             t.cooldown = duration
         end
 
