@@ -20,34 +20,77 @@ spec:RegisterStateExpr("get_death_rune_tracker", function()
     return death_rune_tracker
 end)
 
-spec:RegisterStateTable( "death_runes", setmetatable( { onReset = function( self ) end },{
-    __index = function( t, k )
-        local currentRuneState = function()
-            local state_array = {}
-            for i = 1, 6 do
-                local start, duration, ready = GetRuneCooldown( i )
-                local type = GetRuneType( i )
-                state_array[i] = {type, start, duration, ready}
-            end
-            return state_array
+spec:RegisterStateTable( "death_runes", setmetatable( {
+    state = {},
+
+    reset = setfenv( function()
+        for i = 1, 6 do
+            local start, duration, ready = GetRuneCooldown( i )
+            local type = GetRuneType( i )
+            local expiry = ready and 0 or start + duration
+            death_runes.state[i] = {
+                type = type,
+                start = start,
+                duration = duration,
+                ready = ready,
+                expiry = expiry
+            }
         end
+    end, state),
+
+},{
+    __index = function( t, k )
         local countDeathRunes = function()
-            local state_array = currentRuneState()
+            local state_array = death_runes.state
             local count = 0
             for i = 1, #state_array do
-                if state_array[i][1] == 4 and state_array[i][4] == true then
+                if state_array[i].type == 4 and state_array[i].expiry < state.query_time then
                     count = count + 1
                 end
             end
             return count
         end
+        local runeMapping = {
+            blood = {1, 2},
+            unholy = {3, 4},
+            frost = {5, 6},
+            any = {1, 2, 3, 4, 5, 6}
+        }
+        -- Function to access the mappings
+        local function getRuneSet(runeType)
+            return runeMapping[runeType]
+        end
+
+        local countDRForType = function(type)
+            local state_array = death_runes.state
+            local count = 0
+            local runes = getRuneSet(type)
+            if runes then
+                for _, rune in ipairs(runes) do
+                    if state_array[rune].type == 4 and state_array[rune].expiry < state.query_time then
+                        count = count + 1
+                    end
+                end
+            else
+                print("Invalid rune type:", type)
+            end
+            return count
+        end
 
         if k == "state" then 
-            return currentRuneState()
+            return death_runes.state
+        elseif k == "actual" then
+            return countDRForType("any")
         elseif k == "current" then
-            return countDeathRunes()
+            return countDRForType("any")
+        elseif k == "current_frost" then
+            return countDRForType("frost")
+        elseif k == "current_blood" then
+            return countDRForType("blood")
+        elseif k == "current_unholy" then
+            return countDRForType("unholy")
         elseif k == "cooldown" then
-            return currentRuneState()[1][3]
+            return death_runes.state[1].duration
         end
     end
 } ) )
@@ -900,13 +943,9 @@ local GetRuneType, IsCurrentSpell = _G.GetRuneType, _G.IsCurrentSpell
 
 spec:RegisterPet( "ghoul", 26125, "raise_dead", 3600 )
 
--- spec:RegisterHook( "reset_precast", function ()
---     for i = 1, 6 do
---         if GetRuneType( i ) == 4 then
---             applyBuff( "death_rune_" .. i )
---         end
---     end
--- end )
+spec:RegisterHook( "reset_precast", function ()
+    death_runes.reset()
+end )
 
 
 -- Abilities
