@@ -369,6 +369,22 @@ spec:RegisterAuras( {
         duration = 6,
         tick_time = 1,
         max_stack = 1,
+        generate = function( t )
+            local name, _, _, _, duration, expires = FindUnitBuffByID( "pet", 89751 )
+
+            if name then
+                t.count = 1
+                t.applied = expires - duration
+                t.expires = expires
+                t.caster = "pet"
+                return
+            end
+
+            t.count = 0
+            t.applied = 0
+            t.expires = 0
+            t.caster = "nobody"
+        end,
     },
     -- Damage taken from Shadow damage-over-time effects increased by $s3%.
     haunt = {
@@ -1429,25 +1445,24 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-        texture = 136121,
+        texture = 236303,
         
         handler = function()
-          
             local damage = (power.spell * 0.5 * 2) * 0.33 + 130
             local duration = 6
             local targets = getEnemiesInRange(8)
             
             for _, target in ipairs(targets) do
-                applyDamage(target, damage)
+            applyDamage(target, damage)
             end
             
             startTimer("felstorm", duration, function()
-                for _, target in ipairs(targets) do
-                    applyDamage(target, damage)
-                end
+            for _, target in ipairs(targets) do
+                applyDamage(target, damage)
+            end
             end)
         end,
-    },
+        },
     -- Summons a falling meteor down upon the enemy target, dealing $71521s1 Shadowflame damage and erupts an aura of magic within $86000a1 yards, causing all targets within it to have a $86000s1% increased  chance to be critically hit by any Warlock demons. The aura lasts for $86041d.
     hand_of_guldan = {
         id = 71521,
@@ -1633,7 +1648,7 @@ spec:RegisterAbilities( {
 
     -- You transform into a Demon for 30 sec.  This form increases your armor by 600%, damage by 20%, reduces the chance you'll be critically hit by melee attacks by 6% and reduces the duration of stun and snare effects by 50%.  You gain some unique demon abilities in addition to your normal abilities. 3 minute cooldown.
     metamorphosis = {
-        id = 59672,
+        id = 47241,
         cast = 0,
         cooldown = function() return 180 * ( 1 - ( 0.15 * talent.nemesis.rank ) ) end,
         gcd = "off",
@@ -2449,7 +2464,7 @@ spec:RegisterOptions( {
 
 spec:RegisterPack( "Affliction", 20230226, [[Hekili:DRvwVrkoq4FlJgj0UkjmaD6CSIULM9HvAYoA0kX8mGdTjTv4sG7otl1IF7BzmnymMJC0AL2xMjbB)vhUQVQCP4A6(txNnik29hwgwlmSSUv3000WWY1HEid76KHcEg9e8djOy4F)AyyejGsstylDikfTHbrr6U8ayzxNh3rIOFlX9r14A66G2r3MM7683KO0axNTKnBW89JlGFNT)RmSUY62)O0)Vi)Q0)7KqCP)przL(rPprck9PPL(jP0s)CCyoUyBP)lFb(0trhYGFgb63ESURtePGwWuViab4))rL5IQv)nyeDRxqkjY1bNGEmcVX9pDPGg3zx5isIxfaD2fLbqiAxeTb42LDcYjuCobXXzp2dNGJj4Is)vL(ML(AGnGYFct13Irr0T6zbG1SU036MwrNVlXJ)ZEmlHBpE87HcAJMolXAx6FDLyLxy9hJ(GsXmfAXSvia7fFaYTadcce81dkyf4BpF8X)chSJwzBlhueYyVCEyxfuvfjLLJdsJFePmw6euH4ipuEml1HLPKtY4F)R)Z3l93Vq)ADZRm1VrFzP)Nf1Uh3fgQxDq9nPVKu6F8yPVWhZXXqiopgX8oJXJR(uPFg4n53Mv3FCfVkW2Ovzl2fhd2mOZB3LaND8GJxjQ7tjBEbf9mh2HV6FLWsIZg)EUIFrNDT5rrz617Pc4k)zZkm)Cl8N(md8Be5wYs5)Fh2NBhjsocNq1b1mpDpEJxXweiiVhtJOD0LcmLssEQqVEdXOcaHdvRTbxPPDxrsFfWLhEEkjqMbvP(3H9Cxb2du)4cPnnCOWMuQ(UKckBjput1MorPbGA7rjX87u2j2IGOS29SUZEUaizYr7H0NMFpcknLeWDjSp6rt92qG1wZ4NfYFvOktgZrjbpd(FEIMcTZE1mvVw1OcHXdoLfCgoVa4AGigVyOkfjlIGZRCnmvkinpFxfbIEw7YTcSD9MOw1xx84P4dEb7YlW1mmQ8QwxlGoBVEPHEONstomEuFmkb1qTAAWnUzNjkg2SuDk5DdNWjAdmPlycBpWCWzq5hGFpahHZrN8w3ZaKWy9yUqpsidPGNlwVYu736fpyVQjw4cH4GlQJboECImc7vCvs5EAHUgoT6YHcMgOwlbPO4Iu5MTU(3L7oc6(lQx3rSocgTZOZ(fRCvmfX2obhcIyhGzNfmTfuRF519RoMQZZurKngVX8e2IHfMmRZaPtVB5itY0LfAEWpIptMnrvW0K9VTuHEmkpIeRxt8tDfKrR5uVNU(5EllrZROzBqXxmsD2IjElHif)G1YpBfbgUPWUC9L(3BmlEYXBc49usFYluBz06vX9Su4FM2WBUUF7ZPKVsmxEMDmJ0IGYuJj1eypc0gVPwhu5lynFDJrf8TfGyp4K)nssiopj17eEnYTEHXByqvr0Xu97)VR4OPbt29ixDDSfFASYo8nhMHQgVnaNdkjOURjdzkVWi27FzincNYz7XodhRBne38pmxi(QgXfLB7PAGeJYI)k9rd1fdtqSGPoDZ0ie5kpnJBrmNsvb0HjLp3HKvUV9ScwWc1Jn04oxNxq5jSByxNVfNLMtzWFlV2Ak8wJQH8Px(a4rYWbSCkhiKjKeHDD(CPVQPJu(a)Wf6ndE5IvFPz(kxscxjn0KJh7pWeBZ7muJK8Wpya(P2jrOX34QXpD7qoEthhsCEDN70nb7uQVv16pKd1qXzngq9AZDysAgP5AdKIRn8SmkFOr4GiLMb3LSPVTQOs8DttG3N1JqCT1ntIf8uN(GzFTw3pS(nIolrVp8Rx82qREwoCFV05TNX5zx)SdlEQLc(B9c2TClPuvqynJZa3y1RE8OYUvxpCNQscDGwnRmvHxWEVH05u0gc7m96Bz9OpuxBQ3P37T4YQptwIUl(t)7oSGrvH5zxn3gkEDV5Y3Tz0TlhLoYPKH2jvuc66EWeIDf0D7v3yODQg1AldnPw5MwnvnkRUhsKJ8KOSnnoECweMN8GlLqLtxEzV0XvI5J8Tk0BGGx4uReGQOC)Nr22(rfwdRcI0e18qkQw0UsZ0JvU4WzTZk8v71MFlnYmv60SsHhFEFQGvnB67HVua7zLhOjncqvi9HNCi4xNfZUTPs9QDSsxkou2v))AMSDkbdoQxjzr9j69MIl78gHvMkBerbDnhVpSqIwKHET(ibUlSJy39gXj3x0305iPIDAAixmgKszQVt04uvtdYOwPqQLItPO)YEECPcuQhs7K9lm8Wz7ZYl1vU9cXOlwicZUA(tdP)sT)9GWEWQ7)c]] )
 
-spec:RegisterPack( "Demonology beta", 20230625, [[Hekili:1M1EVTTnq8plffiDflZlYpAt7Idq3WWwcgYaQtXkWqLeTeTfrKi1KOsQbc0N9DKupOOiJTls)J2etEV4943DNJVN)T(RIrCS)ntpB68ZEZzNpXB28ZM(o)v8D5y)v5OO7qBHFHIYG)pgNXwJ5iXf7szOyHakzvfrWL(Rwxrs5xr9xBvQN5b0MJJ8VbeFcjogROexg5V62eszDO4FO6WgTwhY2aFoIty06WusjhUEdROo8pX3rsjt8xjpuyeigg(XnYxeMIwNIJ9)v4yjZ(R2Gtl5SImL6ki5QJ)a73Rd)iJJuFeUGJliINhMpb4zBfQiEIqi3J95W7Xq89meJxxTzZeswglfE6tkWzicfS3lwwhoR3qAjaCWOITyEazd45arpBFIoIvuujTBNcVNKrIF((e)AefhW2eeZyzdvW0EfOt0ivSqghmOeTLr3PRzGW340wusCcHgKHtX4GcevK81k0Yeum7HnPICrqoVvxHQ7cwZs5gQ7CNQtfydWuCgbdV2lh4n7Yz4Im2Vlb(tuP3JSbqJENTpv(TNq0PdZYL9ejQdDzWUcrEt1Jrj400nKc8jdLXLZmIyEZ05QnoyY1BgYfx4y2GQG4VfGGrEVSDbrvfL4jG5sLpm5hd2wWQYbE6uV8afTheeWabR5yyPSEP4UA3gYJ1uY56(ibWmnaqItnCLdkkZaO7mwrEcRKuEWfLVOoKtIUJq3kDtnzgCsgoGZcIjyzoqmJ3xeexv0aPok93SUDiKYbw4E4MKwrYyJsR84jRXLXvHZDDvbDsvUwuTkt44H4ssffOUVY14Hd)EacmaZmDVb1hiASWxSTkngrnj1DMNLssnq7iuAAG6dbI(LQUMbQo6I(MDvCwACwurDYBjxv2vATIZgIWWUVRG4xkeQUvg(S3iUPOQbDx4FKsAiIN3XxyEev87TZ8bvX7UbSiTvgZ8wiTki5wacikiSJc0K01rqxDU7K31PmwCAvjhYERdF8r71mcF58fn3xqO3jiWd81GMnoDQ6uxylTakhwvWBDA8rmwQWRoPhGZm0BPwSZRC(bHr6UW)GbJFIU1DpHw6D)aAqy2tR5Jen6jQl0HSDncHbMKnSINHzjfIDVJO6AGNPUq09g09Baq0qOv3n)uf4WqLyAaiCSzApHgrO4IMoBEUZKBQ3sWOuEYKCrbL02xmm(hiMpskQZhB7wMUf(yEboILTgzffEaG7FNdTikEYkg3zlBiBt4bL8DciBWYvO3bkWB7jXdgJt(6sqf3JlnNq3mYRAVCplncrjrb5mLeALK5fMJ58eol4GhqfuW0H5F(Np8XBU6M)491HqpOe4vrYYzf8MDmFf0A8v1Hf4)RccjX1HLmbonQIZYGWnCquIyO4Yj1x)xqoaelbj9raK5EXLze67)SGgC0D1H)aLbYfDpIKkmhqvqhiCwLct81abEF91DcA2ZLGM)CjO39CjiVZE2KKWD)jAzvUiOjKMk(droN7z8QEUN5KBN7Bi4U(69K1uYpUKMfGG(ng9ESYkEvBhwVjFgeeNPDexD2aVGl2NAH9P6SxFT6RCjVGTHiD2LI4rzPCO6g)sZJARa2Ge11(hSE4XFfxXKe(jdtJfgapbbhJb7zNq2egGFStejJsRIfZMIj8eCX7bdi8NQd)3pvIfscNv(LtRdFiHeLOtnIURxR1HYee8xZtjreEAVCJv5kCr4OvP)sDiy7nQ5wLiG4(xecnw)OPAA(bsAQ2lQrK8wsLEd5r0QS1yveofAJwF9vzTjsZn(oRGlbSPkEcdGExLvTPGCNa1w639x9Y6qfUC91k2kN0HO)Jl)zdmAhe1a6EkzZsnC6LdWODZAlSSDkQGzKHMazNkGLxAa(6qO9iWDeahRnyTWsTn(8jdMjxN5(XPDXRo1TfXcATmfNoP9ZfQF6G5z1VODIjHKFrZwONmEA6lTUqSUG0has)8(zyoevyzb3bEnJrcfI0CaslVosZG66xnCsWbwSXgMQmfO)PqBgOOt1z0y7sfFI8W6RFz7egJ3pSpNRSpztoxNwMHRngVyPNb)F7zLn6)WtmByWy)nbBIW6LElo5f2w9ZG)bPMDbu9v8E8XXzlxSC(c48U2lYbz7pOzHodv5kDyWdPT2sykpXcBJ98wQ8uxCOvVTbGE0pNBBnw7hvPHILHLaYWTLDOUy5mO)4qo1l21stSTP0flNAW8qebNBdnMrTsdZaB3ElDp7rB5yXnlxprMVAUodO8fw1Etxazf9G)El9udifhrmxsTokSJVcEimCA3x69sXOMU(U61f9X4UDiFl7PAOHJlBWUwSUKTd9i)RWyEPbUP9VXFR8mSXEZv6Xp0qm)zM0(Cg9gnK)3)W5(04H4z3Rz7Cjgxo(X)9re776))d]] )
+spec:RegisterPack( "Demonology beta", 20240609, [[Hekili:fJ12UXTnt4NLGcKCrD1)UBIDItTnql(rtSrHVORd6ffrsCLOwryksvkQ113ON9odPosDyx3uGEHxVR0mFZboZhhs)1(p4VnMOP(3Vz1M3T6Ivx6b)F9B34Vv)Co1FBoj6rYE4lcsg8zmntUJQj4lEMljXiafYsve8s)T7kzC9Tc)DtG6B)WMlbzZPr(3dFjLfhtTsslI83(qkROke)JufwB1Qqzc87intkQc5Scn86ePQk8Z0hzCMN)wZdrNqOGpV3equbzhNg7)Z(BJumnvXiOv2vMK4fvQkObYKaDknGYPzuHUWlw(KWFR1qGstjJVgIMzr)vvHAw0JmX(QWxxfgl1EfPea2aIioiHdjppfnJWeqeCvvyePqhOzykTXQ1YVtY1OTERJTWSKILBL9lfqU5Za02m0Nk5VjMaPONsPWNKdeghvSd8u0nGiAFjhe0F7(Oy)TRr78UtnM0e1EQ2dD6aTmiMbUWnvHRpVZk7ictElwkZqSp)eWUxAxQuL2ae09IL0TEX0MYSz3YC3uP55iuVFwOmOKbzCQiam)quyIiMGQW6yaKpmli1jMukHRt9YJ0Mv4nNBYAgletJyzee1HUPSKhKWug8VeXFQAHEgflm2MROrYSDe9u17TauMLjfbju((sIk2P8bDzWlHYBODITpf((tmDAv4VulFDxMrG)p0YdfvBbN1goqbgw4bYwOLQmNLMCivGEXbABhtJtDqYJicwuqU0(G(rMTGVr0mGJjtQYtLfSchbNVIfTDti34eTqIuxIamN3wAox3XaZDXGfgq9DLkxzEVRmbPe1bAHZQ3OIijunuq19sreiqmDUhi8s4FRmplWY(2y9aK(aqWupqK02kHtj9npjMTBOVQd7hGskUPkoGuQitrsnQPGjcYaguAGIi2pISRTdD(Luy)copWIwb0JX5ydJH55IElG1pFksNjOxMf)ozm9WGfIEoItBEpMLNGAYjbrNh)gjwcDx2Q26xKuDwKX3UeQZtFTyttsttUPuRiwnQuBhxkHD4kvpFY1z9OiMP7C(6QxEn6)nBWzJVaQGMXO2983mIEgHXYpV4gEUyDZuyXejuLGWBlHQ3I)0i5MV84fVB7LNaF56vVyIW1dQGu0dbqa6T2RZclXtE)65NmSXuEUQnXUPPLcqldGU13hpeooxEmnHuYNCN9LNDQL6zXgVJp118nErsjhht2P5REO2RRcxn72pNYWMhPVoIaCD2FeGJ8Bh8VjvgRwUzCzF32LFI2sO(w6vvLIzrg3hxBldEIOeWIeK6(9F63U)27)0hRcRcFaNgJLLlXz3mZN9gqN3ufQO)zjS5hmtwHmdKHuQLW4M4dIsX9Dl8QU7xHzzRcFpG0xefL5ikOawVbGc5IEdix1D2tILRKjmo1EKSmwrHHMSwZA7VhctflcQQumXJ42qOFER2QKzov4StXOD0Pe4X0du1Zi2mjKXGVbZyZlJXeffgaLQ(i4aH)qv4FyoHZTAAwXxpdpxdlkTV0eXZDwTkuirW)RColIP5D4gJFREo2gJ(JWzMunM5bleW6)xRhRT7rB6z5NyCEViQgsDJODtllkZ2rTRfC4qGv3DBwtQ(CNJYcVew1l1PsfmsEwzII9isTzY7TpbM5gkArs4mz1DFhmi()MdVxDN1Lk8ApwX3F9)Z50dNXsU(vDBApTood3pTqd6)MwKUbbqZoXWjtR2WD3MjSQPCN)TnJTptiwtOFg2WETdb(zgs(RxHDq1kdQ0WlBsHndB079DSVZjXGu2zav61RrrxMs7QvdmIdHwT)hRqGMK494Aluh3lUzDFCC4(SWaeyiodznVztx(h8sq3UHmDFZ4Yf3QeRCodgE8iVXY9M4BWs00tmEZ6ZDrWDwVXX7vJIxNz6oLu0WgaBHYiy7MuZeltoy3iLg11yF(P0nykvNyyTzI32bSq1MBSS)j(HPRStrbQ3K3YhA4JEtHoa17YA6xH86LUeWRAVaqdN(jEFEogE5LCX3A5RnlTmbv)mWjxxz0P72166fhCrCU2O5YYqXhDLBxzUUTXx228lv9RhawixMw3x(Y5pS65KAM8ArC1P52mqfM((pU5cxD6Ton44)2wW5ULJRgHt7gwhfLgjhJHPy7O6Jsnw3MlCyMn)nZh7)3)]] )
 
 spec:RegisterPack( "Destruction", 20230204, [[Hekili:1EvBloUnq4FlhhKV09CTDYMBlKeOh9d92wwkK(zBRylNiwzlJS8EeWOF7DKKF3YjPuklSjXAMNzMN5n5aVG)o4ycsGdEZ31FTRV7ghp3nF175GJIRf4GJfO43rNHVKJYG))B4sbVkwqy5QZUszOefgLSkEmCEWXtveQ475bNSd8Aq2cCCWB)sWXlKKeSrsCz8iWLr)aXPS43LrfCcJtexLrPmUm63XVtOKGJusPOuzAkjfdF(MowqnUwcgjUegZi0GJ4C0jkoj4BbcWBgjfhrYd1amskHcGuufv0bC)XhJbVbZjidoFGdX54mcUugTtg53JoVkp089qLZAC5qdpwk6CMhc5dYiVhdzedRGE9IqFbJOIlofXcJd)8JHRML0utbhhZYoHSsoTqLIPHiEgJBsUCsH55)6F9NYOpw7SXX9lEW)9LrFEO3DQkn1rROtc7hqDqDTmAWd54miNz4AVxCVnl(jO6blCmKzVVvwLLbHijR42m1z61IloQapuGkCAKrgTQXJ6or5P9W3(yf4BgwUvWmFoPutLXUbtwEbb4Ns1zHBwHSw7Ace)me0jqQdLhJnmLlO61yQYVuNwQmNfQRZMyCsilfAG48QMm3dyAGVfK43j5NTBUPuDR5iq(GQgwmo3DtS2SawdDzkjhhgNeCCRfmgyRm2hk7OZgL3PNpbRZ9zxdJR4L4MQui41)m8mNvva607p6hdCP4cqzuCgohS)9kBBcDt5Fct40srJBaSqHT0CpFKd1oN5A6D0OWPm4TJrlre6ml)QcPN))SfA7OO5cIvgEIbtMhhmF9FfB2xKmIp9TwgbO)Y9AJH1zdKOc4hW8zLtecAdxYlB6AfKmiWzHjevJ7Ez0wxnzLHYrMr2qZMV5zK8umpNf2rQQORbNjd53yvJbvpMd0(4sZHSplOP1zyRMcKLlUnkmjOax8fxtam6HQ5w2Qj8gvItYJbRBPc3B5sCB89Ho6(bBasySmTDwUbWAETZol4fRDVr3MEk1hyEP6yZTR88HjbWfMYbMfQ5(EwbJluveplJm4iJ03xYr(QA)nlLqbU6ZYiBRJLVA0P0PBt)pT)N7wO)ejD)KT011Z3qVd2oBhP(1VkO(u)gA7I3M3vcBFCYQ5JsSdLPZv(QmQ5VwPGZMC3NNu36zp8jy1X7725Fx1Gn6Z17G3D1tfckf77E35)CVZA7BTHzPk(0lFmLSkySvfVA0AQj63UerNxAgAwxBB9ZoVjQoynZKtkzu2T9Pjk8FmHBCNU9eZ8Z2PyZdY5BfgKRnQ3wbn6HDJ7NsNMPQkdnVrF3(TURAh2DW3D1KHZ11ZgLVBZmPwo6AgiVFRY8ndDxMNnc05p7EXTUU7hEUluV1p4DQFmCcP94)ae(pqXW4XFlqLauwmWAy(tpAqpPQyS)Y0pn6gH79S0XUE1KltROIPio7QYpeWTvEtHRRf0cilPJ1SUf9BRc61xvcaa0)2YZpAWRiJQexuVq3FqG3m)lFdcMeIwA9oPG)5d]] )
 
