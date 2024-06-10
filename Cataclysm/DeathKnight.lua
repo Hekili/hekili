@@ -38,6 +38,37 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         end
     end, state),
 
+    spend = setfenv( function()
+        --TODO:
+    end, state ),
+
+    getActiveDeathRunes = setfenv( function()
+        local activeRunes = {}
+        local state_array = death_runes.state
+        for i = 1, #state_array do
+            if state_array[i].type == 4 and state_array[i].expiry < state.query_time then
+                table.insert(activeRunes, i)
+            end
+        end
+        return activeRunes
+    end, state),
+
+    getLeftmostActiveDeathRune = setfenv( function()
+        local activeRunes = death_runes.getActiveDeathRunes()
+        return #activeRunes > 0 and activeRunes[1] or nil
+    end, state),
+
+    getActiveRunes = setfenv( function()
+        local activeRunes = {}
+        local state_array = death_runes.state
+        for i = 1, #state_array do
+            if state_array[i].expiry < state.query_time then
+                table.insert(activeRunes, i)
+            end
+        end
+        return activeRunes
+    end, state)
+
 },{
     __index = function( t, k )
         local countDeathRunes = function()
@@ -89,8 +120,20 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             return countDRForType("blood")
         elseif k == "current_unholy" then
             return countDRForType("unholy")
+        elseif k == "current_non_frost" then
+            return countDRForType("blood") + countDRForType("unholy")
+        elseif k == "current_non_blood" then
+            return countDRForType("frost") + countDRForType("unholy")
+        elseif k == "current_non_unholy" then
+            return countDRForType("blood") + countDRForType("frost")
         elseif k == "cooldown" then
             return death_runes.state[1].duration
+        elseif k == "active_death_runes" then
+            return death_runes.getActiveDeathRunes()
+        elseif k == "leftmost_active_death_rune" then
+            return death_runes.getLeftmostActiveDeathRune()
+        elseif k == "active_runes" then
+            return death_runes.getActiveRunes()
         end
     end
 } ) )
