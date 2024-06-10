@@ -67,6 +67,61 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             end
         end
         return activeRunes
+    end, state),
+
+    getRunesForRequirement = setfenv( function(neededRunes)
+        local bloodNeeded, frostNeeded, unholyNeeded = unpack(neededRunes)
+        local runeMapping = {
+            blood = {1, 2},
+            unholy = {3, 4},
+            frost = {5, 6},
+            any = {1, 2, 3, 4, 5, 6}
+        }
+        
+        local activeRunes = death_runes.getActiveRunes()
+        local usedRunes = {}
+        local usedDeathRunes = {}
+
+        local function useRunes(runetype, needed)
+            local runes = runeMapping[runetype]
+            for _, runeIndex in ipairs(runes) do
+                if needed == 0 then break end
+                if death_runes.state[runeIndex].expiry < state.query_time and death_runes.state[runeIndex].type ~= 4 then
+                    table.insert(usedRunes, runeIndex)
+                    needed = needed - 1
+                end
+            end
+            return needed
+        end
+
+        -- Use specific runes first
+        bloodNeeded = useRunes("blood", bloodNeeded)
+        frostNeeded = useRunes("frost", frostNeeded)
+        unholyNeeded = useRunes("unholy", unholyNeeded)
+
+        -- Use death runes if needed
+        for _, runeIndex in ipairs(activeRunes) do
+            if bloodNeeded == 0 and frostNeeded == 0 and unholyNeeded == 0 then break end
+            if death_runes.state[runeIndex].type == 4 and not usedDeathRunes[runeIndex] then
+                if bloodNeeded > 0 then
+                    table.insert(usedRunes, runeIndex)
+                    bloodNeeded = bloodNeeded - 1
+                elseif frostNeeded > 0 then
+                    table.insert(usedRunes, runeIndex)
+                    frostNeeded = frostNeeded - 1
+                elseif unholyNeeded > 0 then
+                    table.insert(usedRunes, runeIndex)
+                    unholyNeeded = unholyNeeded - 1
+                end
+                usedDeathRunes[runeIndex] = true
+            end
+        end
+
+        if bloodNeeded > 0 or frostNeeded > 0 or unholyNeeded > 0 then
+            return nil, "Not enough active runes to fulfill the requirements"
+        end
+
+        return usedRunes
     end, state)
 
 },{
@@ -134,6 +189,8 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             return death_runes.getLeftmostActiveDeathRune()
         elseif k == "active_runes" then
             return death_runes.getActiveRunes()
+        elseif k == "runes_for_requirement" then
+            return death_runes.getRunesForRequirement
         end
     end
 } ) )
