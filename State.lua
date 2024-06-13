@@ -7144,6 +7144,22 @@ ns.hasRequiredResources = function( ability )
             return ( state[ resource ].current >= spend )
         end
     end
+    
+    -- Checking rune availability including Death_Runes
+    if action.spend_runes and action.spend_runes ~= nil then
+        local function containsNonZero(arr)
+            for i = 1, #arr do
+                if arr[i] ~= 0 then
+                    return true
+                end
+            end
+            return false
+        end
+
+        if containsNonZero(action.spend_runes) then
+            return state.death_runes.runes_for_requirement(action.spend_runes)
+        end
+    end
 
     return true
 end

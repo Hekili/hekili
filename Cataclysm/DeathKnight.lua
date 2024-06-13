@@ -149,7 +149,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         end
 
         if bloodNeeded > 0 or frostNeeded > 0 or unholyNeeded > 0 then
-            return nil, "Not enough active runes to fulfill the requirements"
+            return false, "Not enough active runes to fulfill the requirements"
         end
 
         return usedRunes
