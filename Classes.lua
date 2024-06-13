@@ -2474,13 +2474,13 @@ all:RegisterAuras( {
 all:RegisterPotions( {
     volcanic_potion = {
         item = 58091,
-        buff = "Volcanic Power"
+        buff = "Volcanic Power",
         aura = {
             id = 79476,
             duration = 25,
             max_stack = 1,
         }
-    }
+    },
     
     speed = {
         item = 40211,
@@ -3676,6 +3676,20 @@ all:RegisterAbility( "dark_matter", {
     item = 46038,
     aura = 65024
 })
+all:RegisterAura("enigma", {
+    id = 92123,
+    duration = 15,
+    max_stack = 1
+})
+all:RegisterAbility("unsolvable_riddle", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+    unlisted = false,
+
+    item = 68709,
+    aura = 92123
+})
 all:RegisterAura( "dark_matter", {
     id = 65024,
     duration = 10,
@@ -4178,6 +4192,28 @@ do
     } )
 end
 
+    all:RegisterAura( "swordguard_embroidery", {
+        id = 75176,
+        duration = 15,
+        max_stack = 1
+} )
+   
+
+    all:RegisterAbility( "swordguard_embroidery", {
+        id = 75176,
+        cast = 0,
+        cooldown = 45,
+        gcd = "off",
+
+        toggle = "cooldowns",
+        item = 0,
+        itemKey = "swordguard_embroidery",
+        texture = 236282,
+
+        handler = function ()
+            applyBuff( "swordguard_embroidery" )
+        end
+    } )
 -- Dribbling Inkpod
 all:RegisterAura( "conductive_ink", {
     id = 302565,
