@@ -38,9 +38,40 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         end
     end, state),
 
-    spend = setfenv( function()
-        --TODO:
-    end, state ),
+    spend = setfenv( function(neededRunes)
+        local usedRunes, err = death_runes.getRunesForRequirement(neededRunes)
+        if not usedRunes then
+            print("Error:", err)
+            return
+        end
+
+        local runeMapping = {
+            blood = {1, 2},
+            unholy = {3, 4},
+            frost = {5, 6}
+        }
+
+        for _, runeIndex in ipairs(usedRunes) do
+            local rune = death_runes.state[runeIndex]
+            rune.ready = false
+
+            -- Determine other rune in the group
+            local otherRuneIndex
+            for type, runes in pairs(runeMapping) do
+                if runes[1] == runeIndex then
+                    otherRuneIndex = runes[2]
+                    break
+                elseif runes[2] == runeIndex then
+                    otherRuneIndex = runes[1]
+                    break
+                end
+            end
+
+            local otherRune = death_runes.state[otherRuneIndex]
+            local expiryTime = (otherRune.expiry > 0 and otherRune.expiry or state.query_time) + rune.duration
+            rune.expiry = expiryTime
+        end
+    end, state),
 
     getActiveDeathRunes = setfenv( function()
         local activeRunes = {}
@@ -1181,8 +1212,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "blood_runes",
+        spend_runes = {1,0,0},
 
         gain = 10,
         gainType = "runic_power",
@@ -1845,8 +1875,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "unholy_runes",
+        spend_runes = {0,0,1},
 
         gain = 10,
         gainType = "runic_power",

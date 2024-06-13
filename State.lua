@@ -6625,6 +6625,22 @@ ns.spendResources = function( ability )
         end
     end
 
+    if action.spend_runes ~= nil then
+        
+        local function containsNonZero(arr)
+            for i = 1, #arr do
+                if arr[i] ~= 0 then
+                    return true
+                end
+            end
+            return false
+        end
+
+        if containsNonZero(action.spend_runes) then
+            state.death_runes.spend(action.spend_runes)
+        end
+    end
+
     if action.spend2 ~= nil then
         local cost, resource
 
