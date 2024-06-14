@@ -23,12 +23,12 @@ end)
 spec:RegisterStateTable( "death_runes", setmetatable( {
     state = {},
 
-    reset = setfenv( function()
+    reset = function()
         for i = 1, 6 do
             local start, duration, ready = GetRuneCooldown( i )
             local type = GetRuneType( i )
             local expiry = ready and 0 or start + duration
-            death_runes.state[i] = {
+            state.death_runes.state[i] = {
                 type = type,
                 start = start,
                 duration = duration,
@@ -36,12 +36,12 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
                 expiry = expiry
             }
         end
-    end, state),
+    end,
 
-    spend = setfenv( function(neededRunes)
+    spend = function(neededRunes)
         local usedRunes, err = death_runes.getRunesForRequirement(neededRunes)
         if not usedRunes then
-            print("Error:", err)
+            --print("Error:", err)
             return
         end
 
@@ -52,7 +52,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         }
 
         for _, runeIndex in ipairs(usedRunes) do
-            local rune = death_runes.state[runeIndex]
+            local rune = state.death_runes.state[runeIndex]
             rune.ready = false
 
             -- Determine other rune in the group
@@ -71,9 +71,9 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             local expiryTime = (otherRune.expiry > 0 and otherRune.expiry or state.query_time) + rune.duration
             rune.expiry = expiryTime
         end
-    end, state),
+    end,
 
-    getActiveDeathRunes = setfenv( function()
+    getActiveDeathRunes = function()
         local activeRunes = {}
         local state_array = death_runes.state
         for i = 1, #state_array do
@@ -82,14 +82,14 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             end
         end
         return activeRunes
-    end, state),
+    end,
 
-    getLeftmostActiveDeathRune = setfenv( function()
+    getLeftmostActiveDeathRune = function()
         local activeRunes = death_runes.getActiveDeathRunes()
         return #activeRunes > 0 and activeRunes[1] or nil
-    end, state),
+    end,
 
-    getActiveRunes = setfenv( function()
+    getActiveRunes = function()
         local activeRunes = {}
         local state_array = death_runes.state
         for i = 1, #state_array do
@@ -98,9 +98,9 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             end
         end
         return activeRunes
-    end, state),
+    end,
 
-    getRunesForRequirement = setfenv( function(neededRunes)
+    getRunesForRequirement = function(neededRunes)
         local bloodNeeded, frostNeeded, unholyNeeded = unpack(neededRunes)
         local runeMapping = {
             blood = {1, 2},
@@ -153,7 +153,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         end
 
         return usedRunes
-    end, state)
+    end,
 
 },{
     __index = function( t, k )
@@ -846,6 +846,29 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
+    --Transformed into an undead monstrosity. Damage dealt increased by 60%.
+    dark_transformation = {
+        id = 63560,
+        duration = 30,
+        max_stack = 1,
+        generate = function ( t )
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 63560 )
+
+            if name then
+                t.name = name
+                t.count = 1
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
+    },
     -- $s1 Shadow damage inflicted every sec
     death_and_decay = {
         id = 49938,
@@ -898,30 +921,6 @@ spec:RegisterAuras( {
         id = 48263,
         duration = 3600,
         max_stack = 1,
-    },
-    -- Decreases the time between attacks by $s2% and heals $s1% every $t1 sec.
-    ghoul_frenzy = {
-        id = 63560,
-        duration = 30,
-        tick_time = 3,
-        max_stack = 1,
-        generate = function ( t )
-            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 63560 )
-
-            if name then
-                t.name = name
-                t.count = 1
-                t.expires = expires
-                t.applied = expires - duration
-                t.caster = caster
-                return
-            end
-
-            t.count = 0
-            t.expires = 0
-            t.applied = 0
-            t.caster = "nobody"
-        end,
     },
     -- Stunned.
     glyph_of_death_grip = {
@@ -992,6 +991,29 @@ spec:RegisterAuras( {
         id = 50421,
         duration = 20,
         max_stack = 3,
+    },
+    -- Grants your successful Death Coils a chance to empower your active Ghoul, increasing its damage dealt by 6% for 30 sec.  Stacks up to 5 times.
+    shadow_infusion = {
+        id = 91342,
+        duration = 30,
+        max_stack = 5,
+        generate = function ( t )
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 91342 )
+
+            if name then
+                t.name = name
+                t.count = count
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
     },
     -- Silenced.
     strangulate = {
@@ -1109,8 +1131,7 @@ spec:RegisterAbilities( {
         cooldown = 120,
         gcd = "off",
 
-        spend = 1,
-        spendType = "unholy_runes",
+        spend_runes = {0,0,1},
 
         talent = "antimagic_zone",
         startsCombat = false,
@@ -1131,12 +1152,7 @@ spec:RegisterAbilities( {
         cooldown = 600,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "unholy_runes",
-        spend2 = 1,
-        spend2Type = "frost_runes",
-        spend3 = 1,
-        spend3Type = "blood_runes",
+        spend_runes = {1,1,1},
 
         gain = 15,
         gainType = "runic_power",
@@ -1164,10 +1180,9 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function ()
-            return buff.crimson_scourge.up and 0 or 1
+        spend_runes = function ()
+            return buff.crimson_scourge.up and {0,0,0} or {1,0,0}
         end,
-        spendType = "blood_runes",
 
         gain = 10,
         gainType = "runic_power",
@@ -1189,9 +1204,6 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 1,
         gcd = "off",
-
-        spend = 1,
-        spendType = "blood_runes",
 
         startsCombat = false,
         texture = 135770,
@@ -1252,8 +1264,7 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "unholy_runes",
+        spend_runes = {0,0,1},
 
         gain = 10,
         gainType = "runic_power",
@@ -1277,8 +1288,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "frost_runes",
+        spend_runes = {0,1,0},
 
         gain = function() return 10 + ( 2.5 * talent.chill_of_the_grave.rank ) end,
         gainType = "runic_power",
@@ -1332,6 +1342,31 @@ spec:RegisterAbilities( {
         end,
     },
 
+    --Consume 5 charges of Shadow Infusion on your Ghoul to transform it into a powerful undead monstrosity for 30 sec.  The Ghoul's abilities are empowered and take on new functions while the transformation is active.
+    dark_transformation = {
+        id = 63560,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend_runes = {0,0,1},
+
+        talent = "dark_transformation",
+
+        startsCombat = false,
+        texture = 342913,
+        usable = function()
+            if pet.ghoul.down then return false, "requires a living ghoul" end
+            if buff.shadow_infusion.stacks < 5 then return false, "requires five stacks of shadow_infusion" end 
+            return true 
+        end,
+
+        handler = function()
+            applyBuff("dark_transformation")
+            removeBuff("shadow_infusion")
+        end,
+
+    },
 
     -- Corrupts the ground targeted by the Death Knight, causing 62 Shadow damage every sec that targets remain in the area for 10 sec.  This ability produces a high amount of threat.
     death_and_decay = {
@@ -1340,8 +1375,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "unholy_runes",
+        spend_runes = {0,0,1},
 
         gain = 10,
         gainType = "runic_power",
@@ -1372,6 +1406,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.unholy_blight.enabled then applyDebuff( "target", "unholy_blight" ) end
+            if talent.shadow_infusion.rank == 3 then addStack( "shadow_infusion" ) end
         end,
 
         copy = { 49892, 49893, 49894, 49895 }
@@ -1385,8 +1420,7 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "unholy_runes",
+        spend_runes = {0,0,1},
 
         startsCombat = false,
         texture = 135766,
@@ -1444,10 +1478,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "frost_runes",
-        spend2 = 1,
-        spend2Type = "unholy_runes",
+        spend_runes = {0,1,1},
 
         gain = 20,
         gainType = "runic_power",
@@ -1498,10 +1529,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1, 
-        spendType = "frost_runes",
-        spend2 = 1, 
-        spend2Type = "unholy_runes",
+        spend_runes = {0,1,1},
 
         startsCombat = true,
         texture = 135371,
@@ -1520,9 +1548,6 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 1,
         gcd = "off",
-
-        spend = 1,
-        spendType = "frost_runes",
 
         startsCombat = false,
         texture = 135773,
@@ -1556,34 +1581,6 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Grants your pet 25% haste for 30 sec and  heals it for 60% of its health over the duration.
-    ghoul_frenzy = {
-        id = 63560,
-        cast = 0,
-        cooldown = 10,
-        gcd = "spell",
-
-        spend = 1,
-        spendType = "unholy_runes",
-
-        gain = 10,
-        gainType = "runic_power",
-
-        talent = "ghoul_frenzy",
-        startsCombat = false,
-        texture = 132152,
-
-        usable = function()
-            if pet.ghoul.down then return false, "requires a living ghoul" end
-            return true
-        end,
-
-        handler = function ()
-            applyBuff( "ghoul_frenzy" )
-        end,
-    },
-
-
     -- Instantly strike the target and his nearest ally, causing 50% weapon damage plus 125 on the primary target, and 25% weapon damage plus 63 on the secondary target.  Each target takes 10% additional damage for each of your diseases active on that target.
     heart_strike = {
         id = 55050,
@@ -1591,8 +1588,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "blood_runes",
+        spend_runes = {1,0,0},
 
         gain = 10,
         gainType = "runic_power",
@@ -1631,16 +1627,10 @@ spec:RegisterAbilities( {
         cooldown = 8,
         gcd = "spell",
 
-        spend = function()
-            if buff.freezing_fog.up then return 0 end
-            return 1
+        spend_runes = function()
+            if buff.freezing_fog.up then return {0,0,0} end
+            return {0,1,0}
         end,
-        spendType = "frost_runes",
-        spend2 = function()
-            if buff.freezing_fog.up then return 0 end
-            return 1
-        end,
-        spend2Type = "unholy_runes",
 
         gain = function() return 15 + ( 2.5 * talent.chill_of_the_grave.rank ) end,
         gainType = "runic_power",
@@ -1691,8 +1681,6 @@ spec:RegisterAbilities( {
         cooldown = 180,
         gcd = "off",
 
-        spend = 0,
-        spendType = "runic_power",
 
         startsCombat = false,
         texture = 237525,
@@ -1712,8 +1700,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "frost_runes",
+        spend_runes = {0,1,0},
 
         gain = function() return 10 + ( 2.5 * talent.chill_of_the_grave.rank ) end,
         gainType = "runic_power",
@@ -1782,10 +1769,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "frost_runes",
-        spend2 = 1,
-        spend2Type = "unholy_runes",
+        spend_runes = {0,1,1},
 
         gain = function() return 15 + ( 2.5 * talent.chill_of_the_grave.rank ) end,
         gainType = "runic_power",
@@ -1827,8 +1811,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "frost_runes",
+        spend_runes = {0,1,0},
 
         startsCombat = false,
         texture = 237528,
@@ -1846,8 +1829,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "blood_runes",
+        spend_runes = {1,0,0},
 
         gain = 10,
         gainType = "runic_power",
@@ -1961,8 +1943,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
 
-        spend = 1,
-        spendType = "blood_runes",
+        spend_runes = {1,0,0},
 
         talent = "rune_tap",
         startsCombat = true,
@@ -1975,6 +1956,25 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- A vicious strike that deals 100% weapon damage and absorbs the next (0.70 * Attack power) healing received by the target.
+    necrotic_strike = {
+        id = 73975,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend_runes = {0,0,1},
+
+        gain = 10,
+        gainType = "runic_power",
+
+        startsCombat = true,
+        texture = 132481,
+
+        handler = function ()
+            -- TODO: talent.desecration effect?
+        end,
+    },
 
     -- An unholy strike that deals 70% of weapon damage as Physical damage plus 380.  In addition, for each of your diseases on your target, you deal an additional 12% of the Physical damage done as Shadow damage.
     scourge_strike = {
@@ -1983,15 +1983,11 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "frost_runes",
-        spend2 = 1,
-        spend2Type = "unholy_runes",
+        spend_runes = {0,0,1},
 
         gain = 20,
         gainType = "runic_power",
 
-        talent = "scourge_strike",
         startsCombat = true,
         texture = 237530,
 
@@ -2008,8 +2004,7 @@ spec:RegisterAbilities( {
         cooldown = function() return  120 - (30 * talent.hand_of_doom.rank) end,
         gcd = "spell",
 
-        spend = 1,
-        spendType = "blood_runes",
+        spend_runes = {1,0,0},
 
         gain = 1,
         gainType = "runic_power",
@@ -2076,9 +2071,6 @@ spec:RegisterAbilities( {
         cooldown = 1,
         gcd = "off",
 
-        spend = 1,
-        spendType = "unholy_runes",
-
         startsCombat = false,
         texture = 135775,
 
@@ -2097,9 +2089,6 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 60,
         gcd = "off",
-
-        spend = 0,
-        spendType = "runic_power",
 
         talent = "vampiric_blood",
         startsCombat = true,
