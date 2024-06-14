@@ -9,6 +9,8 @@ local FindUnitBuffByID = ns.FindUnitBuffByID
 local spec = Hekili:NewSpecialization( 9 )
 
 spec:RegisterResource( Enum.PowerType.Mana )
+spec:RegisterResource( Enum.PowerType.SoulShards )
+
 -- Talents
 spec:RegisterTalents( {
     aftermath                   = { 11197, 2, 85113, 85114 },
@@ -814,9 +816,6 @@ end )
 
 local aliasesSet = {}
 
-spec:RegisterStateExpr( "soul_shards", function()
-    return UnitPower("player", Enum.PowerType.SoulShards)
-end )
 
 spec:RegisterHook( "reset_precast", function()
     if settings.solo_curse == "bane_of_doom" and target.time_to_die < 65 then
@@ -1447,7 +1446,7 @@ spec:RegisterAbilities( {
         texture = 236303,
         
         handler = function()
-            applybuff( "felstorm" )
+            applyBuff( "felstorm" )
         end,
         },
 
