@@ -2161,7 +2161,7 @@ spec:RegisterPackSelector( "frost", "Frost DK (IV)", "|T135773:0|t Frost",
         return tab2 > max( tab1, tab3 )
     end )
 
-spec:RegisterPackSelector( "unholy", "Unholy (IV)", "|T135775:0|t Unholy",
+spec:RegisterPackSelector( "unholy", "Unholy", "|T135775:0|t Unholy",
     "If you have spent more points in |T135775:0|t Unholy than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
