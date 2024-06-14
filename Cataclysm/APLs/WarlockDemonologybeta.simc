@@ -23,11 +23,11 @@ actions+=/run_action_list,name=aoe,if=active_enemies>2
 
 
 actions.sdr+=/blood_fury
-actions.sdr+=/demon_soul,if=pet.alive &!buff.fel_intelligence.up 
+actions.sdr+=/demon_soul,if=pet.alive&!buff.fel_intelligence.up 
 actions.sdr+=/immolation_aura,if=buff.metamorphosis.up
 actions.sdr+=/felstorm,if=buff.demon_soul_felguard.up
-actions.sdr+=/bane_of_doom,if=!ticking & target.time_to_die>15
-actions.sdr+=/bane_of_agony,if=!ticking & target.time_to_die<30&!debuff.bane_of_doom.up
+actions.sdr+=/bane_of_doom,if=!ticking&target.time_to_die>15
+actions.sdr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.bane_of_doom.up
 actions.sdr+=/summon_doomguard,if=buff.demonic_pact.stack>=4&buff.molten_core.stack>=1&cooldown.hand_of_gul_dan.remains<10
 actions.sdr+=/summon_infernal,if=settings.inferno_enabled
 actions.sdr+=/hand_of_guldan,gcd=1
