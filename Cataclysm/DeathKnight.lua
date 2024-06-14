@@ -39,7 +39,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
     end,
 
     spend = function(neededRunes)
-        local usedRunes, err = death_runes.getRunesForRequirement(neededRunes)
+        local usedRunes, err = state.death_runes.getRunesForRequirement(neededRunes)
         if not usedRunes then
             --print("Error:", err)
             return
@@ -67,7 +67,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
                 end
             end
 
-            local otherRune = death_runes.state[otherRuneIndex]
+            local otherRune = state.death_runes.state[otherRuneIndex]
             local expiryTime = (otherRune.expiry > 0 and otherRune.expiry or state.query_time) + rune.duration
             rune.expiry = expiryTime
         end
@@ -75,7 +75,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
 
     getActiveDeathRunes = function()
         local activeRunes = {}
-        local state_array = death_runes.state
+        local state_array = state.death_runes.state
         for i = 1, #state_array do
             if state_array[i].type == 4 and state_array[i].expiry < state.query_time then
                 table.insert(activeRunes, i)
@@ -85,13 +85,13 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
     end,
 
     getLeftmostActiveDeathRune = function()
-        local activeRunes = death_runes.getActiveDeathRunes()
+        local activeRunes = state.death_runes.getActiveDeathRunes()
         return #activeRunes > 0 and activeRunes[1] or nil
     end,
 
     getActiveRunes = function()
         local activeRunes = {}
-        local state_array = death_runes.state
+        local state_array = state.death_runes.state
         for i = 1, #state_array do
             if state_array[i].expiry < state.query_time then
                 table.insert(activeRunes, i)
@@ -109,7 +109,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             any = {1, 2, 3, 4, 5, 6}
         }
         
-        local activeRunes = death_runes.getActiveRunes()
+        local activeRunes = state.death_runes.getActiveRunes()
         local usedRunes = {}
         local usedDeathRunes = {}
 
@@ -117,7 +117,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             local runes = runeMapping[runetype]
             for _, runeIndex in ipairs(runes) do
                 if needed == 0 then break end
-                if death_runes.state[runeIndex].expiry < state.query_time and death_runes.state[runeIndex].type ~= 4 then
+                if state.death_runes.state[runeIndex].expiry < state.query_time and state.death_runes.state[runeIndex].type ~= 4 then
                     table.insert(usedRunes, runeIndex)
                     needed = needed - 1
                 end
@@ -133,7 +133,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         -- Use death runes if needed
         for _, runeIndex in ipairs(activeRunes) do
             if bloodNeeded == 0 and frostNeeded == 0 and unholyNeeded == 0 then break end
-            if death_runes.state[runeIndex].type == 4 and not usedDeathRunes[runeIndex] then
+            if state.death_runes.state[runeIndex].type == 4 and not usedDeathRunes[runeIndex] then
                 if bloodNeeded > 0 then
                     table.insert(usedRunes, runeIndex)
                     bloodNeeded = bloodNeeded - 1
@@ -158,7 +158,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
 },{
     __index = function( t, k )
         local countDeathRunes = function()
-            local state_array = death_runes.state
+            local state_array = t.state
             local count = 0
             for i = 1, #state_array do
                 if state_array[i].type == 4 and state_array[i].expiry < state.query_time then
@@ -179,7 +179,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         end
 
         local countDRForType = function(type)
-            local state_array = death_runes.state
+            local state_array = t.state
             local count = 0
             local runes = getRuneSet(type)
             if runes then
@@ -195,7 +195,7 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         end
 
         if k == "state" then 
-            return death_runes.state
+            return t.state
         elseif k == "actual" then
             return countDRForType("any")
         elseif k == "current" then
@@ -213,15 +213,15 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
         elseif k == "current_non_unholy" then
             return countDRForType("blood") + countDRForType("frost")
         elseif k == "cooldown" then
-            return death_runes.state[1].duration
+            return t.state[1].duration
         elseif k == "active_death_runes" then
-            return death_runes.getActiveDeathRunes()
+            return t.getActiveDeathRunes()
         elseif k == "leftmost_active_death_rune" then
-            return death_runes.getLeftmostActiveDeathRune()
+            return t.getLeftmostActiveDeathRune()
         elseif k == "active_runes" then
-            return death_runes.getActiveRunes()
+            return t.getActiveRunes()
         elseif k == "runes_for_requirement" then
-            return death_runes.getRunesForRequirement
+            return t.getRunesForRequirement
         end
     end
 } ) )
