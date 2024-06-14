@@ -4211,6 +4211,37 @@ if Hekili.IsClassic() then
             applyBuff("hyperspeed_acceleration")
         end
     } )
+    -- Increases your primary_stat by 480 for 10 sec.
+    all:RegisterAura( "synapse_springs", {
+        id = 96228,
+        duration = 15,
+        max_stack = 1,
+        copy = {96228, 96229, 96230}
+    })
+    -- Increases your Intellect, Agility, or Strength by 480 for 10 sec.  Your highest stat is always chosen.
+    all:RegisterAbility( "synapse_springs", {
+        id = 82174,
+        known = function () return tinker.hand.spell == 82174 end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = function() return tinker.hand.spell == 82174 and tinker.hand.item or 0 end,
+        itemKey = "synapse_springs",
+
+        texture = function() return tinker.hand.spell == 82174 and tinker.hand.texture or 0 end,
+        startsCombat = true,
+
+        toggle = "cooldowns",
+
+        usable = function ()
+            return tinker.hand.spell == 82174
+        end,
+
+        handler = function()
+            applyBuff("synapse_springs")
+        end
+    } )
 end
 
 

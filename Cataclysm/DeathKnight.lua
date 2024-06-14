@@ -148,9 +148,9 @@ spec:RegisterStateTable( "death_runes", setmetatable( {
             end
         end
 
-        if bloodNeeded > 0 or frostNeeded > 0 or unholyNeeded > 0 then
-            return false, "Not enough active runes to fulfill the requirements"
-        end
+        --if bloodNeeded > 0 or frostNeeded > 0 or unholyNeeded > 0 then
+        --    return false, "Not enough active runes to fulfill the requirements"
+        --end
 
         return usedRunes
     end,
@@ -1028,6 +1028,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 61777, 50514, 49206 },
     },
+    -- Your next Death Coil consumes no runic power.
+    sudden_doom = {
+        id = 81340,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Armor increased by $s1%.  Strength increased by $s2%.
     unbreakable_armor = {
         id = 51271,
@@ -1043,6 +1049,12 @@ spec:RegisterAuras( {
     unholy_frenzy = {
         id = 49016,
         duration = 30,
+        max_stack = 1,
+    },
+    -- Strength increased by 15%.
+    unholy_strength = {
+        id = 53365,
+        duration = 15,
         max_stack = 1,
     },
     -- Attack speed increased $s1%.  Movement speed increased by $49772s1%.  Global cooldown on all abilities reduced by ${$m2/-1000}.1 sec.
@@ -1398,7 +1410,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 40,
+        spend = function() return buff.sudden_doom.up and 0 or 40 end,
         spendType = "runic_power",
 
         startsCombat = true,
@@ -1534,10 +1546,13 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135371,
 
-        --fix:
-        stance = "None",
-        handler = function()
-            --"/cata/spell=85948/festering-strike"
+        handler = function ()
+            if dot.frost_fever.ticking then
+                applyDebuff( "target", "frost_fever" )
+            end
+            if dot.blood_plague.ticking then
+                applyDebuff( "target", "blood_plague" )
+            end
         end,
 
     },
@@ -1761,6 +1776,26 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- A vicious strike that deals 100% weapon damage and absorbs the next (0.70 * Attack power) healing received by the target.
+    necrotic_strike = {
+        id = 73975,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend_runes = {0,0,1},
+
+        gain = 10,
+        gainType = "runic_power",
+
+        startsCombat = true,
+        texture = 132481,
+
+        handler = function ()
+            -- TODO:
+        end,
+    },
+
 
     -- A brutal instant attack that deals 80% weapon damage plus 467, total damage increased 12.5% per each of your diseases on the target, but consumes the diseases.
     obliterate = {
@@ -1956,25 +1991,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- A vicious strike that deals 100% weapon damage and absorbs the next (0.70 * Attack power) healing received by the target.
-    necrotic_strike = {
-        id = 73975,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend_runes = {0,0,1},
-
-        gain = 10,
-        gainType = "runic_power",
-
-        startsCombat = true,
-        texture = 132481,
-
-        handler = function ()
-            -- TODO: talent.desecration effect?
-        end,
-    },
 
     -- An unholy strike that deals 70% of weapon damage as Physical damage plus 380.  In addition, for each of your diseases on your target, you deal an additional 12% of the Physical damage done as Shadow damage.
     scourge_strike = {
@@ -2129,7 +2145,7 @@ spec:RegisterPack( "Frost DK (IV)", 20221001, [[Hekili:DAvxVrQnu0FlRwP08XczystAs
 
 spec:RegisterPack( "Frost DK (wowtbc.gg)", 20221003, [[Hekili:vAvxVTTnu0FlffWibPr(RMK1b78WWWaAkq2dQa7njrrDTfHLifiPQHhm4V9DjvSnPSuAhqrJc5LN73NtsMN89K4cIgsEDXSflMpB2YOzF5Zlx(usS(qdKe3qO7iBXp4KA8))lPqPnz)53S3COsqkSiOeTskEBPw3O(9Pt3l2RZPrB3IFPR2nLwruQ732Yka10nwiUVai6Y73XzBl1ttIZBzv6VYtYhmCwSa9rdqtE9r0jSIcOZsqrtI)EjtzYAKmHKPpyYS)worbfMS2gb3KPlbt25qYK9ps01Mmx4eLexXuALRoaBiTvA8ZxD1fcvZe8K4AgViDJeG)ftrGtYRGIK)irJbP1SlNetXiaKmss8hmzfcDKlxt3a)aKrAgDhJV9cUm6HuTOLwAHA5pdQ8kHOiTPISTfUgRUZtvAjBhyX7Z(zqlpxcKDwWtjYAHSxE8GVXnIUFgyXJbWPGum6Qv9m6PrZHUGx2YbveTvkbooeTYKT4cODMOjnwK(nF3jYRS4yhlc93xg1FJu7nztgVy6U8gtM1T)as7bHlCF7kGd1mahZoEmWCFuh1(TvhAkJkykaNrJEl6p57(XTeQjmUYb2dDV)QWVNn3I)ZRzcknRc4u3qX8z))6q3zY6IMRpVLxkQomqlD5fNd1nI9G0zu6EGGBJUOy(Orr)c2ZMS5UAtE7Mnr7yvvyJkTMqlzCiQT5IVkf7D3LJunANxgF5SVxw)l7LUQXLTS5JV26WsYQ)zHzWIAa(Hd7ZdwslfsEQyt6Egh9xOPASTlbQOoNCHmZlgpTGJ0A40HSfH0smC64E8aVlnNljrNPStyrfI98(l0NU8mh3PRLeCfifLbk6LObfeNmrkbjGlak5W7XBHeBhSLeKUFiyFC0Kahpz0u3OAeQbWOmD3K3SrR3Ni7EpotxJyprYX(nYu(vCzqQTR6l6igSstoTNiZlisT6slV8zDkBtuSb3DtI)4hnzNeEbN213C6MiLXzZV18I1SLMS)MQf5wclReQ5fZlDotfDEO4U1t7c4pzf1xp4CWWplSN(j2M1xpbm8lV0Uh((En6HnQFlEyRc7v2GCGo8ZZN9EvgV6gEM3FbG)XNfWT(4dJP549Gav6ZpAqXiVxDL6DaKHDlR5NuN9p8S6QRNDnx)Qf(wFrXnWvN1sSGms6ozSmAYnVr727HRczJpE0ZmFCUYUbfsNCZisORE44XXKox9WT36NOdOBnsz7UbKhVBiPXvl9DqGkGf6WC755tgrjYheFTIRXy9Vegxfi(QwJ5Sqa6XlQts(V)]] )
 
-spec:RegisterPack( "Unholy (IV)", 20220926.3, [[Hekili:TAv0Ujoou0Vf0if1oDskqNYqxb9Hv7lTRuFHzNhtIXXawKehf7aIri)TVx7uc2b72z7oVurJTp3JV(CV3t8O4VhVidjiXVmE44XdFy8KOXJUF49XlehQiXlQq4TO1WpkrfWF)NYnS8dY0RE6hxRw8qodLPWGZAQXWg2iev8)42B3VFFefFiChHwYJWSIB3Ze5BdX5ioNIVTrduygbj2eUTKUEJimRIhwTJewZeibLvgIzS8m2(sEiAjnNkOeE8ILn0CXtLXlDs8Vof4sfbh)YeGm0Sms7ojCC8IVVHYLPv1uwnva3c1)TeXjzYuwPmvSHitFcdl8dfRLPRBOzKO4f5uUGRZuKvOMCb8Zx0zoewXZ4ff0YSKv1eYpHuaPeTmNKf)NXcGCQTD(llWqKj1uu8IbY0mMiAzoJLLuLJw3qIeu8wA5AzAaWgu9AIa(ubjrWsYOa5ECUmD0q9YRuPSKAsbst12voZOwat4IA6wIIi39EezvnJlswr2rQ)nYdqdaNQbVrXHV6LdVfbEZS0vYuvO2rs6bHmDw3sKssbODKPhpATDtuDU)RnsOeUGMtkX6S59EVj9H4riFOzkKMly7oX7(Pnz60ZXsxvKGanvgbJoOc4KFZPovMOhhMzXH2JDw)8nt9ohdL7R7Kx2s(PEPAlM1nLeOLqtDnPuitbbZW(HvGQui9GvmBkkyLjRb5i7qE)GcAoFrTcuVR3WAYJAQodN(lQA2YFQtWJSkOB4Ke48f8(HXF9mCTO4Kk2E4na6tqXu4YntvoCF)xwmJMRrZFr5YMvRI2WQltyRs2tlfkuHwHNHYErnC(RVaXNgXxfd1eUsjdjeTmPfYOEz42sEof2OwCSgd9j)SmDS(mN6nh19If9QsQ)J5POPPO)cNoajf6KOwNKSNGQaQvtqzh0X1RgQTSsxi4B12HoVTaeJaQMNOYwTVcjTt(SeMJ8xoAKMv5e1n6uJkNu)gpK(gF0fEjUZQZKJ8LMJF7xsQ2Hl0cAYqVk1PMvhNBQ3R6WQG1EeuVXIdn3PvVgRnkayQjG9HLOZtD9N37e2DP9ovvFXTwrzuW3MRn1Q(l19eRb)6H7Ykd)TceiySJiQaXHpOQ41TU4rN2ChO1ik02cE4YCnSLbn)4eX5TVdbWVu1jDhkVH8)zsIlpcZATi4EqJYIae)xRTYaEd2W4jST63CGKq85kwA4UlEXEuDjetOdZtGMVwOmUn(u7lzQ2MwK8zLMHTIQUzF6tY0tEw)lLIwM(3AZMklSDo9Uw(SAJQqfo8HWXtKplFUfvEuN(7M532tL8f6Q5xQfcEBrGBKTfeEaEWhb5ZQcfQVJyYneNukFr9Cn3416lALZCpcNaFIMJhVuWmB0WJhTekWxmEhaAy4Y28Zw9zu3Xb(IBWLH9X5Jggyfw1xmHVRzxh0UUQFeKpBPub9)1KyWvVA1S3bNz7a94rJTzItV9DTjZ6zavrp7D)4OGbTUz7DfNAcJzF9pYvSVGWcCBpOxgwy6RUm6YHUZTEf6vkzUKPhrfwMojn3xNBXlZHQbOQJ6WD4S5JU38a2g66Ab4We4LxwZghdC70lO9mVHlVzGdVppoWVZoZ4A4tQTTGvw)9nZf48HjWHxi4RUCcz)k6ioDzqB3ybx5iY34iU34kQZUZrHIRh5x3)JtC3mXBdmF1pWC7gbOfGzFDZT0JkJ)3p]] )
+spec:RegisterPack( "Unholy", 20240614, [[Hekili:TA1sVnUnq4FlbbWyx0uvBNxEBJZHIEjPa5IYI9qXkrAjklclrkqsTUAHb)T3Hu2wpmPZ(OxsKjN5BEp8lAw0RrHPyfj6L5tNFZ07MDtWS7VD(nrHQMksuyfozdEn8bdxc)9JSCErJ54Mcoo1OTKxlsGR(e)tH0szu4QAAH6jw0kNiF99GkvKKOxUlkmNMMsALKitIcFnNk1OkbLlOQgnY8RvyjjvJ4mnsLt0O92jikSGkvsBaqYW1fk4ZxSbeorr5SOWsklnotqiFf8pcdVQGKg9NrkWLmI1DsycypIGIHWglwtubkAjjwXJtPGjFqJUUdvzceXRjXsLGUHyq76Fc0YisJSS19W7MFc8sjyvECcNwyq6wViDHgLYvbzcUufNr(craOMSbCenAcKQDyOhxQrZMAVoJUoxfliLyktE4MoNGM0aAvNKB8H7ElFyvbNNgxvGxxt(F0jAbSxA9EVoY4mXrmHC7CnA3oho6azoF9CHxdVQollqwBMcIt58YG6kFLYp8gGKJt5BJPSSAjODGubtUAeKtUThIyXMyLaZKzCrj2EianK1ol2ouBGJwB3kyM0yFTXc4SFoaLnmCLeQDvMmP0cP)r2VjiBRDz1Iwh0)iRfT9reucjS1QCajBhxBMEOZnWk8A1kbbVXAd)JXNXJT25DAucNxafuwWGKRvat7yFV01v2WTOwQSh)(EP26YsolEnmAXBkSTNZ(X2syS1zMG9Kuo72Gs(xom7pE4wJwmEYadB3tjj42kQ)PBrnJMexX3cEFsTaYwQ2TflM6ByB2I(VJmAJ)WNsM9H(IEY4)O3D8pPDrVA(OIeSRbN24ZxNFMHnBDbIFISlYHaF645cfUYcL)HSl23yLZfSyEw8wkdUzqZ)WRa8uWsybjHxUc394S)bcqwjHLqcm5Gt2UC423657ciidkXMYGXzwNZRlKbhe(iQcmfMHHmzQRxWpifwu2yqbyE0kBxaflHpyPaHhy9PJhT9KvCcGRNQp(mgF))DRNnldZLML(DuTIc3Ifm7UZJKQ4z0cslNQsQuAh0K1vvCb0uaRG0O1egKftGhEHo4neLmqJ0ONuTkzTFjHLAOJPYXWXMfcndiSXskQbUCWvuiNj(D9ZA0VQr)ZhLedsKs5NVsJ2MttY7lnM10zvnIXnG)Vvf0eQQOd3uZx75bEWO)bWnuCWmV2cbqe4Zgqt7F08EwElTOOxeThs1brTzd7rS6YveHXWYcyrN(5NknjmZbaXG2AKgzzIcxcvTAfuWJcdRRicwTuAkC2mFu4LxQrTeO1O)Ymc)3mZsoW3FUfizWXI8VS83g13FfnB5PJjUvTR52O1Bmt4gIXD(xDs)3sGgMtvh2X7sr3612P7w(JAaY1JwF)JhULUnWhZF8HR7RX4L1Fl60T79Br6JeHncFHNNsNCkkpcj3jdEc8X(PBtYQp72JO76H4Fi4DLA8Ws(H5725JD8dZ9N7CW9DGWNspQtlxKDxEBF1hWn6OIE4C1VlAi7UVdn7yy(DO0bUrhv5uMNt8W6CGxpKWWB4atENx2L725Kz5(J7ZQ89(cdFT5725Tf90MKJC7Si2YlCuh7c9ZxEUP)9Xql7Ndn)ZEWSn5YZ3O3N2uFfN0gvUq0xtUdUNpUCXu)7To3qOFZCX5PoEABkq4BCKU39woW5gTl3ykp0anerI(Vp]] )
 
 
 
