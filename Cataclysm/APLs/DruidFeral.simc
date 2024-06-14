@@ -14,6 +14,7 @@ actions+=/run_action_list,name=cat,if=buff.cat_form.up
 actions+=/cat_form,if=!up
 
 # Cat: Default Rotation when in cat_form
+actions.cat+=/synapse_springs,if=try_tigers_fury|try_berserk
 actions.cat+=/tigers_fury,use_off_gcd=1,if=try_tigers_fury
 actions.cat+=/berserk,use_off_gcd=1,if=try_berserk
 actions.cat+=/cancel_buff,buff_name=primal_madness,if=cancel_primal_madness&buff.primal_madness.up&energy.current<20
@@ -32,6 +33,7 @@ actions.cat+=/ravage,if=ravage_now
 actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current>=energy.max-energy.regen*latency)
 
 # Cat: Default Rotation when in cat_form and multi target
+actions.cat_aoe+=/synapse_springs,if=try_tigers_fury|try_berserk
 actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<60-(buff.clearcasting.up&15|0)
 actions.cat_aoe+=/berserk,if=energy.current>60&cooldown.tigers_fury.remains>=15
 actions.cat_aoe+=/savage_roar,if=!up&ttd>1+latency
@@ -60,7 +62,7 @@ actions.bear_tank+=/faerie_fire_feral,if=settings.maintain_ff&(debuff.major_armo
 actions.bear_tank+=/demoralizing_roar,if=settings.maintain_roar&(debuff.ap_reduction.down|(debuff.demoralizing_roar.up&debuff.demoralizing_roar.remains<4))
 actions.bear_tank+=/berserk,if=dot.lacerate.ticking
 actions.bear_tank+=/enrage,if=rage.current<80
-#actions.bear_tank+=/synapse_springs
+actions.bear_tank+=/synapse_springs
 actions.bear_tank+=/lacerate,if=!dot.lacerate.ticking&!buff.berserk.up
 actions.bear_tank+=/mangle_bear
 actions.bear_tank+=/thrash
@@ -79,7 +81,7 @@ actions.bear_tank_aoe+=/faerie_fire_feral,if=settings.maintain_ff&(debuff.major_
 actions.bear_tank_aoe+=/demoralizing_roar,if=settings.maintain_roar&(debuff.ap_reduction.down|(debuff.demoralizing_roar.up&debuff.demoralizing_roar.remains<4))
 actions.bear_tank_aoe+=/berserk,if=dot.lacerate.ticking
 actions.bear_tank_aoe+=/enrage,if=rage.current<80
-#actions.bear_tan_aoek+=/synapse_springs
+actions.bear_tan_aoek+=/synapse_springs
 actions.bear_tank_aoe+=/thrash
 actions.bear_tank_aoe+=/swipe_bear,if=active_enemies>3
 actions.bear_tank_aoe+=/lacerate,if=!dot.lacerate.ticking&!buff.berserk.up
