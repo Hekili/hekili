@@ -7,7 +7,7 @@ actions+=/run_action_list,name=finish,if=combo_points=5
 actions+=/call_action_list,name=build
 actions+=/call_action_list,name=defensives
 
-actions+=/redirect,if=target.time_to_die<5 & active_enemies>2
+actions+=/redirect,if=target.time_to_die<5&active_enemies>2
 actions+=/blade_flurry,if=spell_targets.blade_flurry>1&!buff.blade_flurry.up
 actions+=/fan_of_knives,if=spell_targets.fan_of_knives>5&energy<50&buff.deep_insight.up
 actions+=/cancel_buff,name=blade_flurry,if=spell_targets.blade_flurry=1&buff.blade_flurry.up
