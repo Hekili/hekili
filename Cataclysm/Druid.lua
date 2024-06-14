@@ -46,12 +46,18 @@ spec:RegisterGear( "tier11feral", 60290, 60286, 60288, 60287, 60289, 65189, 6519
 --- Balance
 
 local function rage_amount()
-    local d = UnitDamage( "player" ) * 0.7
-    local c = ( state.level > 70 and 1.4139 or 1 ) * ( 0.0091107836 * ( state.level ^ 2 ) + 3.225598133 * state.level + 4.2652911 )
-    local f = 3.5
-    local s = 2.5
+    --local d = UnitDamage( "player" ) * 0.7
+    --local c = ( state.level > 70 and 1.4139 or 1 ) * ( 0.0091107836 * ( state.level ^ 2 ) + 3.225598133 * state.level + 4.2652911 )
+    --local f = 3.5
+    --local s = 2.5
+--
+    --return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c )
+    local hit_factor = 6.5
+    local speed = 2.5 -- fixed for bear
+    local rage_multiplier = 1
 
-    return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c )
+    return hit_factor * speed * rage_multiplier
+
 end
 
 local function calculate_damage( coefficient, flatdmg, weaponBased, masteryFlag, armorFlag, critChanceMult )
@@ -1083,7 +1089,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         stop = function() return state.swings.mainhand == 0 end,
         value = function( now )
-            return state.buff.maul.expires < now and rage_amount() or 0
+            return rage_amount()
         end,
     },
 } )
