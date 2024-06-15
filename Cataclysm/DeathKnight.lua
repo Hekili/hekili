@@ -1965,22 +1965,13 @@ spec:RegisterAbilities( {
     raise_dead = {
         id = 46584,
         cast = 0,
-        cooldown = function() return 180 - ( 45 * talent.night_of_the_dead.rank ) - ( 60 * talent.master_of_ghouls.rank ) end,
+        cooldown = function() return 180 - ( 60 * talent.master_of_ghouls.enabled ) end,
         gcd = "spell",
 
         essential = true,
 
         startsCombat = false,
         texture = 136119,
-
-        item = function()
-            if glyph.raise_dead.enabled then return end
-            return 37201
-        end,
-        bagItem = function()
-            if glyph.raise_dead.enabled then return end
-            return true
-        end,
 
         toggle = function()
             if talent.master_of_ghouls.enabled then return end
