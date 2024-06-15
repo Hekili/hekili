@@ -1965,7 +1965,7 @@ spec:RegisterAbilities( {
     raise_dead = {
         id = 46584,
         cast = 0,
-        cooldown = function() return 180 - ( 60 * talent.master_of_ghouls.enabled ) end,
+        cooldown = function() return 180 - ( talent.master_of_ghouls.enabled and 60 or 0 ) end,
         gcd = "spell",
 
         essential = true,
