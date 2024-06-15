@@ -2101,7 +2101,7 @@ spec:RegisterAbilities( {
 
         talent = "unholy_frenzy",
         startsCombat = false,
-        texture = 237512,
+        texture = 136224,
 
         toggle = "cooldowns",
 
