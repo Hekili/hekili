@@ -725,33 +725,32 @@ spec:RegisterTalents( {
 spec:RegisterGlyphs( {
     [58623] = "antimagic_shell",
     [59332] = "blood_boil", 
-    [58640] = "blood_tap", 
-    [58620] = "chains_of_ice", 
+    [58640] = "blood_tap",
+    [58673] = "bone_shield", -- 15% movement speed
+    [58620] = "chains_of_ice",
+    [63330] = "dancing_rune_weapon", -- threat improvement
     [96279] = "dark_succor", 
     [58629] = "death_and_decay", 
-    [63333] = "death_coil", 
+    [63333] = "death_coil",
+    [60200] = "death_gate", -- death gate cooldown
     [62259] = "death_grip",
+    [59336] = "death_strike", -- Increases damage based on RP.
     [58677] = "deaths_embrace",
     [58647] = "frost_strike",
+    [58616] = "heart_strike", -- damage of heart_strike by 30%.
     [58680] = "horn_of_winter",
     [63335] = "howling_blast",
     [63331] = "hungering_cold",
+    [58631] = "icy_touch", -- damage buff
+    [58671] = "obliterate", -- damage buff
+    [59307] = "path_of_frost", -- fall damaged
     [58657] = "pestilence",
-    [58676] = "vampiric_blood",
+    [58635] = "pillar_of_frost", -- cc immune, str pct
+    [58669] = "rune_strike", -- damage buff, un
+    [59327] = "rune_tap", -- %5 health to party
+    [58618] = "strangulate",
+    [58676] = "vampiric_blood"
 } )
-    -- [58673] = "bone_shield", -- 15% movement speed unused.
-    -- [63330] = "dancing_rune_weapon", -- threat improvement unused.
-    -- [60200] = "death_gate", -- death gate cooldown, unused
-    -- [59336] = "death_strike", -- Increases damage based on RP. unused.
-    -- [58616] = "heart_strike", -- damage of heart_strike by 30%. unused.
-    -- [58631] = "icy_touch", -- damage buff, unused
-    -- [58671] = "obliterate", -- damage buff, unused
-    -- [59307] = "path_of_frost", -- fall damaged, unused
-    -- [58635] = "pillar_of_frost", -- cc immune unused.
-    -- [58669] = "rune_strike", -- damage buff, unused
-    -- [59327] = "rune_tap", -- %5 health to party unused.
-    -- [58618] = "strangulate", -- unused
-
 
 -- Auras
 spec:RegisterAuras( {
@@ -975,6 +974,12 @@ spec:RegisterAuras( {
     path_of_frost = {
         id = 3714,
         duration = 600,
+        max_stack = 1,
+    },
+    -- Strength increased by 20%. Immune to movement from external sources.
+    pillar_of_frost = {
+        id = 51271,
+        duration = 20,
         max_stack = 1,
     },
     -- Any presence is applied.
@@ -1885,6 +1890,29 @@ spec:RegisterAbilities( {
         end,
     },
 
+    --Calls upon the power of Frost to increase the Death Knight's Strength by 20%.  Icy crystals hang heavy upon the Death Knight's body, providing immunity against external movement such as knockbacks.  Lasts 20 sec.
+    pillar_of_frost = {
+        id = 51271,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        spend_runes = {0,1,0},
+
+        gain = 10,
+        gainType = "runic_power",
+
+        talent = "pillar_of_frost",
+
+        startsCombat = true,
+        texture = 458718,
+
+        handler = function()
+            applyBuff("pillar_of_frost")
+        end,
+
+    },
+
 
     -- A vicious strike that deals 50% weapon damage plus 189 and infects the target with Blood Plague, a disease dealing Shadow damage over time.
     plague_strike = {
@@ -2142,9 +2170,7 @@ spec:RegisterOptions( {
 
 spec:RegisterPack( "Blood (Beta)", 20240523, [[Hekili:nFvtVnUnq0FllwGIKUzvLSZxfiEpe0dnUa5Ic6rjstnYIWYKcuuRRlwWF7DOKIfLIuC822G9qIT5mZJZm8npkffe9uuycvdrpoZF2L(xnBUN)Tb((3gfQ3xarHfu2g6A8lc6w8)3NlLjgYz3dA65wR7ZL0elkLYkfd9ikCvfpx)GiA1iq7F9LZrFlaw0JxhfMXtsGgpHswu4tz8sdX(h1qA3AdrMI)MP5sHHKZl1O5uPYq(DydpN7ffwVOnjOsa)4X6YQjclYuDwmvKeNam6(OqqqxLdjr3hPXCZ6A3kHmfxdkonk8dgsIu7TYwXXf501vGNMZ2WfRnKFAeJkivbLzwOmKV9ndPfHuLSuhNcFfuVaaxBoX3L9Yk9kfq3yZ15tMRhBBMSioRPZ(viEaegYN6zYfbd5odrRQG4whabSLd4XYpBiZmKZ7s)cOuZZbbYmWc4YJ1ShPg6WIZ2hRLvSmluxDmOgRKDYR61Jl1k(M6u76jXdBrnyPQeqPhRsPaHUU)0KUVC9krMmF)qdNx33M1LeW2c5oqv7x8oGwGlIPYntMkOJCwCDqEjqkNX1ny63bAnyD11Ttc2QQ0up8NBlLI4sgo(Ug8Qk6qQPQxj55wG(1jbkdO56mVcgMmFXqU2FaZ6a7anoVh7O)oe47o2IOQ0pxi9Mz12z6uAvU(fZ6B54yoofb)n8MNZtK7eoBRujILPX74c0(HPUdzS02DZ4qEYGn4YEAoubd5B9oz77(08x325DlmKB8hQLnG1(SXQsigbzB5GTAA(0ihqbO6mcpZEE0Juf389yRwBJIBCZvcwn3xLO9JNq60C5twhQH0EQ19RiefeCmMHRstdmEU8cpRB1TguzOnKT0)A0o1B5EIPzFbtpu9DOufm91BV7sWbtFt1jkBgC1BwuRqbm52vuRSw9c7OkbEaGZZpGPPsdj1xV2aw7Jc5zwAJuMYTK9p(rdP9r0(n7HLH8hc(6mSYp7b2Ed5pbUO8CZsRF4tLn)Z(x95zZnlnlBaT8tl(fhnu3L7lmEbpDHv401dhTr3LhrlSNzhsLf1o5V7wCJF)u7GcN7Id0MUWQkTafLUOrhBrGf1(kDFjWfGNvgS(9H)TkvhBcBcDk385G(YHeAmaDcONgYRxfhVX)oRUm4K0TkMwdXnOrMGTb)FTKrpI(HjC7onHGqVzhNXEhgThYspCqC4fugA(hk6zBo19y9ncbFhN7))92hdt2tBE65k80NPAJ89Mq2UTN(WtBGNgBE0Go13ayiA9VwKwPXlBIcFsMKKxF)N92WO)5d]] )
 
-spec:RegisterPack( "Frost DK (IV)", 20221001, [[Hekili:DAvxVrQnu0FlRwP08XczystAsvsEOQQsjRuEzQ2hbBGldwdyJSndAQI8V9ETjDgddKnPVKmCTVN7X3po2XrX)D8QCQgIFz5ILlJwSikm6MLrxFx8k9UgiEvdnBdDn(doTg)7FjfkTH8NF3qo9PFCMD9DvcAUfhLOvMH7PuRBu)(Lx211fYY2fSfyCvyMO(YoHUAtqwfvPyzxwyXkihO6YGnC26s8JgvqZwiqk0untWdYeIQCrhxfqtzvmnduXRsBzv6N4XPtW9OBrI0azXVCdYewEo0VpqLnG9nsMqY07mKuQcYneb3qEkd)(hw6(lgY6wwoeINqPOGvHNRV(vd5)qWsAd57owBtf7D8mZZ29zzuq0IGfrMNnptZShgvyJeW0qkvFXdxMwje5jOffWZGP3tPqYtefjDmUgKFJv8qABrr4qZH28Jxuq)Qz88Kcja)d4BglgjArBwPfPVKl0HUsqsbSfHrZY2W4R9DOu0vHMssXkM2606QDnLHdmhcCAAfKFYhbWMk66wirPLSnWEw8wQWT2KEbknwbW0K1LzcZjZH0jwG2cjJ87cpZ(UD)YZ1sKJVTmWHASPZNoT8ujq3yp1juzTq6VypuAAJRA5(q2YbS)VvkbU((L(7wKI90GeBIN)82NZZzkaBu3NT)0zHth7HeWoevPfUxF9i38w9mFUb1nIoq6oujDaTrWN5KErFWgARLxkQ2nkLC1GSRcsWCs9GuEgTQkP)ZKkg2lAvJEGkGVzBLY0pezjXWs2Jr(i0tMdnEUbPnSkxJCnnRKXHW2M3T735JBSYAUqSEKd9jH(ymxS9Ldq(pomJx0PoMqXX5CiJUZnYul2AlOfwTNejutrzNhrzpSOQqx7LdxC3YBcJIx1rLCC3OQ5tyLtQTsDxzi9rXqSjtvO554vUFzLXXaJ)7f3vd9Bdfs95y8Q3AcJ)Jyngn7gpyzvM02sZOXR(IH0Zvd5edzaFnKhnKBpeGrNtexT1ybTTsFeB8K3(mCzMrMd4UxF0c1vZc17ic6oOFKqnmHIH7x)zmFQH6d4nqy1I31ZI3CY0wQpRASDXP1rnKlgSKV7gY94vHgY5gYeAQESFVGNL634xRpsSDuf)3M9CoHKupFoa(EXAls36h2dcZJI3D)K2Ir607ZQ)VY4NESVE6YgYRVobad2XzZLKJw85sCyrEc9CN9P00Dz6Roe8jU2WXIbZ17L(hLZJMFSEyhLtvbf96VuWQASh7X3G0l4L0)QwRKND7ZpZpZ1fhW3xJ3H18d0tDnY7OmeDTFoY)oMXPPbdodi0GnQTVP9ThzEK26WNL(HLxN7DP(Nl)fD0ajcTvxANPXhqh4E)SZC8)c]] )
-
-spec:RegisterPack( "Frost DK (wowtbc.gg)", 20221003, [[Hekili:vAvxVTTnu0FlffWibPr(RMK1b78WWWaAkq2dQa7njrrDTfHLifiPQHhm4V9DjvSnPSuAhqrJc5LN73NtsMN89K4cIgsEDXSflMpB2YOzF5Zlx(usS(qdKe3qO7iBXp4KA8))lPqPnz)53S3COsqkSiOeTskEBPw3O(9Pt3l2RZPrB3IFPR2nLwruQ732Yka10nwiUVai6Y73XzBl1ttIZBzv6VYtYhmCwSa9rdqtE9r0jSIcOZsqrtI)EjtzYAKmHKPpyYS)worbfMS2gb3KPlbt25qYK9ps01Mmx4eLexXuALRoaBiTvA8ZxD1fcvZe8K4AgViDJeG)ftrGtYRGIK)irJbP1SlNetXiaKmss8hmzfcDKlxt3a)aKrAgDhJV9cUm6HuTOLwAHA5pdQ8kHOiTPISTfUgRUZtvAjBhyX7Z(zqlpxcKDwWtjYAHSxE8GVXnIUFgyXJbWPGum6Qv9m6PrZHUGx2YbveTvkbooeTYKT4cODMOjnwK(nF3jYRS4yhlc93xg1FJu7nztgVy6U8gtM1T)as7bHlCF7kGd1mahZoEmWCFuh1(TvhAkJkykaNrJEl6p57(XTeQjmUYb2dDV)QWVNn3I)ZRzcknRc4u3qX8z))6q3zY6IMRpVLxkQomqlD5fNd1nI9G0zu6EGGBJUOy(Orr)c2ZMS5UAtE7Mnr7yvvyJkTMqlzCiQT5IVkf7D3LJunANxgF5SVxw)l7LUQXLTS5JV26WsYQ)zHzWIAa(Hd7ZdwslfsEQyt6Egh9xOPASTlbQOoNCHmZlgpTGJ0A40HSfH0smC64E8aVlnNljrNPStyrfI98(l0NU8mh3PRLeCfifLbk6LObfeNmrkbjGlak5W7XBHeBhSLeKUFiyFC0Kahpz0u3OAeQbWOmD3K3SrR3Ni7EpotxJyprYX(nYu(vCzqQTR6l6igSstoTNiZlisT6slV8zDkBtuSb3DtI)4hnzNeEbN213C6MiLXzZV18I1SLMS)MQf5wclReQ5fZlDotfDEO4U1t7c4pzf1xp4CWWplSN(j2M1xpbm8lV0Uh((En6HnQFlEyRc7v2GCGo8ZZN9EvgV6gEM3FbG)XNfWT(4dJP549Gav6ZpAqXiVxDL6DaKHDlR5NuN9p8S6QRNDnx)Qf(wFrXnWvN1sSGms6ozSmAYnVr727HRczJpE0ZmFCUYUbfsNCZisORE44XXKox9WT36NOdOBnsz7UbKhVBiPXvl9DqGkGf6WC755tgrjYheFTIRXy9Vegxfi(QwJ5Sqa6XlQts(V)]] )
+spec:RegisterPack( "Frost", 20240615, [[Hekili:1Iv3UTTnu4NLGc4BANQTtt2wxTViOBOjdTPOkf9IHkjAjAlIitkqsvppeON9DoKYYsYKoPPPx0gf(3578)5lrtIUjkmJOPrFy64PVA85toly80jtMonkuVTKgfwssVLSc(Gtwd))FjfknU62cbjdVTsujtHD(I4lHS1QOWfvSc9L8OfUE5XNEoCLsAA0hGpYzzzu7jPQ0OWBYzQ6Ksjtiz6T1j4VTGOOz1jcEDIoNwN0iNGOWcMsRmkaDjPQqdF(bJcr5Kff0SOlIcjPAMGhfUeXDSslz3sTstYkTBzpIkO5vE(SxsQ0IucCEbirzCQquKj2WbDdULMkzeW6qKRO6anBnnwlIZya0EZS6KtJ0GgpafpKR1cvXIc80OPdEQt)rEQCXMcgFv8IcqBWx7vEmpsctrJZOGlTVX5t4g1j4o1jPcEgZySQt(LBU(Tx)66esgSbyw53s1WYe4FBOffDb6IQLldkzffezSyzSXveuvwNmc8U4Ev8CrXw07q5R0592tTLtkbSPGOc(kfShQhN5rpwuiezXAs5a14cCDaNKYUArxqcAOopwwXPQG0kjGeT1CoXIfZdB3ENfh2zEDYzbNHi68V)aVUBvNuXZOsaDuPMWGGDqwSuizqSXSStqBotS5i7b9Ce0JnG6x9akrLEHKsUDaG(tUQcTYG)g86qEh6qLa2W79nAxjFcCgHoWQclPFdaGMLER5Y3DxDsZ(wZwzbzvfD3bqG9BEaw)a2(O7D29QtUa3ecZy686KpbodSKHi9GqULsk9)WxBPyvtCZV)eix2Y6etzq4hOIBltXf6Vp7ecNjJ9GhRfZDyZEV0hnNQojSjecXrLPAP128ztELjuY4k5zOsyYe2D17h6UCHMuIMS2bPmqW3uJQ9iQe)zL5TBmU70kRU0Mx0TiKG3x56MZ4jpXKZoz8yJkyXYHAGDxNLeA31T6Bs(m6)WEaokV7ZVED7rE0(0dDN)i(YHnHEa(YHoXCk4R(BOjGrKVNKMZ4njU(qSjj(w7vIxBVrtE8eFnYYfso2KzdJRXyapw43bhdcFGm5Vyoydek2q26ekN00nQ)ZVdmd7g1tOV1owbkZU1rost6j(6L892L(hSjSbldBH4w365T9eFGV2W6((Su99oEDV4t6RK(XkH2uOzy9tBqA3oWTDafMkp25aDuSPFzjZnwt1DT))Kk1CqzS(dNmn4S7z8LPMXxWr6L0uX6fKJogDdsGZQO80HM1pkPLvff2eixXFdUEaAnDnV8oXPQwVwWJxbt6k2wq7aYyffT4Gio31uY(kh44(tmQpyaGEZk8s74R8QGjrHBisoo35EUjILSIMISRzkBGKQQSuibFYsbekSIYbDoD)yXb1j1jxQTxYGG1uyApCG0CcSmowW2E8E4PfvzyWhLHuqED9vWe31j)ZNX08l101QV(cmELLM390e(2UdJBASt)3YcwktxS)DZWVAOtTtO)beJl3jMBSpbeF91MG99lnTJK3WqVDRg18K6Dh1ynmlXRwVGkrbRkG(q1xD5A0GHlmDx4sDIHqhSj6NmM5OWN9S2IlVfZr(BoBvUU(ky5l2tmSHtiaFCJHHH1xTJIxR7)5Zgek(c2YzEdrD(aVCqW5loi2A25UVy)Gsh3BsJI8EtzOwT4zTFFeoQTIeot3YVOcEiJX3m70Uxy)SjpOJ3RZ1rUHb6pwMKDf4(gGT(RdBPnYt7SrE4t2Gp3ue7k9wYLOWDuX(nZMmYzH25ahXgP8448DmNQdoGZNb8)Ae49WPRN3VHvi(QN4H1YD3DI3bjTc8(OPD0aix8288U3lnSJkiF63bwTNEowDXvVHuAXLlR7ixdbmBAdEFszo9aJ2MdSOg5ySMzJh5i5aw1LgmVTy3pb6p(lT94SYpsonhZE6HJZb2KhcHL(b896XGrwUjW0ijpSu8MdDpf1FQQzpeD99aESRhQsdSDETt9ZM(ztp4OfcEcsSg5KxWCyIFpTPqUaHM)E7xJKKmVkmlDLgSsrHHvLujVsPmJlh9)d]] )
 
 spec:RegisterPack( "Unholy", 20240614.1, [[Hekili:LEv3pUjoq8)wwvPOK2ECKSF0272SpuDV09K6lPv3dNkGdycwbSr2MMlvr83(n2qaZhMKv7lByTN53mE(E8w69nVnrij27RRCxDN7dlV3X1DPR7dEBKhZXEBYrH7r7GpOOm4VFNMWspQo(ykdfPyxWk4HWv)d7F2qYeEB2wqsLFH6TDeOD)K7Dal54qVVcYiHefHROelc928TeIOmiNtyCI8yzG6)2Ie4OYagTmqMGldQLJJ3MuIqk0VaCmQivcF(v9lcfkjmQ3MmcnYpMJX)c0pmfTnfh59zpjOskYApztiipmNGGNnIVdlDKKmSVK5hrar(yzWTTOkcHx8oSVqYj7Xk0U9vGwmwOOLUZaV7Ef4fHrYe)qgjvH09wr6MYGiM0jMZes)y8pXCa1W9GI0Ifj8iiLIWefupCjO2MYyr(5PODf4HyvDUXJ8dMEQieFVVKJOIygpdvDyhp2hTk(TfXXoJaGtrERak0bUQGb6VoQW7tVo8ehPOCb8EYv(oHcXLUVoiRSFXfCT(TC5RdTCM(xfs2d21ivBAapdMUtMaOugmdY7u317z2rcSc5wogTxld7PatOTA5mVmiKXsJyhOoD8sAcoDQwtM4kTHlTqi1hVWWjvKLXO(7GKg2XuDu3s75w2Zi065vfL3XMyp5Bk5ytiNnwkr9tSFpikdExNRmrqxIO(omfNrWqz13wgSQJXkhkersX0Wk70KP7zSFEwJIj7sK(CCgIqbyFQm4(kxtFbc3SSFzkeuFochIQI4)GvroFu4Uf0)lzvwpKtdLBOLAe6x0pfDBDX1L2RjvhTYlOyrt1AWE)46owHHTsworDjTWhhYkxH(HFjzowdNvtu66ss9MklgKq3hzN9uiPUV1ZqQ2lXbYJe6NZoajhHfCiPxcUCqMF01iXxuOgFa8ISSMkcZ1A0Lk6uXEccQ64tOXfc1DcjmSJoz5(oE9UTuxzVC6uoGxOTQtR3v3A2RSxqtVbBUZK0b(6Eep54bxPMoWRozLJMs99Qn7avnJoA1MBV0Gz8ztKcyWD7RHsuUgk7jTNJBsyCQpl2)aHc30PNx3Ra8KqHtooKLTf1o)Pb6NzSUGaqRqxIvpWlNKxD7NBNXTzm6EDqpZPJY6DPryHY4sNmKYXP02DjSIuHZzIBukoIa92btD0ytXEMkep7Ocfy67kABFX(c4dAeOTWWpJm4QfZ2Oam24Qn9My1)ooFA3auUxLf3SUbSNXbeNQNoRzXcwm0IRAVImIqOBIjkYZzCiQbQsugSdQ7ZjHWYgqm)ESu4ugug8fzftA5NHPrk3LmbbhR6ZCSZsl0W0IivNdmbSz8)O85YGFRm4F)UaRqcNj(X7ldoKqctmPgrp2k1Yaktb()LNscjY0wCJuFvVl0zH(NqSd)Sy(wfeqnNFOanY8Ovgs(ajn14fvdP8mPARH(iAr2wmxjyrk0WS85VKPmyQdwDUmrzGEBm4sWRvibhU3Mnf5yoTqiuooTL3BZBEtzq1sKLb)Lkh)VPQbikFgoFywa8KEUcFHtJV)DR)9EztVNeVEysY4S2gZR46cPkJdr)eI3piSC9s3XzTBIWymooFvjaJtFdhaDgB8AEC3wgvp8(ls(4TMC0VQ)1WtBn7RH6MoCkIVX2eXgm0zdYgMgDuztLA4qaMx3zTIM4iltoyAr7Uy0lGZ218Ebmv7)VEgoVisdld3YBMLn868m72L(ckWS5w3K70Pr3IR(yZn4wy7zylgz2vfh0UEJclBqzdPzZvinCbJ3zCSjFpwFE9seVD1IHjknl)OFCvRunRZ6upD)PtDb6PLddL2wNWnVhP3UWMwVUlLncP)ROhDlMUKY478846LxQUYORya8nB05P7bO54Ntc2nv8yzEw71XgzvKNw)r36i3URGC608BMk)W(AhpE)cRfhTzgEbpPUERPCitzBVE511eEZ0t9puKWS699L1M(1UMu3RDQsuwMGxnIO3))]] )
 
@@ -2156,7 +2182,7 @@ spec:RegisterPackSelector( "blood", "Blood (Beta)", "|T135770:0|t Blood",
         return tab1 > max( tab2, tab3 )
     end )
 
-spec:RegisterPackSelector( "frost", "Frost DK (IV)", "|T135773:0|t Frost",
+spec:RegisterPackSelector( "frost", "Frost", "|T135773:0|t Frost",
     "If you have spent more points in |T135773:0|t Frost than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )
