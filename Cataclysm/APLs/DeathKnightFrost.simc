@@ -1,18 +1,24 @@
 ## Frost DeathKnight
 # Based on WoWSims
 
-# Prepull actions
-actions.precombat+=unholy_presence,if=buff.unholy_presence.down
+## Prepull actions
+actions.precombat+=/unholy_presence,if=buff.unholy_presence.down
 actions.precombat+=/summon_gargoyle,precombat_seconds=6
 actions.precombat+=/horn_of_winter,precombat_seconds=1
 
-# Main actions
-# actions+=/autocast_other_cooldowns
+## Main actions
+## autocast_other_cooldowns
+actions+=/empower_rune_weapon,if=blood_runes.current=0&frost_runes.current=0&unholy_runes.current=0
+actions+=/pillar_of_frost,if=buff.unholy_strength.up
+actions+=/blood_fury,if=buff.unholy_strength.up
+actions+=/potion,if=buff.unholy_strength.up&buff.pillar_of_frost.up
+actions+=/synapse_springs,if=buff.unholy_strength.up
+## Finishers
 actions+=/frost_strike,if=target.time_to_die<=3
 actions+=/obliterate,if=target.time_to_die<=3
 actions+=/howling_blast,if=target.time_to_die<=3
 
-# Raise dead conditions -TODO: add trinkets as well
+# Raise dead conditions -TODO: add Impatience of Youth as alternative to synapse_springs
 actions+=/raise_dead,if=buff.pillar_of_frost.up&buff.unholy_strength.up&buff.synapse_springs.up
 
 # Blood tap conditions
