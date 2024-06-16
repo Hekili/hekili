@@ -22,12 +22,12 @@ actions.cat+=/faerie_fire_feral,if=ff_now&target.outside2
 actions.cat+=/feral_charge_cat,if=target.outside7
 actions.cat+=/mangle_cat,if=feral_t11_refresh_now
 actions.cat+=/rip,if=rip_now
-actions.cat+=/savage_roar,if=roar_now
-actions.cat+=/ferocious_bite,if=bite_now&(energy.current>=action.ferocious_bite.spend|!should_bearweave)
+actions.cat+=/savage_roar,if=roar_now&!rip_now
+actions.cat+=/ferocious_bite,if=bite_now&(energy.current>=action.ferocious_bite.spend|!should_bearweave)&!(rip_now|roar_now)
 actions.cat+=/mangle_cat,if=mangle_now
 actions.cat+=/rake,if=rake_now
 actions.cat+=/mangle_cat,if=feral_t11_build_now
-actions.cat+=/bear_form,if=should_bearweave
+actions.cat+=/bear_form,if=should_bearweave&!(feral_t11_refresh_now|rip_now|roar_now|mangle_now|rake_now|feral_t11_build_now)
 actions.cat+=/feral_charge_cat,if=should_leaveweave
 actions.cat+=/ravage,if=ravage_now
 actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current>=energy.max-energy.regen*latency)
