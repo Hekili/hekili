@@ -1597,7 +1597,7 @@ all:RegisterAuras( {
         duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
         tick_time = 3,
         max_stack = 1,
-        shared = "target",
+        shared = function () return (not spec.deathknight) and "target" or nil end,
     },
 
     -- Movement speed slowed by $s1% and attack speed slowed by $s2%.
