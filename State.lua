@@ -1102,6 +1102,7 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         d.value = 0
         d.applied = 0
         d.unit = unit
+        d.caster = "unknown"
 
         state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
     else
@@ -1123,6 +1124,7 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         d.value = value or 0
         d.applied = state.query_time
         d.unit = unit or "target"
+        d.caster = "player"
     end
 
 end

@@ -23,11 +23,12 @@ actions+=/summon_gargoyle,if=buff.dark_transformation.up&(cooldown.unholy_frenzy
 actions+=/outbreak,if=!(dot.frost_fever.ticking&dot.frost_fever.mine)&!dot.blood_plague.ticking
 actions+=/pestilence,if=(dot.frost_fever.ticking&dot.frost_fever.mine)&dot.blood_plague.ticking&(active_dot.frost_fever+active_dot.blood_plague<active_enemies*2)
 actions+=/death_and_decay,if=!moving&fight_remains>5|active_enemies>1
-actions+=/blood_boil,if=(active_enemies>3)&(active_dot.frost_fever=active_enemies|active_dot.blood_plague=active_enemies)
+actions+=/blood_boil,if=active_enemies>2
 actions+=/scourge_strike,if=unholy_runes.time_to_2<=1
 actions+=/festering_strike,if=blood_runes.time_to_2<=1&frost_runes.time_to_2<=1
 actions+=/blood_strike,if=blood_runes.time_to_2<=1&!action.festering_strike.known
-actions+=/death_coil,if=runic_power.current>=80|buff.sudden_doom.up|(!buff.dark_transformation.up&buff.shadow_infusion.stack<5)
+actions+=/death_coil,if=runic_power.current>=80|buff.sudden_doom.remains<buff.dark_transformation.remains|(!buff.dark_transformation.up&buff.shadow_infusion.stack<5)
+actions+=/icy_touch,if=frost_runes.time_to_2<=1&active_enemies>2
 actions+=/icy_touch,if=frost_runes.time_to_2<=1&!action.festering_strike.known
 actions+=/scourge_strike
 actions+=/festering_strike
