@@ -4801,6 +4801,9 @@ do
             elseif k == "max_stack" or k == "max_stacks" then
                 return aura and aura.max_stack or 1
 
+            elseif k == "mine" then
+                return t.caster == "player"
+
             elseif k == "stack_pct" then
                 if t.up then
                     if aura then aura.max_stack = max( aura.max_stack or 1, t.count ) end
