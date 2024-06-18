@@ -28,13 +28,13 @@ actions+=/blood_tap,if=death_runes.current<=1&blood_runes.time_to_1>5.5
 actions+=/frost_strike,if=runic_power.current>=105
 
 # Ensuring diseases are active
-actions+=/outbreak,if=!dot.frost_fever.ticking|!dot.blood_plague.ticking
+actions+=/outbreak,if=!(dot.frost_fever.ticking&dot.frost_fever.mine)|!dot.blood_plague.ticking
 
 # Howling Blast with Rime proc
 actions+=/howling_blast,if=buff.freezing_fog.up
 
 # Howling Blast if Frost Fever is not active
-actions+=/howling_blast,if=!dot.frost_fever.ticking
+actions+=/howling_blast,if=!(dot.frost_fever.ticking&dot.frost_fever.mine)
 
 # Ensuring Plague Strike is used with Unholy runes and Blood Plague is not active
 actions+=/plague_strike,if=!dot.blood_plague.ticking&unholy_runes.current=2
