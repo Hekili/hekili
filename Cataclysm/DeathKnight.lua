@@ -718,13 +718,10 @@ spec:RegisterTalents( {
     unholy_command             = { 5445 , 2, 49588, 49589                      },
     unholy_frenzy              = { 5408 , 1, 49016                             },
     vampiric_blood             = { 5416 , 1, 55233                             },
+    vengeance                  = { 93099, 1, 93099                             }, -- This is not a valid talentId, same for Paladin
     veteran_of_the_third_war   = { 10309, 3, 49006, 49526, 50029               },
     virulence                  = { 1932 , 3, 48962, 49567, 49568               },
     will_of_the_necropolis     = { 1959 , 3, 52284, 81163, 81164               },
-
-
-    -- Blood Specific Talents
-    veteran_of_the_third_war = { 6713, 1, 50029 },
 } )
 
 
@@ -917,6 +914,13 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = "rime"
     },
+    -- Deals Frost damage over $d.  Reduces melee and ranged attack speed.
+    frost_fever = {
+        id = 55095,
+        duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
+        tick_time = 3,
+        max_stack = 1,
+    },
     -- Stamina increased by $61261s1%.  Armor contribution from cloth, leather, mail and plate items increased by $48263s1%.  Damage taken reduced by $48263s3%.
     frost_presence = {
         id = 48263,
@@ -988,6 +992,25 @@ spec:RegisterAuras( {
         alias = { "blood_presence", "frost_presence", "unholy_presence" },
         aliasMode = "first",
         aliasType = "buff",
+    },
+    raise_dead = {
+        duration = function () return  talent.master_of_ghouls.enabled and 3600 or 60  end,
+        max_stack = 1,
+        generate = function( t )
+            local up, name, start, duration, texture = GetTotemInfo( 1 )
+            if up then
+                t.count = 1
+                t.expires = start + duration
+                t.applied = start
+                t.caster = "player"
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
     },
     rune_strike_usable = {
         duration = 5,
@@ -1076,6 +1099,12 @@ spec:RegisterAuras( {
         duration = function() return glyph.vampiric_blood.enabled and 40 or 25 end,
         max_stack = 1,
     },
+    -- Increases attack power by $s1%.
+    vengeance = {
+        id = 76691,
+        duration = 3600,
+        max_stack = 1
+    },
 
     will_of_the_necropolis = {
         id = 81164,
@@ -1113,7 +1142,7 @@ spec:RegisterAuras( {
 
 local GetRuneType, IsCurrentSpell = _G.GetRuneType, _G.IsCurrentSpell
 
-spec:RegisterPet( "ghoul", 26125, "raise_dead", function() return talent.master_of_ghouls.enabled and 3600 or 60 end )
+spec:RegisterPet( "ghoul", 26125, "raise_dead", 3600)
 
 spec:RegisterHook( "reset_precast", function ()
     death_runes.reset()
@@ -1974,7 +2003,13 @@ spec:RegisterAbilities( {
         usable = function() return not pet.up, "cannot have a pet" end,
 
         handler = function ()
-            summonPet( "ghoul" )
+            if talent.master_of_ghouls.enabled then
+                summonPet( "ghoul" )
+            else
+                removeBuff( "raise_dead" )
+                summonTotem( "raise_dead" )
+                applyBuff( "raise_dead" )
+            end
         end,
     },
 

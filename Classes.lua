@@ -1597,7 +1597,7 @@ all:RegisterAuras( {
         duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
         tick_time = 3,
         max_stack = 1,
-        shared = function () return (not spec.deathknight) and "target" or nil end,
+        shared =  "target"
     },
 
     -- Movement speed slowed by $s1% and attack speed slowed by $s2%.
@@ -1626,7 +1626,7 @@ all:RegisterAuras( {
     },
 
     attack_speed_reduction = {
-        alias = { "earth_shock", "frost_fever", "infected_wounds", "judgements_of_the_just", "thunder_clap" },
+        alias = { "earth_shock", "frost_fever_shared", "infected_wounds", "judgements_of_the_just", "thunder_clap" },
         aliasType = "debuff",
         aliasMode = "longest"
     },
