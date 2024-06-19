@@ -1597,7 +1597,31 @@ all:RegisterAuras( {
         duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
         tick_time = 3,
         max_stack = 1,
-        shared =  "target"
+    },
+
+    -- Deals Frost damage over $d.  Reduces melee and ranged attack speed.
+    frost_fever_shared = {
+        --id = 55095,
+        duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
+        tick_time = 3,
+        max_stack = 1,
+        generate = function ( t )
+            local name, _, count, _, duration, expires, caster = FindUnitDebuffByID( "target", 55095 )
+
+            if name then
+                t.name = name
+                t.count = 1
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
     },
 
     -- Movement speed slowed by $s1% and attack speed slowed by $s2%.
