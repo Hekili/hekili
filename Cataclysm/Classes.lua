@@ -195,6 +195,16 @@ all:RegisterAuras({
 all:RegisterAbilities( {
     -- Phase 4
 
+    figurine_demon_panther = {
+        cast = 0,
+        cooldown = 900,
+        gcd = "off",
+
+        item = 52199,
+
+        toggle = "cooldowns",
+    },
+
     abracadaver = {
         cast = 0,
         cooldown = 900,

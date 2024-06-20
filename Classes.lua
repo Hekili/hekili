@@ -467,7 +467,8 @@ local HekiliSpecMixin = {
         self.potions[ potion ] = data
 
         data.key = potion
-
+        class.potionList[ potion ] = link
+        print("Registering potion: ", potion, data)
         if data.copy then
             if type( data.copy ) == "table" then
                 for _, key in ipairs( data.copy ) do
@@ -490,6 +491,7 @@ local HekiliSpecMixin = {
                 class.potionList[ potion ] = link
                 return true
             end )
+
         end
 
         if data.buff and data.aura then
@@ -2494,12 +2496,30 @@ all:RegisterAuras( {
 -- TODO: Needs Catalcysm potions
 -- TODO: Something about potions is not currently working, needs investigation.
 all:RegisterPotions( {
+    volcanic_potion = {
+        item = 58091,
+        buff = "Volcanic Power",
+        aura = {
+            id = 79476,
+            duration = 25,
+            max_stack = 1,
+        }
+    },
+    
     speed = {
         item = 40211,
         buff = "speed",
         aura = {
             id = 53908,
             duration = 15,
+            max_stack = 1
+        }
+    },
+    tol_vir_potion = {
+        item = 58146,
+        aura = {
+            id = 79634,
+            duration = 25,
             max_stack = 1
         }
     },
@@ -2742,6 +2762,7 @@ all:RegisterAuras( {
         duration = 25,
         max_stack = 1,
     },
+
 } )
 
 
@@ -3239,7 +3260,56 @@ all:RegisterAbilities( {
             gain( 4200, "mana" )
         end,
     },
+    volcanic_potion = {
+        name = function() return GetItemInfo( 58091 ) end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
 
+        startsCombat = false,
+
+        item = 58091,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 58091 ) > 0, "requires volcanic_potion in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 58091 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        handler = function()
+            applyBuff( "volcanic_power" )
+        end,
+    },
+
+    tol_vir_potion = {
+        name = function() return GetItemInfo( 58145 ) end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        startsCombat = false,
+
+        item = 58145,
+        bagItem = true,
+
+        usable = function ()
+            return GetItemCount( 58145 ) > 0, "requires tol_vir_potion in bags"
+        end,
+
+        readyTime = function ()
+            local start, duration = GetItemCooldown( 58145 )
+            return max( 0, start + duration - query_time )
+        end,
+
+        handler = function()
+            applyBuff( "tol_vir_potion" )
+        end,
+    },
+    
     endless_mana_potion = {
         name = function() return GetItemInfo( 43570 ) end,
         cast = 0,
@@ -3629,6 +3699,20 @@ all:RegisterAbility( "dark_matter", {
 
     item = 46038,
     aura = 65024
+})
+all:RegisterAura("enigma", {
+    id = 92123,
+    duration = 15,
+    max_stack = 1
+})
+all:RegisterAbility("unsolvable_riddle", {
+    cast = 0,
+    cooldown = 45,
+    gcd = "off",
+    unlisted = false,
+
+    item = 68709,
+    aura = 92123
 })
 all:RegisterAura( "dark_matter", {
     id = 65024,
@@ -4132,6 +4216,28 @@ do
     } )
 end
 
+    all:RegisterAura( "swordguard_embroidery", {
+        id = 75176,
+        duration = 15,
+        max_stack = 1
+} )
+   
+
+    all:RegisterAbility( "swordguard_embroidery", {
+        id = 75176,
+        cast = 0,
+        cooldown = 45,
+        gcd = "off",
+
+        toggle = "cooldowns",
+        item = 0,
+        itemKey = "swordguard_embroidery",
+        texture = 236282,
+
+        handler = function ()
+            applyBuff( "swordguard_embroidery" )
+        end
+    } )
 -- Dribbling Inkpod
 all:RegisterAura( "conductive_ink", {
     id = 302565,
@@ -4268,6 +4374,36 @@ if Hekili.IsClassic() then
     } )
 end
 
+if Hekili.IsClassic( "synapse_springs" ) then
+    all:RegisterAura( "synapse_springs", {
+        id = 82174,
+        duration = 10,
+        max_stack = 1
+    })
+    all:RegisterAbility( "synapse_springs", {
+        id = 82174,
+        known = function () return tinker.hand.spell == 82174 end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = function() return tinker.hand.spell == 82174 and tinker.hand.item or 0 end,
+        itemKey = "synapse_springs",
+
+        texture = function() return tinker.hand.spell == 82174 and tinker.hand.texture or 0 end,
+        startsCombat = true,
+
+        toggle = "cooldowns",
+
+        usable = function ()
+            return tinker.hand.spell == 82174
+        end,
+
+        handler = function()
+            applyBuff("synapse_springs")
+        end
+    } )
+end
 
 -- Mechagon
 do
