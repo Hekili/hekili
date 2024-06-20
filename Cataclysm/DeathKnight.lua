@@ -790,9 +790,9 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1,
     },
-    -- Damage increased by $48266s1%.  Healed by $50371s1% of non-periodic damage dealt.
+    -- Stamina increased by 8%. Armor contribution from cloth, leather, mail and plate items increased by 55%. Damage taken reduced by 8%.
     blood_presence = {
-        id = 48266,
+        id = 48263,
         duration = 3600,
         max_stack = 1,
     },
@@ -927,9 +927,9 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1,
     },
-    -- Stamina increased by $61261s1%.  Armor contribution from cloth, leather, mail and plate items increased by $48263s1%.  Damage taken reduced by $48263s3%.
+    -- Damage increased by 10%. Runic Power generation increased by 10%.
     frost_presence = {
-        id = 48263,
+        id = 48266,
         duration = 3600,
         max_stack = 1,
     },
@@ -1093,7 +1093,7 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
-    -- Attack speed increased $s1%.  Movement speed increased by $49772s1%.  Global cooldown on all abilities reduced by ${$m2/-1000}.1 sec.
+    -- Attack speed and rune regeneration increased 10%. Movement speed increased by 15%. Global cooldown reduced by 0.5 sec.
     unholy_presence = {
         id = 48265,
         duration = 3600,
@@ -1248,7 +1248,7 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Strengthens the Death Knight with the presence of blood, increasing damage by 15% and healing the Death Knight by 4% of non-periodic damage dealt. Only one Presence may be active at a time.
+    -- You assume the presence of Blood, increasing Stamina by 8%, armor contribution from cloth, leather, mail and plate items by 55%, and reducing damage taken by 8%.  Increases threat generated.  Only one Presence may be active at a time, and assuming a new Presence will consume any stored Runic Power.
     blood_presence = {
         id = 48263,
         cast = 0,
@@ -1596,9 +1596,9 @@ spec:RegisterAbilities( {
 
     },
 
-    -- The death knight takes on the presence of frost, increasing Stamina by 8%, armor contribution from cloth, leather, mail and plate items by 60%, and reducing damage taken by 8%.  Increases threat generated.  Only one Presence may be active at a time.
+    -- Strengthens you with the presence of Frost, increasing damage by 10% and increasing Runic Power generation by 10%.  Only one Presence may be active at a time, and assuming a new Presence will consume any stored Runic Power.
     frost_presence = {
-        id = 48263,
+        id = 48266,
         cast = 0,
         cooldown = 1,
         gcd = "off",
@@ -2142,7 +2142,7 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Infuses the death knight with unholy fury, increasing attack speed by 15%, movement speed by 15% and reducing the global cooldown on all abilities by 0.5 sec.  Only one Presence may be active at a time.
+    -- You are infused with unholy fury, increasing attack speed and rune regeneration by 10%, and movement speed by 15%, and reducing the global cooldown on your abilities by 0.5 sec.  Only one Presence may be active at a time, and assuming a new Presence will consume any stored Runic Power.
     unholy_presence = {
         id = 48265,
         cast = 0,
