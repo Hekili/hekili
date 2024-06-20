@@ -202,9 +202,9 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-
+    -- Your next special attack that costs more than 5 Rage consumes no Rage.
     battle_trance = {
-        id = 85742,
+        id = 12964,
         duration = 10,
         max_stack = 1,
     },
