@@ -4374,36 +4374,6 @@ if Hekili.IsClassic() then
     } )
 end
 
-if Hekili.IsClassic( "synapse_springs" ) then
-    all:RegisterAura( "synapse_springs", {
-        id = 82174,
-        duration = 10,
-        max_stack = 1
-    })
-    all:RegisterAbility( "synapse_springs", {
-        id = 82174,
-        known = function () return tinker.hand.spell == 82174 end,
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-
-        item = function() return tinker.hand.spell == 82174 and tinker.hand.item or 0 end,
-        itemKey = "synapse_springs",
-
-        texture = function() return tinker.hand.spell == 82174 and tinker.hand.texture or 0 end,
-        startsCombat = true,
-
-        toggle = "cooldowns",
-
-        usable = function ()
-            return tinker.hand.spell == 82174
-        end,
-
-        handler = function()
-            applyBuff("synapse_springs")
-        end
-    } )
-end
 
 -- Mechagon
 do
