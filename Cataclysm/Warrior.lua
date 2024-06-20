@@ -831,7 +831,7 @@ end)
 
 spec:RegisterStateExpr( "overpower_now", function()
     local emergency_overpower = not settings.optimize_overpower and buff.taste_for_blood.remains <= 5.5
-    local optimized_overpower = settings.optimize_overpower and buff.taste_for_blood.up and (buff.taste_for_blood_prediction.remains<1.5|buff.taste_for_blood.remains <= 1.5)
+    local optimized_overpower = settings.optimize_overpower and buff.taste_for_blood.up and (buff.taste_for_blood_prediction.remains<1.5 or buff.taste_for_blood.remains <= 1.5)
     return target.health.pct>20 and ( emergency_overpower or optimized_overpower)
 end )
 
