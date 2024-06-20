@@ -717,15 +717,16 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
 
         if application_events[ subtype ] then
 
-            if is_rend then
-                ApplyRend( destGUID, GetTime() )
-            end
             if actionType == 60503 then
                 ApplyTFB( GetTime() )
             end
         end
 
+
         if tick_events[ subtype ] then
+            if is_rend then
+                ApplyRend( destGUID, GetTime() )
+            end
         end
 
         if removal_events[ subtype ] then
@@ -750,7 +751,7 @@ function ApplyRend( destGUID, time )
     else
         RemoveRend( destGUID )
     end
-    for i = time + 3, time + state.debuff.rend.duration, state.debuff.rend.tick_time do
+    for i = time, time + state.debuff.rend.duration, state.debuff.rend.tick_time do
         rend_tracker.target[ destGUID ].ticks[ tostring(i) ] = i
     end
     AssessNextTFB()
@@ -786,7 +787,7 @@ function GetNextTFB( time, lastApplied )
         return
     end
 
-    local next_possible_tfb = ( (lastApplied or 0 ) == 0 and time ) or ( lastApplied + 6 )
+    local next_possible_tfb = ( (lastApplied or 0 ) == 0 and time ) or ( lastApplied + 5 )
     local next_prediction = 0
     -- Ensure rend_tracker.target is a table
     if type(rend_tracker.target) == "table" then
