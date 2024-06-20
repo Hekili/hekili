@@ -1776,7 +1776,7 @@ all:RegisterAuras( {
     -- Expose Armor.
     expose_armor = {
         id = 8647,
-        duration = function() return 10 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
+        duration = function() return UnitClassBase( 'player' ) ~= 'ROGUE' and 10 or 10 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
         max_stack = 1,
         shared = "target",
     },
