@@ -27,7 +27,7 @@ actions+=/blood_boil,if=active_enemies>2
 actions+=/scourge_strike,if=unholy_runes.time_to_2<=1
 actions+=/festering_strike,if=blood_runes.time_to_2<=1&frost_runes.time_to_2<=1
 actions+=/blood_strike,if=blood_runes.time_to_2<=1&!action.festering_strike.known
-actions+=/death_coil,if=runic_power.current>=80|buff.sudden_doom.remains<buff.dark_transformation.remains|(!buff.dark_transformation.up&buff.shadow_infusion.stack<5)
+actions+=/death_coil,if=runic_power.current>=80|(buff.sudden_doom.up&buff.sudden_doom.remains<buff.dark_transformation.remains)|(!buff.dark_transformation.up&buff.shadow_infusion.stack<5)
 actions+=/icy_touch,if=frost_runes.time_to_2<=1&active_enemies>2
 actions+=/icy_touch,if=frost_runes.time_to_2<=1&!action.festering_strike.known
 actions+=/scourge_strike

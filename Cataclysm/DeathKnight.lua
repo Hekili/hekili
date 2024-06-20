@@ -796,6 +796,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    -- When you deal damage with Death Strike while in Blood Presence, you gain a percentage of your health gained as a physical absorption shield. Absorbs %d Physical damage.
+    blood_shield = {
+        id = 77535,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Blood Rune converted to a Death Rune.
     blood_tap = {
         id = 45529,
@@ -841,8 +847,8 @@ spec:RegisterAuras( {
     },
     -- You have recently summoned a rune weapon.
     dancing_rune_weapon = {
-        id = 49028,
-        duration = function() return glyph.dancing_rune_weapon.enabled and 17 or 12 end,
+        id = 81256,
+        duration = 12,
         max_stack = 1,
     },
     -- Taunted.
@@ -1107,8 +1113,8 @@ spec:RegisterAuras( {
     },
 
     will_of_the_necropolis = {
-        id = 81164,
-        copy = {52284, 81163},
+        id = 96171,
+        copy = {52284, 81163, 96171},
         max_stack = 1,
         duration = 8,
     }
@@ -1196,23 +1202,19 @@ spec:RegisterAbilities( {
     -- Summons an entire legion of Ghouls to fight for the Death Knight.  The Ghouls will swarm the area, taunting and fighting anything they can.  While channelling Army of the Dead, the Death Knight takes less damage equal to her Dodge plus Parry chance.
     army_of_the_dead = {
         id = 42650,
-        cast = 0,
+        cast = 4,
         cooldown = 600,
         gcd = "spell",
 
         spend_runes = {1,1,1},
 
-        gain = 15,
+        gain = 30,
         gainType = "runic_power",
 
         startsCombat = true,
         texture = 237511,
 
         toggle = "cooldowns",
-
-        timeToReady = function()
-            return max( blood_runes.time_to_1, frost_runes.time_to_1, unholy_runes.time_to_1 )
-        end,
 
         start = function ()
             gain( 30, "runic_power" )
@@ -1248,7 +1250,7 @@ spec:RegisterAbilities( {
 
     -- Strengthens the Death Knight with the presence of blood, increasing damage by 15% and healing the Death Knight by 4% of non-periodic damage dealt. Only one Presence may be active at a time.
     blood_presence = {
-        id = 48266,
+        id = 48263,
         cast = 0,
         cooldown = 1,
         gcd = "off",
@@ -1510,9 +1512,11 @@ spec:RegisterAbilities( {
         texture = 136146,
 
         toggle = "cooldowns",
+        usable = function () return buff.raise_dead.up or pet.up end,
 
         handler = function ()
             dismissPet( "ghoul" )
+            removeBuff("raise_dead")
             gain( 0.4 * health.max, "health" )
         end,
     },
@@ -1541,6 +1545,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             health.current = min( health.max, health.current + action.death_strike.healing )
+            if buff.blood_presence.up then applyBuff("blood_shield") end
         end,
         copy = { 49999, 45463, 49923, 49924 }
     },
@@ -2164,7 +2169,7 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         talent = "vampiric_blood",
-        startsCombat = true,
+        startsCombat = false,
         texture = 136168,
 
         toggle = "defensives",
@@ -2181,7 +2186,7 @@ spec:RegisterAbilities( {
 spec:RegisterOptions( {
     enabled = true,
 
-    aoe = 3,
+    aoe = 2,
 
     gcd = 47541,
 
@@ -2191,20 +2196,20 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 6,
 
-    package = "Blood (Beta)",
+    package = "Blood",
     usePackSelector = true,
 } )
 
 
-spec:RegisterPack( "Blood (Beta)", 20240523, [[Hekili:nFvtVnUnq0FllwGIKUzvLSZxfiEpe0dnUa5Ic6rjstnYIWYKcuuRRlwWF7DOKIfLIuC822G9qIT5mZJZm8npkffe9uuycvdrpoZF2L(xnBUN)Tb((3gfQ3xarHfu2g6A8lc6w8)3NlLjgYz3dA65wR7ZL0elkLYkfd9ikCvfpx)GiA1iq7F9LZrFlaw0JxhfMXtsGgpHswu4tz8sdX(h1qA3AdrMI)MP5sHHKZl1O5uPYq(DydpN7ffwVOnjOsa)4X6YQjclYuDwmvKeNam6(OqqqxLdjr3hPXCZ6A3kHmfxdkonk8dgsIu7TYwXXf501vGNMZ2WfRnKFAeJkivbLzwOmKV9ndPfHuLSuhNcFfuVaaxBoX3L9Yk9kfq3yZ15tMRhBBMSioRPZ(viEaegYN6zYfbd5odrRQG4whabSLd4XYpBiZmKZ7s)cOuZZbbYmWc4YJ1ShPg6WIZ2hRLvSmluxDmOgRKDYR61Jl1k(M6u76jXdBrnyPQeqPhRsPaHUU)0KUVC9krMmF)qdNx33M1LeW2c5oqv7x8oGwGlIPYntMkOJCwCDqEjqkNX1ny63bAnyD11Ttc2QQ0up8NBlLI4sgo(Ug8Qk6qQPQxj55wG(1jbkdO56mVcgMmFXqU2FaZ6a7anoVh7O)oe47o2IOQ0pxi9Mz12z6uAvU(fZ6B54yoofb)n8MNZtK7eoBRujILPX74c0(HPUdzS02DZ4qEYGn4YEAoubd5B9oz77(08x325DlmKB8hQLnG1(SXQsigbzB5GTAA(0ihqbO6mcpZEE0Juf389yRwBJIBCZvcwn3xLO9JNq60C5twhQH0EQ19RiefeCmMHRstdmEU8cpRB1TguzOnKT0)A0o1B5EIPzFbtpu9DOufm91BV7sWbtFt1jkBgC1BwuRqbm52vuRSw9c7OkbEaGZZpGPPsdj1xV2aw7Jc5zwAJuMYTK9p(rdP9r0(n7HLH8hc(6mSYp7b2Ed5pbUO8CZsRF4tLn)Z(x95zZnlnlBaT8tl(fhnu3L7lmEbpDHv401dhTr3LhrlSNzhsLf1o5V7wCJF)u7GcN7Id0MUWQkTafLUOrhBrGf1(kDFjWfGNvgS(9H)TkvhBcBcDk385G(YHeAmaDcONgYRxfhVX)oRUm4K0TkMwdXnOrMGTb)FTKrpI(HjC7onHGqVzhNXEhgThYspCqC4fugA(hk6zBo19y9ncbFhN7))92hdt2tBE65k80NPAJ89Mq2UTN(WtBGNgBE0Go13ayiA9VwKwPXlBIcFsMKKxF)N92WO)5d]] )
+spec:RegisterPack( "Blood", 20240620, [[Hekili:nVvBVTnos4FlflUGMT58f70SBlqCbAVUfB7HRTyD3TFZs0s02cvwuqIQ5YHa9B)MziLmPePStID6HfBtSf5mpZ7dhQmF88VmFwmtYN)XjNp55N)ltoF04lM8YlF58zYBY5ZNLZI(gBf8lzSnW)(MuHig)2BsfSyC3LIQIi4jFv81zjBkNpBrvsQ89zZx4KYpF(mwLCTOy(Szv58ISQsypRtIJ5QTWlJMp7lRtkRdZlsefjYBQdXpTGvYJRdfz1HY186qndhnFwAsPSeXctWHF8rsQ4zSfP845VrrZIKCzIiB(S3YzY11HSmGwVLhXaQ)3Rd)ZwAhjePXIRHFBPOOo81F63QdJzBiDalsrJyKgbajcIrkmxcczhE2SurLCrbN9ToO4155PaNrouWxwWlbi9j9sbXDzDiPPRd)CkBvfxTY3vikLWp4FNdFIvaFnBbWaqHiQd5)N8KcaKatK8IegYXfvlxoAbsPGCIqJk4ByjzG68QP1HJRdV9wq8uRBjs(GLi17SmuaVWJaMZlLjP8m0hWsebvka)2NQKQfcu53rqqtrhXLeozs03sYwDMEjP8Ys02ZqpGcAvag(o8tEgFtcVuVTKSL8ijGstvHqAjFAsxhEci(WZS0rMp8PnCjOdjQdFM1JmPaO2AFwl2(56Wj1HNI6YN7rxUMZkKbLYIKV1vB(w(swvQ2u)746QdNrlSVJQsvdbjfnAYlvoql5xJaxdjt9txWIM9lrOEPhOQe3fIKuxMDT18nWJ7dMncY4s2XlDyerK(plGqBmCCweKFbfj0fvLiOkFiK)kIOOBn5uhPiuqPIoJGnds1V4rQub2onaKCPtE0O4rjdSzP43HiJjvOFbpvCnGJZ)BQpRvhqAoEASAPzczJOBknkQnkpsQTbNRKLNOfhLAVKiKww(vpYss0nbsrv0A3PESJbVobLH3hbp4l4EuYwI0aSTrfuWiLcwYavQe3DkyNtjZi5mAAIhdIqjpsKfB5X9evGNVGsfPHVAdhKIG4eozAhFokYVWxUik6ZT9tl2DYZOK7MpzAxFeKDVjDgu4F5Wv3mst0XBLqh6GTvsSCm9egaSey8(YZ)OkJ3HLRGyZcMK4ArvwseuzxajI2Yp4B5MSBWc4uG4Vlka1RaStFnjtIEW21UrOGvWKW)Rnyy8JrQwGabILbxtBN4A3s4956FWs0zb61SaYWYQnBWVLbY8ArvQw(zXXjiryWx82ppZqSrYbTqansjH)dyiPi3zlmew(3jOb8DfC()TrrtIsrvo0mulp2allyjTkxTP4n197QkUPb)OURatwG6BMucTeQnHq9XcwuckzSfjPuVA0E(uru5PDRwSeOPRwj6dIz3KXYPFb6bmBvzdsYS1MdalE2QKmoVG86wLk(owBa6dbclLgaRuXOGsfFCvCUp6GW4nLipgTA0zyVijzFJllp12NyltQagq7XvbvhfzyzreSvXsFLZYr66O50KSiOHrQ11CwbAWq5d71IIU712QIWbu421ezhQyyseh6UeDFefYezvSZsIVxVkWLPzz7SW4fyHrscAAyPGhxPzR)IHxC(q1780PnbY))U1AFLZwiW0I6CZoIufuQ2MMk6wZILcsC8nU6YOTBITmq3mr3Ilnq57SnGkijkyH6aG9rZFPxrR6DFAoQRxCZ6j332svf8ioibXd3OKZcvwvyKSCNz1PWSVWYvy(RubDXsDzJpYJke5Iu6iOT9G200kja8nCOEDg28KgZMiL00yxcy5gGKbzTuuR07vVRb18nu6mRawhcWVTrN1ZoHX(ya0hd2UR2gpiY)zxDNEc1CQcXJmBCyKA77SY6mOhmSHtmqJoeJIwypvyiPXPhqGz1DL9HhUXYChO(9aKk748cJvJqiqnIdCiciO9DG37Xze0zxqL)FMTwG9HIM0MdSUSkn9SDzRo7UEucvohIpJIQkk4zWYMshcfZmvraX)ZVhNezSVZ1A2FN3aqtfMzBI2keiRmAVhp5CtzLwFaT8TYYRMQwhISHpgRNedADDBMbOrOsi4oLRTON1yo12gTLVGehc0FNLKI88UgO9uWPWJ5B8omFTfEqVuNp(09lOTBBb70t3rdk3VtB4Rc)Dij(aXs)kfljVw0ciZyXwtwZuNYCVo4mDqXCjw0Y4Ow0kgkJ5luzmvUDoJ9oXPTtv3LwJYH2Bpd3T5YS)ZzzGPPm2xxdkbjh(4aUpFMfPtZBD8kYY1TfmLHCV6SCpkkV98xgnL1o(i3DFoXxhgdm7o1jwTNzhvwBx(GhexWhSV2eFTNCKMW0(nLicz(M6(XEqq75WCimo4PD9o7eVdhzYUpF6ry4it29XwpYdhjhofGyZcMZXJyN9dwAPVlKOXSRxcM4yPqfnHexNSjRSs1Mj3vt)xVMNTDdLsiWUSxYfBOmIMiGJbWCVoR3LBhR4buaA1WbTJSuDQkFDcZk2CtZHAidLdG)AyngNMs5DmEFXp5P0KVt5bHP7OSI6t3Alll4RG04oLf10t92I6w3TD5BFXoa)(6P7aJx4AcrEIk3Ra)Xny946NmEO5iLlA6gOlEzyl(4NheOndHe4BoMdguE4fjkkLEXcLXakwuI8sDb0xcjINDnRiJMZ3S3dNzwv78IARtCwoQ(diDfltsHmi)0p1MZGkW(VYswTww)b8R3EH067IU(d0doQjAQ)GcTLJAL9Nn9FyNT5SKLt9LeYcJh9SkEq72KDN1ZcofWHbg)HKaXnS7MVZb2hBH9JqAd3iBB2lhy6cti9yKIWngTtF5s3zIZhAQb3yqrsF8g4(pHwlvlzTqzWBAPLpa1nURfhzcoe3OIj32ENkMm7iFZjMaOZDNyII97gsmjw7DKysMd8nHyYph3fIjNpW3QHjN7FTky66TN28QPxyLe5GC3fMaO5Isq2oW9yC10X3ER)7V4k74172Lry5hBumaq0tCCZeMm6r4EgmrN9fF01szxQ6iCrcMqPz8xTv39EPcMG6OE5aMWZXLv0xDDYtuBWXqh1G(WDDaD0DMxiWz4O(NYeuONAtn3iWRSCR)romFR0vgQleZoMo80j3ERRPcJFVTr42BFIRr433v(Uos(EERBbSJj0)QP0w6vO8rAE79RLQJTEQlL7ypkxkhzVrOnD8P72t3Ld2DBg6(8qgiP0pYbJ7lzMP35lo)ehdSC6Kt8oOYPU8H23jC33jahDEBg2(Z72HT7rBa29n34O1BbB)XzF1L2H(2nw8OorAtSBoQCc93td(dCoZ2nLPhLn1cIVxmrl2(GgGSjVTgwDl)D(YbQaG)x4o35Fh(8F71SHTmFwhKZ75DVVJa2siADP3E(mSPaLwG12c3D7f5F7zdHoaAJLAFD(TnZ4EpSVI(Dz)rPF8FKV49DfWT)jcqIO7GRt850FYt1nO1zJpZ4Rn33v29Z9Zto1vyZH5vOVRK2nZMnuGEVgSu1H9LKVl2SlV1PPxOqX(xW7W(6V7oACRo8U076dTIWd497URySxvuoP)B69RgF(HSoZbuI2)6udkwpKxr9H8v2zXrf1992O3L0hP6NnjkEKQH2img3Uf93r3NY0)T8vh(03WLStNpRmNhHxIdE3jZ)F]] )
 
 spec:RegisterPack( "Frost", 20240619.2, [[Hekili:1M1wVTTnu4FlbfiVSopBNM0lR2pu0nSMI2uuLIGHHkjAjAlIitkisvppeOF77COKSKOiTDU0xsC4LZ9Z3HFo(t8V23lMOO(FE64PVy8ftE9OjVC6zV41(EQTzuFVms0TKvWh4K1Wp)ZCHuHRUnvqIXBlff5rWo3iUXJTw67TOGLQ(a3FHDj)k4kz0i)pFHVxcloMwDsQmY376eMSmmlNjYzQTLH4FTGiPXLHcEzOkHwgwRNr(EPmPsQDa6ssrQc(4N1oeLtwKsJ9FNVxeiiAoJaMvQqehKxWPYrrf55uUQmCwz44YWtldxI(LZDl4jI0T2223JePycoO01zIn0C9Hc2qjzWIkW5DBqflxoQwYsfiYvQKrfzTsmJLMsYdeld0whkTZE4sRY)xwKVff0lUVcshh07zyw9nzH(3Gco)(QGwHi3YjzsAGeke4RKO0UWP0uK8vu1ifBnnqjcIzqjYBHmZzTYRk3cQIDlff2lFmctSifpnwydI6vpgrLi2KcoyWIusv291gsR5G5egeoIPqdNUrjNLvTXxXnkdXDkdJe8ygUo008RxF17V6nLHKyyJpSoJOyuEeCuXYYW)wuOsG9GZrsbZLd7(dypLOm0m2BM3gM8Blm2xrJHCX8n4Wtg7WJRkwvKmdh(D46GLsY66VDTsiwOsm7uXa)KkJPdkqtUb2zEz45JoxBsMiiwRI6BvD3cblIP5G5rZvegGAbkJfbOAi6GlRwFMa9rAT65OvpUYQmHr2vowOwKtj3Ayr)bxwGbAO2aQqaeumxNdghEVFq7Q6tGZiuJQ8HL0FawGIfDR(Y3Dxzy9(vbUSuYQcAZb0wMjKK9Q7(M3FvTxz47Wnld3WWcYVc5de9xenOSBzoL(FO0wkw1u7ycH9qumdAh0J0GFHUE1ihUqD)IuA7XeXBhMOoMzVYPnp9f9Pkd9QRIq7Oqp5Rk48nDZLUAsNm5XOtO7gAU6HnDBjX9pGBQ21mHFpIEIVj1YUo424vv(YUwJUqwcEFNRBBJJwfDF7KXhZeCRWchy(UU)t7)MtmSmmWvE9QDh5bNthMoFm5sZrwhrU0mjMqHC1hHjbAv(jsucJx356YI1DX3wDLG1v3OPr21yVerohN0SHXvynGJi8FbhRAW2n6dwBcPBiBTAkNupsQV4RnMPMtK6P03x9qtuNDXr2Zi9PUgNCFNP)iNeRTfZHi29TEzB3VIAQjWVRiv)SJZ0lksxq67dcTgOXe)SQiT7q4DZafAKhrASyd3cytFyj9nwtvDJ))KGAgaJ1)bkthD(bEcZu9tyq6z50iX6feRuIAcQ1wcCwj(2qZxA1s7AhZUiRVHVraJW4Pnkp7ExFX61cEWk4LXITP0oMzGKIXCqfxyJLJlabl3FIoaaHay6SeVud7ZZhnX3BdjNx9S2gMMILS0Ay21mzvPKSiltKdzLLcOyyfLd(muCafw8BPk5OYq4n1QQlPTG1u4jF4ZstiWY4dd22JflpkTigl)OaSpn)nLxcVqVm8F(g2O)bfDT87phRyzrjDpnHVTvR1J2P)BwklIPsBLBm(PAYXnk93HmxEJAUUseqf23Rl3BxAAhnVbqu64r1Iu1CuD0qVeVy9cAoQyzkmjQ8sGHbeWWfMwH4ILnA65WMyEshM99E2Z2bV8ESl5JC2Qev5LWYdR3aZ)s8cFjNMvGwwLGH1R)WOD5)Fz2Vzum(C2YzolsTlbJYZNpO6A2f2Vy)Ysl3BsJR8jnw0o)axIuOerWWIabwAe0Gl16LGcS8vlO9VHFJgZgFQfWjyvBWoZg3vjgZtmdGDz115wTFRch5fQ(gc2ZHp110TocXGn5EvTUMJXzsi82lQ2DGgkHHm2F7SZ6EH2x7DuhV3Bb2Zn0L))0zY31YAF7XUi3W49P7n)mKpFTJyNH(Wsg4aOYTmS8TZMCQ1zCZbk61A5HX4EFzFlmWNpdyFxRWdqOUxzsnLCuQN4GW4D3DIZ3WxPWdrrEVvA24m7qUhKb8EvKl)Bqu7PNEBpqLUVpCNDzl6AhiCAT9(KsA9iR2MdeyDaABP5Wbu(86zmDd5pzmpDJb(WIYpq6K7lE6GE5GyYXWvSFbFVr7yLLDUJ1AYbbrN9qha9)PcZ2066NbCexh6sgXoNXP(Dt)SzMTxGGNGgRtTsjBoq2YXykKgMN(FB1vi)uTubsmWOAbqAXRidguxiLAEk())p]] )
 
-spec:RegisterPack( "Unholy", 20240619.2, [[Hekili:1Ev3oUjou4NLOkfntBx2eMM2P7MmxuT30zL6n0QEXQfWbmjwbSr2MoBQI4zFp2qi2emjTJ6nZqS957Z(8)jCE4NddsrsC4N8N5)MzVD(79M)o)78VpmqUVehguIs2H2aFqrfWF)cDllFVA595muQsCbRINaB9v2xdifIWG1vKC5hPHRhg6fGiL4KWp92WGTK0uCZjXIKWGpVLiQJl5egNi3xhR(1AKaNwhZO1XYT464wE8cdYjcPq)cWzOQCj85N0ViuIKWOHbfeAAughJ)oC)Wu06CCA4hcLWvsDStReKa8H5ee8Sr8nyPNKuGJKSOucq5Y647QJNwhRa(B4imfxqWc9g(NOtKaQIn4iHKt2Hv0C3VcAYWcfi0nge9MFfeLIrYTrjmsUIIfoPysDCkt6LXzczug(ByoqxYo4gEclsYEG(QKTkOE7LGADoJLgvMJ2uHphRM1nE9VZ0ONI47IKCevKX4fOMfTm(37K(1vzzEdaGxv5jcQ0Xak)k633RW79pp8e7POsb8EkvgvHcX5ZEEq2O)YQ467385pp0kz6)RqYDCJgPwvdyzW0nYTakA3m9E9EMwmWQKR5y0onhUdAg52Q55M64eglpL9e1ZYkPpWHdT3Kr2sR4YRes9Y3AyKQkky0Onq0eBFU2RBU7Go3re675v5LBPtCh8ngpUi5OYQn8Vhe1XVYAlte0Pi6N14LqwdlLvjKHIKJPjn6Prd3lyF74nkJSzRmIJlqeka7d1XlAmn9je2zE)0uiivFkob14X)oNuoaw(9dCw3MYBU7mfT(q8kkw0LCf0clxzD3oVKW8rYwOjFyiBuqAJ0L4CO6d(JKq5sSoPXaaHz9r2Bhfc16R9my1DIhGpssuj7jWLnPIdHIsWwaCE)mJWrrLQ)aWlKv415xSSDZHse0Dife3OV7xkPrdrBrqwJicnRsO2tiH(E0uTWYZ2UKOV70HJzQgS0RTFOv5sF3zeVinxVXZMY3ywsTNxCVwPwyE0ZC(6D4rZfCL30ZCZChTpXOIqVu4GVckDVtt7injyeW056ck8z9VHsuPgk3r8hDp3Y40iww0tekSJvPr7Ta8Kq(vooHvSgDQJxd071McCwHotSUfBoPSz3pCQR6Ug37vO9OKEkT3LAAgY2l9kqkdN62UzlRkx4D8WDxkoIaTaaQ60HAp(4Pq8I9kuG(9Bo7PxCKa(GMc3wOhPbA81HABqagQR2E984soTzaQvQswyoGtyWtiov3gx3WmSmOwyZSmfeHqxTtuvwY4GFdKoQoEdKfGtsGbCaV(DyPWRoUo(JYgH03GcmnvzWKBrWYQY07TguIMKxLQYJGjGwJ)h1pwh)B1X)Zxeyfs4cX)(664N2ss2AEAeD)jwRJPmf4)xzojHiZpHBQ6R25Vos6FcEp8J085giGSo)Rc0uZL8ny(jsEUXlQfs5XJQ1g6LOvfRXCfXICOhK6h)yHsHPwW)yII6y9eGWMGDRscM8WGGQsmNwjektNwZhg8Ixuh3m4AD8FPIY)BQQtJ6hH1ppoaEsp2GVWRZ6)Qv)EV4PxtYwDEyYWIEYRxj1fcwggI(HeV(mhZvZNnSO2Hcdj4WY1ecm857KaoNXu2MlBx0O5H3Fu0L3n1Uo4sFti6xi4NcKt51)PeVRSOs6jU622qaRPt7eAW2WnVLN3GI52wJS0565ORgtJG9qx)asEAeYFaHADzUEbooKtNiNpb5uhtpA9mTlTFHlW0BCoL4HddoHy7YMthERRNHlFKPxLFWPrNuy5ckxin9Mwx5Ec(kJLnLBPTN)l9V98iNUbR0pUMX1MAnQ2dloCWgOhMFUR062iWEN0F8CgdpN1YvZVuEIbhRbKB6GTm3dqZomhfSjnY4OLv3PHgy8NhwD)Sw)Sbg7z5Lg55WHBMmMpV7XCwU4wNj8CPSMoMv86q46vD2EfJz4hZgE98zBQMm(aeNtj02FFFMwt8QzMNUxDzfvoggq1Tz4)d]] )
+spec:RegisterPack( "Unholy", 20240620, [[Hekili:1Ev3oUjou4NLOkfntBx2eMMot3nzUOAVPZk1BsR6fRwahWeScyJSnD2ufXZ(ESHqSjysAR6nZqS957Z(8)jyEWNcwNGK4Gp6pZ)nZER)mV53DN)D3hSwUVehSUefVdTf(GIkG)(zAglFVA595muIsCbRIhdB9f2xwtkebR3urYLFGgSzyOxaIuIJd(4BdwNrssWnNelIdw)PmIOoQKtyCICFDK6xBqcCsDeJwhjZW1rT84fSoNiKc9laNIQYLWNFu)IqXscJgSUGqtct5y83G7hMI2KJtcEFGeUsQJDAL1XaFyobbpBeFlw6jjf4qjlmHauUSo6U6OP1rkG)koetXfeSqVH)j6eXGQyloui5KDyfn39RGMuSqbcDRbrV5xbrjyKmlmMrYvuSWjftQJsysVuotidtXFfZb6I3b3WtyrI3d0xfNPG6TxcQn5mwsyzoABf(CSAw341FVPrpbX3fk5iQiLXlqnlAz8FWj9BQst9gaaVQYteuPJbu(v0VTxH37(5WtSNIkfW7PuzufkeNp7NdYg9xAfxF)Mp)NdTsM()kKCh3OrQv1awgmDRmdqr7MP3R3Z0IbwLCdhJ2P5WDqZi3wnp3uhfZy5jSNPEwwj9boCO9MmYwAfxELqQx(wdJuvrbJgUfIMy7Z1EDZDh05oIqFpVkVClDI7GVX4XfjhvwTH)9GOo6vwBzIGofr)SgVeYAyPSkHmuKCmnUrpnA4Eb7RhVrPKTzYqoUarOaSpwhTOX00NqyN59ttHGu9j4yuJh)9oPCaS87h4SPnL3C3zkA9H4vuSOl5kOfwUY6UDEjH5JKTqt(Wq2OG0gPlX5q1h8hjHYLyDsJbacZ6JS3okeQ1x7zWQ7epaFK4Ws2ZGlBCfhcfLGTa48Hzn28BoM2Os1Ia4iYkStNySENlZY2nhkhr3HUTJGjJCClUYqqoLqcnTsO2tiHUI0STWYV3UGPV7KLJzihSWSTxQvXuF35lVinxVP1MY3ywWTNpEVgTwyE0ZCn7D4rZuCL30ZCcDNlyIr9IEj4b3fuYENM2rAHWiCQZXgu4Z6FdLOsnuUZhC09mJXPHS0WNjuyhRcN2Bb4jHSVCCmRyd6u)WgO3Rjg4ScDEADd4CszZUV)up3DT13Rm8rj9uAVl1snulq6vGugo1TDBgRkx4D8WDxkoIaniaQ6KHAE(4Pq8I9kuGPbAo7PxCOa(GMa3wOdQbAl2HABqagQN3EDe5soTzaQKQswCC8N5VZdIGFgXP6M86g1HLcvkBM0PGie6AHIQYsgh8BG0r1rBHSaCsmm(d41VdlfE1r1rFq2iK(guGPjkdMmdblRkIV3AmkACEvIkpcMaAn(Fu)uD0Vvh9pFwGviHle)7RRJEoJeNzEAeD)jwRJOmf4)xzojMiZpHBI6R2PZos6FcEp8J08PgiGSo)Rc0eZL8ny(zsEUXlQfs5XJQ1g6LOvfBWCfXICOdL6N(qHsHPwW)yII6i98HWMk7KwnhS(fVOoQzg26O)sfs)3uvth1pbRFUtpC)FQbmHxNP(vR(9EbpVMKU68yIHf9KlUsQlezmme99)F9zEHRMpByrT97hsWHLRXFF4Z3jbCoJbUnx2UcrZdV)uPlVBQDrVL(Mq0pR)peiNsI)djExnqL0tC14THawdQ2j0GDKBElpVBeZTTMEPZ1ZrlmMgb75V(oK800KFhc16YC9cCCENoroFyYPogK06zAxh)cxGP34CGXdhgCyX2Lnhu8wxpdx(itVk)GttrPWYfuUqA6nTUY9e8vglBk3sBp)x6F75roDZyPFCntUn1AQThxC4Gnqpo)CxPnTrG9oP)45mgEKRLRMFP8edoHdi30b7pUhGMTtokytAKXr)PUtdnWKqpU6HzhoCZaZ)m11SplV0Cp3caozSib3t6SCXTotd6sfoDmB71HW1RqT9vgZDyml71ZNTbCY4ZqCoLqN)99KAn8RMzE6EvRvu5CEGkjSAW61vLyoTsi09Gg8)p]] )
 
 
 
-spec:RegisterPackSelector( "blood", "Blood (Beta)", "|T135770:0|t Blood",
+spec:RegisterPackSelector( "blood", "Blood", "|T135770:0|t Blood",
     "If you have spent more points in |T135770:0|t Blood than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
