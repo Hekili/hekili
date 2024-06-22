@@ -657,6 +657,29 @@ spec:RegisterStateExpr("calc_shred_dpe", function()
     return shred_dpe
 end)
 
+
+spec:RegisterStateExpr("calc_bite_dpe", function()
+    local avg_base_damage = 377.877920772
+    local scaling_per_combo_point = 0.125
+    local dmg_per_combo_point = 576.189844175
+
+    local base_cost = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
+    local excess_energy = min(25, energy.current - base_cost) or 0
+
+    local bite_damage =         avg_base_damage
+    bite_damage = bite_damage + dmg_per_combo_point * combo_points.current 
+    bite_damage = bite_damage + state.stat.attack_power * scaling_per_combo_point * combo_points.current
+    
+    Hekili:Debug("bite_damage pre multi (%.2f), attPower (%d)", bite_damage, state.stat.attack_power)
+    bite_damage = bite_damage * (1 + excess_energy/25)
+    bite_damage = bite_damage * (1 + talent.feral_aggression.rank * 0.05)
+
+    local bite_dpe = bite_damage / (base_cost + excess_energy)
+    Hekili:Debug("bite_damage (%.2f), excess_energy (%d), dpe (%.2f)", bite_damage, excess_energy, bite_dpe)
+
+    return bite_dpe
+end)
+
 local cachedRipEndThresh = 10 -- placeholder until first calc
 spec:RegisterStateExpr("cached_rip_end_thresh", function()
     return cachedRipEndThresh
