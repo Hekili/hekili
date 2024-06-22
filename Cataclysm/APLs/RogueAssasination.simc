@@ -4,7 +4,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_sta
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
 
 actions=stealth,if=!stealthed.all
-actions+=/garrote,if=!stealthed.all
+actions+=/garrote,if=stealthed.all
 actions+=/slice_and_dice,if=!buff.slice_and_dice.up
 actions+=/call_action_list,name=st
 actions+=/variable,name=regen_saturated,value=energy.regen_combined>settings.regen_threshold
