@@ -741,11 +741,11 @@ end)
 
 
 spec:RegisterStateFunction("berserk_expected_at", function(current_time, future_time)
+if not talent.berserk.enabled then
+        return false
+    end
     if buff.berserk.up then
-        return (
-            (future_time < current_time + buff.berserk.remains)
-            or (future_time > current_time + cooldown.berserk.remains)
-        )
+        return future_time < current_time + buff.berserk.remains
     end
     if cooldown.berserk.remains > 0 then
         return (future_time > current_time + cooldown.berserk.remains)
@@ -754,7 +754,7 @@ spec:RegisterStateFunction("berserk_expected_at", function(current_time, future_
         return (future_time > current_time + buff.tigers_fury.remains)
     end
 
-    return false
+    return tf_expected_before(current_time, future_time)
 end)
 
 
