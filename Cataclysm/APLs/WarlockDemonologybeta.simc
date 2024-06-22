@@ -1,7 +1,7 @@
 Smufrik beta demo
 # Start the fight with Felguard for the Demon Soul buff and Felstorm
 actions.precombat+=/summon_felguard,if=settings.pet_twisting&!pet.alive
-actions.precombat+=/summon_felhunter,if=!setting.pet_twisting&!pet.alive
+actions.precombat+=/summon_felhunter,if=!settings.pet_twisting&!pet.alive
 actions.precombat+=/fel_armor,if=buff.fel_armor.down
 actions.precombat+=/soul_link,if=!buff.soul_link.up
 actions.precombat+=/volcanic_potion
@@ -16,7 +16,7 @@ actions+=/life_tap,if=mana.pct<55 & cooldown.metamorphosis.remains<10
 actions+=/synapse_springs,if=cooldown.metamorphosis.remains>61
 actions+=/metamorphosis,use_off_gcd=1
 actions+=/soulburn,if=soul_shard>1&buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
-actions+=/summon_felguard,if=buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
+actions+=/summon_felguard,if=buff.fel_intelligence.up & cooldown.demon_soul.remains < 6 & settings.pet_twisting & target.time_to_die>27 & soul_shards>1
 actions+=/run_action_list,name=sdr,if=buff.metamorphosis.up
 actions+=/call_action_list,name=nr,if=buff.metamorphosis.down& cooldown.metamorphosis.remains>1
 actions+=/run_action_list,name=aoe,if=active_enemies>2
@@ -29,11 +29,11 @@ actions.sdr+=/felstorm,if=buff.demon_soul_felguard.up
 actions.sdr+=/bane_of_doom,if=!ticking&target.time_to_die>15
 actions.sdr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.bane_of_doom.up
 actions.sdr+=/summon_doomguard,if=buff.demonic_pact.stack>=4&buff.molten_core.stack>=1&cooldown.hand_of_gul_dan.remains<10
-actions.sdr+=/summon_infernal,if=settings.inferno_enabled
+actions.sdr+=/summon_infernal,if=actions.sdr+=/summon_infernal,if=settings.inferno_enabled&target.time_to_die>45&soul_shards>=3
 actions.sdr+=/hand_of_guldan,use_off_gcd=1
 actions.sdr+=/shadowflame,if=!debuff.shadowflame.up
 actions.sdr+=/soulburn,if=soul_shard>1&settings.pet_twisting&!buff.fel_intelligence.up & buff.demon_soul_felguard.down
-actions.sdr+=/summon_felhunter,if=soul_shard>1&buff.soulburn_up&!buff.fel_intelligence.up&settings.pet_twisting&buff.demon_soul_felguard.down
+actions.sdr+=/summon_felhunter,if=soul_shard>1&buff.soulburn.up&!buff.fel_intelligence.up&settings.pet_twisting&buff.demon_soul_felguard.down
 actions.sdr+=call_action_list,name=nr
 
 
