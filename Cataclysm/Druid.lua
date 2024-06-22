@@ -54,7 +54,7 @@ local function rage_amount()
     return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c )
 end
 
-local function calculate_damage( coefficient, flatdmg, weaponBased, masteryFlag, armorFlag, critChanceMult )
+local function calculate_damage( coefficient, flatdmg, weaponBased, attackPowerFlag, masteryFlag, armorFlag, critChanceMult )
     local feralAura = 1
     local razorClawsMultiplier = state.talent.mangle.enabled --Use MasterySpell(Mangle) as trigger, since razorClaws is neither talent nor ability?
     local boss_armor = 10643*(1-0.2*(state.debuff.major_armor_reduction.up and 1 or 0))*(1-0.2*(state.debuff.shattering_throw.up and 1 or 0))
@@ -64,8 +64,8 @@ local function calculate_damage( coefficient, flatdmg, weaponBased, masteryFlag,
     --local vers = 1 + state.stat.versatility_atk_mod
     local mastery = masteryFlag and razorClawsMultiplier and ( 1.25 + state.stat.mastery_value * 0.03125 ) or 1
     local tf = state.buff.tigers_fury.up and class.auras.tigers_fury.multiplier or 1
-
-    return (coefficient * ((weaponBased and state.stat.weapon_dps) or state.stat.attack_power) + flatdmg) * crit * mastery * feralAura * armor * tf
+    local damageSourceMulti = (weaponBased and state.stat.weapon_dps) or (attackPowerFlag and state.stat.attack_power) or 1
+    return (coefficient * damageSourceMulti + flatdmg) * crit * mastery * feralAura * armor * tf
 end
 
 -- Force reset when Combo Points change, even if recommendations are in progress.
@@ -670,14 +670,35 @@ spec:RegisterStateExpr("calc_bite_dpe", function()
     bite_damage = bite_damage + dmg_per_combo_point * combo_points.current 
     bite_damage = bite_damage + state.stat.attack_power * scaling_per_combo_point * combo_points.current
     
-    Hekili:Debug("bite_damage pre multi (%.2f), attPower (%d)", bite_damage, state.stat.attack_power)
+    -- Hekili:Debug("bite_damage pre dmgc (%.2f), attPower (%d)", bite_damage, state.stat.attack_power)
+    -- bite_damage = calculate_damage(1, bite_damage, false, false, false, false) TODO fix
+    Hekili:Debug("bite_damage (%.2f), excess_energy (%d)", bite_damage, excess_energy)
+
     bite_damage = bite_damage * (1 + excess_energy/25)
     bite_damage = bite_damage * (1 + talent.feral_aggression.rank * 0.05)
+    
+    Hekili:Debug("bite_damage final (%.2f), excess_energy (%d)", bite_damage, excess_energy)
 
     local bite_dpe = bite_damage / (base_cost + excess_energy)
-    Hekili:Debug("bite_damage (%.2f), excess_energy (%d), dpe (%.2f)", bite_damage, excess_energy, bite_dpe)
 
     return bite_dpe
+end)
+
+spec:RegisterStateExpr("calc_rip_tick_damage", function()
+    local base_damage = 56
+    local combo_point_coeff = 161
+    local attack_power_coeff = 0.0207
+    local glyph_muli = (glyph.rip.enabled and 1.15) or 1
+    local cp = combo_points.current
+
+    local flat_damage = base_damage + combo_point_coeff*cp + attack_power_coeff*state.stat.attack_power*cp
+
+    local tick_damage = calculate_damage(1, flat_damage, false, false, true, false)
+    tick_damage = tick_damage * glyph_muli
+
+    Hekili:Debug("Rip tick damage (%.2f)", tick_damage)
+
+    return tick_damage
 end)
 
 local cachedRipEndThresh = 10 -- placeholder until first calc
@@ -691,13 +712,14 @@ spec:RegisterStateExpr("calc_rip_end_thresh", function()
     end
     
     --Calculate the minimum DoT duration at which a Rip cast will provide higher DPE than a Bite cast
-    expected_bite_dpe = 1 --TODO:FIXME
-    expected_rip_tick_dpe = 1 --TODO:FIXME
-    num_ticks_to_break_even = 1 + floor(expected_bite_dpe/expected_rip_tick_dpe)
+    -- TODO: DPE calculations are not accurate enough to be used
+    local expected_bite_dpe = 1 -- calc_bite_dpe
+    local expected_rip_tick_dpe = 1 -- calc_rip_tick_damage / action.rip.cost
+    local num_ticks_to_break_even = 1 + floor(expected_bite_dpe/expected_rip_tick_dpe)
 
     Hekili:Debug("Bite Break-Even Point = %d Rip ticks", num_ticks_to_break_even)
 
-    end_thresh = num_ticks_to_break_even * aura.rip.tick_time
+    local end_thresh = num_ticks_to_break_even * aura.rip.tick_time
 
     --Store the result so we can keep using it even when not at 5 CP
     cachedRipEndThresh = end_thresh
@@ -3077,10 +3099,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132122,
         damage = function ()
-            return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1)
+            return calculate_damage( 0.147, 56, false, true, true ) * (debuff.mangle.up and 1.3 or 1)
         end,
         tick_damage = function ()
-            return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1) * (set_bonus.tier11feral_2pc == 1 and 1.1 or 1)
+            return calculate_damage( 0.147, 56, false, true, true ) * (debuff.mangle.up and 1.3 or 1) * (set_bonus.tier11feral_2pc == 1 and 1.1 or 1)
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -3345,7 +3367,7 @@ spec:RegisterAbilities( {
 
         form = "cat_form",
         damage = function ()
-            return calculate_damage( 5.40 , 56, true, false, true) * (debuff.mangle.up and 1.3 or 1) * (debuff.bleed.up and rend_and_tear_mod or 1)
+            return calculate_damage( 5.40 , 56, true, false, false, true) * (debuff.mangle.up and 1.3 or 1) * (debuff.bleed.up and rend_and_tear_mod or 1)
         end,
     
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
