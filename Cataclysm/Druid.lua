@@ -1654,7 +1654,7 @@ spec:RegisterAuras( {
     -- Bleed damage every $t1 seconds.
     rip = {
         id = 1079,
-        duration = function() return 12 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7feral_2pc == 1 and 4) or 0) end,
+        duration = function() return 16 + ((glyph.rip.enabled and 4) or 0) + ((set_bonus.tier7feral_2pc == 1 and 4) or 0) end,
         tick_time = 2,
         max_stack = 1,
         copy = { 1079, 9492, 9493, 9752, 9894, 9896, 27008, 49799, 49800 },
@@ -1672,7 +1672,7 @@ spec:RegisterAuras( {
             if combo_points.current == 0 then
                 return 0
             end
-            return 14 + (set_bonus.tier8feral_4pc == 1 and 8 or 0) + ((combo_points.current - 1) * 5)
+            return 22 + (set_bonus.tier8feral_4pc == 1 and 8 or 0) + ((combo_points.current - 1) * 5)
         end,
         max_stack = 1,
         copy = { 52610 },
@@ -2392,10 +2392,9 @@ spec:RegisterAbilities( {
         gcd = "totem",
 
         spend = function()
-            local unglyphed = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
-            --Glyph of Ferocious Bite: and consumes up to 25 additional energy to increase damage by up to 100%, and heals you for 1% of your total maximum health for each 10 energy used
-            local additional_due_glyph = (glyph.ferocious_bite.enabled and min(25, energy.current - unglyphed) or 0)
-            return  unglyphed + additional_due_glyph end, 
+            local base_cost = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
+            local excess_energy = min(25, energy.current - base_cost) or 0
+            return  base_cost + excess_energy end, 
         spendType = "energy",
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost
@@ -2744,7 +2743,7 @@ spec:RegisterAbilities( {
         end,
 
     },
-    --Mangle the target for 285% normal damage plus 50 and causes the target to take 30% additional damage from bleed effects for 1 min.  Awards 1 combo point.
+    --Mangle the target for 540% normal damage plus 56 and causes the target to take 30% additional damage from bleed effects for 1 min.  Awards 1 combo point.
     mangle_cat = {
         id = 33876,
         cast = 0,
@@ -3058,10 +3057,7 @@ spec:RegisterAbilities( {
             return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1)
         end,
         tick_damage = function ()
-            return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1) 
-        end,
-        tick_dmg = function ()
-            return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1) 
+            return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1) * (set_bonus.tier11feral_2pc == 1 and 1.1 or 1)
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -3310,7 +3306,7 @@ spec:RegisterAbilities( {
         end,
 
     },
-    --Shred the target, causing 425% damage plus 50 to the target.  Must be behind the target.  Awards 1 combo point.  Effects which increase Bleed damage also increase Shred damage.
+    --Shred the target, causing 540% damage plus 56 to the target.  Must be behind the target.  Awards 1 combo point.  Effects which increase Bleed damage also increase Shred damage.
     shred = {
         id = 5221,
         cast = 0,
@@ -3326,7 +3322,7 @@ spec:RegisterAbilities( {
 
         form = "cat_form",
         damage = function ()
-            return calculate_damage( 4.25 , 56, true, false, true) * (debuff.mangle.up and 1.3 or 1) * (debuff.bleed.up and rend_and_tear_mod or 1)
+            return calculate_damage( 5.40 , 56, true, false, true) * (debuff.mangle.up and 1.3 or 1) * (debuff.bleed.up and rend_and_tear_mod or 1)
         end,
     
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
