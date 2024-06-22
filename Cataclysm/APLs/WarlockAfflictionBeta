@@ -1,0 +1,48 @@
+# Opener
+actions.precombat+=/volcanic_potion
+actions.precombat+=/shadow_bolt,if=!debuff.shadow_and_flame.up
+actions.precombat+=/haunt,if=debuff.shadow_and_flame.up
+actions+=/group_curse,if=debuff.my_curse.down&curse_grouped
+actions+=/solo_curse,if=debuff.my_curse.down
+actions+=/haunt,use_off_gcd=1,if=!target.debuff.haunt.up
+actions+=/demon_soul,if=pet.felhunter.active
+actions+=/unstable_affliction,if=!ticking
+actions+=/corruption,if=spell_targets.corruption<6
+actions+=/bane_of_doom,if=!ticking
+actions+=/shadowflame
+actions+=/shadow_bolt
+actions+=/run_action_list,name=st
+actions+=/call_action_list,name=aoe,if=active_enemies>1
+
+# Single Target Rotation
+actions.st+=/summon_felhunter,if=!pet.felhunter.active
+actions.st+=/shadow_bolt,if=debuff.shadow_and_flame.remains<=1
+actions.st+=/group_curse,if=debuff.my_curse.down&curse_grouped
+actions.st+=/solo_curse,if=debuff.my_curse.down
+actions.st+=/summon_doomguard,if=(fight_style=Single_Target&time>15&!pet.present)
+actions.st+=/summon_infernal,if=(fight_style=Multi_Target&time>15&!pet.present)
+actions.st+=/demon_soul
+actions.st+=/haunt,use_off_gcd=1,if=!target.debuff.haunt.up
+actions.st+=/bane_of_doom,if=target.debuff.bane_of_doom.remains<3
+actions.st+=/unstable_affliction,if=target.debuff.unstable_affliction.remains<3&target.health.pct>25
+actions.st+=/drain_soul,if=target.health.pct<=25
+actions.st+=/shadowflame
+actions.st+=/shadow_bolt
+actions.st+=/soulburn,if=moving
+actions.st+=/soul_fire,if=buff.soulburn.up
+actions.st+=/fel_flame,if=moving
+actions.st+=/call_action_list,name=aoe,if=active_enemies>1
+
+# AoE Rotation
+actions.aoe+=/corruption,if=target.debuff.corruption.remains<3,target_if=debuff.corruption.remains
+actions.aoe+=/unstable_affliction,if=target.debuff.unstable_affliction.remains<3,target_if=debuff.unstable_affliction.remains
+actions.aoe+=/bane_of_agony,target_if=debuff.bane_of_agony.remains,if=debuff.bane_of_agony.remains<3
+actions.aoe+=/soulburn,if=cooldown.seed_of_corruption.remains<gcd&active_enemies>2
+actions.aoe+=/seed_of_corruption,if=buff.soulburn.up&active_enemies>2
+actions.aoe+=/seed_of_corruption,if=active_enemies>=6
+actions.aoe+=/shadowflame
+actions.aoe+=/shadow_bolt,cycle_targets=1
+actions.aoe+=/curse_of_the_elements,if=active_enemies>5&debuff.curse_of_elements.remains<3&!target.distance.yard>5
+
+# Soul Swap Logic (2 targets)
+actions.aoe+=/soul_swap,if=target.debuff.bane_of_agony.up&active_enemies=2
