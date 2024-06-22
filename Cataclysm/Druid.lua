@@ -1339,10 +1339,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 5487, 9634, "dire_bear_form" }
     },
-    -- Immune to Fear effects.
+    -- Your Lacerate periodic damage has a 50% chance to refresh the cooldown of Mangle (Bear) and make it free. 
+    -- When activated, this ability allows Mangle (Bear) to hit up to 3 targets with no cooldown, 
+    -- reduces Cat Form abilities' energy cost by 50% for 15 seconds, and prevents the use of Tiger's Fury during Berserk.
     berserk = {
         id = 50334,
-        duration = function() return glyph.berserk.enabled and 20 or 15 end,
+        duration = function() return glyph.berserk.enabled and 25 or 15 end,
         max_stack = 1,
     },
     -- Immunity to Polymorph effects.  Increases melee attack power by $3025s1 plus Agility.
