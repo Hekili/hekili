@@ -830,8 +830,8 @@ spec:RegisterStateExpr( "overpower_filler", function()
 end)
 
 spec:RegisterStateExpr( "overpower_now", function()
-    local emergency_overpower = not settings.optimize_overpower and buff.taste_for_blood.remains <= 5.5
-    local optimized_overpower = settings.optimize_overpower and buff.taste_for_blood.up and (buff.taste_for_blood_prediction.remains<1.5 or buff.taste_for_blood.remains <= 1.5)
+    local emergency_overpower = not settings.optimize_overpower and buff.taste_for_blood.up and buff.taste_for_blood.remains <= 5.5
+    local optimized_overpower = settings.optimize_overpower and buff.taste_for_blood.up and (buff.taste_for_blood_prediction.remains <1.5 or buff.taste_for_blood.remains <= 1.5)
     return target.health.pct>20 and ( emergency_overpower or optimized_overpower)
 end )
 
@@ -2237,11 +2237,11 @@ spec:RegisterSetting( "predict_tfb", true, {
 } )
 
 
-spec:RegisterSetting( "optimize_overpower", true, {
+spec:RegisterSetting( "optimize_overpower", false, {
     type = "toggle",
     name = strformat( "Optimize %s", Hekili:GetSpellLinkWithTexture( spec.abilities.overpower.id ) ),
-    desc = strformat( "When enabled, %s will be deprioritized until the GCD before a subsequent Taste For Blood proc.\n\nApplies to Arms only.\n\n"..
-        "Default: Checked", Hekili:GetSpellLinkWithTexture( spec.abilities.overpower.id ) ),
+    desc = strformat( "When enabled, %s use TfB-prediction instead of TfB-Remains for last-gcd detection.\n\nApplies to Arms only.\n\n"..
+        "Default: Unchecked", Hekili:GetSpellLinkWithTexture( spec.abilities.overpower.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.optimize_overpower = val
