@@ -1,30 +1,135 @@
-## Blood Death Knight (Beta)
-## 2024-05-23
+## Blood DeathKnight
+# Based on WoWSims
 
+# Use Blood Presence before combat to ensure the buff is active when combat starts
+actions.precombat+=/blood_presence,if=buff.blood_presence.down
+
+# Use Bone Shield 50 seconds before combat to ensure the buff is active when combat starts
+actions.precombat+=/bone_shield,precombat_seconds=50
+
+# Use Army of the Dead 10 seconds before combat to ensure ghouls are summoned and ready when combat begins
+actions.precombat+=/army_of_the_dead,precombat_seconds=10
+
+# Use Raise Dead 3 seconds before combat to summon a ghoul for additional DPS
+actions.precombat+=/raise_dead,precombat_seconds=3
+
+# Use Horn of Winter 1 second before combat to ensure the buff is active when combat starts
+actions.precombat+=/horn_of_winter,precombat_seconds=1
+
+# Use a potion 1 second before combat for a prepot DPS boost
+actions.precombat+=/potion,precombat_seconds=1
+
+
+## Default
+# Use Mind Freeze for interrupts
 actions+=/mind_freeze
-actions+=/horn_of_winter,if=down
-actions+=/bone_shield
-actions+=/dancing_rune_weapon
-actions+=/death_strike,if=health.pct<=70
 
+# Use Blood Fury for a burst of attack power (racial ability for Orcs)
+actions+=/blood_fury
+
+# Use Synapse Springs for an additional burst of attack power (engineering gloves enchant)
+actions+=/synapse_springs
+
+# Use items (e.g., trinkets) on cooldown
 actions+=/use_items
-actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>1
-actions+=/outbreak,if=!dot.blood_plague.ticking & dot.blood_plague.refreshable | !dot.frost_fever.ticking & dot.frost_fever.refreshable
-actions+=/icy_touch,if=!dot.frost_fever.ticking
-actions+=/plague_strike,if=!dot.blood_plague.ticking
-actions+=/death_strike,if=health.current + action.death_strike.healing < health.max & dot.frost_fever.ticking & dot.blood_plague.ticking
-actions+=/rune_strike,if=runic_power.deficit < 20
-actions+=/empower_rune_weapon,if=( blood_runes.current + frost_runes.current + unholy_runes.current ) < 2
-actions+=/blood_boil,if=buff.crimson_scourge.up
-actions+=/heart_strike
 
+# Use Dancing Rune Weapon on cooldown for increased parry chance and damage
+actions+=/dancing_rune_weapon
+
+# Use Icebound Fortitude if health is at or below 30% for damage reduction
+actions+=/icebound_fortitude,if=health.pct<=30
+
+# Use Outbreak if Blood Plague or Frost Fever are about to expire
+actions+=/outbreak,if=debuff.blood_plague.remains<=1|debuff.frost_fever.remains<=1
+
+# Use Bone Shield if it is not already active
+actions+=/bone_shield,if=!buff.bone_shield.up
+
+# Use Vampiric Blood if health is at or below 50% for increased health and healing received
+actions+=/vampiric_blood,if=health.pct<=50
+
+# Use Rune Tap if Will of the Necropolis buff is active for emergency healing
+actions+=/rune_tap,if=buff.will_of_the_necropolis.up
+
+# Use Empower Rune Weapon if health is at or below 50% and Death Strike is not ready
+actions+=/empower_rune_weapon,if=health.pct<=50&!action.death_strike.ready
+
+# Switch to AOE action list if there is more than 1 active enemy
+actions+=/run_action_list,name=aoe,if=active_enemies>1
+
+# Use Death Strike if Frost or Unholy runes are full, health is at or below 50%, or Blood Shield is not active
+actions+=/death_strike,if=frost_runes.current=2|unholy_runes.current=2|health.pct<=50|!buff.blood_shield.up
+
+# Use Rune Strike if runic power is at or above 120
+actions+=/rune_strike,if=runic_power.current>=120
+
+# Use Blood Tap if a single Frost, Unholy, or Death rune is available and Death Strike is not ready
+actions+=/blood_tap,if=(frost_runes.current=1|unholy_runes.current=1|death_runes.current=1)&!action.death_strike.ready
+
+# Use Death Strike on cooldown for healing and Blood Shield
+actions+=/death_strike
+
+# Use Rune Tap if health is at or below 70%, two Blood runes are available, and no Blood runes are converted to Death runes
+actions+=/rune_tap,if=health.pct<=80&blood_runes.current=2&death_runes.current_blood=0
+
+# Use Blood Boil if Crimson Scourge buff is up
+actions+=/blood_boil,if=buff.crimson_scourge.up
+
+# Use Death Pact if Raise Dead is about to expire or health is at or below 30% for emergency healing
+actions+=/death_pact,if=buff.raise_dead.remains<5|health.pct<=30
+
+# Use Heart Strike if two Blood runes are available and no Blood runes are converted to Death runes
+actions+=/heart_strike,if=blood_runes.current=2&death_runes.current_blood=0
+
+# Apply Frost Fever with Icy Touch if it is not ticking
+actions+=/icy_touch,if=!dot.frost_fever.ticking
+
+# Apply Blood Plague with Plague Strike if it is not ticking
+actions+=/plague_strike,if=!dot.blood_plague.ticking
+
+# Default to Rune Strike
+actions+=/rune_strike
+
+# Use Horn of Winter on cooldown to maintain the buff
+actions+=/horn_of_winter
+
+# Use Raise Dead on cooldown to summon a ghoul for additional DPS
+actions+=/raise_dead
+
+
+## AOE
+# Death and Decay - Used on cooldown for AOE damage
 actions.aoe+=/death_and_decay
-actions.aoe+=/outbreak,if=!dot.blood_plague.ticking & dot.blood_plague.refreshable | !dot.frost_fever.ticking & dot.frost_fever.refreshable
-actions.aoe+=/pestilence,if=dot.frost_fever.ticking & dot.blood_plague.ticking & ( active_dot.frost_fever + active_dot.blood_plague < true_active_enemies * 2 )
-actions.aoe+=/icy_touch,if=!dot.frost_fever.ticking
-actions.aoe+=/plague_strike,if=!dot.blood_plague.ticking
-actions.aoe+=/empower_rune_weapon,if=( blood_runes.current + frost_runes.current + unholy_runes.current ) < 2
-actions.aoe+=/rune_strike,if=runic_power.deficit < 20
-actions.aoe+=/blood_boil,if=buff.crimson_scourge.up
-actions.aoe+=/blood_boil,if=health.pct > 60 & ( active_enemies > 3 )
-actions.aoe+=/heart_strike
+
+# Apply or refresh Outbreak if Blood Plague or Frost Fever are about to expire
+actions.aoe+=/outbreak,if=debuff.blood_plague.remains<=1|debuff.frost_fever.remains<=1
+
+# Use Pestilence if both Frost Fever and Blood Plague are ticking, and less than true active enemies are infected
+actions.aoe+=/pestilence,if=dot.frost_fever.ticking&dot.blood_plague.ticking&(active_dot.frost_fever+active_dot.blood_plague<active_enemies*2)
+
+# Default to Heart Strike for AOE damage if there are 5 or fewer enemies
+actions.aoe+=/heart_strike,if=active_enemies<=5
+
+# Use Blood Boil if there are more than 5 active enemies or Crimson Scourge buff is up
+actions.aoe+=/blood_boil,if=active_enemies>5|buff.crimson_scourge.up
+
+# Use Death Strike if health is at or below 50% or Blood Shield is not active
+actions.aoe+=/death_strike,if=health.pct<=50|!buff.blood_shield.up
+
+# Apply Frost Fever with Icy Touch if it is not ticking and the target will live for more than 10 seconds
+actions.aoe+=/icy_touch,if=!dot.frost_fever.ticking&target.time_to_die>10
+
+# Apply Blood Plague with Plague Strike if it is not ticking and the target will live for more than 10 seconds
+actions.aoe+=/plague_strike,if=!dot.blood_plague.ticking&target.time_to_die>10
+
+# Default to Death Strike for healing and Blood Shield
+actions.aoe+=/death_strike
+
+# Default to Rune Strike for generating runic power
+actions.aoe+=/rune_strike
+
+# Use Horn of Winter on cooldown to maintain the buff
+actions.aoe+=/horn_of_winter
+
+# Use Raise Dead on cooldown to summon a ghoul for additional DPS
+actions.aoe+=/raise_dead

@@ -11,18 +11,25 @@ local strformat = string.format
 local spec = Hekili:NewSpecialization( 1 )
 
 
--- TODO: Revisit Rage Generation for Cataclysm.
 local function rage_amount( isOffhand )
-    local d
-    if isOffhand then d = select( 3, UnitDamage( "player" ) ) * 0.7
-    else d = UnitDamage( "player" ) * 0.7 end
+    --local d
+    --if isOffhand then d = select( 3, UnitDamage( "player" ) ) * 0.7
+    --else d = UnitDamage( "player" ) * 0.7 end
+    --
+    --local c = ( state.level > 70 and 1.4139 or 1 ) * ( 0.0091107836 * ( state.level ^ 2 ) + 3.225598133 * state.level + 4.2652911 )
+    --local f = isOffhand and 1.75 or 3.5
+    --local s = isOffhand and ( select( 2, UnitAttackSpeed( "player" ) ) or 2.5 ) or UnitAttackSpeed( "player" )
+    --
+    --return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) -- * ( state.buff.defensive_stance.up and 0.95 or 1 )
 
-    local c = ( state.level > 70 and 1.4139 or 1 ) * ( 0.0091107836 * ( state.level ^ 2 ) + 3.225598133 * state.level + 4.2652911 )
-    local f = isOffhand and 1.75 or 3.5
-    local s = isOffhand and ( select( 2, UnitAttackSpeed( "player" ) ) or 2.5 ) or UnitAttackSpeed( "player" )
+    local hit_factor = 6.5
+    local speed = (isOffhand and state.swings.offhand_speed or state.swings.mainhand_speed)/state.haste
+    local rage_multiplier = state.talent.anger_management.enabled and 1.25 or 1
 
-    return min( ( 15 * d ) / ( 4 * c ) + ( f * s * 0.5 ), 15 * d / c ) * ( state.talent.endless_rage.enabled and 1.25 or 1 ) -- * ( state.buff.defensive_stance.up and 0.95 or 1 )
+    return hit_factor * speed * rage_multiplier * (isOffhand and 0.5 or 1)
 end
+
+
 
 
 spec:RegisterResource( Enum.PowerType.Rage, {
@@ -68,7 +75,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
 
         stop = function () return state.swings.mainhand == 0 end,
         value = function( now )
-            return state.buff.heroic_strike.expires < now and state.buff.cleave.expires < now and rage_amount() or 0
+            return rage_amount()
         end,
     },
 
@@ -202,9 +209,9 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-
+    -- Your next special attack that costs more than 5 Rage consumes no Rage.
     battle_trance = {
-        id = 85742,
+        id = 12964,
         duration = 10,
         max_stack = 1,
     },
@@ -311,6 +318,8 @@ spec:RegisterAuras( {
         id = 43104,
         duration = 12,
         max_stack = 1,
+        shared = "target",
+        copy = {43104, 413764}
     },
     -- Disarmed!
     disarm = {
@@ -715,15 +724,16 @@ spec:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED", function()
 
         if application_events[ subtype ] then
 
-            if is_rend then
-                ApplyRend( destGUID, GetTime() )
-            end
             if actionType == 60503 then
                 ApplyTFB( GetTime() )
             end
         end
 
+
         if tick_events[ subtype ] then
+            if is_rend then
+                ApplyRend( destGUID, GetTime() )
+            end
         end
 
         if removal_events[ subtype ] then
@@ -748,7 +758,7 @@ function ApplyRend( destGUID, time )
     else
         RemoveRend( destGUID )
     end
-    for i = time + 3, time + state.debuff.rend.duration, state.debuff.rend.tick_time do
+    for i = time, time + state.debuff.rend.duration, state.debuff.rend.tick_time do
         rend_tracker.target[ destGUID ].ticks[ tostring(i) ] = i
     end
     AssessNextTFB()
@@ -784,7 +794,7 @@ function GetNextTFB( time, lastApplied )
         return
     end
 
-    local next_possible_tfb = ( (lastApplied or 0 ) == 0 and time ) or ( lastApplied + 6 )
+    local next_possible_tfb = ( (lastApplied or 0 ) == 0 and time ) or ( lastApplied + 5 )
     local next_prediction = 0
     -- Ensure rend_tracker.target is a table
     if type(rend_tracker.target) == "table" then
@@ -814,12 +824,15 @@ spec:RegisterStateExpr( "next_tfb", function()
     return rend_tracker.tfb.next
 end )
 
-spec:RegisterStateExpr( "overpower_now", function()
-    local emergency_overpower = not settings.optimize_overpower and buff.taste_for_blood.remains <= 5.5
-    local optimized_overpower = settings.optimize_overpower and buff.taste_for_blood.up and buff.taste_for_blood_prediction.remains<1.5
-    local filler_overpower = ( buff.taste_for_blood.up or buff.overpower_ready.up ) and not ( action.mortal_strike.enabled and cooldown.mortal_strike.up) and not ( action.colossus_smash.enabled and cooldown.colossus_smash.up) and rage.current>=5
+spec:RegisterStateExpr( "overpower_filler", function()
+    local filler = ( buff.taste_for_blood.up or buff.overpower_ready.up ) and not action.mortal_strike.ready and not action.colossus_smash.ready and rage.current>=5
+    return filler
+end)
 
-    return (target.health.pct>20 and ( emergency_overpower or optimized_overpower)) or filler_overpower
+spec:RegisterStateExpr( "overpower_now", function()
+    local emergency_overpower = not settings.optimize_overpower and buff.taste_for_blood.up and buff.taste_for_blood.remains <= 5.5
+    local optimized_overpower = settings.optimize_overpower and buff.taste_for_blood.up and (buff.taste_for_blood_prediction.remains <1.5 or buff.taste_for_blood.remains <= 1.5)
+    return target.health.pct>20 and ( emergency_overpower or optimized_overpower)
 end )
 
 spec:RegisterStateFunction( "swap_stance", function( stance )
@@ -2224,11 +2237,11 @@ spec:RegisterSetting( "predict_tfb", true, {
 } )
 
 
-spec:RegisterSetting( "optimize_overpower", true, {
+spec:RegisterSetting( "optimize_overpower", false, {
     type = "toggle",
     name = strformat( "Optimize %s", Hekili:GetSpellLinkWithTexture( spec.abilities.overpower.id ) ),
-    desc = strformat( "When enabled, %s will be deprioritized until the GCD before a subsequent Taste For Blood proc.\n\nApplies to Arms only.\n\n"..
-        "Default: Checked", Hekili:GetSpellLinkWithTexture( spec.abilities.overpower.id ) ),
+    desc = strformat( "When enabled, %s use TfB-prediction instead of TfB-Remains for last-gcd detection.\n\nApplies to Arms only.\n\n"..
+        "Default: Unchecked", Hekili:GetSpellLinkWithTexture( spec.abilities.overpower.id ) ),
     width = "full",
     set = function( _, val )
         Hekili.DB.profile.specs[ 1 ].settings.optimize_overpower = val
@@ -2449,7 +2462,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Arms", 20240523, [[Hekili:TN1cpoUTr4FlghGp7CxC9JBt7MUElsAlAVdfBbI3IwGIijAjURyn1JJK68zad9BVZqkjtjtjV(WvuG2GKSXwC0md)M3J9w49O3MiII69WY5lF38BwUA2YLRU5MB92OoKt92Ktc3rEg(qkjb(7pisK4dpWZir4llZkeHWb)9S9pUnSmyCza8XnmKSTfmU69PEBDiJf3SAj8250qVhw4TjMffrnusLHg5aCIieSmrzqo()yQdLbpHF9pt3X4mqpezpX4G0Fvzq734dLF4vWd)R50uk8nsOILLkNLlOHzjBjQ3S(xb)vXP(sfjnK6Me4djK0iw6Z(Y4Sc1BzpTMiLSNtPrMNmRljJ3w80tZso4xZEnvrz7tBoP7ROpDyDShHBF8xxbhgteptRHX)a9jsbx1qkqGSinIk8jIKmbQztg9m)qEmGh8mPSq6ltiY4z0uYwon64XWSmokUUeiOjewQC64jsQsbQMCwefvy)kjuXHXkuHuZuSeQVkZpIrVFYKvFRH4z2QZmWKgUB63mzXSBEdhC8sdpmD6BwnEYOkQti)RSkI9f0Oc9TAwr(XJtCXVI8X9kM7wn94rxNwDXUduIPtTrU2aaIDdHC))dUKxKKq5TqkcN7B(QpNjvVfZbTwc(PKiq)sJ0HeW5FIcWbnHrL3VeaeonfIn4zzr(G7UVkwl)Ae1wcB5eiFJktK4IvT833tP56ihLGTJkDq)I2Cgf)tfIdiLO15UflUfas8J3Vg(Sll3IvZNI0C2j3bNu)cXucxfplpu1c)GO3DCQuMc)hkZOm1meKa2eUd0CBAzPqArFbKy)sugbynhsDq4jUiD8K)tD1A7BKHFsJKDj8ULZTPmMkYyHvwjDIP2wP1loE04u2XGcEZqsiesMfwiG7O6(1nHEFSGwqrIvXckK7KhvXfl4rhNOFyvgyLaRSycFAs)z)cnHcJh1CUTv0IGw6fGxJCJJDY0WPKprD5PoEuFyW)tabVkHCylTmGLKZPja9Lbv(faIKR)c93D5mnT6qq7l1GgjKqrw1j(r4FBFXnNG(uWnFu3OMJhZ(evKNThcctZ2p9fOkuHKk2b0FDAtNxdvO6I6B05rld(jqXaOkfAHk7pEQBaR0SDBwcf(Obe(4rGF0zx6(yDDIC4L6JKQm4(HCsU7ewMR0pA0YnDAPRLYF9xgN21(5UmgEavufQKThfWz1W7qt)CZj60LOgVjKYwUwdaco8OEj4W5Euq)d6JuePI6dnO7Bk(bMWi2PwiUenvr63Jng0yq7inRRtNtGBe0Dbu73o1)zflUF5860)CsXZXGnOjdZAqWhpw19aNKSvIzvuXaMvt74Zk)18GAUSQHf7X8yOfouq330oNbQOP6Sz6OXbUr7Jzc(EMZgDw)UbF1Z7Y0i5oDz2YR6CUq)mnSqrVyH3xMg4iHnc6dYfa7tgKGRzeje0VB1Lu7RFMVk(6Tbc9KaJRN0DXTZw5TzprKIbvWqY)Wp9W7F4p99LbLbpgBkqboTvt1(6UAZRlde0pwWGyKYazwc8cKcvwc06o8ayeT0NHA2LF4VWsHJwaS93NLcQG(4xx5g(paUOYS(ETRi88jl(80zyS2JXmjoLTECAqTGVKWGlnKAnqwKBPKpJduZGb9HOS0DufiF4Y8EL5L0tqcfCJqnqbj5kdOGcDWEcEwAiVa66goIbrxIVhuGGVTm4F(3KuKt0e5p)2YaW3pm2MAs6HtsTmindz(NZ5SqMIFIVv1Yui8wl0FBzGENaAX8OHfaG9ZitJSF0sljVNX5w3OkwQQjvJg6hLwKawoTnIdPdk)W71wv8b3asq7QvgG1YrJL3gWggNj82SPiNkslKGJH(q9UymtAdF8b9UzQSvE)O3Mq4MaqpXBZKYGrGLyGPgldoEe8qgEM7YGP691aSB4zm1uDEWBzW96xg(3vAOT3Hb1s6B0uIX7bVbGdZ8N6tMQFYQALzudN6BEuZ1BIBjIhpEqL5oTWMA4YaZOQPuRWOscgoT892ytRNcc271snSn6xW(Rh7BJLi6Vcr)6JnlrW2Aau8Uo2NgE1PvBBlx7QTA4EzLTy41lycM9nRl1QnwurUPxhfxI7KIEAnfix(URHllSCB7mThYRFDV8cD2mgHf32yZnp8(1vpTFxtyqSgR8e3uDxfvNyYPElAzYpTkfuJ)n9QXDBo7ehSNOe5XTFb840ktqoSy(lMf1Hw)3gqBHPwZGRVo9xSXbRabTCUvmNE5mA20FMWjMkH2EN4L2CH6BzewvOSN(3aydSzclU2E7ewh0Ddfnq7q7PWaYADAKfLU2yHfPD0Did48AwmKDSTfR1IT0G9QRkpqTe7hR)fG2uvqV1mnc)Lu4WUI(5trFoUCAJcwH3yz4ZsJGN1E4EuTTQ20IJ6lq3coFDVaNVkGZ0OoKakLc)z7Q(HMC1Ml(7)jy5g9S1pQNvfHUx0(Z7CHr30UhM(DC8lN16uN)6z2nM0(4MwtEjQLTK)6Ps2VCtFqn6R(x4RDNsQ2DSm4qiJUGBIjSRkVId)5ViRPMJ211n9v1po3VuT3PO5QFMZ6LgcZrPrSVT52f16UMjiRZ6QgBrIgCDtTMuWzBfDx)uD)1wS25AOAvmOzzuTsd2ABAxigRB5g4g(UtCQzlwdBQQvNZ2q1qn)3nd9103s1YTgUXCN1nmwWH0RVZoud3HvNrs6VV7lLzaTvgZ88(J07Vj5xs(qNIWr(nv3y3VcjmCwA8lkxXL25UL9P7jxYp1voO(9eBvZ(0l284HDaVgyZvb5M561Km4o6TYBD590B6QupGUL5Xv9EZ)49Vp]] )
+spec:RegisterPack( "Arms", 20240620.1, [[Hekili:TN1cpUTns4FlgbWXUj11p2TnPD9EiP9WDj4WwG4TOhWHQhwI7kDMsurIkogWq)2Vzi1dszkAVb9Wb0ROTBTjhoZWV5jh7SW5ENnH(CIZDlNV8Q5F7Y5Zw8QRUAXkNn8dzeNnz(b78Fe(qQFc833KNuGlEGY8dXdxWkZdGn(v2(73gu5nUYd(4MyKSTLXu(7sD2AwglHtNrcCUBHZMO4WqIKssrGuoaN8ZZJz5vEz4)lMFOY7b8R)DYUyAmOh5ShIPG0F2ZQ80pY7REpU4pNrsjW38d4XS0Izz5KawYwF(lw)nWF5uIBb3pnGyMe4dj(PHXPp6weXk5Vm(H1(ffXpMscLRmRpjJ3w(WdZso42WEbvHS9PT70)iIDTRJdiC1T)9vWbr(5psAGXFI8GFjL3skqqrzAij31ppHLJA2KrpspKfb4bLvuuw4wK4xenJK6VLscpEmGXOO46tqojXpoTy64jfeohuTIzHeuHDRLqnhgZrfIpJhNqC5m3WyYTtMS6RLeptvDMbM0GDt)QjlMD9lOGNxAWHPtFXQXtgvtDI))MvtSBojSuCRMvMD84et8RmB8GI5MvtpE00U1xSBaLy6uvKthaqSZgY9)p4swzscHQHu(uQR8RU04c(lXKqRla)u)qq)sdfHeW(FIaWbjjMuC7saqOKui2GYyHUG7Ulpsi)gevvcBP(qcholpXeR0833tizIihEE8osHb6xOZzu8puMFaPeTo3SyXRbGe)4TRHpBYYTy18PinNSZnWonhiI4t5rZYc4A4he9UJskksH)dLziJpdbjGnb7anxL24uiTOBoKz)CugcynfsD4ttmr64j)36QP7BWWpjqY(eEZY5QugrYzXb1wjrIjDR06fhpkDk7zqbVzijecjZckZH7i)21THEFSKusqI5r5ei3jnSMlkWJiorSyDgyEowzrg(0M(t9aTHcJh1UVQvuHan9cWRrMXXEzAOe)prm5PoE0qyWFiGGNL4FylPYlojJssa6R8Q9laejt8fYF58zA06qq4lPE3KllUBTGuIFqoREh3q8VtXSR9cAoEK9jsEgBpedMY2p9c0esEbjFhqVIYyrQnwHEhd9XBQPVrKgTY7dGIbivk0bf7V21mGsw2(9kHcFKfHpEe4gDYLEiw3Khho0qKuNa3nG6NzoFL8k9wPwUPxhDAk)t)Yy0Mpm3lIGfi51rkS9OaoPeEpAgMBgrN(e16nHuQ5AP6PbTktv7f(eyXGp2LGmN6J1Ap6TLIS7TdEtltVGiWZflzveq7hqZbQ1goPAYTlN3uFG6x(yeyLAtbTgAz54X62lO(jBlW0o8iq)AOD8j1hBxOHlRAzXEmrh6deKt232VNevjPI0DI4vl3O9rX509Xg7eA9vwp6PTH20fyVgr188oLpKptck5KZwB2OoCzPDT4dFj3ld1jqtPvUaw0eJxjWbzCxPmnpQgt8TRNp76XN5bpcISBC7wc9fSt6t4DIiZUz1zmmFbp8TMVoBaRvbW4U377SzVFEkMgXzZV(MpC37U7V99vEvE3hjRrdGy9l7FEFD55vE5KpwgdVgPYRGLahWVKZsGxValaVsn9rOTLQ3)pItHTwcS9hzPGci2(51bA)tGlCMY3Bc2G1NS4ZtNHjSUpkUaN0GyKcGAbFjjgUYq5fVIYmfL8rCMcXbapHm47iCq(WL5DC5HepIg65ie1aoKOVYJak0b1PyeNgqlHhEaBfd5pY)Eqb8(6kV)1Vuqqorsk(Txw5br3brQu7NEOtQvEPmK5FoJgheZPD8TUEohH3gH(dvEIXIieZ9swu5T43qMgQU0sfjVhc3uUr1SK3qQanelLwMawoHnIcj8QE)7ewvCHRbjiC0Q8WqC0y5SbSHrSCNnBkZi5PLfGJHytX8OKdBa(4DI5tvBRCERZMa4MaqVVZMjvEJalHLhox5D8i4HypkSYBQyMva7S)mBbvNMiPY7wXHH)DLaAh89Wcj9vckXCpEVaGd5tWf7mvSYQgLzulNg6j5YR3eZse3ESvL5gHWMk5ILNPlOuOWOscgoH8D2OsRdhc1h0sz3g9Ny)th71Xse9xHOFZ2Y5OOAnakUAq7JExdcqDznIBFokkkuVY4YGzx5iJvALhvKRFsksNm6MudYLV9PWLfkUT9EWlYRVBqEHoBsJWIx3AZLlE766vh21eElARvEIzQUPMQoM01OHMjVBAsOg)Qb14(TF2Xb1hvJ841Fb8OBQrihwm)IzrtO1)RbunmvzmeIRZWfBmWkqqyFnTXCI5tjyZWzcNiReQ6DIxA5fAO5XOuHsDaisaZYWzu4Q(aAu2O)qAAHwBJQrcYcDAKcLMgAJcP90Did48gwyZoQBX0MTNaSx9KYd0iXHX6)eOLj0fdouGWdx4yI(LR71)IlNLbhO4sJ1ApjxbEC9h1RPB2k2OPlc9F46ntoJs2z9mmHJlxJ6DyqP44VCz9p1wBxUTz61Ub6fXho1YzEBMaULT0y43huBxJ)gHQ9EOVDB3hxIAPk5F)uj1d32QtR(k(Dm1XrUEtjwFNXOZ4KiJSQtDyWBEidRvRPGJQLULTonmopSuvhDQ8QFId55U)xqaQIUQpfp7bNwlvAOOl2r4C1YL9hrhKpBDDlZirwhvN2Bqm2Ws)r3105UcRnocpTYmTdYtlLH2CJotmu)czWn8Qoo1obq7D539OMtMUNThwmC2ZZ3tu9GbT3UE)r7DPzv77kzPjEtv9KEj2U5d3J9WoMJ1RPBC4Gsd4C0fD8fmEIwIvF7n4q32cFB6fTHf2RWHLw1pxkAXOhfo(ZhoLRLENVKktgLHHkn8(g(ZL66csDBSfMVOS2N7h5rXa2FhRjagOAWWX696DspBD)WS2DShU)uaZtBxYKBQs7qY)X5)m]] )
 
 spec:RegisterPack( "Fury", 20230416, [[Hekili:fN1tpUoUn8pl5sGZ(EBAsM38MTatYHIIIU7H3LuGEZok2ktChh7uz5j7ueKp7LuYwwswYoE6GTa7FYikr(JuKuK0Hld)hHBtiCA4pwTy1dl(2YVpF5Qhx(q4w(7NPHBptIFL8c8JCYj4)(3QyVJl(EwbjbpBzrflgieUDFvAg)xZd37KHR(fyVNPXH)yz42JPjju5oPLXsUEB3)KWyPfSB7oJ)VuoS0b8p)70xtZsbPYkoKMbYIeZtlYlNFMrJloTNW)Y6)0EkRKYELYIk5K8y6xtpSEF1HdZL)58KIl53(nxNe(XjsEsA(lrLhlQ44jjLLPVKttKRm3EltfC(07rah4z06DHIqrX(i9aaDM4q46K)4cwjAuJjzzrY)mklTK)v8UDDAEkxFxLv5jG5KWovWqy9gHLs2NrNJSndqNG(u1Y0tu2l0843RPOZRZvNorZ0xHvL3fcEVeTjmV68WmR2ezXj9vVh2KqpqZltFRdNSjiyw7nmAobE2yEKmJNEIgXlIssPF9nswfDDqcvWnoJaNaU0sat17aVM(WIfZUELtaJkFU2bhqe0FNgxXPrNpskBesntosjz8JZphZFE1IbytZLCg5uuXBGHVMV1CCs71UU8UETKY5GAuQwxWbmI((e4(SIIe(Xugy)hRO0oBenhpsY9j0lWzYUKMNmArQo54eOmcPwAkMkDfQj2WW2amnFGnbbp(Z1Eo6XPy2U4xN9tblN)4xYGSWq44SzF5HbqfM62cutQ5(jY)QOM5rmAsLGnG751RbUKp436fwp)4SbWXjigGd)RfuuwaDC6xoRF0jngfzF5ZpnnUOidZkoxZHPHClr1vRI0ezge8qLvqeLE6dpbJw5eR1Ory5AqnCHEFUwxOK3AIs7tr3063josuZMJ4hzuGzzj9ylg1PH36EnJwwMd)RIbGc1UJekHFm6sA5rd6om41RzWs1QASbwJb1TmpUIXO58NxlHjUMge7KySJEjj1EK77saeztUe7NnfS1aBBwVCrZDpEq1DElwWLbMEabreMh4(GbM4(CXfLF39GLvlMgiGI6WGGjjVlI5LpvrkHmFqPzYeUaHHIRLMY8Il2z8qc4JEn56cSriQ4xVAVQcAZ0FX1UibS0keGO(91QsAubKC9L4K1lX3WfAn8gEACkFJ(ZHoyZrkRing(Bw6R(yLYaQuU)DfTIIAxR)gkdWsqZPNsPLRx6XBo4(FasjKAt4SEvK4mr2HpnnyZF4AWDwvAGZ3m08KSEQPFH2Mxbf5aVmoDI707xV2Zlw9kE86kLtpvAEX1Vll09gdA4cAJGehtZOmcU3rWbSWT2YMnYbJgpKdrGaGwjWDoTZfHDLJdhOwx2NJBvnY2cFpVxg3wANd2QiAZ0lx(OMM)OmdFckDVSqpGg5sq3hyBDOpcnvrz1jkkUy(IGdMFpMc)24bcvHOksw6)XOFE7sSXDjiQE5PjOT75hsIM9z2j1QY8REe04nl9dJATLP00cKvvY1lu02UBoJbBE3P76oynWzbJ4nTJkbXLnkXA5Iztd87sC96KoAYm)OvucfGPjAoAJV6iBU2wreWAojdW980tNzW6ALvmNrYFDZc9lk7U9h0EgUf4wjC26bHTA13c3EHWWM8ld3(RNoxW4q)I7((TDsHCBho1HY53(TWTIFjMnh9aPkJd)8hIz1v7Vg(xAgdw4w7X5ipDKCGDy9yHCadwhoMLI3peaMoFb92UP321(gUvFmTcx)XmuopGYPHOCSp6Yf2X38IeP7r3r90YqRj0yOP2heL1JdilRHbDNcs)uOu(E)sXXGIUpbzFWq8MCRA0HU8jSeDTaXi3wr6Yq539yGrHk8tK1d5yQKguDozsn3ylYkVP7bw6s(Zds6hwA8fHtoS7fWvkKpQ9OnHo4VGwEc3gCBNVr9jG0dlwCB3SB7UE92UUd9tWWA3c9LDC1nmu6017TDpFB3Qf6cXOQDxxfdlMj6jq0zNuj9pPqDC4Rmkxzs(8HKJjk6aCA7YvsNpFy1zQJoaLApUYqnmK6FOKMVoOpC6DBUTlq8ppEB3pR8572ZJWz)Ne7eNT1UVap)jhyPGYmXkp4Yvq(ceOvpnATAIcq(6EtAXdCd86q1E0PNf69mDyR3akI6F5JGANTZoeywlaJN9uxgLaYpj2vFtl0CdDghOG8K68QgfRRBjS65gng)5rBmg59IUAc(zgP4SlQbWZYfJgq9B22Swl(13Osh06(b4IRHUkIofrB67S7Wxn2NZRvdkwd)XGMrhJck69maxlGM5A0SIT64Hkhwc7r06kziUrX974F4Ut)ZiVCOjiYwUq3ruVDfPM6VLfhGg3JaZJ)f(XG5vsmhuFH1DSVYuIYsx6m6xRKDLwdOvG)Xx6GVbe3GuB9dnvsyAtrHelGQ6gxwxNzn9dxyTEtSg5EC1sUw3swK7V07ap5KBUsC2uUKKvqM0ZCwJ5ZFt6YtBeYR0Yz90cXwTEFrJxV1UdSVrsFOifvVt1bi(7OS)o8fP5w0YpDVwUdLSx3c9VNGGXR04S67q4Yq53bOBWApJMxC5IcSD88IsawoyU6ab5rvbQ9q7n8om(CjJZ14)DnEZ)p0y53vXLQ6330otLwnDbEl4ZifNv9ugiYEUm(NeYGfelTL(Q7slk2xnOTOQTAavxjwMm1wvF0dRXh9uFhYZx9WIf2vG7k3UrHoo(EhMDa5Tl127dGKRcE97pOpSFhGyp3k9sBdODkI1VqA)yaoeXLlTIWODYovrnOf8dyP6u2ZDzQ8Bu8N0XRrXN67pOoWDzV6bjUE0DM(JATPRecte52qvzTmCOxoWeiT6iRJL2Ur62Jp4hoXk9GZpFIE8VnzH89hqQUAARxR9c2OMTU5E5oMGAZt4(sG0TWgDdTGNKk(riN62)k9qXVlwk8)c]] )
 

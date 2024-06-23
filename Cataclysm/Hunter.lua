@@ -5,6 +5,7 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
+local strformat = string.format
 
 
 local hunter = Hekili:NewSpecialization( 3 )
@@ -370,7 +371,8 @@ hunter:RegisterAuras( {
         id = 1978,
         duration = 15,
         tick_time = 3,
-        max_stack = 1
+        max_stack = 1,
+        copy = { 1978, 88453, 88466, 97153}
     },
     -- Taming pet.
     tame_beast = {
@@ -808,22 +810,9 @@ hunter:RegisterHook( "reset_precast", function()
     if IsUsableSpell( class.abilities.counterattack.id ) and last_parry > 0 and now - last_parry < 5 then applyBuff( "counterattack_usable", last_parry + 5 - now ) end
 end )
 
--- Logic to track the Kill Shot Glyph lockout
-hunter:RegisterStateExpr("kill_shot_glyph_cooldown", function()
-    local start = state.cooldown.kill_shot_glyph_start
-    if start > 0 then
-        return max(0, 6 - (query_time - start))
-    else
-        return 0
-    end
-end )
 
-hunter:RegisterStateExpr( "kill_shot_glyph_cooldown", function()
-    return max( 0, state.cooldown.kill_shot_glyph - (query_time - state.cooldown.kill_shot_glyph_start) )
-end )
-
--- TODO: Some work probably needs to be added for tracking target swapping with Explosive Shot and Serpent Sting
-
+---- TODO: Some work probably needs to be added for tracking target swapping with Explosive Shot and Serpent Sting
+--
 -- Abilities
 hunter:RegisterAbilities( {
     -- Pets
@@ -1381,6 +1370,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = false,
         texture = 132369,
+        toggle = "defensives",
 
         nobuff = "deterrence",
 
@@ -1533,8 +1523,9 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 135860,
+        velocity = 40,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "concussive_shot" )
         end,
     },
@@ -1548,8 +1539,9 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 135736,
+        velocity = 40,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "distracting_shot" )
         end,
     },
@@ -1562,6 +1554,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = false,
         texture = 135815,
+        velocity = 15,
 
         handler = function ()
         end,
@@ -1611,8 +1604,9 @@ hunter:RegisterAbilities( {
         talent = "scatter_shot",
         startsCombat = true,
         texture = 132153,
+        velocity = 60,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "scatter_shot" )
         end,
     },
@@ -1628,8 +1622,9 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132204,
+        velocity = 40,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "serpent_sting" )
         end,
     },
@@ -1645,12 +1640,13 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136020,
+        velocity = 40,
 
         debuff = function()
             return debuff.dispellable_enrage.up and "dispellable_enrage" or "dispellable_magic"
         end,
 
-        handler = function ()
+        impact = function ()
             removeDebuff( "target", "dispellable_enrage" )
             removeDebuff( "target", "dispellable_magic" )
         end,
@@ -1719,12 +1715,8 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132218,
+        velocity = 40,
 
-        handler = function ()
-            if buff.rapid_killing.up then
-                removeBuff( "rapid_killing" )
-            end
-        end,
     },
     -- Automatically shoots the target until cancelled.
     auto_shot = {
@@ -1735,6 +1727,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = false, -- it kinda doesn't.
         -- texture = 132369,
+        velocity = 60, -- is this always the same?
 
         nobuff = "auto_shot",
 
@@ -1752,10 +1745,19 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 461114,
+        velocity = 40,
 
         handler = function ()
             gain( 9, "focus" )
+            if buff.rapid_killing.up then
+                removeBuff( "rapid_killing" )
+            end
         end,
+
+        impact = function ()
+            if debuff.serpent_sting.up then applyDebuff( "target", "serpent_sting", debuff.serpent_sting.remains + 6) end
+        end,
+        
     },
     -- A strike that becomes active after parrying an opponent's attack. This attack deals (Attack power * 0.2 + 321) damage and immobilizes the target for 5 sec.
     -- Counterattack cannot be blocked, dodged, or parried.
@@ -1774,7 +1776,7 @@ hunter:RegisterAbilities( {
         usable = function() return target.distance < 10, "requires melee range" end,
 
         handler = function ()
-            removeBufF( "counterattack_usable" )
+            removeBuff( "counterattack_usable" )
             applyDebuff( "target", "counterattack" )
         end,
     },
@@ -1783,12 +1785,13 @@ hunter:RegisterAbilities( {
     kill_shot = {
         id = 53351,
         cast = 0,
-        cooldown = 10,
+        cooldown = function() return action.kill_shot.glyph_rdy and 0 or 10 end,
         gcd = "spell",
 
         startsCombat = true,
         texture = 236174,
         velocity = 40,
+        glyph_rdy = function() return glyph.kill_shot.enabled and (query_time - action.kill_shot.lastCast  > 6) end,
 
         usable = function() return target.health.pct < 20, "enemy health must be below 20 percent" end,
 
@@ -1796,9 +1799,6 @@ hunter:RegisterAbilities( {
         end,
 
         impact = function ()
-            if glyph.kill_shot.enabled and kill_shot_glyph_cooldown == 0 then
-                state.cooldown.kill_shot_glyph_start = query_time
-            end
         end,
     },
     -- Fires several missiles, hitting your current target and all enemies within 8 yards of that target for 121% of weapon damage.
@@ -1825,13 +1825,14 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132330,
-        velocity = 40,
+        velocity = 30,
 
         handler = function ()
         end,
 
         impact = function ()
             if talent.concussive_barrage.enabled then applyDebuff( "target", "concussive_barrage" ) end
+            if talent.serpent_spread.enabled then applyDebuff("target", "serpent_sting", max(debuff.serpent_sting.remains, talent.serpent_spread.rank == 1 and 6 or 9)) end 
         end,
     },
     -- An attack that instantly deals your normal weapon damage plus 374.
@@ -1856,9 +1857,13 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132213,
+        velocity = 40,
 
         handler = function ()
             gain( 9, "focus" )
+            if buff.rapid_killing.up then
+                removeBuff( "rapid_killing" )
+            end
         end,
     },
 
@@ -1988,10 +1993,10 @@ hunter:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            -- TODO: Can't get these to work for some reason, needs to be fixed
-            -- setCooldown( "rapid_fire", 0 )
-            -- setCooldown( "chimera_shot", 0 )
-            -- setcooldown( "kill_shot", 0 )
+            -- TODO: need further testing
+            setCooldown( "rapid_fire", 0 )
+            setCooldown( "chimera_shot", 0 )
+            setCooldown( "kill_shot", 0 )
         end,
     },
 
@@ -2006,10 +2011,11 @@ hunter:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132323,
+        velocity = 60,
 
         toggle = "interrupts",
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "silencing_shot" )
         end,
     },
@@ -2019,23 +2025,26 @@ hunter:RegisterAbilities( {
     -- A powerful aimed shot that deals 132% ranged weapon damage plus [(Ranged attack power * 0.724) + 777].
     aimed_shot = {
         id = 19434,
-        cast = 0,
+        cast = function() return buff.fire.up and 0 or 2.9 end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() if buff.the_beast_within.up then return 25 else return 50 end end,
+        spend = function() return buff.fire.up and 0 or (50 * buff.the_beast_within.up and 0.5 or 1) end,
         spendType = "focus",
 
         talent = "aimed_shot",
         startsCombat = true,
         texture = 135130,
+        velocity = 40,
 
         handler = function ()
             removeBuff( "fire" )
-
-            if talent.marked_for_death.rank == 1 and rng.roll(0.5) then
-                applyDebuff( "target", "marked_for_death" )
+            if buff.rapid_killing.up then
+                removeBuff( "rapid_killing" )
             end
+        end,
+
+        impact = function()
             if talent.marked_for_death.rank == 2 then
                 applyDebuff( "target", "marked_for_death" )
             end
@@ -2105,8 +2114,9 @@ hunter:RegisterAbilities( {
         talent = "black_arrow",
         startsCombat = true,
         texture = 136181,
+        velocity = 40,
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "black_arrow" )
         end,
     },
@@ -2123,10 +2133,11 @@ hunter:RegisterAbilities( {
         talent = "wyvern_sting",
         startsCombat = true,
         texture = 135125,
+        velocity = 40,
 
         toggle = "cooldowns",
 
-        handler = function ()
+        impact = function ()
             applyDebuff( "target", "wyvern_sting" )
         end,
     },
@@ -2151,40 +2162,23 @@ hunter:RegisterAbilities( {
 
     -- Survival Damage Abilities
 
-    -- TODO: Fix explosive shot with lock and load, timeout is currently not working
-    -- You fire an explosive charge into the enemy target, dealing 191-219 Fire damage. The charge will blast the target every second for an additional 2 sec.
     explosive_shot = {
         id = 53301,
         cast = 0,
         cooldown = function() return buff.lock_and_load.up and 0 or 6 end,
         gcd = "spell",
+        clash = 0.25,
 
-        spend = function()
-            local cost = 50
-
-            if talent.efficiency.rank == 1 then
-                cost = cost - 2
-            elseif talent.efficiency.rank == 2 then
-                cost = cost - 4
-            elseif talent.efficiency.rank == 3 then
-                cost = cost - 6
-            end
-
-            if buff.the_beast_within.up then
-                cost = cost * 0.5
-            end
-
-            return cost
-        end,
+        spend = function() return buff.lock_and_load.up and 0 or (50 - talent.efficiency.rank * 2) * (buff.the_beast_within.up and 0.5 or 1) end,
         spendType = "focus",
 
         talent = "explosive_shot",
         startsCombat = true,
         texture = 236178,
-        velocity = 20,
+        velocity = 40,
 
         handler = function ()
-            removeStack( "lock_and_load" )
+            if buff.lock_and_load.up then removeStack( "lock_and_load" ) end
         end,
 
         impact = function()
@@ -2204,6 +2198,7 @@ hunter:RegisterAbilities( {
 
         startsCombat = false,
         texture = 236159,
+        toggle = "cooldowns",
 
         handler = function ()
             applyBuff( "call_of_the_wild" )
@@ -2318,6 +2313,18 @@ hunter:RegisterSetting( "call_of_the_wild_macro", false, {
         Hekili.DB.profile.specs[ 3 ].settings.call_of_the_wild_macro = val
     end
 })
+hunter:RegisterSetting( "arcane_threshold", 80, {
+    type = "range",
+    name = "Arcane Shot Threshold",
+    desc = strformat( "Select the focus threshold after which %s may be recommended.", Hekili:GetSpellLinkWithTexture( hunter.abilities.arcane_shot.id )),
+    width = "full",
+    min = 0,
+    softMax = 120,
+    step = 1,
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 3 ].settings.arcane_threshold = val
+    end
+} )
 
 if (Hekili.Version:match( "^Dev" )) then
     hunter:RegisterSetting("hunter_debug_header", nil, {
@@ -2350,7 +2357,7 @@ end
 hunter:RegisterOptions( {
     enabled = true,
 
-    aoe = 3,
+    aoe = 2,
 
     gcd = 1494,
 
@@ -2371,9 +2378,7 @@ hunter:RegisterPack( "Beast Mastery (Himea Beta)", 20240509, [[Hekili:DR1EVTnos8
 
 hunter:RegisterPack( "Marksmanship (Himea Beta)", 20240509, [[Hekili:TR1ERXnoq8plHd2lHl1X7Mxxkzd0hhxB4APGl0)Z2k2A3veBlJL2DBGG)SFJKFjBlTpsDB6FekPelnV0Oz(nJKI7y3V66eI4y3ppXEYz2Np22A8P2xC6LUo8hsXUoPOG7rZHFjbfd))Nqz3ZIrjSfK0C)d)ajgJY9FlMJosq7druuOqMm6YSaG(fCEk71NCYA6A(DbwZNFsaIJojicXyVA(ssiMDsSImF1ILjCC2jUo3TKeX)yI7D6nWZDDql5lOzUosJaufjmexqpMf4681fewUV4hWclxg5(0zW3bCcnj3pIW4W0ZOz5(FaFpjIyblIm6msey6)bmO0yEDUFRL9TIze68pzfl9C)38L)l3)v5(VNWcOzHahleeyXqeovYWNOHKzeCiOUmACU)3OF7RV9D5(Vdj4)FLEcPiEQEScTGEi3x4OYVf(gg4lz4aA8DiE(TfRAMvA1q)10tqSuCa3JoZJVa7TaT((JjZMEWDlNnZQyoRLPJyyoNKmNzfJijC4hVI5gbMezEcoS8BR(IBxu7m63hqTcsBxuAWcmSZTyavCPe3fLlIghqnle3UO21KOWbuTcXPxTfHKmprCQqHHyPgvh2kKUorp3Xewib(wmJG7AZJMItWzE1Z7rtIEOks)94zOLrnX5GGcqrrEfF6jY1pwGHnLKqAr1sg2JWXXm1btPsicLrwaWHzW6x4nccWr4mK0afStNnZBEq40XQmKTmPVYruSyjjgFf2dwoXem7MjBLVGimALgwNUDwzGVlcx5M(Oy17)fugmLyZOzlq4xazScLrq3fHlyMdWyECQxibF8ku0s80dl3m5zqGciAVWLXXpicJo12(OhFKJYMJ5wkmwP63q)NgTbocqzmogf(GhBbLlwBhkLmjgWGxb(zLzLHlp(O55ZWIGx21JTo)Orq00kXgI1ylfA6QCJXzYyXyCsONkjDzxp25tmxsW(OdIPRaE7QOmukj0BgyhcfeqPrcNHLm6wjvuSfi9pn03jjRqCD5RLqv4fe3b1RMUmb5Wbz0Ewk4RjjygZKml3LU5c7UScHtPErOLjamAwl2XFpnIYeX8cAABwT4sVn1M9EXaaKbrxWrNiZbjWSxeeKJe2wfLE(Uuc9Mevtyzg2cmkIVWknGF9KEUZoMFzKvPD2RGPgnQTeDHuAQx0Jip2AK56jvabVtcM1OXcWTNp4GA9)KreQLWVaqHADT)vzRzDWGuQL4pfuLg79PaS0ewHZGoh4qacO1JdEaMWRijInD8XXOV71ESjkEZw8AAX)ZfSOXhlourgYu07A4WghZWbk7Nkmuj72B4Ai4g7rBC(RhpAgnyj7MPNPZzVlGA1eVh4AguqpMU5kTmLfGsW1CvSaUuNt(ha50akWWcE6u2oxLslAV75d8Sw)pzWZAj8la8Swx7p4znRdg4zTe)PaE2yVpfWZMWQwGNBcyC0bQXkQtV9O1bjyvNNvlKz90pRqMnX97aKznX7bKPbfSziZgM2gKPP9Y9bY0qU)Waz66ScYLb9uD5H2x56SgLjo2kZ15JXP0mU4k5UOZDcALFRRJqeUF(uxh5qYl1uASWV9z59MIteNto09TUobzea2GGCDom3FZXY5(p(4MOPmKj3)6CFrmT)r5(JY91dd76uy3GTPmihwVgnWTal3iXwJYfEITkYULSeg(2rPLKDqUFXUDJb0NsHzCMrZWeeEJevNsiRZnkRnHQlTxDi7nkQzcHAUy7QPfiFLdzlq9nQR78cLE5EP06OUBGSbBLfsvTdHi)7T5610SC5sXuLbLa4wddA7kJABqtWmMcn2wya1UyfyDvZsqyx0aOGIAeKMccnYvubsFGNg2KBp2sF6wOtS2K0jHTb(MM7FMT0AndnOw5rjnSU4HKDZWa9QRinJjkrt11UKsYCMSgjbl8RSnAuMtKRw)5(xQSvRuBtYV5m0ACjLWkDL0mhgzorSsWJus11xIRnn9kZPhXey2vycq2P8QX1v4QfcsXhYRoUOQNxXJ(jUz46IkvCuFT5DYgovLOIRrVdfY9DLRnxyvnq06VM9oIW8(TqonxpUCJFIcCw7liV1Qer3cyDxrpDNfDXbd1HkVlCx22HCRS(Ds20MPMcNY3enJKwqq9Ze2jsxj6UQm0pyT9n3lYGRsri)gZg2qxmdUXu(GGMmOQP3ypndUrjERqtwKCUnMDn4MJSBfdMtvNmMZi3)o(mdgV5xz01uBX8cGJxotWVNNjyq7JFhoUWW3h)(D4HDQp(D4Ob9E0TERfnp9wJ6AnPB1rhQMTTW7uA)kvkRFEUUTCBV5MyhQmnJ5s965Fp7I2CU4(2f9glO9d26Q58QFvTUw250lWR)EcVU)fG3bm0HaQE)qnhiO6DaxDFHQ7ELl1XETVeLwVFP88u9EvtxNjA256FJn1yWpNORVC1l6kA8YvVSN1VE(V6f5vNOP6fnvIH3WF1F2DIFlAjwwvZ0FPDst6uBBzHkHRP)FZDsbwE)bQdZR)N7))d]])
 
--- TODO: Currently there is a problem with this APL not recomending serpent sting or explosive shot at the correct time if the player doesn't press any other button for their duration
--- This is done to solve the problem of recommending serpent sting or explosive shot for a brief period while the shot is still traveling to the target
-hunter:RegisterPack( "Survival (Himea Beta)", 20240509, [[Hekili:TRvAVTnoq0FlblG3eSPk2o9iTOUa9yX2gSTOaUa9BsIwI2MisIcuu21ag63(od19bLDCvc2c0p0MysoV3WJ5ndzS5eZVzo3LiPMFz64PpD8ZMm2yY1JF2tnNl3fsnNhsCUJSc(LaIp8)ZJfByBiEj2N)rMpLKy)oQKCboUDECIlcxepw4aJDTugg9QRUAlFRCHJXQvx5qKKRC8irrpzvmZLgDvugEpzDCGKkUYC(IyMN8tbMl60VU(ga)qQJ5xUgiG56sthjnYXC(3wZIsSdfmUGj3LyJFAbjI6MyZdsSLRPj2fotI93fe56eBLNyyo3JfjJu(plyLhf(TVOwDObKfEuxZ3zo3bWLkyeymuPegwKHG6W99PbUw(Sixg8rjJhyoNK9ZATkHzZHH0NWcKW)Si4mvMypkXgwYyRcOUzTzK(dl(slywzTMS9o1WolX2NVbqP0bAps0nUwRB4W5EU8TbgoepVCZ2Y8CnIdlrvqczUwlHzgI2tpmALga4K7Rft5MCz5tCe8s6A2ps6Z0sQlDr8YLgrurinqAfHCyGEroVHc6gRvoUgtQpOscR3mW2ZpeB0Fe6XJyBOwrR5Ys6ohodI97XDUZIaNtWWe1AW(9nDM6yKyFrPdvVl0JEHwpsseROsJ1uINCTriEe61j2thxI2Dmy9mhOBo0uln2mc2ue3PMyLavTleRxEiSw4rW1bHGVTbuv6brAYyTqTK7edH2VjX(MkZjIWHeuU8mrFW75vcus3guUw9iLL8FO2LUqTl6r3q9ArPdFHGuYO(y7tNryJ7MjvoxkPe3DLuQpooNSrvcZAXNv0wsy9X0q9rNqcySj6cW(6ssSNSl5YArVPFWcvzt1ATsZOWcyYcHXClIJOwWeXpQkE5Yw5dkKNfAuDekPi0C(YLyuf6vLNwHuAcyAG6OooupkKbOne6fwqCGiqAa1NrtpboTIMyCG2zjHt7xfPj0ZoAOD8OKn0UueogRZs2P2kdvjZwq6DZSJ8jQ0Vcwy6a(mzhk2m9PvNENv7eFEkGFYuE9NpDWPepY3B0qpzvhCNXznfk8ATohkV7Etop4ofwSOops1xVrxdU7OQuqJ7KxfXbZRFps(PpJCXKGdvvqfL1kAXd82zQRArzQWXVRe9x1krliTS8njWFxeJTB5rIdGqxrtwR1zXX28ERdEJSzVO6i9Hm1mvXd1huZsaBJCQro7GSnwP1xgHhHM7t(Hv9wNpT6kGMAFHjV(6M7VqY7z1T9uh5Pxvw)1b(qu55bQduFW8JvDGzLH8BTQFT0Qkoqv)EWnc0NC4aDTx6URSShP(YXtRgvKhH7i)GjX)YJwIFWVQCh6ANWwZPl2L6U9RRD6O))(RuRUsChcP8qLExP9BiGFb9I)MxmvTOKfqahtaycwz5g77Vl)041JhRwmWLRSiajZh2a5wUmfmIS7fwTzzQBTbQ1fPn7fzh)sZ5BjcKeyN)t(HCHeFQ1Nd6Uk)dwWXNu1i5wWJJLR5cZ5QhngVPjFjd97)iX(JQQOFvIDXBlFl2koW)mk99LtSF7x)3e7NKy)bwKdx4cJEnoaJictYvg8zUlBjdDGLcUFI935F)BV79j2VNG2)pQNBwbXP8S0PmKFX2KBHpdn8187lNCB6moYO4k0)1SRANd5s2YzNv)ooJ0Dkz0rK86iOfounGScODmKMD7ZbK4mepgYXlAoGmJWDm0IjyhqAr46M2Q36eju39u726QvwHw3)ntZpP)H0h5RasaOMpQ3LOUXmu6Q6OkEiVQnM(WDvBrZdZDzLhYB2KQg04jTsjhURmoLW2lFkT3m9G2Lw6ABtNDyttF(S8LPpHZE7Vseqx4Mr5waUUayKlyNACfn2lvc4ZoxN69iq5(I97BRzNt9B5)DjBWcrFB1Dx9DtZ7w(6epoJMp6SSeOniQSixKG(QKUPLnhsn7Rv78OZoqvZnHUw5y1WTvDEvWUJk8AcCDZBTNLFbD9MH9EzT6UMn9Yw1IbTboDN3(Eup)fRAWArnWiyTkz(1th3AhPOIr0IZZ2X3VxBTzxmsvv2BUPfuvQl7(H1RVzs)NLZYjMI3OdukNwb88iV3Rupkzmvn5Nj(RaHhHqWcUoLOWcJFqcelqV2DkBC0FIUJ(6)Ja3MGEdUoed9ggvqX9isQWMhanOoMY1LHkp7vEhrKA1fjRfLwU5xgZFKRChFSC3momsdAcZgw1H5zfiKtAAbd)mQdfi8iOouW1POouy8dI6qb61vh6lYF0z6(IF0bSn0e6nEF05DMOD)(Z0(L74IoO8EOruyZ9)2afMw5lCrflB(f0ORdEhsAOCNFikhOCNEqc71e)mmH9QxkX8)c]] )
+hunter:RegisterPack( "Survival", 20240530, [[Hekili:TRvBVXjoq4FlRoPvjQrSV0U5sRYgP(Yj1gDxVkrL63a8cMGvamY2SBxPi(TFJ5DyXSSjKCFOvvnjl2EEgBM5zEgR1yHX3n0DqcSXxxoF5BMV61Z1wSA(8Llm0f7JWg6ri77r3b)rika(PEmBlzlYxoWEFkYrAaonMzdd6jer83nB2o6oojGRDhr4fVrJqNzJeOzEXHcmBgp3eZm03et8fFj0ytNoXI)emDe224RVgSnXXbNntm32q)7EeEIveJqzeX(el5N2G4yNelAyILWdNy9d6p0b)iX6Ja82(75bjwV)B)DILlLLyvSv0m09jCbpDNqcVZhd)1xtpzWHOn(yhJpyOBdWGzeemhSqatJRXW20GaCOJzaH7qGpki0qdDu(VB8ubS5oUjdqKqb8FtKCJlsSMMyH4CYDHyN8NPL9ltQRjSjn9q7UpDAtsScOBbRu5ahotPB8ALUHnL67q3fQzJ89lw2oIVJwCuI1dpahRi2DyHMGeGnfuthcCkF96eRfRQqLHIioMUWoxI2BooAvlifNS9s5rsBFXmazZO97olNx5oTxV0PwP0PCWBIDD14yweouyYL(GM0ll8RigER5D2oAlAoPkaB(yaTlLOvm69eWD4EurDhaM0FEmxc)ZiFkNSfNUAi4tgRaX2xdriP2U9mem0wSVP8WjX6vW7OkNO5mLWF1XGpl5LdN(S7tpqQSw9HK26ThZwB8bsfteJr311(O(Wn2et7(n(nWB8RQCNAlx6nlMR0DCP2X8S1xgUHy2OqW2EmmC2aHlvztzJuCITqndXz1YgZcut32nthDP)mnC)8AHQ0nmufaQ5lonakcDZpERqr7(WgVi5cmYzFLdOMPOa6P1p5AJUjFhkQ5CAXVPIQcwSH0fGagxuSVOKqUy6XCSj4lb8wzrQpYYdC8WiFHNwKKB9AjrXrisQXRfrliYtpxKUa11vYfiDUQSbOSjd2nscBBBSpMHYt6Q7OQPfL2bsmXH4acwgDcErnY1y4Sl9VnLfTYkDzMvBgrX9tU120RhSPT9XqEyjzwnRpKvNxvn9nAuAvZnirxfz7PWvAzFgjkBc)dAV8L3Y3uF7nPrAqrTKNyT1(JQgDiLr(9Mu0t57r3zS9WybYtLdvmCVHZJUtjfKQYJshR3uGr3DsLuOWDkKB0oN5PuCvToHYnbfKFGzvIsnPH(7nujlvKrC8BjV)Qk5T0PQufcQUI6YXKp30hfhcP(SmVQc1gdEGU3MgVlXVLXqqbFshkKVAiYOBR98q4ZwK9EOKMz2HjpT(Da6NMnFQ(Y6htPjQ(uP0si8x26BXj04jqVF5QNMQpdvYkhlDRpAzLQjfEPKvMlN53CE)AX5vgq2SX9tNlO)BjqvpQxEaP4qVmGXJfBu5QuFPbpB1uE7GRPmA99xvpQl2ZoizFeVwonM3JWIEAg7rtJ))(TdatylinwoJ8loE5Bn03HyHsRzO)LGiktiVr4vfBVeR0R6vl5wWOXcpkZq)Zqmnk1r0JHw3dJ5WAtVk5)nS6cVtSolFIFaA65CzJSuxc0vR(FKy95ur6VR6oLtUv(0S5F2NiCBkZ5DEYpRXreb98M4LoDDsqKpXLiDyxgnO29xVvBo8VfPtRS13KBHpdp4BfDuNCB2MKRv2K9Rwp7WQdxqCxpPzxqtv9oy6aklnayHxzJiQG1gcO59NoIaNBXHaUSv0rezP5gcSYsFJiSsZ1nS17lvcOQoz7E111mjxD)9UweP)PSBdS0KGHkViW6pm7M6K29GB976LZF4HdlqF96LRQBbfxI3f1U0V1lQVGwx)1fYl(An0xT0jKpV6A3Uz5rxxM80dx66JV0SRAR4a790)Q68h8M(o57wMB7L3nBYJm6sU8PtYRw0cOk1Isa6tYA3VpxSQTfBV0g2TH40PtoISufHqZBdzd5lnW7aDr1WSdfrTnCZLFW74cflThOuVPA7jh9IgsvwV4IdKVSEPC30zlXt7vI515YmulV8vlo4fxPKejONLhW8Wdkv1CEBlut6YqnX0j5EABbr9NrKxOlZ(tpI6hLSYf5VFmLiOcXmIHNswCPfEbsKlXAmZLln6lA6CjQnA5BO5jkBxC6H4EZ6l7a2osClh7XL7oIzPLEYZaDxh7YMmEvPefKEsGt7W7M1k7URR4PkwMbEeoeAKUcHEwiJuKypU8r65QlkantTXtHpQ0cVa8rLynM8rLg9fLpQe1M8r9Y1mr1xDLomBh8nLJ1IVzC5skr507VOCP1(cGuBLD8LoPW1u8foPt25R6k2T6BgYPr(uf88eK4ufl8SqSOidDCiwsVfhJ)7p]] )
 
 
 hunter:RegisterPackSelector( "beast_mastery", "Beast Mastery (Himea Beta))", "|T132164:0|t Beast Mastery",
@@ -2388,7 +2393,7 @@ hunter:RegisterPackSelector( "marksmanship", "Marksmanship (Himea Beta)", "|T132
         return tab2 > max( tab1, tab3 )
     end )
 
-hunter:RegisterPackSelector( "survival", "Survival (Himea Beta)", "|T132215:0|t Survival",
+hunter:RegisterPackSelector( "survival", "Survival", "|T132215:0|t Survival",
     "If you have spent more points in |T132215:0|t Survival than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
