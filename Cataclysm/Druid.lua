@@ -60,18 +60,35 @@ local function rage_amount()
 
 end
 
-local function calculate_damage( coefficient, flatdmg, weaponBased, attackPowerFlag, masteryFlag, armorFlag, critChanceMult )
+-- Generic function to calculate the total damage for an ability
+-- Parameters:
+-- flatdmg: The base damage or pre-calculated damage of the ability with AP/WeaponDPS
+-- coefficient: The scaling coefficient for the damage source, if AP is already calculated use 0 to avoid double counting
+-- weaponBased: Boolean indicating if the damage is based on weapon DPS, if false it is based on attack power
+-- masteryFlag: Boolean indicating if mastery affects the ability, for feral only apply for bleed damage
+-- armorFlag: Boolean indicating if armor reduction should be applied. Armor reduces physical damage
+-- talentAndBuffModifiers: Combined modifiers from talents and buffs
+-- critChanceMult: Extra multiplier for critical chance, use nil as default
+-- Returns: The total damage after applying all modifiers
+local function calculate_damage(flatdmg, coefficient, weaponBased, masteryFlag, armorFlag, talentAndBuffModifiers, critChanceMult)
     local feralAura = 1
-    local razorClawsMultiplier = state.talent.mangle.enabled --Use MasterySpell(Mangle) as trigger, since razorClaws is neither talent nor ability?
-    local boss_armor = 10643*(1-0.2*(state.debuff.major_armor_reduction.up and 1 or 0))*(1-0.2*(state.debuff.shattering_throw.up and 1 or 0))
+    local armor = 1
+    local mastery = 1
+
+    if armorFlag then
+        local boss_armor = 10643 * (1 - 0.2*(state.debuff.major_armor_reduction.up and 1 or 0)) * (1 - 0.2 * (state.debuff.shattering_throw.up and 1 or 0))
     local armor_coeff = (1 - boss_armor/15232.5) -- no more armor_pen
     local armor = armorFlag and armor_coeff or 1
-    local crit = min( ( 1 + state.stat.crit * 0.01 * ( critChanceMult or 1 ) ), 2 )
-    --local vers = 1 + state.stat.versatility_atk_mod
-    local mastery = masteryFlag and razorClawsMultiplier and ( 1.25 + state.stat.mastery_value * 0.03125 ) or 1
+    end
+    if masteryFlag then
+        mastery = state.talent.mangle.enabled and (1.25 + state.stat.mastery_value * 0.03125) or 1 -- razorClawsMultiplier
+    end
+
+    local crit = math.min((1 + state.stat.crit*0.01*(critChanceMult or 1)), 2)
     local tf = state.buff.tigers_fury.up and class.auras.tigers_fury.multiplier or 1
-    local damageSourceMulti = (weaponBased and state.stat.weapon_dps) or (attackPowerFlag and state.stat.attack_power) or 1
-    return (coefficient * damageSourceMulti + flatdmg) * crit * mastery * feralAura * armor * tf
+    local sourceDamageValue = (weaponBased and state.stat.weapon_dps) or state.stat.attack_power
+
+    return (flatdmg + coefficient*sourceDamageValue) * crit * mastery * feralAura * armor * tf * talentAndBuffModifiers
 end
 
 -- Force reset when Combo Points change, even if recommendations are in progress.
@@ -255,9 +272,20 @@ spec:RegisterStateTable( "rip_tracker", setmetatable( {
     end
 }))
 
-spec:RegisterStateExpr("rend_and_tear_mod", function()
+-- This function calculates the "Rend and Tear" damage modifier for the Shred/Maul ability when it is applied to a bleeding target.
+spec:RegisterStateExpr("rend_and_tear_mod_shred", function()
     local mod_list = {1.07, 1.13, 1.2}
-    if talent.rend_and_tear.rank == 0 then
+    if not debuff.bleed.up or talent.rend_and_tear.rank == 0 then
+        return 1
+    else
+        return mod_list[talent.rend_and_tear.rank]
+    end
+end)
+
+-- This function calculates the "Rend and Tear" critical modifier for the Ferocious Bite ability when it is applied to a bleeding target.
+spec:RegisterStateExpr("rend_and_tear_mod_bite", function()
+    local mod_list = {1.08, 1.17, 1.25}
+    if not debuff.bleed.up or talent.rend_and_tear.rank == 0 then
         return 1
     else
         return mod_list[talent.rend_and_tear.rank]
@@ -662,22 +690,18 @@ spec:RegisterStateExpr("calc_bite_dpe", function()
     local avg_base_damage = 377.877920772
     local scaling_per_combo_point = 0.125
     local dmg_per_combo_point = 576.189844175
+    local cp = combo_points.current
 
     local base_cost = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
     local excess_energy = min(25, energy.current - base_cost) or 0
 
-    local bite_damage =         avg_base_damage
-    bite_damage = bite_damage + dmg_per_combo_point * combo_points.current 
-    bite_damage = bite_damage + state.stat.attack_power * scaling_per_combo_point * combo_points.current
+    local bonus_crit = rend_and_tear_mod_shred
+    local damage_multiplier = (1 + talent.feral_aggression.rank*0.05) * (1 + excess_energy/25)
 
-    -- Hekili:Debug("bite_damage pre dmgc (%.2f), attPower (%d)", bite_damage, state.stat.attack_power)
-    -- bite_damage = calculate_damage(1, bite_damage, false, false, false, false) TODO fix
+    local bite_damage = avg_base_damage + cp*(dmg_per_combo_point + state.stat.attack_power*scaling_per_combo_point)
+
+    bite_damage = calculate_damage(bite_damage, 0, false, false, true, damage_multiplier, bonus_crit) 
     Hekili:Debug("bite_damage (%.2f), excess_energy (%d)", bite_damage, excess_energy)
-
-    bite_damage = bite_damage * (1 + excess_energy/25)
-    bite_damage = bite_damage * (1 + talent.feral_aggression.rank * 0.05)
-    
-    Hekili:Debug("bite_damage final (%.2f), excess_energy (%d)", bite_damage, excess_energy)
 
     local bite_dpe = bite_damage / (base_cost + excess_energy)
 
@@ -688,13 +712,12 @@ spec:RegisterStateExpr("calc_rip_tick_damage", function()
     local base_damage = 56
     local combo_point_coeff = 161
     local attack_power_coeff = 0.0207
-    local glyph_muli = (glyph.rip.enabled and 1.15) or 1
     local cp = combo_points.current
 
-    local flat_damage = base_damage + combo_point_coeff*cp + attack_power_coeff*state.stat.attack_power*cp
+    local damage_multiplier = (glyph.rip.enabled and 1.15 or 1) * (debuff.mangle.up and 1.3 or 1)
+    local flat_damage = base_damage + cp*(combo_point_coeff + state.stat.attack_power*attack_power_coeff)
 
-    local tick_damage = calculate_damage(1, flat_damage, false, false, true, false)
-    tick_damage = tick_damage * glyph_muli
+    local tick_damage = calculate_damage(flat_damage, 0, false, true, false, damage_multiplier)
 
     Hekili:Debug("Rip tick damage (%.2f)", tick_damage)
 
@@ -712,9 +735,9 @@ spec:RegisterStateExpr("calc_rip_end_thresh", function()
     end
     
     --Calculate the minimum DoT duration at which a Rip cast will provide higher DPE than a Bite cast
-    local expected_bite_dpe = 1 --TODO:FIXME
-    local expected_rip_tick_dpe = 1 --TODO:FIXME
-    local num_ticks_to_break_even = 1 + floor(expected_bite_dpe/expected_rip_tick_dpe)
+    local expected_bite_dpe = calc_bite_dpe
+    local expected_rip_tick_dpe = calc_rip_tick_damage/action.rip.cost
+    local num_ticks_to_break_even = 1 + math.floor(expected_bite_dpe/expected_rip_tick_dpe)
 
     Hekili:Debug("Bite Break-Even Point = %d Rip ticks", num_ticks_to_break_even)
 
@@ -3090,10 +3113,12 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132122,
         damage = function ()
-            return calculate_damage( 0.147, 56, false, true, true ) * (debuff.mangle.up and 1.3 or 1)
+            local damage_multiplier = (debuff.mangle.up and 1.3 or 1)
+            return calculate_damage( 56, 0.147, false, true, false, damage_multiplier )
         end,
-        tick_damage = function ()
-            return calculate_damage( 0.147, 56, false, true, true ) * (debuff.mangle.up and 1.3 or 1) * (set_bonus.tier11feral_2pc == 1 and 1.1 or 1)
+        tick_damage = function () -- TODO: Rake can be snapshotted with Tiger's Fury and should continue to apply the increased damage even after Tiger's Fury expires.
+            local damage_multiplier = (debuff.mangle.up and 1.3 or 1) * (set_bonus.tier11feral_2pc == 1 and 1.1 or 1)
+            return calculate_damage( 56, 0.147, false, true, false, damage_multiplier )
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -3358,7 +3383,8 @@ spec:RegisterAbilities( {
 
         form = "cat_form",
         damage = function ()
-            return calculate_damage( 5.40 , 56, true, false, true) * (debuff.mangle.up and 1.3 or 1) * (debuff.bleed.up and rend_and_tear_mod or 1)
+            local damage_multiplier = (debuff.mangle.up and 1.3 or 1) * rend_and_tear_mod_shred
+            return calculate_damage( 56 , 5.40, true, false, true, damage_multiplier)
         end,
     
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
