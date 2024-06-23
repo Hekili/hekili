@@ -44,7 +44,7 @@ actions.cat_aoe+=/swipe_cat,if=excess_e>=action.swipe_cat.spend|buff.clearcastin
 actions.cat_aoe+=/faerie_fire_feral,if=ff_now
 
 ##Bearweave: Use if bearweaving enabled and cat would be downtime
-actions.bearweave+=/maul,use_off_gcd=1,if=should_cat&action.maul.ready
+actions.bearweave+=/maul,use_off_gcd=1,if=should_cat&action.maul.ready&!buff.clearcasting.up
 actions.bearweave+=/cat_form,if=should_cat
 actions.bearweave+=/enrage,use_off_gcd=1,if=!should_cat&rage.current<action.mangle_bear.spend+action.thrash.spend
 actions.bearweave+=/mangle_bear

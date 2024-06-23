@@ -60,7 +60,7 @@ local function rage_amount()
 
 end
 
-local function calculate_damage( coefficient, flatdmg, weaponBased, masteryFlag, armorFlag, critChanceMult )
+local function calculate_damage( coefficient, flatdmg, weaponBased, attackPowerFlag, masteryFlag, armorFlag, critChanceMult )
     local feralAura = 1
     local razorClawsMultiplier = state.talent.mangle.enabled --Use MasterySpell(Mangle) as trigger, since razorClaws is neither talent nor ability?
     local boss_armor = 10643*(1-0.2*(state.debuff.major_armor_reduction.up and 1 or 0))*(1-0.2*(state.debuff.shattering_throw.up and 1 or 0))
@@ -70,8 +70,8 @@ local function calculate_damage( coefficient, flatdmg, weaponBased, masteryFlag,
     --local vers = 1 + state.stat.versatility_atk_mod
     local mastery = masteryFlag and razorClawsMultiplier and ( 1.25 + state.stat.mastery_value * 0.03125 ) or 1
     local tf = state.buff.tigers_fury.up and class.auras.tigers_fury.multiplier or 1
-
-    return (coefficient * ((weaponBased and state.stat.weapon_dps) or state.stat.attack_power) + flatdmg) * crit * mastery * feralAura * armor * tf
+    local damageSourceMulti = (weaponBased and state.stat.weapon_dps) or (attackPowerFlag and state.stat.attack_power) or 1
+    return (coefficient * damageSourceMulti + flatdmg) * crit * mastery * feralAura * armor * tf
 end
 
 -- Force reset when Combo Points change, even if recommendations are in progress.
@@ -657,6 +657,50 @@ spec:RegisterStateExpr("calc_shred_dpe", function()
     return shred_dpe
 end)
 
+
+spec:RegisterStateExpr("calc_bite_dpe", function()
+    local avg_base_damage = 377.877920772
+    local scaling_per_combo_point = 0.125
+    local dmg_per_combo_point = 576.189844175
+
+    local base_cost = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
+    local excess_energy = min(25, energy.current - base_cost) or 0
+
+    local bite_damage =         avg_base_damage
+    bite_damage = bite_damage + dmg_per_combo_point * combo_points.current 
+    bite_damage = bite_damage + state.stat.attack_power * scaling_per_combo_point * combo_points.current
+
+    -- Hekili:Debug("bite_damage pre dmgc (%.2f), attPower (%d)", bite_damage, state.stat.attack_power)
+    -- bite_damage = calculate_damage(1, bite_damage, false, false, false, false) TODO fix
+    Hekili:Debug("bite_damage (%.2f), excess_energy (%d)", bite_damage, excess_energy)
+
+    bite_damage = bite_damage * (1 + excess_energy/25)
+    bite_damage = bite_damage * (1 + talent.feral_aggression.rank * 0.05)
+    
+    Hekili:Debug("bite_damage final (%.2f), excess_energy (%d)", bite_damage, excess_energy)
+
+    local bite_dpe = bite_damage / (base_cost + excess_energy)
+
+    return bite_dpe
+end)
+
+spec:RegisterStateExpr("calc_rip_tick_damage", function()
+    local base_damage = 56
+    local combo_point_coeff = 161
+    local attack_power_coeff = 0.0207
+    local glyph_muli = (glyph.rip.enabled and 1.15) or 1
+    local cp = combo_points.current
+
+    local flat_damage = base_damage + combo_point_coeff*cp + attack_power_coeff*state.stat.attack_power*cp
+
+    local tick_damage = calculate_damage(1, flat_damage, false, false, true, false)
+    tick_damage = tick_damage * glyph_muli
+
+    Hekili:Debug("Rip tick damage (%.2f)", tick_damage)
+
+    return tick_damage
+end)
+
 local cachedRipEndThresh = 10 -- placeholder until first calc
 spec:RegisterStateExpr("cached_rip_end_thresh", function()
     return cachedRipEndThresh
@@ -684,46 +728,58 @@ spec:RegisterStateExpr("calc_rip_end_thresh", function()
 end)
 
 spec:RegisterStateExpr("clip_roar", function()
+    local local_ttd = ttd
+    local rip_max_remains = rip_maxremains
+    local roar_remains = buff.savage_roar.remains
+    local combo_point = combo_points.current
 
-    if not debuff.rip.up or (target.time_to_die - debuff.rip.remains < cached_rip_end_thresh) then
+    if combo_point == 0 then
+        return false
+    end
+
+    if not debuff.rip.up or (local_ttd - debuff.rip.remains < cached_rip_end_thresh) then
         return false
     end
     
     -- Calculate with projected Rip end time assuming full Glyph of Shred extensions
-    if (buff.savage_roar.remains > rip_maxremains + settings.rip_leeway) then
+    if (roar_remains > rip_max_remains + settings.rip_leeway) then
         return false
     end
     
-    if (buff.savage_roar.remains >= target.time_to_die) then
+    if (roar_remains >= local_ttd) then
         return false
     end
     
-    --Calculate when roar would end if casted now
-    local new_roar_dur = aura.savage_roar.duration
+    -- Calculate when roar would end if casted now
+    -- Calculate roar duration since aura.savage_roar.duration gives wrong values
+    local new_roar_dur = 17 + combo_point * 5
+    Hekili:Debug("Roar duration: (%.1f VS %.1f) CP: (%.1f)", new_roar_dur, aura.savage_roar.duration, combo_points.current)
+    
     
     --If a fresh Roar cast now would cover us to end of fight, then clip now for maximum CP efficiency.
-    if new_roar_dur >= target.time_to_die then
+    if new_roar_dur >= local_ttd then
         return true
     end
     
     --If waiting another GCD to build an additional CP would lower our total Roar casts for the fight, then force a wait.    
-    if new_roar_dur + 1 + (combo_points.current < 5 and 5 or 0) >= target.time_to_die then
+    if new_roar_dur + 1 + (combo_points.current < 5 and 5 or 0) >= local_ttd then
         return false
     end
     
     -- Clip as soon as we have enough CPs for the new roar to expire well after the current rip
     if not is_execute_phase then
-        return new_roar_dur >= (rip_maxremains + settings.min_roar_offset)
+        return new_roar_dur >= (rip_max_remains + settings.min_roar_offset)
     end
     
     -- Under Execute conditions, ignore the offset rule and instead optimize for as few Roar casts as possible
-    if combo_points.current < 5 then
+    if combo_point < 5 then
         return false
     end
     
-    local min_roars_possible = (target.time_to_die - buff.savage_roar.remains) / new_roar_dur
-    local projected_roar_casts = target.time_to_die / new_roar_dur
-    
+    local min_roars_possible = math.floor((local_ttd - roar_remains) / new_duration)
+    local projected_roar_casts = math.floor(local_ttd / new_duration)
+    Hekili:Debug("Roar execution: min (%.1f) VS projected (%.1f)", min_roars_possible, projected_roar_casts)
+        
     return projected_roar_casts == min_roars_possible
 end)
 
@@ -739,11 +795,11 @@ end)
 
 
 spec:RegisterStateFunction("berserk_expected_at", function(current_time, future_time)
+    if not talent.berserk.enabled then
+        return false
+    end
     if buff.berserk.up then
-        return (
-            (future_time < current_time + buff.berserk.remains)
-            or (future_time > current_time + cooldown.berserk.remains)
-        )
+        return future_time < current_time + buff.berserk.remains
     end
     if cooldown.berserk.remains > 0 then
         return (future_time > current_time + cooldown.berserk.remains)
@@ -752,7 +808,7 @@ spec:RegisterStateFunction("berserk_expected_at", function(current_time, future_
         return (future_time > current_time + buff.tigers_fury.remains)
     end
 
-    return false
+    return tf_expected_before(current_time, future_time)
 end)
 
 
@@ -1292,10 +1348,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 5487, 9634, "dire_bear_form" }
     },
-    -- Immune to Fear effects.
+    -- Your Lacerate periodic damage has a 50% chance to refresh the cooldown of Mangle (Bear) and make it free. 
+    -- When activated, this ability allows Mangle (Bear) to hit up to 3 targets with no cooldown, 
+    -- reduces Cat Form abilities' energy cost by 50% for 15 seconds, and prevents the use of Tiger's Fury during Berserk.
     berserk = {
         id = 50334,
-        duration = function() return glyph.berserk.enabled and 20 or 15 end,
+        duration = function() return glyph.berserk.enabled and 25 or 15 end,
         max_stack = 1,
     },
     -- Immunity to Polymorph effects.  Increases melee attack power by $3025s1 plus Agility.
@@ -2369,10 +2427,9 @@ spec:RegisterAbilities( {
         gcd = "totem",
 
         spend = function()
-            local unglyphed = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
-            --Glyph of Ferocious Bite: and consumes up to 25 additional energy to increase damage by up to 100%, and heals you for 1% of your total maximum health for each 10 energy used
-            local additional_due_glyph = (glyph.ferocious_bite.enabled and min(25, energy.current - unglyphed) or 0)
-            return  unglyphed + additional_due_glyph end, 
+            local base_cost = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
+            local excess_energy = min(25, energy.current - base_cost) or 0
+            return  base_cost + excess_energy end, 
         spendType = "energy",
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost
@@ -2722,7 +2779,7 @@ spec:RegisterAbilities( {
         end,
 
     },
-    --Mangle the target for 285% normal damage plus 50 and causes the target to take 30% additional damage from bleed effects for 1 min.  Awards 1 combo point.
+    --Mangle the target for 540% normal damage plus 56 and causes the target to take 30% additional damage from bleed effects for 1 min.  Awards 1 combo point.
     mangle_cat = {
         id = 33876,
         cast = 0,
@@ -3033,13 +3090,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132122,
         damage = function ()
-            return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1)
+            return calculate_damage( 0.147, 56, false, true, true ) * (debuff.mangle.up and 1.3 or 1)
         end,
         tick_damage = function ()
-            return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1) 
-        end,
-        tick_dmg = function ()
-            return calculate_damage( 0.147, 56, false, true ) * (debuff.mangle.up and 1.3 or 1) 
+            return calculate_damage( 0.147, 56, false, true, true ) * (debuff.mangle.up and 1.3 or 1) * (set_bonus.tier11feral_2pc == 1 and 1.1 or 1)
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -3288,7 +3342,7 @@ spec:RegisterAbilities( {
         end,
 
     },
-    --Shred the target, causing 425% damage plus 50 to the target.  Must be behind the target.  Awards 1 combo point.  Effects which increase Bleed damage also increase Shred damage.
+    --Shred the target, causing 540% damage plus 56 to the target.  Must be behind the target.  Awards 1 combo point.  Effects which increase Bleed damage also increase Shred damage.
     shred = {
         id = 5221,
         cast = 0,
@@ -3304,7 +3358,7 @@ spec:RegisterAbilities( {
 
         form = "cat_form",
         damage = function ()
-            return calculate_damage( 4.25 , 56, true, false, true) * (debuff.mangle.up and 1.3 or 1) * (debuff.bleed.up and rend_and_tear_mod or 1)
+            return calculate_damage( 5.40 , 56, true, false, true) * (debuff.mangle.up and 1.3 or 1) * (debuff.bleed.up and rend_and_tear_mod or 1)
         end,
     
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
