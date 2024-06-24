@@ -579,7 +579,7 @@ spec:RegisterGlyphs( {
 
 -- Abilities
 spec:RegisterAbilities( {
-    archangel = {
+archangel = {
         id = 81700,
         cast = 0,
         cooldown = 30,
@@ -591,16 +591,15 @@ spec:RegisterAbilities( {
         handler = function ()
             -- Check if there are Evangelism stacks
             if evangelismStacks > 0 then
-                -- Calculate mana restoration and healing/damage increase based on Evangelism stacks
-                local manaRestoration = totalMana * 0.01 * evangelismStacks
-                local healingIncrease = 0.03 * evangelismStacks
+                if evangelismType == "Dark Evangelism" then
 
-                -- Restore mana and increase healing done
-                restoreMana(manaRestoration)
-                increaseHealingDone(healingIncrease)
+                    -- Apply Dark Archangel effect for 18 seconds
+                    applyBuff("dark_archangel", 18)
+                else
 
-                -- Apply Archangel effect for 18 seconds
-                applyBuff("archangel", 18)
+                    -- Apply Archangel effect for 18 seconds
+                    applyBuff("archangel", 18)
+                end
             end
         end,
     },
@@ -1603,29 +1602,7 @@ spec:RegisterAbilities( {
         texture = 136149,
 
         handler = function ()
-            local targetHealth = UnitHealth("target")
-            local targetMaxHealth = UnitHealthMax("target")
-            local targetPercentHealth = targetHealth / targetMaxHealth
-
-            local baseDamage = 368
-            local bonusDamage = 0
-
-            if targetPercentHealth < 0.25 then
-                bonusDamage = baseDamage * 2
-            end
-
-            local totalDamage = baseDamage + bonusDamage
-
-            -- Inflict damage to the target
-            ApplyDamage("target", totalDamage, "shadow")
-
-            -- Check if the target is killed
-            if targetHealth <= totalDamage then
-                -- Target is killed, do nothing
-            else
-                -- Caster takes damage equal to the damage inflicted upon the target
-                ApplyDamage("player", totalDamage, "shadow")
-            end
+           applyDebuff( "target", "shadow_word_death" )
         end,
 
         copy = { 32996, 48157, 48158 },
