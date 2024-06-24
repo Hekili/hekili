@@ -141,8 +141,6 @@ spec:RegisterGlyphs( {
 
 
 -- Auras
-elusiveness = { 247, 2, 13981, 14066 },
-
 spec:RegisterAuras({
     -- Energy regeneration increased by $s1%.
     adrenaline_rush = {
@@ -563,12 +561,6 @@ spec:RegisterStateExpr( "pmultiplier", function ()
     end
 
     return 0
-end )
-
-spec:RegisterStateExpr( "effective_combo_points", function ()
-    local c = combo_points.current or 0
-    if c < 2 or c > 5 then return c end
-    return c
 end )
 
 -- Bleed Modifiers
