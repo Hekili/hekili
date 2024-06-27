@@ -1,0 +1,67 @@
+## Frost DeathKnight
+# Based on WoWSims
+
+## Prepull actions
+actions.precombat+=/unholy_presence,if=buff.unholy_presence.down
+actions.precombat+=/summon_gargoyle,precombat_seconds=6
+actions.precombat+=/horn_of_winter,precombat_seconds=1
+
+## Main actions
+## autocast_other_cooldowns
+actions+=/empower_rune_weapon,if=blood_runes.current=0&frost_runes.current=0&unholy_runes.current=0
+actions+=/pillar_of_frost,if=buff.unholy_strength.up
+actions+=/blood_fury,if=buff.unholy_strength.up
+actions+=/potion,if=buff.unholy_strength.up&buff.pillar_of_frost.up
+actions+=/synapse_springs,if=buff.unholy_strength.up
+## Finishers
+actions+=/frost_strike,if=target.time_to_die<=3
+actions+=/obliterate,if=target.time_to_die<=3
+actions+=/howling_blast,if=target.time_to_die<=3
+
+# Raise dead conditions -TODO: add Impatience of Youth as alternative to synapse_springs
+actions+=/raise_dead,if=buff.pillar_of_frost.up&buff.unholy_strength.up&buff.synapse_springs.up
+
+# Blood tap conditions
+actions+=/blood_tap,if=death_runes.current<=1&blood_runes.time_to_1>5.5
+
+# frost_strike under certain runic power conditions
+actions+=/frost_strike,if=runic_power.current>=105
+
+# Ensuring diseases are active
+actions+=/outbreak,if=!dot.frost_fever.ticking|!dot.blood_plague.ticking
+
+# Howling Blast with Rime proc
+actions+=/howling_blast,if=buff.freezing_fog.up
+
+# Howling Blast if Frost Fever is not active
+actions+=/howling_blast,if=!dot.frost_fever.ticking
+
+# Ensuring Plague Strike is used with Unholy runes and Blood Plague is not active
+actions+=/plague_strike,if=!dot.blood_plague.ticking&unholy_runes.current=2
+
+# Using Frost Strike with certain conditions on runes and runic power
+actions+=/frost_strike,if=runic_power>100&frost_runes.current=0&death_runes.current=0&unholy_runes.current>=1
+
+# Ensuring Obliterate is used with Unholy runes and Blood Plague is active
+actions+=/obliterate,if=dot.blood_plague.ticking&unholy_runes.current=2
+
+# Frost Strike when Killing Machine proc is active
+actions+=/frost_strike,if=buff.killing_machine.up
+
+# Ensuring Horn of Winter is always active
+actions+=/horn_of_winter,if=!buff.horn_of_winter.up
+
+# Default Howling Blast
+actions+=/howling_blast
+
+# Raise dead conditions
+actions+=/raise_dead,if=buff.pillar_of_frost.up&buff.unholy_strength.up
+
+# Default Frost Strike
+actions+=/frost_strike
+
+# Default Horn of Winter
+actions+=/horn_of_winter
+
+# Using Plague Strike when certain runes are on cooldown and runic power conditions are met
+actions+=/plague_strike,if=frost_runes.current=0&death_runes.current=0&unholy_runes.current>=1&frost_runes.time_to_1>2.5&blood_runes.time_to_1>2.5

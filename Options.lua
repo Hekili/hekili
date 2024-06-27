@@ -6228,7 +6228,13 @@ do
                                             type = "input",
                                             order = 3,
                                             name = "Pack Specialization",
-                                            get = function () return select( 2, GetSpecializationInfoByID( shareDB.imported.payload.spec or 0 ) ) or "No Specialization Set" end,
+                                            get = function ()
+                                                if Hekili.IsRetail() then
+                                                    return select( 2, GetSpecializationInfoByID( shareDB.imported.payload.spec or 0 ) ) or "No Specialization Set" 
+                                                else
+                                                    return select( 2, UnitClass( "player" ) ) or "No Class Set" 
+                                                end
+                                                end,
                                             set = function () end,
                                             width = "full",
                                             disabled = true,
