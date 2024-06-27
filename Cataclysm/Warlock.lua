@@ -368,6 +368,7 @@ spec:RegisterAuras( {
         id = 89937,
         duration = 15,
         max_stack = 1,
+    },
     -- Increases speed by $s2%.
     felsteed = {
         id = 5784,
