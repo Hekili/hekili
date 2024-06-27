@@ -270,9 +270,9 @@ local HekiliSpecMixin = {
         data.max_stack = data.max_stack or 1
 
         -- This is a shared buff that can come from anyone, give it a special generator.
-        if data.shared then
+        --[[ if data.shared then
             a.generate = Aura_DetectSharedAura
-        end
+        end ]]
 
         for element, value in pairs( data ) do
             if type( value ) == 'function' then
@@ -1599,7 +1599,31 @@ all:RegisterAuras( {
         duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
         tick_time = 3,
         max_stack = 1,
-        shared = "target",
+    },
+
+    -- Deals Frost damage over $d.  Reduces melee and ranged attack speed.
+    frost_fever_shared = {
+        --id = 55095,
+        duration = function () return 21 + ( 4 * talent.epidemic.rank ) end,
+        tick_time = 3,
+        max_stack = 1,
+        generate = function ( t )
+            local name, _, count, _, duration, expires, caster = FindUnitDebuffByID( "target", 55095 )
+
+            if name then
+                t.name = name
+                t.count = 1
+                t.expires = expires
+                t.applied = expires - duration
+                t.caster = caster
+                return
+            end
+
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end,
     },
 
     -- Movement speed slowed by $s1% and attack speed slowed by $s2%.
@@ -1628,7 +1652,7 @@ all:RegisterAuras( {
     },
 
     attack_speed_reduction = {
-        alias = { "earth_shock", "frost_fever", "infected_wounds", "judgements_of_the_just", "thunder_clap" },
+        alias = { "earth_shock", "frost_fever_shared", "infected_wounds", "judgements_of_the_just", "thunder_clap" },
         aliasType = "debuff",
         aliasMode = "longest"
     },
@@ -1752,7 +1776,7 @@ all:RegisterAuras( {
     -- Expose Armor.
     expose_armor = {
         id = 8647,
-        duration = function() return 10 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
+        duration = function() return UnitClassBase( 'player' ) ~= 'ROGUE' and 10 or 10 * combo_points.current + ( glyph.expose_armor.enabled and 12 or 0 ) end,
         max_stack = 1,
         shared = "target",
     },
@@ -4315,6 +4339,37 @@ if Hekili.IsClassic() then
 
         handler = function()
             applyBuff("hyperspeed_acceleration")
+        end
+    } )
+    -- Increases your primary_stat by 480 for 10 sec.
+    all:RegisterAura( "synapse_springs", {
+        id = 96228,
+        duration = 15,
+        max_stack = 1,
+        copy = {96228, 96229, 96230}
+    })
+    -- Increases your Intellect, Agility, or Strength by 480 for 10 sec.  Your highest stat is always chosen.
+    all:RegisterAbility( "synapse_springs", {
+        id = 82174,
+        known = function () return tinker.hand.spell == 82174 end,
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = function() return tinker.hand.spell == 82174 and tinker.hand.item or 0 end,
+        itemKey = "synapse_springs",
+
+        texture = function() return tinker.hand.spell == 82174 and tinker.hand.texture or 0 end,
+        startsCombat = true,
+
+        toggle = "cooldowns",
+
+        usable = function ()
+            return tinker.hand.spell == 82174
+        end,
+
+        handler = function()
+            applyBuff("synapse_springs")
         end
     } )
 end

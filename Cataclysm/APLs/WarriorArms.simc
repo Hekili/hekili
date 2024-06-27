@@ -1,4 +1,4 @@
-# Arms Warrior
+## Arms Warrior
 
 ## Opener
 actions.precombat+=/battle_stance
@@ -21,7 +21,7 @@ actions+=/potion,if=target.health.pct<20
 actions+=/heroic_strike,if=(active_enemies=1|buff.sweeping_strikes.up)&(rage.current>=settings.queueing_threshold|buff.deadly_calm.up|buff.battle_trance.up|(cooldown.deadly_calm.remains<1&!cooldown.recklessness.remains<1&rage.current>30&!target.time_to_die<130))
 actions+=/cleave,if=active_enemies>1&!buff.sweeping_strikes.up&(rage.current>=settings.queueing_threshold|buff.deadly_calm.up|buff.battle_trance.up|(cooldown.deadly_calm.remains<1&!cooldown.recklessness.remains<1&rage.current>30&!target.time_to_die<130))
 #maybe implement heroic_leap here?
-actions+=/call_action_list,name=battle_stance,if=(settings.macro_stance_dance|buff.battle_stance.up)|(!dot.rend.ticking|overpower_now)
+actions+=/call_action_list,name=battle_stance,if=(buff.battle_stance.up|settings.macro_stance_dance)&(!dot.rend.ticking|overpower_now)
 actions+=/call_action_list,name=berserker_stance,if=(settings.macro_stance_dance|buff.berserker_stance.up)
 
 ## Spread Rend in AoE
@@ -33,15 +33,18 @@ actions.spread_rend+=/thunder_clap,if=dot.rend.ticking
 actions.battle_stance+=/battle_stance,if=!settings.macro_stance_dance&!buff.battle_stance.up
 actions.battle_stance+=/shattering_throw,if=settings.debuff_shattering_throw
 actions.battle_stance+=/rend,if=!up
-actions.battle_stance+=/overpower,if=overpower_now
-actions.battle_stance+=/berserker_stance,if=!settings.macro_stance_dance&!buff.berserker_stance.up&(!buff.taste_for_blood_prediction.up|buff.taste_for_blood_prediction.remains>1.5)
+actions.battle_stance+=/overpower,if=overpower_now|overpower_filler
+actions.battle_stance+=/berserker_stance,if=!settings.macro_stance_dance&!buff.berserker_stance.up
 
 ## Berserker_stance
+actions.berserker_stance+=/run_action_list,name=battle_stance,if=!dot.rend.ticking|overpower_now
 actions.berserker_stance+=/mortal_strike,if=(target.health.pct>20|buff.slaughter.remains<=1.5|talent.lambs_to_the_slaughter&dot.rend.ticking&dot.rend.remains<3|talent.wrecking_crew.enabled&!buff.enrage.up)
 actions.berserker_stance+=/whirlwind,if=active_enemies>=4
-actions.berserker_stance+=/colossus_smash,if=!buff.colossus_smash.up
+actions.berserker_stance+=/colossus_smash,if=!debuff.colossus_smash.up
 actions.berserker_stance+=/execute,if=target.health.pct<20
+actions.berserker_stance+=/call_action_list,name=battle_stance,if=overpower_filler
 actions.berserker_stance+=/colossus_smash,if=target.time_to_die<=1.5
-actions.berserker_stance+=/slam
+actions.berserker_stance+=/slam,if=target.health.pct>20&(cooldown.mortal_strike.remains>=0.5&cooldown.colossus_smash.remains>=0.5)
+actions.berserker_stance+=/berserker_rage
 actions.berserker_stance+=/battle_shout,if=assigned_shout.battle_shout&rage<30
 actions.berserker_stance+=/commanding_shout,if=assigned_shout.commanding_shout&rage<30
