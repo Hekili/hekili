@@ -23,21 +23,22 @@ actions+=/cleave,if=active_enemies>1&!buff.sweeping_strikes.up&(rage.current>=se
 #maybe implement heroic_leap here?
 actions+=/call_action_list,name=battle_stance,if=(buff.battle_stance.up|settings.macro_stance_dance)&(!dot.rend.ticking|overpower_now)
 actions+=/call_action_list,name=berserker_stance,if=(settings.macro_stance_dance|buff.berserker_stance.up)
+actions+=/berserker_stance,use_off_gcd=1,if=!settings.macro_stance_dance&!buff.berserker_stance.up&buff.taste_for_blood_prediction.remains>1
 
 ## Spread Rend in AoE
-actions.spread_rend+=/battle_stance,if=!settings.macro_stance_dance&!up&!dot.rend.ticking
+actions.spread_rend+=/battle_stance,use_off_gcd=1,if=!settings.macro_stance_dance&!up&!dot.rend.ticking
 actions.spread_rend+=/rend,if=!up
 actions.spread_rend+=/thunder_clap,if=dot.rend.ticking
 
 ## Battle_Stance
-actions.battle_stance+=/battle_stance,if=!settings.macro_stance_dance&!buff.battle_stance.up
+actions.battle_stance+=/battle_stance,use_off_gcd=1,if=!settings.macro_stance_dance&!buff.battle_stance.up
 actions.battle_stance+=/shattering_throw,if=settings.debuff_shattering_throw
 actions.battle_stance+=/rend,if=!up
 actions.battle_stance+=/overpower,if=overpower_now|overpower_filler
-actions.battle_stance+=/berserker_stance,if=!settings.macro_stance_dance&!buff.berserker_stance.up
+actions.battle_stance+=/berserker_stance,use_off_gcd=1,if=!settings.macro_stance_dance&!buff.berserker_stance.up
 
 ## Berserker_stance
-actions.berserker_stance+=/run_action_list,name=battle_stance,if=!dot.rend.ticking|overpower_now
+actions.berserker_stance+=/run_action_list,name=battle_stance,use_off_gcd=1,if=!dot.rend.ticking|overpower_now
 actions.berserker_stance+=/mortal_strike,if=(target.health.pct>20|buff.slaughter.remains<=1.5|talent.lambs_to_the_slaughter&dot.rend.ticking&dot.rend.remains<3|talent.wrecking_crew.enabled&!buff.enrage.up)
 actions.berserker_stance+=/whirlwind,if=active_enemies>=4
 actions.berserker_stance+=/colossus_smash,if=!debuff.colossus_smash.up

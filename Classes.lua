@@ -467,8 +467,7 @@ local HekiliSpecMixin = {
         self.potions[ potion ] = data
 
         data.key = potion
-        class.potionList[ potion ] = link
-        print("Registering potion: ", potion, data)
+
         if data.copy then
             if type( data.copy ) == "table" then
                 for _, key in ipairs( data.copy ) do
@@ -487,8 +486,9 @@ local HekiliSpecMixin = {
             potionItem:ContinueOnItemLoad( function()
                 if not data.name then data.name = potionItem:GetItemName() end
                 if not data.link then data.link = potionItem:GetItemLink() end
+                
 
-                class.potionList[ potion ] = link
+                class.potionList[ potion ] = data.link
                 return true
             end )
 
@@ -2496,9 +2496,9 @@ all:RegisterAuras( {
 -- TODO: Needs Catalcysm potions
 -- TODO: Something about potions is not currently working, needs investigation.
 all:RegisterPotions( {
-    volcanic_potion = {
+    volcanic = {
         item = 58091,
-        buff = "Volcanic Power",
+        buff = "volcanic_power",
         aura = {
             id = 79476,
             duration = 25,
@@ -2515,10 +2515,20 @@ all:RegisterPotions( {
             max_stack = 1
         }
     },
-    tol_vir_potion = {
+    golemblood = {
         item = 58146,
+        buff = "golems_strength",
         aura = {
             id = 79634,
+            duration = 25,
+            max_stack = 1
+        }
+    },
+    tolvir = {
+        item = 58145,
+        buff = "tolvir_agility",
+        aura = {
+            id = 79633,
             duration = 25,
             max_stack = 1
         }

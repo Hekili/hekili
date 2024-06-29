@@ -1311,7 +1311,7 @@ paladin:RegisterAbilities( {
             if buff.divine_purpose.up then
                 return 0
             else
-                return state.holy_power.current
+                return max(state.holy_power.current,1)
             end
         end,
         spendType = "holy_power",
@@ -1323,8 +1323,6 @@ paladin:RegisterAbilities( {
             applyBuff( "inquisition" )
             if buff.divine_purpose.up then
                 removeBuff( "divine_purpose" )
-            else
-                gain( -state.holy_power.current, "holy_power" )
             end
         end,
     },
@@ -1380,6 +1378,8 @@ paladin:RegisterAbilities( {
         texture = 523893,
 
         toggle = "interrupts",
+
+        readyTime = state.timeToInterrupt,
 
         handler = function ()
             interrupt()
@@ -1558,7 +1558,7 @@ paladin:RegisterAbilities( {
             if buff.divine_purpose.up then
                 return 0
             else
-                return state.holy_power.current
+                return max(state.holy_power.current,1)
             end
         end,
         spendType = "holy_power",
@@ -1571,8 +1571,6 @@ paladin:RegisterAbilities( {
         handler = function ()
             if buff.divine_purpose.up then
                 removeBuff( "divine_purpose" )
-            else
-                gain( -state.holy_power.current, "holy_power" )
             end
             if spec.retribution and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
@@ -1609,7 +1607,7 @@ paladin:RegisterAbilities( {
             if buff.divine_purpose.up then
                 return 0
             else
-                return state.holy_power.current
+                return max(state.holy_power.current,1)
             end
         end,
         spendType = "holy_power",
@@ -1883,7 +1881,7 @@ paladin:RegisterAbilities( {
             if buff.divine_purpose.up then
                 return 0
             else
-                return state.holy_power.current
+                return max(state.holy_power.current,1)
             end
         end,
         spendType = "holy_power",
@@ -1895,8 +1893,6 @@ paladin:RegisterAbilities( {
         handler = function ()
             if buff.divine_purpose.up then
                 removeBuff( "divine_purpose" )
-            else
-                gain( -state.holy_power.current, "holy_power" )
             end
             if spec.retribution and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
         end,
@@ -1913,6 +1909,7 @@ paladin:RegisterAbilities( {
         texture = 237547,
 
         toggle = "cooldowns",
+        usable = function () return ( holy_power.current == 3 or buff.divine_purpose.up ) end,
 
         handler = function ()
             applyBuff( "zealotry" )
@@ -2294,15 +2291,14 @@ paladin:RegisterOptions( {
     damage = false,
     damageExpiration = 6,
 
-    -- TODO: Update for Catalcysm launch
-    potion = "speed",
+    potion = "golemblood",
 
-    package = "Retribution (Himea Beta)",
+    package = "Retribution",
     usePackSelector = true
 } )
 
 
-paladin:RegisterPack( "Retribution (Himea Beta)", 20240516, [[Hekili:TR16oUTnw4NLbfW1UBQRVmZK0c7aSj5hnbBlcQ6VLeTeTnB0fxskp7SWqp77HuwuusKs2J9K2uemymSfp35HFNdjL7u3F31jeXXU)6SjZUDYDtVF8KzZNC7uxh(J7WUo7qbFcTb(sckg(83WCkzvgNKMK7p8NjXyuU)BWC0ibPpgLIcfIKLMrdaYDiXzrib1VLIwZZ93F78zF)mxNvzKi(7tCxzq9Z(Xz3bIyhoaESRZwsyiUGsmlW1533sy5(I)bvF08Y9txd)oOWUIimom86uAU)pJ)ejImgSoA6AseytFtU)hrrOqsYpL7R7pFagr6rFlRWNY9)3F8)K7)95(VJWcsPHadBfemMHi8ujd)c6XCFHXN)b43cztXbPXRq88puypSX7kF0)A5pqRuOhkJIEbz9YBwLTE9yXVgNTBadZ5KKnSXXisch(xs3aeJr2KGdL)ACtXywzbPjb4eofDPQRTGSOqAgdfIPxKU0LHz1eI3NEPUunzyBUIbzsiW1Vef1qkMv1QimWuYgV01EFsiYkLvoKzfwoALsv03sM9R6yYMT8RSQLY0SQzyuKGeonJVvOwPwfpfIAc9WwmFYel5aK9KeS3UiSCIjgLGgVdtfPPlu2QgrE8TWmX20OqZY7pYc3GJbUlxi)o8AuwuLLlsVrrrEf)0taY8cbO4sscPgvzmShHJJz6pCxAbgt1t2c4RuaLtKNeeGJWfRUEHG901R92eeUCQod0SK2kpaCT9yreqm0EShobhtWSx3pRIjOiCP7(EHxaiJuyioyyvrjH)bYypIsqWeBbZCah0JN6fsWVypkkdVCyiwo9bOeahWCFywC8JIuhyoC0HdCeDdMpwJXsv)wPpuPWcFsl)GksHWPzSeiTQwEsRrhhM(qYGgXILQecJ8yqZQSbH2gAo5s8upfHv5xJginp1imzk(wS3kyqP9zqHBYq0qckrqlGvqesubeeKcCc8n()bMFkN(OA5X0jgKvjv1tLuXnRQsj1zthme8Kh92L(aMUC(HdsglxnLr3LYWWm7Obr494OLV6UZYkohzVWOSHpt2iYXEaw0S1GgKYufTGCWButBLp1lgfqtHeZB4OiiguroorKNh2xAX5Lv8uskoguy8uASHL4lBIZjj0eqNsIKK)mJWisGgvCs7Hsl5WHHLRsfYc7vnF9DtgF)9JEDl2oM5m6uZBgga5Fa4xsOMWHPI2ZsmWWhzWtEa6hted3eLc5yvycrRJuWaNOXOHouWT3wq7y6vWkBodwjMfZBHsDRbbaDEXWbhlniMXu6gk5MsXE6e4fNUxMDb2i8vGSrdo2XsHQ0jwSQOHfy0akBhJbDC(jCpoXctIaQfUlcrzE7XaWtaVkZR1KXHd6tzxJ8KpRbWz9HzuhxsMKQhnnWo()MsdiSyf3cqdeLlY9FarbJWatBrXXWuMGejazjV1XnLX7JLLfz8Wt2fWx0Rtarqa2kjJbfZX0PZ9MTlWlg6GbpOfUBpExJSltUIqasZ1(YRNutGf9E4CSjOsrx0uu39MEeJSJMqALzSC6id64ZvxgkfEf6YqjR)s7Y4eSIZr2lmk7pZDzO0BpqU9LiDYymk2)IVRaLN836Ucuw5Fffevk)CkOOy6YkOyc(4kxrX2Iht(IHkkQbVKkkTTLN1Ep0TTx)YjAjSs97vmruJnxhiJJj(I6axDDGjDX(1zUoVpExkLdys(3140uhN)bxheujmL66ipKuxh5aYt7vQp4B)Q88KpcS5(gxNakHJPeK4aF1REM7F4qU)WC)oRHM7pOWmQQJM7Vm3FAU)iWAck8OAfQD5IZm2MrakupOL7Vi3V3cTGYKgsFLBRSifrcRzUvRXA9wPDnDsLaTwlvOGB7oM3BDyP2Mnv6JqaQA5LmwpVyQYm4uzOrwdvs(RURYQlDlxhTkNICeWOVRR5OlWewC6MW9DzcnrDK64gTSL613LwHWibsSuNVYOQJzAY0EPvttp0a(68kP2a3tiMx1DMrTweKoODPxlL(h7nY1S3b16DBDqK7)D5(IUiKrYxBqmQS1rxsMkWMPcOQjpZLrRH3OzuIGbSoThmpTEpUet3w)ixl)QwRtspZoA(q7gRqHTDVRw0VzRtsd1oIV5gCQexzZqsXyhQ2CVof2DR(Dkau1GVB08Kux2rTT3luvzOMitN4c3PsyxBigAMJG271PTQNPMKzhRYEPwJ9pvPmTHLQWoo2qnH2vlvQmSIgRkZhV5y40CdwssQ7eaW0lN0y1yhnBPI06pvmt4ewC5sM6zsXuJlBQOHlVI7HxCNmQEDk5qDXtnMJMRtuXfr1Gcz2yJ6qvZ9MVOQgIWEf9MDWbbrnP34QPQ5LfNZJPI1Nc3hBlvgVv30xxr8MxQEXBCaLSRyy1v9R7CQuOIReUEUrTRfUOB2oVf)U7E9Iuv7BWVw6zZX6SX1lZq0VEFdGrLQ3oa5fP(Ax7VgKtTh3z68fP(gVma65E1hOZgulnHvv3pVfZOKI6MYkRVIavgu7H6SX0Nfts(Qdy2KkgQ)MC1FzckQnorRYCR9oAV12Rw1Sj6OXvLNRHMYvyFN2MQBV7zv3MTqFxwRvsd82o8uF4VUf7VUf7tZe(ICl2pL03NEURD4Rox4A(c)Bb6ihVBCTVULDdiQ)dCl7n3IO1Id3AplQJnA)8VtmdBJ4wRBXQRnZFsrIf1LE7dxRJDW)3SthPZcbF(N0M1XKM9cg1RwCUNyzhNsXzDcr90S55Dcrv6W0bezhX(z8aIMvR50UpGOzt1P16benZoMXvQLA(XJdXqRYP7KHRkolFjwfFlkdlxcy79wvg4eV)XLDE0(nyvkWJh3G(J5Q)C))]] )
+paladin:RegisterPack( "Retribution", 20240629, [[Hekili:LR1xpokos8plTwPOKzNnxiPtUPLsYdZCpS78WERogP5nahWjnxd4Cgi91NI4Z(v2agBWgYKKR1jTQvpQX)PQYU(3VQ84y58nh7aug253NpB(JZwn)PPZxS0A5Jo2zVDe7yFe5)c6a8hjOy4F)h4mA4U8SqscBU3IiOagnsj5uFyE7W48ieB6Vqr7Zk8o94I5)YCh7D5Hrz)wIZo98BbqIJyFyyh7NddcWLReN67y)TNdtl8y)Ik8QKNcpYE4BFgNk8IctZGP3tOfE)k(LWOWPG0rj7dJaz6N(Pcpj5UW7pqrOGWKIVct8zukoaOgm83jFhe)0IVY(HTP)GI9jX7qzfFTKtPtpwp0pV5VqBOPlkNI(y4(npSlF)(PSVMMFCukollm5q60yuysg8lFDJqPPHhsWb8VM2Mm6zMpjXhNKrr3k76sidmKMNIcW0BIxY0qpBcWNi36rsHgM0vPGncco63cJArf9SAxeg2uYbxYE3xyKSHz1tPNH1Z2WuX67qZHzDC4HNZUZSMtt9SofJIyljJMN9mJTCUYgfU1y8jD9IzZmydeEkmb7EmcZvmXOe00JykZmD9tg2ZHCenieLW4jOqcH12CB7tirbKxtM(Fa(tYOVjKHnwZoF240B3KfgJDZiUbHy989FMhCahdCRoiXFdVhLh1CRWm2YbRh(xUSitFKf6CJpC6oHzshBQtyxCcooeNU1AWTYU(JW1m0U6RAPRCwUn(U8x0nrp6g21W5ZJfdWwgLPLXK80eqZZSxuf4nwt0WdX9sJjNyOuoZFg0W5umqqnB)9qDc3DOOuszAJtqsi23rqSFq0Geh1KHLRbYTWpcckc3c8bct(x5HPHmPx)bjpf7gMHJtf3Z)404ipA2nqaWql5aZN9vimpxJpEChs9Gimq9OUXiFkzY5ZpKHIanqZYXjiioqWKlK)17tZus7vCaLPNqZUy6YrpuUDzflk4Trgv4JYq0d4SPsQ9TR05q8wc6iOOsps7yJPE31ykTyPgc9kHgWmzperOVj5zfTNf1K7DnA8ZKO3CpsEft3S48z(kQJ4LtpsszUetAckxVB3NHthMoASp4waGJscCBOeOJ6Q(sbzxNVjyoEmcrtDpHbNmFUlAdP2AwQAUPfzYtbWkVGRVw0WSwRuLxRxmuOd4u5UJKKNckrm1AH78J(UX4imE0dDmHhGW4)nH6hMgZDag6OSDJfCPwLRKqcIYtZ4kg(qSOxiAgtx)kIQ3Q)zuCmqw2syModDsVsbshJzxdcx97hDbOIPy)sKI87qHjhGrGqXUYlWnMCIF2aId)jSmzBAojDlDpv22ORxXWXj4NtPatHfTAMm(cXHOpWfc5tArqIkaMhCLg0uiWx45UBiEzUCnPCftOnxQsQ3UzA5rlAboyJuybn7rdNvSXgR)4Yg1vSWMtCLXE3e37Gj5YNggELPUTMPHw1R6JS0OK9qGv)GnwI7nJSsq15wxA82i8jC0MpT8hsk(rO9AT0UvQ5UC4EKNEiZIFmRIRXOO6sjnJqJ1G5DtBpp(cLD96qXwahg3b5qfu26C)mAHLYy(HztxTAYwtaoMCP2nxD6yXj5)RbnyudkNRTtuQh1qGBo7rvb6LSsEXDRjzRwbOFKiTiXADKqhYPX6vgNplRYUh2jVRxGZhkMHACjUrQE4xITld)AiquInzeeLEPQh4IxiArtMl6KnbolZ(lxbodhBW6kfOwvtrxATYXgUGsyBXX(3IpsOzSMu(yRoEoT4Ro2iOMEc1X(xH4Eih7DS(z(3tu6uBH3y(SfEFgNHM4yZ3nVTTCusWF978obxsDh7syno2vPtC(StgRZSFtEeBFkuNlnKXZAmnLzd8oFg4yvf0MAQqH3OQcXf2GfEBk8Sk8M0iikDUGjelmkepuXqJDDOHQILWO4JgPOrSlfERzs6SYtAplBlSmPArBKaJazys0Ywsu9MeTwOSX40WJLJFNBQrhnR065AnD7be7v9BFCjurCul7acJQ)vJuDCJrwBAd2cganbwxLAnyjMapXwYqcOkmoMG(jzhOAA2Yf6P(VI0alP0uBX0L1NRso0QJi8j7XoCe7W2UZiG5zH3QgzwI7mz1A2Wog67vsPD)ILsUXQ9BHtERHcNibhIFcaLDteCESIfLQs95JRvJMGivttDPPfMi6twReIsbnh)KzoqPmh2o8bqwPAO44g5OnufUOyoCPSOSgKKgc1ItC6yoiP5eW1wSA9qnZELGZwTJfQ4(p0Lt5LSLqBYLeLEEi7Q3bDsJmvJKHlsRKD0BbxPL)UL5Ox3SSB6g7tVhSSbjeNNMJRnwYhQpuRcMwIDTRZRXgij8JV1txnpLBRu1MyTwsYbrI7CGrMJukJcKBOpesWAEinTdtVAlEdkbynnieA)uYTak09TU1bGQ6frvV)vEv0sSB9(i29dy8Myv3hWwr10EUlc041jiYVUTM4N1S3CWZBI9kV6TKLJYWAGtENyFR3cx2iuDIEHg24ikEEAdIr9kufLDgFH8gbQ7u9IR8)jIe)LZ1lsLtvJGCGcSAGfcjnLdk1PsjZXK7eu6PzMc8CrOaFNlpYsPu1MKFkPEZyoc8hMxx8YMdbVQjPkqbiXwsMYQVgFzHZUL)pHQSWFDX5UKDxv4nxqRO09QiC9pSG26TzkG(FGHUgyQt3B01Xvjt1Ma0u3MvWK1ttNnG)56kNNzUEHMFMdNYL4bFIco3MBDlL0WFEb(Y)0sD1Ck9OcmBQEdaFBIW6lxe6Tq(7Fv8ncvRs11iAMd8EnMVxVTR5q2964Q)ju6esNp)aX0hRPThk90Z0RRu49Hcp2lSWvnB1qgH5)KBX0)ouWE7(C8N9grSMl)gYo8ypMr9g4)wQ6tGl1x3lxOxwve12vO1t)lUOBI1Quxtds6TpfMSlyh(Uws3ndDTDeQ3mbV)kT59O0mNXqnDHWX8sBQ0aaTV0gb9KmAT(BeupTiyGgODlDpBUcEY2MTTKW5kNMM(70AzMD6VB96O8hN)l]] )
 
 paladin:RegisterPack( "Protection (Himea Beta)", 20240502, [[Hekili:TR1wVTTnu4FlfdWlbl1XxsCxkCkWslWAdw7kGlqFZs0s02SrsuJKkEbWq)23Hu3iLjvIDU8Y6lbo8Y57WdjpFNpcnF48VnFwisGN)LrdgD2GZhmQ)WZhC(4rZNjUlfpFwkk4g0k4hjOy4VFLrf4abHMK7FXez33frrHsZWPzSayiRfIu(Bp90n0nIfb9xT60aKaDAqeIZF9QmsiMFAATzEDkkcfssoD(SfzKiXNsMVyxx6SZV48HaeP4aOzadsyiUyKyEGPB91cdM7dTHkAAjLL7)r8nKis)C)RqCCyUVSdWh5KyEUFeDfj4eyo4LOabLjhGAwxm5IjnMA(SicxWvlxsYQim8RVOcI4e0IiC48RMplGreygbbUjgfjw3pfdbMerU)0CFowiGzY7hJ(bL5fIxIt4KBH4gkOeb0DE0eV1OKq(CHC5(ey(C)E5(lYwUSpIbrorrpHyw)q6MKgWxLb9tqjE0LEOKaICO3inO0tg)06joXQLp1YJLEYzhKNu7dEI1mmFnnkSXBQ7Sf6WOUZJVMGJcLiF(lhYHKBjjyVM7ks8N8CJVQ96jMXXEv7t74z1Da(1BC6xkm4GZ1A5jBsU1lyzI1st87stuVPFlozf4cEByiOBntdJ8cNGv74bOubIK4bzTyKauldJzCT90HdChuL7(P0nyivWL5(dY93Un3pgLGCeOl3ZIWOMq9UBPq3kG7i1HjWJvBlDTfVHUYgIBOSqzuEveLDNcZoYN0ctT9kvSsTBTg7XiRwlW0mvsHHDKvqZEtnSxalJJG7YECbJCdwzNZ2z7xBxYC)FO7BHceBfw0VksfueLgnq7cnkgotixlfhTK2BIo2)ilCfogcWTr9n6JkGMWXbSsAbZbACswffSCkwijVwIYIe2irQHbff5v8pEsUNcgiVc2yscrutrund5vwiAeZB5vJ1huk1IFR2bKtNUeoWeek9QMLbuoadiGXHG7eGJWwx6U3yK2bY)GtWXemW4(UCFnRZYsCUkdGBl3ITL87Hm7sEAv8oLHdOXlqDgXRpD7TmdUYOQWGrsl68ZO7KNMgD2oz4mNwrUUozVFvfHCgd1pl1mVBmK7Qi)f0RQlO6jYQez0xoEggU4SitTKLnO5(T7PtI7hLtaxbK5Hkoi0YnS0xN82pohPkDslFWO5opD(OGpeFl1siWS5o5UFuWd58HJ7qfu4Doky2rN00vUa0dxENXTBunctxPEEv)qMHTO0XAhA3UQO9F5CPy59u7UurxDwFrtXmmSeDEbZ2KYcdEW160rjhhb88TiopOQoY9p2mAXqaLkqINc5GzhsnjhvUajj)tgHtKtVSKX61UEx6rOjvEJ16AUpxuZQnLW0jvwhvLCFG1QYZ6stoiJH)xklGWJVNQwUpZyROv3ztSBnMTkCu0ILeS)uk7b7j)uk7)lKYUhNnCFjWnF3dM94c98FDQu(NsBVpPTT5wmKj1Ov0u3BRG8ElDvRkzNIin0K6sezlrPoKUkkLkAjdpnvXx0yIBrqad6v(ROmSI1peRoAcvZdMboPfMfhFxv1yJhmqrUlp9uQ(wqIHRNuVqIYmSsPy6nxs9CleOKWkFR3Xdho6S(GOWniwsrHJFkoLYeYhJ9COUoLhM7REc2(5xl1ZrxsKU6Vu)SVVf(vZJbFn0Xhbur)kugYvybu(8F81)k3)15(FGWdGdqW4xlhqFoIiOQj8zAizjr9cWmACU)3PF)Bx9(C)3JKZ)pvVGTYeh4lDxasLqY8RH)x6)vAtZVUyHY7xlx93U8ut5LNqwEPlvNoMFlzHsl8kDnh9SR3Ox36oTd2UI)oq421qoauxP3HILUnSdJHIUdegdB4AVYq32bculRyhQfTvK1a2IgvxwaSQ3EpabG3p0kLxpXqRSPDOniuRVlPlRBkiPB7wtczhNjA49Kw6OgMMPJ3UvNoDA3uPh3ZED72HvJ2sbRvHzLRalIYMo54EnE6LJ3lSluCzVpZQrKU2(y5k5s778AX5UVtVM209ezv5P)qXB2wBiz2NwVr7js6UlLmU6JQ(Dz1BSvOeAXX7SEI27YE5q9j06XplaVqsNC5i7Q5DxF39p1IhmTA5(j5QaixzqxqTuA3LLRpWgv1lumznk(tu1pC5rUkEOhu4WXB3UBjdvq)E1AObWI1eaPEf1YLOzTJtDkxBxl5u32Ey2Eo1IAbWwdBVHPBHMwautZxxGzrvvpBkQ2fGDK29Sct16)jaKEwvg(SECRdEhxNxmsN2r4VK(rlN(G9I9XIPn0x1Y4J75kkyiwZIvBrCPBtBhFTlaZvKQHcWYi0fB56MIRWCndrvYPzQSKvJREtFpZPC(GgSkY7(uCER2s7JR8ysVvd4lv6TAaFUsVvdWZB6T2W8cMERg6hCsPMDzhjLmhGJYXA9Hz0ri)PlLwTPFstP1ebT)1r4o9w9mB9DqyoJP2MHZ0Cnxjm)(gK2CNpkIPJSL4rlj3UEQ1KNM3dlFFQfYVVU)oX8RYBYfZNHGdyu28zQxKr9(pZ)V)]] )
 
@@ -2310,7 +2306,7 @@ paladin:RegisterPack( "Protection (Himea Beta)", 20240502, [[Hekili:TR1wVTTnu4Fl
 -- paladin:RegisterPack( "Holy Paladin (wowtbc.gg)", 20221002.1, [[Hekili:vA1YUTToq0pMceKG2kl5Mw3CrCw0vnErAbua6ozrjowIxtrkqsz3ayWV9ouQrMsrooDtc9WZCMhCMJDsuYJjXuIbsEyE485rHHZdIwm)MWRtInpvdjX1K8TKc8GGuH)97s(t20Fs4ektytVCVCVjlpOO4kh0N4sc1rPw2OYr4LgtT()MnRhgEYW3olNt06pw0WOGEwjY5hR7OCwsCwdJBUxKKnvM95imZ01qoAgPNrPqhsqNNe)yjtBtRvmPIzW809PmIgO2ujMTMsWM2Nk20FPiMsBABAeKeZzAJUTHaBinCdE8H2geiizCGM8TK4CKyqXijXKCdBhSMknbzajxkwl3SMZkkn20L20WoesbwqdVoX4Y9trBwZMnbAGWdOY9IJK4m5OypttLvoo(0j5WqufGjGI1drKJ18T20OqB6f20kIGeud4JJW0AFHxI()n0cOcVzyGU2fOjX0vpEjbI(ZVLoMMKRa6ADjd40X9Rbx6O8l(jazhikyII17DVEJc(cFKu2oMawZ48MkMG0zCa8Vob8Aoqgb7gFy1Yjikk0hsJgJQbQ0Jrfnr82q2jvJbo3hOB)a7gY8TJH9Voc41JBBUU3qL7neKnAbO1TSE95EbbbuXaC36oK02XQZfoC(xd5QU3axmo7uYlJXL9HHPxtHk3g9Hd(gBeuGGJtxnQ31nP4c7Gjj43svotxnSRIZZ1kixwLroQa8SlkWOyznUpSM0OgpOCM1A0SwJJUJwTF2S71yl(F9RVD)wPQFbUTM2bkTdsVAAs8EIs0gU47RQLkJtMCUnTJlBARCyGDLRFi3W4OC(7ENnD43aSYzcD6h5gzgOWZi92v2vDSOd67LVF5muZNviWvBxRBAiVOx8b2MLVSIpVZDv)P8U3FNxdLNDUCAT9LH(UouuUpy9Y3(yNqC15WOnNBJcVWxJ(2fHNKKUVSXpD8fohvhdUByvmur1)MjuqN4ANIPV5ofsFl9cIt4DR(NV9JYDdQTPfSMUf67OV0Jxp5V6l3fDXR7(rbKjD(Yrsshomwo6kF2ok5qAmLoD)(Fos7AAYFc]] )
 
 
-paladin:RegisterPackSelector( "retribution", "Retribution (Himea Beta)", "|T135873:0|t Retribution",
+paladin:RegisterPackSelector( "retribution", "Retribution", "|T135873:0|t Retribution",
     "If you have spent more points in |T135873:0|t Retribution than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )

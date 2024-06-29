@@ -4194,7 +4194,7 @@ spec:RegisterOptions( {
     damage = false,
     damageExpiration = 6,
 
-    potion = "speed",
+    potion = "tolvir",
 
     package = "Feral DPS",
     usePackSelector = true

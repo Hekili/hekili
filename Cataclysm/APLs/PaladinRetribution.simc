@@ -1,6 +1,6 @@
-# Paladin: Retribution
-# Himea's Beta APL - Discord: himea.saito
-# May 2024
+## Retribution Paladin
+# Based on WoWSims
+
 
 ## Precombat
 actions.precombat+=/retribution_aura,if=!buff.aura.up&settings.maintain_aura&assigned_aura.retribution_aura
@@ -11,21 +11,40 @@ actions.precombat+=/resistance_aura,if=!buff.aura.up&settings.maintain_aura&assi
 actions.precombat+=/blessing_of_kings,if=!buff.blessing.up&settings.maintain_blessing&assigned_blessing.blessing_of_kings
 actions.precombat+=/blessing_of_might,if=!buff.blessing.up&settings.maintain_blessing&assigned_blessing.blessing_of_might
 actions.precombat+=/seal_of_truth,if=buff.seal.remains<300
-actions.precombat+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
+actions.precombat+=/divine_plea,if=mana.percent<90
+actions.precombat+=/guardian_of_ancient_kings,if=cooldown.zealotry.remains<=10|cooldown.zealotry.remains>=time_to_die
 actions.precombat+=/judgement
 
 ## Default
-actions+=/call_action_list,name=init
-actions+=/use_items
-actions+=/potion
-actions+=/hyperspeed_acceleration,use_off_gcd=1
 actions+=/run_action_list,name=cleave,if=active_enemies>1
 actions+=/run_action_list,name=single
 
-## Init Parameters
-actions.init+=/variable,name=time_to_die,value=(debuff.training_dummy.up&300)|target.time_to_die
+## Single
+actions.single+=/rebuke
+actions.single+=/seal_of_truth,if=buff.seal.down|(buff.seal_of_righteousness.up&active_enemies=1)
+actions.single+=/judgement,if=!buff.judgements_of_the_pure.up
+actions.single+=/guardian_of_ancient_kings,if=cooldown.zealotry.remains<=10|cooldown.zealotry.remains>=time_to_die
+# also activate all other cooldowns if buff.zealotry.up&buff.inquisition.up
+actions.single+=/use_items,if=buff.zealotry.up&buff.inquisition.up
+actions.single+=/potion,if=buff.zealotry.up&buff.inquisition.up
+actions.single+=/avenging_wrath,if=((buff.zealotry.up&!settings.zealotry_macro)|!talent.zealotry.enabled)&buff.inquisition.up
+actions.single+=/zealotry
+actions.single+=/inquisition,if=buff.inquisition.remains<=3.5&!action.zealotry.ready&cooldown.zealotry.remains&target.time_to_die>6
+actions.single+=/synapse_springs,if=cooldown.avenging_wrath.remains>=35
+actions.single+=/word_of_glory,if=buff.selfless.down&(holy_power=3|buff.divine_purpose.up)&settings.selfless_healer&(can_spend_holy_power|!settings.zealotry_save)
+actions.single+=/templars_verdict,if=holy_power>=3|buff.divine_purpose.up&cooldown.crusader_strike.remains
+actions.single+=/crusader_strike,if=holy_power<3
+actions.single+=/judgement,if=set_bonus.tier13_2pc_melee&!buff.zealotry.up&holy_power<3
+actions.single+=/exorcism,if=(cooldown.crusader_strike.remains>=1|!buff.bloodlust.up)&buff.the_art_of_war.up
+actions.single+=/hammer_of_wrath
+actions.single+=/judgement,if=cooldown.crusader_strike.remains>=1|!buff.bloodlust.up
+actions.single+=/holy_wrath,if=cooldown.crusader_strike.remains>=1|!buff.bloodlust.up
+actions.single+=/consecration,if=(settings.ignore_consecration_movement|!moving)&settings.single_target_consecration&(cooldown.crusader_strike.remains>=1|!buff.bloodlust.up)&mana.current>=16000
+actions.single+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
+
 
 ## Cleave
+actions.cleave+=/rebuke
 actions.cleave+=/seal_of_righteousness,if=buff.seal_of_righteousness.down&active_enemies>=settings.seal_of_righteousness
 actions.cleave+=/judgement,if=(mana.percent<settings.mana_judgement_threshold)&buff.judgements_of_the_bold.down
 actions.cleave+=/guardian_of_ancient_kings,if=cooldown.zealotry.remains<10
@@ -43,28 +62,9 @@ actions.cleave+=/templars_verdict,if=(buff.divine_purpose.up|holy_power=3)&(can_
 actions.cleave+=/consecration,if=(settings.ignore_consecration_movement|!moving)&!buff.active_consecration.up&active_enemies>2
 actions.cleave+=/judgement,if=buff.zealotry.down&holy_power<3
 actions.cleave+=/exorcism,if=buff.the_art_of_war.up
-actions.cleave+=/hammer_of_wrath,if=buff.avenging_wrath.up|target.health.pct<2
+actions.cleave+=/hammer_of_wrath
 actions.cleave+=/judgement,if=set_bonus.tier13_2pc_melee&buff.zealotry.up&holy_power<3
 actions.cleave+=/crusader_strike
 actions.cleave+=/holy_wrath
 actions.cleave+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
 
-## Single
-actions.single+=/seal_of_truth,if=buff.seal.down|(buff.seal_of_righteousness.up&active_enemies=1)
-actions.single+=/judgement,if=(mana.percent<settings.mana_judgement_threshold)&buff.judgements_of_the_bold.down
-actions.single+=/guardian_of_ancient_kings,if=cooldown.zealotry.remains<10
-actions.single+=/zealotry,use_off_gcd=1,if=buff.guardian_of_ancient_kings.remains<21&(holy_power=3|buff.divine_purpose.up)&level=85
-actions.single+=/zealotry,use_off_gcd=1,if=(holy_power=3|buff.divine_purpose.up)&level<85
-actions.single+=/avenging_wrath,use_off_gcd=1,if=(buff.zealotry.up&!settings.zealotry_macro)|!talent.zealotry.enabled
-actions.single+=/crusader_strike,if=holy_power<3
-actions.single+=/judgement,if=buff.zealotry.down&holy_power<3
-actions.single+=/inquisition,if=(buff.inquisition.down|(time_to_three_holy_power*0.66)>buff.inquisition.remains)&(holy_power=3|buff.divine_purpose.up)&(can_spend_holy_power|!settings.zealotry_save)
-actions.single+=/word_of_glory,if=buff.selfless.down&(holy_power=3|buff.divine_purpose.up)&settings.selfless_healer&(can_spend_holy_power|!settings.zealotry_save)
-actions.single+=/templars_verdict,if=(buff.divine_purpose.up|holy_power=3)&(can_spend_holy_power|!settings.zealotry_save)
-actions.single+=/exorcism,if=buff.the_art_of_war.up
-actions.single+=/hammer_of_wrath,if=buff.avenging_wrath.up|target.health.pct<20
-actions.single+=/judgement,if=set_bonus.tier13_2pc_melee&buff.zealotry.up&holy_power<3
-actions.single+=/crusader_strike
-actions.single+=/holy_wrath
-actions.single+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
-actions.single+=/consecration,if=(settings.ignore_consecration_movement|!moving)&!buff.active_consecration.up&mana.percent>70&settings.single_target_consecration
