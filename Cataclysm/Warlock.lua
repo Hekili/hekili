@@ -185,6 +185,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         shared = "target",
     },
+   --Critical strike chance taken from Warlock Demons increased by 10%.
+	curse_of_guldan = {
+        id = 86000,
+        duration = 15,
+        max_stack = 1,
     -- Speaking Demonic increasing casting time by $s1%.
     curse_of_tongues = {
         id = 1714,
