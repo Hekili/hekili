@@ -190,6 +190,7 @@ spec:RegisterAuras( {
         id = 86000,
         duration = 15,
         max_stack = 1,
+    },
     -- Speaking Demonic increasing casting time by $s1%.
     curse_of_tongues = {
         id = 1714,
