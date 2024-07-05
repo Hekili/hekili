@@ -682,8 +682,8 @@ end)
 
 
 spec:RegisterStateExpr("calc_rake_dpe", function()
-    local rake_dpe = action.rake.damage + action.rake.tick_damage*(math.floor(min(aura.rake.duration,ttd)/aura.rake.tick_time))
-    return rake_dpe / action.rake.cost
+    local rake_dmg = action.rake.damage + action.rake.tick_damage*(math.floor(min(aura.rake.duration,ttd)/aura.rake.tick_time))
+    return rake_dmg / action.rake.cost
 end)
 
 spec:RegisterStateExpr("calc_shred_dpe", function()
