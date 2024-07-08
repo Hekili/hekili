@@ -404,6 +404,13 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 17, 592, 600, 3747, 6065, 6066, 10898, 10899, 10900, 10901, 25217, 25218, 27607, 48065, 48066 },
     },
+
+    power_word_fortitude = {
+        id = 79105,
+        duration = 60,
+        max_stack = 1,
+        copy = { 1244, 1245, 2791, 10937, 10938, 21562, 25389, 48161, 79014, 79105 },
+    },
     -- Increases Shadow Resistance by $s1.
     prayer_of_shadow_protection = {
         id = 27683,
@@ -579,7 +586,7 @@ spec:RegisterGlyphs( {
 
 -- Abilities
 spec:RegisterAbilities( {
-archangel = {
+    archangel = {
         id = 81700,
         cast = 0,
         cooldown = 30,
@@ -1260,7 +1267,7 @@ archangel = {
 
     mind_spike = {
         id = 73510,
-        cast = 1.5,
+        cast = 0,
         cooldown = 0,
         gcd = "spell",
 
@@ -1268,7 +1275,7 @@ archangel = {
         spendType = "mana",
 
         startsCombat = true,
-        texture = 136207,
+        texture = 457655    ,
 
         handler = function ()
         end,
@@ -1318,7 +1325,7 @@ archangel = {
 
     -- Power infuses the target, increasing their Stamina by 3 for 30 min.
     power_word_fortitude = {
-        id = 21562,
+        id = 79105,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1333,7 +1340,7 @@ archangel = {
             applyBuff( "power_word_fortitude" )
         end,
 
-        copy = { 1244, 1245, 2791, 10937, 10938, 25389, 48161 },
+        copy = { 1244, 1245, 2791, 10937, 10938, 21562, 25389, 48161, 79014, 79105 },
     },
 
 
@@ -1602,7 +1609,7 @@ archangel = {
         texture = 136149,
 
         handler = function ()
-           applyDebuff( "target", "shadow_word_death" )
+
         end,
 
         copy = { 32996, 48157, 48158 },
@@ -1793,7 +1800,7 @@ spec:RegisterOptions( {
 
 
 -- Packs
-spec:RegisterPack( "ShadowBeta", 20240621, [[Hekili:vJ1AVTTnu0FlfdiTfRvZwjoBRloaTd7rkWYkQtX(WqLjTevexOe1iPINbc0V9DjPEzgkfNM9LHIMetD55(4C5LhRO5rxfTkbRirxgol8KzNgopim84tMnpALAxjjAvjo(g81WFuGZHFkZWj8TBikS(r7yCCIgcjVsedpoA1MkktDrr0gF4gggc2wsIJUCr0QmAscXAjrghT6QmQSgP)pUg143Aepf(CSIYlQrmQubpoLlQr)k5gkJgaHHGNszGZ)QA0VxskiI63B3GmOuqI55BWQVE53KtlswllP3q8)CBQTElxKSUetl6SQ7zPusrYROPl3uLMgSHX5jSkPkOQCOTjKBHQbT461Lm81ve9gEMIgFdS0rkS4AIkiHyGW10abjh8S8SJhc4T48sQGgVwXRIZMaU9n0pyMQWggwQ6sKMeNl2aBbSCO5IQI12pTwx8FLUlyjMBsk963swdv8CkrE(YWhCJsaB9)aM630vy0h5kSHA7yeP6EbzmNZGaSiOF52CB5SPlbdyMbiNYW76Y(UvadGEUZo2br32IwxF(ChO9X7pA62c19z8hjrBHzyONqWQHiLrWmvwqzS6SWftw(hPhXWI)yd1ahrlsQrFsbhjv78ggDhE6OZbR3ZNo7flIZWfxtyDrc5wZNPYClHTCXrV4qQoNF6D3Dy0X9TC0EGtFPBtafgVjKWc6aohxGnL45ULynkRLvLWaizR1dOKfZo6z2ySdptVSPO)w(p57KdCQSDihbl2BDpt3UFt1yj5W2klwp92tlopTtmMAXvygPq96vWDk0uAmuCSEOg9I3M8xWW5A0gSKa9M67p2bGvJuM9uJIZ40yI0Lc7VNWgpAJd6xmGuG3WijhzcWU(tl9Gmb1ptzmG0gB0t3mWp0E7tn6Days)3lrlGR0wNsfWvCBXIcOAiJw9hV9JxEXL)YBaxIUkdUNKMxYfQMlhFUu98AKG83vW2GKxYZbtWvkEoCPCIo31rTmO(9MnNYzm(wazTrcmu(2seW6vMsNEsTsB2W7HHcBLQ1UcUXZvf7zDsI2yqgawZbVrxFEnelDJs0LHhipsiP4k2)xsgRcMgbjwPm5u48Tou0h27tSR16u09RkO7(gIccEOaCHYUjd7NdZf1bSkt3GqULi2PXMYf6rSqKfZQaHtWJOqekAJO)8tsIgjsU8ZVcsPmAC2qRXf769AtYs(NsgnMQy94om3BD6paNIeTU5kle1O5FUz6F)sHd88w4WWGmQbsvRPMQHzPIQ8nelbZ4kGmVW0jOx4ehjGWdJwz(lT4tyyc8RlnAzBoCg9oROsbTuVTOv7nZe2sS93DJlJuGsvhaGDRascu6EydkRrNvJoUhCx70(44d0h(hH66H9TsJ)jhi(Jny11dU2b(qbzMYxbFVIQr(GdjSVMVHb3es8QrlRrZQrhPhCpPuVP5qFI9SzRhShNIphA4DsvnEpgU9ju7py(9lT)zXdHFVifdyHl83VBKBQb80PjexDLE7Iay(2r61gOH0PzZV0uVnDEeIA760E(7MobCLJA24ctl1lEGo2H9uNwJU7ox7hVrzSDmzFlSJx2x56uUOtYVF0KSvcRHTNpGT7vMQby(SrrypzTMcZZ0x36kUThzxTXg8NCyJryMd))FHYW97)hriOjLUNyqtq7onAVaSrLO)HjMrNgPp(M060do8nr4)OXKtgb6O59j4zs4tzy14deN0LFPZUgF24JAuZ4Ja123)cpGZuWr9WEyCELhwfkRTV3mTgfptdpKTAIkL(9C18DcEqXo23cM3ZiTncJQrzaOEyW9CJ7xFPh1bFLLMGhuRNXHqAvUXs9Ar)7d]] )
+spec:RegisterPack( "ShadowBeta", 20240621, [[Hekili:DJ1AVTTnx4FlbdiTfR1Z2PoTRZoaPdB7nbyzdvPyFyOYIwIkIlsIAKujZab63(ohkzDHIsrPTF5DiOn2sh(CU)WZjUlCV21jGOOUxTC(Yxp)nZF7SLlNVy1sxh1(mQRtgX)wYnWhsjjW)7erc43)EQIGVAFmNeGqi55cF41Uo7YzXQlsD3zf3tCDi5QiUaqkjpuWU11jIfeqlpav676CDetw4H)Ju4vP(cpEi8DFfJNw4fZKk41HCrH3)JEllMnZ1r)q0wiCk8RR0UgnLSlMg4((sWfSmebxNZ5)uH3h4ks5xlb21jHLgSvsjcxfy4gaaNwrfmWXveXnu1Sa6U8WWzsDiz79CrW2mclDMGMa)cmW1fEN0aUPCOoozI64ossgtW83Q45(rdPHUsH4)6jIFa9oidYsVzBwm5MC6qAWuouhRguhTdpCXoauahJO9UyIu5I)aGhsYJv2sEnyEeuta2njMDh1m2gYOPbJN6GJRy(3cEqH3XWNNEMep2wflPNwNAg1mAivqTDH3zBk8wOngTa07iP3qHI5KdcaVFLrqlmMSF807tj0psgC0W1Ofnwcx2kEo9Zt1J0pyrX97lEZGQfpZD0T0uAcJkltplBGsKNUT8ZBrcNsANTLCJiXdG9BnWEkh9qlG0A1VLSwx6SFf8(28znUJpNhd1aPZAoBt0cCT5pEWnpB8wk9zQllpu1I8gpPwSZG2GbkZNkl5xJcYPYy(LwboCpxLEIOKyv0SmFLg0LRk8E4HcVeskP(HlwzNmkGsurJ3E9KiimBxSr72TI8hRQ7GlTtdk8(OcUKwT3ALzlq6wAARzYWbSZwQR7E(u5mGcVtFsSBdCGrlTHd8IM4gr4hPnC0f)(bDXbZ1bmzgviXpdaSy(GiyueTQSD)OQ7AAGbBYRrhn(TY8SmbvwRJr5KKzSBPgvaxtIPPQx5Kr9zHm)cVZ1Nachp)8G)kxcw0oIKcfh4iD7HyngqXZu45hXz(u5l62wGVBwJ(Mvznn3DwhwR4SwysA1NDPRn)ZS4yiGmHYmmywszdrjFEYoIvM7oO)BzWTkcRHUdeSdozrlqTqiwN543tfLNcgowXu5bMPLF)G5w49EW167R2Wyg2OwZoEqBSuWD2gYe0UMNoSCxv9z58)NUe42VNisH(jqL)X5F4QlU6xExHxH31rW09SKmqxvJ0)m4I0Nv4jO)DoGnKFL8eqgyXbEcSsrawFG5d5SIl1NoKhhZVxpPajxqGsmWfGNNRlVWRgvOyL2D56dyfJ6GCPCTQZt7iDqakmSedbRtFxXLfEVcSLAkt4bx(ioIu9Fd)OAY8)pXzkxGmtWdzX0YnjtyatgAkiTwJJDd2qICtkGO)wQcmEiaCHQ8q6oLe4Aj0GvryldfkR3JyZ4qxZE0Y8JHgeqAkdSqXbl6p)OKIirtKF6LGlfX8JAlnjDFJwRCw6)KfZ8zQ4gCB77hu6pamMIdQ56siGRh(u1vTnpAzlnFpWS1YJQGuDquD0q)O08KD0YeCmxbjZl0vc4dETXg4WlbMkGFhNMXPkE768nfELmDfxwkUCwnh53U57Ay9S)EtQVAPQFNEuHxYc3Cu9MG9fQbaTKvRsC80UYED9iCTbU(wderRBZD2MfhB9cJnR6bKE4kBiPNeRT4MtImIdn0ql2DOUtencS2hDYoOgR58sCbNnaJocp(8MLRoBZYh9GaPWL4pqrv3LCAkEKQEH0r26zZ8X9T8mBi3jRBSRZ6tMyv1zlmG2wI9ZoFwcz)u6NzMSeUElv0cXMzlxVC1dpCyy11lwnAUzGYDDk2(wdwTPAsGX2JyZCJZwpHyTL0Vt94NpLq2zNoXwVEcoy5XPVWS(OE(C0ChoaBoWokDRSZQ5hFu)59Rc5D(lH2Gl0WwZvtjcZxyJJDAE56tmX6ZSKThoFbDt9WA6LSFnwZXw)I(gYsxyG9EoU3op4qbAJQApMhLjZS4F9QA2wZ9eSFzTTLfQrFWnjSJvR1jWniC)3p]] )
 
 
 spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
