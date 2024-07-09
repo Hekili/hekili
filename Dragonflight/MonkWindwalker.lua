@@ -10,6 +10,7 @@ local class, state = Hekili.Class, Hekili.State
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 269 )
+local GetSpellCount = C_Spell.GetSpellCastCount
 
 spec:RegisterResource( Enum.PowerType.Energy, {
     crackling_jade_lightning = {
@@ -85,7 +86,7 @@ spec:RegisterTalents( {
     attenuation                 = { 80668, 386941, 1 }, -- Bonedust Brew's Shadow damage or healing is increased by 20%, and when Bonedust Brew deals Shadow damage or healing, its cooldown is reduced by 0.5 sec.
     bonedust_brew               = { 80669, 386276, 1 }, -- Hurl a brew created from the bones of your enemies at the ground, coating all targets struck for 10 sec. Your abilities have a 50% chance to affect the target a second time at 40% effectiveness as Shadow damage or healing. Spinning Crane Kick refunds 1 Chi when striking enemies with your Bonedust Brew active.
     crane_vortex                = { 80667, 388848, 2 }, -- Spinning Crane Kick damage increased by 10%.
-    dampen_harm                 = { 95172, 122278, 1 }, -- Reduces all damage you take by 20% to 50% for 10 sec, with larger attacks being reduced by more.
+    dampen_harm                 = { 80704, 122278, 1 }, -- Reduces all damage you take by 20% to 50% for 10 sec, with larger attacks being reduced by more.
     dance_of_chiji              = { 80626, 325201, 1 }, -- Spending Chi has a chance to make your next Spinning Crane Kick free and deal an additional 200% damage.
     dance_of_the_wind           = { 80704, 414132, 1 }, -- Your dodge chance is increased by 10%.
     detox                       = { 80606, 218164, 1 }, -- Removes all Poison and Disease effects from the target.

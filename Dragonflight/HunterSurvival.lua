@@ -12,6 +12,11 @@ local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 255 )
 
+local GetSpellBookItemName = function(index, bookType)
+    local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet;
+    return C_SpellBook.GetSpellBookItemName(index, spellBank);
+end
+
 spec:RegisterResource( Enum.PowerType.Focus, {
     terms_of_engagement = {
         aura = "terms_of_engagement",

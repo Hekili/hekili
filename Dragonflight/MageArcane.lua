@@ -1163,7 +1163,7 @@ spec:RegisterHook( "reset_precast", function ()
 
     if arcane_charges.current > 0 then applyBuff( "arcane_charge", nil, arcane_charges.current ) end
 
-    mana_gem_charges = GetItemCount( 36799, nil, true )
+    mana_gem_charges = C_Item.GetItemCount( 36799, nil, true )
 
     if prev[1].conjure_mana_gem and now - action.conjure_mana_gem.lastCast < 1 and mana_gem_charges == 0 then
         mana_gem_charges = 3
