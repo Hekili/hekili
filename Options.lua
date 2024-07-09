@@ -10259,17 +10259,13 @@ do
 
                             for i, tal in ipairs( talents) do
                                 if ( tal.isSpec == false and tal.isHero == false ) then
-                                    print("class tal")
                                     insert( classTalents, tal )
                                 end
                                 if ( tal.isSpec == true and tal.isHero == false ) then
-                                    print("spec tal")
                                     if ( specName == nil ) then specName = tal.specName end
                                     insert( specTalents, tal )
                                 end
                                 if (tal.isSpec == false and tal.isHero == true ) then
-                                    
-                                    print("hero tal")
                                     if ( firstHeroSpec == nil ) then 
                                         firstHeroSpec = tal.specName 
                                     end
@@ -10280,7 +10276,6 @@ do
                                         if ( secondHeroSpec == nil ) then secondHeroSpec = tal.specName end
                                         insert( hero2Talents, tal )
                                     end
-
                                 end
                             end
 
