@@ -1,5 +1,5 @@
 -- Targets.lua
--- June 2014
+-- July 2024
 
 local addon, ns = ...
 local Hekili = _G[addon]
@@ -1065,8 +1065,8 @@ Hekili:ProfileCPU( "Audit", ns.Audit )
 
 
 function Hekili:DumpDotInfo( aura )
-    if not IsAddOnLoaded( "Blizzard_DebugTools" ) then
-        LoadAddOn( "Blizzard_DebugTools" )
+    if not C_AddOns.IsAddOnLoaded( "Blizzard_DebugTools" ) then
+        C_AddOns.LoadAddOn( "Blizzard_DebugTools" )
     end
 
     aura = aura and class.auras[ aura ] and class.auras[ aura ].id or aura
