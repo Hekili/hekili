@@ -546,6 +546,9 @@ spec:RegisterAuras({
     }
 })
 
+spec:RegisterStateExpr( "envenom_pool_deficit", function ()
+    return energy.max * ( ( 100 - ( settings.envenom_pool_pct or 100 ) ) / 100 )
+end )
 
 spec:RegisterStateExpr( "pmultiplier", function ()
     if not this_action then return 0 end
@@ -735,35 +738,6 @@ spec:RegisterStateExpr( "cp_max_spend", function ()
     return combo_points.max
 end )
 
-spec:RegisterSetting( "envenom_pool_pct", 60, {
-    name = "Energy % for |T132292:0|t Envenom",
-    desc = "If set above 0, the addon will pool to this Energy threshold before recommending |T132292:0|t Envenom.",
-   type = "range",
-    min = 0,
-    max = 100,
-    step = 1,
-    width = 1.5
-} )
-spec:RegisterStateExpr( "envenom_pool_deficit", function ()
-    return energy.max * ( ( 100 - ( settings.envenom_pool_pct or 100 ) ) / 100 )
-end )
-
-spec:RegisterSetting( "dot_threshold", 7, {
-    name = "Remaining Time DoT Threshold",
-    desc = "If set above 0, the DoT priority will not be used if your enemy or enemies will not survive longer than the specified time.",
-    type = "range",
-    min = 0,
-    max = 10,
-    step = 0.1,
-    width = "full"
-} )
-
-spec:RegisterSetting( "solo_vanish", true, {
-    name = "Allow |T132292:0|t Vanish when Solo",
-    desc = "If unchecked, the addon will not recommend |T132292:0|t Vanish when you are alone (to avoid resetting combat).",
-    type = "toggle",
-    width = "full"
-} )
 local stealth = {
     rogue   = { "stealth", "vanish", "shadow_dance" },
     mantle  = { "stealth", "vanish" },
@@ -1850,6 +1824,32 @@ spec:RegisterSetting( "rogue_general_footer", nil, {
     name = "\n\n"
 } )
 
+spec:RegisterSetting( "envenom_pool_pct", 60, {
+    name = "Energy % for |T132292:0|t Envenom",
+    desc = "If set above 0, the addon will pool to this Energy threshold before recommending |T132292:0|t Envenom.",
+   type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = 1.5
+} )
+
+spec:RegisterSetting( "dot_threshold", 7, {
+    name = "Remaining Time DoT Threshold",
+    desc = "If set above 0, the DoT priority will not be used if your enemy or enemies will not survive longer than the specified time.",
+    type = "range",
+    min = 0,
+    max = 10,
+    step = 0.1,
+    width = "full"
+} )
+
+spec:RegisterSetting( "solo_vanish", true, {
+    name = "Allow |T132292:0|t Vanish when Solo",
+    desc = "If unchecked, the addon will not recommend |T132292:0|t Vanish when you are alone (to avoid resetting combat).",
+    type = "toggle",
+    width = "full"
+} )
 
 spec:RegisterOptions( {
     enabled = true,
@@ -1867,7 +1867,7 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Assassination", 20240627, [[Hekili:vR1wVnoUv4Fl5fpXOZQAlhNj72ydSTp0odkYd1trlqXkjAjABIil5ssLSgWq)275qkzrkrj7mzAXwmZSiHx(o3VWJ2GPbFnyvcrsdEYFI)DtU3)tE((ZFW)HGvYJhObRoqIFMSf(HmYE4)(ZcbriyzejlpRmc3)yAojbXrKxWJHZeSADblv(5SG1TaFM30hM9WDtdwrkK7Y5bRwTVydN9CWQDSKeQ(gurCWQVUJjkJW)rkJQyIYO8nWVhRPDktiHT3KZlJ(l0NzPmpGD45ByP0Zadh3MJ55BlOLFrdIW7aNgNVFnrUqMNg(cJhEih35JSnlUriPKu5oAIhjn1XD(Dl(9Vq4mY6u6hr1ZcjNL9mvgkoMfhksZLF8fsAbDXueUQn9M6TJicfsI0JKDmm5Gy0T3uVPFNnpDQ5IX55Pj5VM5LuWvYZYfnxSZMJFpSSVjl3LRmy5UYtdl7GRwoG4aC8zEErL2FalbimBjCEUKIhQ3ZiszX0qswsyc8dk8wxSzJN96EfhmVumasO(xdrpnT2sinpJTMKt3sZcfejkm0Kk9inJY3E0tVjAdyz0KLcQuYY2kQwxUJtf7aLr)OdEWBtPHscFlT2gjoqbMuVKWBdjlmFt4ZzSxOIh97hQyGqHRtZZtcJjIgwv5LcEkVeUnorzEQpx)yDGZY5m5XqWkOmHvy1z9(HilxcbD5PGaE6ucvBA2XEbmiNoD2frc5dKOcGs82uaIn4rVdL8qjBp9r)jJpD6w1DPzVqZY3dxFK1VZP7jSmXJl8HJwzwoelxU4HjNoTHTDNm88r(XjA5iKMkOlENSLnTmCXbvb9xpKlaNq((CUYjU2Xazej8Vq9jgHUo5GEcwv4fxW50maU7mX6zw8ZdhTuPkuH2KuabajzOmhCaPHaFlOG2cTmjJChH4C5AT2ClMC5clxqqVuCGIrgi13PyquL84SjTU2SlhggNiScWbZcIALvkHPcmq5iKMXHchxvSDcDdntGbpgMipr3uMfGbdkYKs5vo7w2gagwmtUC6Pt1xZZYf)MZlBft3IKxmXM(y8Idq(g1XS0It1wQ8xOCOYykQaIgXPBW8miThPjQh6LIoajm6puzhx6pPm60PYOwa29gLrllJU3g4w83AkxGSq2wKfv8KkJsAHqQIK6Ike00Xay54QUqJh0YzTC8UBKoIB5dtg1kJWz6zFDRtHX11imVn0T4lRCUFuJDigcMKlbpbss6r8QcWrdxrcrOGQakE2j)iKJboqLvV(G6fRSX1log1cN9HACghnq5GLlM))TC(SwC((cjlfZJeFm(C0Jqx96sC)3Li1XdXVywV(y4EK(BV1LtjwpRZ6pcoR3CUgXAOTyOVR1Jh3HM1BzvtPEXrU4cx06nef(yROWfZRJHUFUj3bPUXeQ0SeGRi68wv1sRx0txbfuL1mvvI9AFSZTsEFBCBAzXOEWzCH6x2SOZ0plM6pzKD2pZONUcqxmwoBsFfqR4P6idJct1itYycvxVA93JZNmQQFvDDaeLB6KDVfkq78KdGXvaHRGP)CYxXR58KTfeEsiD)AEolHYpQt51vB11U5UY5EMio0SM8GNMjP7TkXwFD0Tv1v6Mc(r32p3xYQgZvEPUp3RvXjofUfuBRmQhFeNWwKjYtFr16bhErBk9mYGDTMHC62HEDDQp6KgoTHUOJ7B)92ZOPVj0KNMtEgZgcDda3v0QzVf(1oZTpOf7Abj9fIOYezIeMjux3wVF)a8gA9my1ReEgQxcw9p(5)2tF(P)8pvgvg91DqZoS9hY5YQjo8bGeKIu5hkJ40)DbJttkJe57HZrkK57XNacjr2rYGmzELFrHWM8008xb4XdXjIYOxPCyDinmCywg4RHhtlf6jCugTUqwFoO6ecsrM1PtsWdNqGm7qh8)eyBI(bGxGMIrZ0feJZtg4AfK)k8a2YiFaV)uoupGR2(dnpQ)FcajZnwsQx7w)FD8fVUVJR7396ZEFuVVRFrQFrTzDC21Qm)FUxrD2buw0JyRAIz6zTb8VqXiIIdgY1wSuelgGwRwawhK)pl1xs5bThtoKGeNaltbD7reBDVIiFfNwKapTkIYa(JxZp)R)UGIibLe(Lpcc0ow8oZttYo2q1krfErCk24wAdUMsEnr)dLraVxrMVQHOmA6VGGMyUKVbLFfkNAirvqkRpQsBOwkRypu3rzEtHoml)YNvoc4c33AgLWMbRGwgJdE6UGvQLuJDvNab(XNuJHT6L3b)XGvXa)dkCsWQBa8nF(xWkn0aG6LdKbp537175UvnsH3D2qK2Dpmg8G1wiC31cU6t2UvaTEiupuz4xHRoV1vZbcbTU2GrDxR4pbp7gpSJzRPEuAFZxtbsfvBnVoKfU)nZcd8sGYOhbFltkA9kcKEF6ntVPM41zqEMMpNdYdj6dVzI25jFMmr3nbA8JVfAuJ0VnheyLwqnjWGv4CrSzT6zLCvSN2Nysz0y91AOo42UOm6HjO2B6K(dO7z(GQgvDnJqnU31O5nN4OIyFljFWrnQUC)PEUWagvmS78l9UvLvrPeN3rI1sQVHKQT3k(S)0Cn9dQWD2KEaEwdWnnuQW(BkNh0KG6YTZ61WydnntJuWGxOcO25UUkUOPp5amH0QZDd(TwvY(zvUkoD50nw54689PS8XAAYR93GszfVTm6MZvVXE56Ekmk0aMoFskTX3achNySRcPxwo9F7YPljORC6sByjNoLILxsrmw7Jy4ZmOtIvG1cDAVrkgTVhaA402AZH7YPnLMn3Isnpq0i3GETH7a69MAqQdZhul170VkJqDM5ai6zky6PWB4Nvb0W6mhVPVRWTqLNv564y4)OQEQVlLcEpdJPv7h9RU75dmuP2hOwrNzQ5wz0opDdL1LH11vS9sBM5M1YgtEZmahNCNRwzBO0fg1IP4yyAms3Bp9gxnTEvj(RFOQRUqVkautXt7JlCwT4Y5)CnmELfFQ2NZ1q517OmeUhoVzo1MPBpCSW75vsTYgOy(rD9sulA(zYCpyr1Jvp3MZsDsZ2FlodYmW3KZICgjO0bjdhp0DoK9Nea5Xg4BMf7WXbD((b6qDND1bTVQwUokDj2NCJwUPnFlU0n0w34CeNbYZ7JfC2xPvS3Atb0XNyrb8GpyCPDItRDR1zHSnQgWg8lDz0vq3)pXqPLC8n7A2O13TRQdNp99xyN9BwHT9RKTA(9QyNV90B9MCt9UXlPxTFeu9hFeKaZpxkMV2X70VSj9w1F7pgR6HTUpZJM9M15ZsQU8yhS(v(K4gCgzOaBX)9XvgPWQGjy4hhpO45Qnk78m3p3vcfPrL5bBBCOEeA(iAV1wa7lpE)L)EdF0SZnmo0RfVqnjZpU1qLKQBlTtHSgA35l1DfnUzqEJwYC1nNRgZ(VzxG1)j4)m]] )
+spec:RegisterPack( "Assassination", 20240627, [[Hekili:vNv3UnoUv4NLCJNy0SQ2YXzMzBKb22lAtqXCr9u0cuSsMrI2wiYsUIujJbm8ZEphskjskkzNjZ2IcSZchkYZF8WVZFHtd)A4YecNg(f)j(3o5JtN457p)tZNgUKFypnC5Es8ZKnWpYj7G))VWyeglnNWtlYXVEiRGKGuHvuvgd7iC5tvPz8hYdFYfPV72zHljv8TfLHlxURADz6ZHl3MMKqLNGYIdx(1TPStRW)roTsjcNwvSg(7yKZNwLLY4WNxxuEA1FH(CAwQx4sXIcvIUMuLXHF(fHksZjpLrtc)JHlJlt50Yus4YRoTIXPKm(wAIhjldKRyPAPwoKdYEVhVNZUHuwwaAnC2zdX6NQwV2JLLgtJi5jrjWp8Q2RjdgFcj3TwKRENXa)JK)reAbK2Hi5fg8NWrNBD0cGrmkVLgVqa5c(k(RSkkUzA5MdEL0n08O4IDpLMttoTAbyZOCEA(gM6B8TLu22ISebruCv(jgHxvcEajOiC3Bwey7PGIXjLBOCM3AsEuX6ONZtFHcx83FALVohbFYnzu1Ur(9X3m)MQFdTVK(s0M4eVPEXGYf9uwrHHk2UAumHPuYp9Mz6(Y0cGPhIaNgsZEu8O7hbE853cpQPuEbpAFrrgyLuSoIMXGpC84PvjuPZ420xaxWtRW1IHnNu8AUhhEkYrllL4TUcUqkPXBrRCepDhvErm50QXYJPCB2hZbFLGtR(0eDJ61)q511Qhr08xO5f7eKBK1AL0DK0C0Fbeg)bet56Rt3SLhzCOppbn6tN0poq97b8qC4Fr0VTVGrfcd(YPaS8WxyEXvLL0CflVT9ctU)is5oauez23dM1ZPXploC)iwCsgWEqm4r8c4HlncSUmQNAZTwVoWs9(Pwt1PvZ7OXsn1xttLxlc5SF0XTcfuE7a0D2KEi8Swcdokv7PiyJG2FxqLXjmXHTblBfmLZBsQaAc3qenVeInzICd(2cczd5PDtuSbqR8GWu0CgcODHIO2bqqoeLcnlKV7iD8ISOxslbZAn8IT7Z5HWmWn5LP5pt5E8PEGVvedWT8i5hIs2Ze3IWJwqAA2LVJDHpe1itd6qcgmre8hV81iHJDmwh8tT1i2H84iwwb3vW5ZRN(o1txAqx90L1WqpDQfloNH4SQjOp7szXrOV9GUikxB45zcGNrmCOLr5wxvEy4mIgKg0sgT8zm(ZGzgjOGGHzvmoGVqquaWGkJS7Hbcq0RKuQeFEQ)KHCNTrcS40lKgzvDH4IncU0Ib2kE6AyvoRi7fbOqjKoBg1vIx9ZEn8Jxlkt2urktIO7EQSinHkT89JNiHMDDop0Jri6dD7aUmK9qiigKXbekt64CwFMghYgAkJwd(2YOTTxBkMRso20f)oT3Ckc9w9ZCeGiqeqQ3R0G270UNtdnUn3VbDBDXJfnHUgiOQsxkR2d5kBghr3y0VBSmvgzayj3AkUqc5xZP6LlEbFhMLzYlsEkB7f4X(d1jRJh9ffeSbqt4LQfsCqNvJKkcKjsQzvIH6yFglWGTLaAdZqYT)4WUN2CA2CdorFHWaQAWa1Ad7J9EtlIlQg0Hr68H(msJfS4PXPCHd(u5tS6d4PvNH8lxP9rZA00ICvbEfRbxsA5Ww23tj3w2jHOpQ7tcXIL01yrTiv6n2ZpHBtL87cP7KSwgNSPh8H7SzN2vNer4cIHPhoAWGy6rknJh3)JEfP099w04s3rzVvSCnK0czHv21KzjLUjTXjAGx0O88(ebNvB0hqJrxf017gN2wFtb)gSPelKbpKFnkDTiZ7Kcm8hjj7akMmardxHdLRjEK0KRyNI9LwjCZ1HnBou9hQdB08HXHoA9XVDk7S)3RS2TCPwz3vXtZqGpZ6GUib83a4orRhoNjvwSC8H4MJXq0Ahn9583Dxl(V(FJ12efh75E9Ownn44js8Zqjmpjo8yhM6lSrjT0zKM5Ys(7tQ0GWuKjC4wMmO65kNrtCM7M7cqrenfIAiIAlBW9D(FmC5RKYCrYnl)h)YF7lp8L)8pFA1PvFDlaaNUBFrjx1Y6pO6q9hq0))DvAj2(fwb2KlsfVyh21uq62sYH0P9o9OGcRlYYkEv4RrGeObb(vAjSoy5GnNcVH442KsRSf5iqkVEFG3ksKQCJDNKGBoHawscJ(ZNEueBdBIb8ZhpJA00aIlvr(RP5WN8b69NkaRzP4ZFOUk3PE)tGq8cTL4Y1U2)BJp7X9DCC)UhF27J79D8ZY9ZAnRZS9snM)x3ROUEvuxKZOzFzb8OLkhwdi)mHGWQ2RPxBWNtPXnnZaeDq)FGlpKWdAhwWqcYCcSmfSThAdsGYvCwvccrstb5RSwE(x)DSpRpWP7y)6nGcTnnER(Uj5hA5QsvPFBFgcON1sxDnVMP)HtRazxXMVkjbea4xrIMOVKVgNFfWV00ifj51BvynelLxTdYatC9MbXFo94dchbCH7SgYf8rXSqIXebxQS3nZod2S(i5aMxSPIE6rjjyEnpqdm7nYnPRdUYiFAhN53f87RHNVbZupOtlMUruGqWuKCTpJS711ORVQ9rI9hpES9GDAX1IG2d25JJFpISVUi3vQ0e5U6tRi7qQwmG6mgF4OK5aL1FGBcqzuzdHBQ39y2zbb96PJdAhYUeBP1cWg02JPL0AOEk7OZbfUOVHe2p1nYwsr7bsw6E)(jvNrZP7L6CWE9tRojQQOv3ey7LeAjjIcW1MJa74XlC8x37pz8XJxBvk1ixJ76(aFyRTd5ArWNMC8OXWTUp4ZtUPDqGbhp(UeltEP5Ldwd9XBj8J7zGzJCnSSfb3QtlCkxd)GrzkeVUhEExJC)iX5Y1wT5gc5IadVW2UTGCVnHZ7NnX6yZo)lrinaJ34W1cs1Hgb15jABZYe2h7PqPDV5X6cL2MHU6rGR6Kwm94rx1hD84v9uzKjlplGNCBQIbXTzyANoYUJoJ0AVYOUDg5NuxTl8NG(8gKQ7UxCNo5SKP2EQGIvNEZarn6qp41thJUHhSvTllMz5bE7i5tVfFAYilOHg(zE8oDwPMcZTjTLCzG)EttD)bxnyn1qG0oyLayt3c9LlAvK)y0k4OeXrdeAyrW8)VvYNzj51LwFJrtbKrYoN0)d5154HKxe(RpbUhT)6RD5uIb26S(9GZ6vDAAW4XD4z9NmcUuV4ixsHlE9gEfEV1RWG51VHUBUU0by4iiQAyisSQEgzwGFTq1ZOYwCNnDBtFrlWG2KxSerNWpbt9Ny1ge9xpDvahqIZM0xK0od3QdLfJDcPR0(D)8jJUYA4vQf07rVfvSgSud4B)ZQAKJri25EZDi06A013F9AOVyZSYDFP4(qgboUWd1TEoRiodn7CXfVtY2zm2nuwBy1o9LqxPUdKWfpCEX4IpUp9p6R72eGWBDRz9zLkxGFThQJjg2djvt3ZMsi8MmyCZeb7HaVHelfDMm8)m]] )
 
 spec:RegisterPack( "Combat", 20240614, [[Hekili:DEvttoQnq0Fl7fx7wzIJbBVzsITpKCj7EyV4nNsT8HbHrLXaLKWtMQCXV90TeFibcgVBn1mdi161TEDRwp8C8(Q3X4qbX7lURC3S6JUUlD(1vBwVX7O41sI3XYWOlHNHhYdVc)nQ46PqrDGGWf4KVMvegJGWlQyrGbEhpvrZeFk37KjYoBw6648SlGCyLiTG5D841Qeg9I3XuACmrTccpY74xtP86a83W6GMiOoOibEpsqlYRdYOCbmDsbRo4VjxOz0Lq4WksOzKoGbd(lv8(z164llze1wyVOiZ)gL5xwirS1IFA)VWtP3EIMSpMCQkjzzmLxsYYcpLr8j5miuwwvQB)fA0f93JcZY8vV6JX5ti1TpkMRBeRkFSnj0Ckpf9ngKfqSrZf89BFB0rsp(TnlMKqY50BeiwmIgsmfygb6Ari7mrSuqVs8ff(XuYUTlqtVH7FYvkHFWvFXNYcJj(jzvm2Rias6YxbdFP(ShCw8ojNQp4a2mjm3ViX)sogLJHZy6dBxare78R72UAHkzriL(uylEovma4OW8isMpAwdN9WX9ENf2d7(clzcalEWuOGW85cOcK8e(ViXEh0bsm4z0iIFyEmWSrKLXfVKVWiBVYcOgR57hZdwWmmMrYdZO5eFwfu09wGQrMDyWi3iieNB3TdQC3TErZHOHwQIrB(HrUgcjWdBh7UZfvNh5J9BM0h2c5H5NHrSf3cDxuOcnpKl4bR5Mk9nbb3SXboZKcVFFQCmw)17nvZdWDKBuEeHb9ENPtsV5SQsrfZITlENa6Sb78fV)ubNF)UztG9o3VZlYk(qZz6b0G9t6nJoO4dNyCBNdoUDGuueNvXnP3hAdBb3DoU68g0y2YXH(08ZRGesrgs4lnkf6kvD2oenza7NuXED0megNWqwvpg67lJnQG7uVGn54PHGxLnbtHkBr6YYiXU9URAOLHgAWogqsUfYHrhI06Tni1m)0aaxouv2rXAySELzNM9RBGSFfaQEhFjKLdBAE7L7n3vRUL)kLZrgjGxvwwWenxSFgZa0iqTbJMFbBkxhuh8jHArYBYVsYJjXGfPOQeObaW4a20cgvaprZJYQanfWuurkH97aPh8Z1b)7)WjisKR8V9uDWlP0OuDRdZFT3R1b5fi4)xjCeKkY6XngFcDoP3P)biuH16MVQGOoW5BiOX6d5Q55xG6kTDudKIwtLSHCO8QRqfe6yEwHyz9N)0vKWWb(4a1rWKGSSssK3xanxYHKQ9ijHvzc4XViv)bv9GYMyV)ee3bXpq4HOrtl9b0VjDdaoiuYtac8qCAhevdPJkm)6b(P10HAuurPFJsZyoU2ntS2b6N0dE96X6G91bBnaw12aXE7psCjBQJR(J)iRU)qfcXVozcyCxR6GDWoPoyHkn33hUo4aumPXmnA5qh88KoyAXos8CKo6D1b2AI37l9jq)9BpO)muXjDOANPA5Q2QRKJy7QLE)BGdgaoRWiaxuB6spcTNU6Kf(O8Z(w(Xk5Ge)XUVZO7CwR)m)UdZtkIUQZzpDARaVf((7c7oz(Gy0MXBU0x(67H9iC1FDW97Jl7u0aodkdOo4dg1mdvfnt9KXCJLgiN22bcSo1DaW9cf07viv4yRv0BsitCq0XDckxO6CnB(tRk)zvv(8cmu7uTK8aoAup4E5h26e3zvNuKrvHATPMDN0lea2naN5UYiDyrGI2bVbtoF96qpTERHN6fWONxKJnFA3axa228HEXWb0FgUBG4M(wVTdROr1Dfwyq1hBHJ3FzQ5hMOhJtQ)FCOcr6kBePnhAa4pO)o04VHeSf)nSO9nCOSt6OR)N686U2m0CFVzFpB7F6L6Ii90Pji20mmtdKnZgq61nYpS1MMIz2UBNU0zwLfFVxXA0rAEnfZsTDziBjo8sKPQ6MSIv09J3)d]] )
 
