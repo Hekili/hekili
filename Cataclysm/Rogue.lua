@@ -1496,13 +1496,11 @@ spec:RegisterAbilities( {
 
         usable = function ()
             if combo_points.current == 0 then return false, "requires combo_points" end
-            if ( settings.rupture_duration or 0 ) > 0 and target.time_to_die < ( settings.rupture_duration or 0 ) then return false, "target will die within " .. ( settings.rupture_duration or 0 ) .. " seconds" end
-            return true
+
         end,
 
         handler = function ()
             applyDebuff( "target", "rupture" )
-            debuff.rupture.pmultiplier = persistent_multiplier
             spend( combo_points.current, "combo_points" )
         end,
 
