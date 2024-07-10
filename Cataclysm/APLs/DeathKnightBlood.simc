@@ -60,8 +60,8 @@ actions+=/run_action_list,name=aoe,if=active_enemies>1
 # Use Death Strike if Frost or Unholy runes are full, health is at or below 50%, or Blood Shield is not active
 actions+=/death_strike,if=frost_runes.current=2|unholy_runes.current=2|health.pct<=50|!buff.blood_shield.up
 
-# Use Rune Strike if runic power is at or above 120
-actions+=/rune_strike,if=runic_power.current>=120
+# Use Rune Strike if we are close to runic_power cap
+actions+=/rune_strike,if=runic_power.current>=runic_power.max-10
 
 # Use Blood Tap if a single Frost, Unholy, or Death rune is available and Death Strike is not ready
 actions+=/blood_tap,if=(frost_runes.current=1|unholy_runes.current=1|death_runes.current=1)&!action.death_strike.ready

@@ -60,18 +60,35 @@ local function rage_amount()
 
 end
 
-local function calculate_damage( coefficient, flatdmg, weaponBased, attackPowerFlag, masteryFlag, armorFlag, critChanceMult )
+-- Generic function to calculate the total damage for an ability
+-- Parameters:
+-- flatdmg: The base damage or pre-calculated damage of the ability with AP/WeaponDPS
+-- coefficient: The scaling coefficient for the damage source, if AP is already calculated use 0 to avoid double counting
+-- weaponBased: Boolean indicating if the damage is based on weapon DPS, if false it is based on attack power
+-- masteryFlag: Boolean indicating if mastery affects the ability, for feral only apply for bleed damage
+-- armorFlag: Boolean indicating if armor reduction should be applied. Armor reduces physical damage
+-- talentAndBuffModifiers: Combined modifiers from talents and buffs
+-- critChanceMult: Extra multiplier for critical chance, use nil as default
+-- Returns: The total damage after applying all modifiers
+local function calculate_damage(flatdmg, coefficient, weaponBased, masteryFlag, armorFlag, talentAndBuffModifiers, critChanceMult)
     local feralAura = 1
-    local razorClawsMultiplier = state.talent.mangle.enabled --Use MasterySpell(Mangle) as trigger, since razorClaws is neither talent nor ability?
-    local boss_armor = 10643*(1-0.2*(state.debuff.major_armor_reduction.up and 1 or 0))*(1-0.2*(state.debuff.shattering_throw.up and 1 or 0))
-    local armor_coeff = (1 - boss_armor/15232.5) -- no more armor_pen
-    local armor = armorFlag and armor_coeff or 1
-    local crit = min( ( 1 + state.stat.crit * 0.01 * ( critChanceMult or 1 ) ), 2 )
-    --local vers = 1 + state.stat.versatility_atk_mod
-    local mastery = masteryFlag and razorClawsMultiplier and ( 1.25 + state.stat.mastery_value * 0.03125 ) or 1
+    local armor = 1
+    local mastery = 1
+
+    if armorFlag then
+        local boss_armor = 10643 * (1 - 0.2*(state.debuff.major_armor_reduction.up and 1 or 0)) * (1 - 0.2 * (state.debuff.shattering_throw.up and 1 or 0))
+        local armor_coeff = (1 - boss_armor/15232.5) -- no more armor_pen
+        local armor = armorFlag and armor_coeff or 1
+    end
+    if masteryFlag then
+        mastery = state.talent.mangle.enabled and (1.25 + state.stat.mastery_value * 0.03125) or 1 -- razorClawsMultiplier
+    end
+
+    local crit = math.min((1 + state.stat.crit*0.01*(critChanceMult or 1)), 2)
     local tf = state.buff.tigers_fury.up and class.auras.tigers_fury.multiplier or 1
-    local damageSourceMulti = (weaponBased and state.stat.weapon_dps) or (attackPowerFlag and state.stat.attack_power) or 1
-    return (coefficient * damageSourceMulti + flatdmg) * crit * mastery * feralAura * armor * tf
+    local sourceDamageValue = (weaponBased and state.stat.weapon_dps) or state.stat.attack_power
+
+    return (flatdmg + coefficient*sourceDamageValue) * crit * mastery * feralAura * armor * tf * talentAndBuffModifiers
 end
 
 -- Force reset when Combo Points change, even if recommendations are in progress.
@@ -255,9 +272,20 @@ spec:RegisterStateTable( "rip_tracker", setmetatable( {
     end
 }))
 
-spec:RegisterStateExpr("rend_and_tear_mod", function()
+-- This function calculates the "Rend and Tear" damage modifier for the Shred/Maul ability when it is applied to a bleeding target.
+spec:RegisterStateExpr("rend_and_tear_mod_shred", function()
     local mod_list = {1.07, 1.13, 1.2}
-    if talent.rend_and_tear.rank == 0 then
+    if not debuff.bleed.up or talent.rend_and_tear.rank == 0 then
+        return 1
+    else
+        return mod_list[talent.rend_and_tear.rank]
+    end
+end)
+
+-- This function calculates the "Rend and Tear" critical modifier for the Ferocious Bite ability when it is applied to a bleeding target.
+spec:RegisterStateExpr("rend_and_tear_mod_bite", function()
+    local mod_list = {1.08, 1.17, 1.25}
+    if not debuff.bleed.up or talent.rend_and_tear.rank == 0 then
         return 1
     else
         return mod_list[talent.rend_and_tear.rank]
@@ -549,9 +577,12 @@ spec:RegisterStateExpr("rip_refresh_time", function()
     return calc_rip_refresh_time
 end)
 
+--- Return the time at which Rip should be refreshed.
 spec:RegisterStateExpr("calc_rip_refresh_time", function()
+    local reaction_time = latency -- TODO: This appears to always be 0.1, a very low value, in order to clip the rip with TF the addon has a 0.2s window to perform this query before TF drops and then the user must react in the remaining time.
+    local now = query_time
     if not debuff.rip.up then
-        return query_time - latency
+        return query_time - reaction_time
     end
 
     -- If we're not gaining a new Tiger's Fury snapshot, then use the standard 1 tick refresh window
@@ -564,18 +595,20 @@ spec:RegisterStateExpr("calc_rip_refresh_time", function()
     -- Likewise, if the existing TF buff will still be up at the start of the normal window, then don't clip unnecessarily
     local tf_end = buff.tigers_fury.expires
 
-    if tf_end > standard_refresh_time + latency then
+    if tf_end > standard_refresh_time + reaction_time then
         return standard_refresh_time
     end
 
     -- Potential clips for a TF snapshot should be done as late as possible
-    local latest_possible_snapshot = tf_end - latency * 2
+    local latest_possible_snapshot = tf_end - reaction_time * 2 
 
     -- Determine if an early clip would cost us an extra Rip cast over the course of the fight
-    local max_rip_dur = debuff.rip.duration
-    local final_possible_rip_cast = (talent.blood_in_the_water == 2 and target.time_to_25 - latency) or (target.time_to_die - cached_rip_end_thresh)
-    local min_rips_possible = (final_possible_rip_cast - standard_refresh_time) / max_rip_dur
-    local projected_rip_casts = (final_possible_rip_cast - latest_possible_snapshot) / max_rip_dur
+    local max_rip_dur = aura.rip.duration + (glyph.bloodletting.enabled and 6 or 0)
+    local ttd_absolute = ttd + now -- Note that standard_refresh_time and latest_possible_snapshot are absolute time units, not intervals of time.
+
+    local final_possible_rip_cast = ttd_absolute - cached_rip_end_thresh -- TODO: ingore execution fase for now '(talent.blood_in_the_water.rank == 2 and target.time_to_25 - reaction_time) or ', target.time_to_25 does not exist
+    local min_rips_possible = math.floor((final_possible_rip_cast - standard_refresh_time) / max_rip_dur)
+    local projected_rip_casts = math.floor((final_possible_rip_cast - latest_possible_snapshot) / max_rip_dur)
 
     -- If the clip is free, then always allow it
     if projected_rip_casts == min_rips_possible then
@@ -584,7 +617,7 @@ spec:RegisterStateExpr("calc_rip_refresh_time", function()
 
     -- If the clip costs us a Rip cast (30 Energy), then we need to determine whether the damage gain is worth the spend.
     -- First calculate the maximum number of buffed Rip ticks we can get out before the fight ends.
-    local buffed_tick_count = min(aura.rip.duration/aura.rip.tick_time + 1, floor((target.time_to_die - latest_possible_snapshot) / debuff.rip.tick_time))
+    local buffed_tick_count = min(max_rip_dur/aura.rip.tick_time + 1, (ttd_absolute - latest_possible_snapshot) / aura.rip.tick_time)
 
     -- Subtract out any ticks that would already be buffed by an existing snapshot
     if rip_tf_snapshot then
@@ -592,10 +625,11 @@ spec:RegisterStateExpr("calc_rip_refresh_time", function()
     end
 
     -- Perform a DPE comparison vs. Shred
-    local expected_damage_gain = action.rip.tick_damage * (1.0 - 1.0 / 1.15) * buffed_tick_count --TODO: check if TF is already applied in damage calc
+    local tick_dmg = calc_rip_tick_damage
+    local expected_damage_gain = tick_dmg * (1.0 - 1.0/1.15) * buffed_tick_count
     local energy_equivalent = expected_damage_gain / action.shred.damage * action.shred.cost
 
-    Hekili:Debug("Rip TF snapshot is worth %.1f Energy", energy_equivalent)
+    Hekili:Debug("Rip TF snapshot is worth %.1f Energy, DMG gain %.1f, ticks %.1f, dmg: %.1f", energy_equivalent, expected_damage_gain, buffed_tick_count, tick_dmg)
 
     return (energy_equivalent > action.rip.cost) and latest_possible_snapshot or standard_refresh_time
 end)
@@ -648,8 +682,8 @@ end)
 
 
 spec:RegisterStateExpr("calc_rake_dpe", function()
-    local rake_dpe = action.rake.damage + action.rake.tick_damage*(math.floor(min(aura.rake.duration,ttd)/aura.rake.tick_time))/action.rake.cost
-    return rake_dpe
+    local rake_dmg = action.rake.damage + action.rake.tick_damage*(math.floor(min(aura.rake.duration,ttd)/aura.rake.tick_time))
+    return rake_dmg / action.rake.cost
 end)
 
 spec:RegisterStateExpr("calc_shred_dpe", function()
@@ -662,39 +696,34 @@ spec:RegisterStateExpr("calc_bite_dpe", function()
     local avg_base_damage = 377.877920772
     local scaling_per_combo_point = 0.125
     local dmg_per_combo_point = 576.189844175
+    local cp = combo_points.current
 
     local base_cost = (buff.clearcasting.up and 0) or (25 * ((buff.berserk.up and 0.5) or 1))
     local excess_energy = min(25, energy.current - base_cost) or 0
 
-    local bite_damage =         avg_base_damage
-    bite_damage = bite_damage + dmg_per_combo_point * combo_points.current 
-    bite_damage = bite_damage + state.stat.attack_power * scaling_per_combo_point * combo_points.current
+    local bonus_crit = rend_and_tear_mod_shred
+    local damage_multiplier = (1 + talent.feral_aggression.rank*0.05) * (1 + excess_energy/25)
 
-    -- Hekili:Debug("bite_damage pre dmgc (%.2f), attPower (%d)", bite_damage, state.stat.attack_power)
-    -- bite_damage = calculate_damage(1, bite_damage, false, false, false, false) TODO fix
+    local bite_damage = avg_base_damage + cp*(dmg_per_combo_point + state.stat.attack_power*scaling_per_combo_point)
+
+    bite_damage = calculate_damage(bite_damage, 0, false, false, true, damage_multiplier, bonus_crit) 
     Hekili:Debug("bite_damage (%.2f), excess_energy (%d)", bite_damage, excess_energy)
 
-    bite_damage = bite_damage * (1 + excess_energy/25)
-    bite_damage = bite_damage * (1 + talent.feral_aggression.rank * 0.05)
-    
-    Hekili:Debug("bite_damage final (%.2f), excess_energy (%d)", bite_damage, excess_energy)
-
-    local bite_dpe = bite_damage / (base_cost + excess_energy)
+    local bite_dpe = bite_damage / (base_cost + excess_energy) -- TODO: check if this should include excess energy
 
     return bite_dpe
 end)
 
-spec:RegisterStateExpr("calc_rip_tick_damage", function()
+spec:RegisterStateExpr("calc_rip_tick_damage", function() -- TODO move this to an action?
     local base_damage = 56
     local combo_point_coeff = 161
     local attack_power_coeff = 0.0207
-    local glyph_muli = (glyph.rip.enabled and 1.15) or 1
     local cp = combo_points.current
 
-    local flat_damage = base_damage + combo_point_coeff*cp + attack_power_coeff*state.stat.attack_power*cp
+    local damage_multiplier = (glyph.rip.enabled and 1.15 or 1) * (debuff.mangle.up and 1.3 or 1)
+    local flat_damage = base_damage + cp*(combo_point_coeff + state.stat.attack_power*attack_power_coeff)
 
-    local tick_damage = calculate_damage(1, flat_damage, false, false, true, false)
-    tick_damage = tick_damage * glyph_muli
+    local tick_damage = calculate_damage(flat_damage, 0, false, true, false, damage_multiplier)
 
     Hekili:Debug("Rip tick damage (%.2f)", tick_damage)
 
@@ -712,9 +741,9 @@ spec:RegisterStateExpr("calc_rip_end_thresh", function()
     end
     
     --Calculate the minimum DoT duration at which a Rip cast will provide higher DPE than a Bite cast
-    local expected_bite_dpe = 1 --TODO:FIXME
-    local expected_rip_tick_dpe = 1 --TODO:FIXME
-    local num_ticks_to_break_even = 1 + floor(expected_bite_dpe/expected_rip_tick_dpe)
+    local expected_bite_dpe = calc_bite_dpe
+    local expected_rip_tick_dpe = calc_rip_tick_damage/action.rip.cost
+    local num_ticks_to_break_even = 1 + math.floor(expected_bite_dpe/expected_rip_tick_dpe)
 
     Hekili:Debug("Bite Break-Even Point = %d Rip ticks", num_ticks_to_break_even)
 
@@ -752,7 +781,7 @@ spec:RegisterStateExpr("clip_roar", function()
     
     -- Calculate when roar would end if casted now
     -- Calculate roar duration since aura.savage_roar.duration gives wrong values
-    local new_roar_dur = 17 + combo_point * 5
+    local new_roar_dur = 9 + (combo_points.current*5) + (talent.endless_carnage.rank * 4)
     Hekili:Debug("Roar duration: (%.1f VS %.1f) CP: (%.1f)", new_roar_dur, aura.savage_roar.duration, combo_points.current)
     
     
@@ -824,6 +853,7 @@ spec:RegisterStateExpr("roar_refresh_pending", function()
     return buff.savage_roar.up and (buff.savage_roar.remains < ttd - latency) and combo_points.current >= 1
 end)
 
+--- Calculates and returns a table of pending actions with their respective refresh times and costs.
 spec:RegisterStateExpr("pending_actions", function()
     local pending_actions = {
         mangle_cat = {
@@ -889,21 +919,34 @@ spec:RegisterStateExpr("pending_actions", function()
     return pending_actions
 end)
 
-spec:RegisterStateExpr("sorted_actions", function()
-    local sorted_actions = {}
-    for entry in pairs(pending_actions) do
-        table.insert(sorted_actions, entry)
+--- This function sorts pending actions based on their refresh times.
+-- Actions with a refresh time of 0 are placed at the end of the list.
+spec:RegisterStateFunction("sorted_actions", function(pending_actions_map)
+    Hekili:Debug("sorted_actions called")
+    local sorted_action_list = {}
+    for entry in pairs(pending_actions_map) do
+        table.insert(sorted_action_list, entry)
     end
 
-    table.sort(sorted_actions, function(a,b)
-        return pending_actions[a].refresh_time < pending_actions[b].refresh_time
+    table.sort(sorted_action_list, function(a, b)
+        if pending_actions_map[a].refresh_time == 0 then
+            return false
+        elseif pending_actions_map[b].refresh_time == 0 then
+            return true
+        else
+            return pending_actions_map[a].refresh_time < pending_actions_map[b].refresh_time
+        end
     end)
 
-    return sorted_actions
+    return sorted_action_list
 end)
 
+--- Calculates and returns the refresh time of the next pending action.
 spec:RegisterStateExpr("next_refresh_at", function()
-    return pending_actions[sorted_actions[1]].refresh_time
+    local pending_actions_map = pending_actions
+    local sorted_action_list = sorted_actions(pending_actions_map)
+    
+    return pending_actions_map[sorted_action_list[1]].refresh_time
 end)
 
 spec:RegisterStateExpr("excess_e", function()
@@ -947,23 +990,26 @@ spec:RegisterStateExpr("excess_e", function()
     local previous_time = query_time
     local tf_pending = false
     local regen_rate = energy.regen
-    for i = 1, #sorted_actions do
-        local entry = sorted_actions[i]
-        if pending_actions[entry].refresh_time > 0 and pending_actions[entry].refresh_time < 3600 then
-            local elapsed_time = pending_actions[entry].refresh_time - previous_time
+    local pending_actions_map = pending_actions
+    local sorted_action_list = sorted_actions(pending_actions_map)
+
+    for i = 1, #sorted_action_list do
+        local entry = sorted_action_list[i]
+        if pending_actions_map[entry].refresh_time > 0 and pending_actions_map[entry].refresh_time < 3600 then
+            local elapsed_time = pending_actions_map[entry].refresh_time - previous_time
             local energy_gain = elapsed_time * regen_rate
             if not tf_pending then
-                tf_pending = tf_expected_before(query_time, pending_actions[entry].refresh_time)
+                tf_pending = tf_expected_before(query_time, pending_actions_map[entry].refresh_time)
                 if tf_pending then
-                    pending_actions[entry].refresh_cost = pending_actions[entry].refresh_cost - 60
+                    pending_actions_map[entry].refresh_cost = pending_actions_map[entry].refresh_cost - 60
                 end
             end
 
-            if energy_gain < pending_actions[entry].refresh_cost then
-                floating_energy = floating_energy + pending_actions[entry].refresh_cost -  energy_gain
-                previous_time = pending_actions[entry].refresh_time
+            if energy_gain < pending_actions_map[entry].refresh_cost then
+                floating_energy = floating_energy + pending_actions_map[entry].refresh_cost -  energy_gain
+                previous_time = pending_actions_map[entry].refresh_time
             else
-                previous_time = previous_time + pending_actions[entry].refresh_cost / regen_rate
+                previous_time = previous_time + pending_actions_map[entry].refresh_cost / regen_rate
             end
         end
     end
@@ -1053,10 +1099,11 @@ spec:RegisterStateExpr("should_bearweave", function() -- aka can_bearweave
     -- Prioritize all timers over weaving
     local default_weave_duration = 1.5 * 3 + latency * 2
     local earliest_weave_end = query_time + default_weave_duration
-    local is_pooling = next_refresh_at > 0
+    local next_refresh_time = next_refresh_at
+    local is_pooling = next_refresh_time > 0
 
-    if is_pooling and next_refresh_at < earliest_weave_end then
-        Hekili:Debug("is_pooling (%d) and next_refresh_at (%d) < earliest_weave_end (%d)", is_pooling, next_refresh_at, earliest_weave_end)
+    if is_pooling and next_refresh_time < earliest_weave_end then
+        Hekili:Debug("is_pooling (%s) and next_refresh_at (%d) < earliest_weave_end (%d)", tostring(is_pooling), next_refresh_time, earliest_weave_end)
         return false
     end
 
@@ -1097,9 +1144,10 @@ spec:RegisterStateExpr("should_cat", function() -- aka terminate_bearweave
 
     -- Check timer leeway
     local earliest_weave_end = query_time + smallest_weave_extension + 1.5
-    local is_pooling = next_refresh_at > 0
+    local next_refresh_time = next_refresh_at
+    local is_pooling = next_refresh_time > 0
 
-    if is_pooling and next_refresh_at < earliest_weave_end then
+    if is_pooling and next_refresh_time < earliest_weave_end then
         return true
     end
 
@@ -1107,7 +1155,7 @@ spec:RegisterStateExpr("should_cat", function() -- aka terminate_bearweave
     local energy_to_dump = final_energy + 1.5 * energy.regen -- need to include Cat Form GCD here
     local time_to_dump = earliest_weave_end + floor(energy_to_dump / action.shred.cost)
     
-    return time_to_dump - query_time >= ttd or tf_expected_before(query_time, time_to_dump)
+    return (time_to_dump - query_time >= ttd) or tf_expected_before(query_time, time_to_dump)
 end)
 
 spec:RegisterStateExpr("movement_speed", function()
@@ -1128,9 +1176,10 @@ spec:RegisterStateExpr("should_leaveweave", function()
 
     -- Prioritize all timers over weaving
     local weave_end = query_time + weave_duration
-    local is_pooling = next_refresh_at > 0
+    local next_refresh_time = next_refresh_at
+    local is_pooling = next_refresh_time > 0
 
-    if (is_pooling and next_refresh_at < weave_end) or tf_expected_before(query_time, weave_end) then
+    if (is_pooling and next_refresh_time < weave_end) or tf_expected_before(query_time, weave_end) then
         return false
     end
 
@@ -1450,13 +1499,15 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 339, 1062, 5195, 5196, 9852, 9853, 19970, 19971, 19972, 19973, 19974, 19975, 26989, 27010, 53308, 53313, 65857, 66070 },
     },
-    feline_grace = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=20719)
+    -- Reduces damage from falling.
+    feline_grace = {
         id = 20719,
         duration = 3600,
         max_stack = 1,
     },
-    feral_aggression = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16862)
-        id = 16858,
+    -- Increases the damage caused by your Ferocious Bite by 10% and causes Faerie Fire (Feral) to apply 3 stacks of the Faerie Fire effect when cast.
+    feral_aggression = {
+        id = 16859,
         duration = 3600,
         max_stack = 1,
         copy = { 16862, 16861, 16860, 16859, 16858 },
@@ -1513,12 +1564,6 @@ spec:RegisterAuras( {
         copy = { 16914, 17401, 17402, 27012, 48467 },
     },
     -- TODO: remove 
-    improved_moonfire = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16822)
-        id = 16822,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 16822, 16821 },
-    },
     improved_rejuvenation = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=17113)
         id = 17113,
         duration = 3600,
@@ -1562,12 +1607,6 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 3,
         copy = { 33763, 48450, 48451 },
-    },
-    living_spirit = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=34153)
-        id = 34151,
-        duration = 3600,
-        max_stack = 1,
-        copy = { 34153, 34152, 34151 },
     },
     mark_of_the_wild = {
         id = 79061,
@@ -1614,8 +1653,9 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 16835, 16834, 16833 },
     },
-    naturalist = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=17073)
-        id = 17069,
+    -- Reduces the cast time of your Healing Touch and Nourish spells by 0.50 sec.
+    naturalist = {
+        id = 17070,
         duration = 3600,
         max_stack = 1,
         copy = { 17073, 17072, 17071, 17070, 17069 },
@@ -1730,7 +1770,8 @@ spec:RegisterAuras( {
             if combo_points.current == 0 then
                 return 0
             end
-            return 17 + (set_bonus.tier8feral_4pc == 1 and 8 or 0) + ((combo_points.current) * 5)
+            -- The base duration is 14s + 5s per extra CP. We assume 9s for 0 CP to make the calculations easier.
+            return 9 + (combo_points.current * 5) + (talent.endless_carnage.rank * 4) + (set_bonus.tier8feral_4pc == 1 and 8 or 0)
         end,
         max_stack = 1,
         copy = { 52610 },
@@ -1759,8 +1800,9 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 48505, 50286, 50288, 50294, 53188, 53189, 53190, 53191, 53194, 53195, 53196, 53197, 53198, 53199, 53200, 53201 },
     },
-    starlight_wrath = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=16818)
-        id = 16814,
+    -- Reduces the cast time of your Wrath and Starfire spells by 0.15-0.5 sec.
+    starlight_wrath = {
+        id = 16815,
         duration = 3600,
         max_stack = 1,
         copy = { 16818, 16817, 16816, 16815, 16814 },
@@ -1889,7 +1931,7 @@ spec:RegisterStateFunction( "swap_form", function( form )
 
     if form == "bear_form" then
         spend( rage.current, "rage" )
-        if talent.furor.rank==5 then
+        if talent.furor.rank==3 then
             gain( 10, "rage" )
         end
     end
@@ -3090,10 +3132,12 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132122,
         damage = function ()
-            return calculate_damage( 0.147, 56, false, true, true ) * (debuff.mangle.up and 1.3 or 1)
+            local damage_multiplier = (debuff.mangle.up and 1.3 or 1)
+            return calculate_damage( 56, 0.147, false, true, false, damage_multiplier )
         end,
-        tick_damage = function ()
-            return calculate_damage( 0.147, 56, false, true, true ) * (debuff.mangle.up and 1.3 or 1) * (set_bonus.tier11feral_2pc == 1 and 1.1 or 1)
+        tick_damage = function () -- TODO: Rake can be snapshotted with Tiger's Fury and should continue to apply the increased damage even after Tiger's Fury expires.
+            local damage_multiplier = (debuff.mangle.up and 1.3 or 1) * (set_bonus.tier11feral_2pc == 1 and 1.1 or 1)
+            return calculate_damage( 56, 0.147, false, true, false, damage_multiplier )
         end,
 
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -3358,7 +3402,8 @@ spec:RegisterAbilities( {
 
         form = "cat_form",
         damage = function ()
-            return calculate_damage( 5.40 , 56, true, false, true) * (debuff.mangle.up and 1.3 or 1) * (debuff.bleed.up and rend_and_tear_mod or 1)
+            local damage_multiplier = (debuff.mangle.up and 1.3 or 1) * rend_and_tear_mod_shred
+            return calculate_damage( 56 , 5.40, true, false, true, damage_multiplier)
         end,
     
         -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
@@ -4194,7 +4239,7 @@ spec:RegisterOptions( {
     damage = false,
     damageExpiration = 6,
 
-    potion = "speed",
+    potion = "tolvir",
 
     package = "Feral DPS",
     usePackSelector = true

@@ -1,0 +1,37 @@
+## Elemental Shaman
+# Based on WoWSims/Shaman Discord
+
+
+actions.precombat+=/flametongue_weapon,if=!mainhand_imbued
+actions.precombat+=/flametongue_weapon,if=!offhand_imbued
+actions.precombat+=/lightning_shield,if=buff.shield.down
+actions.precombat+=/call_of_the_elements,if=buff.earth_totem.down&buff.fire_totem.down&buff.water_totem.down&buff.air_totem.down
+actions.precombat+=/potion
+
+actions+=/call_action_list,name=aoe,if=active_enemies>2
+actions+=/call_action_list,name=single
+
+# Single-target rotation
+actions.single+=/fire_elemental_totem,if=buff.potion.up|target.time_to_die<=120
+actions.single+=/call_of_the_elements,if=buff.earth_totem.down&buff.fire_totem.down&buff.water_totem.down&buff.air_totem.down
+actions.single+=/searing_totem,if=buff.fire_totem.down
+actions.single+=/elemental_mastery
+actions.single+=/flame_shock,if=debuff.flame_shock.remains<=2
+actions.single+=/lava_burst,if=debuff.flame_shock.remains>2
+actions.single+=/earth_shock,if=buff.lightning_shield.stack>=7
+actions.single+=/thunderstorm,if=mana.pct<60
+actions.single+=/lightning_shield,if=buff.shield.down
+actions.single+=/chain_lightning,if=active_enemies>1&!moving
+actions.single+=/unleash_elements,if=moving&!glyph.unleashed_lightning.enabled
+actions.single+=/lightning_bolt
+
+# AoE rotation
+actions.aoe+=/call_of_the_ancestors,if=buff.earth_totem.down&buff.fire_totem.down&buff.water_totem.down&buff.air_totem.down
+actions.aoe+=/fire_elemental_totem
+actions.aoe+=/elemental_mastery
+actions.aoe+=/earth_shock,if=buff.lightning_shield.stack>=9&active_enemies<=4
+actions.aoe+=/magma_totem,if=buff.fire_totem.down&target.within6
+actions.aoe+=/thunderstorm,if=mana.pct<60
+actions.aoe+=/lightning_shield,if=buff.shield.down
+actions.aoe+=/lightning_bolt,if=moving&glyph.unleashed_lightning.enabled
+actions.aoe+=/chain_lightning

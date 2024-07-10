@@ -808,43 +808,42 @@ spec:RegisterAuras( {
 
 -- Glyphs
 spec:RegisterGlyphs( {
-    [58058] = "astral_recall",
-    [55437] = "chain_heal",
-    [55449] = "chain_lightning",
-    [63279] = "earth_shield",
-    [55439] = "earthliving_weapon",
-    [55452] = "elemental_mastery",
-    [63271] = "feral_spirit",
-    [55455] = "fire_elemental_totem",
-    [55450] = "fire_nova",
-    [55447] = "flame_shock",
-    [55451] = "flametongue_weapon",
-    [55443] = "frost_shock",
-    [59289] = "ghost_wolf",
-    [55456] = "healing_stream_totem",
-    [55440] = "healing_wave",
-    [63291] = "hex",
-    [55454] = "lava",
-    [55444] = "lava_lash",
-    [55438] = "lesser_healing_wave",
-    [55453] = "lightning_bolt",
-    [55448] = "lightning_shield",
-    [55441] = "mana_tide",
-    [58059] = "renewed_life",
-    [63273] = "riptide",
-    [55442] = "shocking",
-    [63298] = "stoneclaw_totem",
-    [55446] = "stormstrike",
-    [58135] = "arctic_wolf",
-    [58134] = "black_wolf",
-    [63270] = "thunder",
-    [62132] = "thunderstorm",
-    [63280] = "totem_of_wrath",
-    [58055] = "water_breathing",
-    [55436] = "water_mastery",
-    [58063] = "water_shield",
-    [58057] = "water_walking",
-    [55445] = "windfury_weapon",
+    [58058]  = "astral_recall",
+    [55437]  = "chain_heal",
+    [55449]  = "chain_lightning",
+    [63279]  = "earth_shield",
+    [55439]  = "earthliving_weapon",
+    [55452]  = "elemental_mastery",
+    [63271]  = "feral_spirit",
+    [55455]  = "fire_elemental_totem",
+    [55450]  = "fire_nova",
+    [55447]  = "flame_shock",
+    [55451]  = "flametongue_weapon",
+    [55443]  = "frost_shock",
+    [59289]  = "ghost_wolf",
+    [55441]  = "grounding_totem",
+    [55456]  = "healing_stream_totem",
+    [55440]  = "healing_wave",
+    [63291]  = "hex",
+    [55454]  = "lava_burst",
+    [55444]  = "lava_lash",
+    [55453]  = "lightning_bolt",
+    [55448]  = "lightning_shield",
+    [58059]  = "renewed_life",
+    [63273]  = "riptide",
+    [63280]  = "shamanistic_rage",
+    [55442]  = "shocking",
+    [63298]  = "stoneclaw_totem",
+    [55446]  = "stormstrike",
+    [58135]  = "the_arctic_wolf",
+    [63270]  = "thunder",
+    [62132]  = "thunderstorm",
+    [55438]  = "totemic_recall",
+    [101052] = "unleashed_lightning",
+    [89646]  = "water_breathing",
+    [55436]  = "water_shield",
+    [58057]  = "water_walking",
+    [55445]  = "windfury_weapon"
 } )
 
 
@@ -1148,7 +1147,7 @@ spec:RegisterAbilities( {
             if buff.elemental_mastery.up then return 0 end
             return 2 * (1 - (buff.maelstrom_weapon.stack * 2) / 10) * haste
         end,
-        cooldown = 6,
+        cooldown = 0,
         gcd = "spell",
 
         spend = function ()
@@ -2572,12 +2571,12 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Elemental / Resto DPS (IV)", 20220925, [[Hekili:1EvZUnUnq4NLGfWjbnw(NDZUnTj5q72djhcwuVy7njslrzXAksbskl4Ia(S3zOSLLKLtt32CXwIC4W5NVz(gfol8RHlsOww4tZNoF(0BMFDWS5F465FmCHDBblCrbnEnDf8GKMd)(BcwotAPchzIJ87mJv5iF(llCKlE4BxIIVvOOjOAnQsDmCKmRTW8ttMuvvfWJ3oEdJlnbXQ8jvkRy94yb1y4Xty7v9ytgnNkhNuygxSHnwRSulxjhhRuIevL0mMUKl4woZeUyzjxyFqgUCyh5AWqkyXHp9jWs4jjSAjzM4WfFnJBCKcnxP52TWtGVELJaBYxjzjosQs7iTC5lwwADendmEyPKgrAhhOGkRycXLocQ9LudkwzHs6ipaU)3q3)8oQDH3FDKvL8e2ov(hAQnliCHGBSgmCsvm4VN8zmMKUuWsc)LWfXGPZ0Ckgistds5AwKvzz5byKcowmg6cxKtxLtR3j0cbjVk3TN)qs1gABndc9(2c1KEIYPg4k32t4p0w44mkxgj4RYSsUCvprVUNpS)u2SsiOQHyPoVohP5f1BvlIjaIc)WDtAl4v807GOhnOi2E7ntF(zlvVIzdsGahvgZUD20rReBlYc8)gPsJAF8G92rRizpn4i3ENJmBQJmYr2FvWIoYnWAp)CVfnmRf8ztGXgfJrlje3Z0mtgGEb33IUwkTuyBYN7davCzsKjJr19IyhNUoKoQZPVqMR0WIaxl3mugBqOeEYnWDiz5qnMJCp4(TsUuHiQ(LieEwdsJQBqGW09P4xl05JN0qoZrS841EiuJ7lGlcIsQ414H)0jpCIYg0s4anlhqL1UtmyirwU3I3PxbDdnAzjalq1(JNuT5QnG94bd9VHJSvitAZoyR3CcG)rLlDW(pXWoiydMyndAXbp7BCH914ub)V8DhDeLx(Go2AdW8()zG5tZMEsN(TSKy46F0E6uC0eEIwQGANoqi41cFB5Lu7l3L8m004YmkuPXZxwYs6HSSk5QswufJcTSBQ9gkPHLb(UjnvJMEzUViOySAlWeIjqSgeyfsXeiB75AylPcIqubKxt2ISei9JsEoSyfvARZ6q9lCkB9jRyNVH5xdWeu0z(tKU4x)8Uli4ikHAm4bobFoBiYIdBubOm9G7q5TxVPvZ3bHKFnm(vHmDd1pAVKgWdW0(UgDNO2if6D6Jiv0T1RSbmJu85mQ1hYbGOKwaGo41mKN2sxZaNRatthh46AHbLfhcdjSCLKhhbtmyHn8iqadc3ObnRMzqGw6unIzbKXd5fkTfn33d2zCDnRNEpW9iIFvPCb0p6DVBWHdUagEWr8tpCP7rui8sgp9MXZV29O7X9mKn1bap5XaAKT8SEfaG2CK)9q1F()muDyJEO6k0ShempAiq2ObbXJgaapSf0nX3C39lxWW2)J4VHTLoG)gt5iO5OHGLTGfGMomCr7vhAyI273m8q7f7pbWvi3)Da1pAGDhE4(zTp4rtc0XuoWK6HP7ytBlYboAuItqWFFd5ENR(avSFKrpl(OtWG3l3(Q4D7eG6sO3Eg17FrYW2kP)uU9hS9oyY2ot(28YR(k6YP2Uns9G2T(QHtxg09inFmr)noDUFNa9cA1n5oKeQzgGVschJ3S7ZKQZi42vk96aFERRwFd(wH(g(BuIcyalTzk4BbA(Urpnt4F)d]] )
+spec:RegisterPack( "Elemental", 20240701, [[Hekili:fFvBVTTnq4FlbfWTfRv121nzPloaTOfdjFiBOkR5ddvw0s0weLsuJKkEgiq)23DK6fkfz74cuSVyyrE3dV3EoEmysWTb(Xenn4MPJNoB8zJN4n50ztFxGVEBonWpNe9DYA4pzKu43pZPP0mnHJ7SLliXiakrHmc2nWFzbJRVkly5GOo5uq2CAuWnNf4NWIJPwjPQOa)BtyQYWCjtiz6TW)Gt(vLHWMS1z04YWvczzyJbug(ILf6YqjnsKclf3iYxOkTOm8t)PFzibGCdLZFzziI(sIcfRixKvgEv02x)vklt98oW6NqsjW2RlyX0kiVts0jEb(CMsRmEmlBnNc)7gteKMrwYPXbFmWNePzISa)vmjDbTg2fAHMMADvjl3kIVbKxRjY1u0teAIDdqenvYiy8C1kVCbUSxrEz4dpugAL3tZsPaSlIzGvEX8YWjthhOHiEpdQhyuIuNynhVyXgWrhbXfChJfp0gBGmPCWDim31BD(icNVqSAHoPjgOqB7T7326zbT4PaRgcwvrraOziq172gLtjkaVTUNbi8725PgtTNlhkUxOserF3tstjqnHnKo1jF2kdI5P)qyEzhi5K7jlwwivAeXZ2FSHZwNOZWGGkHr5XEknqqaibZ8mNyHj92yM)6obfQXjE5rqD3fLHNoUfbDsbqMaJsinH6Z3VDvznDZx9nweNjJ3jqOA3dvkz0ug1gMMykYoPmmvCpGJtPvcekx0CagK7ZbD8sJ21yTMVnpXRiJtjQeAClkE1k3Cmvc1P6DYu3QUwFCPGR7wYbFse7T9GldHKfHTSKQE9h(G4Z7PRWptICDBK93mRdj7ThdJC2pET(5gJUFfdswNTtwWUBaSZ4vvt2nmDcl70wKtjRtjT9H2DBGNm)6a8(Nm)Apu9wsWrWa6vFx3jyx8W(1)X0vKcqVb4a7L4pThhX(Xc8Mx79VlStIG8RbUT7jPB1T3g7m3maXsYGwANM)Ar26c6InusoUwhQ6hTdwGJvCN4oFwQ6n1Zr8jMksiJDDBSTge9sizXlyPllOX7)IBqEXQvUIVpl7W3Z(KRPoap9NzlOdolX7CRgTJi1ViesV3dmnChCq0PJphhSDdrIUj0T9Up8LBU6MF)9LHLH3MaJrXsZfsD1qFp3wM8CCgZ)PaCiibRePGyKcTifCeybGgKTMQ8kV2aWkbNl2yyBKcPD6tjSEHP8GbURgfZA2LHynj6(6A5YeMth6q4kDCmkmmqnbhG99Lxxg(AyazJpdFCD9OZIvmo1oPBktPmMHQi3XNwdunjlcagMN67uny4GVFL2QuNzP1jeyzkea36owollIxeJKvk0BKkRTM)(VuuejAQ6BWy7BsyrjUstY22EQvok9FZ5SiMM3IRRFxFO)gu(lRpMBTqati8ne0y3LM6CYByCUJhvbPUwut0WSuwr6sQn5YfAirELPiaxyw3mfMLHsUcDIqAESds6)JmNxfvg(MUV)4fx91xI9ymzMa)N9SHEQX1WQhUbcMOlV2ApkVM2w)Y8384EaVITA(j9AXCu62TDZWQ2VHbQy)2ldR5qu6gT73uz0qnugnyZKrd0izylOL7uTBTv5CLXRWllMd3ZGMw3BQUC6Hv029apci9UJN61ACwPXeYaJA1eBAEj4dp84xbEXC4fGdG4)pr7MJVZB3Ao3(xq8y9E0mKdfSAFKfI8UF61fZNoG6TpaB)AF5qk7mJzJxn8GRxo)Sb03DoqeG6bgV40HsIhhzRn33DkTbQKNm6KQ5dFS29FeKXmncp6Kdoj5EDcCKYkQrNx50QeW76v728mPF(fV2dFiQyFz2tvALahrzY5J6MCUy(S(W58(JDXLg19Tl9r4jv3zf94k66RdMJDQyoIcMQC)JEPVoi4)o]] )
 
 spec:RegisterPack( "Enhancement", 20240413, [[Hekili:nJvxVTUnp4FlNBc25So)gN0pofOPxmGbS23HUl8W2DYwXwowOYwgsYnRaf(3(OKtSLL)Qh0HTHcuKsrrsr(q(WgKp63qbjyfb90M1BUC9L(B92S(YnxDlkq9AjbfuIJFgFa(qboh(9pvKHlIj5KcL(SxzCCI2gsELigohfSVIYupuG2pUH3IcWvQmUafeuvsefvsjkiJMKqAUdrgJc(dU6x()1rKoVvhjZW54I6ibxHvuo8PuUOo6Njptzuiye8ukdcbCS(uPxPGeZZ3JvF)U)3rArsAL41WJeCjV4cA6UpLJPAZNesZ3xrsw1jidldLLegRKFKiQFCmlMYG8HIxCOIC2OcCXZ7A01B4XE54)muRYp4pQ7)OExBtEAQLjh)Qm6HmvbT4qOmJsyj6lUVkn1R5p9s4hlg)MXyglKNgQYiHeMPQiBVnbluzHkUIKBmXBVzeNsfKHspcadXqXyQTWXdIsUP2)y7PNQUWRbcbxPF4A()gv6V56lCHMMdQurJbxFGOvxsuH75qdMNIse(RT6Mc3ugVZ32avssifs9sBHNt2wbMUEEQ4JznvRENteGyzjvqvty(bMRG)cwhVAXVawVGKtjY77fEXzqslSf72c7YXeMuj45NZ9sfmWA3vRMZyhXu1yoCvmNZ0qpV24Ytq0Ll5D7w7DZkxi9PdVF67DHKeVB6JTJQUgZ9CMAXx4a4c0bWJF(I4xJzq8Hfhik5o)l0GX(Y2yWsas5zWzRAKcqKC9RkmHsUF3T9s9Z1270FVAq79583M1Jw37HHvCro8uPpt6gk1jR)qbq)C8HCCJBglEARCmiCkIFToAvDuNsoG4bwVzGMjNoEvQB8jyeWs6cJU9ZCfpsbEpdA2NC0A)hCpxGFbhYWYSLESwY8Qkxnq25mW2)UEagO3D2s0OlJ0VS2B72LMiDcRDKQYOf(RHjHfyVYy1DWOkfessVMBzUaa4eeiwyjOGxicjyxZYeB99xFnk4iwOFfWYdpKxYfkyEy0M6OMaOoIbEw6v)iSAsjjg90nWMjyjj5xl6TetD039WV)z43B(mkWChZgrKuCftbF8jZgsngf8zlrdk4u(b9JifewAT6KeedJ)ickgf8P6iN5)gCOT4(0a99MfbM2pBD8ZzvhYx8oIHjdan31zBpp)MoMUCU3EFgRzdyWuxnPPwGlRoAxDKFN5DbFAJFTDLSLpYPqEJTsn0FoA8vBngBsIJ(32tFl6rh98x)EIpF)jtr9zZQJUVxgPDIRXktJxNHZXKKVYaDM3xoK1gp6ICbErqXjjgx6HzIIz4vJUdIvGY2zOFV5Iglnxi02ic7lyEetd1xmT1zT(88g76I771L0mpgCMnjUEWuWaQDuWgN(VtS8M0WqMEidaX2TMy465FBoe9D51ri7HSpmlETfGyKvimo9MbntgiQdM)RZhAU7iyngO7eJHU9D)g7HJE)lq05AlEydbrVUBRDlCjsMU)Egs6UiZAtJXqCnhBC0g7aYor5eqBT1RD1exTwSZWEtLUWDKTvmGNTtNiNMJ4BjbDQZ8U(sB3MPo6l6XhB3UqsC6MgNvDor42SUJXVlTYZmuz6V6LZ)lXT7O8pW2hUSg)xy7dxELpW2hlGHF3TwtJqh9BkPo6T3gYr5CI73yI1r9)wtwEO71lTIZ5Fq)f]] )
 
 
-spec:RegisterPackSelector( "elemental", "Elemental / Resto DPS (IV)", "|T136048:0|t Elemental",
+spec:RegisterPackSelector( "elemental", "Elemental", "|T136048:0|t Elemental",
     "If you have spent more points in |T136048:0|t Elemental than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab1 > max( tab2, tab3 )
@@ -2589,7 +2588,7 @@ spec:RegisterPackSelector( "enhancement", "Enhancement", "|T136051:0|t Enhanceme
         return tab2 > max( tab1, tab3 )
     end )
 
-spec:RegisterPackSelector( "restoration", "Elemental / Resto DPS (IV)", "|T136052:0|t Restoration",
+spec:RegisterPackSelector( "restoration", "Elemental", "|T136052:0|t Restoration",
     "If you have spent more points in |T136052:0|t Restoration than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab3 > max( tab1, tab2 )
