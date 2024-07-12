@@ -10646,7 +10646,7 @@ do
                     supporters = {
                         type = "description",
                         name = function ()
-                            return "|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n" .. ns.Patrons .. ".\n\n" ..
+                            return "|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n" .. ns.Patrons .. "\n\n" ..
                                 "Please see the |cFFFFD100Issue Reports|r link for information about reporting bugs.\n\n"
                         end,
                         fontSize = "medium",
@@ -10683,11 +10683,20 @@ do
                         set = function() end,
                         dialogControl = "SFX-Info-URL"
                     },
+                    faq = {
+                        type = "input",
+                        name = "FAQ / Help",
+                        order = 13,
+                        width = "full",
+                        get = function() return "https://github.com/Hekili/hekili/wiki/Frequently-Asked-Questions" end,
+                        set = function() end,
+                        dialogControl = "SFX-Info-URL"
+                    }
 
                     simulationcraft = {
                         type = "input",
                         name = "SimC",
-                        order = 13,
+                        order = 14,
                         get = function () return "https://github.com/simulationcraft/simc/wiki" end,
                         set = function () end,
                         width = "full",
@@ -10774,6 +10783,7 @@ do
             abilities = {
                 type = "group",
                 name = "Abilities",
+                desc = "Edit specific abilities, such as disabling, assigning to a toggle, overriding the keybind text or icon and more."
                 order = 80,
                 childGroups = "select",
                 args = {
@@ -10796,6 +10806,7 @@ do
             items = {
                 type = "group",
                 name = "Gear and Items",
+                desc = "Edit specific items, such as disabling, assigning to a toggle, overriding the keybind text and more."
                 order = 81,
                 childGroups = "select",
                 args = {
@@ -10818,6 +10829,7 @@ do
             snapshots = {
                 type = "group",
                 name = "Issue Reporting (Snapshots)",
+                desc = "Learn how to report an issue with the addon, such as incorrect recommendations or bugs."
                 order = 86,
                 args = {
                     autoSnapshot = {
