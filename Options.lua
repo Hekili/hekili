@@ -10782,7 +10782,7 @@ do
             abilities = {
                 type = "group",
                 name = "Abilities",
-                desc = "Edit specific abilities, such as disabling, assigning to a toggle, overriding the keybind text or icon and more."
+                desc = "Edit specific abilities, such as disabling, assigning to a toggle, overriding the keybind text or icon and more.",
                 order = 80,
                 childGroups = "select",
                 args = {
@@ -10805,7 +10805,7 @@ do
             items = {
                 type = "group",
                 name = "Gear and Items",
-                desc = "Edit specific items, such as disabling, assigning to a toggle, overriding the keybind text and more."
+                desc = "Edit specific items, such as disabling, assigning to a toggle, overriding the keybind text and more.",
                 order = 81,
                 childGroups = "select",
                 args = {
@@ -10828,7 +10828,7 @@ do
             snapshots = {
                 type = "group",
                 name = "Issue Reporting (Snapshots)",
-                desc = "Learn how to report an issue with the addon, such as incorrect recommendations or bugs."
+                desc = "Learn how to report an issue with the addon, such as incorrect recommendations or bugs.",
                 order = 86,
                 args = {
                     autoSnapshot = {
