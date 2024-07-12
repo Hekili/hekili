@@ -173,6 +173,11 @@ spec:RegisterAuras( {
 
         copy = { 2944, 19276, 19277, 19278, 19279, 19280, 25467, 48299, 48300 },
     },
+    dark_archangel = {
+        id = 87153,
+        duration = 90,
+        max_stack = 1,
+   },
     -- Reduces all damage by $s1%, and you regenerate $49766s1% mana every $60069t1 sec for $d.  Cannot attack or cast spells. Immune to snare and movement impairing effects.
     dispersion = {
         id = 47585,
