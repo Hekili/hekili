@@ -36,6 +36,9 @@ actions+=/howling_blast,if=buff.freezing_fog.up
 # Howling Blast if Frost Fever is not active
 actions+=/howling_blast,if=!dot.frost_fever.ticking
 
+# Use DnD in AoE situation
+actions+=/death_and_decay,if=!moving&fight_remains>5&active_enemies>1
+
 # Ensuring Plague Strike is used with Unholy runes and Blood Plague is not active
 actions+=/plague_strike,if=!dot.blood_plague.ticking&unholy_runes.current=2
 
