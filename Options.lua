@@ -10691,8 +10691,7 @@ do
                         get = function() return "https://github.com/Hekili/hekili/wiki/Frequently-Asked-Questions" end,
                         set = function() end,
                         dialogControl = "SFX-Info-URL"
-                    }
-
+                    },
                     simulationcraft = {
                         type = "input",
                         name = "SimC",
