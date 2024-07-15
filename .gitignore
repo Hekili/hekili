@@ -70,11 +70,11 @@ Libs/LibCompress
 Libs/LibDeflate
 Libs/LibCustomGlow-1.0/
 Libs/LibDataBroker-1-1
-# Libs/LibDBIcon-1.0
+Libs/LibDBIcon-1.0
 Libs/LibDualSpec-1.0
 Libs/LibItemBuffs-1.0
 Libs/LibNameplateRegistry-1.0/
-#Libs/LibRangeCheck-3.0
+Libs/LibRangeCheck-3.0
 Libs/LibSharedMedia-3.0
 Libs/LibSpellRange-1.0
 Libs/LibStub
