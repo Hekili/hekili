@@ -383,7 +383,7 @@ do
 
                         local _, range
 
-                        if debugging then details = format( "%s\n - Checking %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
+                        if debugging then details = format( "%s\n - Checking nameplate list for %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
                         if excluded then
                             if requiredForInclusion[ npcid ] then
