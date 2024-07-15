@@ -1509,7 +1509,7 @@ spec:RegisterAbilities( {
 
 
     thunder_clap = {
-        id = 396719,
+        id = 6343,
         cast = 0,
         cooldown = 6,
         hasteCD = true,
