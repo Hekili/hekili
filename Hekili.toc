@@ -34,7 +34,7 @@ Shadowlands\Legendaries.lua
 Dragonflight\Items.lua
 Dragonflight\Classes.lua
 
-# TheWarWithin\DeathKnightBlood.lua
+TheWarWithin\DeathKnightBlood.lua
 # TheWarWithin\DeathKnightFrost.lua
 # TheWarWithin\DeathKnightUnholy.lua
 # TheWarWithin\DemonHunterHavoc.lua
@@ -43,9 +43,9 @@ Dragonflight\Classes.lua
 # TheWarWithin\DruidFeral.lua
 # TheWarWithin\DruidGuardian.lua
 # TheWarWithin\DruidRestoration.lua
-# TheWarWithin\EvokerDevastation.lua
-# TheWarWithin\EvokerPreservation.lua
-# TheWarWithin\EvokerAugmentation.lua
+TheWarWithin\EvokerDevastation.lua
+TheWarWithin\EvokerPreservation.lua
+TheWarWithin\EvokerAugmentation.lua
 # TheWarWithin\HunterBeastMastery.lua
 # TheWarWithin\HunterMarksmanship.lua
 # TheWarWithin\HunterSurvival.lua
@@ -70,9 +70,9 @@ Dragonflight\Classes.lua
 # TheWarWithin\WarlockAffliction.lua
 # TheWarWithin\WarlockDemonology.lua
 # TheWarWithin\WarlockDestruction.lua
-# TheWarWithin\WarriorArms.lua
-# TheWarWithin\WarriorFury.lua
-# TheWarWithin\WarriorProtection.lua
+TheWarWithin\WarriorArms.lua
+TheWarWithin\WarriorFury.lua
+TheWarWithin\WarriorProtection.lua
 
 Targets.lua
 Options.lua
