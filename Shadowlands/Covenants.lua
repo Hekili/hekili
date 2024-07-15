@@ -9,7 +9,11 @@ local class = Hekili.Class
 
 local all = Hekili.Class.specs[ 0 ]
 
-local GetItemCooldown = _G.GetItemCooldown
+local GetItemCooldown = C_Item.GetItemCooldown
+local GetItemCount = C_Item.GetItemCount
+local IsUsableItem = C_Item.IsUsableItem
+local GetItemInfo = C_Item.GetItemInfo
+local IsUsableSpell = C_Spell.IsSpellUsable
 local AreCovenantsDisabled = ns.AreCovenantsDisabled
 
 -- Covenants

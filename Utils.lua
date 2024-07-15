@@ -1,5 +1,5 @@
 -- Utils.lua
--- June 2014
+-- July 2024
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
@@ -11,6 +11,13 @@ local class = Hekili.Class
 local state = Hekili.State
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local GetSpellBookItemName = function(index, bookType)
+    local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet;
+    return C_SpellBook.GetSpellBookItemName(index, spellBank);
+end
+
+local GetItemInfo = C_Item.GetItemInfo
+local GetSpellInfo = C_Spell.GetSpellInfo
 
 local errors = {}
 local eIndex = {}
@@ -926,7 +933,7 @@ function Hekili:GetLoadoutExportString()
     local bitWidthRanksPurchased = 6
 
     -- Cannot force-load as needed without causing taint, so this simply replicates existing Blizzard functionality.
-    if IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then
+    if C_AddOns.IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then
         bitWidthHeaderVersion = ClassTalentImportExportMixin.bitWidthHeaderVersion
         bitWidthSpecID = ClassTalentImportExportMixin.bitWidthSpecID
         bitWidthRanksPurchased = ClassTalentImportExportMixin.bitWidthRanksPurchased

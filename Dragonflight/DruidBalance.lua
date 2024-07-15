@@ -8,6 +8,13 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 
+local GetSpellBookItemName = function(index, bookType)
+    local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet;
+    return C_SpellBook.GetSpellBookItemName(index, spellBank);
+end
+
+local GetSpellCount = C_Spell.GetSpellCastCount
+
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 102 )

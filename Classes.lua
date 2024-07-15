@@ -1,5 +1,5 @@
 -- Classes.lua
--- July 2014
+-- July 2024
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
@@ -26,10 +26,12 @@ local insert, wipe = table.insert, table.wipe
 local mt_resource = ns.metatables.mt_resource
 
 local GetActiveLossOfControlData, GetActiveLossOfControlDataCount = C_LossOfControl.GetActiveLossOfControlData, C_LossOfControl.GetActiveLossOfControlDataCount
-local GetItemCooldown = _G.GetItemCooldown
-local GetSpellDescription, GetSpellTexture = _G.GetSpellDescription, _G.GetSpellTexture
+local GetItemCooldown = C_Item.GetItemCooldown
+local GetSpellDescription, GetSpellTexture = C_Spell.GetSpellDescription, C_Spell.GetSpellTexture
 local GetSpecialization, GetSpecializationInfo = _G.GetSpecialization, _G.GetSpecializationInfo
-
+local GetItemSpell, GetItemCount, IsUsableItem = C_Item.GetItemSpell, C_Item.GetItemCount, C_Item.IsUsableItem
+local GetSpellInfo = C_Spell.GetSpellInfo
+local GetSpellLink = C_Spell.GetSpellLink
 
 local specTemplate = {
     enabled = true,
@@ -280,7 +282,7 @@ local HekiliSpecMixin = {
             if a.id > 0 then
                 -- Hekili:ContinueOnSpellLoad( a.id, function( success )
                 a.onLoad = function( a )
-                    a.name = GetSpellInfo( a.id )
+                    a.name = GetSpellInfo( a.id ).name
 
                     if not a.name then
                         for k, v in pairs( class.auraList ) do
@@ -741,6 +743,7 @@ local HekiliSpecMixin = {
                     local link = actionItem:GetItemLink()
                     local texture = actionItem:GetItemIcon()
 
+                   
                     if name then
                         if not a.name or a.name == a.key then a.name = name end
                         if not a.link or a.link == a.key then a.link = link end
@@ -858,7 +861,16 @@ local HekiliSpecMixin = {
         if a.id and a.id > 0 then
             -- Hekili:ContinueOnSpellLoad( a.id, function( success )
             a.onLoad = function()
-                a.name = GetSpellInfo( a.id )
+                local spellInfo = GetSpellInfo( a.id )
+                
+                if spellInfo == nil then
+                    spellInfo = GetItemInfo( a.id )
+                end
+                if spellInfo then
+                    a.name = spellInfo.name
+                else
+                    a.name = nil
+                end
 
                 if not a.name then
                     for k, v in pairs( class.abilityList ) do
@@ -870,7 +882,7 @@ local HekiliSpecMixin = {
                     return
                 end
 
-                -- if not a.name then Hekili:Error( "Name info not available for " .. a.id .. "." ); return false end
+                if not a.name then Hekili:Error( "Name info not available for " .. a.id .. "." ); return false end
 
                 a.desc = GetSpellDescription( a.id ) -- was returning raw tooltip data.
 

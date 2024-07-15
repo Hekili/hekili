@@ -16,6 +16,7 @@ local RC = LibStub( "LibRangeCheck-3.0" )
 
 
 local spec = Hekili:NewSpecialization( 266 )
+local GetSpellCount = C_Spell.GetSpellCastCount
 
 spec:RegisterResource( Enum.PowerType.SoulShards )
 spec:RegisterResource( Enum.PowerType.Mana )

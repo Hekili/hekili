@@ -18,6 +18,18 @@ local multiUnpack = ns.multiUnpack
 local orderedPairs = ns.orderedPairs
 local round = ns.round
 
+local IsCurrentItem = C_Item.IsCurrentItem
+local IsUsableItem = C_Item.IsUsableItem
+local IsCurrentSpell = C_Spell.IsCurrentSpell
+local GetSpellTexture = C_Spell.GetSpellTexture
+local IsUsableSpell = C_Spell.IsSpellUsable
+local GetSpellCooldown = function(spellID)
+    local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID);
+    if spellCooldownInfo then
+        return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
+    end
+end
+
 local format, insert = string.format, table.insert
 
 local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi

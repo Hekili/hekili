@@ -12,6 +12,8 @@ local PTR = ns.PTR
 
 local strformat = string.format
 
+local GetSpellCount = C_Spell.GetSpellCastCount
+
 local spec = Hekili:NewSpecialization( 253, true )
 
 

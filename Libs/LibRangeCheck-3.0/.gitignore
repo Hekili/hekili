@@ -1,0 +1,7 @@
+.env
+desktop.ini
+.DS_Store
+.release
+.install
+.lua/*
+.vscode/settings.json

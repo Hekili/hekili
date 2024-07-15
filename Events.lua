@@ -1,5 +1,5 @@
 -- Events.lua
--- June 2014
+-- June 2024
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
@@ -17,7 +17,16 @@ local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table
 
 local CGetItemInfo = C_Item.GetItemInfo
 local IsEquippedItem = C_Item.IsEquippedItem
+local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo
 local UA_GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local IsUsableItem = C_Item.IsUsableItem
+local GetItemSpell = C_Item.GetItemSpell
+local GetSpellCooldown = function(spellID)
+    local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID);
+    if spellCooldownInfo then
+        return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
+    end
+end
 local FindStringInInventoryItemTooltip = ns.FindStringInInventoryItemTooltip
 local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
@@ -101,7 +110,7 @@ function ns.StartEventHandler()
 
     events:SetScript( "OnUpdate", function( self, elapsed )
         if Hekili.PendingSpecializationChange then
-            Hekili:SpecializationChanged()
+           -- Hekili:SpecializationChanged()
             Hekili.PendingSpecializationChange = false
             -- Spec updates are expensive; exit and do other work in the next frame.
             return
