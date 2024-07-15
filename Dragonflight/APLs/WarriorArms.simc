@@ -52,7 +52,8 @@ actions.execute+=/bladestorm
 actions.execute+=/wrecking_throw
 
 actions.aoe+=/execute,if=buff.juggernaut.up&buff.juggernaut.remains<gcd&set_bonus.tier31_4pc
-actions.aoe+=/whirlwind,if=buff.collateral_damage.up&debuff.colossus_smash.remains&buff.sweeping_strikes.downactions.aoe+=/thunder_clap,if=talent.thunder_clap&talent.blood_and_thunder&talent.rend&dot.rend.remains<=dot.rend.duration*0.3
+actions.aoe+=/whirlwind,if=buff.collateral_damage.up&debuff.colossus_smash.remains&buff.sweeping_strikes.down
+actions.aoe+=/thunder_clap,if=talent.thunder_clap&talent.blood_and_thunder&talent.rend&dot.rend.remains<=dot.rend.duration*0.3
 actions.aoe+=/thunderous_roar
 actions.aoe+=/sweeping_strikes,if=cooldown.bladestorm.remains>15|talent.improved_sweeping_strikes&cooldown.bladestorm.remains>21|!talent.bladestorm|!talent.bladestorm&talent.blademasters_torment&cooldown.avatar.remains>15|!talent.bladestorm&talent.blademasters_torment&talent.improved_sweeping_strikes&cooldown.avatar.remains>21
 actions.aoe+=/avatar,if=raid_event.adds.in>15|talent.blademasters_torment|target.time_to_die<20|buff.hurricane.remains<3
