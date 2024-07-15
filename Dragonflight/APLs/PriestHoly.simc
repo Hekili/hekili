@@ -23,7 +23,7 @@ actions.divine_favor_chastise_prep+=/apotheosis,if=(cooldown.holy_word_chastise.
 # Divine Word only if we can sync with Chastise and (if talented) Empyreal Blaze
 actions.divine_favor_chastise_prep+=/divine_word,if=cooldown.holy_word_chastise.up&(!talent.empyreal_blaze|buff.empyreal_blaze.up)
 # Holy word chastise to trigger divine favor: chastise
-actions.divine_favor_chastise_prep+=/holy_word_chastise,if=buff.divine_word.up
+actions.divine_favor_chastise_prep+=/holy_word_chastise,if=!talent.empyreal_blaze&buff.divine_word.up|talent.empyreal_blaze&buff.empyreal_blaze.down
 
 actions.divine_favor_chastise_active+=/halo,if=spell_targets.halo>=2
 actions.divine_favor_chastise_active+=/divine_star,if=spell_targets.divine_star>=2
