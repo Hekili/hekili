@@ -1,0 +1,44 @@
+# Opener
+actions.precombat+=/mind_spike
+actions.precombat+=/shadow_word_pain
+actions+=/shadowfiend,if=!pet.alive
+actions+=/shadow_word_pain,if=!ticking&target.debuff.shadow_word_pain.remains<tick_time
+actions+=/mind_flay,if=buff.shadow_orb.stack>=1&buff.evangelism.stack=5
+actions+=/mind_blast,if=buff.shadow_orb.react
+actions+=/devouring_plague,if=!ticking&target.debuff.devouring_plague.remains<tick_time
+actions+=/vampiric_touch,if=!ticking&target.debuff.vampiric_touch.remains<tick_time
+actions+=/run_action_list,name=aoe,if=active_enemies>=2
+actions+=/run_action_list,name=st
+
+
+# Main Rotation
+actions.st+=/mind_blast,if=cooldown.mind_blast.remains=0&target.debuff.vampiric_touch.up
+actions.st+=/mind_flay,if=buff.mind_flay.stack<3&target.debuff.shadow_word_pain.remains>1
+actions.st+=/devouring_plague,if=target.debuff.devouring_plague.remains<tick_time
+actions.st+=/vampiric_touch,if=target.debuff.vampiric_touch.remains<tick_time
+actions.st+=/shadow_word_death,if=target.health.pct<25|mana.pct<15
+actions.st+=/mind_blast,if=buff.shadow_orb.react
+
+# Cooldown and Utility
+actions.st+=/shadowfiend,if=cooldown.shadowfiend.remains=0
+actions.st+=/archangel,if=buff.evangelism.stack=5&(target.debuff.vampiric_touch.remains>6&target.debuff.devouring_plague.remains>6&target.debuff.shadow_word_pain.remains>6)
+actions.st+=/dispersion,if=mana.pct<15
+actions.st+=/pain_suppression,if=health.pct<50&!buff.dispersion.up
+
+# AoE Rotation
+actions.aoe+=/mind_sear
+actions.aoe+=/shadow_word_pain,if=target.debuff.shadow_word_pain.remains<3
+actions.aoe+=/vampiric_touch,if=target.debuff.vampiric_touch.remains<3
+actions.aoe+=/devouring_plague,if=target.debuff.devouring_plague.remains<3
+actions.aoe+=/mind_blast,if=buff.shadow_orb.react
+
+# Talent-Specific Actions (Adjust based on your talent choices)
+actions.st+=/mind_spike,if=talent.mind_spike.enabled&buff.archangel.up
+ 
+# Fillers
+actions.st+=/mind_flay,if=buff.evangelism.stack<5
+
+
+# Precombat Buffs
+actions.precombat+=/power_word_fortitude,if=buff.power_word_fortitude.down
+actions.precombat+=/inner_fire

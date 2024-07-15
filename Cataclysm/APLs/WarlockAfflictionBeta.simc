@@ -1,0 +1,45 @@
+# Opener
+actions.precombat+=/volcanic_potion
+actions.precombat+=/fel_armor,if=buff.armor.down
+actions.precombat+=/summon_felhunter,if=!pet.alive
+actions.precombat+=/soul_harvest,if=soul_shards<3
+actions+=/shadow_bolt,if=debuff.shadow_embrace.down & target.health.pct > 25
+actions+=/group_curse,if=debuff.my_curse.down&curse_grouped
+actions+=/solo_curse,if=debuff.my_curse.down
+actions+=/haunt,use_off_gcd=1,if=!target.debuff.haunt.up|dot.haunt.remains<cast_time+latency+1
+actions+=/demon_soul,if=pet.alive
+actions+=/unstable_affliction,if=debuff.unstable_affliction.down
+actions+=/run_action_list,name=st
+actions+=/call_action_list,name=aoe,if=active_enemies>1
+
+# Single Target Rotation
+actions.st+=/summon_felhunter,if=!pet.alive
+actions.st+=/group_curse,if=debuff.my_curse.down&curse_grouped
+actions.st+=/solo_curse,if=debuff.my_curse.down
+actions.st+=/corruption,if=debuff.corruption.remains<tick_time
+actions+=/haunt,use_off_gcd=1,if=!target.debuff.haunt.up|dot.haunt.remains<cast_time+latency+3
+actions.st+=/bane,if=debuff.my_bane.remains<15
+actions.st+=/unstable_affliction,if=target.debuff.unstable_affliction.remains<tick_time&target.health.pct>25
+actions.st+=/drain_soul,if=target.health.pct<=25
+actions.st+=/shadowflame,if=target.distance<7
+actions.st+=/soulburn,if=moving
+actions.st+=/soul_fire,if=buff.soulburn.up
+actions.st+=/demon_soul
+actions.st+=/fel_flame,if=buff.fel_spark.up|moving
+actions.st+=/shadow_bolt,if=target.health.pct > 25 & target.distance > 7 |debuff.shadow_embrace.down & target.health.pct > 25|target.distance<7&cooldown.shadowflame.remains>3
+actions.st+=/life_tap,if=mana.pct<10|glyph.life_tap.enabled&buff.life_tap.remains<5
+actions.st+=/call_action_list,name=aoe,if=active_enemies>2
+
+# AoE Rotation
+actions.aoe+=/corruption,if=target.debuff.corruption.remains<3,target_if=debuff.corruption.remains
+actions.aoe+=/unstable_affliction,if=target.debuff.unstable_affliction.remains<3
+actions.aoe+=/bane_of_agony,if=debuff.bane_of_agony.remains<tick_time&!bane_priority.ticking
+actions.aoe+=/soulburn,if=cooldown.seed_of_corruption.remains<gcd&active_enemies>2
+actions.aoe+=/seed_of_corruption,if=buff.soulburn.up&active_enemies>2
+actions.aoe+=/seed_of_corruption,if=active_enemies>=6
+actions.aoe+=/shadowflame,if=target.distance<7
+actions.aoe+=/shadow_bolt,cycle_targets=1
+actions.aoe+=/curse_of_the_elements,if=active_enemies>5&debuff.curse_of_elements.remains<3&!target.distance.yard>5
+
+# Soul Swap Logic (2 targets)
+actions.aoe+=/soul_swap,if=target.debuff.bane_of_agony.up&active_enemies=2
