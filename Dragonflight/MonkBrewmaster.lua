@@ -10,6 +10,7 @@ local class, state = Hekili.Class, Hekili.State
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 268 )
+local GetSpellCount = C_Spell.GetSpellCastCount
 
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.Energy )

@@ -1,0 +1,10 @@
+package-as: LibRangeCheck-3.0
+enable-nolib-creation: no
+
+externals:
+    LibStub-1.0:
+        url: https://repos.curseforge.com/wow/libstub/trunk
+        tag: latest
+    CallbackHandler-1.0:
+        url: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+        tag: latest

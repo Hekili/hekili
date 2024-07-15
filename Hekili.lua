@@ -1,10 +1,10 @@
 -- Hekili.lua
--- April 2014
+-- July 2024
 
 local addon, ns = ...
 Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
-Hekili.Version = GetAddOnMetadata( "Hekili", "Version" )
-Hekili.Flavor = GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
+Hekili.Version = C_AddOns.GetAddOnMetadata( "Hekili", "Version" )
+Hekili.Flavor = C_AddOns.GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
 
 local format = string.format
 local insert, concat = table.insert, table.concat

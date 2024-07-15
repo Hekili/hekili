@@ -9,11 +9,13 @@ local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local PTR = ns.PTR
+local GetSpellTexture = C_Spell.GetSpellTexture
 
 local strformat = string.format
 
 
 local spec = Hekili:NewSpecialization( 267 )
+local GetSpellCount = C_Spell.GetSpellCastCount
 
 spec:RegisterResource( Enum.PowerType.SoulShards, {
     infernal = {
