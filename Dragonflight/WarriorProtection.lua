@@ -1050,11 +1050,11 @@ spec:RegisterAbilities( {
             if buff.ignore_pain.up then
                 buff.ignore_pain.expires = query_time + class.auras.ignore_pain.duration
                 -- TODO: Remove retail/PTR compatibility statement post 10.1 release. (3.5 [retail] vs 4.375 [10.1 patch])
-                buff.ignore_pain.v1 = min( 0.3 * health.max, buff.ignore_pain.v1 + stat.attack_power * (Hekili.CurrentBuild > 100007 and 4.375 or 3.5) * ( 1 + stat.versatility_atk_mod / 100 ) )
+                buff.ignore_pain.v1 = min( 0.3 * health.max, buff.ignore_pain.v1 + stat.attack_power * 4.375 * ( 1 + stat.versatility_atk_mod / 100 ) )
             else
                 applyBuff( "ignore_pain" )
                 -- TODO: Remove retail/PTR compatibility statement post 10.1 release. (3.5 [retail] vs 4.375 [10.1 patch])
-                buff.ignore_pain.v1 = min( 0.3 * health.max, stat.attack_power * (Hekili.CurrentBuild > 100007 and 4.375 or 3.5) * ( 1 + stat.versatility_atk_mod / 100 ) )
+                buff.ignore_pain.v1 = min( 0.3 * health.max, stat.attack_power * 4.375 * ( 1 + stat.versatility_atk_mod / 100 ) )
             end
         end,
     },
@@ -1749,7 +1749,7 @@ spec:RegisterSetting( "shockwave_interrupt", true, {
 
 spec:RegisterSetting( "overlap_ignore_pain", false, {
     name = "Overlap |T1377132:0|t Ignore Pain",
-    desc = "If checked, |T1377132:0|t Ignore Pain can be recommended while it is already active.  This setting may cause you to spend more Rage on mitigation.",
+    desc = "If checked, |T1377132:0|t Ignore Pain can be recommended while it is already active even if its remaining absorb is greater than 30% of your maximum health.  This setting may cause you to spend more Rage on mitigation.",
     type = "toggle",
     width = "full"
 } )
