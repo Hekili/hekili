@@ -282,7 +282,8 @@ local HekiliSpecMixin = {
             if a.id > 0 then
                 -- Hekili:ContinueOnSpellLoad( a.id, function( success )
                 a.onLoad = function( a )
-                    a.name = GetSpellInfo( a.id ).name
+                    local d = GetSpellInfo( a.id )
+                    a.name = d and d.name
 
                     if not a.name then
                         for k, v in pairs( class.auraList ) do
@@ -4799,10 +4800,13 @@ do
     end
 
     all:RegisterAbility( "gladiators_medallion", {
-        name = function () return ( GetSpellInfo( 277179 ) ) end,
+        name = function ()
+            local data = GetSpellInfo( 277179 )
+            return data and data.name or "Gladiator's Medallion"
+        end,
         listName = function ()
-            local _, _, tex = GetSpellInfo( 277179 )
-            if tex then return "|T" .. tex .. ":0|t " .. ( GetSpellLink( 277179 ) ) end
+            local data = GetSpellInfo( 277179 )
+            if data and data.iconID then return "|T" .. data.iconID .. ":0|t " .. ( GetSpellLink( 277179 ) ) end
         end,
         link = function () return ( GetSpellLink( 277179 ) ) end,
         cast = 0,
@@ -4872,10 +4876,13 @@ do
     end
 
     all:RegisterAbility( "gladiators_badge", {
-        name = function () return ( GetSpellInfo( 277185 ) ) end,
+        name = function ()
+            local data = GetSpellInfo( 277185 )
+            return data and data.name or "Gladiator's Badge"
+        end,
         listName = function ()
-            local _, _, tex = GetSpellInfo( 277185 )
-            if tex then return "|T" .. tex .. ":0|t " .. ( GetSpellLink( 277185 ) ) end
+            local data = GetSpellInfo( 277185 )
+            if data and data.iconID then return "|T" .. data.iconID .. ":0|t " .. ( GetSpellLink( 277185 ) ) end
         end,
         link = function () return ( GetSpellLink( 277185 ) ) end,
         cast = 0,
@@ -4971,10 +4978,13 @@ do
 
 
     all:RegisterAbility( "gladiators_emblem", {
-        name = function () return ( GetSpellInfo( 277187 ) ) end,
+        name = function ()
+            local data = GetSpellInfo( 277187 )
+            return data and data.name or "Gladiator's Emblem"
+        end,
         listName = function ()
-            local _, _, tex = GetSpellInfo( 277187 )
-            if tex then return "|T" .. tex .. ":0|t " .. ( GetSpellLink( 277187 ) ) end
+            local data = GetSpellInfo( 277187 )
+            if data and data.iconID then return "|T" .. data.iconID .. ":0|t " .. ( GetSpellLink( 277187 ) ) end
         end,
         link = function () return ( GetSpellLink( 277187 ) ) end,
         cast = 0,
@@ -6428,11 +6438,11 @@ function Hekili:SpecializationChanged()
 
         if ability and ability.id > 0 then
             if not ability.texture or not ability.name then
-                local name, _, tex = GetSpellInfo( ability.id )
+                local data = GetSpellInfo( ability.id )
 
-                if name and tex then
-                    ability.name = ability.name or name
-                    class.abilityList[ k ] = "|T" .. tex .. ":0|t " .. ability.name
+                if data and data.name and data.iconID then
+                    ability.name = ability.name or data.name
+                    class.abilityList[ k ] = "|T" .. data.iconID .. ":0|t " .. ability.name
                 end
             else
                 class.abilityList[ k ] = "|T" .. ability.texture .. ":0|t " .. ability.name
