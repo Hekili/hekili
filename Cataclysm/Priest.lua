@@ -175,7 +175,7 @@ spec:RegisterAuras( {
     },
     dark_archangel = {
         id = 87153,
-        duration = 90,
+        duration = 18,
         max_stack = 1,
    },
     -- Reduces all damage by $s1%, and you regenerate $49766s1% mana every $60069t1 sec for $d.  Cannot attack or cast spells. Immune to snare and movement impairing effects.
@@ -591,29 +591,29 @@ spec:RegisterGlyphs( {
 
 -- Abilities
 spec:RegisterAbilities( {
+    -- Consumes your Evangelism effects, causing an effect depending on what type of Evangelism effect is consumed:
+    -- Archangel (Evangelism):Instantly restores 1% of your total mana and increases your healing done by 3% for each stack. Lasts for 18 sec. 30 sec cooldown.
+    -- Dark Archangel (Dark Evangelism):Instantly restores 5% of your total mana and increases the damage done by your Mind Flay, Mind Spike, Mind Blast and Shadow Word: Death by 4% for each stack. Lasts for 18 sec. 90 sec cooldown.
     archangel = {
-        id = 81700,
+        id = 87151,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return buff.dark_evangelism.up and 90 or 30 end,
         gcd = "spell",
 
         startsCombat = false,
-        texture = 463560,
+        texture = 458225,
+        talent = "archangel",
 
         handler = function ()
-            -- Check if there are Evangelism stacks
-            if evangelismStacks > 0 then
-                if evangelismType == "Dark Evangelism" then
-
-                    -- Apply Dark Archangel effect for 18 seconds
+            if buff.dark_evangelism.stacks > 0 then
                     applyBuff("dark_archangel", 18)
-                else
-
-                    -- Apply Archangel effect for 18 seconds
+            elseif buff.evangelism.stacks > 0 then
                     applyBuff("archangel", 18)
-                end
             end
+            removeBuff("dark_evangelism")
+            removeBuff("evangelism")
         end,
+        copy = { 81700, 87151, 87152, 87153 },
     },
     -- Heals a friendly target and the caster for 1055 to 1352.  Low threat.
     binding_heal = {
