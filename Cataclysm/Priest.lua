@@ -16,88 +16,85 @@ spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
 spec:RegisterTalents( {
-    absolution                    = {  1769, 3, 33167, 33171, 33172 },
-    aspiration                    = {  1894, 2, 47507, 47508 },
-    blessed_recovery              = {  1636, 3, 27811, 27815, 27816 },
-    blessed_resilience            = {  1765, 3, 33142, 33145, 33146 },
-    body_and_soul                 = {  2279, 2, 64127, 64129 },
-    borrowed_time                 = {  1202, 5, 52795, 52797, 52798, 52799, 52800 },
-    circle_of_healing             = {  1815, 1, 34861 },
-    darkness                      = {   462, 5, 15259, 15307, 15308, 15309, 15310 },
-    desperate_prayer              = {   442, 1, 19236 },
-    dispersion                    = {  1910, 1, 47585 },
-    divine_aegis                  = {  1895, 3, 47509, 47511, 47515 },
-    divine_fury                   = {  1181, 5, 18530, 18531, 18533, 18534, 18535 },
-    divine_providence             = {  1905, 5, 47562, 47564, 47565, 47566, 47567 },
-    empowered_healing             = {  1767, 5, 33158, 33159, 33160, 33161, 33162 },
-    empowered_renew               = {  1902, 3, 63534, 63542, 63543 },
-    enlightenment                 = {  1772, 3, 34908, 34909, 34910 },
-    focused_mind                  = {  1777, 3, 33213, 33214, 33215 },
-    focused_power                 = {  1771, 2, 33186, 33190 },
-    focused_will                  = {  1858, 3, 45234, 45243, 45244 },
-    grace                         = {  1901, 2, 47516, 47517 },
-    guardian_spirit               = {  1911, 1, 47788 },
-    healing_focus                 = {   410, 2, 14913, 15012 },
-    healing_prayers               = {   413, 2, 14911, 15018 },
-    holy_concentration            = {  1768, 3, 34753, 34859, 34860 },
-    holy_reach                    = {  1635, 2, 27789, 27790 },
-    holy_specialization           = {   401, 5, 14889, 15008, 15009, 15010, 15011 },
-    improved_devouring_plague     = {  2267, 3, 63625, 63626, 63627 },
-    improved_flash_heal           = {  1773, 3, 63504, 63505, 63506 },
-    improved_healing              = {   408, 3, 14912, 15013, 15014 },
-    improved_inner_fire           = {   346, 3, 14747, 14770, 14771 },
-    improved_mana_burn            = {   350, 2, 14750, 14772 },
-    improved_mind_blast           = {   481, 5, 15273, 15312, 15313, 15314, 15316 },
-    improved_power_word_fortitude = {   344, 2, 14749, 14767 },
-    improved_power_word_shield    = {   343, 3, 14748, 14768, 14769 },
-    improved_psychic_scream       = {   542, 2, 15392, 15448 },
-    improved_renew                = {   406, 3, 14908, 15020, 17191 },
-    improved_shadow_word_pain     = {   482, 2, 15275, 15317 },
-    improved_shadowform           = {  1906, 2, 47569, 47570 },
-    improved_spirit_tap           = {  2027, 2, 15337, 15338 },
-    improved_vampiric_embrace     = {  1638, 2, 27839, 27840 },
-    inner_focus                   = {   348, 1, 14751 },
-    inspiration                   = {   361, 3, 14892, 15362, 15363 },
-    lightwell                     = {  1637, 1,   724 },
-    martyrdom                     = {   321, 2, 14531, 14774 },
-    meditation                    = {   347, 3, 14521, 14776, 14777 },
-    mental_agility                = {   341, 3, 14520, 14780, 14781 },
-    mental_strength               = {  1201, 5, 18551, 18552, 18553, 18554, 18555 },
-    mind_flay                     = {   501, 1, 15407 },
-    mind_melt                     = {  1781, 2, 14910, 33371 },
-    misery                        = {  1816, 3, 33191, 33192, 33193 },
-    pain_and_suffering            = {  1909, 3, 47580, 47581, 47582 },
-    pain_suppression              = {  1774, 1, 33206 },
-    penance                       = {  1897, 1, 47540 },
-    power_infusion                = {   322, 1, 10060 },
-    psychic_horror                = {  1908, 1, 64044 },
-    rapture                       = {  1896, 3, 47535, 47536, 47537 },
-    reflective_shield             = {  2268, 2, 33201, 33202 },
-    renewed_hope                  = {  2235, 2, 57470, 57472 },
-    searing_light                 = {   403, 2, 14909, 15017 },
-    serendipity                   = {  1904, 3, 63730, 63733, 63737 },
-    shadow_affinity               = {   466, 3, 15318, 15272, 15320 },
-    shadow_focus                  = {   463, 3, 15260, 15327, 15328 },
-    shadow_power                  = {  1778, 5, 33221, 33222, 33223, 33224, 33225 },
-    shadow_reach                  = {   881, 2, 17322, 17323 },
-    shadow_weaving                = {   461, 3, 15257, 15331, 15332 },
-    shadowform                    = {   521, 1, 15473 },
-    silence                       = {   541, 1, 15487 },
-    silent_resolve                = {   352, 3, 14523, 14784, 14785 },
-    soul_warding                  = {   351, 1, 63574 },
-    spell_warding                 = {   411, 5, 27900, 27901, 27902, 27903, 27904 },
-    spirit_of_redemption          = {  1561, 1, 20711 },
-    spirit_tap                    = {   465, 3, 15270, 15335, 15336 },
-    spiritual_guidance            = {   402, 5, 14901, 15028, 15029, 15030, 15031 },
-    spiritual_healing             = {   404, 5, 14898, 15349, 15354, 15355, 15356 },
-    surge_of_light                = {  1766, 2, 33150, 33154 },
-    test_of_faith                 = {  1903, 3, 47558, 47559, 47560 },
-    twin_disciplines              = {  1898, 5, 47586, 47587, 47588, 52802, 52803 },
-    twisted_faith                 = {  1907, 5, 47573, 47577, 47578, 51166, 51167 },
-    unbreakable_will              = {   342, 5, 14522, 14788, 14789, 14790, 14791 },
-    vampiric_embrace              = {   484, 1, 15286 },
-    vampiric_touch                = {  1779, 1, 34914 },
-    veiled_shadows                = {   483, 2, 15274, 15311 },
+    archangel                   = { 11608, 2, 87151, 81700 },
+    atonement                   = { 11812, 2, 81749, 14523 },
+    binding_prayers             = { 413,   2, 15018, 14911 },
+    blessed_recovery            = { 1636,  3, 27811, 27815, 27816 },
+    blessed_resilience          = { 11672, 2, 33145, 33142 },
+    body_and_soul               = { 9587,  2, 64129, 64127 },
+    borrowed_time               = { 1202,  3, 52797, 52798, 52795 },
+    chakra                      = { 348,   1, 14751 },
+    circle_of_healing           = { 1815,  1, 34861 },
+    darkness                    = { 462,   3, 15308, 15307, 15259 },
+    designer_notes              = { 7449,  1, 80556 },
+    desperate_prayer            = { 2829,  1, 19236 },
+    dispersion                  = { 9080,  1, 47585 },
+    divine_accuracy             = { 7578,  2, 81762, 81763 },
+    divine_aegis                = { 8609,  3, 47515, 47509, 47511 },
+    divine_fury                 = { 9549,  3, 18530, 18531, 18533 },
+    divine_providence           = { 1905,  5, 47562, 47567, 47565, 47564, 47566 },
+    divine_touch                = { 1902,  2, 63534, 63542 },
+    empowered_healing           = { 2859,  3, 33158, 33159, 33160 },
+    evangelism                  = { 8593,  2, 81662, 81659 },
+    focused_will                = { 8621,  2, 45243, 45234 },
+    grace                       = { 8625,  2, 47517, 47516 },
+    guardian_spirit             = { 9601,  1, 47788 },
+    harnessed_shadows           = { 1816,  2, 33191, 78228 },
+    heavenly_voice              = { 11668, 2, 87430, 87431 },
+    holy_concentration          = { 1768,  2, 34859, 34753 },
+    holy_reach                  = { 1635,  2, 27789, 27790 },
+    holy_specialization         = { 2823,  5, 15008, 15009, 15010, 15011, 14889 },
+    improved_devouring_plague   = { 9062,  2, 63626, 63625 },
+    improved_healing            = { 408,   2, 14912, 15013 },
+    improved_holy_nova          = { 7580,  2, 81766, 81830 },
+    improved_mind_blast         = { 481,   3, 15312, 15273, 15313 },
+    improved_power_word_shield  = { 10736, 2, 14768, 14748 },
+    improved_psychic_scream     = { 9040,  2, 15448, 15392 },
+    improved_renew              = { 10746, 2, 15020, 14908 },
+    improved_shadow_word_pain   = { 482,   2, 15317, 15275 },
+    inner_focus                 = { 8591,  1, 89485 },
+    inner_sanctum               = { 346,   3, 14747, 14771, 14770 },
+    inspiration                 = { 361,   2, 15362, 14892 },
+    lightwell                   = { 1637,  1, 724 },
+    masochism                   = { 11778, 2, 88995, 88994 },
+    mental_agility              = { 341,   3, 14781, 14520, 14780 },
+    mind_flay                   = { 501,   1, 15407 },
+    mind_melt                   = { 1781,  2, 14910, 33371 },
+    pain_and_suffering          = { 1909,  2, 47581, 47580 },
+    pain_suppression            = { 1774,  1, 33206 },
+    paralysis                   = { 11663, 2, 87192, 87195 },
+    penance                     = { 1897,  1, 47540 },
+    penitence                   = { 7576,  2, 81656, 81657 },
+    phantasm                    = { 1906,  2, 47569, 47570 },
+    power_infusion              = { 8611,  1, 10060 },
+    power_word_barrier          = { 5564,  2, 62618, 14769 },
+    psychic_horror              = { 1908,  1, 64044 },
+    rapid_renewal               = { 14738, 1, 95649 },
+    rapture                     = { 1896,  3, 47537, 47536, 47535 },
+    reflective_shield           = { 2268,  2, 33202, 33201 },
+    renewed_hope                = { 2235,  2, 57472, 57470 },
+    revelations                 = { 11755, 1, 88627 },
+    searing_light               = { 403,   3, 14909, 15017, 78069 },
+    serendipity                 = { 1904,  2, 63733, 63730 },
+    shadowform                  = { 521,   1, 15473 },
+    shadowy_apparition          = { 5791,  3, 78204, 78202, 78203 },
+    silence                     = { 98008, 1, 15487 },
+    sin_and_punishment          = { 11605, 2, 87100, 87099 },
+    soul_warding                = { 351,   3, 78501, 78500, 63574 },
+    spirit_of_redemption        = { 1561,  1, 20711 },
+    spiritual_guidance          = { 2845,  4, 15031, 15028, 15029, 15030 },
+    strength_of_soul            = { 11813, 2, 89488, 89489 },
+    surge_of_light              = { 11765, 2, 88690, 88687 },
+    test_of_faith               = { 1903,  3, 47559, 47558, 47560 },
+    thriving_light              = { 5795,  2, 78245, 78244 },
+    tome_of_light               = { 12184, 2, 81625, 14898 },
+    train_of_thought            = { 12183, 2, 92295, 92297 },
+    twin_disciplines            = { 1898,  3, 47588, 47586, 47587 },
+    twisted_faith               = { 1907,  2, 47577, 47573 },
+    unbreakable_will            = { 342,   5, 14788, 14789, 14522, 14790, 14791 },
+    vampiric_embrace            = { 484,   1, 15286 },
+    vampiric_touch              = { 1779,  1, 34914 },
+    veiled_shadows              = { 9046,  2, 15311, 15274 },
 } )
 
 -- Auras
@@ -109,15 +106,21 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1,
     },
-    absolution = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=33172)
-        id = 33172,
+    absolution = {
+        id = 33167,
         duration = 3600,
         max_stack = 1,
-        copy = { 33172, 33171, 33167 },
+
+    },
+    --
+    archangel = {
+        id = 81700,
+        duration = 18,
+        max_stack = 1,
     },
     -- Prevents you from being critically hit.
     blessed_resilience = {
-        id = 33143,
+        id = 33145,
         duration = 6,
         max_stack = 1,
         copy = { 33143 },
@@ -131,7 +134,7 @@ spec:RegisterAuras( {
     },
     -- $s1% spell haste until next spell cast.
     borrowed_time = {
-        id = 59891,
+        id = 52797,
         duration = 6,
         max_stack = 1,
         copy = { 59891, 59890, 59889, 59888, 59887 },
@@ -170,14 +173,19 @@ spec:RegisterAuras( {
 
         copy = { 2944, 19276, 19277, 19278, 19279, 19280, 25467, 48299, 48300 },
     },
+    dark_archangel = {
+        id = 87153,
+        duration = 90,
+        max_stack = 1,
+   },
     -- Reduces all damage by $s1%, and you regenerate $49766s1% mana every $60069t1 sec for $d.  Cannot attack or cast spells. Immune to snare and movement impairing effects.
     dispersion = {
         id = 47585,
         duration = 6,
         max_stack = 1,
     },
-    divine_fury = { -- TODO: Check Aura (https://wowhead.com/wotlk/spell=18535)
-        id = 18535,
+    divine_fury = { 
+        id = 18533,
         duration = 3600,
         max_stack = 1,
         copy = { 18535, 18534, 18533, 18531, 18530 },
@@ -188,6 +196,17 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
         copy = { 64844, 64843 },
+    },
+    dark_evangelism = {
+        id = 87118,
+        duration = 18,
+        max_stack = 5,
+    },
+
+    evangelism = {
+        id = 81661,
+        duration = 18,
+        max_stack = 5,
     },
     -- Reduced threat level.
     fade = {
@@ -357,6 +376,13 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 2096, 10909 },
     },
+    -- Chance for the next Mind Blast from the Priest to critically hit increased by 30%.
+    mind_spike = { 
+        id = 73510,
+        duration = 3600,
+        max_stack = 3,
+        copy = { 87178, 87179 },
+    },
     -- Chance to hit with spells on the target increased by $s1%.
     misery = {
         id = 33198,
@@ -382,6 +408,13 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
         copy = { 17, 592, 600, 3747, 6065, 6066, 10898, 10899, 10900, 10901, 25217, 25218, 27607, 48065, 48066 },
+    },
+
+    power_word_fortitude = {
+        id = 79105,
+        duration = 60,
+        max_stack = 1,
+        copy = { 1244, 1245, 2791, 10937, 10938, 21562, 25389, 48161, 79014, 79105 },
     },
     -- Increases Shadow Resistance by $s1.
     prayer_of_shadow_protection = {
@@ -520,42 +553,68 @@ spec:RegisterAuras( {
 
 -- Glyphs
 spec:RegisterGlyphs( {
-    [55675] = "circle_of_healing",
-    [55677] = "dispel_magic",
-    [63229] = "dispersion",
-    [55684] = "fade",
-    [57985] = "fading",
-    [55678] = "fear_ward",
-    [55679] = "flash_heal",
-    [58009] = "fortitude",
-    [55683] = "holy_nova",
-    [63246] = "hymn_of_hope",
-    [55686] = "inner_fire",
-    [57987] = "levitate",
-    [55673] = "lightwell",
-    [55691] = "mass_dispel",
-    [55688] = "mind_control",
-    [55687] = "mind_flay",
-    [63237] = "mind_sear",
-    [63248] = "pain_suppression",
-    [63235] = "penance",
-    [55672] = "power_word_shield",
-    [55680] = "prayer_of_healing",
-    [55676] = "psychic_scream",
-    [55674] = "renew",
-    [55690] = "scourge_imprisonment",
-    [57986] = "shackle_undead",
-    [55689] = "shadow",
-    [58015] = "shadow_protection",
-    [55682] = "shadow_word_death",
-    [55681] = "shadow_word_pain",
-    [58228] = "shadowfiend",
-    [55692] = "smite",
-    [55685] = "spirit_of_redemption",
+    [55675]  = "circle_of_healing",
+    [63248]  = "desperation",
+    [55677]  = "dispel_magic",
+    [63229]  = "dispersion",
+    [63246]  = "divine_accuracy",
+    [55684]  = "fade",
+    [57985]  = "fading",
+    [55678]  = "fear_ward",
+    [55679]  = "flash_heal",
+    [58009]  = "fortitude",
+    [63231]  = "guardian_spirit",
+    [55683]  = "holy_nova",
+    [55686]  = "inner_fire",
+    [57987]  = "levitate",
+    [55673]  = "lightwell",
+    [55691]  = "mass_dispel",
+    [55687]  = "mind_flay",
+    [63235]  = "penance",
+    [55689]  = "power_word:_barrier",
+    [55672]  = "power_word:_shield",
+    [55680]  = "prayer_of_healing",
+    [55685]  = "prayer_of_mending",
+    [55688]  = "psychic_horror",
+    [55676]  = "psychic_scream",
+    [55674]  = "renew",
+    [55690]  = "scourge_imprisonment",
+    [57986]  = "shackle_undead",
+    [107906] = "shadow",
+    [58015]  = "shadow_protection",
+    [55682]  = "shadow_word:_death",
+    [55681]  = "shadow_word:_pain",
+    [58228]  = "shadowfiend",
+    [55692]  = "smite",
+    [63237]  = "spirit_tap"
 } )
 
 -- Abilities
 spec:RegisterAbilities( {
+    archangel = {
+        id = 81700,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+
+        startsCombat = false,
+        texture = 463560,
+
+        handler = function ()
+            -- Check if there are Evangelism stacks
+            if evangelismStacks > 0 then
+                if evangelismType == "Dark Evangelism" then
+
+                    -- Apply Dark Archangel effect for 18 seconds
+                    applyBuff("dark_archangel", 18)
+                else
+
+                    -- Apply Archangel effect for 18 seconds
+                    applyBuff("archangel", 18)
+                end
+            end
+        end,
+    },
     -- Heals a friendly target and the caster for 1055 to 1352.  Low threat.
     binding_heal = {
         id = 32546,
@@ -1210,8 +1269,23 @@ spec:RegisterAbilities( {
             applyBuff( "pain_suppression" )
         end,
     },
+    -- Blasts the target for 1213 Shadowfrost damage, but extinguishes your shadow damage-over-time effects from the target in the process. Mind Spike also increases the critical strike chance of your next Mind Blast on the target by 30%. Stacks up to 3 times.
+    mind_spike = {
+        id = 73510,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
 
+        spend = 0.12,
+        spendType = "mana",
 
+        startsCombat = true,
+        texture = 457655    ,
+
+        handler = function ()
+            applyDebuff("target", "mind_spike")
+        end,
+    },
     -- Launches a volley of holy light at the target, causing 240 Holy damage to an enemy, or 670 to 756 healing to an ally instantly and every 1 sec for 2 sec.
     penance = {
         id = 47540,
@@ -1272,7 +1346,7 @@ spec:RegisterAbilities( {
             applyBuff( "power_word_fortitude" )
         end,
 
-        copy = { 1244, 1245, 2791, 10937, 10938, 25389, 48161 },
+        copy = { 1244, 1245, 2791, 10937, 10938, 21562, 25389, 48161, 79014, 79105 },
     },
 
 
@@ -1297,28 +1371,6 @@ spec:RegisterAbilities( {
 
         copy = { 592, 600, 3747, 6065, 6066, 10898, 10899, 10900, 10901, 25217, 25218, 48065, 48066 },
     },
-
-
-    -- Power infuses all party and raid members, increasing their Stamina by 43 for 1 |4hour:hrs;.
-    prayer_of_fortitude = {
-        id = 21562,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return glyph.fortitude.enabled and 0.345 or 0.69 end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135941,
-
-        handler = function ()
-            applyBuff( "prayer_of_fortitude" )
-        end,
-
-        copy = { 21564, 25392, 48162 },
-    },
-
 
     -- A powerful prayer heals the friendly target's party members within 30 yards for 312 to 333.
     prayer_of_healing = {
@@ -1531,7 +1583,7 @@ spec:RegisterAbilities( {
     shadow_word_death = {
         id = 32379,
         cast = 0,
-        cooldown = 12,
+        cooldown = 10,
         gcd = "spell",
 
         spend = 0.12,
@@ -1541,6 +1593,7 @@ spec:RegisterAbilities( {
         texture = 136149,
 
         handler = function ()
+
         end,
 
         copy = { 32996, 48157, 48158 },
@@ -1721,7 +1774,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 3,
 
-    potion = "wild_magic",
+    potion = "volcanic",
 
     package = "Shadow",
     package1 = "Shadow",
@@ -1731,7 +1784,7 @@ spec:RegisterOptions( {
 
 
 -- Packs
--- spec:RegisterPack( "Shadow", 20231124, [[Hekili:vN1wVTTnu4FlbfWWg1vXxAU0bR8W2EynpemaTNLeTeDmr0nirfpdeOF77qsDHsIK2UnDffOOjrMN7NZ35JYUlD)hxNqef7(0QfRwVC5QVyT8(f3S4wxh6XmSRtgk4f0ZWVKGIH)3zpkm9a7XhJsrHmXlslZdGp6q6HcsCH1Ze6(YTwK0k)jv(Wt3JrHwbPXxFiLg9IRZ2sse9RjUBvz6pV6lGkZWbUpDJRZEsyiwCsCrqJ5R8)7CcUGw5NLtsZj0Jv(re2FVlnVY)VWVqIiUoShvW9qsYZry43EIhV4e02iCO7V76eacJZjixNxrWpGhBrjXypAQxibx5VXUYhfqjPjwXKKqVDrOJwHL5i2JQ8F7Tk)Pv(XPVcwGhUxv5hMsTcXVczf4HEzrONlXw54yejPOYFMRJqHSqQ)HCPqQqRdUTC3olssco3BxAqzHvzwRdWmzbp14Dinp0ldSvNj3u5V06gU7z(GpOkAPKGx8yjLk)pcPzOGLeCSxC0EwwaS(cZWpu5VOtvcFBhbNeYu2N1QmipZCSM0(u()4POMWdJyffRck0ax5drMidOXlGp)o4aZAtPg0f7WRnOSnT6A2WiRlRZcVB0gES60RO4msoja0BzW(UQKCvamvaQGwxFmgER78L(AM5j3AkrBQH2C38DxAZG9W4bQeSolV0xH((Tri2qoRcXlp54SiCcPyFmoH2RFF94guUWmN6EZJy67F6uO0yitJFzGgla0lhZzT(LA9WfmaOfwR6m9beHhflxOYO1yb6AD(u789GtiL0NDI(q5XUrGfb7rqQjQ5Zn5lSiB6z4pAaDAZd6H0VQUnPUArYXCmtJtjlxmQkdYXnKEOzWqxKIBdwC82CuGq96boVQzdJkixWlHJLxMr9i7GZQynXewjR4b7vC7OhtDOrKHScXikhPyPEqRHYRcryPEKMyucYkddCjsOI2JBLYzHeGuqEb73z1Dq57qLruvl1Bejaff5j(dpgxabJapbrgsIO)HxvBKOSa7bUtCHS(AwQ1COSuXp7DIHzvgDLCsM4K7rc(b1B3sZJR8ja9H8uAnrITLpdJePL0oZS)ilEZW4qigcWrybPdHtMUBN3ZbHSy34EeMYEf7HtWXaHj(22LDMiVmrB(jicaaXQ2nCosxZ4IxPYYXa5VTiJ1QUuZGC3taYF8wmqRJXsudAntol4NjNbfQqcumWEfSjqkxi(Kl)ZYYrhHbN0DYFSCpOKOMj7iux6bqB85hWdPeAziwRf7Fc52TXkXm3OHGE8vy18a1cVPVhIJUzg862tnFqBBOmscFu7kacC)auVcmk3Cz(7IYYWsQce3GJqS4rr5pJH7xaHZfHbd4C)RxFv4CNs4(gcq)uy3BSd7BGk)W(RrTtcUOksUNkF9dHRSbCVrm5)g85FrU(YP508Rhj)3xwHdP()otkCij)lm3EnS1S51siHPOcMDTgywd8Rplxq24Vl8x1J7FE8x1VZ(S4VAG(8fXFLZ)uXYW0m2v5OY9fISm73IaNGFhpmpnrZHzbM)fwghFSPnE9IfTibc0h5cexH1S0KFSInQN2vQv)EmkIU3klGYNlxTq2i4)fhusXEz7rfcgHGgFTov08Q)(m7cD5Sybqk)ACgq0bhYX8e2w8(9kSQEKXNmDhH5eFO59a(Bv(1VyWh)a)noEoVhs(z7ZUS6r4HCTwZyT6rH5lSAjX(r7R74CoNSZwfnu1Y1J(yROJ5Jorpxu1kwffXw9RLe6qZmGIQsl1b(1Q)ren3SCHAHhIWXuXvqtRMyIx3RRi)P42EThfoWWB3nN1UzZgRKpv7n6KFyJUbfFbxndoFNk63dC1WMaPOcoSMRYnx6MC2lLfyWvReHMGanZC9XVF40IkUowtY8RSCK)FJYHpcWU6snwSShVqjMZfclHsmNp3Bpvh(Zea7z2BVng15eMOhgrTrgHTSz1IMi4p4PIoLksnGABxDPinzFVcbgIXZRMgFLCAmkBz28Eu(SxoFenq77MlVVZ246oUViwknzQjU9BGlamX0bEWw40Qi()XAcYZuezsC4zoJQf(pSqHC9PJFEPLD26jY34JBAjwmrPVyVwBq0Luox35QAg6tMovlBA7B04i3DdmhOxoWtvk4gqUzAu5svz6owVAlq2DjTPdOz)2B6PyVzTQoI(laUAmt6lX51Sq4surVb(te(xVAsZ40qObv9nDJ1x2i7Pkc1(Wj6u5ewzQt7PvbDP)WT0p5htIQ6g7BBXvDQ3t0iUyVHgBPS)DmqtZ3wkmouN8nIVotH1LQe9jDuN(bv))j8yRFDHWJdKtcr6NjAJc)Ba897o0SX2QZC7B)MJF8iGT2tQ1Ba9)HflfcZ(wRAYN6IXn2lSwnVahy8uNq5Q)s7MmQpV7lSBI(A8g7P1cQ7RPRDkH73t1RQpDcfziJ)DTZzCV9fVZrfC0fTyyeWVsabTa)gNA0FyJa)WD7lP7tZDDCkHhNuwuWVGU7)n]] )
+spec:RegisterPack( "Shadow", 20240716, [[Hekili:vR16UTTrw4NLGI1noXHRLIvYUDTmGtDZwhG6ge6U5hlkfhrosAG5TLZq7Aad(SVNZz4DnuKwXPz3F0gR5Y5(LVzg6mX5AhBFMI7C10JNEYXVDYBSMo9KxFYBDSv3NWDStyE3Wwd)rele()2By(X3HdFFqmZh3Umol1dM6ZXF2wekZDpi3f(7FMdtBVmteOUmYzPr28Ay3jCpNRM5yVr47Z1lKl9CSVEJaOf(FSC3cPi3nEf8BpLiok3nqivW0RItZD)z(nIaHfiyPXRebG48DFxURwAZD)yQGlv5Fah7Dmj3hiuejLDL48pOx1ht5)yC4sM6vNtCtcdN7(trkEAjzb(gcciiqrXkqQcsH9FpmcqzbWmTykTss5EePE58)QSANhjwnFz2Qvw1dzb)BeXNFKbsR7hJVd52NJt9)HC33hNQeQmFEtEcS4wUzwLG7EXDWMxSQCRvm10KDz)Lrri7FViDSSuG7yXkydiJEwwsdQ9VyHjIuHhyedxMY8glnVTyFl46T1KY2kwkS9QLN7ENqTj39xerGh2orCtpenewWcPEEYJVFU2X7qTbbZdKmvCU75X)uUBASIPJIrUmfIhbMhgJMAEepecxb2I)ceBjpQfptZIwO)1cmf4imZColMmnAt5IcAC28Pe7VGVILfO08xkIwhWFfy7wZvnKKH4aMaPtoSjkK7EDbj(ufj0Z)RjCk0rY)pz8i0vt5OYITvW56yJM(RcREurUUAd8hHm0W7ZrZBF2flzBhlfNO3Iv9OwzjhuoQ2pPtcsao0CoF(TqvnqExKeWwN1AFvrKQ4mVnwLXIzHHO7SiasWrvc1fiEHQIvejHb6UmAYIj4S0GIylsBxjwVPREjRPkPyjCLfrRduIq(PZir48KeKqLf9kQB8rY4PLeGB(zPLbEOPCzCwryb)psWmDt8T2gHmVpZxkh9tYtvcVBwGI1wE43hWUViguN5UgJtaXjADTy)RPlLfwOlyP3azM3YIwZH4WqAFE3in50xb0(ibMeNMLOw0ozCrC6slAVNnFYbApmq7f8ksxo7mY8(89BVhQ9gZF(0xS2Z)LtTM9cTGAvjIwL2)dltw(fY)uNcH1Ic5qgsK39BB4qtSI2Hj3CV2L(9AqG9qouuxcGM3Oa11L(Ua6hy4vhhiMKYULjcyld6gwrs2sCRhzWrvKr9jothqx364AmJBVdMBN42WO0jJUuVnpB7W7kH8IYkgGRGkzS3Iz3Apne0Tkl1ru3A((ZflCCmn(kaYuauXUpVeT7Ftc605PEBO4EOx7gE0oYr1raHS)arBrPZ6Y4xeFnm5ggwhuccTWtG1XRnsTfcwjdRIumM9nF2bpFNEZZMDWagXZMD4JUs(iRsxB)6K1EbNPkcOPA)LnLr2SKhGRC6S)cyU4SaCHekbwetVcC((Rx7J0gLdnrT00WkXtD60zp8asg9poUw8Uqa4XtLvatQ51T807nXr)QDGSQIOtoUNQ)JS9(2jj6yO2vDKAC8EXXbAOw9x)7z7o8alY9WddLMrlQKBw15hnxqvHDcNxR66Tq7aT9RC8K6rPlecqfeXN7oRgkyLEbO8Qq5aeWaIVHHcqTra0GIKAWyY2r47OeLwc2cxG39Eb8ffeB(KJG8(fThJ6Sk5kSBVeqgRKleakZy(G9F6B(2f3oVNMf7L6Qd2ALsEhuIepZjw3kigRZZJIZwVPRPPtxMNadZ(1E6GI0E8VH5w4l4N1tdV6sVp5D002etT02Lg)03NB8auAKInecfQK5JdH2JlnRhKTO2INT7jgx3xNguvPsvf5c4szzrUt6Ti3OBLDq7kGNEsJEBtM1tH3EW90P(QJ9T6EBf3B1BMoXX(owAeg46y)5Z)0vxE1)emtq1g06ictIXZ1qh397bI99W5RHdbdUwGZY4q0eKPIdbRomGgzJ0k)d0UxfhagmkHJb5xGeEhz0YOlSQ68HAzvF9xGtaJG0RJWLSkolQ1Q99Xf7ZuSLmj)hGUtUVcKLQGzSD1akIu9)j6H(odlUcqDiyOqkjrrML0qNOtEIDjuqzKBGYWwOUFzrKnDvrHamoof6I3SexdakjveNku0519cY8X7PHlWO7sj6FtPrxQ4HYF)ieLSGoYs1Qzr3xZ1cLfY(daCWQGA62u3lz6)GYVkyZ1AsK7o53lYXQhAAdoR7BvPrL5XLlLSg0qrzHl5AhCqScCMxsbb4aN02BHEAhB6VWlagIZH)5k6UK5ry1uFN3bdt7WXUr2eEZUPIe947lAihBGgq1qbtZJ6u)C3ZGf6OGS1EKLU1cbA1SxmQe2B1H2XEwtEAQXfDfYduVn390(xtvdSogPNAGCOX519yCAJk4RHPXmsMMgMEpSnsLTr0aE859T3smkMTO)PJteT8N0JLVlEMoI8tbKShJBQp4xnDu9dbdv0z7QwabRAhfdgjKTMA02a0qP4nDKI613pQPrNjdONYDFj4J1iOCSBcrZXUeJwhDhbZ1r1FYrrIQ(BhrbqcvLjH5BggWMUOTG6rw9PZihu36(Nsu5Hh0mUA1tOMb)To2Ib6c1cAOP2ykhk6LEsLD14R(HG6WZhXBn1tqE1RlzQzxlE9f)Yt16tNxfAN9HHQYt1qewOF4yeKGHEpTK1X8mv7qCAWnPs7LK70bv)Uq7kOyFEwQM2MNvvpP17qrXXpR)AnBTcdVjvNvS1ltnmui6Yk7gY8iUa0r8uwDSf1xkk1sN6TFAbST(qMSnSTrdsAF6poMY)TA31TVElf(54HBwT9ZjPZsMqMbTd20fBRxfu17WM2R5ezHK3xu3iAQ1m63AJMHNCcOr3UugfSbFNRH7P914v)gexHb5yFFjTXen8fGvWa2KVniK6dMq3Jcygo6E)WCgmV7)rdm1I)BeW6Nm8Z)9XczX0Z4zmyci6KJ7Xkv9gBMad(1)f)2kmTNcH66GhqL(giQ5SYLoOhrVYdj7Zaa5(YAv2xBqIZJ5(k(tdU(4qHVfy7PhtQsF9WRFOqt6WiE4XMIvBu(Ag33HRhFpQrIXBVEBYTbfmCHpQTbANhmkU5I3X7twVWd14JR(O4(FXZXuYFtFSIg9LJ9dMClHP3phYDbkT(RD0OWSRpFYobd6EX9f)29lG0i3g(ZR0ip7INQDXTH)8knEwQIZEXYuBItXAKqMDuMusd78F)d]] )
 
 
 spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
@@ -1766,26 +1819,10 @@ spec:RegisterPackSelector( "shadow", "Shadow", "|T136207:0|t Shadow",
     end )
 
 -- Settings
-spec:RegisterSetting( "dots_in_aoe", false, {
+spec:RegisterSetting( "dots_in_aoe", true, {
     type = "toggle",
     name = "|T252997:0|t|T136207:0|t|T135978:0|t Apply DoTs in AOE",
     desc = "When enabled, the Shadow priority will recommend applying DoTs to your current target in multi-target scenarios before channeling |T237565:0|t Mind Sear.",
     width = "full",
 } )
 
-spec:RegisterSetting( "optimize_mind_blast", false, {
-    type = "toggle",
-    name = "|T136224:0|t Mind Blast: Optimize Use",
-    desc = "When enabled, the Shadow priority will only recommend |T136224:0|t Mind Blast below an internally-calculated haste threshold (vs. using |T136208:0|t Mind Flay).",
-    width = "full",
-} )
-
-spec:RegisterSetting( "min_shadowfiend_mana", 25, {
-    type = "range",
-    name = "|T136199:0|t Shadowfiend Mana Threshold",
-    desc = "If set above zero, |T136199:0|t Shadowfiend cannot be recommended until your mana falls below this percentage.",
-    width = "full",
-    min = 0,
-    max = 100,
-    step = 1,
-} )
