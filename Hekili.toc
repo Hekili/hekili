@@ -73,6 +73,8 @@ Dragonflight\WarriorArms.lua
 Dragonflight\WarriorFury.lua
 Dragonflight\WarriorProtection.lua
 
+AnimatedQueue\AnimatedQueue.xml
+
 Targets.lua
 Options.lua
 UI.lua

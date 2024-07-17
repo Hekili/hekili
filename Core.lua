@@ -1499,6 +1499,10 @@ function Hekili.Update( initial )
 
         fullReset = fullReset or state.offset > 0
 
+        if fullReset then
+            AnimatedQueueFrame:PreQueueUpdate();
+        end
+
         if debug then
             Hekili:SetupDebug( dispName )
             Hekili:Debug( "*** START OF NEW DISPLAY: %s ***", dispName )
@@ -1953,6 +1957,10 @@ function Hekili.Update( initial )
                         end
                     end
 
+                    if dispName == "Primary" then
+                        ability.keybind = slot.keybind;
+                        AnimatedQueueFrame:QueueAbility(i, ability);
+                    end
                 else
                     for s = i, numRecs do
                         action = action or ''
@@ -1995,6 +2003,10 @@ function Hekili.Update( initial )
                     end
                     break
                 end
+            end
+
+            if dispName == "Primary" then
+                AnimatedQueueFrame:OnQueueFullyUpdate();
             end
 
             UI.NewRecommendations = true
