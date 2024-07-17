@@ -829,16 +829,6 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 4,
     },
-
-    -- Suffering $w1 Fire damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=270332
-    pheromone_bomb = {
-        id = 270332,
-        duration = 6,
-        tick_time = 1,
-        type = "Ranged",
-        max_stack = 1
-    },
     -- Pinned in place.
     -- https://wowhead.com/beta/spell=50245
     pin = {
@@ -946,15 +936,6 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
-    -- Suffering $w1 Fire damage every $t1 sec.  $?s259387[Mongoose Bite][Raptor Strike] and Butchery apply a stack of Internal Bleeding.
-    -- https://wowhead.com/beta/spell=270339
-    shrapnel_bomb = {
-        id = 270339,
-        duration = 6,
-        tick_time = 1,
-        type = "Ranged",
-        max_stack = 1
-    },
     -- Damage taken reduced by $s1%.
     -- https://wowhead.com/beta/spell=263938
     silverback = {
@@ -1051,13 +1032,6 @@ spec:RegisterAuras( {
     },
     -- Suffering $w1 Fire damage every $t1 sec.
     -- https://wowhead.com/beta/spell=271049
-    volatile_bomb = {
-        id = 271049,
-        duration = 6,
-        tick_time = 1,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Talent: Silenced.
     -- https://wowhead.com/beta/spell=355596
     wailing_arrow = {
@@ -1099,13 +1073,6 @@ spec:RegisterAuras( {
     },
     -- Suffering $w1 Fire damage every $t1 sec.
     -- https://wowhead.com/beta/spell=269747
-    wildfire_bomb = {
-        id = 269747,
-        duration = 6,
-        tick_time = 1,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=195645
     wing_clip = {
@@ -1525,7 +1492,6 @@ spec:RegisterAbilities( {
             applyBuff( "camouflage" )
         end,
     },
-
     -- Talent: A quick shot causing ${$s2*$<mult>} Physical damage.    Reduces the cooldown of Kill Command by $?s378244[${$s3+($378244s1/-1000)}][$s3] sec.
     cobra_shot = {
         id = 193455,
