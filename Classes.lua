@@ -2829,6 +2829,7 @@ all:RegisterAbilities( {
         name = "|cff00ccff[Null Cooldown]|r",
         listName = "|T136243:0|t |cff00ccff[Null Cooldown]|r",
         cast = 0,
+        cooldown = 0.001,
         gcd = "off",
 
         startsCombat = false,
