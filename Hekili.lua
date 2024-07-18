@@ -36,11 +36,10 @@ Hekili.IsDragonflight = function()
     return buildNum >= 100000
 end
 
-Hekili.BuiltFor = 100205
+Hekili.BuiltFor = 110000
 Hekili.GameBuild = buildStr
 
-ns.PTR = buildNum > 100205
-
+ns.PTR = buildNum > 110000
 
 ns.Patrons = "|cFFFFD100Current Status|r\n\n"
     .. "All existing specializations are currently supported, though healer priorities are experimental and focused on rotational DPS only.\n\n"
@@ -261,7 +260,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             local class = Hekili.Class
 
             for i = 1, 40 do
-                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitBuff( "player", i )
+                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = ns.UnitBuff( "player", i )
 
                 if not name then break end
 
@@ -275,7 +274,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             auraString = auraString .. "\n\nplayer_debuffs:"
 
             for i = 1, 40 do
-                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff( "player", i )
+                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = ns.UnitDebuff( "player", i )
 
                 if not name then break end
 
@@ -293,7 +292,7 @@ function Hekili:SaveDebugSnapshot( dispName )
                 auraString = auraString .. "\n\ntarget_buffs:"
 
                 for i = 1, 40 do
-                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitBuff( "target", i )
+                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = ns.UnitBuff( "target", i )
 
                     if not name then break end
 
@@ -307,7 +306,7 @@ function Hekili:SaveDebugSnapshot( dispName )
                 auraString = auraString .. "\n\ntarget_debuffs:"
 
                 for i = 1, 40 do
-                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnitDebuff( "target", i, "PLAYER" )
+                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = ns.UnitDebuff( "target", i, "PLAYER" )
 
                     if not name then break end
 

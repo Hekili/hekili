@@ -24,10 +24,11 @@ local IsCurrentSpell = C_Spell.IsCurrentSpell
 local GetSpellTexture = C_Spell.GetSpellTexture
 local IsUsableSpell = C_Spell.IsSpellUsable
 local GetSpellCooldown = function(spellID)
-    local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID);
+    local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
     if spellCooldownInfo then
-        return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
+        return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate
     end
+    return 0, 0, false, 0
 end
 
 local format, insert = string.format, table.insert

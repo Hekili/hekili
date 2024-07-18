@@ -11,10 +11,28 @@ local class = Hekili.Class
 local state = Hekili.State
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local GetBuffDataByIndex, GetDebuffDataByIndex = C_UnitAuras.GetBuffDataByIndex, C_UnitAuras.GetDebuffDataByIndex
+
 local GetSpellBookItemName = function(index, bookType)
     local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet;
     return C_SpellBook.GetSpellBookItemName(index, spellBank);
 end
+
+ns.UnitBuff = function( unitToken, index, filter )
+    local b = GetBuffDataByIndex( unitToken, index, filter )
+    if b and b.name then
+        return b.name, b.icon, b.applications, b.dispelName, b.duration, b.expirationTime, b.sourceUnit, b.isStealable, b.nameplateShowPersonal, b.spellID, b.canApplyAura, b.isBossAura, b.nameplateShowAll, b.timeMod, unpack( b.points )
+    end
+end
+
+ns.UnitDebuff = function( unitToken, index, filter )
+    local d = GetDebuffDataByIndex( unitToken, index, filter )
+    if d and d.name then
+        return d.name, d.icon, d.applications, d.dispelName, d.duration, d.expirationTime, d.sourceUnit, d.isStealable, d.nameplateShowPersonal, d.spellID, d.canApplyAura, d.isBossAura, d.nameplateShowAll, d.timeMod, unpack( d.points )
+    end
+end
+
+local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 
 local GetItemInfo = C_Item.GetItemInfo
 local GetSpellInfo = C_Spell.GetSpellInfo
@@ -297,7 +315,7 @@ function Hekili:After( time, func, ... )
     C_Timer.After( time, delayfunc )
 end
 
-function ns.FindRaidBuffByID(id)
+function ns.FindRaidBuffByID( id )
 
     local unitName
     local buffCounter = 0
@@ -524,7 +542,7 @@ local function FindPlayerAuraByID( id )
     local aura = GetPlayerAuraBySpellID( id )
 
     if aura and aura.name then
-        return aura.name, aura.icon, aura.applications, aura.dispelName, aura.expirationTime, aura.sourceUnit, aura.isStealable, aura.nameplateShowPersonal, aura.spellId, aura.canApplyAura, aura.isBossAura, aura.nameplateShowAll, aura.timeMod, unpack( aura.points )
+        return aura.name, aura.icon, aura.applications, aura.dispelName, aura.duration, aura.expirationTime, aura.sourceUnit, aura.isStealable, aura.nameplateShowPersonal, aura.spellId, aura.canApplyAura, aura.isBossAura, aura.nameplateShowAll, aura.timeMod, unpack( aura.points )
     end
 end
 ns.FindPlayerAuraByID = FindPlayerAuraByID
