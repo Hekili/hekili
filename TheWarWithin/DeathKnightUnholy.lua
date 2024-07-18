@@ -1,5 +1,5 @@
 -- DeathKnightUnholy.lua
--- October 2022
+-- July 2024
 
 if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
@@ -332,6 +332,12 @@ me:RegisterPvpTalents( {
 
 -- Auras
 me:RegisterAuras( {
+    -- Your Runic Power spending abilities deal $w1% increased damage.
+    a_feast_of_souls = {
+        id = 440861,
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Talent: Absorbing up to $w1 magic damage.  Immune to harmful magic effects.
     -- https://wowhead.com/beta/spell=48707
     antimagic_shell = {
@@ -350,8 +356,8 @@ me:RegisterAuras( {
     -- Talent: Stunned.
     -- https://wowhead.com/beta/spell=221562
     asphyxiate = {
-        id = 221562,
-        duration = 5,
+        id = 108194,
+        duration = 4.0,
         mechanic = "stun",
         type = "Magic",
         max_stack = 1
@@ -365,20 +371,32 @@ me:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    blood_draw = {
+        id = 454871,
+        duration = 8,
+        max_stack = 1
+    },
     -- You may not benefit from the effects of Blood Draw.
     -- https://wowhead.com/beta/spell=374609
-    blood_draw = {
+    blood_draw_cd = {
         id = 374609,
-        duration = 180,
+        duration = 120,
         max_stack = 1
     },
     -- Draining $w1 health from the target every $t1 sec.
     -- https://wowhead.com/beta/spell=55078
     blood_plague = {
         id = 55078,
-        duration = 24,
+        duration = function() return 24 * ( talent.ebon_fever.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.ebon_fever.enabled and 0.5 or 1 ) * ( buff.plaguebringer.up and 0.5 or 1 ) end,
         max_stack = 1,
         copy = "blood_plague_superstrain"
+    },
+    -- Physical damage taken reduced by $s1%.; Chance to gain Vampiric Strike increased by $434033s2%.
+    bloodsoaked_ground = {
+        id = 434034,
+        duration = 3600,
+        max_stack = 1,
     },
     -- Talent: Movement slowed $w1% $?$w5!=0[and Haste reduced $w5% ][]by frozen chains.
     -- https://wowhead.com/beta/spell=45524
@@ -455,12 +473,24 @@ me:RegisterAuras( {
         type = "Magic",
         max_stack = 3
     },
-    -- $?s206930[Heart Strike will hit up to ${$m3+2} targets.]?s207311[Clawing Shadows will hit ${$55090s4-1} enemies near the target.]?s55090[Scourge Strike will hit ${$55090s4-1} enemies near the target.][Dealing Shadow damage to enemies inside Death and Decay.]
-    -- https://wowhead.com/beta/spell=188290
+    -- Inflicts $s1 Shadow damage every sec.
     death_and_decay = {
-        id = 188290,
+        id = 391988,
+        duration = 3600,
+        tick_time = 1.0,
+        max_stack = 1,
+
+        -- Affected by:
+        -- mastery_dreadblade[77515] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 1.8, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- mastery_dreadblade[77515] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 1.8, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- blood_death_knight[137008] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 48.2, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- death_rot[377540] #0: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'points': 1.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+    },
+    -- [444347] $@spelldesc444010
+    death_charge = {
+        id = 444347,
         duration = 10,
-        max_stack = 1
+        max_stack = 1,
     },
     -- Talent: The next $w2 healing received will be absorbed.
     -- https://wowhead.com/beta/spell=48743
@@ -474,8 +504,7 @@ me:RegisterAuras( {
         duration = 10,
         max_stack = 2,
     },
-    -- Your movement speed is increased by $s1%, you cannot be slowed below $s2% of normal speed, and you are immune to forced movement effects and knockbacks.
-    -- https://wowhead.com/beta/spell=48265
+    -- Your movement speed is increased by $w1%, you cannot be slowed below $s2% of normal speed, and you are immune to forced movement effects and knockbacks.
     deaths_advance = {
         id = 48265,
         duration = 10,
@@ -495,13 +524,11 @@ me:RegisterAuras( {
         max_stack = 8,
         copy = "defile_mastery"
     },
-    -- Talent: Haste increased by $s3%.  Generating $s1 $LRune:Runes; and ${$m2/10} Runic Power every $t1 sec.
-    -- https://wowhead.com/beta/spell=47568
-    empower_rune_weapon = {
-        id = 47568,
-        duration = 20,
-        tick_time = 5,
-        max_stack = 1
+    -- Haste increased by ${$W1}.1%. $?a434075[Damage of Death Strike and Death Coil increased by $W2%.][]
+    essence_of_the_blood_queen = {
+        id = 433925,
+        duration = 20.0,
+        max_stack = function() return 1 + ( talent.frenzied_bloodthirst.enabled and 2 or 0 ) end,
     },
     -- Suffering from a wound that will deal [(20.7% of Attack power) / 1] Shadow damage when damaged by Scourge Strike.
     festering_wound = {
@@ -527,8 +554,8 @@ me:RegisterAuras( {
     -- https://wowhead.com/beta/spell=55095
     frost_fever = {
         id = 55095,
-        duration = 24,
-        tick_time = 3,
+        duration = function() return 24 * ( talent.ebon_fever.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.ebon_fever.enabled and 0.5 or 1 ) * ( buff.plaguebringer.up and 0.5 or 1 ) end,
         max_stack = 1,
         copy = "frost_fever_superstrain"
     },
@@ -571,6 +598,12 @@ me:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    -- Rooted.
+    ice_prison = {
+        id = 454787,
+        duration = 4.0,
+        max_stack = 1,
+    },
     -- Talent: Damage taken reduced by $w3%.  Immune to Stun effects.
     -- https://wowhead.com/beta/spell=48792
     icebound_fortitude = {
@@ -578,17 +611,29 @@ me:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    -- Attack speed increased $w1%.
+    -- Attack speed increased by $w1%$?a436687[, and Runic Power spending abilities deal Shadowfrost damage.][.]
     icy_talons = {
         id = 194879,
         duration = 6,
         max_stack = 3
     },
-    -- Time between attacks increased by $w1%.
+    -- Taking $w1% increased Shadow damage from $@auracaster.
+    incite_terror = {
+        id = 458478,
+        duration = 15.0,
+        max_stack = 1,
+    },
+    -- Time between auto-attacks increased by $w1%.
     insidious_chill = {
         id = 391568,
         duration = 30,
         max_stack = 4
+    },
+    -- Absorbing up to $w1 magic damage.; Duration of harmful magic effects reduced by $s2%.
+    lesser_antimagic_shell = {
+        id = 454863,
+        duration = function() return 5.0 * ( taletn.antimagic_barrier.enabled and 1.4 or 1 ) end,
+        max_stack = 1,
     },
     -- Casting speed reduced by $w1%.
     -- https://wowhead.com/beta/spell=326868
@@ -695,10 +740,16 @@ me:RegisterAuras( {
         duration = function () return 3 * haste end,
         max_stack = 1,
     },
+    -- Damage dealt increased by $s1%.; Healing received increased by $s2%.
+    sanguine_ground = {
+        id = 391459,
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Talent: Afflicted by Soul Reaper, if the target is below $s3% health this effect will explode dealing an additional $343295s1 Shadowfrost damage.
     -- https://wowhead.com/beta/spell=343294
     soul_reaper = {
-        id = 343294,
+        id = 448229,
         duration = 5,
         tick_time = 5,
         type = "Magic",
@@ -707,11 +758,16 @@ me:RegisterAuras( {
     -- Silenced.
     strangulate = {
         id = 47476,
-        duration = 4,
+        duration = 5,
         max_stack = 1
     },
-    -- Your next Death Coil$?s207317[ or Epidemic][] consumes no Runic Power.
-    -- https://wowhead.com/beta/spell=81340
+    -- Damage dealt to $@auracaster reduced by $w1%.
+    subduing_grasp = {
+        id = 454824,
+        duration = 6.0,
+        max_stack = 1,
+    },
+    -- Your next Death Coil$?s207317[ or Epidemic][] cost ${$s1/-10} less Runic Power and is guaranteed to critically strike.
     sudden_doom = {
         id = 81340,
         duration = 10,
@@ -727,6 +783,25 @@ me:RegisterAuras( {
     summon_gargoyle_buff = { -- TODO: Buff on the gargoyle...
         id = 61777,
         duration = 25,
+        max_stack = 1,
+    },
+    -- Damage taken from area of effect attacks reduced by an additional $w1%.
+    suppression = {
+        id = 454886,
+        duration = 6.0,
+        max_stack = 1,
+    },
+    -- Movement slowed $w1%.
+    trollbanes_icy_fury = {
+        id = 444834,
+        duration = 4.0,
+        max_stack = 1,
+    },
+    -- Suffering $w1 Shadowfrost damage every $t1 sec.; Each time it deals damage, it gains $s3 $Lstack:stacks;.
+    undeath = {
+        id = 444633,
+        duration = 24.0,
+        tick_time = 3.0,
         max_stack = 1,
     },
     -- Talent: Haste increased by $s1%.
@@ -745,16 +820,47 @@ me:RegisterAuras( {
         tick_time = 1,
         type = "Magic",
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+
+        generate = function ()
+            local ub = buff.unholy_blight_buff
+            local name, _, count, _, duration, expires, caster = FindUnitBuffByID( "pet", 115989 )
+
+            if name then
+                ub.name = name
+                ub.count = count
+                ub.expires = expires
+                ub.applied = expires - duration
+                ub.caster = caster
+                return
+            end
+
+            ub.count = 0
+            ub.expires = 0
+            ub.applied = 0
+            ub.caster = "nobody"
+        end,
     },
     -- Suffering $s1 Shadow damage every $t1 sec.
     -- https://wowhead.com/beta/spell=115994
     unholy_blight = {
         id = 115994,
         duration = 14,
-        tick_time = 2,
+        tick_time = function() return 2 * ( buff.plaguebringer.up and 0.5 or 1 ) end,
         max_stack = 4,
         copy = { "unholy_blight_debuff", "unholy_blight_dot" }
+    },
+    -- Haste increased by $w1%.
+    unholy_ground = {
+        id = 374271,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Deals $s1 Fire damage.
+    unholy_pact = {
+        id = 319240,
+        duration = 0.0,
+        max_stack = 1,
     },
     -- Strength increased by $s1%.
     -- https://wowhead.com/beta/spell=53365
@@ -763,14 +869,26 @@ me:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    -- Vampiric Aura's Leech amount increased by $s1% and is affecting $s2 nearby allies.
+    vampiric_aura = {
+        id = 434105,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Movement speed increased by $w1%.
+    vampiric_speed = {
+        id = 434029,
+        duration = 5.0,
+        max_stack = 1,
+    },
     -- Suffering $w1 Shadow damage every $t1 sec.  Erupts for $191685s1 damage split among all nearby enemies when the infected dies.
     -- https://wowhead.com/beta/spell=191587
     virulent_plague = {
-        id = 191587,
+        id = 441277,
         duration = function () return 27 * ( talent.ebon_fever.enabled and 0.5 or 1 ) end,
-        tick_time = function() return 3 * ( talent.ebon_fever.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.ebon_fever.enabled and 0.5 or 1 ) * ( buff.plaguebringer.up and 0.5 or 1 ) end,
         type = "Disease",
-        max_stack = 1
+        max_stack = 1,
     },
     -- The touch of the spirit realm lingers....
     -- https://wowhead.com/beta/spell=97821
@@ -1139,7 +1257,7 @@ me:RegisterAbilities( {
     antimagic_shell = {
         id = 48707,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - ( talent.antimagic_barrier.enabled and 20 or 0 ) - ( talent.unyielding_will.enabled and -20 or 0 ) - ( pvptalent.spellwarden.enabled and 10 or 0 ) end,
         gcd = "off",
 
         talent = "antimagic_shell",
@@ -1152,6 +1270,7 @@ me:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "antimagic_shell" )
+            if talent.unyielding_will.enabled then removeBuff( "dispellable_magic" ) end
         end,
     },
 
@@ -1159,7 +1278,7 @@ me:RegisterAbilities( {
     antimagic_zone = {
         id = 51052,
         cast = 0,
-        cooldown = 45,
+        cooldown = function() return 120 - ( talent.assimilation.enabled and 30 or 0 ) end,
         gcd = "spell",
 
         talent = "antimagic_zone",
@@ -1176,7 +1295,7 @@ me:RegisterAbilities( {
     apocalypse = {
         id = 275699,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( ( pvptalent.necromancers_bargain.enabled and 75 or 90 ) - ( level > 48 and 15 or 0 ) ) end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( ( pvptalent.necromancers_bargain.enabled and 45 or 60 ) - ( level > 48 and 15 or 0 ) ) end,
         gcd = "spell",
 
         talent = "apocalypse",
@@ -1219,7 +1338,7 @@ me:RegisterAbilities( {
     army_of_the_dead = {
         id = function () return pvptalent.raise_abomination.enabled and 288853 or 42650 end,
         cast = 0,
-        cooldown = function () return pvptalent.raise_abomination.enabled and 120 or 480 end,
+        cooldown = function () return pvptalent.raise_abomination.enabled and 120 or 180 end,
         gcd = "spell",
 
         spend = 1,
@@ -1238,6 +1357,7 @@ me:RegisterAbilities( {
                 summonPet( "abomination" )
             else
                 applyBuff( "army_of_the_dead", 4 )
+                summonPet( "army_ghoul", 30 )
             end
         end,
 
@@ -1283,7 +1403,7 @@ me:RegisterAbilities( {
     chains_of_ice = {
         id = 45524,
         cast = 0,
-        cooldown = 0,
+        cooldown = function() return talent.ice_prison.enabled and 12 or 0 end,
         gcd = "spell",
 
         spend = 1,
@@ -1294,6 +1414,7 @@ me:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "chains_of_ice" )
+            if talent.ice_prison.enabled then applyDebuff( "target", "ice_prison" ) end
         end,
     },
 
@@ -1326,7 +1447,7 @@ me:RegisterAbilities( {
                 apply_festermight( 1 )
                 if set_bonus.tier29_2pc > 0 then applyBuff( "vile_infusion" ) end
             end
-            gain( 3, "runic_power" )
+            -- gain( 3, "runic_power" ) -- ?
         end,
 
         bind = { "scourge_strike", "wound_spender" }
@@ -1390,7 +1511,7 @@ me:RegisterAbilities( {
     dark_transformation = {
         id = 63560,
         cast = 0,
-        cooldown = 60,
+        cooldown = 45,
         gcd = "spell",
 
         talent = "dark_transformation",
@@ -1407,18 +1528,31 @@ me:RegisterAbilities( {
                 applyBuff( "death_dealer" )
             end
 
-            if azerite.helchains.enabled then applyBuff( "helchains" ) end
+            if talent.commander_of_the_dead.enabled then
+                applyBuff( "commander_of_the_dead" ) -- 10.0.7
+                applyBuff( "commander_of_the_dead_window" ) -- 10.0.5
+            end
+
+            if talent.unholy_blight.enabled then
+                applyBuff( "unholy_blight_buff" )
+                applyDebuff( "target", "unholy_blight" )
+                applyDebuff( "target", "virulent_plague" )
+                active_dot.virulent_plague = active_enemies
+
+                if talent.superstrain.enabled then
+                    applyDebuff( "target", "blood_plague_superstrain" )
+                    applyDebuff( "target", "frost_fever_superstrain" )
+                end
+            end
+
             if talent.unholy_pact.enabled then applyBuff( "unholy_pact" ) end
 
+            if azerite.helchains.enabled then applyBuff( "helchains" ) end
             if legendary.frenzied_monstrosity.enabled then
                 applyBuff( "frenzied_monstrosity" )
                 applyBuff( "frenzied_monstrosity_pet" )
             end
 
-            if talent.commander_of_the_dead.enabled then
-                applyBuff( "commander_of_the_dead" ) -- 10.0.7
-                applyBuff( "commander_of_the_dead_window" ) -- 10.0.5
-            end
         end,
 
         auras = {
@@ -1469,8 +1603,7 @@ me:RegisterAbilities( {
         gcd = "spell",
 
         spend = function ()
-            if buff.sudden_doom.up then return 0 end
-            return 30 - ( legendary.deadliest_coil.enabled and 10 or 0 ) end,
+            return 30 - ( buff.sudden_doom.up and 10 or 0 ) - ( legendary.deadliest_coil.enabled and 10 or 0 ) end,
         spendType = "runic_power",
 
         startsCombat = false,
@@ -1574,7 +1707,7 @@ me:RegisterAbilities( {
 
         spend = function()
             if buff.dark_succor.up then return 0 end
-            return ( level > 27 and 35 or 45 )
+            return ( level > 27 and 35 or 45 ) - ( talent.improved_death_strike.enabled and 10 or 0 ) - ( buff.blood_draw.up and 10 or 0 )
         end,
         spendType = "runic_power",
 
@@ -1608,7 +1741,7 @@ me:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Defile the targeted ground, dealing ${($156000s1*($d+1)/$t3)} Shadow damage t...
+    -- Defile the targeted ground, dealing ${($156000s1*($d+1)/$t3)} Shadow damage to all enemies over $d.; While you remain within your Defile, your $?s207311[Clawing Shadows][Scourge Strike] will hit ${$55090s4-1} enemies near the target$?a315442|a331119[ and inflict Death's Due for $324164d.; Death's Due reduces damage enemies deal to you by $324164s1%, up to a maximum of ${$324164s1*-$324164u}% and their power is transferred to you as an equal amount of Strength.][.]; Every sec, if any enemies are standing in the Defile, it grows in size and deals increased damage.
     defile = {
         id = 152280,
         cast = 0,
@@ -1666,10 +1799,9 @@ me:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return buff.sudden_doom.up and 0 or 30 end,
+        spend = function () return 30 - ( buff.sudden_doom.up and 10 or 0 ) end,
         spendType = "runic_power",
 
-        talent = "epidemic",
         startsCombat = false,
 
         targets = {
@@ -1780,7 +1912,6 @@ me:RegisterAbilities( {
         spend = 1,
         spendType = "runes",
 
-        talent = "outbreak",
         startsCombat = true,
 
         cycle = "virulent_plague",
@@ -1839,7 +1970,7 @@ me:RegisterAbilities( {
         id = function() return IsActiveSpell( 46584 ) and 46584 or 46585 end,
         cast = 0,
         cooldown = function() return IsActiveSpell( 46584 ) and 30 or 120 end,
-        gcd = "spell",
+        gcd = function() return IsActiveSpell( 46584 ) and "spell" or "off" end,
 
         talent = "raise_dead",
         startsCombat = false,
@@ -1965,7 +2096,7 @@ me:RegisterAbilities( {
     strangulate = {
         id = 47476,
         cast = 0,
-        cooldown = 60,
+        cooldown = 45,
         gcd = "off",
 
         spend = 0,
@@ -2027,7 +2158,43 @@ me:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Surrounds yourself with a vile swarm of insects for $d, stinging all nearby e...
+    -- A vampiric strike that deals $?a137007[$s1][$s5] Shadow damage and heals you for $?a137007[$434422s2][$434422s3]% of your maximum health.; Additionally grants you Essence of the Blood Queen for $433925d.
+    vampiric_strike = {
+        id = 433895,
+        cast = 0.0,
+        cooldown = 0.0,
+        gcd = "spell",
+
+        spend = 1,
+        spendType = 'runes',
+
+        startsCombat = true,
+
+        handler = function ()
+            gain( 0.01 * health.max, "health" )
+            applyBuff( "essence_of_the_blood_queen" ) -- TODO: mod haste
+        end,
+
+        -- Effects:
+        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'attributes': ['Area Effects Use Target Radius'], 'ap_bonus': 1.04, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+        -- #1: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 434422, 'target': TARGET_UNIT_CASTER, }
+        -- #2: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 433925, 'target': TARGET_UNIT_CASTER, }
+        -- #3: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- #4: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'ap_bonus': 0.484542, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+
+        -- Affected by:
+        -- mastery_dreadblade[77515] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 1.8, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- mastery_dreadblade[77515] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 1.8, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- blood_plague[55078] #2: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ANY, }
+        -- death_knight[137005] #1: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
+        -- mawsworn_menace[444099] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- incite_terror[458478] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'points': 3.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- blood_death_knight[137008] #17: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': CHAINED_TARGETS, }
+        -- death_rot[377540] #0: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'points': 1.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- rotten_touch[390276] #0: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'pvp_multiplier': 0.6, 'points': 50.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+    },
+
+    --[[ Talent: Surrounds yourself with a vile swarm of insects for $d, stinging all nearby e...
     unholy_blight = {
         id = 115989,
         cast = 0,
@@ -2051,13 +2218,13 @@ me:RegisterAbilities( {
                 applyDebuff( "target", "frost_fever_superstrain" )
             end
         end,
-    },
+    }, ]]
 
     -- Talent: Inflict disease upon your enemies spreading Festering Wounds equal to the amount currently active on your target to $s1 nearby enemies.
     vile_contagion = {
         id = 390279,
         cast = 0,
-        cooldown = 90,
+        cooldown = 45,
         gcd = "spell",
 
         spend = 30,
