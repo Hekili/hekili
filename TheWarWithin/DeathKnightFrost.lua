@@ -1,5 +1,5 @@
 -- DeathKnightFrost.lua
--- October 2022
+-- July 2024
 
 if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
@@ -7,8 +7,6 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
-local roundUp = ns.roundUp
-local FindUnitBuffByID = ns.FindUnitBuffByID
 local PTR = ns.PTR
 
 local strformat = string.format
@@ -354,6 +352,12 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    -- Your Runic Power spending abilities deal $w1% increased damage.
+    a_feast_of_souls = {
+        id = 440861,
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Talent: Absorbing up to $w1 magic damage.  Immune to harmful magic effects.
     -- https://wowhead.com/beta/spell=48707
     antimagic_shell = {
@@ -367,13 +371,18 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     asphyxiate = {
-        id = 221562,
-        duration = 5,
+        id = 108194,
+        duration = 4,
         mechanic = "stun",
         type = "Magic",
         max_stack = 1
     },
-
+    -- Next Howling Blast deals Shadowfrost damage.
+    bind_in_darkness = {
+        id = 443532,
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Talent: Disoriented.
     -- https://wowhead.com/beta/spell=207167
     blinding_sleet = {
@@ -383,18 +392,24 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Talent: You may not benefit from the effects of Blood Draw.
-    -- https://wowhead.com/beta/spell=374609
     blood_draw = {
+        id = 454871,
+        duration = 8,
+        max_stack = 1
+    },
+    -- You may not benefit from the effects of Blood Draw.
+    -- https://wowhead.com/beta/spell=374609
+    blood_draw_cd = {
         id = 374609,
-        duration = 180,
+        duration = 120,
         max_stack = 1
     },
     -- Draining $w1 health from the target every $t1 sec.
     -- https://wowhead.com/beta/spell=55078
     blood_plague = {
         id = 55078,
-        duration = 24,
+        duration = function() return 24 * ( talent.wither_away.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.wither_away.enabled and 0.5 or 1 ) end,
         max_stack = 1
     },
     -- Draining $s1 health from the target every $t1 sec.
@@ -497,6 +512,12 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
+    -- [444347] $@spelldesc444010
+    death_charge = {
+        id = 444347,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Talent: The next $w2 healing received will be absorbed.
     -- https://wowhead.com/beta/spell=48743
     death_pact = {
@@ -539,6 +560,12 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 10
     },
+    -- Casting speed reduced by $w1%.
+    expelling_shield = {
+        id = 440739,
+        duration = 6.0,
+        max_stack = 1,
+    },
     -- Reduces damage dealt to $@auracaster by $m1%.
     -- https://wowhead.com/beta/spell=327092
     famine = {
@@ -550,8 +577,8 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=55095
     frost_fever = {
         id = 55095,
-        duration = 24,
-        tick_time = 3,
+        duration = function() return 24 * ( talent.wither_away.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.wither_away.enabled and 0.5 or 1 ) end,
         max_stack = 1
     },
     -- Talent: Grants ${$s1*$mas}% Mastery.
@@ -610,17 +637,24 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    -- Rooted.
+    ice_prison = {
+        id = 454787,
+        duration = 4.0,
+        max_stack = 1,
+    },
     -- Talent: Damage taken reduced by $w3%.  Immune to Stun effects.
     -- https://wowhead.com/beta/spell=48792
     icebound_fortitude = {
         id = 48792,
         duration = 8,
+        tick_time = 1.0,
         max_stack = 1
     },
     icy_talons = {
         id = 194879,
         duration = 6,
-        max_stack = 3
+        max_stack = function() return talent.smothering_offense.enabled and 5 or 3 end,
     },
     inexorable_assault = {
         id = 253595,
@@ -638,6 +672,20 @@ spec:RegisterAuras( {
         id = 51124,
         duration = 10,
         max_stack = function() return 1 + talent.fatal_fixation.rank end,
+    },
+    -- Absorbing up to $w1 magic damage.; Duration of harmful magic effects reduced by $s2%.
+    lesser_antimagic_shell = {
+        id = 454863,
+        duration = function() return 5.0 * ( talent.antimagic_barrier.enabled and 1.4 or 1 ) end,
+        max_stack = 1,
+
+        -- Affected by:
+        -- fatal_fixation[405166] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
+        -- antimagic_barrier[205727] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -20000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+        -- antimagic_barrier[205727] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.5, 'points': 40.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+        -- osmosis[454835] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
+        -- unyielding_will[457574] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 20000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+        -- spellwarden[410320] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
     },
     -- Casting speed reduced by $w1%.
     -- https://wowhead.com/beta/spell=326868
@@ -700,6 +748,13 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 5
     },
+    -- You are a prey for the Deathbringer... This effect will explode for $436304s1 Shadowfrost damage for each stack.
+    reapers_mark = {
+        id = 434765,
+        duration = 12.0,
+        tick_time = 1.0,
+        max_stack = 40,
+    },
     -- Talent: Dealing $196771s1 Frost damage to enemies within $196771A1 yards each second.
     -- https://wowhead.com/beta/spell=196770
     remorseless_winter = {
@@ -723,6 +778,12 @@ spec:RegisterAuras( {
         duration = 15,
         type = "Magic",
         max_stack = 1
+    },
+    -- Magical damage taken reduced by $w1%.
+    rune_carved_plates = {
+        id = 440290,
+        duration = 5.0,
+        max_stack = 1,
     },
     -- Talent: Strength increased by $w1%
     -- https://wowhead.com/beta/spell=374585
@@ -760,12 +821,30 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Afflicted by Soul Reaper, if the target is below $s3% health this effect will explode dealing an additional $343295s1 Shadowfrost damage.
-    -- https://wowhead.com/beta/spell=343294
+    -- https://wowhead.com/beta/spell=448229
     soul_reaper = {
-        id = 343294,
+        id = 448229,
         duration = 5,
         tick_time = 5,
         max_stack = 1
+    },
+    -- Silenced.
+    strangulate = {
+        id = 47476,
+        duration = 5.0,
+        max_stack = 1,
+    },
+    -- Damage dealt to $@auracaster reduced by $w1%.
+    subduing_grasp = {
+        id = 454824,
+        duration = 6.0,
+        max_stack = 1,
+    },
+    -- Damage taken from area of effect attacks reduced by an additional $w1%.
+    suppression = {
+        id = 454886,
+        duration = 6.0,
+        max_stack = 1,
     },
     -- Deals $s1 Fire damage.
     -- https://wowhead.com/beta/spell=319245
@@ -837,12 +916,6 @@ spec:RegisterAuras( {
         id = 199719,
         duration = 3600,
         max_stack = 1,
-    },
-    -- Silenced.
-    strangulate = {
-        id = 47476,
-        duration = 4,
-        max_stack = 1
     },
 
     -- Legendary
@@ -967,7 +1040,7 @@ spec:RegisterAbilities( {
     antimagic_shell = {
         id = 48707,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - ( talent.antimagic_barrier.enabled and 15 or 0 ) - ( talent.unyielding_will.enabled and -20 or 0 ) - ( pvptalent.spellwarden.enabled and 10 or 0 ) end,
         gcd = "off",
 
         talent = "antimagic_shell",
@@ -983,6 +1056,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "antimagic_shell" )
+            if talent.unyielding_will.enabled then removeBuff( "dispellable_magic" ) end
         end,
     },
 
@@ -990,7 +1064,7 @@ spec:RegisterAbilities( {
     antimagic_zone = {
         id = 51052,
         cast = 0,
-        cooldown = 45,
+        cooldown = function() return 120 - ( talent.assimilation.enabled and 30 or 0 ) end,
         gcd = "spell",
 
         talent = "antimagic_zone",
@@ -1068,17 +1142,17 @@ spec:RegisterAbilities( {
     chains_of_ice = {
         id = 45524,
         cast = 0,
-        cooldown = 0,
+        cooldown = function() return 0 + ( talent.ice_prison.enabled and 12 or 0 ) end,
         gcd = "spell",
 
         spend = 1,
         spendType = "runes",
 
-        talent = "chains_of_ice",
         startsCombat = true,
 
         handler = function ()
             applyDebuff( "target", "chains_of_ice" )
+            if talent.ice_prison.enabled then applyDebuff( "target", "ice_prison" ) end
             removeBuff( "cold_heart_item" )
             removeBuff( "cold_heart_talent" )
         end,
@@ -1159,7 +1233,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Corrupts the targeted ground, causing ${$52212m1*11} Shadow damage over $d to targets within the area.$?!c2&(a316664|a316916)[    While you remain within the area, your ][]$?s223829&a316916[Necrotic Strike and ][]$?a316664[Heart Strike will hit up to $188290m3 additional targets.]?s207311&a316916[Clawing Shadows will hit up to ${$55090s4-1} enemies near the target.]?a316916[Scourge Strike will hit up to ${$55090s4-1} enemies near the target.][]
+    -- Corrupts the targeted ground, causing ${$341340m1*11} Shadow damage over $d to targets within the area.$?!c2[; While you remain within the area, your ][]$?s223829&!c2[Necrotic Strike and ][]$?c1[Heart Strike will hit up to $188290m3 additional targets.]?s207311&!c2[Clawing Shadows will hit up to ${$55090s4-1} enemies near the target.]?!c2[Scourge Strike will hit up to ${$55090s4-1} enemies near the target.][; While you remain within the area, your Obliterate will hit up to $316916M2 additional $Ltarget:targets;.]
     death_and_decay = {
         id = 43265,
         noOverride = 324128,
@@ -1257,13 +1331,17 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return ( talent.improved_death_strike.enabled and 35 or 45 ) end,
+        spend = function ()
+            if buff.dark_succor.up then return 0 end
+            return ( talent.improved_death_strike.enabled and 40 or 50 ) - ( buff.blood_draw.up and 10 or 0 )
+        end,
         spendType = "runic_power",
 
         talent = "death_strike",
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "dark_succor" )
             gain( health.max * 0.10, "health" )
         end,
     },
@@ -1299,6 +1377,7 @@ spec:RegisterAbilities( {
         end,
         gcd = "off",
 
+        talent = "empower_rune_weapon",
         startsCombat = false,
 
         usable = function() return talent.empower_rune_weapon.rank + talent.empower_rune_weapon_2.rank > 0, "requires an empower_rune_weapon talent" end,
@@ -1354,14 +1433,14 @@ spec:RegisterAbilities( {
         }
     },
 
-    -- Talent: A sweeping attack that strikes all enemies in front of you for $s2 Frost damage. This attack benefits from Killing Machine. Critical strikes with Frostscythe deal $s3 times normal damage. Deals reduced damage beyond $s5 targets.
+    -- A sweeping attack that strikes all enemies in front of you for $s2 Frost damage. This attack always critically strikes and critical strikes with Frostscythe deal $s3 times normal damage. Deals reduced damage beyond $s5 targets. ; Consuming Killing Machine reduces the cooldown of Frostscythe by ${$s1/1000}.1 sec.
     frostscythe = {
         id = 207230,
         cast = 0,
-        cooldown = 0,
+        cooldown = 30,
         gcd = "spell",
 
-        spend = 1,
+        spend = 2,
         spendType = "runes",
 
         talent = "frostscythe",
@@ -1466,7 +1545,7 @@ spec:RegisterAbilities( {
     icebound_fortitude = {
         id = 48792,
         cast = 0,
-        cooldown = function () return 180 - ( azerite.cold_hearted.enabled and 15 or 0 ) + ( conduit.chilled_resilience.mod * 0.001 ) end,
+        cooldown = function () return 120 - ( azerite.cold_hearted.enabled and 15 or 0 ) + ( conduit.chilled_resilience.mod * 0.001 ) end,
         gcd = "off",
 
         talent = "icebound_fortitude",
@@ -1483,7 +1562,7 @@ spec:RegisterAbilities( {
     lichborne = {
         id = 49039,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return 120 - ( talent.deaths_messenger.enabled and 30 or 0 ) end,
         gcd = "off",
 
         startsCombat = false,
@@ -1570,11 +1649,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: The power of frost increases your Strength by $s1% for $d.    Each Rune spent while active increases your Strength by an additional $s2%.
+    -- The power of frost increases your Strength by $s1% for $d.
     pillar_of_frost = {
         id = 51271,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - ( talent.icecap.enabled and 15 or 0 ) end,
         gcd = "off",
 
         talent = "pillar_of_frost",
@@ -1614,7 +1693,7 @@ spec:RegisterAbilities( {
     raise_dead = {
         id = 46585,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return 120 - ( talent.deaths_messenger.enabled and 30 or 0 ) end,
         gcd = "off",
 
         talent = "raise_dead",
@@ -1625,6 +1704,31 @@ spec:RegisterAbilities( {
         handler = function ()
             summonPet( "ghoul" )
         end,
+    },
+
+    -- Viciously slice into the soul of your enemy, dealing $?a137008[$s1][$s4] Shadowfrost damage and applying Reaper's Mark.; Each time you deal Shadow or Frost damage,
+    reapers_mark = {
+        id = 439843,
+        cast = 0.0,
+        cooldown = function() return 60.0 - ( talent.swift_end.enabled and 30 or 0 ) end,
+        gcd = "spell",
+
+        spend = function() return 2 - ( talent.swift_end.enabled and 1 or 0 ) end,
+        spendType = 'runes',
+
+        talent = "reapers_mark",
+        startsCombat = true,
+
+        -- Effects:
+        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'attributes': ['Chain from Initial Target', 'Enforce Line Of Sight To Chain Targets'], 'ap_bonus': 0.8, 'target':
+        -- #1: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 434765, 'value': 10, 'schools': ['holy', 'nature'], 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- #2: { 'type': ENERGIZE, 'subtype': NONE, 'points': 200.0, 'target': TARGET_UNIT_CASTER, 'resource': runic_power, }
+        -- #3: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'attributes': ['Chain from Initial Target', 'Enforce Line Of Sight To Chain Targets'], 'ap_bonus': 1.5, 'target':
+
+        -- Affected by:
+        -- painful_death[443564] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- swift_end[443560] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -30000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+        -- swift_end[443560] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -1.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
     },
 
     -- Talent: Drain the warmth of life from all nearby enemies within $196771A1 yards, dealing ${9*$196771s1*$<CAP>/$AP} Frost damage over $d and reducing their movement speed by $211793s1%.
@@ -1706,7 +1810,7 @@ spec:RegisterAbilities( {
     strangulate = {
         id = 47476,
         cast = 0,
-        cooldown = 60,
+        cooldown = 45,
         gcd = "off",
 
         spend = 0,
