@@ -37,7 +37,7 @@ Dragonflight\Classes.lua
 TheWarWithin\DeathKnightBlood.lua
 TheWarWithin\DeathKnightFrost.lua
 TheWarWithin\DeathKnightUnholy.lua
-# TheWarWithin\DemonHunterHavoc.lua
+TheWarWithin\DemonHunterHavoc.lua
 # TheWarWithin\DemonHunterVengeance.lua
 # TheWarWithin\DruidBalance.lua
 # TheWarWithin\DruidFeral.lua
