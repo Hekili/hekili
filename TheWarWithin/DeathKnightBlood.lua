@@ -394,9 +394,14 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    -- Talent: You may not benefit from the effects of Blood Draw.
-    -- https://wowhead.com/beta/spell=374609
     blood_draw = {
+        id = 454871,
+        duration = 8,
+        max_stack = 1
+    },
+    -- You may not benefit from the effects of Blood Draw.
+    -- https://wowhead.com/beta/spell=374609
+    blood_draw_cd = {
         id = 374609,
         duration = 120,
         max_stack = 1
