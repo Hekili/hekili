@@ -202,7 +202,13 @@ spec:RegisterAuras( {
         duration = 18,
         max_stack = 5,
     },
-
+    -- %d% increased periodic shadow damage.
+    empowered_shadow = {
+        id = 95799,
+        duration = 15,
+        max_stack = 1,
+    },
+    -- Increases the damage done by your Smite, Holy Fire and Penance spells by 4% and reduces the mana cost of those spells by 6%.
     evangelism = {
         id = 81661,
         duration = 18,
@@ -355,6 +361,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 15407, 17311, 17312, 17313, 17314, 18807, 25387, 48155, 48156, 58381 },
     },
+    -- Spell haste increased by 5%.
+    mind_quickening = {
+        id = 49868,
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Causing shadow damage to all targets within $49821a1 yards.
     mind_sear = {
         id = 48045,
@@ -369,19 +381,19 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
-    -- Sight granted through target's eyes.
-    mind_vision = {
-        id = 2096,
-        duration = 60,
-        max_stack = 1,
-        copy = { 2096, 10909 },
-    },
     -- Chance for the next Mind Blast from the Priest to critically hit increased by 30%.
     mind_spike = { 
         id = 73510,
         duration = 3600,
         max_stack = 3,
         copy = { 87178, 87179 },
+    },
+    -- Sight granted through target's eyes.
+    mind_vision = {
+        id = 2096,
+        duration = 60,
+        max_stack = 1,
+        copy = { 2096, 10909 },
     },
     -- Chance to hit with spells on the target increased by $s1%.
     misery = {
@@ -464,6 +476,12 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
         copy = { 9484, 9485, 10955 },
+    },
+    -- Consumed to increase damage done by Mind Blast or Mind Spike.
+    shadow_orb = {
+        id = 77487,
+        duration = 60,
+        max_stack = 3,
     },
     -- Shadow resistance increased by $s1.
     shadow_protection = {
@@ -1784,7 +1802,7 @@ spec:RegisterOptions( {
 
 
 -- Packs
-spec:RegisterPack( "Shadow", 20240716, [[Hekili:vR16UTTrw4NLGI1noXHRLIvYUDTmGtDZwhG6ge6U5hlkfhrosAG5TLZq7Aad(SVNZz4DnuKwXPz3F0gR5Y5(LVzg6mX5AhBFMI7C10JNEYXVDYBSMo9KxFYBDSv3NWDStyE3Wwd)rele()2By(X3HdFFqmZh3Umol1dM6ZXF2wekZDpi3f(7FMdtBVmteOUmYzPr28Ay3jCpNRM5yVr47Z1lKl9CSVEJaOf(FSC3cPi3nEf8BpLiok3nqivW0RItZD)z(nIaHfiyPXRebG48DFxURwAZD)yQGlv5Fah7Dmj3hiuejLDL48pOx1ht5)yC4sM6vNtCtcdN7(trkEAjzb(gcciiqrXkqQcsH9FpmcqzbWmTykTss5EePE58)QSANhjwnFz2Qvw1dzb)BeXNFKbsR7hJVd52NJt9)HC33hNQeQmFEtEcS4wUzwLG7EXDWMxSQCRvm10KDz)Lrri7FViDSSuG7yXkydiJEwwsdQ9VyHjIuHhyedxMY8glnVTyFl46T1KY2kwkS9QLN7ENqTj39xerGh2orCtpenewWcPEEYJVFU2X7qTbbZdKmvCU75X)uUBASIPJIrUmfIhbMhgJMAEepecxb2I)ceBjpQfptZIwO)1cmf4imZColMmnAt5IcAC28Pe7VGVILfO08xkIwhWFfy7wZvnKKH4aMaPtoSjkK7EDbj(ufj0Z)RjCk0rY)pz8i0vt5OYITvW56yJM(RcREurUUAd8hHm0W7ZrZBF2flzBhlfNO3Iv9OwzjhuoQ2pPtcsao0CoF(TqvnqExKeWwN1AFvrKQ4mVnwLXIzHHO7SiasWrvc1fiEHQIvejHb6UmAYIj4S0GIylsBxjwVPREjRPkPyjCLfrRduIq(PZir48KeKqLf9kQB8rY4PLeGB(zPLbEOPCzCwryb)psWmDt8T2gHmVpZxkh9tYtvcVBwGI1wE43hWUViguN5UgJtaXjADTy)RPlLfwOlyP3azM3YIwZH4WqAFE3in50xb0(ibMeNMLOw0ozCrC6slAVNnFYbApmq7f8ksxo7mY8(89BVhQ9gZF(0xS2Z)LtTM9cTGAvjIwL2)dltw(fY)uNcH1Ic5qgsK39BB4qtSI2Hj3CV2L(9AqG9qouuxcGM3Oa11L(Ua6hy4vhhiMKYULjcyld6gwrs2sCRhzWrvKr9jothqx364AmJBVdMBN42WO0jJUuVnpB7W7kH8IYkgGRGkzS3Iz3Apne0Tkl1ru3A((ZflCCmn(kaYuauXUpVeT7Ftc605PEBO4EOx7gE0oYr1raHS)arBrPZ6Y4xeFnm5ggwhuccTWtG1XRnsTfcwjdRIumM9nF2bpFNEZZMDWagXZMD4JUs(iRsxB)6K1EbNPkcOPA)LnLr2SKhGRC6S)cyU4SaCHekbwetVcC((Rx7J0gLdnrT00WkXtD60zp8asg9poUw8Uqa4XtLvatQ51T807nXr)QDGSQIOtoUNQ)JS9(2jj6yO2vDKAC8EXXbAOw9x)7z7o8alY9WddLMrlQKBw15hnxqvHDcNxR66Tq7aT9RC8K6rPlecqfeXN7oRgkyLEbO8Qq5aeWaIVHHcqTra0GIKAWyY2r47OeLwc2cxG39Eb8ffeB(KJG8(fThJ6Sk5kSBVeqgRKleakZy(G9F6B(2f3oVNMf7L6Qd2ALsEhuIepZjw3kigRZZJIZwVPRPPtxMNadZ(1E6GI0E8VH5w4l4N1tdV6sVp5D002etT02Lg)03NB8auAKInecfQK5JdH2JlnRhKTO2INT7jgx3xNguvPsvf5c4szzrUt6Ti3OBLDq7kGNEsJEBtM1tH3EW90P(QJ9T6EBf3B1BMoXX(owAeg46y)5Z)0vxE1)emtq1g06ictIXZ1qh397bI99W5RHdbdUwGZY4q0eKPIdbRomGgzJ0k)d0UxfhagmkHJb5xGeEhz0YOlSQ68HAzvF9xGtaJG0RJWLSkolQ1Q99Xf7ZuSLmj)hGUtUVcKLQGzSD1akIu9)j6H(odlUcqDiyOqkjrrML0qNOtEIDjuqzKBGYWwOUFzrKnDvrHamoof6I3SexdakjveNku0519cY8X7PHlWO7sj6FtPrxQ4HYF)ieLSGoYs1Qzr3xZ1cLfY(daCWQGA62u3lz6)GYVkyZ1AsK7o53lYXQhAAdoR7BvPrL5XLlLSg0qrzHl5AhCqScCMxsbb4aN02BHEAhB6VWlagIZH)5k6UK5ry1uFN3bdt7WXUr2eEZUPIe947lAihBGgq1qbtZJ6u)C3ZGf6OGS1EKLU1cbA1SxmQe2B1H2XEwtEAQXfDfYduVn390(xtvdSogPNAGCOX519yCAJk4RHPXmsMMgMEpSnsLTr0aE859T3smkMTO)PJteT8N0JLVlEMoI8tbKShJBQp4xnDu9dbdv0z7QwabRAhfdgjKTMA02a0qP4nDKI613pQPrNjdONYDFj4J1iOCSBcrZXUeJwhDhbZ1r1FYrrIQ(BhrbqcvLjH5BggWMUOTG6rw9PZihu36(Nsu5Hh0mUA1tOMb)To2Ib6c1cAOP2ykhk6LEsLD14R(HG6WZhXBn1tqE1RlzQzxlE9f)Yt16tNxfAN9HHQYt1qewOF4yeKGHEpTK1X8mv7qCAWnPs7LK70bv)Uq7kOyFEwQM2MNvvpP17qrXXpR)AnBTcdVjvNvS1ltnmui6Yk7gY8iUa0r8uwDSf1xkk1sN6TFAbST(qMSnSTrdsAF6poMY)TA31TVElf(54HBwT9ZjPZsMqMbTd20fBRxfu17WM2R5ezHK3xu3iAQ1m63AJMHNCcOr3UugfSbFNRH7P914v)gexHb5yFFjTXen8fGvWa2KVniK6dMq3Jcygo6E)WCgmV7)rdm1I)BeW6Nm8Z)9XczX0Z4zmyci6KJ7Xkv9gBMad(1)f)2kmTNcH66GhqL(giQ5SYLoOhrVYdj7Zaa5(YAv2xBqIZJ5(k(tdU(4qHVfy7PhtQsF9WRFOqt6WiE4XMIvBu(Ag33HRhFpQrIXBVEBYTbfmCHpQTbANhmkU5I3X7twVWd14JR(O4(FXZXuYFtFSIg9LJ9dMClHP3phYDbkT(RD0OWSRpFYobd6EX9f)29lG0i3g(ZR0ip7INQDXTH)8knEwQIZEXYuBItXAKqMDuMusd78F)d]] )
+spec:RegisterPack( "Shadow", 20240719, [[Hekili:nRvBVXTns4FlbfNrCIJoVBZ2EPNxd4u3G6a00GkFx(qrLexjU7sy92jrzxdyOF73md17l5k59SBoyKyVIKZmCE75rCPZmNRDSdysUZNMF683E63p7DwZ)2fZp9Do2Y7t5o2Pm)ByBG)iMfb)V9wwqYD4JVpmHfGlppPiZhg6ljFXweLx6DuPh83)mhg2EvHiuEvSZk9QzoS8uUVZNw4yVveeWvZKN77yF9wbim8FSsVkZO0lzn8zFPijU0luKlHHxNKv69Z8BeHclWYYswlcb75B(MspL5w695mbpxw(r8zVNLZdabftM5qtU8JQz95m(pMeTIjFZfK2YHhx69tXsEwTyb9gbgiyqXjsWQcZG1Fp8eqYcqzkZm3knJ7tI61l)75nR8eX6LRkwV2Q9rwWVJj98JmWA9(CYDO2(sswWpu69HKmPqweW7Qtqf3Y1RQuC1U3bl2DD9sBuQUbhQ(RIJr1)br2uvPaxH7AybOIErrAhP9VzrPImHp4eJwLX8NQmVTADUC1Y6kzBjldwEZ0l9Uti3w69lIyicBNkUXGqJGj4MRgNI4hwOD6buBWW8bltMu6DrYpv6LLizQSyulZH8rq5rjORMhZJG0vqT4NaZoNh3tNzfXUQp5ILaNGLMlzjKRr5kDRKX5lNtQ)s(AwrOuP)Cr8Mq(BaF3gUSJLmMgWcivXHnjHsVRReXV1ic14)AkNsDY5)NcEmgQPA08QLvP52CJUXRkVECvTUCl8hrm0XhWr3Rj)IvE)alLNOwIv7tTkspQ(PQ4KQiif0q3Xc43cT1a71nnKTPO36AYiLjf(BTQZflIIWWzvcKGJBjCVa5luxSQmjmr3JrdwnaNLfwLBr721InBhUVYBLkTXs5slswhjfr8ZwOsHJ4GJn2)(Ap6hcz3RI5OhusEX6wIvDv(m(qn(W1WsrnThFLPHY4O2YpBJFWRdHM(ObHM3fPP4(uNbu5OQ9sOlvZ2VvhDdUAmTDsTADe5QwgBWeuiNnEtRb9RzRYRcnxYYUb8N3YI3WHcGiAD(3KB2tHDpYksLU97c4MKTYIw75lNDKk1cKTlVr01JUG2tV8Ww7XQ0GLVC(RqV(CRfVszOwnMOvqrgvKECDv6VqE(2A3b(S3hsFaJmd8qy5h7wMiKTkKRZLScx6jA8evHMFJZu5cTGcxJ1sDYdQT2kgaRskQ6EX)ZueqQVw7xs2jVDqTADQP(rLc)BCrhzFJ8Y6EbqYk1m4GnZHDv6yO70WzGPUZ49nwnboMI5eqgke6fBkkrR(FLd7PlY83sjwak6wE8EkcuzarS)e5rr1lQg0xMCnm4wg2HlhmAHVa7q36K6BeSAf2KPOn9E5IJE5EJMNV4OrCINV44hDp6j2)T1)nOV2LCMSkHM6Qxd3IQzfpeN58f)nWDXzH4ej8FwmtndCCZTadqzJ2HsOwkzyL6lpB(IhEafJ6dN2AExkaM2z5nuoA11T8S71PXGMvGQQrOZo1q71jcCVBrIkhQFxNCfdD)KKqfjkZquVy)Phio0dpmwzgnPATz1wF0DcnDojgCgBCAda6nbEA7rLle3ojKXx6TOLKxZ(c4V1WFbeGgUClgffLq6bEEI0wAw59ZW3tlkLfSduR)9(HC3kHTC2jqDVB)Nrqx5CjcNMdCEL5UcG)ycFukcMgVFZTlmawCqBxvYwVsY7GwK4BtI9TctW(884KInBh6AgGY8e4yom4PJQk7X)ggZnqWp3aGxBR3NCenLprhK2(2Xp94CtNGsNsSXyOqTmFCKOFCLzgOoI7w8T2EIPE)8aq1uk10KlKNNx3K7TgBYnzOSJ63b8S32bBB2cdnEnW7zq)vh7BvyBnhj135yFhllgtCRp8PQZssTJJe55ujtErAAc(se0l1sVjb2usczT3av9wLELExv5iPZCicynWjpfEefCfEBAMijtiPx8ZpSiaFHFUaDM)aaZ49MsVFNIAxj5r5)XjiPmbXqUz2S47B1Af3fizleODjdBLlsXP(vlRv6)KcNvQ5ALik9M9hvH02hnVJMvTjB2r1Pn1tL8g0JIlIwb5eWmYdtKwLF8Qi0HHpaskubKQtVdg0XMvi3Mare7cGVrCro4)PbXtxecBWV(eDqL8ySEoW59WJjH4y3jEINAyMiv98dfp2XgKbupkykD0M8v6DomrhjKVyWwgwncYQlAaUjS3bJWXErxDQR1jD8KJuXx6DM5500cDGt6PMkb6C(wdoN(4sphUg9yPDDmgFDpuk7IPcr8LMwBnkPEp6F5mvqp)Bn45hIOoWKFkif8yctMia0nqzMeaUrxSVEbeW(EAgmrsdD3r7sraTIVBGv0o)9CUutTsgWVl9EneJvy4o2Djj4yxZsyWEhPtmyR)KZJb36F)eAas466mMVASq6gI2HSb51NVGcqd77FgjLhEqP4MzpJad(hd8fJGc1JCIoymj8JnKbpkMhEA27tDhYHP31f9IMm1ENEo5HEH5S4DMHMtsFWm2580hhKLoiMb7(hZH7mHdGFGVO9aFiWcc14SkcbMW8mvuEONt)ZCtM9GHSl1MjtKy4j7RphtZ(qxR(El9LqhIbTMPdmuHBpJ8dQuqDhROAwqf)XDJOljXoV07vT(N5wlOpRCgAorDqgd7qR1Wg9y8hp1554l1qhA2xhmvtaldjpQNaZb)LjOPU6WjtQdu4RevSNmgxVBQGC6(Qh0MmbcD2Pg8snFVa6Op88)TuStAQH2hQUhhrnmgjR586PoAernZJj)Jj8)NeiqtWBKMNYB4(xgbVPXBBh6zZpL2kMWMB)Yn0ThMWxwsxZQpVqLInbLo9o7tK72b99PSlu64n(i8q0ppAwC3jVNVtL2jESI3BG6AQSpYVvj)jzrdjvn97VJbGOMBSJo(N9RZ(F9280UFgCtB275pbDCMRoAmx1TXdpCmn8p7zRt5Q)ShZPJ2O22s8g2vDrQ()X4uT(1Db30wXn1lz3ogJXRq3(ELG2BiNwJzFx5UbLSkgtM6Ym8wZPvBJFL80QZHKY7xAm(vYt7BYkB(X5)o]] )
 
 
 spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",

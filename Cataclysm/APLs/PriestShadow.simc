@@ -28,14 +28,14 @@ actions+=/run_action_list,name=st
 actions.st+=/mind_spike,if=!debuff.mind_spike.up&!debuff.shadow_word_pain.up&!debuff.devouring_plague.up&!debuff.vampiric_touch.up
 # Summon Shadowfiend if it is not alive and it is early in the fight
 actions.st+=/shadowfiend,if=!pet.alive&time<5
-# Apply Shadow Word: Pain if its duration is about to expire
-actions.st+=/shadow_word_pain,if=debuff.shadow_word_pain.remains<tick_time
+# Emergency Mind Flay to maintain Shadow Word: Pain
+actions.st+=/mind_flay,if=debuff.shadow_word_pain.up&debuff.shadow_word_pain.remains<gcd+latency
+# Apply Shadow Word: Pain if its not up
+actions.st+=/shadow_word_pain,if=!debuff.shadow_word_pain.up
 # Cast Mind Flay to start generating Shadow Orbs and Dark Evangelism stacks
 actions.st+=/mind_flay,interrupt_if=buff.shadow_orb.stack>=1&buff.dark_evangelism.stack>=5,if=!(buff.shadow_orb.stack>=1&buff.dark_evangelism.stack>=5)&time<=(2*gcd+2.5*action.mind_flay.duration)
 
 ## Main Rotation
-# Emergency Mind Flay to maintain Shadow Word: Pain
-actions.st+=/mind_flay,if=debuff.shadow_word_pain.up&debuff.shadow_word_pain.remains<gcd+latency
 # Cast Mind Blast if Shadow Orbs are available
 actions.st+=/mind_blast,if=buff.shadow_orb.up
 # Reapply Vampiric Touch if its duration is about to expire
