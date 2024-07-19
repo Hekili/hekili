@@ -1,5 +1,6 @@
 -- WarriorProtection.lua
--- October 2023
+-- July 2024
+-- TODO: Model Ravager better for rage generation
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -71,7 +72,7 @@ spec:RegisterTalents( {
     crackling_thunder               = { 95959, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
     cruel_strikes                   = { 90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%. 
     crushing_force                  = { 90369, 390642, 2 }, -- Shield Slam deals an additional 5% damage and deals 5% increased critical strike damage. 
-    defensive_stance                = { 90330, 386208, 1 }, -- A defensive combat state that reduces all damage you take by 20% and all magic damage you take by an additional 5%. Lasts until canceled.
+    defensive_stance                = { 90330, 386208, 1 }, -- A defensive combat state that reduces all damage you take by 16%. Lasts until canceled.
     double_time                     = { 90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
     endurance_training              = { 90339, 382940, 2 }, -- Stamina increased by 5% and the duration of Fear, Sap and Incapacitate effects on you is reduced by 10.0%.
     fast_footwork                   = { 90344, 382260, 1 }, -- Movement speed increased by 5%.
@@ -86,7 +87,7 @@ spec:RegisterTalents( {
     menace                          = { 90383, 275338, 1 }, -- Intimidating Shout will knock back all nearby enemies except your primary target, and cause them all to cower in fear for 15 sec instead of fleeing.
     onehanded_weapon_specialization = { 90324, 382895, 1 }, -- Damage with one-handed weapons and Leech increased by 5%.
     overwhelming_rage               = { 90378, 382767, 2 }, -- Maximum Rage increased by 15.
-    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 3.50% of your maximum health. This can only occur once every 10 sec.
+    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 2% of your maximum health. This can only occur once every 10 sec.
     piercing_challenge              = { 90379, 382948, 1 }, -- Champion's Spear's damage increased by 50% and its Rage generation is increased by 100%.
     piercing_howl                   = { 90348, 12323 , 1 }, -- Snares all enemies within 12 yards, reducing their movement speed by 70% for 8 sec.
     rallying_cry                    = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 10% temporary and maximum health for 10 sec.
@@ -121,25 +122,25 @@ spec:RegisterTalents( {
     challenging_shout               = { 90309, 1161  , 1 }, -- Taunts all enemies within 10 yds to attack you for 6 sec.
     champions_bulwark               = { 90316, 386328, 1 }, -- Shield Charge deals 20% increased damage, grants you Shield Block, makes your next Revenge cost no Rage, and generates an additional 20 Rage.
     dance_of_death                  = { 90260, 390713, 1 }, -- When an enemy dies while affected by your Ravager, its duration is extended by 2 sec. This effect can trigger a maximum of 3 times per use of Ravager.
-    defenders_aegis                 = { 90310, 397103, 1 }, -- Shield Wall gains 1 additional charge, and its cooldown is reduced by 30 sec.
+    defenders_aegis                 = { 90310, 397103, 1 }, -- Shield Wall gains 1 additional charge, and its cooldown is reduced by 60 sec.
     demoralizing_shout              = { 90305, 1160  , 1 }, -- Demoralizes all enemies within 15 yards, reducing the damage they deal to you by 20% for 8 sec. Generates 30 Rage.
     devastator                      = { 90299, 236279, 1 }, -- Your auto attacks deal an additional 23,172 Physical damage and have a 20% chance to reset the remaining cooldown on Shield Slam.
     disrupting_shout                = { 90307, 386071, 1 }, -- Taunts all enemies within 14 yds to attack you for 6 sec, interrupts all spellcasting within 14 yds and prevents any spell in that school from being cast for 6 sec. 
-    enduring_alacrity               = { 90433, 384063, 1 }, -- Increases Stamina and Armor by 10% and your Haste by 2%.
+    enduring_alacrity               = { 90433, 384063, 1 }, -- Increases Stamina and Armor by 8% and your Haste by 2%.
     enduring_defenses               = { 90313, 386027, 1 }, -- Shield Block lasts 2 sec longer.
-    fight_through_the_flames        = { 90306, 452494, 1 }, -- Defensive Stance additionally reduces magic damage you take by 5%.
+    fight_through_the_flames        = { 90306, 452494, 1 }, -- Defensive Stance additionally reduces magic damage you take by 6%.
     focused_vigor                   = { 90318, 384067, 1 }, -- Increases Strength and Armor by 5% and your critical strike chance by 1%. 
     fueled_by_violence              = { 90451, 383103, 1 }, -- You are healed for 110% of the damage dealt by Deep Wounds.
     heavy_repercussions             = { 90319, 203177, 1 }, -- Shield Slam generates 2 more Rage and extends the duration of Shield Block by 1.0 sec.
     ignore_pain                     = { 90295, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken, up to 1.8 million total damage prevented.
     impenetrable_wall               = { 90310, 384072, 1 }, -- Shield Slam generates an additional 3 Rage and reduces the remaining cooldown of Shield Wall by 5 sec.
-    indomitable                     = { 90434, 202095, 1 }, -- Your maximum health is increased by 10%, and every 10 Rage you spend heals you for 1% of your maximum health.
+    indomitable                     = { 90434, 202095, 1 }, -- Your maximum health is increased by 6%, and every 20 Rage you spend heals you for 1% of your maximum health.
     instigate                       = { 90301, 394311, 1 }, -- Devastate deals 20% increased damage and generates 2 Rage. Devastator deals 10% increased damage and generates 1 Rage.
-    into_the_fray                   = { 90319, 202603, 1 }, -- You gain 2% Haste for each enemy or ally within 10 yards, up to 10% Haste.
+    into_the_fray                   = { 90319, 202603, 1 }, -- You gain 2% Haste for each enemy or ally within 10 yards, up to 8% Haste.
     juggernaut                      = { 90449, 393967, 1 }, -- Execute increases Execute's damage dealt by 3% for 20 sec, stacking up to 15 times.
     last_stand                      = { 90297, 12975 , 1 }, -- Increases maximum health by 30% for 15 sec, and instantly heals you for that amount.
     massacre                        = { 90313, 281001, 1 }, -- Execute is now usable on targets below 35% health. 
-    punish                          = { 90449, 275334, 1 }, -- Shield Slam deals 10% increased damage, and reduces enemies' damage against you by 3% for 9 sec. Multiple punishments may overlap.
+    punish                          = { 90449, 275334, 1 }, -- Shield Slam deals 10% increased damage, and reduces enemies' damage against you by 2% for 9 sec. Multiple punishments may overlap.
     ravager                         = { 90432, 228920, 1 }, -- Throws a whirling weapon at the target location that chases nearby enemies, inflicting 327,423 Physical damage to all enemies over 10.4 sec. Deals reduced damage beyond 8 targets. Generates 10 Rage each time it deals damage.
     rend                            = { 90302, 394062, 1 }, -- Wounds the target, causing 25,927 Physical damage instantly and an additional 80,044 Bleed damage over 15 sec. Thunder Clap affects 5 nearby targets with Rend. 
     revenge                         = { 90298, 6572  , 1 }, -- Swing in a wide arc, dealing 37,983 Physical damage to all enemies in front of you. Deals reduced damage beyond 5 targets. Your successful dodges and parries have a chance to make your next Revenge cost no Rage.
@@ -256,6 +257,11 @@ spec:RegisterAuras( {
         duration = 16,
         max_stack = 5
     },
+    burst_of_power = {
+        id = 437121,
+        duration = 12,
+        max_stack = 2,
+    },
     challenging_shout = {
         id = 1161,
         duration = 6,
@@ -265,6 +271,11 @@ spec:RegisterAuras( {
         id = 105771,
         duration = 1,
         max_stack = 1,
+    },
+    colossal_might = {
+        id = 440989,
+        duration = 24,
+        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 0 ) end
     },
     concussive_blows = {
         id = 383116,
@@ -307,9 +318,14 @@ spec:RegisterAuras( {
         duration = 1.2,
         max_stack = 1
     },
-    elysian_might = {
+    champions_spear = {
+        id = 376080,
+        duration = function() return 4 + ( talent.champions_might.enabled and 2 or 0 ) end,
+        max_stack = 1
+    },
+    champions_might = {
         id = 386286,
-        duration = 8,
+        duration = 6,
         max_stack = 1
     },
     -- Target Swapping
@@ -366,6 +382,11 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 15,
         copy = 383290
+    },
+    keep_your_feet_on_the_ground = {
+        id = 438591,
+        duration = 5,
+        max_stack = 1
     },
     last_stand = {
         id = 12975,
@@ -438,7 +459,7 @@ spec:RegisterAuras( {
     },
     shockwave = {
         id = 132168,
-        duration = 2,
+        duration = function() return 2 + ( talent.boneshaker.enabled and 1 or 0 ) end,
         max_stack = 1
     },
     show_of_force = {
@@ -448,7 +469,7 @@ spec:RegisterAuras( {
     },
     spell_block = {
         id = 392966,
-        duration = 20,
+        duration = 30,
         max_stack = 1
     },
     spell_reflection = {
@@ -488,6 +509,11 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1
     },
+    thunder_blast = {
+        id = 435615,
+        duration = 15,
+        max_stack = 2
+    },
     thunder_clap = {
         id = 6343,
         duration = 10,
@@ -521,6 +547,11 @@ spec:RegisterAuras( {
     },
     wild_strikes = {
         id = 392778,
+        duration = 10,
+        max_stack = 1
+    },
+    wrecked = {
+        id = 447513,
         duration = 10,
         max_stack = 1
     }
@@ -566,13 +597,13 @@ spec:RegisterAuras( {
 } )
 
 
-local rageSpent = 0
-local gloryRage = 0
-local outburstRage = 0
+local rageSpent_10 = 0
+local rageSpent_20 = 0
+local rageSpent_30 = 0
 
-spec:RegisterStateExpr( "glory_rage", function () return gloryRage end )
-spec:RegisterStateExpr( "rage_spent", function () return rageSpent end )
-spec:RegisterStateExpr( "outburst_rage", function () return outburstRage end )
+spec:RegisterStateExpr( "rageSpent_10", function () return rageSpent_10 end ) -- Glory (Shadowlands) and Anger Management talent
+spec:RegisterStateExpr( "rageSpent_20", function () return rageSpent_20 end ) -- Indomitable talent
+spec:RegisterStateExpr( "rageSpent_30", function () return rageSpent_30 end ) -- Outburst talent
 
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
@@ -581,65 +612,74 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
     if powerType == "RAGE" then
         local current = UnitPower( "player", RAGE )
         if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
-            if state.talent.anger_management.enabled or state.talent.indomitable.enabled then
-                rageSpent = ( rageSpent + lastRage - current ) % 10 -- Anger Management / Indomitable
+            if state.talent.anger_management.enabled or ( state.legendary.glory.enabled and FindPlayerAuraByID( 324143 ) ) then -- Glory and Anger Management
+                rageSpent_10 = ( rageSpent_10 + lastRage - current ) % 10 
             end
-
-            if state.legendary.glory.enabled and FindPlayerAuraByID( 324143 ) then
-                gloryRage = ( gloryRage + lastRage - current ) % 10 -- Glory.
+            if state.talent.indomitable.enabled then -- Indomitable
+                rageSpent_20 = ( rageSpent_20 + lastRage - current ) % 20
             end
-
-            if state.talent.violent_outburst.enabled then
-                outburstRage = ( outburstRage + lastRage - current ) % 30 -- Outburst T28 or Violent Outburst
+            if state.talent.violent_outburst.enabled then -- Outburst T28 or Violent Outburst
+                rageSpent_30 = ( rageSpent_30 + lastRage - current ) % 30
             end
         end
         lastRage = current
     end
 end )
 
-
 -- model rage expenditure and special effects
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" and amt < 0 then
-        if talent.indomitable.enabled or talent.anger_management.enabled then
-            rage_spent = rage_spent + amt
-            local activations = floor( rage_spent / 10 )
-            rage_spent = rage_spent % 10
+        if talent.anger_management.enabled or ( legendary.glory.enabled and buff.conquerors_banner.up ) then
+            rageSpent_10 = rageSpent_10 + amt
+            local rage10activations = floor( rageSpent_10 / 10 )
+            rageSpent_10 = rageSpent_10 % 10
 
-            if activations > 0 then
+            if rage10activations > 0 then
+                if legendary.glory.enabled and buff.conquerors_banner.up then
+                    buff.conquerors_banner.expires = buff.conquerors_banner.expires + ( rage10activations * 0.5 )
+                end
                 if talent.anger_management.enabled then
-                    if talent.shield_wall.enabled then
-                        cooldown.shield_wall.expires = cooldown.shield_wall.expires - activations
+                    if talent.shield_wall.enabled then cooldown.shield_wall.expires = cooldown.shield_wall.expires - rage10activations end
+                    if talent.avatar.enabled then cooldown.avatar.expires = cooldown.avatar.expires - rage10activations end
                     end
-                    if talent.avatar.enabled then
-                        cooldown.avatar.expires = cooldown.avatar.expires - activations
                     end
                 end
+        
                 if talent.indomitable.enabled then
-                    gain( ( 0.1 * activations ) * health.max, "health" )
-                end
+            rageSpent_20 = rageSpent_20 + amt
+            local rage20activations = floor( rageSpent_20 / 20 )
+            rageSpent_20 = rageSpent_20 % 20
+
+            if rage20activations > 0 then
+                gain( ( 0.01 * rage20activations ) * health.max, "health" ) -- Restores 1% max health
             end
         end
 
-        if legendary.glory.enabled and buff.conquerors_banner.up then
-            glory_rage = glory_rage + amt
-            local addition = floor( glory_rage / 10 ) * 0.5
-            glory_rage = glory_rage % 10
-
-            buff.conquerors_banner.expires = buff.conquerors_banner.expires + addition
-        end
-
         if talent.violent_outburst.enabled then
-            outburst_rage = outburst_rage + amt
-            local stacks = floor( outburst_rage / 30 )
-            outburst_rage = outburst_rage % 30
-            if stacks > 0 then
-                addStack( "seeing_red", nil, stacks )
+            rageSpent_30 = rageSpent_30 + amt
+            local rage30activations = floor( rageSpent_30 / 30 )
+            rageSpent_30 = rageSpent_30 % 30
+
+            if rage30activations > 0 then
+                addStack( "seeing_red", nil, rage30activations )
                 if buff.seeing_red.stack > 7 then
                     applyBuff( "violent_outburst" )
                     removeBuff( "seeing_red" )
                 end
             end
+        end
+    end
+end )
+
+spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, critical )
+    --TODO: Deepdive to see if beneficial or not.
+    if sourceGUID == state.GUID then
+        if state.talent.colossal_might.enabled and spellID == 440989 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+            Hekili:ForceUpdate( "COLOSSALMIGHT_CHANGED", true )
+        elseif state.talent.thunder_blast.enabled and spellID == 435615 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+            Hekili:ForceUpdate( "THUNDERBLAST_CHANGED", true )
+        elseif state.talent.burst_of_power.enabled and spellID == 437121 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+            Hekili:ForceUpdate( "BURSTOFPOWER_CHANGED", true )
         end
     end
 end )
@@ -729,11 +769,11 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "off",
 
-        talent = "berserker_rage",
         startsCombat = false,
         texture = 136009,
 
         toggle = "defensives",
+        usable = function () return ( debuff.sap.up or debuff.incapacitate.up or debuff.fear.up ) , "requires fear/incapacitate/sap debuff" end,
 
         handler = function ()
             applyBuff( "berserker_rage" )
@@ -791,6 +831,7 @@ spec:RegisterAbilities( {
         texture = 132359,
 
         handler = function ()
+            applyBuff( "bodyguard" )
         end,
     },
 
@@ -802,6 +843,7 @@ spec:RegisterAbilities( {
         gcd = "off",
 
         talent = "challenging_shout",
+        notalent = "disrupting_shout",
         startsCombat = true,
         texture = 132091,
 
@@ -813,6 +855,26 @@ spec:RegisterAbilities( {
         end,
     },
 
+    champions_spear = {
+        id = function() return talent.champions_spear.enabled and 376079 or 307865 end,
+        cast = 0,
+        cooldown = 90,
+        gcd = "spell",
+
+        spend = function () return ( -10 * ( talent.piercing_challenge.enabled and 2 or 1 ) ) * ( 1 + conduit.piercing_verdict.mod * 0.01 ) end,
+        spendType = "rage",
+
+        startsCombat = true,
+        toggle = "cooldowns",
+        velocity = 30,
+
+        handler = function ()
+            applyDebuff( "target", "champions_spear" )
+            if talent.champions_might.enabled or legendary.elysian_might.enabled then applyBuff( "champions_might" ) end
+        end,
+
+        copy = { "spear_of_bastion", 307865, 376079 }
+    },
 
     charge = {
         id = 100,
@@ -855,6 +917,22 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "battle_stance" )
             applyBuff( "defensive_stance" )
+        end,
+    },
+
+    demolish = {
+        id = 436358,
+        cast = function () return 2 * haste end,
+        channeled = true,
+        breakable = false,
+        cooldown = 45,
+        gcd = "spell",
+
+        startsCombat = true,
+
+        handler = function()
+            removeBuff( "colossal_might" )
+            active_dot.wrecked = active_enemies
         end,
     },
 
@@ -988,6 +1066,8 @@ spec:RegisterAbilities( {
                 removeBuff( "sudden_death" )
             end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
+
+            if talent.colossal_might then addStack( "colossal_might" ) end
         end,
     },
 
@@ -1039,7 +1119,6 @@ spec:RegisterAbilities( {
 
         usable = function () return target.minR > 7, "requires 8 yard range or more" end,
         handler = function ()
-            if talent.improved_heroic_throw.enabled then applyDebuff( "target", "deep_wounds" ) end
         end,
     },
 
@@ -1069,11 +1148,9 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.ignore_pain.up then
                 buff.ignore_pain.expires = query_time + class.auras.ignore_pain.duration
-                -- TODO: Remove retail/PTR compatibility statement post 10.1 release. (3.5 [retail] vs 4.375 [10.1 patch])
                 buff.ignore_pain.v1 = min( 0.3 * health.max, buff.ignore_pain.v1 + stat.attack_power * 4.375 * ( 1 + stat.versatility_atk_mod / 100 ) )
             else
                 applyBuff( "ignore_pain" )
-                -- TODO: Remove retail/PTR compatibility statement post 10.1 release. (3.5 [retail] vs 4.375 [10.1 patch])
                 buff.ignore_pain.v1 = min( 0.3 * health.max, stat.attack_power * 4.375 * ( 1 + stat.versatility_atk_mod / 100 ) )
             end
         end,
@@ -1094,8 +1171,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "victorious" )
-            gain( health.max * 0.3, "health" )
+            gain( health.max * 0.2, "health" )
             if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
+            if talent.steadfast_as_the_peaks.enabled then
+                gain( health.max * 0.1, "health" )
+                applyBuff( "steadfast_as_the_peaks" )
+            end
         end,
     },
 
@@ -1104,11 +1185,11 @@ spec:RegisterAbilities( {
         id = 3411,
         cast = 0,
         cooldown = function ()
-            if pvptalent.safeguard.enabled then return 40 end
-            return 30
+            if pvptalent.safeguard.enabled then return 40 - ( talent.honed_reflexes.enabled and 40*0.05 or 0 ) end
+            return 30 - ( talent.honed_reflexes.enabled and 30*0.05 or 0 )
         end,
         charges = function () if pvptalent.safeguard.enabled then return 2 end end,
-        recharge = function () if pvptalent.safeguard.enabled then return 40 end end,
+        recharge = function () if pvptalent.safeguard.enabled then return 40 - ( talent.honed_reflexes.enabled and 40*0.05 or 0 ) end end,
         gcd = "off",
         icd = 1.5,
 
@@ -1237,7 +1318,7 @@ spec:RegisterAbilities( {
     pummel = {
         id = 6552,
         cast = 0,
-        cooldown = function () return 15 - ( talent.concussive_blows.enabled and 1 or 0 ) - ( talent.honed_reflexes.enabled and 1 or 0 ) end,
+        cooldown = function () return 15 - ( talent.concussive_blows.enabled and 1 or 0 ) - ( talent.honed_reflexes.enabled and 15*0.05 or 0 )  end,
         gcd = "off",
 
         startsCombat = true,
@@ -1315,7 +1396,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 30,
+        spend = 20,
         spendType = "rage",
 
         talent = "rend",
@@ -1356,6 +1437,11 @@ spec:RegisterAbilities( {
             if buff.revenge.up then removeBuff( "revenge" ) end
             if talent.show_of_force.enabled then applyBuff( "show_of_force" ) end
             applyDebuff( "target", "deep_wounds" )
+
+            if talent.demolish.enabled and active_enemies > 2 then
+                if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+                addStack( "colossal_might" )
+             end
         end,
     },
 
@@ -1459,8 +1545,8 @@ spec:RegisterAbilities( {
         spend = function ()
             local reduction = 0
             -- The Wall Legendary overtakes the new Impenetrable Wall talent, they do not stack in 10.0
-            if legendary.the_wall.enabled then reduction = -5
-            elseif talent.impenetrable_wall.enabled then reduction = -3
+            if legendary.the_wall.enabled then reduction = reduction - 5
+            elseif talent.impenetrable_wall.enabled then reduction = reduction - 4
             end
 
             return
@@ -1473,6 +1559,10 @@ spec:RegisterAbilities( {
         equipped = "shield",
         startsCombat = true,
         texture = 134951,
+
+        readyTime = function()
+            if buff.burst_of_power.up then return 0 end
+        end,
 
         handler = function ()
             if buff.violent_outburst.up then
@@ -1510,8 +1600,8 @@ spec:RegisterAbilities( {
         id = 871,
         cast = 0,
         charges = function () return 1 + ( talent.defenders_aegis.enabled and 1 or 0 ) + ( legendary.unbreakable_will.enabled and 1 or 0 ) end,
-        cooldown = function() return 210 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) - ( talent.defenders_aegis.enabled and 30 or 0 ) end,
-        recharge = function() return 210 - ( conduit.stalwart_guardian.enabled and 20 or 0 ) - ( talent.defenders_aegis.enabled and 30 or 0 ) end,
+        cooldown = function() return 210 - ( talent.honed_reflexes.enabled and 210*0.05 or 0 ) - ( conduit.stalwart_guardian.enabled and 20 or 0 ) - ( talent.defenders_aegis.enabled and 60 or 0 ) end,
+        recharge = function() return 210 - ( talent.honed_reflexes.enabled and 210*0.05 or 0 ) - ( conduit.stalwart_guardian.enabled and 20 or 0 ) - ( talent.defenders_aegis.enabled and 60 or 0 ) end,
         gcd = "off",
 
         talent = "shield_wall",
@@ -1538,7 +1628,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "shield_wall" )
-            if talent.immovable_object.enabled then applyBuff( "avatar", 10 ) end
+            if talent.immovable_object.enabled then applyBuff( "avatar", 4 ) end
         end,
     },
 
@@ -1549,6 +1639,7 @@ spec:RegisterAbilities( {
         cooldown = function () return
             ( ( ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40 )
             - ( conduit.disturb_the_peace.enabled and 5 or 0 )
+            - ( talent.earthquaker.enabled and 5 or 0 )
             ) end,
         gcd = "spell",
 
@@ -1603,11 +1694,27 @@ spec:RegisterAbilities( {
         end,
     },
 
+    spell_reflection = {
+        id = 23920,
+        cast = 0,
+        cooldown = function() return 25 - ( talent.honed_reflexes.enabled and 25 * 0.05 or 0 ) end,
+        gcd = "off",
+
+        talent = "spell_reflection",
+
+        toggle = "defensives",
+        debuff = "casting",
+
+        handler = function()
+            applyBuff( "spell_reflection" )
+            applyBuff( "spell_reflection_defense" )
+        end,
+    },
 
     storm_bolt = {
         id = 107570,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - ( talent.honed_reflexes.enabled and 30 * 0.05 or 0 ) + ( talent.storm_bolts.enabled and 10 or 0 ) end,
         gcd = "spell",
 
         talent = "storm_bolt",
@@ -1659,7 +1766,7 @@ spec:RegisterAbilities( {
                 reduceCooldown( "demoralizing_shout", min( 3, active_enemies ) )
             end
 
-            if talent.blood_and_thunder.enabled and talent.rend.enabled then -- Blood and Thunder now directly applies Rend to 5 nearby targets
+            if talent.rend.enabled then
                 applyDebuff( "target", "rend" )
                 active_dot.rend = min( active_enemies, 5 )
             end
@@ -1671,11 +1778,49 @@ spec:RegisterAbilities( {
         end,
     },
 
+    thunder_blast = {
+        id = 435222,
+        cast = 0,
+        cooldown = function () return haste * ( ( buff.avatar.up and talent.unstoppable_force.enabled ) and 3 or 6 ) end,
+        gcd = "spell",
+        hasteCD = true,
+
+        spend = function () return -15
+            * ( buff.violent_outburst.up and 2 or 1 )
+            * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
+        spendType = "rage",
+
+        talent = "thunder_clap",
+        startsCombat = true,
+        texture = 136105,
+
+        handler = function ()
+            applyDebuff( "target", "thunder_clap" )
+            active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
+            removeBuff( "show_of_force" )
+
+            if ( talent.thunderlord.enabled or legendary.thunderlord.enabled ) and cooldown.demoralizing_shout.remains > 0 then
+                reduceCooldown( "demoralizing_shout", min( 3, active_enemies ) )
+            end
+
+            if talent.rend.enabled then
+                applyDebuff( "target", "rend" )
+                active_dot.rend = min( active_enemies, 5 )
+            end
+
+            if buff.violent_outburst.up then
+                applyBuff( "ignore_pain" )
+                removeBuff( "violent_outburst" )
+            end
+        end,
+        copy = { 6343 }
+    },
+
 
     thunderous_roar = {
         id = 384318,
         cast = 0,
-        cooldown = function() return talent.uproar.enabled and 60 or 90 end,
+        cooldown = function() return talent.uproar.enabled and 90 or 45 end,
         gcd = "spell",
 
         spend = -10,
@@ -1692,25 +1837,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
-    titanic_throw = {
-        id = 384090,
-        cast = 0,
-        cooldown = 8,
-        gcd = "spell",
-
-        talent = "titanic_throw",
-        startsCombat = true,
-
-        handler = function ()
-            if talent.improved_heroic_throw.enabled then
-                applyDebuff( "target", "deep_wounds" )
-                active_dot.deep_wounds = min( active_enemies, 5 )
-            end
-        end,
-    },
-
-
     victory_rush = {
         id = 34428,
         cast = 0,
@@ -1722,11 +1848,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "victorious" )
-            gain( 0.2 * health.max, "health" )
+            gain( health.max * 0.2, "health" )
             if conduit.indelible_victory.enabled then applyBuff( "indelible_victory" ) end
         end,
     },
-
 
     whirlwind = {
         id = 1680,
@@ -1734,7 +1859,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 30,
+        spend = 20,
         spendType = "rage",
 
         startsCombat = false,
@@ -1743,7 +1868,6 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
     },
-
 
     wrecking_throw = {
         id = 384110,
@@ -1755,7 +1879,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeDebuff( "target", "all_absorbs" )
         end,
     },
 } )
