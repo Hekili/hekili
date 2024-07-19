@@ -142,7 +142,7 @@ spec:RegisterAuras( {
     -- Causes $s1 damage every $t1 seconds, healing the caster.
     devouring_plague = {
         id = 2944,
-        duration = function() return 24 * spell_haste end,
+        duration = function() return 30 * spell_haste end,
         tick_time = function() return 3 * ( buff.shadowform.up and spell_haste or 1 ) end,
         max_stack = 1,
 
@@ -157,9 +157,9 @@ spec:RegisterAuras( {
                 return
             end
 
-            if applied and now - applied < 24 * spell_haste then
+            if applied and now - applied < 30 * spell_haste then
                 t.count = 1
-                t.expires = applied + 24 * spell_haste
+                t.expires = applied + 30 * spell_haste
                 t.applied = applied
                 t.caster = "player"
                 return
