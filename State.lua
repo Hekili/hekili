@@ -3071,7 +3071,7 @@ do
                 if id > 0 then
                     start, duration = GetCooldown( id )
                     local lossStart, lossDuration = GetSpellLossOfControlCooldown( id )
-                    if lossStart + lossDuration > start + duration then
+                    if lossStart and lossStart + lossDuration > start + duration then
                         start = lossStart
                         duration = lossDuration
                     end
