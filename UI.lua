@@ -21,8 +21,10 @@ local round = ns.round
 local IsCurrentItem = C_Item.IsCurrentItem
 local IsUsableItem = C_Item.IsUsableItem
 local IsCurrentSpell = C_Spell.IsCurrentSpell
+local GetItemCooldown = C_Item.GetItemCooldown
 local GetSpellTexture = C_Spell.GetSpellTexture
 local IsUsableSpell = C_Spell.IsSpellUsable
+
 local GetSpellCooldown = function(spellID)
     local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
     if spellCooldownInfo then
@@ -1502,7 +1504,7 @@ do
 
                         local rStart, rDuration = 0, 0
                         if a.item then
-                            rStart, rDuration = GetItemCooldown( a.item )
+                            rStart, rDuration = C_Item.GetItemCooldown( a.item )
                         else
                             if a.cooldown > 0 or a.spendType ~= "runes" then
                                 rStart, rDuration = GetSpellCooldown( a.id )
