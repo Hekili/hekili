@@ -1,4 +1,4 @@
-local MinBuild, OverBuild = 100000, 0
+local MinBuild, OverBuild = 110000, 0
 local BuildStr, _, _, Build = GetBuildInfo()
 if BuildStr:match("^3.4.") then MinBuild = 30400 end
 if Build < (MinBuild or 0) or ( (OverBuild or 0) > 0 and Build >= OverBuild ) then return end
@@ -15,7 +15,7 @@ if SpellFlashCore and not SpellFlashCore.LS then
     a.print(L["Old uncompletable version of SFC detected, shuttingdown. \r\n Please update other copies of SFC before use."])
     return
 end
-SpellFlashCore = LibStub:NewLibrary("SpellFlashCore", tonumber("20231129150302") or tonumber(date("%Y%m%d%H%M%S")))
+SpellFlashCore = LibStub:NewLibrary("SpellFlashCore", tonumber("20240720150302") or tonumber(date("%Y%m%d%H%M%S")))
 if not SpellFlashCore then return end
 SpellFlashCore.LS = true
 local FrameNames = {}
@@ -49,7 +49,7 @@ local EmptyTable = {}
 
 local GetSpellInfo = C_Spell.GetSpellInfo
 
-local ItemCache = setmetatable({}, {__index = function(t, v) if GetItemInfo(v) then t[v] = {GetItemInfo(v)} return t[v] end return EmptyTable end})
+local ItemCache = setmetatable({}, {__index = function(t, v) if C_Item.GetItemInfo(v) then t[v] = {C_Item.GetItemInfo(v)} return t[v] end return EmptyTable end})
 function SpellFlashCore.GetItemInfo(id)
     if type(id) == "string" then return GetItemInfo(id) end
     return unpack(ItemCache[id])
@@ -58,7 +58,9 @@ local GetItemInfo = SpellFlashCore.GetItemInfo
 
 function SpellFlashCore.SpellName(GlobalSpellID, NoSubName)
     if type(GlobalSpellID) == "number" then
-        local SpellName = GetSpellInfo(GlobalSpellID).name
+        local sInfo = GetSpellInfo(GlobalSpellID)
+        if not sInfo then return GlobalSpellID end
+        local SpellName = sInfo.name
         local SubName = GetSpellSubtext(GlobalSpellID)
         if not NoSubName and SubName and SubName ~= "" then
             return SpellName.."("..SubName..")"
