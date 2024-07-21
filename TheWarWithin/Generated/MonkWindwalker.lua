@@ -453,7 +453,7 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         -- Affected by:
-        -- windwalker_monk[137025] #30: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -18.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+        -- windwalker_monk[137025] #29: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -18.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
     -- Damage taken reduced by $w1%.
     jade_sanctuary = {
@@ -619,10 +619,9 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         -- Affected by:
-        -- windwalker_monk[137025] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 22.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 12.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk[137025] #11: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -500.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
-        -- windwalker_monk[137025] #19: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
-        -- windwalker_monk[137025] #27: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 7000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+        -- windwalker_monk[137025] #26: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 7000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
         -- monk[137022] #0: { 'type': APPLY_AURA, 'subtype': MOD_COOLDOWN_BY_HASTE_REGEN, 'target': TARGET_UNIT_CASTER, }
         -- storm_earth_and_fire[137639] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- storm_earth_and_fire[137639] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
@@ -651,7 +650,6 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         -- Affected by:
-        -- windwalker_monk[137025] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- renewing_mist[119611] #1: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- chi_proficiency[450426] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- elusive_mists[388681] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -6.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
@@ -669,7 +667,7 @@ spec:RegisterAuras( {
         -- Affected by:
         -- windwalker_monk[137025] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk[137025] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- windwalker_monk[137025] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 188.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 165.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk_twohand_adjustment[346104] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk_twohand_adjustment[346104] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- fast_feet[388809] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -716,9 +714,9 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         -- Affected by:
-        -- windwalker_monk[137025] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #13: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- communion_with_wind[451576] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- communion_with_wind[451576] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- communion_with_wind[451576] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 80.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- storm_earth_and_fire[137639] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- storm_earth_and_fire[137639] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- tigereye_brew[247483] #0: { 'type': APPLY_AURA, 'subtype': MOD_ABILITY_SCHOOL_MASK, 'value': 8, 'schools': ['nature'], 'target': TARGET_UNIT_CASTER, }
@@ -788,7 +786,7 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         -- Affected by:
-        -- windwalker_monk[137025] #16: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+        -- windwalker_monk[137025] #15: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
     },
     -- Parry and Avoidance increased by $w1%.
     whirling_steel = {
@@ -834,7 +832,7 @@ spec:RegisterAbilities( {
         -- windwalker_monk[137025] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- windwalker_monk[137025] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
         -- windwalker_monk[137025] #11: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -500.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
-        -- windwalker_monk[137025] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- blackout_kick[261916] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -2.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
         -- windwalker_monk_twohand_adjustment[346104] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk_twohand_adjustment[346104] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
@@ -985,7 +983,7 @@ spec:RegisterAbilities( {
         cooldown = 0.0,
         gcd = "global",
 
-        spend = 20,
+        spend = 10,
         spendType = 'energy',
 
         talent = "detox",
@@ -1061,8 +1059,8 @@ spec:RegisterAbilities( {
         -- #1: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
-        -- windwalker_monk[137025] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 75.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- windwalker_monk[137025] #29: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #21: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 75.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #28: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- profound_rebuttal[392910] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
         -- vigorous_expulsion[392900] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- vigorous_expulsion[392900] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
@@ -1143,7 +1141,7 @@ spec:RegisterAbilities( {
         -- #1: { 'type': DUMMY, 'subtype': NONE, 'pvp_multiplier': 1.5, 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
-        -- windwalker_monk[137025] #26: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -240000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+        -- windwalker_monk[137025] #25: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -240000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
         -- expeditious_fortification[388813] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -30000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
         -- ironshell_brew[388814] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
         -- ironshell_brew[388814] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
@@ -1321,9 +1319,9 @@ spec:RegisterAbilities( {
         -- #0: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 185099, 'points': 1.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
 
         -- Affected by:
-        -- windwalker_monk[137025] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 16.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk[137025] #11: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -500.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
-        -- windwalker_monk[137025] #15: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 40.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 40.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- monk[137022] #0: { 'type': APPLY_AURA, 'subtype': MOD_COOLDOWN_BY_HASTE_REGEN, 'target': TARGET_UNIT_CASTER, }
         -- fast_feet[388809] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 70.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- brawlers_intensity[451485] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -1000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
@@ -1371,10 +1369,9 @@ spec:RegisterAbilities( {
         -- #1: { 'type': DUMMY, 'subtype': NONE, }
 
         -- Affected by:
-        -- windwalker_monk[137025] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 22.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 12.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk[137025] #11: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -500.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
-        -- windwalker_monk[137025] #19: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
-        -- windwalker_monk[137025] #27: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 7000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+        -- windwalker_monk[137025] #26: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 7000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
         -- monk[137022] #0: { 'type': APPLY_AURA, 'subtype': MOD_COOLDOWN_BY_HASTE_REGEN, 'target': TARGET_UNIT_CASTER, }
         -- storm_earth_and_fire[137639] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- storm_earth_and_fire[137639] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
@@ -1433,7 +1430,6 @@ spec:RegisterAbilities( {
         -- #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
-        -- windwalker_monk[137025] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- elusive_mists[388681] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -6.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
     },
 
@@ -1459,7 +1455,6 @@ spec:RegisterAbilities( {
         -- #1: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_TAKEN, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
-        -- windwalker_monk[137025] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- renewing_mist[119611] #1: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- chi_proficiency[450426] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- elusive_mists[388681] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -6.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
@@ -1511,7 +1506,6 @@ spec:RegisterAbilities( {
 
         -- Affected by:
         -- windwalker_monk[137025] #11: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -500.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
-        -- windwalker_monk[137025] #19: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
         -- fast_feet[388809] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- crane_vortex[388848] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- crane_vortex[388848] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
@@ -1565,9 +1559,9 @@ spec:RegisterAbilities( {
         -- #3: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 395521, 'value': 500, 'schools': ['fire', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
-        -- windwalker_monk[137025] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #13: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- communion_with_wind[451576] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- communion_with_wind[451576] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- communion_with_wind[451576] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 80.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- storm_earth_and_fire[137639] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- storm_earth_and_fire[137639] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- tigereye_brew[247483] #0: { 'type': APPLY_AURA, 'subtype': MOD_ABILITY_SCHOOL_MASK, 'value': 8, 'schools': ['nature'], 'target': TARGET_UNIT_CASTER, }
@@ -1597,11 +1591,11 @@ spec:RegisterAbilities( {
         -- windwalker_monk[137025] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk[137025] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- windwalker_monk[137025] #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
-        -- windwalker_monk[137025] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 16.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk[137025] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 125.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk[137025] #11: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -500.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
-        -- windwalker_monk[137025] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- windwalker_monk[137025] #28: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
+        -- windwalker_monk[137025] #13: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #27: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
         -- windwalker_monk_twohand_adjustment[346104] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- windwalker_monk_twohand_adjustment[346104] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- efficient_training[450989] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1787,10 +1781,10 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 1.98478, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 2.58, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
-        -- windwalker_monk[137025] #20: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.34, 'points': 150.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- windwalker_monk[137025] #19: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.34, 'points': 150.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- renewing_mist[119611] #1: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- chi_proficiency[450426] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- temple_training[442743] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }

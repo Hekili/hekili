@@ -106,7 +106,7 @@ spec:RegisterTalents( {
     lunar_amplification           = { 94596, 429529, 1 }, -- Each non-Arcane damaging ability you use increases the damage of your next Arcane damaging ability by $431250s1%, stacking up to $431250U times.
     lunar_beam                    = { 92587, 204066, 1 }, -- Summons a beam of lunar light at your location, increasing your mastery by ${$s2*$mas}%, dealing ${$414613s1*$s1} Arcane damage, and healing you for ${$204069s1*$s1} over $m1 sec.
     lunar_calling                 = { 94590, 429523, 1 }, -- $?a137013[Starfire deals $s1% increased damage to its primary target, but no longer triggers Solar Eclipse.][Thrash now deals Arcane damage and its damage is increased by $s2%.]
-    lunar_insight                 = { 94588, 429530, 1 }, -- Moonfire deals 10% additional damage.
+    lunar_insight                 = { 94588, 429530, 1 }, -- Moonfire deals $s1 additional damage.
     lunation                      = { 94586, 429539, 1 }, -- $?a137013[Your Arcane abilities reduce the cooldown of Fury of Elune by ${$s1/-1000}.1 sec and the cooldown of New Moon, Half Moon, and Full Moon by ${$s2/-1000}.1 sec.][Your Arcane abilities reduce the cooldown of Lunar Beam by ${$s3/-1000}.1 sec.]; 
     mangle                        = { 82131, 231064, 1 }, -- Mangle deals $33917s3% additional damage against bleeding targets.
     maul                          = { 82127, 6807  , 1 }, -- Maul the target for $s2 Physical damage.
@@ -193,7 +193,7 @@ spec:RegisterAuras( {
         -- oakskin[449191] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
         -- verdant_heart[301768] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
         -- reinforced_fur[393618] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
-        -- survival_of_the_fittest[203965] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+        -- survival_of_the_fittest[203965] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -12.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
         -- ursocs_endurance[393611] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
     },
     -- Armor increased by $w4%.; Stamina increased by $1178s2%.; Immune to Polymorph effects.$?$w13<0[; Arcane damage taken reduced by $w14% and all other magic damage taken reduced by $w13%.][]
@@ -731,7 +731,7 @@ spec:RegisterAuras( {
     -- Dealing $w2% reduced damage to $@auracaster.
     pulverize = {
         id = 80313,
-        duration = 10.0,
+        duration = 8.0,
         max_stack = 1,
 
         -- Affected by:
@@ -757,7 +757,7 @@ spec:RegisterAuras( {
     -- Prevents $s3% of all damage you take, increases damage done by $s5%, grants $s3% leech, and reflects $219432s1 Nature damage back at your attackers.
     rage_of_the_sleeper = {
         id = 200851,
-        duration = 10.0,
+        duration = 8.0,
         max_stack = 1,
     },
     -- Stunned.
@@ -1129,7 +1129,7 @@ spec:RegisterAbilities( {
         -- oakskin[449191] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
         -- verdant_heart[301768] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
         -- reinforced_fur[393618] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
-        -- survival_of_the_fittest[203965] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+        -- survival_of_the_fittest[203965] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -12.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
         -- ursocs_endurance[393611] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
     },
 
@@ -1522,7 +1522,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': OBS_MOD_HEALTH, 'attributes': ['Compute Points Only At Cast Time'], 'tick_time': 1.0, 'pvp_multiplier': 0.626, 'points': 8.0, 'target': TARGET_UNIT_CASTER, }
+        -- #0: { 'type': APPLY_AURA, 'subtype': OBS_MOD_HEALTH, 'attributes': ['Compute Points Only At Cast Time'], 'tick_time': 1.0, 'pvp_multiplier': 0.626, 'points': 5.0, 'target': TARGET_UNIT_CASTER, }
         -- #1: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_PCT, 'attributes': ['Compute Points Only At Cast Time'], 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
         -- #2: { 'type': APPLY_AREA_AURA_PARTY, 'subtype': MOD_PET_TALENT_POINTS, 'target': TARGET_UNIT_CASTER, }
 
@@ -1753,7 +1753,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': UNKNOWN, 'points': 120.0, 'value': 1, 'schools': ['physical'], 'target': TARGET_UNIT_CASTER, }
+        -- #0: { 'type': APPLY_AURA, 'subtype': UNKNOWN, 'points': 112.0, 'value': 1, 'schools': ['physical'], 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
         -- ursine_adept[300346] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 19.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
@@ -2345,7 +2345,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 2.076, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 2.6988, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_HEAL, 'tick_time': 2.0, 'sp_bonus': 0.0864, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
@@ -2476,7 +2476,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL_PCT, 'subtype': NONE, 'points': 30.0, 'target': TARGET_UNIT_CASTER, }
+        -- #0: { 'type': HEAL_PCT, 'subtype': NONE, 'points': 20.0, 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
         -- bear_form[5487] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': THREAT, }

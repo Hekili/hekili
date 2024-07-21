@@ -140,6 +140,7 @@ spec:RegisterTalents( {
 -- PvP Talents
 spec:RegisterPvpTalents( {
     arcanosphere               = 5397, -- (353128) Builds a sphere of Arcane energy, gaining power over $d. Upon release, the sphere passes through any barriers, knocking enemies back and dealing up to $<wave> Arcane damage.
+    chrono_shift               = 5661, -- (235711) Arcane Barrage slows enemies by $236298s% and increases your movement speed by $236299s% for $236299d.
     ethereal_blink             = 5601, -- (410939) Blink and Shimmer apply Slow at $s2% effectiveness to all enemies you Blink through. For each enemy you Blink through, the cooldown of Blink and Shimmer are reduced by $s3 sec, up to $s4 sec.
     ice_wall                   = 5488, -- (352278) Conjures an Ice Wall $s3 yards long that obstructs line of sight. The wall has $s4% of your maximum health and lasts up to $d.
     improved_mass_invisibility = 637 , -- (415945) The cooldown of Mass Invisibility is reduced by ${$s1/-60000} min and can affect allies in combat.
@@ -256,6 +257,12 @@ spec:RegisterAuras( {
 
         -- Affected by:
         -- frigid_winds[235224] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+    },
+    -- Movement speed slowed by $s1%.
+    chrono_shift = {
+        id = 236299,
+        duration = 5.0,
+        max_stack = 1,
     },
     -- Your next Arcane Blast is free.
     concentration = {
@@ -1594,7 +1601,7 @@ spec:RegisterAbilities( {
     mass_barrier = {
         id = 414660,
         cast = 0.0,
-        cooldown = 120.0,
+        cooldown = 180.0,
         gcd = "global",
 
         spend = 0.120,

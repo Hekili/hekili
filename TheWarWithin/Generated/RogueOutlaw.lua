@@ -41,7 +41,7 @@ spec:RegisterTalents( {
     master_poisoner           = { 90636, 378436, 1 }, -- Increases the non-damaging effects of your weapon poisons by $s1%.
     nimble_fingers            = { 90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by $s1.
     numbing_poison            = { 90763, 5761  , 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for $d. Each strike has a $5761h% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by $5760s1% for $5760d.
-    recuperator               = { 90640, 378996, 1 }, -- Slice and Dice heals you for up to $s1% of your maximum health per 2 sec.
+    recuperator               = { 90640, 378996, 1 }, -- Slice and Dice heals you for up to $s1% of your maximum health per $426605t sec.
     resounding_clarity        = { 90638, 381622, 1 }, -- Echoing Reprimand Animacharges $m1 additional combo $Lpoint:points;.
     reverberation             = { 90638, 394332, 1 }, -- Echoing Reprimand's damage is increased by $s1%.
     rushed_setup              = { 90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by $s1%.
@@ -628,7 +628,6 @@ spec:RegisterAuras( {
         -- shadowheart[455131] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
         -- shadowrunner[378807] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
         -- subterfuge[108208] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'trigger_spell': 1784, 'triggers': stealth, 'spell': 115191, 'value': 1784, 'schools': ['nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
-        -- hit_and_run[196922] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'sp_bonus': 0.25, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
     },
     -- Damage taken increased by $w1%.
     stinging_vulnerability = {
@@ -680,7 +679,6 @@ spec:RegisterAuras( {
         -- shadowheart[455131] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
         -- shadowrunner[378807] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
         -- subterfuge[108208] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_5_VALUE, }
-        -- hit_and_run[196922] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'sp_bonus': 0.25, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
     },
     -- Healing effects reduced by $w2%.
     wound_poison = {
@@ -1086,7 +1084,7 @@ spec:RegisterAbilities( {
         -- cloud_cover[441429] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 441587, 'target': TARGET_UNIT_CASTER, }
     },
 
-    -- Throws a distraction, attracting the attention of all nearby monsters and leaving a cloud of smoke for $d. Usable while stealthed.; Attacks from within the cloud afflict targets with Distracted for $441224d.
+    -- Throws a distraction, attracting the attention of all nearby monsters and leaving a cloud of smoke for $d. Usable while stealthed.; Attacks from within the cloud afflict targets with Fazed for $441224d.
     distract_441587 = {
         id = 441587,
         cast = 0.0,
@@ -1679,7 +1677,6 @@ spec:RegisterAbilities( {
         -- shadowheart[455131] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
         -- shadowrunner[378807] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
         -- subterfuge[108208] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'trigger_spell': 1784, 'triggers': stealth, 'spell': 115191, 'value': 1784, 'schools': ['nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
-        -- hit_and_run[196922] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'sp_bonus': 0.25, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
     },
 
     -- Restore $s1 Energy. Mastery increased by ${$s2*$mas}.1% for $d.

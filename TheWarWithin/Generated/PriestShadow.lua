@@ -79,7 +79,7 @@ spec:RegisterTalents( {
     dark_energy                = { 94693, 451018, 1 }, -- $?c3[Void Torrent can be used while moving. ][]While Entropic Void is active, you move $s1% faster. 
     dark_evangelism            = { 82660, 391095, 2 }, -- Your Mind Flay, Mind Spike, and Void Torrent damage increase the damage of your periodic Shadow effects by $s2%, stacking up to $391099U times.
     darkening_horizon          = { 94695, 449912, 1 }, -- Void Blast increases the duration of Entropic Rift by $?c1[${$s1}.1][${$s3}.1] sec, up to a maximum of $s2 sec.
-    deathspeaker               = { 82558, 392507, 1 }, -- Your Shadow Word: Pain damage has a chance to reset the cooldown of Shadow Word: Death, increase its damage by $392511s2%, and deal damage as if striking a target below $32379s2% health.
+    deathspeaker               = { 82558, 392507, 1 }, -- Your Shadow Word: Pain damage has a chance to reset the cooldown of Shadow Word: Death, increase its damage by $392511s2%, and deal damage as if striking a target below $32379s3% health.
     depth_of_shadows           = { 100212, 451308, 1 }, -- Shadow Word: Death has a high chance to summon a Shadowfiend for $s1 sec when damaging targets below $s2% health.
     devour_matter              = { 94668, 451840, 1 }, -- Shadow Word: Death consumes absorb shields from your target, dealing $32379s1 extra damage to them and granting you $?c3[$s3 Insanity][$s2% mana] if a shield was present.
     devouring_plague           = { 82665, 335467, 1 }, -- Afflicts the target with a disease that instantly causes $s1 Shadow damage plus an additional $o2 Shadow damage over $d. Heals you for ${($e2+$137033s17+$137033s18)*100}% of damage dealt.; If this effect is reapplied, any remaining damage will be added to the new Devouring Plague.
@@ -316,7 +316,7 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         -- Affected by:
-        -- discipline_priest[137032] #15: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
+        -- discipline_priest[137032] #14: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
         -- holy_priest[137031] #12: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
     },
     -- Conjuring $373273s1 Shadowy Apparitions will summon a Thing from Beyond.
@@ -395,10 +395,10 @@ spec:RegisterAuras( {
         -- voidform[194249] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -447,7 +447,7 @@ spec:RegisterAuras( {
         -- Affected by:
         -- dark_ascension[391109] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twilight_equilibrium[390707] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #13: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -38.81, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -38.81, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- holy_priest[137031] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- holy_priest[137031] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
@@ -490,8 +490,8 @@ spec:RegisterAuras( {
         -- benevolence[415416] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
         -- phantom_reach[459559] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
         -- inner_quietus[448278] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
-        -- discipline_priest[137032] #19: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 33.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
-        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
+        -- discipline_priest[137032] #18: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 33.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
+        -- discipline_priest[137032] #21: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
     },
     -- Damage taken reduced by $w1%.
     protective_light = {
@@ -535,8 +535,8 @@ spec:RegisterAuras( {
         -- renew[139] #1: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- discipline_priest[137032] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- discipline_priest[137032] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #17: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #18: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #16: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #17: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -555,7 +555,7 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         -- Affected by:
-        -- discipline_priest[137032] #27: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -37.5, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+        -- discipline_priest[137032] #26: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -37.5, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
     -- Taking $s1% increased damage from the Priest.
     schism = {
@@ -621,10 +621,10 @@ spec:RegisterAuras( {
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
         -- discipline_priest[137032] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 18.1, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- discipline_priest[137032] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 18.1, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -754,10 +754,10 @@ spec:RegisterAuras( {
         -- voidform[194249] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1055,7 +1055,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'amplitude': 1.0, 'sp_bonus': 2.842, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'amplitude': 1.0, 'sp_bonus': 3.4104, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
         -- shadow_priest[137033] #15: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 46.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1069,7 +1069,7 @@ spec:RegisterAbilities( {
         -- unwavering_will[373456] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': GLOBAL_COOLDOWN, }
         -- discipline_priest[137032] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- discipline_priest[137032] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #16: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 63.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #15: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 63.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- surge_of_light[114255] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
         -- surge_of_light[114255] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
         -- surge_of_light[114255] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': IGNORE_SHAPESHIFT, }
@@ -1161,10 +1161,10 @@ spec:RegisterAbilities( {
         -- voidform[194249] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- rhapsody[390636] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- holy_priest[137031] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
@@ -1328,10 +1328,10 @@ spec:RegisterAbilities( {
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
         -- discipline_priest[137032] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 80.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1394,10 +1394,10 @@ spec:RegisterAbilities( {
         -- voidform[194249] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1457,10 +1457,10 @@ spec:RegisterAbilities( {
         -- voidform[194249] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1534,7 +1534,7 @@ spec:RegisterAbilities( {
         -- Affected by:
         -- dark_ascension[391109] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twilight_equilibrium[390707] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #13: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -38.81, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -38.81, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- holy_priest[137031] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- holy_priest[137031] #9: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
@@ -1550,7 +1550,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': MELEE_SLOW, 'sp_bonus': 0.25, 'points': 20.0, 'value': 126, 'schools': ['holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, 'target2': TARGET_UNIT_CASTER, }
+        -- #0: { 'type': APPLY_AURA, 'subtype': MELEE_SLOW, 'sp_bonus': 0.25, 'points': 20.0, 'value': 126, 'schools': ['holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
     },
 
     -- Infuses the target with vitality, increasing their Stamina by $s1% for $d.; If the target is in your party or raid, all party and raid members will be affected.
@@ -1590,7 +1590,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 8.625, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 10.35, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #1: { 'type': DUMMY, 'subtype': NONE, }
         -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #3: { 'type': UNKNOWN, 'subtype': NONE, 'points': 20.0, }
@@ -1621,7 +1621,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'sp_bonus': 3.36, 'variance': 0.05, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'sp_bonus': 4.032, 'variance': 0.05, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'tick_time': 1.0, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
@@ -1632,8 +1632,8 @@ spec:RegisterAbilities( {
         -- benevolence[415416] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
         -- phantom_reach[459559] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
         -- inner_quietus[448278] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
-        -- discipline_priest[137032] #19: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 33.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
-        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
+        -- discipline_priest[137032] #18: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 33.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
+        -- discipline_priest[137032] #21: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_24, }
     },
 
     -- Places a ward on an ally that heals them for $33110s1 the next time they take damage, and then jumps to another ally within $155793a1 yds. Jumps up to $s1 times and lasts $41635d after each jump.
@@ -1783,8 +1783,8 @@ spec:RegisterAbilities( {
         -- renew[139] #1: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- discipline_priest[137032] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- discipline_priest[137032] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #17: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #18: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #16: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #17: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1850,9 +1850,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         -- Effects:
-        -- #0: { 'type': TRIGGER_MISSILE, 'subtype': NONE, 'trigger_spell': 205386, 'radius': 8.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- #0: { 'type': TRIGGER_MISSILE, 'subtype': NONE, 'trigger_spell': 205386, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, }
         -- #1: { 'type': ENERGIZE, 'subtype': NONE, 'points': 600.0, 'target': TARGET_UNIT_CASTER, 'resource': insanity, }
-        -- #2: { 'type': TRIGGER_MISSILE, 'subtype': NONE, 'trigger_spell': 391286, 'radius': 8.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- #2: { 'type': TRIGGER_MISSILE, 'subtype': NONE, 'trigger_spell': 391286, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, }
 
         -- Affected by:
         -- dark_ascension[391109] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1904,7 +1904,7 @@ spec:RegisterAbilities( {
         -- shadow_priest[137033] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- shadow_priest[137033] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': 60.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- shadow_priest[137033] #19: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -42.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- shadow_priest[137033] #22: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 400.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
+        -- shadow_priest[137033] #22: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 400.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_5_VALUE, }
         -- shadow_priest[137033] #24: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
         -- shadow_priest[137033] #29: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- shadow_priest[137033] #30: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
@@ -1922,10 +1922,10 @@ spec:RegisterAbilities( {
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
         -- discipline_priest[137032] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -1992,10 +1992,10 @@ spec:RegisterAbilities( {
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
         -- discipline_priest[137032] #6: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 18.1, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- discipline_priest[137032] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 18.1, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -2100,10 +2100,10 @@ spec:RegisterAbilities( {
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
         -- discipline_priest[137032] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -2187,10 +2187,10 @@ spec:RegisterAbilities( {
         -- voidform[194249] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- voidform[194249] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- voidform[194249] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
-        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- discipline_priest[137032] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- discipline_priest[137032] #22: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- discipline_priest[137032] #23: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- twist_of_fate[390978] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- twist_of_fate[390978] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_priest[137031] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 43.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }

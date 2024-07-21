@@ -13,7 +13,7 @@ spec:RegisterResource( Enum.PowerType.Maelstrom )
 
 spec:RegisterTalents( {
     -- Shaman Talents
-    ancestral_guidance        = { 103580, 108281, 1 }, -- For the next $d, $s1% of your healing done and $s2% of your damage done is converted to healing on up to $s4 nearby injured party or raid members, up to ${$MHP*$s3/100} healing to each target per second.
+    ancestral_guidance        = { 103810, 108281, 1 }, -- For the next $d, $s1% of your healing done and $s2% of your damage done is converted to healing on up to $s4 nearby injured party or raid members, up to ${$MHP*$s3/100} healing to each target per second.
     ancestral_wolf_affinity   = { 103610, 382197, 1 }, -- Cleanse Spirit, Wind Shear, Purge, and totem casts no longer cancel Ghost Wolf.
     arctic_snowstorm          = { 103619, 462764, 1 }, -- Enemies within $s1 yds of your Frost Shock are snared by $462765s1%.
     ascending_air             = { 103607, 462791, 1 }, -- Wind Rush Totem's cooldown is reduced by ${$s1/-1000} sec and its movement speed effect lasts an additional ${$s2/1000} sec.
@@ -101,12 +101,12 @@ spec:RegisterTalents( {
     hot_hand                  = { 80945, 201900, 2 }, -- Melee auto-attacks with Flametongue Weapon active have a $h% chance to reduce the cooldown of Lava Lash by ${100*(1-(100/(100+$m2)))}% and increase the damage of Lava Lash by $s3% for $215785d.
     ice_strike                = { 80956, 342240, 1 }, -- Strike your target with an icy blade, dealing $s1 Frost damage and snaring them by $s2% for $d.; Ice Strike increases the damage of your next Frost Shock by $384357s1%$?s384359[ and generates $384359s1 $Lstack:stacks; of Maelstrom Weapon][].
     imbuement_mastery         = { 94871, 445028, 1 }, -- $?a137041[Increases the chance for Windfury Weapon to trigger by $s1% and increases its damage by $s2%.][Increases the duration of your  Earthliving effect by ${$s3/1000} sec.]; 
-    improved_maelstrom_weapon = { 80957, 383303, 2 }, -- Maelstrom Weapon now increases the damage of spells it affects by $s1% per stack and the healing of spells it affects by $s2% per stack.
+    improved_maelstrom_weapon = { 80957, 383303, 1 }, -- Maelstrom Weapon now increases the damage of spells it affects by $s1% per stack and the healing of spells it affects by $s2% per stack.
     lashing_flames            = { 80948, 334046, 1 }, -- Lava Lash increases the damage of Flame Shock on its target by $334168s1% for $334168d.
     lava_lash                 = { 80942, 60103 , 1 }, -- Charges your off-hand weapon with lava and burns your target, dealing $s1 Fire damage.; Damage is increased by $s2% if your offhand weapon is imbued with Flametongue Weapon. $?s334033[Lava Lash will spread Flame Shock from your target to $s3 nearby targets.][]$?s334046[; Lava Lash increases the damage of Flame Shock on its target by $334168s1% for $334168d.][]
     legacy_of_the_frost_witch = { 80951, 384450, 2 }, -- Consuming $s2 stacks of Maelstrom Weapon will reset the cooldown of Stormstrike and increases the damage of your Physical and Frost abilities by $s1% for $384451d.
     lively_totems             = { 94882, 445034, 1 }, -- $?a137041[Lava Lash has a chance to summon a Searing Totem to hurl Searing Bolts that deal $3606s1 Fire damage to a nearby enemy. Lasts $458101d.][Your Healing Tide Totem, Healing Stream Totem, Cloudburst Totem, Mana Tide Totem, and Spirit Link Totem cast a free, instant Chain Heal at $458221s2% effectiveness when you summon them.]
-    molten_assault            = { 80943, 334033, 2 }, -- Lava Lash cooldown reduced by ${$m1/-1000}.1 sec, and if Lava Lash is used against a target affected by your Flame Shock, Flame Shock will be spread to up to $s2 enemies near the target.
+    molten_assault            = { 80943, 334033, 1 }, -- Lava Lash cooldown reduced by ${$m1/-1000}.1 sec, and if Lava Lash is used against a target affected by your Flame Shock, Flame Shock will be spread to up to $s2 enemies near the target.
     natures_protection        = { 94880, 454027, 1 }, -- Targets struck by your Tempest deal $454029s1% less damage to you for $454029d.
     overflowing_maelstrom     = { 80938, 384149, 1 }, -- Your damage or healing spells will now consume up to $s1 Maelstrom Weapon stacks. 
     oversized_totems          = { 94859, 445026, 1 }, -- Increases the size and radius of your totems by $458016s2%, and the health of your totems by $458016s1%.
@@ -144,7 +144,7 @@ spec:RegisterTalents( {
     whirling_elements         = { 94879, 445024, 1 }, -- [453409] $?a137041[Your next Stormstrike or Windstrike deals $s2% increased damage and damages $s3 nearby $Lenemy:enemies; at $s4% effectiveness.][The cast time of your next healing spell is reduced by $s1%.]; 
     wind_barrier              = { 94891, 445031, 1 }, -- If you have a totem active, your totem grants you a shield absorbing ${$mhp*$s1/100} damage for $457387d every $457390d.
     windfury_weapon           = { 80958, 33757 , 1 }, -- Imbue your main-hand weapon with the element of Wind for $319773d. Each main-hand attack has a $319773h% chance to trigger $?s390288[three][two] extra attacks, dealing $25504sw1 Physical damage each.$?s262647[; Windfury causes each successive Windfury attack within $262652d to increase the damage of Windfury by $262652s1%, stacking up to $262652u times.][]
-    witch_doctors_ancestry    = { 80971, 384447, 2 }, -- Increases the chance to gain a stack of Maelstrom Weapon by $s1%, and whenever you gain a stack of Maelstrom Weapon, the cooldown of Feral Spirits is reduced by ${$m2/1000}.1 sec.
+    witch_doctors_ancestry    = { 80971, 384447, 1 }, -- Increases the chance to gain a stack of Maelstrom Weapon by $s1%, and whenever you gain a stack of Maelstrom Weapon, the cooldown of Feral Spirits is reduced by ${$m2/1000}.1 sec.
 } )
 
 -- PvP Talents
@@ -175,6 +175,9 @@ spec:RegisterAuras( {
         duration = 10.0,
         tick_time = 0.5,
         max_stack = 1,
+
+        -- Affected by:
+        -- restoration_shaman[137039] #29: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
     -- Your next $s3 Chain Lightning spells are instant cast and will deal $s2% increased damage.
     arc_discharge = {
@@ -602,9 +605,11 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         -- Affected by:
+        -- enhancement_shaman[137041] #25: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- totemic_focus[382201] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
         -- oversized_totems[445026] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
         -- restoration_shaman[137039] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 12.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- elemental_shaman[137040] #28: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- tidecallers_guard[457496] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
     },
     -- Cannot benefit from Bloodlust or other similar effects.
@@ -840,6 +845,9 @@ spec:RegisterAbilities( {
         -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 25.0, 'target': TARGET_UNIT_CASTER, }
         -- #2: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 20.0, 'target': TARGET_UNIT_CASTER, }
         -- #3: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 3.0, 'target': TARGET_UNIT_CASTER, }
+
+        -- Affected by:
+        -- restoration_shaman[137039] #29: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
 
     -- Returns the spirit to the body, restoring a dead target to life with $s1% of maximum health and mana. Cannot be cast when in combat.
@@ -1188,7 +1196,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         -- Effects:
-        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'attributes': ['Add Target (Dest) Combat Reach to AOE', 'Area Effects Use Target Radius'], 'ap_bonus': 0.264, 'variance': 0.05, 'radius': 8.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
+        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'attributes': ['Add Target (Dest) Combat Reach to AOE', 'Area Effects Use Target Radius'], 'ap_bonus': 0.264, 'variance': 0.05, 'radius': 12.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
         -- #1: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
@@ -1209,7 +1217,7 @@ spec:RegisterAbilities( {
     doom_winds = {
         id = 384352,
         cast = 0.0,
-        cooldown = 90.0,
+        cooldown = 60.0,
         gcd = "global",
 
         talent = "doom_winds",
@@ -1747,7 +1755,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 4.08, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 4.896, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
         -- enhancement_shaman[137041] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -4.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
@@ -2083,8 +2091,8 @@ spec:RegisterAbilities( {
         -- shaman[137038] #2: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
         -- fire_and_ice[382886] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- spiritwalkers_grace[79206] #0: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'value': 7, 'schools': ['physical', 'holy', 'fire'], 'target': TARGET_UNIT_CASTER, }
-        -- molten_assault[334033] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -3000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- molten_assault[334033] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
+        -- molten_assault[334033] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -6000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+        -- molten_assault[334033] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 4.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
         -- ashen_catalyst[390371] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.33333, 'points': 12.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- hot_hand[215785] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- hot_hand[215785] #1: { 'type': APPLY_AURA, 'subtype': ABILITY_PERIODIC_CRIT, 'target': TARGET_UNIT_CASTER, }
@@ -2526,7 +2534,7 @@ spec:RegisterAbilities( {
         -- legacy_of_the_frost_witch[384451] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
     },
 
-    -- $?a137039[Summons a totem at the target location that maintains Healing Rain for $d. Heals for $455630s3% more than a normal Healing Rain.; Replaces Healing Rain.][Summons a totem at the target location that creates a Seismic Wave immediately and every $455593t1 sec for $455622s1 Physical damage. Damage reduced beyond $455622s2 targets. Lasts $d.]
+    -- $?a137039[Summons a totem at the target location that maintains Healing Rain for $d. Heals for $455630s3% more than a normal Healing Rain.; Replaces Healing Rain.][Summons a totem at the target location that creates a Tremor immediately and every $455593t1 sec for $455622s1 Physical damage. Damage reduced beyond $455622s2 targets. Lasts $d.]
     surging_totem = {
         id = 444995,
         cast = 0.0,
@@ -2544,6 +2552,7 @@ spec:RegisterAbilities( {
 
         -- Effects:
         -- #0: { 'type': SUMMON, 'subtype': NONE, 'value': 225409, 'schools': ['physical'], 'value1': 5967, 'target': TARGET_DEST_DEST, }
+        -- #1: { 'type': DUMMY, 'subtype': NONE, 'radius': 10.0, 'target': TARGET_DEST_DEST, }
 
         -- Affected by:
         -- ancestral_wolf_affinity[382197] #0: { 'type': APPLY_AURA, 'subtype': MOD_IGNORE_SHAPESHIFT, 'target': TARGET_UNIT_CASTER, }

@@ -73,7 +73,7 @@ spec:RegisterTalents( {
     demoniacs_fervor               = { 94832, 449629, 1 }, -- Your demonic soul deals $s1% increased damage to $?s137043[targets affected by your Unstable Affliction.][the main target of Hand of Gul'dan.]
     demonic_brutality              = { 101920, 453908, 1 }, -- Critical strikes from your spells and your demons deal $s1% increased damage.
     demonic_calling                = { 101903, 205145, 1 }, -- Shadow Bolt$?s264178[ and Demonbolt have][ has] a $s3% chance to make your next Call Dreadstalkers cost $s1 fewer Soul $LShard:Shards; and have no cast time.
-    demonic_soul                   = { 94851, 449614, 1 }, -- A demonic entity now inhabits your soul, allowing you to detect if a Soul Shard has a Succulent Soul when it's generated. ; A Succulent Soul empowers your next $?s137043[Malefic Rapture, increasing its damage by $449793s2%, and unleashing your demonic soul to deal an additional $449801s1 Shadow damage.][Hand of Gul'dan, increasing its damage by $449793s2%, and unleashing your demonic soul to deal an additional $449801s1 Shadow damage.]
+    demonic_soul                   = { 94851, 449614, 1 }, -- A demonic entity now inhabits your soul, allowing you to detect if a Soul Shard has a Succulent Soul when it's generated. ; A Succulent Soul empowers your next $?s137043[Malefic Rapture, increasing its damage by $449793s2%, and unleashing your demonic soul to deal an additional $449801s1 Shadow damage.][Hand of Gul'dan, increasing its damage by $449793s3%, and unleashing your demonic soul to deal an additional $449801s1 Shadow damage.]
     demonic_strength               = { 101890, 267171, 1 }, -- Infuse your Felguard with demonic strength and command it to charge your target and unleash a Felstorm that will deal $s2% increased damage.
     diabolic_ritual                = { 94855, 428514, 1 }, -- Spending a Soul Shard on a damaging spell grants Diabolic Ritual for $431944d. While Diabolic Ritual is active, each Soul Shard spent on a damaging spell reduces its duration by $s1 sec.; When Diabolic Ritual expires you gain Demonic Art, causing your next $?s137044[Hand of Gul'dan][Chaos Bolt, Rain of Fire, or Shadowburn] to summon an Overlord, Mother of Chaos, or Pit Lord that unleashes a devastating attack against your enemies.
     doom                           = { 101919, 460551, 1 }, -- When Demonbolt consumes a Demonic Core it inflicts impending doom upon the target, dealing $460555s1 Shadow damage to enemies within $460555a1 yds of its target after $460553d or when removed. Damage is reduced beyond $s2 targets.; Consuming a Demonic Core reduces the duration of Doom by ${$s1/1000} sec.
@@ -516,7 +516,7 @@ spec:RegisterAuras( {
         duration = 600.0,
         max_stack = 1,
     },
-    -- $?s137043[Malefic Rapture deals $s2% increased damage.][Hand of Gul'dan deals $s2% increased damage.]; Unleashes your demonic entity upon consumption, dealing an additional $449801s~1 Shadow damage to enemies.
+    -- $?s137043[Malefic Rapture deals $s2% increased damage.][Hand of Gul'dan deals $s3% increased damage.]; Unleashes your demonic entity upon consumption, dealing an additional $449801s~1 Shadow damage to enemies.
     succulent_soul = {
         id = 449793,
         duration = 30.0,
@@ -870,7 +870,7 @@ spec:RegisterAbilities( {
 
         -- Effects:
         -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'pvp_multiplier': 0.5, 'points': 300.0, 'target': TARGET_UNIT_PET, }
+        -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'pvp_multiplier': 0.75, 'points': 300.0, 'target': TARGET_UNIT_PET, }
     },
 
     -- Rips a hole in time and space, opening a portal that damages your target.; Generates $s2 Soul Shard Fragments.

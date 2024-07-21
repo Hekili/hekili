@@ -105,7 +105,7 @@ spec:RegisterTalents( {
     liberation                      = { 102502, 461287, 1 }, -- Word of Glory and Light of Dawn have a chance equal to your haste to reduce the cost of your next Holy Light, Crusader Strike, or Judgment by $461471s1.
     light_of_dawn                   = { 81565, 85222 , 1 }, -- Unleashes a wave of Holy energy, healing up to $s1 injured allies within a $?a337812[$a3]?a387879[$a3][$a1] yd frontal cone for $225311s1.
     light_of_the_martyr             = { 81561, 447985, 1 }, -- While above $s1% health, Holy Shock's healing is increased $447988s1%, but creates a heal absorb on you for $s2% of the amount healed that prevents Beacon of Light from healing you until it has dissipated.
-    lightforged_blessing            = { 93168, 406468, 1 }, -- $?s2812[Denounce][Shield of the Righteous] heals you and up to $s3 nearby allies for $53600s2% of maximum health.
+    lightforged_blessing            = { 93168, 406468, 1 }, -- $?s2812[Denounce][Shield of the Righteous] heals you and up to $s3 nearby allies for ${$53600s2}.1% of maximum health.
     lights_conviction               = { 93927, 414073, 1 }, -- Holy Shock now has ${$s1+1} charges.
     lights_protection               = { 93522, 461243, 1 }, -- Allies with Beacon of Light receive $s1% less damage.
     lingering_radiance              = { 95071, 431407, 1 }, -- Dawnlight leaves an Eternal Flame for ${$s1/1000} sec on allies or a Greater Judgment on enemies when it expires or is extended.
@@ -219,27 +219,18 @@ spec:RegisterAuras( {
         id = 156910,
         duration = 3600,
         max_stack = 1,
-
-        -- Affected by:
-        -- lights_protection[461243] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_5_VALUE, }
     },
     -- Healed whenever the Paladin heals a nearby ally.$?e3[; Damage taken reduced by $w4%.][]
     beacon_of_light = {
         id = 53563,
         duration = 3600,
         max_stack = 1,
-
-        -- Affected by:
-        -- lights_protection[461243] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
     },
     -- Healed whenever the Paladin heals a nearby ally.$?e2[; Damage taken reduced by $w3%.][]
     beacon_of_virtue = {
         id = 200025,
         duration = 8.0,
         max_stack = 1,
-
-        -- Affected by:
-        -- lights_protection[461243] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
     },
     -- Healing $s1 every $t1 sec.
     bestow_light = {
@@ -584,7 +575,7 @@ spec:RegisterAuras( {
         -- protection_paladin[137028] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- protection_paladin[137028] #4: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
         -- protection_paladin[137028] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -14.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- protection_paladin[137028] #19: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+        -- protection_paladin[137028] #18: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
         -- liberation[461471] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'coefficient': -0.00152381, 'scaling_class': -2, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
     },
     -- Attackers are healed for $183811s1.
@@ -1000,10 +991,7 @@ spec:RegisterAbilities( {
         -- #1: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 53651, 'triggers': lights_beacon, 'target': TARGET_UNIT_CASTER, }
         -- #2: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #3: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #4: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_TAKEN, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
-
-        -- Affected by:
-        -- lights_protection[461243] #2: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_5_VALUE, }
+        -- #4: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_TAKEN, 'points': -5.0, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
     },
 
     -- Wrap a single ally in holy energy, causing your heals on other party or raid members to also heal that ally for $53651s1% of the amount healed.$?a231642[ ; Healing this ally directly with Flash of Light or Holy Light grants $231642s1 Holy Power.][]
@@ -1022,10 +1010,7 @@ spec:RegisterAbilities( {
         -- #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'trigger_spell': 53651, 'triggers': lights_beacon, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #1: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 53651, 'triggers': lights_beacon, 'target': TARGET_UNIT_CASTER, }
         -- #2: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_TAKEN, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
-
-        -- Affected by:
-        -- lights_protection[461243] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_4_VALUE, }
+        -- #3: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_TAKEN, 'points': -5.0, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
     },
 
     -- Apply a Beacon of Light to your target and $s2 injured allies within $A2 yds for $d.; All affected allies will be healed for $53651s1% of the amount of your other healing done.
@@ -1044,10 +1029,7 @@ spec:RegisterAbilities( {
         -- Effects:
         -- #0: { 'type': APPLY_AURA, 'subtype': DUMMY, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 4.0, 'radius': 30.0, 'target': TARGET_DEST_TARGET_ALLY, 'target2': TARGET_UNIT_DEST_AREA_ALLY, }
-        -- #2: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_TAKEN, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
-
-        -- Affected by:
-        -- lights_protection[461243] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -5.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
+        -- #2: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_TAKEN, 'points': -5.0, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ALLY, }
     },
 
     -- Your Blessing of Protection and Blessing of Freedom spells now have 1 additional charge.
@@ -1333,7 +1315,7 @@ spec:RegisterAbilities( {
         -- protection_paladin[137028] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- protection_paladin[137028] #3: { 'type': APPLY_AURA, 'subtype': MOD_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
         -- protection_paladin[137028] #4: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
-        -- protection_paladin[137028] #16: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- protection_paladin[137028] #15: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- liberation[461471] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'coefficient': -0.00152381, 'scaling_class': -2, 'target': TARGET_UNIT_CASTER, 'modifies': IGNORE_SHAPESHIFT, }
     },
 
@@ -1490,7 +1472,7 @@ spec:RegisterAbilities( {
         -- Affected by:
         -- holy_paladin[137029] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- holy_paladin[137029] #14: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': RANGE, }
-        -- paladin[137026] #8: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
+        -- paladin[137026] #7: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
         -- beacon_of_faith[156910] #2: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- quickened_invocation[379391] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'trigger_spell': 375576, 'triggers': divine_toll, 'points': -15000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
         -- divine_purpose[223819] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': IGNORE_SHAPESHIFT, }
@@ -1578,7 +1560,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 2.63, 'pvp_multiplier': 1.12, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 3.156, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
         -- beacon_of_light[53563] #2: { 'type': APPLY_AURA, 'subtype': MOD_HEALING_RECEIVED, 'target': TARGET_UNIT_TARGET_ALLY, }
@@ -1650,7 +1632,7 @@ spec:RegisterAbilities( {
         -- protection_paladin[137028] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- protection_paladin[137028] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- protection_paladin[137028] #4: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
-        -- protection_paladin[137028] #18: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 68.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- protection_paladin[137028] #17: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 68.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
 
     -- Call upon the Light to empower your spells, causing your next $n Holy Lights to heal $s1% more, cost $s3% less mana, and be instant cast.
@@ -1837,7 +1819,7 @@ spec:RegisterAbilities( {
         -- Affected by:
         -- divine_purpose[223819] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
         -- divine_purpose[223819] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.666667, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- protection_paladin[137028] #13: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+        -- protection_paladin[137028] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
     },
 
     -- Stuns the target Player for $d. If the judgment holds for $d, the enemy will be instantly teleported to your jail. Can only be used while in Ashran.
@@ -2118,7 +2100,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         -- Effects:
-        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'ap_bonus': 0.425, 'variance': 0.05, 'radius': 6.0, 'target': TARGET_UNIT_CONE_CASTER_TO_DEST_ENEMY, }
+        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'ap_bonus': 0.425, 'variance': 0.05, 'radius': 6.0, 'target': TARGET_UNIT_CONE_ENEMY_24, }
         -- #1: { 'type': TRIGGER_SPELL_WITH_VALUE, 'subtype': NONE, 'trigger_spell': 403460, 'points': 1.0, }
         -- #2: { 'type': TRIGGER_SPELL_WITH_VALUE, 'subtype': NONE, 'trigger_spell': 407467, 'points': 1.0, }
 
@@ -2220,7 +2202,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 3.15, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 3.465, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
         -- holy_paladin[137029] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'modifies': DAMAGE_HEALING, }
@@ -2234,7 +2216,7 @@ spec:RegisterAbilities( {
         -- divine_purpose[223819] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.666667, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- divine_purpose[223819] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': IGNORE_SHAPESHIFT, }
         -- gleaming_rays[431481] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 6.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- protection_paladin[137028] #17: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 75.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- protection_paladin[137028] #16: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 75.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
 
 } )

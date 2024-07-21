@@ -1528,7 +1528,7 @@ spec:RegisterAbilities( {
     mass_barrier = {
         id = 414660,
         cast = 0.0,
-        cooldown = 120.0,
+        cooldown = 180.0,
         gcd = "global",
 
         spend = 0.120,

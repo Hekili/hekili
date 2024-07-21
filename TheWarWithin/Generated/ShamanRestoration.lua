@@ -13,7 +13,7 @@ spec:RegisterResource( Enum.PowerType.Maelstrom )
 
 spec:RegisterTalents( {
     -- Shaman Talents
-    ancestral_guidance          = { 103580, 108281, 1 }, -- For the next $d, $s1% of your healing done and $s2% of your damage done is converted to healing on up to $s4 nearby injured party or raid members, up to ${$MHP*$s3/100} healing to each target per second.
+    ancestral_guidance          = { 103810, 108281, 1 }, -- For the next $d, $s1% of your healing done and $s2% of your damage done is converted to healing on up to $s4 nearby injured party or raid members, up to ${$MHP*$s3/100} healing to each target per second.
     ancestral_wolf_affinity     = { 103610, 382197, 1 }, -- Cleanse Spirit, Wind Shear, Purge, and totem casts no longer cancel Ghost Wolf.
     arctic_snowstorm            = { 103619, 462764, 1 }, -- Enemies within $s1 yds of your Frost Shock are snared by $462765s1%.
     ascending_air               = { 103607, 462791, 1 }, -- Wind Rush Totem's cooldown is reduced by ${$s1/-1000} sec and its movement speed effect lasts an additional ${$s2/1000} sec.
@@ -80,11 +80,11 @@ spec:RegisterTalents( {
     ancestral_awakening         = { 81043, 382309, 2 }, -- When you heal with your Healing Wave, Healing Surge, or Riptide you have a $s2% chance to summon an Ancestral spirit to aid you, instantly healing an injured friendly party or raid target within 40 yards for $s1% of the amount healed. Critical strikes increase this chance to $s3%.
     ancestral_protection_totem  = { 81046, 207399, 1 }, -- Summons a totem at the target location for $d. All allies within $?s382201[${$207495s1*(1+$382201s3/100)}][$207495s1] yards of the totem gain $207498s1% increased health. If an ally dies, the totem will be consumed to allow them to Reincarnate with $207553s1% health and mana.; Cannot reincarnate an ally who dies to massive damage.
     ancestral_reach             = { 81031, 382732, 1 }, -- Chain Heal bounces an additional time and its healing is increased by $s2%.
-    ancestral_swiftness         = { 94894, 443454, 1 }, -- Your next healing or damaging spell is instant, costs no mana, and deals $s6% increased damage and healing.; If you know Nature's Swiftness, it is replaced by Ancestral Swiftness and causes Ancestral Swiftness to call an Ancestor to your side.
+    ancestral_swiftness         = { 94894, 443454, 1 }, -- [443454] Your next healing or damaging spell is instant, costs no mana, and deals $s6% increased damage and healing.; If you know Nature's Swiftness, it is replaced by Ancestral Swiftness and causes Ancestral Swiftness to call an Ancestor to your side.
     ancestral_vigor             = { 103429, 207401, 1 }, -- Targets you heal with Healing Wave, Healing Surge, Chain Heal, or Riptide's initial heal gain $207400s2% increased health for $207400d.
     ancient_fellowship          = { 94862, 443423, 1 }, -- Ancestors have a $s1% chance to call another Ancestor when they expire.
     ascendance                  = { 81055, 114052, 1 }, -- Transform into a Water Ascendant, duplicating all healing you deal at $s4% effectiveness for $114051d and immediately healing for $294020s1. Ascendant healing is distributed evenly among allies within $114083A1 yds.
-    call_of_the_ancestors       = { 94888, 443450, 1 }, -- $?a137040[Primordial Wave][Triggering Undulation or casting Unleash Life] calls an Ancestor to your side for 6 sec. Whenever you cast a healing or damaging spell, the Ancestor will cast a similar spell.
+    call_of_the_ancestors       = { 94888, 443450, 1 }, -- $?a137040[Primordial Wave calls an Ancestor to your side for $445624d. ][Benefiting from Undulation calls an Ancestor to your side for $445624d.; Casting Unleash Life calls an Ancestor to your side for $s1 sec.; ]Whenever you cast a healing or damaging spell, the Ancestor will cast a similar spell.
     cloudburst_totem            = { 81048, 157153, 1 }, -- Summons a totem at your feet for $d that collects power from all of your healing spells. When the totem expires or dies, the stored power is released, healing all injured allies within $157503A1 yards for $157503s2% of all healing done while it was active, divided evenly among targets.; Casting this spell a second time recalls the totem and releases the healing.
     current_control             = { 92675, 404015, 1 }, -- Reduces the cooldown of Healing Tide Totem by ${$s1/-1000} sec.
     deeply_rooted_elements      = { 81051, 378270, 1 }, -- [114052] Transform into a Water Ascendant, duplicating all healing you deal at $s4% effectiveness for $114051d and immediately healing for $294020s1. Ascendant healing is distributed evenly among allies within $114083A1 yds.
@@ -181,6 +181,9 @@ spec:RegisterAuras( {
         duration = 10.0,
         tick_time = 0.5,
         max_stack = 1,
+
+        -- Affected by:
+        -- restoration_shaman[137039] #29: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
     -- Health increased by $s1%.; If you die, the protection of the ancestors will allow you to return to life.
     ancestral_protection = {
@@ -578,6 +581,8 @@ spec:RegisterAuras( {
         -- restoration_shaman[137039] #24: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 12.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- totemic_focus[382201] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
         -- oversized_totems[445026] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
+        -- elemental_shaman[137040] #28: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- enhancement_shaman[137041] #25: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- tidecallers_guard[457496] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
     },
     -- Heals $w2 every $t2 seconds.
@@ -886,6 +891,9 @@ spec:RegisterAbilities( {
         -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 25.0, 'target': TARGET_UNIT_CASTER, }
         -- #2: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 20.0, 'target': TARGET_UNIT_CASTER, }
         -- #3: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 3.0, 'target': TARGET_UNIT_CASTER, }
+
+        -- Affected by:
+        -- restoration_shaman[137039] #29: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
 
     -- Summons a totem at the target location for $d. All allies within $?s382201[${$207495s1*(1+$382201s3/100)}][$207495s1] yards of the totem gain $207498s1% increased health. If an ally dies, the totem will be consumed to allow them to Reincarnate with $207553s1% health and mana.; Cannot reincarnate an ally who dies to massive damage.
@@ -978,7 +986,7 @@ spec:RegisterAbilities( {
         -- #0: { 'type': APPLY_AURA, 'subtype': TRANSFORM, 'value': 59349, 'schools': ['physical', 'fire', 'frost', 'arcane'], 'value1': 6, 'target': TARGET_UNIT_CASTER, }
         -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'tick_time': 1.0, 'target': TARGET_UNIT_CASTER, }
         -- #2: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 294020, 'target': TARGET_UNIT_CASTER, }
-        -- #3: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 80.0, 'target': TARGET_UNIT_CASTER, }
+        -- #3: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 70.0, 'target': TARGET_UNIT_CASTER, }
         -- #4: { 'type': APPLY_AURA, 'subtype': MELEE_SLOW, 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
@@ -1755,7 +1763,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 4.08, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 4.896, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
         -- mastery_deep_healing[77226] #0: { 'type': APPLY_AURA, 'subtype': UNKNOWN, 'sp_bonus': 3.0, 'value': 2, 'schools': ['holy'], 'target': TARGET_UNIT_CASTER, }
@@ -1838,7 +1846,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 4.55, 'chain_amp': 0.2, 'pvp_multiplier': 1.2, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_CHAINHEAL_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 5.46, 'chain_amp': 0.2, 'pvp_multiplier': 1.2, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_CHAINHEAL_ALLY, }
 
         -- Affected by:
         -- mastery_deep_healing[77226] #0: { 'type': APPLY_AURA, 'subtype': UNKNOWN, 'sp_bonus': 3.0, 'value': 2, 'schools': ['holy'], 'target': TARGET_UNIT_CASTER, }
@@ -2403,7 +2411,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 2.21, 'pvp_multiplier': 1.1, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 2.652, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_HEAL, 'tick_time': 3.0, 'sp_bonus': 0.22, 'pvp_multiplier': 1.21, 'target': TARGET_UNIT_TARGET_ALLY, }
 
         -- Affected by:
@@ -2584,7 +2592,7 @@ spec:RegisterAbilities( {
         -- #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
     },
 
-    -- $?a137039[Summons a totem at the target location that maintains Healing Rain for $d. Heals for $455630s3% more than a normal Healing Rain.; Replaces Healing Rain.][Summons a totem at the target location that creates a Seismic Wave immediately and every $455593t1 sec for $455622s1 Physical damage. Damage reduced beyond $455622s2 targets. Lasts $d.]
+    -- $?a137039[Summons a totem at the target location that maintains Healing Rain for $d. Heals for $455630s3% more than a normal Healing Rain.; Replaces Healing Rain.][Summons a totem at the target location that creates a Tremor immediately and every $455593t1 sec for $455622s1 Physical damage. Damage reduced beyond $455622s2 targets. Lasts $d.]
     surging_totem = {
         id = 444995,
         cast = 0.0,
@@ -2602,6 +2610,7 @@ spec:RegisterAbilities( {
 
         -- Effects:
         -- #0: { 'type': SUMMON, 'subtype': NONE, 'value': 225409, 'schools': ['physical'], 'value1': 5967, 'target': TARGET_DEST_DEST, }
+        -- #1: { 'type': DUMMY, 'subtype': NONE, 'radius': 10.0, 'target': TARGET_DEST_DEST, }
 
         -- Affected by:
         -- ancestral_wolf_affinity[382197] #0: { 'type': APPLY_AURA, 'subtype': MOD_IGNORE_SHAPESHIFT, 'target': TARGET_UNIT_CASTER, }
@@ -2727,7 +2736,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         -- Effects:
-        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 2.66, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
+        -- #0: { 'type': HEAL, 'subtype': NONE, 'sp_bonus': 3.192, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ALLY, }
         -- #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 35.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- #2: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 30.0, 'target': TARGET_UNIT_CASTER, }
         -- #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': CHAINED_TARGETS, }
@@ -2812,7 +2821,6 @@ spec:RegisterAbilities( {
         -- natures_swiftness[378081] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
         -- ancestral_swiftness[443454] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
         -- ancestral_swiftness[443454] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
-        -- ancestral_swiftness[443454] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- maelstrom_supremacy[443447] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
 

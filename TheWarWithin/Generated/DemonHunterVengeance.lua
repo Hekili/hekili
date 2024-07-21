@@ -75,7 +75,7 @@ spec:RegisterTalents( {
     darkglare_boon            = { 90985, 389708, 1 }, -- When Fel Devastation finishes fully channeling, it refreshes $s1-$s2% of its cooldown and refunds $s3-$s4 Fury.
     deflecting_spikes         = { 90989, 321028, 1 }, -- Demon Spikes also increases your Parry chance by $203819s1% for $203819d.
     demonic_intensity         = { 94901, 452415, 1 }, -- Activating Metamorphosis greatly empowers $?a212612[Eye Beam][Fel Devastation], Immolation Aura, and Sigil of Flame.; Demonsurge damage is increased by $?a452416[${$452416s2/$452416u}][$452416s2]% for each time it previously triggered while your demon form is active.
-    demonsurge                = { 94917, 452402, 1 }, -- Metamorphosis now also $?a212612[increases current and maximum health by $162264s10% and Armor by $162264s11%][greatly empowers Soul Cleave and Spirit Bomb].; While demon form is active, the first cast of each empowered ability induces a Demonsurge, causing you to explode with Fel energy, dealing $452416s1 Fire damage to nearby enemies.
+    demonsurge                = { 94917, 452402, 1 }, -- Metamorphosis now also $?a203555[causes Demon Blades to generate $162264s10 additional Fury]?a212612[causes Demon's Bite to generate $162264s11 additional Fury][greatly empowers Soul Cleave and Spirit Bomb].; While demon form is active, the first cast of each empowered ability induces a Demonsurge, causing you to explode with Fel energy, dealing $452416s1 Fire damage to nearby enemies.
     down_in_flames            = { 90961, 389732, 1 }, -- Fiery Brand has ${$s1/-1000} sec reduced cooldown and $s2 additional $lcharge:charges;.
     enduring_torment          = { 94916, 452410, 1 }, -- The effects of your demon form persist outside of it in a weakened state, increasing $?a212612[Chaos Strike and Blade Dance damage by 5%, and Haste by 3%][maximum health by 5% and Armor by 20%].
     evasive_action            = { 94911, 444926, 1 }, -- Vengeful Retreat can be cast a second time within $444929d.
@@ -666,6 +666,32 @@ spec:RegisterAbilities( {
         -- havoc_demon_hunter[212612] #2: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
     },
 
+    -- [203555] Your auto attacks deal an additional $203796s1 $@spelldesc395041 damage and generate $203796m2-$203796M2 Fury.
+    demon_blades = {
+        id = 203796,
+        cast = 0.0,
+        cooldown = 0.0,
+        gcd = "global",
+
+        startsCombat = true,
+
+        -- Effects:
+        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'ap_bonus': 0.149325, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        -- #1: { 'type': ENERGIZE, 'subtype': NONE, 'variance': 0.5263158, 'points': 9.5, 'target': TARGET_UNIT_CASTER, 'resource': fury, }
+
+        -- Affected by:
+        -- vengeance_demon_hunter[212613] #2: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
+        -- metamorphosis[162264] #9: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+        -- any_means_necessary[388114] #0: { 'type': APPLY_AURA, 'subtype': MOD_ABILITY_SCHOOL_MASK, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
+        -- any_means_necessary[388114] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 1.8, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- any_means_necessary[388114] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 1.8, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- havoc_demon_hunter[212612] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- havoc_demon_hunter[212612] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+        -- havoc_demon_hunter[212612] #2: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
+        -- havoc_demon_hunter[212612] #11: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- havoc_demon_hunter[212612] #12: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+    },
+
     -- Surge with fel power, increasing your Armor by ${$203819s2*$AGI/100}$?s321028[, and your Parry chance by $203819s1%, for $203819d][].
     demon_spikes = {
         id = 203720,
@@ -715,6 +741,7 @@ spec:RegisterAbilities( {
         -- #0: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 162243, 'target': TARGET_UNIT_TARGET_ENEMY, }
 
         -- Affected by:
+        -- metamorphosis[162264] #10: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
         -- insatiable_hunger[258876] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'ap_bonus': 0.1, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
     },
 
@@ -734,6 +761,7 @@ spec:RegisterAbilities( {
 
         -- Affected by:
         -- vengeance_demon_hunter[212613] #2: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
+        -- metamorphosis[162264] #10: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
         -- insatiable_hunger[258876] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'ap_bonus': 0.1, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- havoc_demon_hunter[212612] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- havoc_demon_hunter[212612] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
@@ -1035,7 +1063,7 @@ spec:RegisterAbilities( {
 
         -- Effects:
         -- #0: { 'type': APPLY_AURA, 'subtype': TRANSFORM, 'sp_bonus': 0.25, 'value': 104712, 'schools': ['nature'], 'value1': 6, 'target': TARGET_UNIT_CASTER, }
-        -- #1: { 'type': APPLY_AURA, 'subtype': MOD_INCREASE_HEALTH_PERCENT, 'points': 50.0, 'target': TARGET_UNIT_CASTER, }
+        -- #1: { 'type': APPLY_AURA, 'subtype': MOD_INCREASE_HEALTH_PERCENT, 'points': 40.0, 'target': TARGET_UNIT_CASTER, }
         -- #2: { 'type': APPLY_AURA, 'subtype': MOD_LEECH, 'target': TARGET_UNIT_CASTER, }
         -- #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
         -- #4: { 'type': APPLY_AURA, 'subtype': MOD_VERSATILITY, 'target': TARGET_UNIT_CASTER, }
@@ -1130,7 +1158,7 @@ spec:RegisterAbilities( {
         -- vengeance_demon_hunter[212613] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
         -- vengeance_demon_hunter[212613] #2: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
         -- vengeance_demon_hunter[212613] #3: { 'type': APPLY_AURA, 'subtype': MOD_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
-        -- vengeance_demon_hunter[212613] #10: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+        -- vengeance_demon_hunter[212613] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
         -- shear_fury[389997] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
         -- frailty[247456] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'points': 2.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
         -- havoc_demon_hunter[212612] #2: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
@@ -1324,8 +1352,8 @@ spec:RegisterAbilities( {
         -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
         -- #1: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 228478, 'value': 300, 'schools': ['fire', 'nature', 'shadow'], 'target': TARGET_UNIT_CASTER, }
         -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
-        -- #3: { 'type': HEAL, 'subtype': NONE, 'ap_bonus': 0.5, 'variance': 0.05, 'target': TARGET_UNIT_CASTER, }
-        -- #4: { 'type': HEAL, 'subtype': NONE, 'ap_bonus': 0.5, 'variance': 0.05, 'target': TARGET_UNIT_CASTER, }
+        -- #3: { 'type': HEAL, 'subtype': NONE, 'ap_bonus': 0.4, 'variance': 0.05, 'target': TARGET_UNIT_CASTER, }
+        -- #4: { 'type': HEAL, 'subtype': NONE, 'ap_bonus': 0.4, 'variance': 0.05, 'target': TARGET_UNIT_CASTER, }
 
         -- Affected by:
         -- immolation_aura[258920] #5: { 'type': APPLY_AURA, 'subtype': MOD_ABILITY_SCHOOL_MASK, 'value': 4, 'schools': ['fire'], 'target': TARGET_UNIT_CASTER, }
