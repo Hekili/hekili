@@ -38,7 +38,7 @@ TheWarWithin\DeathKnightBlood.lua
 TheWarWithin\DeathKnightFrost.lua
 TheWarWithin\DeathKnightUnholy.lua
 TheWarWithin\DemonHunterHavoc.lua
-# TheWarWithin\DemonHunterVengeance.lua
+TheWarWithin\DemonHunterVengeance.lua
 # TheWarWithin\DruidBalance.lua
 # TheWarWithin\DruidFeral.lua
 # TheWarWithin\DruidGuardian.lua

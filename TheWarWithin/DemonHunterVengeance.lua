@@ -1,5 +1,5 @@
 -- DemonHunterVengeance.lua
--- October 2023
+-- July 2024
 
 if UnitClassBase( "player" ) ~= "DEMONHUNTER" then return end
 
@@ -159,14 +159,14 @@ spec:RegisterTalents( {
 spec:RegisterPvpTalents( {
     blood_moon        = 5434, -- (355995) Consume Magic now affects all enemies within 8 yards of the target and generates a Lesser Soul Fragment. Each effect consumed has a 5% chance to upgrade to a Greater Soul.
     chaotic_imprint   = 5439, -- (356510) Throw Glaive now deals damage from a random school of magic, and increases the target's damage taken from the school by 10% for 20 sec.
-    cleansed_by_flame = 814 , -- (205625) Immolation Aura dispels a magical effect on you when cast.
+    cleansed_by_flame =  814, -- (205625) Immolation Aura dispels a magical effect on you when cast.
     cover_of_darkness = 5520, -- (357419) The radius of Darkness is increased by 4 yds, and its duration by 2 sec.
     demonic_trample   = 3423, -- (205629) Transform to demon form, moving at 175% increased speed for 3 sec, knocking down all enemies in your path and dealing 1003.7 Physical damage. During Demonic Trample you are unaffected by snares but cannot cast spells or use your normal attacks. Shares charges with Infernal Strike.
     detainment        = 3430, -- (205596) Imprison's PvP duration is increased by 1 sec, and targets become immune to damage and healing while imprisoned.
-    everlasting_hunt  = 815 , -- (205626) Dealing damage increases your movement speed by 15% for 3 sec.
+    everlasting_hunt  =  815, -- (205626) Dealing damage increases your movement speed by 15% for 3 sec.
     glimpse           = 5522, -- (354489) Vengeful Retreat provides immunity to loss of control effects, and reduces damage taken by 35% until you land.
-    illidans_grasp    = 819 , -- (205630) You strangle the target with demonic magic, stunning them in place and dealing 67,347 Shadow damage over 5 sec while the target is grasped. Can move while channeling. Use Illidan's Grasp again to toss the target to a location within 40 yards, stunning them and all nearby enemies for 3 sec and dealing 20,011 Shadow damage.
-    jagged_spikes     = 816 , -- (205627) While Demon Spikes is active, melee attacks against you cause Physical damage equal to 30% of the damage taken back to the attacker.
+    illidans_grasp    =  819, -- (205630) You strangle the target with demonic magic, stunning them in place and dealing 67,347 Shadow damage over 5 sec while the target is grasped. Can move while channeling. Use Illidan's Grasp again to toss the target to a location within 40 yards, stunning them and all nearby enemies for 3 sec and dealing 20,011 Shadow damage.
+    jagged_spikes     =  816, -- (205627) While Demon Spikes is active, melee attacks against you cause Physical damage equal to 30% of the damage taken back to the attacker.
     rain_from_above   = 5521, -- (206803) You fly into the air out of harm's way. While floating, you gain access to Fel Lance allowing you to deal damage to enemies below.
     reverse_magic     = 3429, -- (205604) Removes all harmful magical effects from yourself and all nearby allies within 10 yards, and sends them back to their original caster if possible.
     sigil_mastery     = 1948, -- (211489) Reduces the cooldown of your Sigils by an additional 25%.
@@ -177,6 +177,18 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    -- $w1 Soul Fragments consumed. At $?a212612[$442290s1~][$442290s2~], Reaver's Glaive is available to cast.
+    art_of_the_glaive = {
+        id = 444661,
+        duration = 30.0,
+        max_stack = 1,
+    },
+    -- Damage taken reduced by $s1%.
+    blade_ward = {
+        id = 442715,
+        duration = 5.0,
+        max_stack = 1,
+    },
     -- Versatility increased by $w1%.
     -- https://wowhead.com/beta/spell=355894
     blind_faith = {
@@ -192,6 +204,11 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1
     },
+    calcified_spikes = {
+        id = 391171,
+        duration = 12,
+        max_stack = 1
+    },
     -- Talent: Stunned.
     -- https://wowhead.com/beta/spell=179057
     chaos_nova = {
@@ -204,7 +221,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=196718
     darkness = {
         id = 196718,
-        duration = function() return talent.long_night.enabled and 11 or 8 end,
+        duration = function() return ( talent.long_night.enabled and 11 or 8 ) + ( talent.cover_of_darkness.enabled and 2 or 0 ) end,
         max_stack = 1
     },
     demon_soul = {
@@ -219,10 +236,11 @@ spec:RegisterAuras( {
         duration = function() return 6 + talent.extended_spikes.rank end,
         max_stack = 1
     },
-    calcified_spikes = {
-        id = 391171,
-        duration = 12,
-        max_stack = 1
+    -- Vengeful Retreat may be cast again.
+    evasive_action = {
+        id = 444929,
+        duration = 3.0,
+        max_stack = 1,
     },
     feast_of_souls = {
         id = 207693,
@@ -330,15 +348,35 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    -- Agility increased by $w1%.
+    monster_rising = {
+        id = 452550,
+        duration = 3600,
+        max_stack = 1
+    },
     painbringer = {
         id = 212988,
         duration = 6,
         max_stack = 1
     },
+    -- $w3
+    pursuit_of_angriness = {
+        id = 452404,
+        duration = 0.0,
+        tick_time = 1.0,
+        max_stack = 1,
+    },
     ruinous_bulwark = {
         id = 326863,
         duration = 10,
         max_stack = 1
+    },
+    -- Taking $w1 Fire damage every $t1 sec.
+    set_fire_to_the_pain = {
+        id = 453286,
+        duration = 6.0,
+        tick_time = 1.0,
+        max_stack = 1,
     },
     -- Talent: Movement slowed by $s1%.
     -- https://wowhead.com/beta/spell=204843
@@ -368,7 +406,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=207685
     sigil_of_misery_debuff = {
         id = 207685,
-        duration = function () return 20 + ( 2 * talent.chains_of_anger.rank ) end,
+        duration = function () return 15 + ( 2 * talent.chains_of_anger.rank ) end,
         mechanic = "flee",
         type = "Magic",
         max_stack = 1
@@ -377,7 +415,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=204490
     sigil_of_silence = {
         id = 204490,
-        duration = function () return 6 + ( 2 * talent.chains_of_anger.rank ) end,
+        duration = function () return 4 + ( 2 * talent.chains_of_anger.rank ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -450,6 +488,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 15
     },
+    -- Mastery increased by ${$w1*$mas}.1%. ; Generating $453236s1 Fury every $t2 sec.
+    student_of_suffering = {
+        id = 453239,
+        duration = 8.0,
+        max_stack = 1,
+    },
     -- Talent: Suffering $w1 $@spelldesc395042 damage every $t1 sec.
     -- https://wowhead.com/beta/spell=345335
     the_hunt_dot = {
@@ -474,6 +518,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 323996
     },
+    -- Attack Speed increased by $w1%
+    thrill_of_the_fight = {
+        id = 442695,
+        duration = 20.0,
+        max_stack = 1,
+    },
     -- Taunted.
     -- https://wowhead.com/beta/spell=185245
     torment = {
@@ -491,6 +541,12 @@ spec:RegisterAuras( {
     void_reaver = {
         id = 268178,
         duration = 12,
+        max_stack = 1,
+    },
+    -- Your next $?a212612[Chaos Strike]?s263642[Fracture][Shear] will deal $442507s1 additional Physical damage.
+    warblades_hunger = {
+        id = 442503,
+        duration = 30.0,
         max_stack = 1,
     },
 
@@ -529,12 +585,8 @@ local sigils = setmetatable( {}, {
 spec:RegisterStateFunction( "create_sigil", function( sigil )
     sigils[ sigil ] = query_time + activation_time
 
-    if sigil == "elysian_decree" then
-        applyDebuff( "target", "elysian_decree" )
-        debuff.elysian_decree.applied = debuff.elysian_decree.applied + activation_time
-        debuff.elysian_decree.expires = debuff.elysian_decree.expires + activation_time
-    else
-        local effect = sigil == "elysian_dcreee" and "elysian_decree" or ( "sigil_of_" .. sigil )
+    if sigil ~= "spite" then
+        local effect = "sigil_of_" .. sigil
         applyDebuff( "target", effect )
         debuff[ effect ].applied = debuff[ effect ].applied + 1
         debuff[ effect ].expires = debuff[ effect ].expires + 1
@@ -1248,8 +1300,6 @@ spec:RegisterAbilities( {
         known = 202138,
         cast = 0,
         cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end,
-        charges = function () return talent.illuminated_sigils.enabled and 2 or 1 end,
-        recharge = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 90 end,
         gcd = "spell",
         school = "physical",
 
@@ -1268,9 +1318,9 @@ spec:RegisterAbilities( {
         id = function () return talent.precise_sigils.enabled and 389810 or 204596 end,
         known = 204596,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return talent.illuminated_sigils.enabled and 25 or 30 end,
         charges = function () return talent.illuminated_sigils.enabled and 2 or 1 end,
-        recharge = 30,
+        recharge = function() return talent.illuminated_sigils.enabled and 25 or 30 end,
         gcd = "spell",
         icd = function() return 0.25 + ( talent.quickened_sigils.enabled and 1 or 2 ) end,
         school = "physical",
@@ -1299,8 +1349,6 @@ spec:RegisterAbilities( {
         known = 207684,
         cast = 0,
         cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 120 - ( talent.improved_sigil_of_misery.enabled and 30 or 0 ) end,
-        charges = function () if talent.illuminated_sigils.enabled then return 2 end end,
-        recharge = function () if talent.illuminated_sigils.enabled then return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 120 - ( talent.improved_sigil_of_misery.enabled and 30 or 0 ) end end,
         gcd = "spell",
         school = "physical",
 
@@ -1323,8 +1371,6 @@ spec:RegisterAbilities( {
         known = 202137,
         cast = 0,
         cooldown = function () return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 60 end,
-        charges = function () if talent.illuminated_sigils.enabled then return 2 end end,
-        recharge = function () if talent.illuminated_sigils.enabled then return ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) * 60 end end,
         gcd = "spell",
 
         startsCombat = true,
@@ -1348,6 +1394,31 @@ spec:RegisterAbilities( {
                 max_stack = 1
             }
         }
+    },
+
+    -- Place a demonic sigil at the target location that activates after $d.; Detonates to deal $389860s1 Chaos damage and shatter up to $s3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond $s1 targets.
+    sigil_of_spite = {
+        id = 390163,
+        cast = 0.0,
+        cooldown = function() return talent.sigil_mastery.enabled and 45 or 60 end,
+        gcd = "spell",
+
+        talent = "sigil_of_spite",
+        startsCombat = false,
+
+        handler = function()
+            create_sigil( "spite" )
+        end,
+
+        -- Effects:
+        -- #0: { 'type': DUMMY, 'subtype': NONE, 'radius': 8.0, 'target': TARGET_DEST_DEST, }
+        -- #1: { 'type': CREATE_AREATRIGGER, 'subtype': NONE, 'points': 50.0, 'value': 26752, 'target': TARGET_DEST_DEST, }
+        -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_DEST_DEST, }
+
+        -- Affected by:
+        -- quickened_sigils[209281] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -1000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+        -- chains_of_anger[389715] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
+        -- sigil_mastery[211489] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
     },
 
     -- Talent: Shield yourself for $d, absorbing $<baseAbsorb> damage.    Consumes all Soul Fragments within 25 yds to add $<fragmentAbsorb> to the shield per fragment.
@@ -1406,16 +1477,14 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "soul_furnace" )
+
             if talent.feed_the_demon.enabled then
                 gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
             end
 
             if talent.feast_of_souls.enabled then applyBuff( "feast_of_souls" ) end
             if talent.soulcrush.enabled then applyDebuff( "target", "frailty" ) end
-            if talent.void_reaver.enabled then active_dot.frailty = true_active_enemies end
-            if legendary.fiery_soul.enabled then reduceCooldown( "fiery_brand", 2 * min( 2, buff.soul_fragments.stack ) ) end
-
-            removeBuff( "soul_furnace" )
             if talent.soul_furnace.enabled then
                 addStack( "soul_furnace_stack", nil, min( 2, buff.soul_fragments.stack ) )
                 if buff.soul_furnace_stack.up and buff.soul_furnace_stack.stack == 10 then
@@ -1423,7 +1492,11 @@ spec:RegisterAbilities( {
                     applyBuff( "soul_furnace" )
                 end
             end
+            if talent.void_reaver.enabled then active_dot.frailty = true_active_enemies end
+
             buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 2 )
+
+            if legendary.fiery_soul.enabled then reduceCooldown( "fiery_brand", 2 * min( 2, buff.soul_fragments.stack ) ) end
         end,
     },
 
@@ -1582,9 +1655,15 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            if talent.evasive_action.enabled and buff.evasive_action.down then
+                applyBuff( "evasive_action" )
+                setCooldown( "vengeful_retreat", 0 )
+            end
+
             if talent.vengeful_bonds.enabled and action.chaos_strike.in_range then -- 20231116: and target.within8 then
                 applyDebuff( "target", "vengeful_retreat" )
             end
+
             if talent.momentum.enabled then applyBuff( "momentum" ) end
 
             if pvptalent.glimpse.enabled then applyBuff( "glimpse" ) end
