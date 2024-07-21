@@ -371,9 +371,9 @@ spec:RegisterAuras( {
     },
     -- Critical damage dealt increased by $s1%.
     howl_of_the_pack = {
-        id = 462515,
+        id = 445707,
         duration = 8.0,
-        max_stack = 1,
+        max_stack = 3,
     },
     -- Can always be seen and tracked by the Hunter.; Damage taken increased by $428402s4% while above $s3% health.
     hunters_mark = {
@@ -392,7 +392,7 @@ spec:RegisterAuras( {
     huntmasters_call = {
         id = 459731,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 3,
     },
     -- Redirecting spells to the Hunter's pet.
     interlope = {
@@ -552,9 +552,9 @@ spec:RegisterAuras( {
     },
     -- Critical strike chance increased by $s1%.
     thrill_of_the_hunt = {
-        id = 257946,
+        id = 257944,
         duration = 8.0,
-        max_stack = 1,
+        max_stack = 3,
 
         -- Affected by:
         -- savagery[424557] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
