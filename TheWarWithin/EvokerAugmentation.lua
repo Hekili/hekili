@@ -276,8 +276,19 @@ spec:RegisterAuras( {
         friendly = true
     },
     -- Your Ebon Might is active on allies.; Your damage done is increased by $w1%.
-    ebon_might = {
+    ebon_might_allies = {
         id = 395296,
+        duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
+        tick_time = 1.0,
+        pandemic = true,
+        max_stack = 1,
+        dot = "buff",
+        friendly = true,
+        no_ticks = true
+    },
+    -- Your Ebon Might is active on allies.; Your damage done is increased by $w1%.
+    ebon_might = {
+        id = 426404,
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         tick_time = 1.0,
         pandemic = true,
@@ -292,11 +303,17 @@ spec:RegisterAuras( {
         duration = function() return 15.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = function() return 1 + ( talent.essence_attunement.enabled and 1 or 0 ) end,
     },
-    -- Movement speed increased by $w2%.; Evoker spells may be cast while moving. Does not affect empowered spells.$?e9[; Immune to movement speed reduction effects.][]
+    -- Movement speed increased by $w2%.$?e0[ Area damage taken reduced by $s1%.][]; Evoker spells may be cast while moving. Does not affect empowered spells.$?e9[; Immune to movement speed reduction effects.][]
     hover = {
         id = 358267,
         duration = function() return ( 6.0 + ( talent.extended_flight.enabled and 4 or 0 ) ) end,
         tick_time = 1.0,
+        max_stack = 1,
+    },
+    -- Essence costs of Disintegrate and Pyre are reduced by $s1, and their damage increased by $s2%.
+    imminent_destruction = {
+        id = 411055,
+        duration = 12.0,
         max_stack = 1,
     },
     -- Granted the inferno's blessing by $@auracaster, giving your damaging attacks and spells a high chance to deal additional Fire damage.
@@ -311,7 +328,7 @@ spec:RegisterAuras( {
     -- Rooted.
     landslide = {
         id = 355689,
-        duration = 30.0,
+        duration = 15,
         max_stack = 1,
     },
     -- Absorbing $w1 damage.; Immune to interrupts and silence effects.
@@ -379,6 +396,12 @@ spec:RegisterAuras( {
         duration = 10.0,
         max_stack = 1,
     },
+    -- Movement speed reduced by $w1%.; Attack speed reduced by $w2%.
+    perilous_fate = {
+        id = 439606,
+        duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
+        max_stack = 1,
+    },
     -- Movement speed reduced by $w1%.
     permeating_chill = {
         id = 370898,
@@ -419,6 +442,17 @@ spec:RegisterAuras( {
         id = 370665,
         duration = 1.0,
         max_stack = 1,
+    },
+    -- Watching for allies who use exceptionally powerful abilities.
+    sense_power = {
+        id = 361021,
+        duration = 3600,
+        max_stack = 1,
+    },
+    sense_power_ally = P{
+        id = 361021,
+        duration = 10,
+        max_stack = 1
     },
     -- Versatility increased by ${$W1}.1%. Cast by $@auracaster.
     shifting_sands = {
@@ -476,7 +510,7 @@ spec:RegisterAuras( {
         no_ticks = true,
         friendly = true
     },
-    -- Accumulating damage from $@auracaster's allies who are affected by Ebon Might.$?$w2<0[; Movement speed reduced by $w2%.; Attack speed reduced by $w3%.][]
+    -- Accumulating damage from $@auracaster's allies who are affected by Ebon Might.
     temporal_wound = {
         id = 409560,
         duration = function() return 10.0 * ( 1 + 1.25 * stat.mastery_value ) end,
@@ -892,6 +926,21 @@ spec:RegisterAbilities( {
             active_dot.prescience = min( group_members, active_dot.prescience + 1 )
 
             if set_bonus.tier31_4pc > 0 then addStack( "trembling_earth" ) end
+        end,
+    },
+
+
+    -- Gauge the magical energy of your allies, showing you when they are using an exceptionally powerful ability.
+    sense_power = {
+        id = 361021,
+        cast = 0.0,
+        cooldown = 1.0,
+        gcd = "off",
+
+        startsCombat = false,
+
+        handler = function()
+            applyBuff( "sense_power" )
         end,
     },
 

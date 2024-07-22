@@ -1232,7 +1232,7 @@ spec:RegisterAbilities( {
         school = "firestorm",
         color = "black",
 
-        spend = 0.028,
+        spend = 0.014,
         spendType = "mana",
 
         talent = "landslide",
@@ -1305,11 +1305,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Let out a bone-shaking roar at enemies in a cone in front of you, increasing the duration of crowd controls that affect them by 50% in the next 10 sec.
+    -- Let out a bone-shaking roar at enemies in a cone in front of you, increasing the duration of crowd controls that affect them by $s2% in the next $d.$?s374346[; Removes $s1 Enrage effect from each enemy.][]
     oppressing_roar = {
         id = 372048,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return 120 - 30 * talent.overawe.rank end,
         gcd = "spell",
         school = "physical",
         color = "black",
