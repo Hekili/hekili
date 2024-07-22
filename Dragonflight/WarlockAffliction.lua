@@ -1712,7 +1712,7 @@ spec:RegisterAbilities( {
         cast = 3,
         channeled = true,
         cooldown = 45.0,
-        gcd = "global",
+        gcd = "spell",
 
         spend = 2,
         spendType = "soul_shards",
