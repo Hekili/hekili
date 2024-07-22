@@ -46,7 +46,7 @@ TheWarWithin\DruidGuardian.lua
 TheWarWithin\EvokerDevastation.lua
 TheWarWithin\EvokerPreservation.lua
 TheWarWithin\EvokerAugmentation.lua
-# TheWarWithin\HunterBeastMastery.lua
+TheWarWithin\HunterBeastMastery.lua
 # TheWarWithin\HunterMarksmanship.lua
 # TheWarWithin\HunterSurvival.lua
 # TheWarWithin\MageArcane.lua

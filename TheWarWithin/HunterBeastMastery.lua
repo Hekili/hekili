@@ -1,5 +1,5 @@
 -- HunterBeastMastery.lua
--- October 2023
+-- July 2024
 
 if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
@@ -154,110 +154,146 @@ spec:RegisterResource( Enum.PowerType.Focus, {
 -- Talents
 spec:RegisterTalents( {
     -- Hunter
-    alpha_predator              = { 79904, 269737, 1 }, -- Kill Command now has 2 charges, and deals 15% increased damage.
-    arctic_bola                 = { 79815, 390231, 2 }, -- Cobra Shot has a chance to fling an Arctic Bola at your target, dealing 0 Frost damage and snaring the target by 20% for 3 sec. The Arctic Bola strikes up to 2 targets.
-    barrage                     = { 79914, 120360, 1 }, -- Rapidly fires a spray of shots for 2.8 sec, dealing an average of 2,829 Physical damage to all nearby enemies in front of you. Usable while moving. Deals reduced damage beyond 8 targets.
-    beast_master                = { 79926, 378007, 2 }, -- Pet damage increased by 3%.
-    binding_shackles            = { 79920, 321468, 1 }, -- Targets rooted by Binding Shot, knocked back by High Explosive Trap, incapacitated by Scatter Shot, or stunned by Intimidation deal 10% less damage to you for 8 sec after the effect ends.
-    binding_shot                = { 79937, 109248, 1 }, -- Fires a magical projectile, tethering the enemy and any other enemies within 5 yds for 10 sec, stunning them for 3 sec if they move more than 5 yds from the arrow. Targets stunned by Binding Shot deal 10% less damage to you for 8 sec after the effect ends.
-    born_to_be_wild             = { 79933, 266921, 2 }, -- Reduces the cooldowns of Aspect of the Cheetah, Survival of the Fittest, and Aspect of the Turtle by 7%.
-    camouflage                  = { 79934, 199483, 1 }, -- You and your pet blend into the surroundings and gain stealth for 1 min. While camouflaged, you will heal for 2% of maximum health every 1 secs.
-    concussive_shot             = { 79906, 5116  , 1 }, -- Dazes the target, slowing movement speed by 50% for 6 sec. Cobra Shot will increase the duration of Concussive Shot on the target by 3.0 sec.
-    death_chakram               = { 79916, 375891, 1 }, -- Throw a deadly chakram at your current target that will rapidly deal 991 Physical damage 7 times, bouncing to other targets if they are nearby. Enemies struck by Death Chakram take 10% more damage from you and your pet for 10 sec. Each time the chakram deals damage, its damage is increased by 15% and you generate 3 Focus.
-    entrapment                  = { 79977, 393344, 1 }, -- When Tar Trap is activated, all enemies in its area are rooted for 4 sec. Damage taken may break this root.
-    explosive_shot              = { 79914, 212431, 1 }, -- Fires an explosive shot at your target. After 3 sec, the shot will explode, dealing 3,403 Fire damage to all enemies within 8 yds. Deals reduced damage beyond 5 targets.
-    high_explosive_trap         = { 79910, 236776, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 840 Fire damage and knocking all enemies away. Trap will exist for 1 min. Targets knocked back by High Explosive Trap deal 10% less damage to you for 8 sec after being knocked back.
-    hunters_avoidance           = { 79832, 384799, 1 }, -- Damage taken from area of effect attacks reduced by 6%.
-    hydras_bite                 = { 79911, 260241, 1 }, -- Serpent Sting fires arrows at 2 additional enemies near your target, and its damage over time is increased by 20%.
-    improved_kill_command       = { 79932, 378010, 2 }, -- Kill Command damage increased by 5%.
-    improved_kill_shot          = { 79930, 343248, 1 }, -- Kill Shot's critical damage is increased by 25%.
-    improved_tranquilizing_shot = { 79919, 343244, 1 }, -- When Tranquilizing Shot successfully dispels an effect, gain 10 Focus.
-    improved_traps              = { 79923, 343247, 2 }, -- The cooldown of Tar Trap, Steel Trap, High Explosive Trap, and Freezing Trap is reduced by 2.5 sec.
-    intimidation                = { 79910, 19577 , 1 }, -- Commands your pet to intimidate the target, stunning it for 5 sec. Targets stunned by Intimidation deal 10% less damage to you for 8 sec after the effect ends.
-    keen_eyesight               = { 79922, 378004, 2 }, -- Critical strike chance increased by 2%.
-    killer_instinct             = { 79904, 273887, 1 }, -- Kill Command deals 50% increased damage against enemies below 35% health.
-    lone_survivor               = { 79820, 388039, 1 }, -- Reduce the cooldown of Survival of the Fittest by 30 sec, and increase its duration by 2.0 sec.
-    master_marksman             = { 79913, 260309, 2 }, -- Your melee and ranged special attack critical strikes cause the target to bleed for an additional 7% of the damage dealt over 6 sec.
-    misdirection                = { 79924, 34477 , 1 }, -- Misdirects all threat you cause to the targeted party or raid member, beginning with your next attack within 30 sec and lasting for 8 sec.
-    natural_mending             = { 79925, 270581, 2 }, -- Every 30 Focus you spend reduces the remaining cooldown on Exhilaration by 1.0 sec.
-    natures_endurance           = { 79820, 388042, 1 }, -- Survival of the Fittest reduces damage taken by an additional 20%.
-    pathfinding                 = { 79918, 378002, 2 }, -- Movement speed increased by 2%.
-    poison_injection            = { 79911, 378014, 1 }, -- Serpent Sting's damage applies Latent Poison to the target, stacking up to 10 times. Barbed Shot consumes all stacks of Latent Poison, dealing 303 Nature damage to the target per stack consumed.
-    posthaste                   = { 79921, 109215, 2 }, -- Disengage also frees you from all movement impairing effects and increases your movement speed by 25% for 4 sec.
-    rejuvenating_wind           = { 79909, 385539, 2 }, -- Maximum health increased by 4%, and Exhilaration now also heals you for an additional 10.0% of your maximum health over 8 sec.
-    roar_of_sacrifice           = { 79832, 53480 , 1 }, -- Instructs your pet to protect a friendly target from critical strikes, making attacks against that target unable to be critical strikes, but 10% of all damage taken by that target is also taken by the pet. Lasts 12 sec.
-    scare_beast                 = { 79927, 1513  , 1 }, -- Scares a beast, causing it to run in fear for up to 20 sec. Damage caused may interrupt the effect. Only one beast can be feared at a time.
-    scatter_shot                = { 79937, 213691, 1 }, -- A short-range shot that deals 65 damage, removes all harmful damage over time effects, and incapacitates the target for 4 sec. Any damage caused will remove the effect. Turns off your attack when used. Targets incapacitated by Scatter Shot deal 10% less damage to you for 8 sec after the effect ends.
-    sentinel_owl                = { 79819, 388045, 1 }, -- Call forth a Sentinel Owl to the target location within 40 yds, granting you unhindered vision. Your attacks ignore line of sight against any target in this area. While the Sentinel Owl is active, your party gains 5% Leech. Every 150 Focus spent grants you 1 sec of the Sentinel Owl when cast, up to a maximum of 12 sec. The Sentinel Owl can only be summoned when it will last at least 5 sec.
-    sentinels_perception        = { 79818, 388056, 1 }, -- Sentinel Owl now also grants unhindered vision to party members while active.
-    sentinels_protection        = { 79818, 388057, 1 }, -- While the Sentinel Owl is active, your party gains 5% leech.
-    serpent_sting               = { 79905, 271788, 1 }, -- Fire a shot that poisons your target, causing them to take 323 Nature damage instantly and an additional 2,067 Nature damage over 18 sec.
-    serrated_shots              = { 79814, 389882, 2 }, -- Serpent Sting and Bleed damage increased by 10%. This value is increased to 20% against targets below 30% health.
-    stampede                    = { 79916, 201430, 1 }, -- Summon a herd of stampeding animals from the wilds around you that deal 2,796 Physical damage to your enemies over 12 sec. Enemies struck by the stampede are snared by 30%, and you have 10% increased critical strike chance against them for 5 sec.
-    steel_trap                  = { 79908, 162488, 1 }, -- Hurls a Steel Trap to the target location that snaps shut on the first enemy that approaches, immobilizing them for 20 sec and causing them to bleed for 2,676 damage over 20 sec. Damage other than Steel Trap may break the immobilization effect. Trap will exist for 1 min. Limit 1.
-    survival_of_the_fittest     = { 79821, 264735, 1 }, -- Reduces all damage you and your pet take by 40% for 6 sec.
-    tar_trap                    = { 79928, 187698, 1 }, -- Hurls a tar trap to the target location that creates a 8 yd radius pool of tar around itself for 30 sec when the first enemy approaches. All enemies have 50% reduced movement speed while in the area of effect. Trap will exist for 1 min.
-    trailblazer                 = { 79931, 199921, 2 }, -- Your movement speed is increased by 15% anytime you have not attacked for 3 sec.
-    tranquilizing_shot          = { 79907, 19801 , 1 }, -- Removes 1 Enrage and 1 Magic effect from an enemy target.
-    wilderness_medicine         = { 79936, 343242, 2 }, -- Mend Pet heals for an additional 25% of your pet's health over its duration, and has a 25% chance to dispel a magic effect each time it heals your pet.
-
-    -- BeastMastery
-    a_murder_of_crows           = { 79943, 131894, 1 }, -- Summons a flock of crows to attack your target, dealing 7,755 Physical damage over 15 sec. If the target dies while under attack, A Murder of Crows' cooldown is reset.
-    animal_companion            = { 79947, 267116, 1 }, -- Your Call Pet additionally summons the first pet from your stable. This pet will obey your Kill Command, but cannot use pet family abilities and both of your pets deal 35% reduced damage.
-    aspect_of_the_beast         = { 79944, 191384, 1 }, -- Increases the damage and healing of your pet's abilities by 30%. Increases the effectiveness of your pet's Predator's Thirst, Endurance Training, and Pathfinding passives by 50%.
-    barbed_shot                 = { 79968, 217200, 1 }, -- Fire a shot that tears through your enemy, causing them to bleed for 3,329 damage over 8 sec and increases your critical strike chance by 3% for 8 sec, stacking up to 3 times. Sends your pet into a frenzy, increasing attack speed by 30% for 8 sec, stacking up to 3 times. Generates 20 Focus over 8 sec.
-    barbed_wrath                = { 79822, 231548, 1 }, -- Barbed Shot reduces the cooldown of Bestial Wrath by 12.0 sec.
-    beast_cleave                = { 79956, 115939, 2 }, -- After you Multi-Shot, your pet's melee attacks also strike all nearby enemies for 35% of the damage for the next 3.0 sec. Deals reduced damage beyond 8 targets.
-    bestial_wrath               = { 79955, 19574 , 1 }, -- Sends you and your pet into a rage, instantly dealing 1,104 Physical damage to its target, and increasing all damage you both deal by 25% for 15 sec. Removes all crowd control effects from your pet. Bestial Wrath's remaining cooldown is reduced by 12 sec each time you use Barbed Shot and activating Bestial Wrath grants 1 charge of Barbed Shot.
-    bloodshed                   = { 79943, 321530, 1 }, -- Command your pet to tear into your target, causing your target to bleed for 2,549 over 18 sec and increase all damage taken from your pet by 15% for 18 sec.
-    bloody_frenzy               = { 79946, 407412, 1 }, -- While Call of the Wild is active, your pets have the effects of Beast Cleave, and each time Call of the Wild summons a pet, all of your pets Stomp.
-    brutal_companion            = { 79816, 386870, 1 }, -- When Barbed Shot causes Frenzy to stack up to 3, your pet will immediately use its special attack and deal 50% bonus damage.
-    call_of_the_wild            = { 79967, 359844, 1 }, -- You sound the call of the wild, summoning $s1 of your active pets for $d. During this time, a random pet from your stable will appear every $t2 sec to assault your target for $361582d. ; Each time Call of the Wild summons a pet, the cooldown of Barbed Shot and Kill Command are reduced by $s3%.
-    cobra_senses                = { 79963, 378244, 1 }, -- Cobra Shot reduces the cooldown of Kill Command by an additional 1.0 sec.
-    cobra_shot                  = { 79949, 193455, 1 }, -- A quick shot causing 1,995 Physical damage. Reduces the cooldown of Kill Command by 1 sec.
-    cobra_sting                 = { 79941, 378750, 2 }, -- Cobra Shot has a 25% chance to make your next Kill Command consume no Focus.
-    counter_shot                = { 79912, 147362, 1 }, -- Interrupts spellcasting, preventing any spell in that school from being cast for 3 sec.
-    dire_beast                  = { 79959, 120679, 1 }, -- Summons a powerful wild beast that attacks the target and roars, increasing your Haste by 5% for 8 sec.
-    dire_command                = { 79953, 378743, 2 }, -- Kill Command has a $s1% chance to also summon a Dire Beast to attack your target for $120679d.
-    dire_frenzy                 = { 79823, 385810, 2 }, -- Dire Beast lasts an additional 1 sec and deals 20% increased damage.
-    dire_pack                   = { 79940, 378745, 1 }, -- Every 5 Dire Beasts summoned resets the cooldown of Kill Command, and reduces the Focus cost and cooldown of Kill Command by 50% for 8 sec.
-    hunters_prey                = { 79951, 378210, 1 }, -- Kill Command has a 10% chance to reset the cooldown of Kill Shot, and causes your next Kill Shot to be usable on any target, regardless of the target's health.
-    kill_cleave                 = { 79954, 378207, 1 }, -- While Beast Cleave is active, Kill Command now also strikes nearby enemies for 80% of damage dealt. Deals reduced damage beyond 8 targets.
-    kill_command                = { 79935, 34026 , 1 }, -- Give the command to kill, causing your pet to savagely deal 2,490 Physical damage to the enemy.
-    kill_shot                   = { 79835, 53351 , 1 }, -- You attempt to finish off a wounded target, dealing 4,365 Physical damage. Only usable on enemies with less than 20% health. Kill Shot deals 25% increased critical damage.
-    killer_cobra                = { 79961, 199532, 1 }, -- While Bestial Wrath is active, Cobra Shot resets the cooldown on Kill Command.
-    killer_command              = { 79939, 378740, 2 }, -- Kill Command damage increased by 5%.
-    kindred_spirits             = { 79957, 56315 , 2 }, -- Increases your maximum Focus and your pet's maximum Focus by 20.
-    master_handler              = { 79962, 424558, 1 }, -- Each time Barbed Shot deals damage, the cooldown of Kill Command is reduced by ${$m1/1000}.2 sec.
-    multishot                   = { 79917, 2643  , 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 197 Physical damage. Deals reduced damage beyond 5 targets.
-    one_with_the_pack           = { 79960, 199528, 2 }, -- Wild Call has a 20% increased chance to reset the cooldown of Barbed Shot.
-    pack_tactics                = { 79958, 321014, 1 }, -- Passive Focus generation increased by 100%.
-    piercing_fangs              = { 79961, 392053, 1 }, -- While Bestial Wrath is active, your pet's critical damage dealt is increased by 35%.
-    savagery                    = { 79950, 424557, 1 }, -- Kill Command damage is increased by $s1%. Barbed Shot lasts ${$m2/1000}.1 sec longer.
-    scent_of_blood              = { 79965, 193532, 2 }, -- Activating Bestial Wrath grants 1 charge of Barbed Shot.
-    sharp_barbs                 = { 79945, 378205, 2 }, -- Barbed Shot damage increased by 1%.
-    stomp                       = { 79942, 199530, 2 }, -- When you cast Barbed Shot, your pet stomps the ground, dealing 378 Physical damage to all nearby enemies.
-    thrill_of_the_hunt          = { 79964, 257944, 2 }, -- Barbed Shot increases your critical strike chance by $257946s1% for $257946d, stacking up to $s2 $Ltime:times;.
-    training_expert             = { 79948, 378209, 2 }, -- All pet damage dealt increased by 5%.
-    wailing_arrow               = { 79938, 392060, 1 }, -- Fire an enchanted arrow, dealing 4,352 Shadow damage to your target and an additional 1,764 Shadow damage to all enemies within 8 yds of your target. Non-Player targets struck by a Wailing Arrow have their spellcasting interrupted and are silenced for 3 sec.
-    war_orders                  = { 79952, 393933, 2 }, -- Barbed Shot deals 10% increased damage, and applying Barbed Shot has a 25% chance to reset the cooldown of Kill Command.
-    wild_call                   = { 79966, 185789, 1 }, -- Your auto shot critical strikes have a 20% chance to reset the cooldown of Barbed Shot.
-    wild_instincts              = { 79946, 378442, 1 }, -- While Call of the Wild is active, each time you Kill Command, your Kill Command target takes $424567s1% increased damage from all of your pets, stacking up to $424567u times.
+    binding_shackles        = { 102388, 321468, 1 }, -- Targets stunned by Binding Shot, knocked back by High Explosive Trap, knocked up by Implosive Trap, incapacitated by Scatter Shot, or stunned by Intimidation deal 10% less damage to you for 8 sec after the effect ends.
+    binding_shot            = { 102386, 109248, 1 }, -- Fires a magical projectile, tethering the enemy and any other enemies within 5 yds for 10 sec, stunning them for 3 sec if they move more than 5 yds from the arrow.
+    blackrock_munitions     = { 102392, 462036, 1 }, -- The damage of Explosive Shot is increased by 8%.
+    born_to_be_wild         = { 102416, 266921, 1 }, -- Reduces the cooldowns of Aspect of the Cheetah, and Aspect of the Turtle by 30 sec.
+    bursting_shot           = { 102421, 186387, 1 }, -- Fires an explosion of bolts at all enemies in front of you, knocking them back, snaring them by 50% for 6 sec, and dealing 470 Physical damage.
+    camouflage              = { 102414, 199483, 1 }, -- You and your pet blend into the surroundings and gain stealth for 1 min. While camouflaged, you will heal for 2% of maximum health every 1 sec.
+    concussive_shot         = { 102407, 5116  , 1 }, -- Dazes the target, slowing movement speed by 50% for 6 sec. Steady Shot will increase the duration of Concussive Shot on the target by 3.0 sec.
+    counter_shot            = { 102292, 147362, 1 }, -- Interrupts spellcasting, preventing any spell in that school from being cast for 3 sec.
+    devilsaur_tranquilizer  = { 102415, 459991, 1 }, -- If Tranquilizing Shot removes only an Enrage effect, its cooldown is reduced by 5 sec.
+    disruptive_rounds       = { 102395, 343244, 1 }, -- When Tranquilizing Shot successfully dispels an effect or Counter Shot interrupts a cast, gain 10 Focus.
+    emergency_salve         = { 102389, 459517, 1 }, -- Feign Death and Aspect of the Turtle removes poison and disease effects from you.
+    entrapment              = { 102403, 393344, 1 }, -- When Tar Trap is activated, all enemies in its area are rooted for 4 sec. Damage taken may break this root.
+    explosive_shot          = { 102420, 212431, 1 }, -- Fires an explosive shot at your target. After 3 sec, the shot will explode, dealing 25,937 Fire damage to all enemies within 8 yds. Deals reduced damage beyond 5 targets.
+    ghillie_suit            = { 102385, 459466, 1 }, -- You take 20% reduced damage while Camouflage is active. This effect persists for 3 sec after you leave Camouflage.
+    high_explosive_trap     = { 102739, 236776, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 5,110 Fire damage and knocking all enemies away. Limit 1. Trap will exist for 1 min.
+    hunters_avoidance       = { 102423, 384799, 1 }, -- Damage taken from area of effect attacks reduced by 5%.
+    implosive_trap          = { 102739, 462031, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 5,110 Fire damage and knocking all enemies up. Limit 1. Trap will exist for 1 min.
+    improved_kill_shot      = { 102410, 343248, 1 }, -- Kill Shot's critical damage is increased by 25%.
+    improved_traps          = { 102418, 343247, 1 }, -- The cooldown of Tar Trap, High Explosive Trap, Implosive Trap, and Freezing Trap is reduced by 5.0 sec.
+    intimidation            = { 102397, 19577 , 1 }, -- Commands your pet to intimidate the target, stunning it for 5 sec.
+    keen_eyesight           = { 102409, 378004, 2 }, -- Critical strike chance increased by 2%.
+    kill_shot               = { 102378, 53351 , 1 }, -- You attempt to finish off a wounded target, dealing 28,522 Physical damage. Only usable on enemies with less than 20% health.
+    kindling_flare          = { 102425, 459506, 1 }, -- Stealthed enemies revealed by Flare remain revealed for 3 sec after exiting the flare.
+    kodo_tranquilizer       = { 102415, 459983, 1 }, -- Tranquilizing Shot removes up to 1 additional Magic effect from up to 2 nearby targets.
+    lone_survivor           = { 102391, 388039, 1 }, -- Reduce the cooldown of Survival of the Fittest by 30 sec, and increase its duration by 2.0 sec. Reduce the cooldown of Counter Shot and Muzzle by 2 sec.
+    misdirection            = { 102419, 34477 , 1 }, -- Misdirects all threat you cause to the targeted party or raid member, beginning with your next attack within 30 sec and lasting for 8 sec.
+    moment_of_opportunity   = { 102426, 459488, 1 }, -- When a trap triggers, you gain Aspect of the Cheetah for 3 sec. Can only occur every 1 min.
+    natural_mending         = { 102401, 270581, 1 }, -- Every 10 Focus you spend reduces the remaining cooldown on Exhilaration by 1.0 sec.
+    no_hard_feelings        = { 102412, 459546, 1 }, -- When Misdirection targets your pet, it reduces the damage they take by 50% for 5 sec.
+    padded_armor            = { 102406, 459450, 1 }, -- Survival of the Fittest gains an additional charge.
+    pathfinding             = { 102404, 378002, 1 }, -- Movement speed increased by 4%.
+    posthaste               = { 102411, 109215, 1 }, -- Disengage also frees you from all movement impairing effects and increases your movement speed by 50% for 4 sec.
+    quick_load              = { 102413, 378771, 1 }, -- When you fall below 40% health, Bursting Shot and Scatter Shot have their cooldown immediately reset. This can only occur once every 25 sec.
+    rejuvenating_wind       = { 102381, 385539, 1 }, -- Maximum health increased by 8%, and Exhilaration now also heals you for an additional 12.0% of your maximum health over 8 sec.
+    roar_of_sacrifice       = { 102405, 53480 , 1 }, -- Instructs your pet to protect a friendly target from critical strikes, making attacks against that target unable to be critical strikes, but 10% of all damage taken by that target is also taken by the pet. Lasts 12 sec.
+    scare_beast             = { 102382, 1513  , 1 }, -- Scares a beast, causing it to run in fear for up to 20 sec. Damage caused may interrupt the effect. Only one beast can be feared at a time.
+    scatter_shot            = { 102421, 213691, 1 }, -- A short-range shot that deals 397 damage, removes all harmful damage over time effects, and incapacitates the target for 4 sec. Any damage caused will remove the effect. Turns off your attack when used.
+    scouts_instincts        = { 102424, 459455, 1 }, -- You cannot be slowed below 80% of your normal movement speed while Aspect of the Cheetah is active.
+    scrappy                 = { 102408, 459533, 1 }, -- Casting Kill Command reduces the cooldown of Intimidation and Binding Shot by 0.5 sec.
+    serrated_tips           = { 102384, 459502, 1 }, -- You gain 5% more critical strike from critical strike sources.
+    specialized_arsenal     = { 102390, 459542, 1 }, -- Kill Command deals 10% increased damage.
+    survival_of_the_fittest = { 102422, 264735, 1 }, -- Reduces all damage you and your pet take by 30% for 6 sec.
+    tar_trap                = { 102393, 187698, 1 }, -- Hurls a tar trap to the target location that creates a 8 yd radius pool of tar around itself for 30 sec when the first enemy approaches. All enemies have 50% reduced movement speed while in the area of effect. Limit 1. Trap will exist for 1 min.
+    tarcoated_bindings      = { 102417, 459460, 1 }, -- Binding Shot's stun duration is increased by 1 sec.
+    territorial_instincts   = { 102394, 459507, 1 }, -- Casting Intimidation without a pet now summons one from your stables to intimidate the target. Additionally, the cooldown of Intimidation is reduced by 5 sec.
+    trailblazer             = { 102400, 199921, 1 }, -- Your movement speed is increased by 30% anytime you have not attacked for 3 sec.
+    tranquilizing_shot      = { 102380, 19801 , 1 }, -- Removes 1 Enrage and 1 Magic effect from an enemy target.
+    trigger_finger          = { 102396, 459534, 2 }, -- You and your pet have 5.0% increased attack speed. This effect is increased by 100% if you do not have an active pet.
+    unnatural_causes        = { 102387, 459527, 1 }, -- Your damage over time effects deal 10% increased damage. This effect is increased by 50% on targets below 20% health.
+    wilderness_medicine     = { 102383, 343242, 1 }, -- Mend Pet heals for an additional 25% of your pet's health over its duration, and has a 25% chance to dispel a magic effect each time it heals your pet.
+    -- Dark Ranger
+    a_murder_of_crows       = { 102352, 459760, 1 }, -- Every 5 casts of Kill Command summons a Murder of Crows. A Murder of Crows Summons a flock of crows to attack your target, dealing 46,212 Physical damage over 15 sec.
+    alpha_predator          = { 102368, 269737, 1 }, -- Kill Command now has 2 charges, and deals 15% increased damage.
+    animal_companion        = { 102361, 267116, 1 }, -- Your Call Pet additionally summons the pet from the bonus slot in your stable. This pet will obey your Kill Command, but cannot use pet family abilities and both of your pets deal 35% reduced damage.
+    aspect_of_the_beast     = { 102351, 191384, 1 }, -- Increases the damage and healing of your pet's abilities by 30%. Increases the effectiveness of your pet's Predator's Thirst, Endurance Training, and Pathfinding passives by 50%.
+    barbed_shot             = { 102377, 217200, 1 }, -- Fire a shot that tears through your enemy, causing them to bleed for 21,168 damage over 8 sec. Sends your pet into a frenzy, increasing attack speed by 30% for 8 sec, stacking up to 3 times. Generates 20 Focus over 8 sec.
+    barbed_wrath            = { 102373, 231548, 1 }, -- Barbed Shot reduces the cooldown of Bestial Wrath by 12.0 sec.
+    barrage                 = { 102335, 120360, 1 }, -- Rapidly fires a spray of shots for 2.4 sec, dealing an average of 13,726 Physical damage to all nearby enemies in front of you. Usable while moving. Deals reduced damage beyond 8 targets. Grants Beast Cleave.
+    basilisk_collar         = { 102367, 459571, 2 }, -- Each damage over time effect on a target increases the damage they receive from your pet's attacks by 5%.
+    beast_cleave            = { 102341, 115939, 1 }, -- After you Multi-Shot, your pet's melee attacks also strike all nearby enemies for 80% of the damage for the next 6.0 sec. Deals reduced damage beyond 8 targets.
+    bestial_wrath           = { 102340, 19574 , 1 }, -- Sends you and your pet into a rage, instantly dealing 18,639 Physical damage to its target, and increasing all damage you both deal by 25% for 15 sec. Removes all crowd control effects from your pet.
+    bloodshed               = { 102362, 321530, 1 }, -- Command your pet to tear into your target, causing your target to bleed for 15,532 over 18 sec and take 15% increased damage from your pet by for 18 sec.
+    bloody_frenzy           = { 102339, 407412, 1 }, -- While Call of the Wild is active, your pets have the effects of Beast Cleave, and each time Call of the Wild summons a pet, all of your pets Stomp.
+    brutal_companion        = { 102350, 386870, 1 }, -- When Barbed Shot causes Frenzy to stack up to 3, your pet will immediately use its special attack and deal 50% bonus damage.
+    call_of_the_wild        = { 102336, 359844, 1 }, -- You sound the call of the wild, summoning 2 of your active pets for 20 sec. During this time, a random pet from your stable will appear every 4 sec to assault your target for 6 sec. Each time Call of the Wild summons a pet, the cooldown of Barbed Shot and Kill Command are reduced by 50%.
+    cobra_senses            = { 102356, 378244, 1 }, -- Cobra Shot reduces the cooldown of Kill Command by an additional 1.0 sec.
+    cobra_shot              = { 102354, 193455, 1 }, -- A quick shot causing 13,949 Physical damage. Reduces the cooldown of Kill Command by 1 sec.
+    dire_beast              = { 102376, 120679, 1 }, -- Summons a powerful wild beast that attacks the target and roars, increasing your Haste by 5% for 8 sec. Generates 20 Focus.
+    dire_command            = { 102365, 378743, 1 }, -- Kill Command has a 30% chance to also summon a Dire Beast to attack your target for 8 sec.
+    dire_frenzy             = { 102337, 385810, 1 }, -- Dire Beast lasts an additional 2 sec and deals 60% increased damage.
+    explosive_venom         = { 102370, 459693, 1 }, -- Every 5 casts of Explosive Shot or Multi-Shot will apply Serpent Sting to targets hit.
+    go_for_the_throat       = { 102357, 459550, 1 }, -- Kill Command deals increased critical strike damage equal to 100% of your critical strike chance.
+    hunters_prey            = { 102360, 378210, 1 }, -- Kill Command has a 10% chance to reset the cooldown of Kill Shot, and causes your next Kill Shot to be usable on any target, regardless of the target's health.
+    huntmasters_call        = { 102349, 459730, 1 }, -- Every 3 casts of Dire Beast sounds the Horn of Valor, summoning either Hati or Fenryr to battle. Hati Increases the damage of all your pets by 8%. Fenryr Pounces your primary target, inflicting a heavy bleed that deals 28,522 damage over 8 sec and grants you 10% Haste.
+    improved_kill_command   = { 102344, 378010, 1 }, -- Kill Command damage increased by 5%.
+    kill_cleave             = { 102355, 378207, 1 }, -- While Beast Cleave is active, Kill Command now also strikes nearby enemies for 80% of damage dealt. Deals reduced damage beyond 8 targets.
+    kill_command            = { 102346, 34026 , 1 }, -- Give the command to kill, causing your pet to savagely deal 13,358 Physical damage to the enemy.
+    killer_cobra            = { 102375, 199532, 1 }, -- While Bestial Wrath is active, Cobra Shot resets the cooldown on Kill Command.
+    killer_instinct         = { 102364, 273887, 2 }, -- Kill Command deals 50% increased damage against enemies below 35% health.
+    kindred_spirits         = { 102359, 56315 , 2 }, -- Increases your maximum Focus and your pet's maximum Focus by 20.
+    laceration              = { 102369, 459552, 1 }, -- When your pets critically strike, they cause their target to bleed for 15% of the damage dealt over 6 sec.
+    master_handler          = { 102372, 424558, 1 }, -- Each time Barbed Shot deals damage, the cooldown of Kill Command is reduced by 0.50 sec.
+    multishot               = { 102363, 2643  , 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 1,123 Physical damage. Deals reduced damage beyond 5 targets.
+    pack_tactics            = { 102374, 321014, 1 }, -- Passive Focus generation increased by 100%.
+    piercing_fangs          = { 102371, 392053, 1 }, -- While Bestial Wrath is active, your pet's critical damage dealt is increased by 35%.
+    savagery                = { 102353, 424557, 1 }, -- Kill Command damage is increased by 10%. Barbed Shot lasts 2.0 sec longer.
+    scent_of_blood          = { 102342, 193532, 2 }, -- Activating Bestial Wrath grants 1 charge of Barbed Shot.
+    shower_of_blood         = { 102366, 459729, 1 }, -- Bloodshed now hits 2 additional nearby targets.
+    stomp                   = { 102347, 199530, 1 }, -- When you cast Barbed Shot, your pet stomps the ground, dealing 7,046 Physical damage to all nearby enemies.
+    thrill_of_the_hunt      = { 102345, 257944, 1 }, -- Barbed Shot increases your critical strike chance by 2% for 8 sec, stacking up to 3 times.
+    training_expert         = { 102348, 378209, 2 }, -- All pet damage dealt increased by 5%.
+    venomous_bite           = { 102366, 459667, 1 }, -- Bloodshed increases all damage taken from your pet by an additional 15%, and Kill Command deals 20% increased damage to the target.
+    venoms_bite             = { 102358, 459565, 1 }, -- Kill Shot applies Serpent Sting for 18 sec.  Serpent Sting Fire a shot that poisons your target, causing them to take 1,836 Nature damage instantly and an additional 13,834 Nature damage over 18 sec.
+    war_orders              = { 102343, 393933, 1 }, -- Barbed Shot deals 10% increased damage, and applying Barbed Shot has a 50% chance to reset the cooldown of Kill Command.
+    wild_call               = { 102338, 185789, 1 }, -- Your auto shot critical strikes have a 20% chance to reset the cooldown of Barbed Shot.
+    wild_instincts          = { 102339, 378442, 1 }, -- While Call of the Wild is active, each time you Kill Command, your Kill Command target takes 3% increased damage from all of your pets, stacking up to 10 times.
+    -- Pack Leader
+    beast_of_opportunity    = { 94979, 445700, 1 }, -- Bestial Wrath calls on the pack, summoning a pet from your stable for 6 sec.
+    cornered_prey           = { 94984, 445702, 1 }, -- Disengage increases the range of all your attacks by 5 yds for 5 sec.
+    covering_fire           = { 94969, 445715, 1 }, -- Kill Command increases the duration of Beast Cleave by 1 sec.
+    cull_the_herd           = { 94967, 445717, 1 }, -- Kill Shot deals an additional 30% damage over 6 sec and increases the bleed damage you and your pet deal to the target by 25%.
+    den_recovery            = { 94972, 445710, 1 }, -- Aspect of the Turtle, Survival of the Fittest, and Mend Pet heal the target for 20% of maximum health over 4 sec. Duration increased by 1 sec when healing a target under 50% maximum health.
+    frenzied_tear           = { 94988, 445696, 1 }, -- Your pet's Basic Attack has a 20% chance to reset the cooldown and cause Kill Command to strike a second time for 30% of normal damage.
+    furious_assault         = { 94979, 445699, 1 }, -- Consuming Frenzied Tear has a 50% chance to reset the cooldown of Barbed Shot and deal 30% more damage.
+    howl_of_the_pack        = { 94992, 445707, 1 }, -- Your pet's Basic Attack critical strikes increase your critical strike damage by 5% for 8 sec stacking up to 3 times.
+    pack_assault            = { 94966, 445721, 1 }, -- Vicious Hunt and Pack Coordination now stack and apply twice, and are always active during Call of the Wild.
+    pack_coordination       = { 94985, 445505, 1 }, -- Attacking with Vicious Hunt instructs your pet to strike with their Basic Attack along side your next Barbed Shot.
+    scattered_prey          = { 94969, 445768, 1 }, -- Multi-Shot increases the damage of your next Multi-Shot by 25%.
+    tireless_hunt           = { 94984, 445701, 1 }, -- Aspect of the Cheetah now increases movement speed by 15% for another 8 sec.
+    vicious_hunt            = { 94991, 445404, 1 }, -- Kill Command prepares you to viciously attack in coordination with your pet, dealing an additional 26,743 Physical damage with your next Kill Command.
+    wild_attacks            = { 94962, 445708, 1 }, -- Every third pet Basic Attack is a guaranteed critical strike, with damage further increased by critical strike chance.
+    -- Dark Ranger
+    black_arrow             = { 94987, 430703, 1 }, -- Fire a Black Arrow into your target, dealing 21,938 Shadow damage over 18 sec. Each time Black Arrow deals damage, you have a 10% chance to generate a charge of Barbed Shot.
+    dark_chains             = { 94960, 430712, 1 }, -- Disengage will chain the closest target to the ground, causing them to move 40% slower until they move 8 yards away.
+    dark_empowerment        = { 94986, 430718, 1 }, -- When Black Arrow resets the cooldown of an ability, gain 15 Focus.
+    darkness_calls          = { 94974, 430722, 1 }, -- All Shadow damage you and your pets deal is increased by 10%.
+    death_shade             = { 94968, 430711, 1 }, -- When you apply Black Arrow to a target, you gain the Hunter's Prey effect.
+    embrace_the_shadows     = { 94959, 430704, 1 }, -- You heal for 15% of all Shadow damage dealt by you or your pets.
+    grave_reaper            = { 94986, 430719, 1 }, -- When a target affected by Black Arrow dies, the cooldown of Black Arrow is reduced by 12 sec.
+    overshadow              = { 94961, 430716, 1 }, -- Barbed Shot and Kill Command deal 15% increased damage.
+    shadow_erasure          = { 94974, 430720, 1 }, -- Kill Shot has a 15% chance to generate a charge of Barbed Shot when used on a target affected by Black Arrow.
+    shadow_hounds           = { 94983, 430707, 1 }, -- Each time Black Arrow deals damage, you have a 10% chance to manifest a Dark Hound to charge to your target and deal Shadow damage.
+    shadow_lash             = { 94957, 430717, 1 }, -- When Call of the Wild is active, Black Arrow deals damage 50% faster.
+    shadow_surge            = { 94982, 430714, 1 }, -- When Multi-Shot hits a target affected by Black Arrow, a burst of Shadow energy erupts, dealing moderate Shadow damage to all enemies near the target. This can only occur once every 6 sec.
+    smoke_screen            = { 94959, 430709, 1 }, -- Exhilaration grants you 3 sec of Survival of the Fittest. Survival of the Fittest activates Exhilaration at 50% effectiveness.
+    withering_fire          = { 94993, 430715, 1 }, -- When Black Arrow resets the cooldown of Barbed Shot, a barrage of dark arrows will strike your target for Shadow damage and increase the damage you and your pets deal by 10% for 6 sec.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    chimaeral_sting     = 3604, -- (356719) Stings the target, dealing 2,198 Nature damage and initiating a series of venoms. Each lasts 3 sec and applies the next effect after the previous one ends.  Scorpid Venom: 90% reduced movement speed.  Spider Venom: Silenced.  Viper Venom: 20% reduced damage and healing.
+    chimaeral_sting     = 3604, -- (356719) Stings the target, dealing 13,370 Nature damage and initiating a series of venoms. Each lasts 3 sec and applies the next effect after the previous one ends.  Scorpid Venom: 90% reduced movement speed.  Spider Venom: Silenced.  Viper Venom: 20% reduced damage and healing.
     diamond_ice         = 5534, -- (203340) Victims of Freezing Trap can no longer be damaged or healed. Freezing Trap is now undispellable, but has a 5 sec duration.
     dire_beast_basilisk = 825 , -- (205691) Summons a slow moving basilisk near the target for 30 sec that attacks the target for heavy damage.
     dire_beast_hawk     = 824 , -- (208652) Summons a hawk to circle the target area, attacking all targets within 10 yards over the next 10 sec.
     hunting_pack        = 3730, -- (203235) Aspect of the Cheetah has 50% reduced cooldown and grants its effects to allies within 15 yds.
     interlope           = 1214, -- (248518) Misdirection now causes the next 3 hostile spells cast on your target within 10 sec to be redirected to your pet, but its cooldown is increased by 15 sec. Your pet must be within 20 yards of the target for spells to be redirected.
-    kindred_beasts      = 5444, -- (356962) Command Pet's unique ability cooldown reduced by 50%, and gains additional effects.
-    survival_tactics    = 3599, -- (202746) Feign Death reduces damage taken by $m1% for $202748d.
+    kindred_beasts      = 5444, -- (356962) Command Pet's unique ability cooldown reduced by 50%, and gains additional effects. Ferocity: Primal Rage increases Haste by 12% for 20 sec, but no longer applies Sated.
+    survival_tactics    = 3599, -- (202746) Feign Death reduces damage taken by 90% for 3 sec.
     the_beast_within    = 693 , -- (356976) Bestial Wrath now provides immunity to Fear and Horror effects for you and your pets for 8 sec. Nearby allied pets are also inspired, increasing their attack speed by 10%.
-    tranquilizing_darts = 5418, -- (356015) Interrupting or removing effects with Tranquilizing Shot and Counter Shot releases 8 darts at nearby enemies, each reducing the duration of a beneficial Magic effect by 4 sec.
     wild_kingdom        = 5441, -- (356707) Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
 } )
 
@@ -272,6 +308,12 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
+    a_murder_of_crows_stack = {
+        id = 459759,
+        duration = 15,
+        max_stack = 5
+    },
+
     -- Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=263446
     acid_spit = {
@@ -294,14 +336,6 @@ spec:RegisterAuras( {
         id = 50433,
         duration = 6,
         mechanic = "snare",
-        max_stack = 1
-    },
-    -- Talent: Slowed by $s2%.
-    -- https://wowhead.com/beta/spell=390232
-    arctic_bola = {
-        id = 390232,
-        duration = 3,
-        type = "Ranged",
         max_stack = 1
     },
     -- Movement speed increased by $w1%.
@@ -451,6 +485,18 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
     },
+    -- Stunned.
+    binding_shot = {
+        id = 117526,
+        duration = function() return 3.0 + ( 1 * talent.tarcoated_bindings.rank ) end,
+        max_stack = 1,
+    },
+    black_arrow = {
+        id = 430703,
+        duration = 18,
+        tick_time = 2,
+        max_stack = 1
+    },
     -- Talent: Bleeding for $w1 Physical damage every $t1 sec.  Taking $s2% increased damage from the Hunter's pet.
     -- https://wowhead.com/beta/spell=321538
     bloodshed = {
@@ -499,13 +545,11 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Movement speed reduced by $s4%.
-    -- https://wowhead.com/beta/spell=186387
+    -- Disoriented.
     bursting_shot = {
-        id = 186387,
-        duration = 6,
-        type = "Ranged",
-        max_stack = 1
+        id = 224729,
+        duration = 4.0,
+        max_stack = 1,
     },
     -- Summoning 1 of your active pets every 4 sec. Each pet summoned lasts for 6 sec.
     -- https://wowhead.com/beta/spell=359844
@@ -533,13 +577,6 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
-    -- Talent: Your next Kill Command will consume $s1% less Focus.
-    -- https://wowhead.com/beta/spell=392296
-    cobra_sting = {
-        id = 392296,
-        duration = 15,
-        max_stack = 1
-    },
     -- Talent: Movement slowed by $s1%.
     -- https://wowhead.com/beta/spell=5116
     concussive_shot = {
@@ -548,6 +585,13 @@ spec:RegisterAuras( {
         mechanic = "snare",
         type = "Ranged",
         max_stack = 1
+    },
+    -- Bleeding for $w1 damage every $t1 sec.
+    cull_the_herd = {
+        id = 449233,
+        duration = 6.0,
+        tick_time = 2.0,
+        max_stack = 1,
     },
     -- Talent: Taking $w2% increased Physical damage from $@auracaster.
     -- https://wowhead.com/beta/spell=325037
@@ -584,7 +628,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=281036
     dire_beast = {
         id = 281036,
-        duration = function() return talent.dire_frenzy.enabled and 9 or 8 end,
+        duration = function() return 8 + 2 * talent.dire_frenzy.rank end,
         max_stack = 1
     },
     dire_beast_basilisk = {
@@ -596,11 +640,6 @@ spec:RegisterAuras( {
         id = 208684,
         duration = 3600,
         max_stack = 1,
-    },
-    dire_pack = {
-        id = 378747,
-        duration = 8,
-        max_stack = 1
     },
     -- Dodge chance increased by $s1%.
     -- https://wowhead.com/beta/spell=263887
@@ -634,6 +673,12 @@ spec:RegisterAuras( {
         tick_time = 3,
         type = "Ranged",
         max_stack = 1
+    },
+    -- Explosive Shot and Multi-Shot will apply Serpent Sting at $u stacks.
+    explosive_venom = {
+        id = 459689,
+        duration = 15.0,
+        max_stack = 1,
     },
     -- Directly controlling pet.
     -- https://wowhead.com/beta/spell=321297
@@ -729,6 +774,12 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
+    -- Critical damage dealt increased by $s1%.
+    howl_of_the_pack = {
+        id = 462515,
+        duration = 8.0,
+        max_stack = 1,
+    },
     -- Can always be seen and tracked by the Hunter.; Damage taken increased by $428402s4% while above $s3% health.
     -- https://wowhead.com/beta/spell=257284
     hunters_mark = {
@@ -746,6 +797,12 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    -- Dire Beast will summon Hati or Fenryr at $u stacks.
+    huntmasters_call = {
+        id = 459731,
+        duration = 3600,
+        max_stack = 1,
+    },
     intimidation = {
         id = 24394,
         duration = 5,
@@ -758,25 +815,12 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    -- Injected with Latent Poison. $?s137015[Barbed Shot]?s137016[Aimed Shot]?s137017&!s259387[Raptor Strike][Mongoose Bite]  consumes all stacks of Latent Poison, dealing ${$378016s1/$s1} Nature damage per stack consumed.
-    -- https://wowhead.com/beta/spell=378015
-    latent_poison = {
-        id = 378015,
-        duration = 15,
-        max_stack = 10
-    },
     -- Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=263423
     lock_jaw = {
         id = 263423,
         duration = 6,
         mechanic = "snare",
-        max_stack = 1
-    },
-    master_marksman = {
-        id = 269576,
-        duration = 6,
-        mechanic = "bleed",
         max_stack = 1
     },
     masters_call = {
@@ -815,6 +859,12 @@ spec:RegisterAuras( {
     misdirection = {
         id = 35079,
         duration = 8,
+        max_stack = 1,
+    },
+    -- Damage taken reduced by $w1%
+    no_hard_feelings = {
+        id = 459547,
+        duration = 5.0,
         max_stack = 1,
     },
     -- Damage reduced by $s1%.
@@ -864,6 +914,13 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
+    -- Recently benefitted from Quick Load.
+    quick_load = {
+        id = 385646,
+        duration = 25.0,
+        max_stack = 1,
+        copy = "quick_load_icd"
+    },
     rejuvenating_wind = {
         id = 339400,
         duration = 8,
@@ -891,41 +948,6 @@ spec:RegisterAuras( {
     scatter_shot = {
         id = 213691,
         duration = 4,
-        type = "Ranged",
-        max_stack = 1
-    },
-    -- Talent: Ignoring line of sight to enemies in the targeted area.
-    -- https://wowhead.com/beta/spell=388045
-    sentinel_owl = {
-        id = 388045,
-        duration = function() return buff.sentinel_owl_ready.stack end,
-        max_stack = 1
-    },
-    sentinel_owl_ready = {
-        duration = 3600,
-        max_stack = 12,
-        generate = function( t, auraType )
-            local n = GetSpellCount( 388045 )
-
-            if n > 4 then
-                t.name = class.abilities.sentinel_owl.name
-                t.count = n
-                t.applied = now
-                t.expires = now + 3600
-                t.caster = "player"
-                return
-            end
-            t.count = 0
-            t.applied = 0
-            t.expires = 0
-            t.caster = "nobody"
-        end
-    },
-    -- Talent: Suffering $s2 Nature damage every $t2 sec.
-    -- https://wowhead.com/beta/spell=271788
-    serpent_sting = {
-        id = 271788,
-        duration = 18,
         type = "Ranged",
         max_stack = 1
     },
@@ -976,6 +998,12 @@ spec:RegisterAuras( {
         type = "Ranged",
         max_stack = 1
     },
+    -- All damage taken reduced by $s1%.
+    survival_of_the_fittest = {
+        id = 264735,
+        duration = function() return 6.0 + 2 * talent.lone_survivor.rank end,
+        max_stack = 1,
+    },
     -- Reduces damage taken by $202746s1%, up to a maximum of $w1.
     survival_tactics = {
         id = 202748,
@@ -1022,11 +1050,17 @@ spec:RegisterAuras( {
     thrill_of_the_hunt = {
         id = 257946,
         duration = 8,
-        max_stack = function() return talent.thrill_of_the_hunt.rank end,
+        max_stack = 3,
         copy = 312365
     },
     trailblazer = {
         id = 231390,
+        duration = 3600,
+        max_stack = 1,
+    },
+    -- Damage taken from $@auracaster's Kill Command is increased by $w1%.
+    venomous_bite = {
+        id = 459668,
         duration = 3600,
         max_stack = 1,
     },
@@ -1240,25 +1274,6 @@ spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- Talent: Summons a flock of crows to attack your target, dealing ${$131900s1*16} Physical damage over $d. If the target dies while under attack, A Murder of Crows' cooldown is reset.
-    a_murder_of_crows = {
-        id = 131894,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-        school = "physical",
-
-        spend = 30,
-        spendType = "focus",
-
-        talent = "a_murder_of_crows",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "a_murder_of_crows" )
-        end,
-    },
-
     -- A quick shot that causes $sw2 Arcane damage.$?s260393[    Arcane Shot has a $260393h% chance to reduce the cooldown of Rapid Fire by ${$260393m1/10}.1 sec.][]
     arcane_shot = {
         id = 185358,
@@ -1276,11 +1291,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Increases your movement speed by $s1% for $d, and then by $186258s1% for another $186258d.
+    -- Increases your movement speed by $s1% for $d, and then by $186258s1% for another $186258d$?a445701[, and then by $445701s1% for another $445701s2 sec][].$?a459455[; You cannot be slowed below $s2% of your normal movement speed.][]
     aspect_of_the_cheetah = {
         id = 186257,
         cast = 0,
-        cooldown = function () return 180 * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( 1 - 0.075 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
+        cooldown = function () return 180 * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) - ( 30 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
         gcd = "off",
         school = "physical",
 
@@ -1299,7 +1314,7 @@ spec:RegisterAbilities( {
         id = 186265,
         cast = 8,
         channeled = true,
-        cooldown = function () return 180 * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( 1 - 0.075 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
+        cooldown = function () return 180 * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) - ( 30 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
         gcd = "off",
         school = "physical",
 
@@ -1379,7 +1394,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Rapidly fires a spray of shots for $120360d, dealing an average of $<damageSec> Physical damage to all nearby enemies in front of you. Usable while moving. Deals reduced damage beyond $120361s1 targets.
+    -- Rapidly fires a spray of shots for $120360d, dealing an average of $<damageSec> Physical damage to all nearby enemies in front of you. Usable while moving. Deals reduced damage beyond $120361s1 targets.; $?c1[Grants Beast Cleave.][]
     barrage = {
         id = 120360,
         cast = function () return 3 * haste end,
@@ -1440,7 +1455,25 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Command your pet to tear into your target, causing your target to bleed for $<damage> over $321538d and increase all damage taken from your pet by $321538s2% for $321538d.
+    -- Fire a Black Arrow into your target, dealing $o1 Shadow damage over $d.; Each time Black Arrow deals damage, you have a $s2% chance to generate a charge of $?a137015[Barbed Shot]?a137016[Aimed Shot and reduce its cast time by $439659s2%][Barbed Shot or Aimed Shot].
+    black_arrow = {
+        id = 430703,
+        cast = 0.0,
+        cooldown = 30.0,
+        gcd = "spell",
+
+        spend = 10,
+        spendType = 'focus',
+
+        talent = "black_arrow",
+        startsCombat = true,
+
+        handler = function()
+            applyDebuff( "target", "black_arrow" )
+        end,
+    },
+
+    -- Command your pet to tear into your target, causing your target to bleed for $<damage> over $321538d and take $321538s2% increased damage from your pet by for $321538d.
     bloodshed = {
         id = 321530,
         cast = 0,
@@ -1456,6 +1489,20 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "bloodshed" )
         end,
+    },
+
+    -- Fires an explosion of bolts at all enemies in front of you, knocking them back, snaring them by $s4% for $d, and dealing $s1 Physical damage.$?s378771[; When you fall below $378771s1% heath, Bursting Shot's cooldown is immediately reset. This can only occur once every $385646d.][]
+    bursting_shot = {
+        id = 186387,
+        cast = 0.0,
+        cooldown = 30.0,
+        gcd = "spell",
+
+        spend = 10,
+        spendType = 'focus',
+
+        talent = "bursting_shot",
+        startsCombat = true,
     },
 
     -- Talent: You sound the call of the wild, summoning $s1 of your active pets for $d. During this time, a random pet from your stable will appear every $t2 sec to assault your target for $361582d.$?s378442[    While Call of the Wild is active, Barbed Shot has a $378442h% chance to gain a charge any time Focus is spent.][]$?s378739[    While Call of the Wild is active, Barbed Shot affects all of your summoned pets.][]
@@ -1492,6 +1539,7 @@ spec:RegisterAbilities( {
             applyBuff( "camouflage" )
         end,
     },
+
     -- Talent: A quick shot causing ${$s2*$<mult>} Physical damage.    Reduces the cooldown of Kill Command by $?s378244[${$s3+($378244s1/-1000)}][$s3] sec.
     cobra_shot = {
         id = 193455,
@@ -1538,7 +1586,7 @@ spec:RegisterAbilities( {
     counter_shot = {
         id = 147362,
         cast = 0,
-        cooldown = 24,
+        cooldown = function() return 24 - 2 * talent.lone_survivor.rank end,
         gcd = "off",
         school = "physical",
 
@@ -1559,32 +1607,16 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Covenant (Necrolord) / Talent: Throw a deadly chakram at your current target that will rapidly deal $375893s1 Physical damage $x times, bouncing to other targets if they are nearby. Enemies struck by Death Chakram take $375893s2% more damage from you and your pet for $375893d.    Each time the chakram deals damage, its damage is increased by $s3% and you generate $s4 Focus.
-    death_chakram = {
-        id = function() return talent.death_chakram.enabled and 375891 or 325028 end,
-        cast = 0,
-        cooldown = 45,
-        gcd = "spell",
-        school = "physical",
-
-        startsCombat = true,
-
-        handler = function ()
-            applyBuff( "death_chakram" )
-            applyDebuff( "target", "death_chakram_vulnerability" )
-            if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
-        end,
-
-        copy = { 325028, 375891 }
-    },
-
-    -- Talent: Summons a powerful wild beast that attacks the target and roars, increasing your Haste by $281036s1% for $d.
+    -- Summons a powerful wild beast that attacks the target and roars, increasing your Haste by $281036s1% for $d.; Generates $281036s2 Focus.
     dire_beast = {
         id = 120679,
         cast = 0,
         cooldown = 20,
         gcd = "spell",
         school = "nature",
+
+        spend = -20,
+        spendType = "focus",
 
         talent = "dire_beast",
         startsCombat = true,
@@ -1797,7 +1829,7 @@ spec:RegisterAbilities( {
     freezing_trap = {
         id = 187650,
         cast = 0,
-        cooldown = function() return 30 - 2.5 * talent.improved_traps.rank end,
+        cooldown = function() return 30 - 5 * talent.improved_traps.rank end,
         gcd = "spell",
         school = "physical",
 
@@ -1817,7 +1849,7 @@ spec:RegisterAbilities( {
     high_explosive_trap = {
         id = 236776,
         cast = 0,
-        cooldown = function() return 40 - 2.5 * talent.improved_traps.rank end,
+        cooldown = function() return 40 - 5 * talent.improved_traps.rank end,
         gcd = "spell",
         school = "fire",
 
@@ -1849,6 +1881,19 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing $236777s2 Fire damage and knocking all enemies up. Limit $s2. Trap will exist for $236775d.$?s321468[; Targets knocked up by Implosive Trap deal $321469s1% less damage to you for $321469d after being knocked up.][]
+    implosive_trap = {
+        id = 462031,
+        cast = 0.0,
+        cooldown = function() return 60.0 - 5 * talent.improved_traps.rank end,
+        gcd = "spell",
+
+        talent = "implosive_trap",
+        startsCombat = false,
+
+        handler = function()
+        end,
+    },
 
     interlope = {
         id = 248518,
@@ -1869,7 +1914,7 @@ spec:RegisterAbilities( {
     intimidation = {
         id = 19577,
         cast = 0,
-        cooldown = 60,
+        cooldown = function() return 60 - 5 * talent.territorial_instincts.rank end,
         gcd = "spell",
         school = "nature",
 
@@ -1886,13 +1931,13 @@ spec:RegisterAbilities( {
         id = 34026,
         cast = 0,
         charges = function() return talent.alpha_predator.enabled and 2 or nil end,
-        cooldown = function () return 7.5 * ( buff.dire_pack.up and 0.5 or 1 ) * haste end,
-        recharge = function() return talent.alpha_predator.enabled and ( 7.5 * ( buff.dire_pack.up and 0.5 or 1 ) * haste ) or nil end,
+        cooldown = function () return 7.5 * haste end,
+        recharge = function() return talent.alpha_predator.enabled and ( 7.5 * haste ) or nil end,
         icd = 0.5,
         gcd = "spell",
         school = "physical",
 
-        spend = function () return ( buff.cobra_sting.up or buff.flamewakers_cobra_sting.up ) and 0 or ( 30 * ( buff.dire_pack.up and 0.5 or 1 ) ) end,
+        spend = 30,
         spendType = "focus",
 
         talent = "kill_command",
@@ -1908,6 +1953,15 @@ spec:RegisterAbilities( {
             removeBuff( "lethal_command" )
 
             if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
+
+            if talent.a_murder_of_crows.enabled then
+                if buff.a_murder_of_crows_stack.stack == 4 then
+                    applyDebuff( "target", "a_murder_of_crows" )
+                    removeBuff( "a_murder_of_crows" )
+                else
+                    addStack( "a_murder_of_crows_stack" )
+                end
+            end
 
             if talent.wild_instincts.enabled and buff.call_of_the_wild.up then
                 applyDebuff( "target", "wild_instincts", nil, buff.wild_instincts.stack + 1 )
@@ -2118,29 +2172,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Fire a shot that poisons your target, causing them to take $s1 Nature damage instantly and an additional $o2 Nature damage over $d.$?s260241[    Serpent Sting fires arrows at $260241s1 additional $Lenemy:enemies; near your target.][]$?s378014[    Serpent Sting's damage applies Latent Poison to the target, stacking up to $378015u times. $@spelldesc393949 consumes all stacks of Latent Poison, dealing $378016s1 Nature damage to the target per stack consumed.][]
-    serpent_sting = {
-        id = 271788,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "nature",
-
-        spend = function () return 10 * ( legendary.eagletalons_true_focus.enabled and buff.trueshot.up and 0.75 or 1 ) end,
-        spendType = "focus",
-
-        talent = "serpent_sting",
-        startsCombat = false,
-
-        velocity = 60,
-
-        impact = function ()
-            applyDebuff( "target", "serpent_sting" )
-            if talent.hydras_bite.enabled then active_dot.serpent_sting = min( true_active_enemies, active_dot.serpent_sting + 2 ) end
-            if talent.poison_injection.enabled then applyDebuff( "target", "latent_poison", nil, debuff.latent_poison.stack + 1 ) end
-        end,
-    },
-
     spirit_mend = {
         id = 90361,
         cast = 0,
@@ -2173,32 +2204,23 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Hurls a Steel Trap to the target location that snaps shut on the first enemy that approaches, immobilizing them for $162480d and causing them to bleed for $162487o1 damage over $162487d.     Damage other than Steel Trap may break the immobilization effect. Trap will exist for $162496d. Limit 1.
-    steel_trap = {
-        id = 162488,
-        cast = 0,
-        cooldown = function() return 30 - 2.5 * talent.improved_traps.rank end,
-        gcd = "spell",
-        school = "physical",
+    -- A steady shot that causes $s1 Physical damage.; Usable while moving.$?s321018[; Generates $s2 Focus.][]
+    steady_shot = {
+        id = 56641,
+        cast = 1.7,
+        cooldown = 0.0,
+        gcd = "global",
 
-        spend = function ()
-            if legendary.nessingwarys_trapping_apparatus.enabled then
-                return -45, "focus"
-            end
-        end,
-
-        talent = "steel_trap",
-        startsCombat = false,
-
-        handler = function ()
-        end,
+        startsCombat = true,
     },
 
-
+    -- Reduces all damage you and your pet take by $s1% for $d.
     survival_of_the_fittest = {
         id = 264735,
         cast = 0,
         cooldown = function () return ( talent.lone_survivor.enabled and 150 or 180 ) * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( 1 - 0.075 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) end,
+        charges = function() return talent.padded_armor.enabled and ( ( talent.lone_survivor.enabled and 150 or 180 ) * ( pvptalent.hunting_pack.enabled and 0.5 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * ( 1 - 0.075 * talent.born_to_be_wild.rank ) + ( conduit.cheetahs_vigor.mod * 0.001 ) ) or nil end,
+        recharge = function() return talent.padded_armor.enabled and 2 or nil end,
         gcd = "off",
 
         startsCombat = false,
@@ -2231,11 +2253,11 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Hurls a tar trap to the target location that creates a $187699s1 yd radius pool of tar around itself for $13810d when the first enemy approaches. All enemies have $135299s1% reduced movement speed while in the area of effect. Trap will exist for $13809d.
+    -- Hurls a tar trap to the target location that creates a $187699s1 yd radius pool of tar around itself for $13810d when the first enemy approaches. All enemies have $135299s1% reduced movement speed while in the area of effect. Limit $s2. Trap will exist for $13809d.
     tar_trap = {
         id = 187698,
         cast = 0,
-        cooldown = function() return 30 - 2.5 * talent.improved_traps.rank end,
+        cooldown = function() return 30 - 5 * talent.improved_traps.rank end,
         gcd = "spell",
         school = "physical",
 
@@ -2272,6 +2294,7 @@ spec:RegisterAbilities( {
         usable = function () return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic effect" end,
 
         handler = function ()
+            if talent.devilsaur_tranquilizer.enabled and buff.dispellable_enrage.up and buff.dispellable_magic.up then reduceCooldown( "tranquilizing_shot", 5 ) end
             removeBuff( "dispellable_enrage" )
             removeBuff( "dispellable_magic" )
             if state.spec.survival or talent.improved_tranquilizing_shot.enabled then gain( 10, "focus" ) end
@@ -2400,4 +2423,4 @@ spec:RegisterSetting( "check_pet_range", false, {
 } )
 
 
-spec:RegisterPack( "Beast Mastery", 20240110, [[Hekili:T3t7YnUns(SmvQtJDSTgj6pY4Cw(hZCBQBM72SPwNu5FIcwcYIRPi1sszpoLl9SFDdascacqcsjnJtox1KyBcGgD3Or)jbX4HJ)1X3mJKrh)ZEd8oBWWHd6p8SZp90lgFt2tROJVzfz69K7GFjISe()FGssZ2m5Vd)FAYtyZpfgtMHGjnEDYuOlF3MjlYYwL(JV7D3fKTy9T9NgV8DPblxhsYcIJMMqMNH)903n(MBxheM9POX3Aen8(HX3qwNTioz8n3eS8JJVzrWSzuE3PPthFd09tpzO3jEVFZKEBMGJ(Kbdpz4GFeqYGO4KntGzAZK1RqW3FZN3858HmCaBid9GU(pPlJFGUzYntPra5fpFZKpeghpBZKPlOtVpfEue8isYTu4z3SiotbudUW409FUzY)96iGr92uKLLCp0knlli6oPrdiloA1oQ0(GFaA)NwNKTGcWhynE5tqQA)oh63VqYMUG3RYghCXjENbn(BPan()eegUzYhJxUKebetaqyFmKsqY)ry9QOdINLrcbEIeSo7epeH)nggSzY8KyGGVPy59J4YRu3pfwBGUd8yY0aca4PXXHZIFeM21PGK1MjKz)R1G4eGlZrg4hj40JlbabVzYVhecT8aqQt(annJbIFpHKTO)4BcdsZszIW05K1HzWV(ZmrAAe52q6SXFGlNKeScrTX383(cD6A2urFaKFHPiyjvmrKPz40halbKhibHieG5aEmBOtJzRq(PWI)4mqqfNN8gZsir)Bquo4pGfxExKWbO3NQHvakbalGm(Mdkeks7Vew69jraE98ZiNp5oAw)Gu)BJtbS6qM8koLpq9NbIGlyyuQ)sMO1Ont4s0IXTGscZw4VAkiqF9MjVN3imD3LeVELYuGCb)SySV(y)GUF30za68Lnt(ECxfm5LeR80I02zA0w8kqzanRCapqakfAf)TW1WpEZMjjKGz(WIaiArMnlTp9l4Azokc)d6twsq09i6nS)csQ)6uQ)TRNpxG6LnMlr1pHUKeeLYiGthux)iZEYbWCuP0A)PGyPF8CFqwX)rqMS)S1jmbEw3gEoBsNhC3Im)IXFyo9itmE1rmEosmE1tmMaZoGyW5q7Px5muzsrCyu)IVbPduEL3OElktHEJOUnab9o380Ind05f2rmX8Q)y5LMHLJMVnTNjEK35AAI(VOWEOLbrGINaqiiitO5b25XS7iumfJAjPgvk2hvPgWvLXmAbqEzWFi4gzK7Pa8wLeedQAa5J04cfU4eLck3Z14cQUZcwfsZ1hG4b8FHXr3X)ne7Emo6TWpMrdja0aRLWaxqcz4o0L81baR(hOHQhdq0gW64hfZs6sgnWaqkN0cz0pYK5wE4BiOZNtrLwcP50soKahcJzWwqp9zky85(Nmno7rF2ocuZ05AAMk0LJcQ8)WhTHWTKKdIzP4yVOlJnhLra8dwv5luHtJOldOc5dUe0BkS3El6OL)uMr4(cOiR)xEWNc6BHzEAgA9ZnenLzd79oJIxxGITf)WTiTh)4aEmIL3SkHcEqElP08EoisxVCjm6vuDZTkgNVnoldAXFoi4rN9iAHol(lbrnyI2jZyAA1l9TrZ2IQkF3mkOAbmaCpiijjob1WopbqQ1jarLfVmgE6JfApLazZdXMrJsTQxz2ezzh0bbkwWvEPn0YgSpKr2gsVMWZrnHNhwOMUoplAELPcx(V6mn7gUyMIGD2GDc0AGauCv7PpfnnxTEoGrF4)ueAcifIZAwaAEj3a1pQQ9NR4ygzjZGL4zhZTjHZf0i4LDsg(7fG3w7SqwrwcIa3SIkIdHKkSWonoknyg21)oB7c3q7pLVHzZKFTChZJuWWksSliaLeZJjtdZtdIMsf2fxf)ivevr6Qq0i2T0ShP0ib7B2Y7kT4XciJ9yziQyGtWK9h6NZ47Sl45pRVbyAyg9uMrDtROs6CjVX3mS)5sAPZO0qFiePvYwykn19ieSfQuMGSyfBjIoucG8w5ggegjme0xHQFwe7IaYkN7zuK)2hcyfaV)Q4GuWXL0mY07zsoxMVlN1R5j0O)4PCxbLFuPdEJKcyc8dfc(w4YzXEQB5XU6)il0vzxdh6XgtX4zEsknlc8cTZNJxwHArKa29jx0PCV5xdndlDlqh)kvbvGm9AMeafetFcwk8fopIRg5MGDFj5vwDJSAZ8z7zwGrzk(PjZl4mUJurGduCbfZa2t(cEtX(YMO5sXI8LCw8f55n5mfxZKPtn)X01WusyfkUK82x1TsjmYKV8LGsqQ3hads1z2siYBKNVSch7ZBK(Lvq4iOhVgY6Z7vCwnJSCfDgvRpxQWpqwE6cC2v60WbY9Agf4w(GG09jKL69u1bzjvVQDtXdzI)Y1jGbqKVnfTZP3BDHSDP(1kIq5jNQAu0xQecc2zFC0k2m47Vs5(7cijAQhJbPVA8lq8VGRfjsY1w0Jnu32QlkYEzqtwiOZLx6veU1w1VqrOlibCbg1MO3n9aDle(OjRW1)um5MYSOekOtjDboa5ewMNfYzbuU3Fc3qTqg2dE1OHdaGuE2Ff(OiToMGv4aH5LDuzQs2sTO4ZBqtaxwNVuuKg4oWuk5GvikuL6)Vwp7ULadNnzdRSiBq)KNUr6suAE801PftkJ2StNtJVnHuMz8gmj1WktJ5stIYvCDKn367wDKj720Dl5o2U6KGP3ZYXJNDJuhGP9c4HmBSCUzc9okprLNYtA4v5Ta8ujTXjtjriBpjHVAMjLyjdo72SZ(c9dv0kjRJ5amwm6d(4s8WkDvj4z3GMb(DUwW69ZX)U10ubVVA8N)AYArotlI3cIfddEkHYcTmiHRyPmkuIuSP8aR4XLYgbZ9bLqSWbvMdr9Ti7gUD9wjCKjBKdxp7AB5wir)aTk7I)8AsJwWCZb)zJa1jdMIH1rzbHIiK36v)hzL5826ebeUDBzL2NgMYs5Cd(cxiy4IyVPO5ZNFbzGPtnmot(VX0tfpFoU5LLJvjhCRptxfUsxk0xPPQPhWEId1Rw0B6(uygblTzuFMRExEmCAk0BCGIkvPrGv4D1s8xBfVpHxDTMaWjmvFxzfm9S2cG(Nvx57QWY9QWYRfZCOlDh5VEKrMVTPa7U95yRfEuWcJ97QkC5AN3JAcEgx1ktCTzws((j7eR3G66WvMbSo34W2Lc9mJzKM)okyuXa3cIJ1m3b1hnkdvLPAPuaMXZg54nIaxxutCRLw378DeTQzo93sXsZjNK5caKwjR9I8shKYTzYsBpAEvukyrrLrFxWNYRjmZeDHz3Cq1qLC5VmsSHYyf93m5NGjmL)CeaCPiH9BrM41s(EaF2FQyoiHyPVr78Y18gZnrIcrEWcYkiE10kiPHsEBJ8ymkIXIIia2TcwfJsbQbw6r0rRshgiJGO50e4Ff0p79esDjKxpCSilz0OziTMLt6GddNqUlkgC8yk)Lbq43ecL4ew1pkE9csjlLPVvKGew9uwJbcaHUdH1kTwX7TOw8gsCNM7lEAUV45K7lnObWbFl8STHX0B(t3CFPQTuhSavJo36DFX4an5(Ibn01s8TY9ftaO7Ea0A3xQ6XyTyMdDP7iVr3xSpf7c3xQr4XMrHDI7lgHNRUVu9nXRrJPU5(snoZz19LMRV)27(sdXETnAOAyo2rUVyrlXw4(s7OvEsWsn(c(6s(43Qcl(vOcHUvcvJfphlyaqazbrGFdkPhYHcokacjC1cI)Qe6mswCsZvaZEcEDcXkegCT(DN5qD0o3L6OPurJ6k(4p4A92SxfIwtLx6ADzg0QA31LccwBvnBB1a7wPTotAZN9YP1SiU1TNI99iyQBxCP2m93EGCnW2kOOzDIxwxzglK4SwSnBoxVNl22fUuoPkvc0XIV0PkCnuP46svGsdNAOKEovmQMrWQfIAVvTVQfHs3I4oBQevIA1Amr31xVWAl3fgZqRk3f(oyBWuVRvzV5Ylu6hG5kuvt9ab1FsMqsGnE3JB5Q1E93s09cnZI(ZxN8u9wXFHGUKOPWWtGHJtKPkJ8IaLVSeJNd6Tzmzt5b5fbYEQ0BG)Qy2pf75EaKLX)epcMNo0d74JKKi8GPn(MFft0tWYvXjzIeO9wXzU7TygH(3RdyVOSPXOktY6S4Le2XSdSmd(4JNtX)x2RmmEke)yCemxSMFBUB)QrVaWetC1BTeCd08bd)YHoau9qjmaydDzpc82bwWLX6bkVdThFDcWTdKoZc6c(6mWBeSE1lOvPzNW1QPC3aG7kJOBaVDG1K8GHo0E81ja3oq6mlOl4RZaVaS)GoyRE(OkGN9JoLoY((Dmu38zdAWloyvTth(P1U1kNtzzRLuZkeSnGUvggQht7Osa7yAtN3kdyVddXPjV5d7LbQ0HH44KxS9ipmY62cj1N9k4BeWgsxCD2yAlE3vW3iGLYjTjgHuBUINwb3W2dUx8yxJlkVkR6m4DaW)zr)Dxx62ZGVra31LohX7Uc(gb8lE9eVSXUgxuEvw1zWxa4Zn72Ts2DFRQF3gp9Q6iSf4wwngnGw9eV(26DLxqEOlBTWt(HMrl90oPHC2YkLorVFHU3FIHEf53Dk0)QMJTUf98Ef4nc2UQMWrSURGFVb4V149w5U2Uv2yVc89eyFfNFfNFzIZDvJHJyDxb)EdWVI3DdVvKTCQKaoIXThWTbKTk2N2JXTc8nc49I3DDmS1xDeOrW(kJyla73eCoEfLVxmLF2xST3Q3bgoYispummPtUWZpxd(C4Zp)M2cWQOaduxlV3vxdZ)XP9uEBrQTZh5nqbPvO)AiMRnIxNm886g0jNFLXH1Z4tp6SZVwHqagynV959oOMzU2gBhAD9inwwvWD9iZWRtlMsZLH2VsHdzzgoQoiOXJp8qBehkRAMa8gyUHRmbOskJnxVX6MpzKo3(0Obv2eryNdId7DWBSjgVn7yTctJyHv(tTtd0oYjuwhUY78TaVBWPH)KQy7DVQy7Vok2E3FzvS9UxvST)uSv4txLcXig1w5qUnGoScMux40LDzpc8gbRbjtNIp1rSURGFVb4V149wf2(Uv2yVc89eyFfNFfNFzIZDvJHJyDxb)EdWVI3DdVvKTC6Cz4ig3Ea3gqALjyUpTfJBf4BeW7fV7862Bi2Roc0iyFLrSfG9BcoBp34wJ9S2m(4zkWUQ4J7PqYZ9uizqlU9CJBOZQPqAOLuivLyCifsvhu7YvJtPqAOPuivDMRTX2HwAPqYe46AkKmUyAozbDmfsgGqDPqs3OBNtHKbdHvYnU(MpzKUDPqYAMGB)owRWSZPqYWEjNtHKR4Ddon8NufB2Zn(Rk22bO1xxfBV7VSk2QKB8xvST7uS13Yrky6m0LWxmNMG)s9g5VtHEfx83rq3OurAlpS46cfRaXquWRpU1O87YxoYv5PkuQtatiyBcILn1EWY(Y)zcO5n4I0k7BGwq(hfpTve1gB5(a1pHFAq2833ph3dSdW5H1bAuq0euXN3waM)rytdE6FB2QaUlDrcOncwM1OM)DB419pTD)Zwr2obS2t2ob22r26I1QG001pLcOT0bx2LRCz)PT9X4fbOoCVWmCLUz90GQH7Cpx3M)IrVHfd7Dh)SaWUIF6Fgz2rs(nOVCNiN6v)EHoG7B(8NyQJrODb)Qmc)(qJ364O(w8oSnEEqyXvdxA)Ipqohn6DL314B(SP2TDlJV5ZF3MjVEPj)v)st28QuEyshJ3ZtJQMzGJzxvtJkIpu9JwuzKuvcXtDa5nifZAZFRFkdJT5pnpLyIPa9lNZkTPmW8qLLhq(Zm2Xrg6yVAWKr1Gjkr07i)uMf9NwYUnsMEvKmRjTwMbC53sGJLVKUhnS)5hhmhe1f2MK)og0l3atXyr1NGIS)g)BJlSJJckMFIRHqS9dM8yXUwWUuqidllWPrtJxhbQwyFKElEkGFa0Ja3Hdd(dC61BDbBqP(ljj3JO7bP0m8tCm(rKn5EFs0tWkg)dzBqQp(HV8WE8eS4ploRV8WhnONONlOKWSf(RMMD97h07G7sIxVQamifHFpCHw9F)GRfFUN)EVbhQRkp)EIHrXBMCh4LubdjgVruGF5Je8wMR4Mv53XiT3m5Fsc4SWOmS4zWyc(dc3CugOQmTufp)UAj)6Xjv9sSHD)IUIDD3X)Cnd4rkxFo)3Q)wSHPRnxUeWQ)bQy(Xa2vYtyy8JIzjDjJgyaiLtAHm6h)CJYnwjR5DJ0njuTx3p9LxNvf)l)KPNl2NaCmFgdRpz2misZVGMT7DWbwuHiRQUss0oDGLMHjSUbEuXdQK9KIKKpupt01yCWGketOONvuS6a7ekQNqrhGbSD45NTTOuz1A9QEhO)ScqP3qq0vENxf4brxFHPjfGT(JYzIdX(J6e6PNWuzrpgrY)tF0zqHi4S0M7uHKEJ9e(jOMoyA2OHOAmHkkAeDzafqi0uOiyljFJ7P1TtBEE4dSM56Aputxtt11dzk8)UCfymfb)c3TSpfnFDktx1JlqxY(a)BqmOCdwqxW1sLSoc)YbFm)2TcFYu(MFURJlzUXgJknYL1a30)LpH3lxPOId8MfjfSHfnlv4HN(Si64WZpMRI8u5rWrmYuMnh2CXiGpWUGca3zrJmtahQwlIba1pBImk0Qtwbbh8Lamjn4xv5mmEcK7KBWfKwGLKGOhIVh4HFbmrercz7Y5llmpA9deCoCvHfQsL9xODO3yjdT9oqe8K6N85NFUy7QX7UGRoDqLn4dVO0xboQx(LmVJiNfCZWUVHNwzYl(UKV)N8kuU6xz8VbiqXhn89(CFP(uZ)cGV3N3tzAtYN6uw4YL3vihRCJtW1zzjFF9Qljaxnc8v7i8E755NTNlURoT3bw3WWmUA36hRdhQrjY3ulkouRKA8EvVQsUcq3EgZqV2mOJh1mlfrhu6bLgWYV(C0xpYVXC0FUmhsRnL7fhhW5MrozEPwtvUNBQqxLHQO0G6Dzt7ed1ZBxVQxxnxpS)zGqV1Tpww3RxN9ZpBxgvOgX7iamhwylppvG6A6VuFnR4MLrN)jFbYyIxiDrY0R6vhY15UZzAf1aJx7gDPqfu1lRKkbMbZ2vNRlUvC)VO1GsyTw1SK7WO8v)ItZRYLXY2seYx3k7iyjUvvyroZU7vos6Uzbce4WRkUrwKvrZ9jS59hZOmCeVmvbrNvXbPqGKm1SxFzVd2wL4oTfy)QRVJ7FpS9SY))lZYaVILydgNQcNXuTdUczbi9HXABOMv1J62xXmB7RO9wBJRyK6(muTKyggKndzfDOQP9ssPQ59I2SygxcSvTSw0ynMLDvYVELi1yzv1qxHPWgSw7vXMzh2T(vaRAqSX0cPbB7LRI7C77Y8QeaLBL11DWMEy)(37zao7oxluz8w21v66botCZP5WdmRAfn3gptmeJLj02DVtCeGo5vXPd08Q472m5xtwlsyErb)e3)44fA(mAAqck4jxguIuXrr8U4EphhbtXQun(Yte3r6zsU8LNwKjzRjxbc(6b8giNvKh1gpCNNug)7wttbE8HM4oBlZbzkpqDM7W7EdSNDv(b40lRgjyQ5cf1fzRLkGzmKFv33wrd26XXXRgLsZcMlydUS6X7Qpf8wFuJ(xCmMzYaeJgzJHXyn)wkw9hoLvTEkAVAaIuJgKYPFwIorwLOwpIQgHLPbFkVOpm2DblSm7R1wQgPB7FMsI(BM8tWekoTxia4L9sSwik3VmvikgeaINkMdsiM4wCntUOwOFajke5bliRaBxvRNKHAAzJ8ymkIX38cbWUvWQyukqnhYZDT2RtHbYiiAonb(xb9tIEsFjuuWRjFkcCYzgsRz5KEyC2jK7IIb5SP8uzl2dGqjoH9kwuu)WuYsz6BfjiH9sBSgeFaj)uWeQ0AfV3AfBtEdbwkQGm6YJXFjE(Cu)h4naIt512GNheJ1yZ1d9IPptlvRCL7N5f3)Eqz8qsz5iVyOVkN4flFmOmu7UgpVlvht7oxjoDCxm9PGQ6exxBTdPupSlMGwhpRlgxenwM2UDsxmaGAoOl6fJTRNZfJNmXdR9LIrcHB1HCPtF)NmUb1ge76jCXWMhNpGloI0DvVNNSEVD3H97RZz9ZOWLf9EnDs)SCq)6Y58BBppDoP3Z0X8RUt532IuQ692HNXpJlIgL17MEV2Da)2vNVpJAZv17vZ78xR071PZ2xThTVD1j7BxFW(mG0JVjDfD64F278tz3VZJ))(d]] )
+spec:RegisterPack( "Beast Mastery", 20240720, [[Hekili:T3t)ZTTTs(3sMoNIvTTSeLTtspl)dj3RZLC3RVop3o93efmfKfFMIupck74oE0F73Ua8dqqasqkPu3EEM0gfcGf7Uy)cl(A6OP)Y0BMtsOt)jNHoNp8DoJgm6YHNF(ftVj5P10P3SM4Dp5o4hHKvW))Juclz7S)o8)PXpHf)uqezocgw0MypOkF32zltswZ(HZo7o)KLBUDGx0QZy(R2eqs8Jc9IjlsW)T3ztV52n(bjFoC6TArJXotVHSjzzu80BUXF1NMEZs)5ZPIQtzEtVbQ(4th5CQZ73oR32zyRpD4Othn8haK0pmkE7mON2oBZAe8d2(LTFjRjJgYBYihOQ)t6QOhOBNDJhneiVOfBN9XGOO5BN5TK6Dpd(ui8js8Tu4B3SmkPeOgEP2U7)C7S)7nHaJ6TmKLfFpuknjXp8oPwdil26YvSu5dFhu(pUjozjfG)OHdCY6aw56DbuVFMK4TuuRIchE5PoNdf(RmGg)F8dc2o7trRwrcbIXhiSpfqji5)imELxH0VLqcaEIeSo)uheH)vogSD2I4iGGVjF49t4WRu1hdJnq1bEmXZNaa2lkkyE0Jq3UHbswBNrM)V2aItaUSazGFIGDpoeae82z)MFauYdaPo7Juwche)wmjz5GP3e4ZsyCry6cYMGe4N)exKMgsUnGoF6hfYjX(RruB6n)TVs92W7k6dG8l0f(ROPDeXlb7EFyiG8aXpaHa0hWN5n1lIpc5YGb)PjGGk2pzfMetc)3GOS)VddUIQiHdqThRGvakbaZNm9MJYfkydwbd9UKqaVE(zKZhFhnzGpZ92igGv95YRyx(a1DoicUKJrm3vCrRjBNjKOtB3skjizP7ApqG(6TZEVOqO7UloAZ6sDbYfCtIW66I1dQ(DEZb05RBN99Owf05feRC3I025k0w0AWyanPObpqakfkf)vWg4VEZ2zXe)5UWGaiArMpNnG(vCSmdfH)a1jj2p8Ee9gnyjH5UHrDVDZIfPOErHzsudIPRi(HmobmEyD1Jm)jlaZXfsRd8aXs3OfUGSI7JGm5G5BI5c88Qn6cENUW)ULjU5TVFg9itmo1rmowsmo1tm6aZEGyW(q5Rxznu5srcyu)GVgPduEvuOAjL6c1crBBac6CH(UflgOZlnJyP9R6NLhAgv0AHAApD8iNl4QbUcVOErjp6Yh3uSp9FrbnRv(HG5iFq0Wpj1EeOpY9gLAUkcTDs1AQCaAO1xyGJ7kdG8k)FpLhLqUNcWBDSFeyacKAyr5MHXoIbM8ZSddg0t8xhqZSsG4b8FbrH3j(fIDpgf(w4VMtdia0aFOqdxsc44ouLSrhaR(hO7Rh9r0gW6Oht7f2konWbatqAbC6hz9c)rc1e6Ifu0uwQmoRGdLIdbrCyNspdqltxOyzk3wokOk(hUOpeHNKSbN5mSTx2L2MHCiaENrt(PMWPH0v(0u5dHe0BY93ElgOLRh3j8GuOiB)xUXJb7Tqp7LGE)SdrzCFyV3Au86CuST4hQI0E8ta4PiwEZ6ykeb5TKc37zGGTz1kO1RPQUBl5C(2OKeOe3fGigD(JOh6KOV6h2GlARCJPyvVi2gfFlLn5BNtHYEa9HWd8JJJIrlSlIbKAtmqujrRIGV(yU1tjq2Ctm50OWQ6v6DrwubvqGIfcZuknTOaZnzIPM0Rj8Cst4z)CZ01fzrZJmv4Y)vNPj74kT2UJCbfAWran2SdmUlPSQL3rct8SNc9YmVN1Tye(FoeDfWGzHn3hDZK5O6hk7fqywzozf3Xv63or4Bc7lOqig84e835G3u58j0ImmebUznnDwkewQNwVOqM)CSQ)DUYKWH7pMPoTD2VuOp9ifCWIe7scqjrIzSPG5m)qpAQ)X1rpstNZbBDa6m7wAYJuAyk7B(Q7k88XNUg)ZYqCqNdbp7Bd0nQwDm3POuUz5CFDAM0vZ9FQBKkHmk7k5iuaG(GloxKrvQAj9z7GgY3apx8zr6(iFsKzZekx4VCXPXW5E3gkt4S9cfvcuuwBSC)s8M0W4Yh6bXcCCmMYLY9JrKtwHGiPMigJfQi8wW7Jb5E327CBoZPsnY4pwYK1YHRWUeXiup)AxzxI(yqnE29xOIbCRMWSB9dsv025rUh55s52IHVSreBK30iMXl14aTlnGjd7kdv5aOisVMhy1zGPiXhCIgJWlikr(FJEmJwSavE5H9vIt)Rmm0qtb2R4xi1YNptWo5ogqoF6KosN(ckOIFvm7d(Ox(isryz1oNbrYW4nLpdoWFWpcDit8Deac)QPdTP26vmV7l69NY7dsaojlueqE2vbKYENa7tljRxtdRoXgntUYe5XzueTUDtb2TPSkoLcudydfrhfFPAid)Wf0y4p50pppvLhcfZ8cDJNaEWrAnjJ0bPJtj3fgbc7EIPDMQsHqjkM7FnFISmYkz6BnXpM7XEdA1pMYGzMknwjQD6S(KKSBiiVC3FfwWRuuvpJwKOLc3sDTl0JGf5CO(G2odMrOU0q0ydttsJcbwH3vlXFTr8(urILAcaNYDXELrW0Zyja6FEDzUQcl3PclVwmZIQ0DK)6jAz(M6cS6M7JDw4XuMrlnfhfUCT97XnbpTJAfZztpljtFYmX6mSUkCLEaRYn63UzpktOLML2qdggeHQyz6ITW8rJYqvzQgMfSE8SroEJiW15Pd2ywLDUyprR1LiW0w6Oe(It1Wx04wPHrglS57yIq0TyeDZTsvBCwyzOgDH6DROTH6CROrZPwIVvUv0bGUBzU1UvQ6jVwmZIQ0DKxRBfZDX(WTsncpwLUXU6wrl8S1Ts1fhSrJC25wPgNSgDR0Ckh3D3knet8UyHQH(yp5wXGvIDWTs7OvrsWWflst(Vk8wC4YQIac1SMJJglTgi0ygn(EyUZ6sG0ld09sj0f38nUl2e)u9BEIxiOlj0dAEm0CSJ0LVKxeO8hkW4f(Xuotwx0rViq2Xslv46i(FZ14yA3LpkO8IyA4V)u2Y3l)PIUyI0MCb8JmCq22eqU6SeI39c8jZUrUTa1m3LVnmYRHM8VXRK0MP5w(EklDld59Kxa1nD52rISwD1c2pcBxGQs8d9syLy(l2aOqm1Bjc0I1ykNY7LdesW6Le31X05KKO48K)LJP37dqYtSTXQxR0kel38R8MHO0AdlX4YvPYx53eYQ105uL1W9IsR7lkFZwI0qPkDzPkjpiQuX3jxX5uOcUaF8(yYkLkAED0Bnv(b5(SelVCxoAOCfPFDDqedx3Dn79SrMvwKhMqSP0iKqMHjw5yOBWLfdxn)bNlPNy04GfcEg1KsvrrWuNcNKXyhUoCoWZIerqEmYdeWR(tfuN(yd(qlulhvAlgmhmN6Y3seQ8(Xvgp1nc1G7IYeoYlYOVsBFV5(cE8ff9yasKm3)1M53Tcyf8oRKsIx0TXeT4K6gGrVjw5yVOIDxP8cw3ic(iXhZOVlbxbvE)AEFZSJ8IBj3XLuJ99UNVdDgzwVDh7ksShjK6UEdUEmyp9bJ90r4cc4Trmzg(VaE6D0W8DIxFXSI4Lac3v6eWyDSyOnjFFZuRhY5uo1HRaryI76iFwuyMJoyu8dzo62DpPDqZ9BKd49MnQ9JR8xz1nYQBbFUH5luARRjZGeCZJlJvhvAx5HHu8KBkdRK7K6yevLv4BUYSTs(52gqI5a1BDCgMTUNsQIypkT)(mhl47SoyK3BruCFWMO4khauDrNvt8pTYuO5qDQgjrP4pAz4vone8sBm5mQRt1)Bkn1gcQAavgcq(C7cqRHj)2qyoLW8y8GszrOtgnav6qxyWyXHl(iDXk(ERcF1C0nIWwY6uoTzMoLIff9woCNgzAmbd1feQtd5xWet2UURsGOoM1sRn8WXdBx4HWa3d0ygwS4G2ncSIcuFCiE8JMEZVGBNc)vRJIts3MkVn9Kv9wCFx8V34Z3WJSiK9s2KeTIWpmvGAF4D8tJ2)lFRFIN1Spffc9fV43MLj1YjegGjU9qERH8fdfF0OV23cGQMDwnawtvoGaVDGf8vxpqfvO94RvaUDG0AwqxWxRbEJG1PEbTkfBfUwD1L1a4UYi6gWBhy1jpOPcThFTcWTdKwZc6c(AnWZb77ubB1tbto8mFazur23VNH62VOXcE(XNPD2WhxRQvgNYGQLuXLiytaDNCmupM2rJaMX0MovnAWElAIvDEZhPhnuPfnXYopx9iBLSRtfsQohuW3iG1Sc815JPT4DxbFJawAz(1XiKkZw80i4g1EW9Ih7ACq5vzvRbVfa(pl2V76q3bg8nc4Uo0zjE3vW3iGFXBN4Ln214GYRYQwdEtbiN2imqOweF8i9XURMq13wo(DtBugvA)WcDN)ed9ksf7vO)nnZvDBoPhuG3iy7QYNLyDxb)bdW)rJ37uqq7xzJdkWpqG9vC(vC(Ljo3vlgwI1Df8hma)kE3n8UKSLvjA3smU9aUnGSvZOO9yCRaFJa(GeDxhNm4Rbc0iyFLrSdG9peCoAnvOlYe3BdM0T6DKMZ2Q0htBM0rS85NRbF6)8ZVPTaSkkWb11Y6UQwy(pg3R0g(O2kFSZWsiDj6VgI5AT41PJUOUgD6fxPTz90(1Jp)IRlriadSMJjxVJQPNRTW2HwxprHLvfCxprp860GPuFPP8RkXHm0dhxheu4X97BI4qzv9eGZq9fCLoavqz8(6ngv(Kr6m)ttgwrjc3Hrpq737O3ysmEx0ynctTyHr(tTDduoYjknoCLZf7aE3qqd)j1W2zVAy7Vog2o7VSg2o7vdBhodB5X0DXHiGCtaDufmPUPtxuLdiWBeSAKmTA(PwI1Df8hma)hnEVttBF)kBCqb(bcSVIZVIZVmX5UAXWsSURG)Gb4xX7UH3LKTS60oyjg3Ea3gqAKjOVoTfJBf4BeWhKO7C62(U61abAeSVYi2bW(hcoBo34gN7zTz8Xr3e7QIp2Ncjh7tHKgR4MZnUMkxofsJmKcPQeJfPqQAJAxUASkfsJ0LcPQ9CTf2o0sjfs6axxtHK2bt9jlOJPqsdeQlfsQoD7CkK04iSsUXvv(Kr62LcjJzcU9ASgHzNtHKgDjRtHKT4Ddbn8NudBMZn(Rg22dO13wdBN9xwdBvYn(Rg22Fg2gy4if4nhdj8fZPj4Vu7i)9k0ReI)Ec6ALkyT8iyRkuSgedrbVbOQrX1fwgYv5RLOuRawQGToiwuu7bl)gvshqZkWgPv(noKF2DjQYis5cBPEq5B(ufiR)Ar1sDG9aopYGPH8lGjDqv(IzYwaMDPmPap17QPkG7sBKaAJGLElQz3gcVQ)0w9NDISTcyTNSTcSTJSvvbldsD35wLaTHkyJwEPBfqf1hT3yGQWvvfkTTsxbFkqvZLZNTQ5VySBuNz(oHFgayxXp1qd2ts(nyVCViN6mCFJ7B)YN5MJrODP4XveFilWxSz0E70ByRPEt)jNlgJVxZrl8dYVA8ydYVbAoEYzfpzZB)IUYn9ynV9lF32zV(6Y(n)1Lv)Ou2mMobFCkNunjbNWFokNKpvXY3kqftQQYS9k3GScKM(AZxMofZOT57(Mcmr3C(l6ZkLvQHzZAwUbzFtBfNOPI9QbtMudMuAY9wYpLzr)PLSBJKPtfjZAYWfATdm283exMKGwbfSJ(Kqlovfb65OunlWnIFahs5i0eVOnHG6p)QSm)RaYLetcHOxd8)D0UMAPl5nI5UIeF)j(lMCeJMKGxmJdWV4scFc4QIBXtFMlEvt2VNiFiUZJsgi38jd7LwZLusqYs31Ejx)(H9o6U4OnRZbdsr49YjuQ77hED61Y537mSVQ52SNKuofVD2Dqqn5mKi8X3e(XNi4BDB(J45VHtmE7S)jXxWcdtW16cAJ)VteEpsaZzScZWINf0SxIvw53lv(DG6A(JUR4(GfWdMWMR4x1)GPYThMj7ay1)anE(Op)1Fnii6X0EHTItdCaWeKwaN(XRfxHdfzRJ5(Dyn8YYoqECUSiAXf2CMOzmWXC5mSbK5ZHjg(v0lBVJoYGAUS50k58A8qdfdDyDn848pujzh550EKAIJRXaUg1CDOOJruSAd7ekQM)plGbOo88ZMguQmATzDVJu)woOulWp8kNlQcC)WRVuxNcWw9tzmXry9rBc9uZVPSOhNif)txm2TurW5SMRuUKEJ1e(BWuQVxYKrOzSutu0q6kFkGqO7Q05gjfkBpLQnU5(r0WA6RRDqlDn1vxpIBW)7YmGXne8ZIqN(C4InmUTQhxIHn9rX9(lyCdgqxkSsfVjeV(Cpr8qkJFXtO8lcVBfpuZi0OrMSgev9p)z8jGMHgoWxSmg4alColnkm1EjTIJU4eHjYXYTqGyepUphEFXjGpYViTHqorNmZGGE2KgYoAFwhzKBvNSgcG)R(yovW7X4em8FK7K5TfKwGHe)WhIUh4HFfCresc4A5IHfEuNU(PCoCuHpZIk6xOFO3yiHQ9okDUoLF0OE(5C1vTVraxnEyff8rxweOGa1lEl06iYza30O9nACLop)Ln7W35vO8YVtz)bGa5p7yh8((dQDT4ne7G3VJ5wtY6AgFkTf3P9Nu6kTxyZYq656v3C2VAceR2X47vXZpBo1zxnU3rgvy4oxn79JxH(kuI81TpI6VrBMS7v9T(4kaD7PnH6k9GkEutVKhbFreukal75LqD8i7fLq97YCiLYk9(sybo3mYjZlvkQ8dOr7KMuZwwVQpjdxpAW5GSRrTaddF1B695NnlQLAnW5yam9ZDjNLaovd2FqL1N)0nOJdQHdP8ogKRYx9s7VYeHM7tV6c1H38xLaLck9Qbyutolan53MaR63sVsa7kri)GuTNGv6dlaFMQ8NFGJLEEcGaV7Fv(JsGSjrrmynliB(Pz56p07OD1OPvYQhwBRDurRF7zL))xMLgEv(JPsvoJUuRFfYcq6dNBRML0PEu38iMEFn5L3AFk5Tu1hD1vmstJm5XjVcvDLwqkvDNMxMb3M2k4wVnGA8Gv2HsUlNg8k6uX3uhu2(gGvnmQRBCqJpuzccF5IALhS9GIfOt99oAGZ(Z9DzUJbj7c37ypv59kYiAUlE)1mVbDOT9rayjaTYZnmh6YEUH5()lXBstcC(cnLSKGRAumLVMA(XOLj5LFJiTOCiENL)uEl4gVKwBPSKlDSA2rl2)UPzh1ycdGju8GlMb7rvkS)EprdU3THYaECFDCNDL5GmLhOwZDevVb2Z(AoVc6LN3FmDtbP56FNLkGEmaxEY2lAWhpojA9egnXFrkBWMrprvDPqeXtA0h(jy228rmAIjggN18RmCfneuw11iqzjPtt3Nptq)8K3HSQ01ViDLqWLEa)QyHm4S7CwyrgfRD5hehSiEt5gjgSD2pcDy6bocbGyPCshlsxMzzQiDboaq8uEFqcWKrIJzYlud6SoUerE0sY610WQRrIM1PXe5XzueTR4FkWUnLvXPuGA6lYhRYY4RHm8dxqJH)Kt)KWNuhctxeNzFoeIezosRjzKEquYPK7cJa5mpr6zt1bqOefZxA)81eJrwjtFRj(X8nlWgq8bK8zGluPXkrTvwajzfcC5v8tORob)r0IfO9pikeeNYYxViPaAx3iBp3f6UPqQUAm2FSlS)kjs750XWPUqtDlDOlmCFePz9OA8ixuTnT7Ony1jUq3Tru1oUUYAhsv(8wOdAD84wODqu7sp2TdBHgauZzTqDbg76rTq7HJRFTBgdjeUvNZIoDfePvb1ee76HSqJYJ1NXclr6UA3Zr2U3(78M9T54MPv4YGDVMoSzgoRzD5OMTRhPlRS7P7KMv3bnBxrQY292JhZmTdIAL17MDV2DgZ2xhXmTwZlB3RM9AwRS71PJxwTNUS91HlBFF2Y0G08xR3P)F)]] )
