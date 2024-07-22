@@ -450,7 +450,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     sense_power_active = {
-        id = 361021,
+        id = 361022,
         duration = 10,
         max_stack = 1,
         dot = "buff",
