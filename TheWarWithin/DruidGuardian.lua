@@ -1294,7 +1294,7 @@ spec:RegisterAbilities( {
             if talent.empowered_shapeshifting.enabled and buff.cat_form.up then return 40, "energy" end
             return 10, "rage"
         end,
- 
+
         talent = "frenzied_regeneration",
         startsCombat = false,
 
@@ -1525,7 +1525,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         startsCombat = true,
-        form = function() 
+        form = function()
             if talent.fluid_form.enabled then return end
             return "bear_form"
         end,
