@@ -502,7 +502,7 @@ spec:RegisterAuras( {
     sudden_death = {
         id = 52437,
         duration = 10,
-        max_stack = 1
+        max_stack = 2
     },
     taunt = {
         id = 355,

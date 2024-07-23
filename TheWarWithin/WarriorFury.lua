@@ -458,6 +458,11 @@ spec:RegisterAuras( {
     sudden_death = {
         id = 280776,
         duration = 10,
+        max_stack = 2
+    },
+    steadfast_as_the_peaks = {
+        id = 437152,
+        duration = 5,
         max_stack = 1
     },
     taunt = {
