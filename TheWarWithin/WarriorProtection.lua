@@ -1759,6 +1759,7 @@ spec:RegisterAbilities( {
         talent = "thunder_clap",
         startsCombat = true,
         texture = 136105,
+        bind = "thunder_blast",
 
         handler = function ()
             applyDebuff( "target", "thunder_clap" )
@@ -1796,6 +1797,7 @@ spec:RegisterAbilities( {
         talent = "thunder_clap",
         startsCombat = true,
         texture = 136105,
+        bind = "thunder_clap",
 
         handler = function ()
             applyDebuff( "target", "thunder_clap" )
