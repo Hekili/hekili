@@ -485,8 +485,13 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1,
     },
-    -- Stunned.
     binding_shot = {
+        id = 117405,
+        duration = 10,
+        max_stack = 1,
+    },
+    -- Stunned.
+    binding_shot_stun = {
         id = 117526,
         duration = function() return 3.0 + ( 1 * talent.tarcoated_bindings.rank ) end,
         max_stack = 1,
@@ -1721,17 +1726,24 @@ spec:RegisterAbilities( {
     explosive_shot = {
         id = 212431,
         cast = 0,
-        cooldown = 30,
+        cooldown = function()
+            if buff.bombardier.up then return 0 end
+            return 30
+        end,
         gcd = "spell",
         school = "fire",
 
-        spend = 20,
+        spend = function()
+            if buff.bombardier.up then return 0 end
+            return 20
+        end,
         spendType = "focus",
 
         talent = "explosive_shot",
         startsCombat = true,
 
         handler = function ()
+            removeStack( "bombardier" )
             applyDebuff( "target", "explosive_shot" )
         end,
     },
@@ -2064,7 +2076,7 @@ spec:RegisterAbilities( {
     muzzle = {
         id = 187707,
         cast = 0,
-        cooldown = 15,
+        cooldown = function() return 15 - 2 * talent.lone_survivor.rank end,
         gcd = "off",
         school = "physical",
 
@@ -2209,7 +2221,7 @@ spec:RegisterAbilities( {
         id = 56641,
         cast = 1.7,
         cooldown = 0.0,
-        gcd = "global",
+        gcd = "spell",
 
         startsCombat = true,
     },
@@ -2304,11 +2316,17 @@ spec:RegisterAbilities( {
     -- Sylvanas Legendary / Talent: Fire an enchanted arrow, dealing $354831s1 Shadow damage to your target and an additional $354831s2 Shadow damage to all enemies within $354831A2 yds of your target. Targets struck by a Wailing Arrow are silenced for $355596d.
     wailing_arrow = {
         id = function() return talent.wailing_arrow.enabled and 392060 or 355589 end,
-        cast = 2,
+        cast = function()
+            if buff.lock_and_load.up then return 0 end
+            return ( buff.trueshot.up and 1 or 2 ) * haste
+        end,
         cooldown = 60,
         gcd = "spell",
 
-        spend = 15,
+        spend = function()
+            if buff.lock_and_load.up then return 0 end
+            return 15 * ( talent.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 )
+        end, -- TODO: Does game match spell data?
         spendType = "focus",
 
         toggle = "cooldowns",
@@ -2320,6 +2338,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            removeStack( "lock_and_load" )
             interrupt()
             applyDebuff( "target", "wailing_arrow" )
             if talent.readiness.enabled then
