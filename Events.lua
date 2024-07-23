@@ -1456,7 +1456,11 @@ do
         instanceDB[ aura.auraInstanceID ] = aura.isBossAura or aura.isStealable or model and ( model.shared or model.used and aura.isFromPlayerOrPlayerPet )
     end
 
-    RegisterUnitEvent( "UNIT_AURA", "player", "target", function( event, unit, data )
+    RegisterUnitEvent( "UNIT_AURA", "player", "softenemy", function( event, realunit, data )
+        local unit = realunit
+        if unit == "softenemy" then
+            unit = "target"
+        end
         local isPlayer = ( unit == "player" )
         instanceDB = isPlayer and playerInstances or targetInstances
 
@@ -1464,8 +1468,8 @@ do
         if data.isFullUpdate then
             wipe( instanceDB )
 
-            ForEachAura( unit, "HELPFUL", nil, StoreInstanceInfo, true )
-            ForEachAura( unit, "HARMFUL", nil, StoreInstanceInfo, true )
+            ForEachAura( realunit, "HELPFUL", nil, StoreInstanceInfo, true )
+            ForEachAura( realunit, "HARMFUL", nil, StoreInstanceInfo, true )
 
             state[ unit ].updated = true
             Hekili:ForceUpdate( event )
@@ -1490,7 +1494,7 @@ do
 
         if data.updatedAuraInstanceIDs and #data.updatedAuraInstanceIDs > 0 then
             for _, instance in ipairs( data.updatedAuraInstanceIDs ) do
-                local aura = GetAuraDataByAuraInstanceID( unit, instance )
+                local aura = GetAuraDataByAuraInstanceID( realunit, instance )
                 local ofConcern = false
 
                 if aura then
@@ -1523,9 +1527,9 @@ do
         instanceDB = targetInstances
         wipe( instanceDB )
 
-        if UnitExists( "target" ) then
-            ForEachAura( "target", "HELPFUL", nil, StoreInstanceInfo, true )
-            ForEachAura( "target", "HARMFUL", nil, StoreInstanceInfo, true )
+        if UnitExists( "softenemy" ) then
+            ForEachAura( "softenemy", "HELPFUL", nil, StoreInstanceInfo, true )
+            ForEachAura( "softenemy", "HARMFUL", nil, StoreInstanceInfo, true )
         end
 
         state.target.updated = true
