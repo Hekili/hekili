@@ -2321,7 +2321,7 @@ spec:RegisterAbilities( {
         id = 441591,
         cast = 0.0,
         cooldown = 0.0,
-        gcd = "global",
+        gcd = "spell",
 
         spend = function ()
             if buff.apex_predator.up or buff.apex_predators_craving.up then return 0 end
