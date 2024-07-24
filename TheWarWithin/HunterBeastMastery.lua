@@ -459,7 +459,7 @@ spec:RegisterAuras( {
 
             if name then
                 bc.name = name
-                bc.count = 1
+                bc.count = count > 0 and count or 1
                 bc.expires = expires
                 bc.applied = expires - duration
                 bc.caster = caster

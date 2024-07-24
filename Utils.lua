@@ -18,18 +18,26 @@ local GetSpellBookItemName = function(index, bookType)
     return C_SpellBook.GetSpellBookItemName(index, spellBank);
 end
 
-ns.UnitBuff = function( unitToken, index, filter )
-    local b = GetBuffDataByIndex( unitToken, index, filter )
-    if b and b.name then
-        return b.name, b.icon, b.applications, b.dispelName, b.duration, b.expirationTime, b.sourceUnit, b.isStealable, b.nameplateShowPersonal, b.spellID, b.canApplyAura, b.isBossAura, b.nameplateShowAll, b.timeMod, unpack( b.points )
-    end
+local FindAura = AuraUtil.FindAura
+
+ns.UnitBuff = function( unitToken, spellID, filter )
+    local playerOrPet = UnitIsUnit( "player", unitToken ) or UnitIsUnit( "pet", unitToken )
+    filter = filter or "HELPFUL"
+
+    return FindAura( function( _, _, _, ... )
+        local id, isFromPlayerOrPet = select( 10, ... ), select( 13, ... )
+        return id == spellID and ( not playerOrPet or isFromPlayerOrPet )
+    end, unitToken, filter )
 end
 
-ns.UnitDebuff = function( unitToken, index, filter )
-    local d = GetDebuffDataByIndex( unitToken, index, filter )
-    if d and d.name then
-        return d.name, d.icon, d.applications, d.dispelName, d.duration, d.expirationTime, d.sourceUnit, d.isStealable, d.nameplateShowPersonal, d.spellID, d.canApplyAura, d.isBossAura, d.nameplateShowAll, d.timeMod, unpack( d.points )
-    end
+ns.UnitDebuff = function( unitToken, spellID, filter )
+    local playerOrPet = UnitIsUnit( "player", unitToken ) or UnitIsUnit( "pet", unitToken )
+    filter = filter or "HARMFUL"
+
+    return FindAura( function( _, _, _, ... )
+        local id, isFromPlayerOrPet = select( 10, ... ), select( 13, ... )
+        return id == spellID and ( not playerOrPet or isFromPlayerOrPet )
+    end, unitToken, filter )
 end
 
 local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
@@ -550,24 +558,7 @@ ns.FindPlayerAuraByID = FindPlayerAuraByID
 -- Duplicate spell info lookup.
 function ns.FindUnitBuffByID( unit, id, filter )
     if unit == "player" then return FindPlayerAuraByID( id ) end
-
-    local playerOrPet = false
-
-    if filter == "PLAYER|PET" then
-        playerOrPet = true
-        filter = nil
-    end
-
-    local i = 1
-    local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitBuff( unit, i, filter )
-
-    while( name ) do
-        if spellID == id and ( not playerOrPet or UnitIsUnit( caster, "player" ) or UnitIsUnit( caster, "pet" ) ) then break end
-        i = i + 1
-        name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitBuff( unit, i, filter )
-    end
-
-    return name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3
+    return UnitBuff( unit, id, filter )
 end
 
 
