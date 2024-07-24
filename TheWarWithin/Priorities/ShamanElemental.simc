@@ -33,7 +33,7 @@ actions.aoe+=/stormkeeper,if=!buff.stormkeeper.up
 # Reset LMT CD as early as possible.
 actions.aoe+=/totemic_recall,if=cooldown.liquid_magma_totem.remains>45
 # Keep your cooldowns rolling.
-actions.aoe+=/liquid_magma_totem
+actions.aoe+=/liquid_magma_totem,if=totem.liquid_magma_totem.down
 # Spread Flame Shock using Surge of Power.
 actions.aoe+=/primordial_wave,cycle_targets=1,if=buff.surge_of_power.up
 # Spread Flame Shock using Surge of Power.
@@ -119,7 +119,7 @@ actions.single_target+=/storm_elemental,if=!buff.storm_elemental.up&(!talent.pri
 # Reset LMT CD as early as possible.
 actions.single_target+=/totemic_recall,if=cooldown.liquid_magma_totem.remains>45&(active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1))
 # Keep your cooldowns rolling.
-actions.single_target+=/liquid_magma_totem,if=active_dot.flame_shock=0|dot.flame_shock.remains<6|active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1)
+actions.single_target+=/liquid_magma_totem,if=totem.liquid_magma_totem.down&(active_dot.flame_shock=0|dot.flame_shock.remains<6|active_enemies>1&(spell_targets.chain_lightning>1|spell_targets.lava_beam>1))
 # Use Primordial Wave as much as possible without wasting buffs.
 actions.single_target+=/primordial_wave,cycle_targets=1
 actions.single_target+=/flame_shock,cycle_targets=1,if=active_enemies=1&refreshable&(dot.flame_shock.remains<cooldown.primordial_wave.remains|!talent.primordial_wave.enabled)&!buff.surge_of_power.up&(!buff.master_of_the_elements.up|(!buff.stormkeeper.up&(talent.elemental_blast.enabled&maelstrom<90-10*talent.eye_of_the_storm.enabled|maelstrom<60-5*talent.eye_of_the_storm.enabled)))
