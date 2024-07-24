@@ -532,12 +532,12 @@ me:RegisterAuras( {
     },
     festering_scythe = {
         id = 458123,
-        duration = 3600,
+        duration = 15,
         max_stack = 1,
         copy = "festering_scythe_buff"
     },
     festering_scythe_stacking_buff = {
-        id = 458124,
+        id = 459238,
         duration = 3600,
         max_stack = 20,
         copy = "festering_scythe_stack"
@@ -1211,8 +1211,6 @@ me:RegisterHook( "reset_precast", function ()
         end
     end
 
-    if talent.festering_scythe.enabled and IsActiveSpell( 458123 ) then applyBuff( "festering_scythe" ) end
-
     if talent.vampiric_strike.enabled and IsActiveSpell( 433899 ) then applyBuff( "vampiric_strike" ) end
 
     if Hekili.ActiveDebug then Hekili:Debug( "Pet is %s.", pet.alive and "alive" or "dead" ) end
@@ -1860,7 +1858,7 @@ me:RegisterAbilities( {
 
     -- Talent: Strikes for $s1 Physical damage and infects the target with $m2-$M2 Festering...
     festering_strike = {
-        id = function() return IsActiveSpell( 458123 ) and 458123 or 85948 end,
+        id = function() return buff.festering_scythe.up and 458123 or 85948 end,
         known = 85948,
         cast = 0,
         cooldown = 0,
