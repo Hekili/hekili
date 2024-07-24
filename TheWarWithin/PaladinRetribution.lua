@@ -1154,7 +1154,9 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "holy",
 
-        notalent = "crusade",
+        notalent = function()
+            return talent.radiant_glory.enabled and "radiant_glory" or "crusade"
+        end,
         startsCombat = false,
         toggle = "cooldowns",
 
@@ -1362,6 +1364,8 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 236262,
+        talent = "crusade",
+        notalent = "radiant_glory",
 
         nobuff = "crusade",
 
@@ -2230,6 +2234,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if target.is_undead or target.is_demon then applyDebuff( "target", "wake_of_ashes" ) end
+            if talent.radiant_glory.enabled then
+                if talent.crusade.enabled then applyBuff( "crusade", 10 )
+                else applyBuff( "avenging_wrath", 8 ) end
+            end
             if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if conduit.truths_wake.enabled then applyDebuff( "target", "truths_wake" ) end
         end,
