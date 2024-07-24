@@ -15,9 +15,10 @@ local GetBuffDataByIndex, GetDebuffDataByIndex = C_UnitAuras.GetBuffDataByIndex,
 local FindAura = AuraUtil.FindAura
 local UnpackAuraData = AuraUtil.UnpackAuraData
 
-local GetSpellBookItemName = function(index, bookType)
-    local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet;
-    return C_SpellBook.GetSpellBookItemName(index, spellBank);
+local GetSpellBookItemInfo = function(index, bookType)
+    local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet
+    local info = C_SpellBook.GetSpellBookItemInfo(index, spellBank)
+    if info then return info.name, info.icon, info.spellID end
 end
 
 ns.UnitBuff = function( unit, index, filter )
@@ -599,8 +600,7 @@ end
 function ns.IsActiveSpell( id )
     local slot = FindSpellBookSlotBySpellID( id )
     if not slot then return false end
-
-    local _, _, spellID = GetSpellBookItemName( slot, "spell" )
+    local _, _, spellID = GetSpellBookItemInfo( slot, "spell" )
     return id == spellID
 end
 

@@ -1275,6 +1275,10 @@ spec:RegisterHook( "reset_precast", function ()
         fb_extension_remaining = 0
     end
 
+    if IsActiveSpell( class.abilities.icefury.id ) then
+        applyBuff( "icefury" )
+    end
+
     --[[ TODO: Not really needed; shift to Enhancement module.
     if talent.static_accumulation.enabled and buff.ascendance.up then
         local expires = buff.ascendance.expires
@@ -2059,6 +2063,7 @@ spec:RegisterAbilities( {
         talent = "frost_shock",
         startsCombat = true,
         nobuff = "icefury",
+        texture = 135849,
 
         bind = "icefury",
 
@@ -2248,7 +2253,6 @@ spec:RegisterAbilities( {
     -- Talent: Hurls frigid ice at the target, dealing $s1 Frost damage and causing your next $n Frost Shocks to deal $s2% increased damage and generate $343725s7 Maelstrom.    |cFFFFFFFFGenerates $343725s8 Maelstrom.|r
     icefury = {
         id = 210714,
-        known = function() return class.abilities.frost_shock.id end,
         cast = 2,
         cooldown = 30,
         gcd = "spell",
@@ -2260,6 +2264,7 @@ spec:RegisterAbilities( {
         talent = "icefury",
         startsCombat = true,
         buff = "icefury",
+        texture = 135855,
 
         bind = "frost_shock",
 
