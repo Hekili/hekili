@@ -1645,10 +1645,38 @@ spec:RegisterAbilities( {
         copy = { 370965, 323639 }
     },
 
+
+    reavers_glaive = {
+        id = 442294,
+        cast = 0,
+        charges = function()
+            local c = talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank
+            if c > 0 then return 1 + c end
+        end,
+        cooldown = function() return talent.perfectly_balanced_glaive.enabled and 3 or 9 end,
+        recharge = function()
+            local c = talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank
+            if c > 0 then return ( talent.perfectly_balanced_glaive.enabled and 3 or 9 ) end
+        end,
+        gcd = "spell",
+        school = "physical",
+
+        spend = function() return talent.furious_throws.enabled and 25 or nil end,
+        spendType = function() return talent.furious_throws.enabled and "fury" or nil end,
+
+        startsCombat = true,
+        buff = "reavers_glaive",
+
+        handler = function ()
+            removeBuff( "reavers_glaive" )
+            if talent.serrated_glaive.enabled or conduit.serrated_glaive.enabled then applyDebuff( "target", "exposed_wound" ) end
+            if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
+        end,
+    },
+
     -- Throw a demonic glaive at the target, dealing $337819s1 Physical damage. The glaive can ricochet to $?$s320386[${$337819x1-1} additional enemies][an additional enemy] within 10 yards.
     throw_glaive = {
-        id = function() return buff.reavers_glaive.up and 442294 or 204157 end,
-        known = 204157,
+        id = 204157,
         cast = 0,
         charges = function()
             local c = talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank
@@ -1671,8 +1699,6 @@ spec:RegisterAbilities( {
             if talent.serrated_glaive.enabled or conduit.serrated_glaive.enabled then applyDebuff( "target", "exposed_wound" ) end
             if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
         end,
-
-        copy = { 204157, "reavers_glaive", 442294 }
     },
 
     -- Taunts the target to attack you.
