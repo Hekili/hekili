@@ -33,6 +33,8 @@ local GetItemSpell, GetItemCount, IsUsableItem = C_Item.GetItemSpell, C_Item.Get
 local GetSpellInfo = C_Spell.GetSpellInfo
 local GetSpellLink = C_Spell.GetSpellLink
 
+local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
+
 local specTemplate = {
     enabled = true,
 
@@ -2090,13 +2092,13 @@ all:RegisterAuras( {
     dispellable_disease = {
         generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuffCompat( "player", i, "RAID" )
 
             while( name ) do
                 if debuffType == "Disease" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff(Co "player", i, "RAID" )
             end
 
             if name then

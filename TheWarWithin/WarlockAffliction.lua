@@ -1074,6 +1074,7 @@ spec:RegisterAbilities( {
 
         spend = 0.01,
         spendType = "mana",
+        cycle = "agony",
 
         startsCombat = true,
 

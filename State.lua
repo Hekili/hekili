@@ -20,22 +20,8 @@ local GetItemSpell = C_Item.GetItemSpell
 local GetItemCooldown = C_Item.GetItemCooldown
 local IsUsableItem = C_Item.IsUsableItem
 local GetSpellLossOfControlCooldown = C_Spell.GetSpellLossOfControlCooldown
-local UnitBuff = function(unitToken, index, filter)
-    local auraData = C_UnitAuras.GetBuffDataByIndex(unitToken, index, filter)
-    if not auraData then
-        return nil
-    end
+local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 
-    return AuraUtil.UnpackAuraData(auraData)
-end
-local UnitDebuff = function(unitToken, index, filter)
-    local auraData = C_UnitAuras.GetDebuffDataByIndex(unitToken, index, filter)
-    if not auraData then
-        return nil
-    end
-
-    return AuraUtil.UnpackAuraData(auraData)
-end
 local GetSpellCharges = function(spellID)
     local spellChargeInfo = C_Spell.GetSpellCharges(spellID);
     if spellChargeInfo then

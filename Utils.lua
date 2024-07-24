@@ -12,15 +12,24 @@ local state = Hekili.State
 
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local GetBuffDataByIndex, GetDebuffDataByIndex = C_UnitAuras.GetBuffDataByIndex, C_UnitAuras.GetDebuffDataByIndex
+local FindAura = AuraUtil.FindAura
+local UnpackAuraData = AuraUtil.UnpackAuraData
 
 local GetSpellBookItemName = function(index, bookType)
     local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet;
     return C_SpellBook.GetSpellBookItemName(index, spellBank);
 end
 
-local FindAura = AuraUtil.FindAura
+ns.UnitBuff = function( unit, index, filter )
+    return UnpackAuraData( GetBuffDataByIndex( unit, index, filter ) )
+end
 
-ns.UnitBuff = function( unitToken, spellID, filter )
+ns.UnitDebuff = function( unit, index, filter )
+    return UnpackAuraData( GetDebuffDataByIndex( unit, index, filter ) )
+end
+
+
+ns.UnitBuffByID = function( unitToken, spellID, filter )
     local playerOrPet = UnitIsUnit( "player", unitToken ) or UnitIsUnit( "pet", unitToken )
     filter = filter or "HELPFUL"
 
@@ -30,7 +39,7 @@ ns.UnitBuff = function( unitToken, spellID, filter )
     end, unitToken, filter )
 end
 
-ns.UnitDebuff = function( unitToken, spellID, filter )
+ns.UnitDebuffByID = function( unitToken, spellID, filter )
     local playerOrPet = UnitIsUnit( "player", unitToken ) or UnitIsUnit( "pet", unitToken )
     filter = filter or "HARMFUL"
 
@@ -41,6 +50,7 @@ ns.UnitDebuff = function( unitToken, spellID, filter )
 end
 
 local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
+local UnitBuffByID, UnitDebuffByID = ns.UnitBuffByID, ns.UnitDebuffByID
 
 local GetItemInfo = C_Item.GetItemInfo
 local GetSpellInfo = C_Spell.GetSpellInfo
@@ -558,7 +568,7 @@ ns.FindPlayerAuraByID = FindPlayerAuraByID
 -- Duplicate spell info lookup.
 function ns.FindUnitBuffByID( unit, id, filter )
     if unit == "player" then return FindPlayerAuraByID( id ) end
-    return UnitBuff( unit, id, filter )
+    return UnitBuffByID( unit, id, filter )
 end
 
 
@@ -986,7 +996,7 @@ function Hekili:GetLoadoutExportString()
 			if isNodePurchased then
 				es:AddValue(1, isPartiallyRanked and 1 or 0);
 				if(isPartiallyRanked) then
-					es:AddValue(self.bitWidthRanksPurchased, treeNode.ranksPurchased);
+					es:AddValue(bitWidthRanksPurchased, treeNode.ranksPurchased);
 				end
 
 				es:AddValue(1, isChoiceNode and 1 or 0);

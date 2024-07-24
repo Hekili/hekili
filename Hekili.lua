@@ -9,6 +9,9 @@ Hekili.Flavor = C_AddOns.GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
 local format = string.format
 local insert, concat = table.insert, table.concat
 
+local GetBuffDataByIndex, GetDebuffDataByIndex = C_UnitAuras.GetBuffDataByIndex, C_UnitAuras.GetDebuffDataByIndex
+local UnpackAuraData = AuraUtil.UnpackAuraData
+
 local buildStr, _, _, buildNum = GetBuildInfo()
 
 Hekili.CurrentBuild = buildNum
@@ -260,7 +263,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             local class = Hekili.Class
 
             for i = 1, 40 do
-                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = ns.UnitBuff( "player", i )
+                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetBuffDataByIndex( "player", i ) )
 
                 if not name then break end
 
@@ -274,7 +277,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             auraString = auraString .. "\n\nplayer_debuffs:"
 
             for i = 1, 40 do
-                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = ns.UnitDebuff( "player", i )
+                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetDebuffDataByIndex( "player", i ) )
 
                 if not name then break end
 
@@ -292,7 +295,7 @@ function Hekili:SaveDebugSnapshot( dispName )
                 auraString = auraString .. "\n\ntarget_buffs:"
 
                 for i = 1, 40 do
-                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = ns.UnitBuff( "target", i )
+                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetBuffDataByIndex( "target", i ) )
 
                     if not name then break end
 
@@ -306,7 +309,7 @@ function Hekili:SaveDebugSnapshot( dispName )
                 auraString = auraString .. "\n\ntarget_debuffs:"
 
                 for i = 1, 40 do
-                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = ns.UnitDebuff( "target", i, "PLAYER" )
+                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetDebuffDataByIndex( "target", i, "PLAYER" ) )
 
                     if not name then break end
 
