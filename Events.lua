@@ -358,8 +358,6 @@ do
             local specialization = GetSpecialization()
             local specID = specialization and GetSpecializationInfo( specialization )
 
-            print( specID, state.spec.id )
-
             if specID and specID ~= state.spec.id then
                 Hekili.PendingSpecializationChange = true
             end
