@@ -448,7 +448,8 @@ spec:RegisterAuras( {
     slaughtering_strikes_raging_blow = {
         id = 393931,
         duration = 12,
-        max_stack = 5
+        max_stack = 5,
+        copy = "slaughtering_strikes"
     },
     spell_reflection = {
         id = 23920,
@@ -1263,7 +1264,7 @@ spec:RegisterAbilities( {
 
 
     execute = {
-        id = function () return IsActiveSpell( 280735 ) and 280735 or 5308 end,
+        id = function () return talent.massacre.enabled and 280735 or 5308 end, -- TODO: Need to make sure we capture all situations that change ID to 280735.
 	    known = 5308,
         noOverride = 317485,
         cast = 0,
@@ -1286,17 +1287,6 @@ spec:RegisterAbilities( {
         cycle = "execute_ineligible",
 
         indicator = function () if cycle_for_execute then return "cycle" end end,
-
-        timeToReady = function()
-            -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
-            if talent.improved_execute.enabled then
-                return 0 -- We gain rage when using excute with this talent
-            elseif rage.current >= 20 then
-                return 0
-            else
-                return rage.time_to_20
-            end
-        end,
 
         handler = function ()
             if talent.imminent_demise.enabled then
