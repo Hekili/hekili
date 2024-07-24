@@ -138,6 +138,8 @@ state.off_hand = {
 
 state.gcd = {}
 
+state.hero_tree = setmetatable( {}, { __index = function( t, k ) return false end } ) -- TODO: Update hero tree detection for 11.0 launch.
+
 state.history = {
     casts = {},
     units = {}
