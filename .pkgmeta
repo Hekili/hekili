@@ -62,6 +62,8 @@ externals:
         url: https://repos.wowace.com/wow/libchatanims/trunk/LibChatAnims
     Libs/LibTranslit-1.0:
         url: https://github.com/Vardex/LibTranslit.git
+    Libs/LibDataBroker-1.1:
+        url: https://github.com/tekkub/libdatabroker-1-1
 
 move-folders:
     Hekili/Libs/LibRangeCheck-3.0/LibRangeCheck-3.0: Hekili/Libs/LibRangeCheck-3.0
