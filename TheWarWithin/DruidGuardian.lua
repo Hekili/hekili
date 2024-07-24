@@ -1343,7 +1343,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyBuff( "growl" )
+            applyDebuff( "growl" )
         end,
     },
 
@@ -2274,4 +2274,4 @@ spec:RegisterSetting( "owlweave_bear", false, {
 } ) ]]
 
 
-spec:RegisterPack( "Guardian", 20240723, [[Hekili:TrvtVTnmm0Fl98AtIDZwwlqVSDyO9WU4cSBYr2M2wiYsgusjO9G)Tpk72ujLCjiM8j(1JpYYyVYkA4wG938n5B3Sl)(v5BYY2SLvyFBeyfJ86d8o6pk(a97FCCSrWvEhVj18gFamAhwto7T2rZJRx3jS9UQv16H1gXGtYTcTQg5Tw)31RzfvoH0(SIvD9SNZk4oBVgzffIHFtrw00alWbtnRWd)Un7Ul)(hN2)ApmT)FCK(HsSGQnPWynZTg0YDsl93)o3Q8AFPWkCgOuyHbdRau8kj0W(fZsLriiHQMJk(YhrWUpewfGgapKazBiKEGJ2sDBPThkpjKnjG)EiykJoemLhfDczcWFecSwRoQpaZb1mkqHnTD2fc3y5dJqJq1vIAoMa9NHq7q9P0u)qiGweuVlGMse6afGxBiLTjAkXXdMdIlafrlghEuCKllfkJLg)x0qzre0OtEeqX7qkQi(bP13pN9gjaJqAVNfrwsNIJLvaFifwenvH0sM0pnBDxeWzE6ltf1e5qvkNvCZ0(kxB7kbQv0dx5gdw4wSnhHDjr4tmdAcJaHWyIaXhMEpwY8B1sANGJDan(O1EF0Iy3bssKwWpedq1jthQ5r0PTh5ME)ukT3ZJz0tIr4kWSe7HaDHOIFP60dVSvJdPVHEfr4gpOLlgz57yfNivkXd0UYZdJA0cnt7ZN2VeTP9Zhdwn9IpJ6wHVXwCzwDUe(2tRpN0PxME5daK5ZxkcngCzi08hxccnDHYp0zKsp0Xvu2HUtuYHUMvUHgUQsnQO)qygLGl0HHEpl7cnEfvwO7Vevr5oudfnGxuc3kAF6Me5siSpfd3gT0)uM)DbIIONql)XF731dTeSAhntc2KnJqT)a325Ds2)p]] )
+spec:RegisterPack( "Guardian", 20240723, [[Hekili:TrzpVnommy4FlfD8AZhU9A7vGUC3WHMHUOcCBYr2M2wiYsgusjODW)2pQKMujLSyyt(isks(A(s(7CwJWb83kwuC)IhlUBwXILpS4joZ9XiWzJI6nIo6fTyGE(xVaBKcDWXhkJOjeaRXJ1KZENB0(885DsxVVAwTzyUvo4vcN0ORrrRl8D9CoRYlvUx18QlN9LCMW76niNXKd)HISSPboGd2AolGF7IhVT4UNNw)EpmT(FcKEqjws1MsAD29xnOv4vo6132Fvf1HsHZ8wOu6GblNbArLcA4)M7OYigsQRfOwC4JeS7IXQa0c4MmK7Jr6bb6knTLUEOCNu1Kb)ZyykJEeSLBLDsvg4dXG1g9wZgyFqTJsu6YVopgJBDIHrOrQ7krJaZqFkgTfb9NsOPeHoqd4L6b)kPhiWn2nYCMLlskapUvUvOkLARJAUNvUltMrJE1waLFc5ujdjKwop2zTkagH8B2YKPLYRfyzfigYXsMyviTcPc9Qw)zbC)46BtSAQ1tvQGZUAADLVTDMenA6GZ8JrRthSTpcpKfHJmdgIrIqCmrGgh2(alz(JAfnXfyhqTpAPoeTKX8aTWNxWpLcO7uN1utgNUEuy7dDP87Er6eDNCeUaMJMEiq6)kX5AVaEzRbhYpdDkAGBdqN(FaNTJ0G0CG2vEDy0GoOzADX06drBA9EP(SPvuXmc1HvU7dj30kd3Xdu2zNQMF8Y8t5FA10QVaiZN(LqSXOFbeB(ljFSPZK4XotK0XoUGeo2DMKDA11xF8MhC3HMDjH7I62Kc)lDAssotwg79Kkm24feDXU)wJLK7yjvst(GW4gz7lxLPEIXoQnUjrd8YYW5I0ijhH0cPFhw9JTeTPN0t(EXoSxY))d]] )
