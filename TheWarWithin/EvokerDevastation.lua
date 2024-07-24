@@ -943,6 +943,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 4622450,
         toggle = "cooldowns",
+        notalent = "breath_of_eons",
 
         min_range = 20,
         max_range = 50,
