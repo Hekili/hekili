@@ -502,7 +502,7 @@ spec:RegisterAuras( {
     sudden_death = {
         id = 52437,
         duration = 10,
-        max_stack = 1
+        max_stack = 2
     },
     taunt = {
         id = 355,
@@ -641,11 +641,11 @@ spec:RegisterHook( "spend", function( amt, resource )
                 if talent.anger_management.enabled then
                     if talent.shield_wall.enabled then cooldown.shield_wall.expires = cooldown.shield_wall.expires - rage10activations end
                     if talent.avatar.enabled then cooldown.avatar.expires = cooldown.avatar.expires - rage10activations end
-                    end
-                    end
                 end
+            end
+        end
         
-                if talent.indomitable.enabled then
+        if talent.indomitable.enabled then
             rageSpent_20 = rageSpent_20 + amt
             local rage20activations = floor( rageSpent_20 / 20 )
             rageSpent_20 = rageSpent_20 % 20
@@ -772,8 +772,9 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136009,
 
-        toggle = "defensives",
-        usable = function () return ( debuff.sap.up or debuff.incapacitate.up or debuff.fear.up ) , "requires fear/incapacitate/sap debuff" end,
+        --Not yet Implemented in LossOfControl via Classes.lua
+        --toggle = "defensives",
+        --usable = function () return ( debuff.sap.up or debuff.incapacitate.up or debuff.fear.up ) , "requires fear/incapacitate/sap debuff" end,
 
         handler = function ()
             applyBuff( "berserker_rage" )
@@ -791,7 +792,9 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136009,
 
-        toggle = "defensives",
+        --Not yet Implemented in LossOfControl via Classes.lua
+        --toggle = "defensives",
+        --usable = function () return ( debuff.sap.up or debuff.incapacitate.up or debuff.fear.up ) , "requires fear/incapacitate/sap debuff" end,
 
         handler = function ()
             applyBuff( "berserker_shout" )
@@ -1756,6 +1759,7 @@ spec:RegisterAbilities( {
         talent = "thunder_clap",
         startsCombat = true,
         texture = 136105,
+        bind = "thunder_blast",
 
         handler = function ()
             applyDebuff( "target", "thunder_clap" )
@@ -1793,6 +1797,7 @@ spec:RegisterAbilities( {
         talent = "thunder_clap",
         startsCombat = true,
         texture = 136105,
+        bind = "thunder_clap",
 
         handler = function ()
             applyDebuff( "target", "thunder_clap" )
