@@ -110,7 +110,7 @@ function ns.StartEventHandler()
 
     events:SetScript( "OnUpdate", function( self, elapsed )
         if Hekili.PendingSpecializationChange then
-           -- Hekili:SpecializationChanged()
+            Hekili:SpecializationChanged()
             Hekili.PendingSpecializationChange = false
             -- Spec updates are expensive; exit and do other work in the next frame.
             return
@@ -358,12 +358,14 @@ do
             local specialization = GetSpecialization()
             local specID = specialization and GetSpecializationInfo( specialization )
 
+            print( specID, state.spec.id )
+
             if specID and specID ~= state.spec.id then
                 Hekili.PendingSpecializationChange = true
             end
         end
 
-        RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, CheckForTalentUpdate )
+        RegisterEvent( "ACTIVE_PLAYER_SPECIALIZATION_CHANGED", CheckForTalentUpdate )
 
         for event in pairs( specializationEvents ) do
             RegisterEvent( event, CheckForTalentUpdate )
