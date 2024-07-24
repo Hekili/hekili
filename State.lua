@@ -4754,6 +4754,8 @@ ns.metatables.mt_equipped = mt_equipped
 
 -- Aliases let a single buff name refer to any of multiple buffs.
 -- Developed mainly for RtB; it will also report "stack" or "count" as the sum of stacks of multiple buffs.
+local mt_alias_debuff
+
 do
     local autoReset = setmetatable( {
         applied = 1,
