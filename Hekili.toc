@@ -56,8 +56,8 @@ TheWarWithin\HunterSurvival.lua
 # TheWarWithin\MonkMistweaver.lua
 # TheWarWithin\MonkWindwalker.lua
 # TheWarWithin\PaladinHoly.lua
-# TheWarWithin\PaladinProtection.lua
-# TheWarWithin\PaladinRetribution.lua
+TheWarWithin\PaladinProtection.lua
+TheWarWithin\PaladinRetribution.lua
 # TheWarWithin\PriestDiscipline.lua
 # TheWarWithin\PriestHoly.lua
 # TheWarWithin\PriestShadow.lua
@@ -67,9 +67,9 @@ TheWarWithin\HunterSurvival.lua
 TheWarWithin\ShamanElemental.lua
 TheWarWithin\ShamanEnhancement.lua
 # TheWarWithin\ShamanRestoration.lua
-# TheWarWithin\WarlockAffliction.lua
-# TheWarWithin\WarlockDemonology.lua
-# TheWarWithin\WarlockDestruction.lua
+TheWarWithin\WarlockAffliction.lua
+TheWarWithin\WarlockDemonology.lua
+TheWarWithin\WarlockDestruction.lua
 TheWarWithin\WarriorArms.lua
 TheWarWithin\WarriorFury.lua
 TheWarWithin\WarriorProtection.lua
