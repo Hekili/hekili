@@ -907,7 +907,12 @@ local HekiliSpecMixin = {
                 if a.rangeSpell and type( a.rangeSpell ) == "number" then
                     Hekili:ContinueOnSpellLoad( a.rangeSpell, function( success )
                         if success then
-                            a.rangeSpell = GetSpellInfo( a.rangeSpell )
+                            info = GetSpellInfo( a.rangeSpell )
+                            if info then
+                                a.rangeSpell = info.name
+                            else
+                                a.rangeSpell = nil
+                            end
                         else
                             a.rangeSpell = nil
                         end
