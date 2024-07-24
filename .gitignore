@@ -70,7 +70,6 @@ Libs/LibCompress
 Libs/LibDeflate
 Libs/LibCustomGlow-1.0/
 Libs/LibDataBroker-1-1
-Libs/LibDBIcon-1.0
 Libs/LibDualSpec-1.0
 Libs/LibItemBuffs-1.0
 Libs/LibNameplateRegistry-1.0/
@@ -94,5 +93,6 @@ Dragonflight/APLs/Tier28/
 Libs/TaintLess/TaintLess.toc
 Libs/TaintLess/TaintLess.xml
 Specs.md
-
-Libs/LibDataBroker-1.1/LibDataBroker-1.1.lua
+Libs/LibRangeCheck-3.0/LibRangeCheck-3.0.lua
+Libs/LibDBIcon-1.0/
+Libs/LibDBIcon-1.0/LibDBIcon-1.0.lua
