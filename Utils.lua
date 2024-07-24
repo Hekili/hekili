@@ -969,42 +969,46 @@ function Hekili:GetLoadoutExportString()
         es:AddValue( 8, hashVal )
     end
 
-    local treeNodes = C_Traits.GetTreeNodes( treeID )
-    for i, treeNodeID in ipairs( treeNodes ) do
-        local treeNode = C_Traits.GetNodeInfo( configID, treeNodeID )
+	local treeNodes = C_Traits.GetTreeNodes(treeID);
+	for i, treeNodeID in ipairs(treeNodes) do
+		local treeNode = C_Traits.GetNodeInfo(configID, treeNodeID);
 
-        local isNodeSelected = treeNode.ranksPurchased > 0
-        local isPartiallyRanked = treeNode.ranksPurchased ~= treeNode.maxRanks
-        local isChoiceNode = treeNode.type == Enum.TraitNodeType.Selection
+		local isNodeGranted = treeNode.activeRank - treeNode.ranksPurchased > 0;
+		local isNodePurchased = treeNode.ranksPurchased > 0;
+		local isNodeSelected = isNodeGranted or isNodePurchased;
+		local isPartiallyRanked = treeNode.ranksPurchased ~= treeNode.maxRanks;
+		local isChoiceNode = treeNode.type == Enum.TraitNodeType.Selection or treeNode.type == Enum.TraitNodeType.SubTreeSelection;
 
-        es:AddValue( 1, isNodeSelected and 1 or 0 )
+		es:AddValue(1, isNodeSelected and 1 or 0);
+		if(isNodeSelected) then
+			es:AddValue(1, isNodePurchased and 1 or 0);
 
-        if ( isNodeSelected ) then
-            es:AddValue( 1, isPartiallyRanked and 1 or 0 )
-            if ( isPartiallyRanked ) then
-                es:AddValue( bitWidthRanksPurchased, treeNode.ranksPurchased )
-            end
+			if isNodePurchased then
+				es:AddValue(1, isPartiallyRanked and 1 or 0);
+				if(isPartiallyRanked) then
+					es:AddValue(self.bitWidthRanksPurchased, treeNode.ranksPurchased);
+				end
 
-            es:AddValue( 1, isChoiceNode and 1 or 0 )
-            if ( isChoiceNode) then
-                local entryIndex = 0
+				es:AddValue(1, isChoiceNode and 1 or 0);
+				if(isChoiceNode) then
+					local entryIndex = 0
 
-                for i, entryID in ipairs( treeNode.entryIDs ) do
-                    if ( entryID == treeNode.activeEntry.entryID ) then
-                        entryIndex = i
-                        break
+                    for i, entryID in ipairs(treeNode.entryIDs) do
+                        if(entryID == treeNode.activeEntry.entryID) then
+                            entryIndex = i
+                        end
                     end
-                end
 
-                if ( entryIndex <= 0 or entryIndex > 4 ) then
-                    return "error: unable to generate"
-                end
+					if(entryIndex <= 0 or entryIndex > 4) then
+						error("Error exporting tree node " .. treeNode.ID .. ". The active choice node entry index (" .. entryIndex .. ") is out of bounds. ");
+					end
 
-                -- store entry index as zero-index
-                es:AddValue( 2, entryIndex - 1 )
-            end
-        end
-    end
+					-- store entry index as zero-index
+					es:AddValue(2, entryIndex - 1);
+				end
+			end
+		end
+	end
 
     return es:GetExportString()
 end
