@@ -1806,7 +1806,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Causes the earth within $a1 yards of the target location to tremble and break, dealing $<damage> Physical damage over $d and has a $?s381743[${$77478s2+$381743S1)}.1][$77478s2]% chance to knock the enemy down.
     earthquake = {
-        id = 61882,
+        id = function() return talent.earthquake_2.enabled and 462620 or 61882 end,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1815,7 +1815,7 @@ spec:RegisterAbilities( {
         spend = function () return 60 - 5 * talent.eye_of_the_storm.rank end,
         spendType = "maelstrom",
 
-        talent = "earthquake",
+        talent = function() return talent.earthquake_2.enabled and "earthquake_2" or "earthquake" end,
         startsCombat = true,
 
         handler = function ()
@@ -1861,6 +1861,8 @@ spec:RegisterAbilities( {
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
+
+        copy = { 61882, 462620 }
     },
 
     -- Shock the target for $s1 Elemental damage and create an ancestral echo, causing your next damage or healing spell to be cast a second time ${$s2/1000}.1 sec later for free.
