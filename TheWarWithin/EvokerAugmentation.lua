@@ -681,6 +681,7 @@ end )
 spec:RegisterStateTable( "evoker", setmetatable( {}, {
     __index = setfenv( function( t, k )
         if k == "prescience_buffs" then return active_dot.prescience end
+        if k == "allied_cds_up" then return active_dot.sense_power_active end
         if k == "use_early_chaining" then k = "use_early_chain" end
         local val = settings[ k ]
         if val ~= nil then return val end
