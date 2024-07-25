@@ -242,18 +242,24 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
                 end
 
             -- Grimoire Felguard
-            -- elseif spellID == 111898 then table.insert( grim_felguard, now + 17 )
+            elseif spellID == 111898 then table.insert( grim_felguard, now + 17 )
 
             -- Demonic Tyrant: 265187, 15 seconds uptime.
             elseif spellID == 265187 then table.insert( demonic_tyrant, now + 15 )
-                -- for i = 1, #dreadstalkers do dreadstalkers[ i ] = dreadstalkers[ i ] + 15 end
-                -- for i = 1, #vilefiend do vilefiend[ i ] = vilefiend[ i ] + 15 end
-                -- for i = 1, #grim_felguard do grim_felguard[ i ] = grim_felguard[ i ] + 15 end
-                for i = 1, #wild_imps do wild_imps[ i ] = wild_imps[ i ] + 15 end
+                for i = 1, #dreadstalkers do dreadstalkers[ i ] = dreadstalkers[ i ] + 15 end
+                for i = 1, #vilefiend do vilefiend[ i ] = vilefiend[ i ] + 15 end
+                for i = 1, #grim_felguard do grim_felguard[ i ] = grim_felguard[ i ] + 15 end
+                for i = 1, 15 do
+                    if not wild_imps[ i ] then break end
+                    wild_imps[ i ] = wild_imps[ i ] + 15
+                end
 
+                local i = 0
                 for _, imp in pairs( imps ) do
                     imp.expires = imp.expires + 15
                     imp.max = imp.max + 15
+                    i = i + 1
+                    if i == 15 then break end
                 end
 
             -- Other Demons, 15 seconds uptime.
@@ -312,8 +318,9 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
 
             -- Call Dreadstalkers (use travel time to determine buffer delay for Demonic Cores).
             elseif spellID == 104316 then
+                local info = GetSpellInfo( 104316 )
                 -- TODO:  Come up with a good estimate of the time it takes.
-                dreadstalkers_travel_time = ( select( 6, GetSpellInfo( 104316 ) ) or 25 ) / 25
+                dreadstalkers_travel_time = ( info and info.maxRange or 25 ) / 25
 
             end
         end
@@ -451,7 +458,7 @@ spec:RegisterHook( "reset_precast", function()
             local demon, extraTime = nil, 0
 
             -- Grimoire Felguard
-            if texture == 136216 then
+            if texture == 237562 then
                 extraTime = action.grimoire_felguard.lastCast % 1
                 demon = grim_felguard_v
             elseif texture == 1616211 then
@@ -470,11 +477,12 @@ spec:RegisterHook( "reset_precast", function()
             end
         end
 
-        if #grim_felguard_v > 1 then table.sort( grim_felguard_v ) end
-        if #vilefiend_v > 1 then table.sort( vilefiend_v ) end
-        if #dreadstalkers_v > 1 then table.sort( dreadstalkers_v ) end
-        if #demonic_tyrant_v > 1 then table.sort( demonic_tyrant_v ) end
     end
+
+    if #grim_felguard_v > 1 then table.sort( grim_felguard_v ) end
+    if #vilefiend_v > 1 then table.sort( vilefiend_v ) end
+    if #dreadstalkers_v > 1 then table.sort( dreadstalkers_v ) end
+    if #demonic_tyrant_v > 1 then table.sort( demonic_tyrant_v ) end
 
     if demonic_tyrant_v[ 1 ] and demonic_tyrant_v[ 1 ] > now then
         summonPet( "demonic_tyrant", demonic_tyrant_v[ 1 ] - now )
@@ -509,8 +517,6 @@ spec:RegisterHook( "reset_precast", function()
         applyBuff( "felstorm" )
         buff.demonic_strength.expires = buff.felstorm.expires
     end
-
-    -- print( grim_felguard_v[1], buff.grimoire_felguard.up, buff.grimoire_felguard.remains )
 
     if Hekili.ActiveDebug then
         Hekili:Debug(   " - Dreadstalkers: %d, %.2f\n" ..
@@ -1370,7 +1376,7 @@ spec:RegisterAuras( {
                 return exp and exp >= query_time or false
             end,
             down = function ( t ) return not t.up end,
-            applied = function () local exp = dreadstalkers_v[ #dreadstalkers_v ]; return exp and ( exp - 12 ) or 0 end,
+            applied = function () local exp = dreadstalkers_v[ 1 ]; return exp and min( query_time, exp - 12 ) or 0 end,
             expires = function () return dreadstalkers_v[ #dreadstalkers_v ] or 0 end,
             count = function ()
                 local c = 0
@@ -1391,7 +1397,7 @@ spec:RegisterAuras( {
                 return exp and exp >= query_time or false
             end,
             down = function ( t ) return not t.up end,
-            applied = function () local exp = grim_felguard_v[ #grim_felguard_v ]; return exp and ( exp - 17 ) or 0 end,
+            applied = function () local exp = grim_felguard_v[ 1 ]; return exp and min( query_time, exp - 17 ) or 0 end,
             expires = function () return grim_felguard_v[ #grim_felguard_v ] or 0 end,
             count = function ()
                 local c = 0
@@ -1409,7 +1415,7 @@ spec:RegisterAuras( {
         meta = {
             up = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and exp >= query_time or false end,
             down = function ( t ) return not t.up end,
-            applied = function () local exp = vilefiend_v[ #vilefiend_v ]; return exp and ( exp - 15 ) or 0 end,
+            applied = function () local exp = vilefiend_v[ 1 ]; return exp and min( query_time, exp - 15 ) or 0 end,
             expires = function () return vilefiend_v[ #vilefiend_v ] or 0 end,
             count = function ()
                 local c = 0
@@ -1427,7 +1433,7 @@ spec:RegisterAuras( {
         meta = {
             up = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and exp >= query_time or false end,
             down = function ( t ) return not t.up end,
-            applied = function () local exp = wild_imps_v[ #wild_imps_v ]; return exp and ( exp - 40 ) or 0 end,
+            applied = function () local exp = wild_imps_v[ 1 ]; return exp and min( query_time, exp - 40 ) or 0 end,
             expires = function () return wild_imps_v[ #wild_imps_v ] or 0 end,
             count = function ()
                 local c = 0
@@ -1446,7 +1452,7 @@ spec:RegisterAuras( {
         meta = {
             up = function () local exp = imp_gang_boss_v[ #imp_gang_boss_v ]; return exp and exp >= query_time or false end,
             down = function ( t ) return not t.up end,
-            applied = function () local exp = imp_gang_boss_v[ #imp_gang_boss_v ]; return exp and ( exp - 40 ) or 0 end,
+            applied = function () local exp = imp_gang_boss_v[ 1 ]; return exp and min( query_time,  exp - 40 ) or 0 end,
             expires = function () return imp_gang_boss_v[ #imp_gang_boss_v ] or 0 end,
             count = function ()
                 local c = 0
@@ -1464,7 +1470,7 @@ spec:RegisterAuras( {
         meta = {
             up = function () local exp = other_demon_v[ #other_demon_v ]; return exp and exp >= query_time or false end,
             down = function ( t ) return not t.up end,
-            applied = function () local exp = other_demon_v[ #other_demon_v ]; return exp and ( exp - 15 ) or 0 end,
+            applied = function () local exp = other_demon_v[ 1 ]; return exp and min( query_time, exp - 15 ) or 0 end,
             expires = function () return other_demon_v[ #other_demon_v ] or 0 end,
             count = function ()
                 local c = 0
@@ -1519,7 +1525,7 @@ spec:RegisterPet( "sayaad",
 
 -- Wrathguard       58965
 spec:RegisterPet( "felguard",
-    function() return Glyphed( 112870 ) and 58965 or 17252 end,
+    function() return Glyphed( 112870 ) and 58965 or 237562 end,
     "summon_felguard",
     3600, 58965, 17252 )
 
@@ -1529,15 +1535,15 @@ spec:RegisterPet( "doomguard",
     300 )
 
 
---[[ Demonic Tyrant
+-- Demonic Tyrant
 spec:RegisterPet( "demonic_tyrant",
     135002,
     "summon_demonic_tyrant",
-    15 ) ]]
+    15 )
 
 spec:RegisterTotem( "demonic_tyrant", 135002 )
 spec:RegisterTotem( "vilefiend", 1616211 )
-spec:RegisterTotem( "grimoire_felguard", 136216 )
+spec:RegisterTotem( "grimoire_felguard", 237562 )
 spec:RegisterTotem( "dreadstalker", 1378282 )
 
 
