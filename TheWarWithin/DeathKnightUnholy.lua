@@ -911,11 +911,12 @@ me:RegisterAuras( {
     -- Suffering $w1 Shadow damage every $t1 sec.  Erupts for $191685s1 damage split among all nearby enemies when the infected dies.
     -- https://wowhead.com/beta/spell=191587
     virulent_plague = {
-        id = 441277,
+        id = 191587,
         duration = function () return 27 * ( talent.ebon_fever.enabled and 0.5 or 1 ) end,
         tick_time = function() return 3 * ( talent.ebon_fever.enabled and 0.5 or 1 ) * ( buff.plaguebringer.up and 0.5 or 1 ) end,
         type = "Disease",
         max_stack = 1,
+        copy = 441277,
     },
     -- The touch of the spirit realm lingers....
     -- https://wowhead.com/beta/spell=97821
