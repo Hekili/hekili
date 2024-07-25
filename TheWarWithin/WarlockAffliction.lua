@@ -1947,6 +1947,31 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Talent: Wither away all life force of your current target and up to 3 additional targets nearby, causing your primary target to suffer 10,339 Nature damage and secondary targets to suffer 5,169 Nature damage over 8 sec. For the next 8 sec, casting Drain Life will cause you to also Drain Life from any enemy affected by your Soul Rot, and Drain Life will not consume any mana.
+    soul_rot = {
+        id = function() return talent.soul_rot.enabled and 386997 or 325640 end,
+        cast = 1.5,
+        cooldown = function() return 60 - 8 * talent.souleaters_gluttony.rank end,
+        gcd = "spell",
+        school = "nature",
+
+        spend = 0.005,
+        spendType = "mana",
+
+        startsCombat = true,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyDebuff( "target", "soul_rot" )
+            active_dot.soul_rot = min( 4, active_enemies )
+            if legendary.decaying_soul_satchel.enabled then applyBuff( "decaying_soul_satchel", nil, active_dot.soul_rot ) end
+            if talent.dark_harvest.enabled then applyBuff( "dark_harvest", nil, active_dot.soul_rot ) end
+        end,
+
+        copy = { 386997, 325640 }
+    },
+
     soulburn = {
         id = 385899,
         cast = 0,
