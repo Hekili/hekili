@@ -424,7 +424,8 @@ spec:RegisterAuras( {
         duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
         dot = "buff",
-        friendly = true
+        friendly = true,
+        no_ticks = true
     },
     prescience_applied = {
         duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,
@@ -677,13 +678,14 @@ spec:RegisterHook( "reset_precast", function()
 end )
 
 
-spec:RegisterStateTable( "evoker", setmetatable( {},{
-    __index = function( t, k )
+spec:RegisterStateTable( "evoker", setmetatable( {}, {
+    __index = setfenv( function( t, k )
+        if k == "prescience_buffs" then return active_dot.prescience end
         if k == "use_early_chaining" then k = "use_early_chain" end
-        local val = state.settings[ k ]
+        local val = settings[ k ]
         if val ~= nil then return val end
         return false
-    end
+    end, state )
 } ) )
 
 
