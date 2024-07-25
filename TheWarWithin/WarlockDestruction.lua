@@ -1297,7 +1297,6 @@ spec:RegisterAbilities( {
         end,
         spendType = "soul_shards",
 
-        talent = "chaos_bolt",
         startsCombat = true,
         cycle = function () return talent.eradication.enabled and "eradication" or nil end,
 
