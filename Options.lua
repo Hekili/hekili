@@ -37,10 +37,10 @@ local BlizzBlue = "|cFF00B4FF"
 local Bullet = AtlasToString( "characterupdate_arrow-bullet-point" )
 local ClassColor = C_ClassColor.GetClassColor( class.file )
 
-local IsPassiveSpell = C_Spell and C_Spell.IsSpellPassive or _G.IsPassiveSpell
-local IsHarmfulSpell = C_Spell and C_Spell.IsSpellHarmful or _G.IsHarmfulSpell
-local IsHelpfulSpell = C_Spell and C_Spell.IsSpellHelpful or _G.IsHelpfulSpell
-local IsPressHoldReleaseSpell = C_Spell and C_Spell.IsPressHoldReleaseSpell or _G.IsPressHoldReleaseSpell
+local IsPassiveSpell = C_Spell.IsSpellPassive or _G.IsPassiveSpell
+local IsHarmfulSpell = C_Spell.IsSpellHarmful or _G.IsHarmfulSpell
+local IsHelpfulSpell = C_Spell.IsSpellHelpful or _G.IsHelpfulSpell
+local IsPressHoldReleaseSpell = C_Spell.IsPressHoldReleaseSpell or _G.IsPressHoldReleaseSpell
 
 local GetNumSpellTabs = C_SpellBook.GetNumSpellBookSkillLines;
 
@@ -9355,7 +9355,7 @@ do
             end
 
             local selfbuff = SpellIsSelfBuff( spellID )
-            talent = talent or ( C_Spell and C_Spell.IsClassTalentSpell( spellID ) )
+            talent = talent or ( C_Spell.IsClassTalentSpell( spellID ) )
 
             if selfbuff or passive then
                 auras[ token ] = auras[ token ] or {}
