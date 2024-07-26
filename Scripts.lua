@@ -1714,7 +1714,7 @@ function scripts:LoadScripts()
                             end
                         end
 
-                        if list ~= "precombat" and ( ability.item or data.action == "trinket1" or data.action == "trinket2" ) and data.enabled then
+                        if list ~= "precombat" and ( ability.item or data.action == "trinket1" or data.action == "trinket2" or data.action == "main_hand" ) and data.enabled then
                             self.PackInfo[ pack ].items[ data.action ] = true
                         end
 

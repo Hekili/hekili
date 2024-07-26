@@ -2275,7 +2275,9 @@ do
             elseif k == "charges" then return cooldown.charges
             elseif k == "charges_fractional" then return cooldown.charges_fractional
             elseif k == "charges_max" or k == "max_charges" then return ability and ability.charges or 1
+            elseif k == "cooldown_duration" then return cooldown.duration
             elseif k == "cooldown_react" or k == "cooldown_up" then return cooldown.remains == 0
+            elseif k == "cooldown_remains" then return cooldown.remains
             elseif k == "cost" then
                 if not ability then return 0 end
 
