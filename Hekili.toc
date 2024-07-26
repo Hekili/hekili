@@ -52,7 +52,7 @@ TheWarWithin\HunterSurvival.lua
 # TheWarWithin\MageArcane.lua
 # TheWarWithin\MageFire.lua
 # TheWarWithin\MageFrost.lua
-# TheWarWithin\MonkBrewmaster.lua
+TheWarWithin\MonkBrewmaster.lua
 # TheWarWithin\MonkMistweaver.lua
 # TheWarWithin\MonkWindwalker.lua
 # TheWarWithin\PaladinHoly.lua
