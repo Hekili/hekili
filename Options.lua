@@ -58,7 +58,7 @@ local GetSpellTabInfo = function(index)
     end
 end
 
-local GetSpellInfo = function(spellID)
+local GetSpellInfo = function( spellID )
     if not spellID then
         return nil;
     end
@@ -9434,7 +9434,7 @@ do
     local function skeletonHandler( self, event, ... )
         local unit = select( 1, ... )
 
-        if ( event == "PLAYER_SPECIALIZATION_CHANGED" and UnitIsUnit( unit, "player" ) ) or event == "PLAYER_ENTERING_WORLD" then
+        if ( event == "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" ) or event == "PLAYER_ENTERING_WORLD" then
             local sID, s = GetSpecializationInfo( GetSpecialization() )
             if specID ~= sID then
                 wipe( resources )
@@ -9494,18 +9494,21 @@ do
                             local entryInfo = C_Traits.GetEntryInfo( configID, entryID )
                             if entryInfo.definitionID then -- Not a subTree (hero talent hidden node)
                                 local definitionInfo = C_Traits.GetDefinitionInfo( entryInfo.definitionID )
+                                local spellID = definitionInfo and definitionInfo.spellID
 
-                                local spellID = definitionInfo.spellID
-                                local name = definitionInfo.overrideName or GetSpellInfo( spellID )
-                                local subtext = C_Spell.GetSpellSubtext( spellID )
+                                if spellID then
+                                    local name = definitionInfo.overrideName or GetSpellInfo( spellID )
+                                    local subtext = spellID and C_Spell.GetSpellSubtext( spellID ) or ""
 
-                                if subtext then
-                                    local rank = subtext:match( "^Rank (%d+)$" )
-                                    if rank then name = name .. "_" .. rank end
+                                    if subtext then
+                                        local rank = subtext:match( "^Rank (%d+)$" )
+                                        if rank then name = name .. "_" .. rank end
+                                    end
+
+                                    local token = key( name )
+                                    insert( talents, { name = token, talent = nodeID, isSpec = isSpecSpec, isHero = isHeroSpec, specName = specializationName, definition = entryInfo.definitionID, spell = spellID, ranks = node.maxRanks } )
+                                    if not IsPassiveSpell( spellID ) then EmbedSpellData( spellID, token, true ) end
                                 end
-                                local token = key( name )
-                                insert( talents, { name = token, talent = nodeID, isSpec = isSpecSpec, isHero = isHeroSpec, specName = specializationName, definition = entryInfo.definitionID, spell = spellID, ranks = node.maxRanks } )
-                                if not IsPassiveSpell( spellID ) then EmbedSpellData( spellID, token, true ) end
                             end
                         end
                     end
@@ -9630,7 +9633,7 @@ do
 
     function Hekili:StartListeningForSkeleton()
         -- listener:SetScript( "OnEvent", skeletonHandler )
-        skeletonHandler( listener, "PLAYER_SPECIALIZATION_CHANGED", "player" )
+        skeletonHandler( listener, "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" )
         skeletonHandler( listener, "SPELLS_CHANGED" )
     end
 
@@ -9728,7 +9731,7 @@ do
                             append( "-- Talents" )
                             append( "spec:RegisterTalents( {" )
                             increaseIndent()
-                            local formatStr = "%-" .. max_talent_length .. "s = { %5d, %-6d, %d }, -- %s"
+                            local formatStr = "%-" .. max_talent_length .. "s = { %6d, %6d, %d }, -- %s"
 
                             -- Write Class Talents
                             append( "-- " .. playerClass )
@@ -9738,6 +9741,7 @@ do
                             end
 
                             -- Write Spec Talents
+                            append( "" )
                             append( "-- " .. specName )
                             for i, tal in ipairs( specTalents ) do
                                 local line = format( formatStr, tal.name, tal.talent, tal.spell, tal.ranks or 0, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s%s+", " " ) )
@@ -9745,6 +9749,7 @@ do
                             end
                             
                             -- Write Hero1 Talents
+                            append( "" )
                             append( "-- " .. firstHeroSpec )
                             for i, tal in ipairs( hero1Talents ) do
                                 local line = format( formatStr, tal.name, tal.talent, tal.spell, tal.ranks or 0, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s%s+", " " ) )
@@ -9752,6 +9757,7 @@ do
                             end
 
                             -- Write Hero2 Talents
+                            append( "" )
                             append( "-- " .. secondHeroSpec )
                             for i, tal in ipairs( hero2Talents ) do
                                 local line = format( formatStr, tal.name, tal.talent, tal.spell, tal.ranks or 0, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s%s+", " " ) )
@@ -9770,7 +9776,7 @@ do
                                 if chars > max_pvptalent_length then max_pvptalent_length = chars end
                             end
 
-                            local formatPvp = "%-" .. max_pvptalent_length .. "s = %-4d, -- (%d) %s"
+                            local formatPvp = "%-" .. max_pvptalent_length .. "s = %4d, -- (%d) %s"
 
                             for i, tal in ipairs( pvptalents ) do
                                 append( format( formatPvp, tal.name, tal.talent, tal.spell, GetSpellDescription( tal.spell ):gsub( "\n", " " ):gsub( "\r", " " ):gsub( "%s%s+", " " ) ) )
