@@ -300,7 +300,7 @@ spec:RegisterAuras( {
     },
     subterfuge = {
         id = 115192,
-        duration = 3,
+        duration = function() return 3 * talent.subterfuge.rank end,
         max_stack = 1,
     },
     symbols_of_death_crit = {
@@ -1127,6 +1127,54 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "shadow_blades" )
+        end,
+    },
+
+    -- Talent: Allows use of all Stealth abilities and grants all the combat benefits of Stealth for $d$?a245687[, and increases damage by $s2%][]. Effect not broken from taking damage or attacking.$?s137035[    If you already know $@spellname185313, instead gain $394930s1 additional $Lcharge:charges; of $@spellname185313.][]
+    shadow_dance = {
+        id = 185313,
+        cast = 0,
+        charges = function ()
+            if state.spec.subtlety and talent.shadow_dance.enabled then return 2 end
+            return talent.enveloping_shadows.enabled and 2 or nil end,
+        cooldown = 60,
+        recharge = function ()
+            if state.spec.subtlety and talent.shadow_dance.enabled then return 60 end
+            return talent.enveloping_shadows.enabled and 60 or nil
+        end,
+        gcd = "off",
+
+        startsCombat = false,
+
+        toggle = "cooldowns",
+        nobuff = "shadow_dance",
+
+        usable = function ()
+            if state.spec.subtlety then return end
+            return not stealthed.all, "not used in stealth"
+        end,
+        handler = function ()
+            applyBuff( "shadow_dance" )
+
+            if talent.danse_macabre.enabled then
+                applyBuff( "danse_macabre" )
+                wipe( danse_macabre_tracker )
+            end
+            if talent.master_of_shadows.enabled then applyBuff( "master_of_shadows" ) end
+            if talent.premeditation.enabled then applyBuff( "premeditation" ) end
+            if talent.shot_in_the_dark.enabled then applyBuff( "shot_in_the_dark" ) end
+            if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
+            if talent.soothing_darkness.enabled then applyBuff( "soothing_darkness" ) end
+
+            if state.spec.subtlety and set_bonus.tier30_2pc > 0 then
+                applyBuff( "symbols_of_death", 6 )
+                if debuff.rupture.up then debuff.rupture.expires = debuff.rupture.expires + 4 end
+            end
+
+            if azerite.the_first_dance.enabled then
+                gain( 2, "combo_points" )
+                applyBuff( "the_first_dance" )
+            end
         end,
     },
 
