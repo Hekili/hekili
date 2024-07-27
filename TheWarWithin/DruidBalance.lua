@@ -1623,6 +1623,8 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         -- in_any
         elseif k == "in_any" then
             return eclipse.state == "IN_SOLAR" or eclipse.state == "IN_LUNAR" or eclipse.state == "IN_BOTH"
+        elseif k == "in_none" then
+            return eclipse.state ~= "IN_SOLAR" and eclipse.state ~= "IN_LUNAR" and eclipse.state ~= "IN_BOTH"
         -- in_solar
         elseif k == "in_solar" then
             return eclipse.state == "IN_SOLAR"
