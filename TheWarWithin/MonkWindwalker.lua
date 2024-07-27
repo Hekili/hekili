@@ -1334,7 +1334,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function ()
-            return weapons_of_order( buff.ordered_elements.up and 3 or 2 )
+            return weapons_of_order( buff.ordered_elements.up and 2 or 3 )
         end,
         spendType = "chi",
 
@@ -1554,7 +1554,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function ()
-            return weapons_of_order( buff.ordered_elements.up and 2 or 1 )
+            return weapons_of_order( buff.ordered_elements.up and 1 or 2 )
         end,
         spendType = "chi",
 
@@ -1717,7 +1717,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function () return buff.dance_of_chiji.up and 0 or weapons_of_order( buff.ordered_elements.up and 2 or 1 ) end,
+        spend = function () return buff.dance_of_chiji.up and 0 or weapons_of_order( buff.ordered_elements.up and 1 or 2 ) end,
         spendType = "chi",
 
         startsCombat = true,
@@ -1811,7 +1811,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return buff.ordered_elements.up and 2 or 1 end,
+        spend = function() return buff.ordered_elements.up and 1 or 2 end,
         spendType = "chi",
 
         talent = "strike_of_the_windlord",
