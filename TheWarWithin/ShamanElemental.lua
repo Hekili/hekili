@@ -1932,8 +1932,6 @@ spec:RegisterAbilities( {
                 fb_extension_remaining = fb_extension_remaining - extension
             end
 
-            if talent.lightning_rod.enabled then applyDebuff( "target", "lightning_rod" ) end
-
             if talent.storm_frenzy.enabled then
                 addStack( "storm_frenzy", nil, 2 )
             end
