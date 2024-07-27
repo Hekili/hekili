@@ -33,7 +33,7 @@ spec:RegisterResource( Enum.PowerType.LunarPower, {
         end,
 
         interval = 0.5,
-        value = 3
+        value = 2.5
     },
 
     celestial_infusion = {
@@ -3231,7 +3231,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function ()
-            if state.spec.balance then return ( talent.soul_of_the_forest.enabled and buff.eclipse_solar.up and 1.3 or 1 ) * ( talent.wild_surges.enabled and -12 or -10 ) end
+            if state.spec.balance then return ( talent.soul_of_the_forest.enabled and buff.eclipse_solar.up and 1.3 or 1 ) * ( talent.wild_surges.enabled and -8 or -6 ) end
             return 0.002
         end,
         spendType = function()
