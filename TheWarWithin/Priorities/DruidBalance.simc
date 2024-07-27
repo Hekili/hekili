@@ -16,8 +16,8 @@ actions+=/fury_of_elune
 actions+=/incarnation
 actions+=/celestial_alignment
 actions+=/warrior_of_elune,if=!talent.lunar_calling&buff.eclipse_solar.remains<7|talent.lunar_calling
-actions+=/starfire,if=(!talent.lunar_calling&spell_targets.starfire=1)&(buff.eclipse_solar.up&buff.eclipse_solar.remains<action.starfire.cast_time|eclipse.in_none)
-actions+=/wrath,if=(talent.lunar_calling|spell_targets.starfire>1)&(buff.eclipse_lunar.up&(buff.eclipse_lunar.remains<action.wrath.cast_time)|eclipse.in_none)
+actions+=/starfire,if=(!talent.lunar_calling&spell_targets.starfire=1)&(buff.eclipse_solar.up&buff.eclipse_solar.remains<action.starfire.cast_time|(buff.celestial_alignment.down&buff.eclipse_lunar.down&buff.eclipse_solar.down))
+actions+=/wrath,if=(talent.lunar_calling|spell_targets.starfire>1)&(buff.eclipse_lunar.up&(buff.eclipse_lunar.remains<action.wrath.cast_time)|(buff.celestial_alignment.down&buff.eclipse_lunar.down&buff.eclipse_solar.down))
 actions+=/starfall,if=buff.starweavers_warp.up
 actions+=/starsurge,if=spell_targets.starfall<2
 actions+=/starfall,if=spell_targets.starfall>1
