@@ -1249,6 +1249,14 @@ spec:RegisterAuras( {
         mechanic = "stun",
         max_stack = 1
     },
+    -- Talent: Kingsbane damage increased by $s1%.
+    -- https://wowhead.com/beta/spell=394095
+    kingsbane_buff = {
+        id = 394095,
+        duration = 20,
+        max_stack = 50,
+        copy = 192853
+    },
     -- Talent: Suffering $w4 Nature damage every $t4 sec.
     -- https://wowhead.com/beta/spell=385627
     kingsbane_dot = {
@@ -1256,13 +1264,6 @@ spec:RegisterAuras( {
         duration = 14,
         max_stack = 1,
         copy = "kingsbane"
-    },
-    -- Talent: Kingsbane damage increased by $s1%.
-    -- https://wowhead.com/beta/spell=394095
-    kingsbane_buff = {
-        id = 394095,
-        duration = 20,
-        max_stack = 99
     },
     -- Movement-impairing effects suppressed.
     -- https://wowhead.com/beta/spell=197003
@@ -2322,6 +2323,7 @@ spec:RegisterAbilities( {
         cp_gain = 1,
 
         handler = function ()
+            removeBuff( "kingsbane" )
             applyDebuff( "target", "kingsbane_dot" )
             gain( action.kingsbane.cp_gain, "combo_points" )
         end,
