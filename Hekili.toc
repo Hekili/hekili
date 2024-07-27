@@ -34,6 +34,8 @@ Shadowlands\Legendaries.lua
 Dragonflight\Items.lua
 Dragonflight\Classes.lua
 
+TheWarWithin\Items.lua
+
 TheWarWithin\DeathKnightBlood.lua
 TheWarWithin\DeathKnightFrost.lua
 TheWarWithin\DeathKnightUnholy.lua
