@@ -1,5 +1,6 @@
 actions.precombat+=/windfury_weapon
 actions.precombat+=/flametongue_weapon
+actions.precombat+=/skyfury
 actions.precombat+=/lightning_shield
 actions.precombat+=/variable,name=trinket1_is_weird,value=trinket.1.is.algethar_puzzle_box|trinket.1.is.manic_grieftorch|trinket.1.is.elementium_pocket_anvil|trinket.1.is.beacon_to_the_beyond
 actions.precombat+=/variable,name=trinket2_is_weird,value=trinket.2.is.algethar_puzzle_box|trinket.2.is.manic_grieftorch|trinket.2.is.elementium_pocket_anvil|trinket.2.is.beacon_to_the_beyond

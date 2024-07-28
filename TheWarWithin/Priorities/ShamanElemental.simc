@@ -1,5 +1,6 @@
 # Ensure weapon enchant is applied if you've selected Improved Flametongue Weapon.
 actions.precombat+=/flametongue_weapon,if=talent.improved_flametongue_weapon.enabled
+actions.precombat+=/skyfury
 actions.precombat+=/potion
 actions.precombat+=/stormkeeper
 actions.precombat+=/lightning_shield
