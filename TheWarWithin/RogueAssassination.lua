@@ -870,6 +870,26 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 20,
     },
+    -- Talent: Each strike has a chance of poisoning the enemy, reducing their damage by ${$392388s1*-1}.1% for $392388d.
+    -- https://wowhead.com/beta/spell=381637
+    atrophic_poison = {
+        id = 381637,
+        duration = 3600,
+        max_stack = 1
+    },
+    -- Talent: Damage reduced by ${$W1*-1}.1%.
+    -- https://wowhead.com/beta/spell=392388
+    atrophic_poison_dot = {
+        id = 392388,
+        duration = 10,
+        type = "Magic",
+        max_stack = 1,
+    },
+    audacity = {
+        id = 386270,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Talent: $w1% reduced damage and healing.
     -- https://wowhead.com/beta/spell=394119
     blackjack = {
@@ -898,6 +918,11 @@ spec:RegisterAuras( {
         id = 121153,
         duration = 10,
         max_stack = 1,
+    },
+    -- Real RtB buffs.
+    broadside = {
+        id = 193356,
+        duration = 30,
     },
     caustic_spatter = {
         id = 421976,
@@ -1124,12 +1149,33 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1
     },
+    finality_rupture = {
+        id = 385951,
+        duration = 30,
+        max_stack = 1,
+    },
     -- Talent: $w1% of armor is ignored by the attacking Rogue.
     -- https://wowhead.com/beta/spell=316220
     find_weakness = {
         id = 316220,
         duration = 10,
         max_stack = 1
+    },
+    flagellation = {
+        id = 323654,
+        duration = 12,
+        max_stack = 30
+    },
+    flagellation_buff = {
+        id = 384631,
+        duration = 12,
+        max_stack = 30
+    },
+    flagellation_persist = {
+        id = 394758,
+        duration = 12,
+        max_stack = 30,
+        copy = 345569,
     },
     garrote = {
         id = 703,
@@ -1178,6 +1224,16 @@ spec:RegisterAuras( {
         duration = function () return talent.iron_wire.enabled and 6 or 3 end,
         mechanic = "silence",
         max_stack = 1
+    },
+    -- Your finishing moves cost no Energy.
+    -- TODO: Does Goremaw's Bite track by value or by stacks?
+    goremaws_bite = {
+        id = 426593,
+        duration = 30,
+        max_stack = 3,
+
+        -- Affected by:
+        -- shadow_blades[121471] #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 6.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=1776

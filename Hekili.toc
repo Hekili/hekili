@@ -64,8 +64,8 @@ TheWarWithin\PaladinRetribution.lua
 # TheWarWithin\PriestHoly.lua
 # TheWarWithin\PriestShadow.lua
 TheWarWithin\RogueAssassination.lua
-TheWarWithin\RogueOutlaw.lua
-TheWarWithin\RogueSubtlety.lua
+# TheWarWithin\RogueOutlaw.lua
+# TheWarWithin\RogueSubtlety.lua
 TheWarWithin\ShamanElemental.lua
 TheWarWithin\ShamanEnhancement.lua
 # TheWarWithin\ShamanRestoration.lua
