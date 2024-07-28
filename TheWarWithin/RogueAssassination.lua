@@ -1750,9 +1750,15 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "deathstalkers_mark", nil, 3 )
             end
 
-            if talent.unseen_blade.enabled and buff.unseen_blade.down then
-                applyDebuff( "target", "unseen_blade" )
-                applyBuff( "unseen_blade" )
+            if talent.unseen_blade.enabled and debuff.unseen_blade.down then
+                applyDebuff( "target", "fazed" )
+                applyDebuff( "player", "unseen_blade" )
+                if buff.escalating_blade.stack == 3 then
+                    removeBuff( "escalating_blade" )
+                    applyBuff( "coup_de_grace" )
+                else
+                    addStack( "escalating_blade" )
+                end
             end
 
             if talent.venom_rush.enabled and debuff.poisoned.up then gain( 7, "energy" ) end

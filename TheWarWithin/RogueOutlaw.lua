@@ -299,6 +299,11 @@ spec:RegisterAuras( {
             end
         }
     },
+    escalating_blade = {
+        id = 441786,
+        duration = 3600,
+        max_stack = 4
+    },
     -- Taking 5% more damage from $auracaster.
     fazed = {
         id = 441224,
@@ -1359,9 +1364,15 @@ spec:RegisterAbilities( {
             gain( action.sinister_strike.cp_gain, "combo_points" )
             removeStack( "snake_eyes" )
 
-            if talent.unseen_blade.enabled and buff.unseen_blade.down then
-                applyDebuff( "target", "unseen_blade" )
-                applyBuff( "unseen_blade" )
+            if talent.unseen_blade.enabled and debuff.unseen_blade.down then
+                applyDebuff( "target", "fazed" )
+                applyDebuff( "player", "unseen_blade" )
+                if buff.escalating_blade.stack == 3 then
+                    removeBuff( "escalating_blade" )
+                    applyBuff( "coup_de_grace" )
+                else
+                    addStack( "escalating_blade" )
+                end
             end
         end,
 
