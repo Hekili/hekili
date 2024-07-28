@@ -461,7 +461,7 @@ spec:RegisterHook( "reset_precast", function()
             if texture == 237562 then
                 extraTime = action.grimoire_felguard.lastCast % 1
                 demon = grim_felguard_v
-            elseif texture == 1616211 then
+            elseif texture == 1616211 or texture == 1709931 or texture == 1709932 then
                 extraTime = action.summon_vilefiend.lastCast % 1
                 demon = vilefiend_v
             elseif texture == 1378282 then
@@ -1542,6 +1542,8 @@ spec:RegisterPet( "demonic_tyrant",
     15 )
 
 spec:RegisterTotem( "demonic_tyrant", 135002 )
+spec:RegisterTotem( "vilefiend", 1709931 ) -- Charhound.
+spec:RegisterTotem( "vilefiend", 1709932 ) -- Gloomhound.
 spec:RegisterTotem( "vilefiend", 1616211 )
 spec:RegisterTotem( "grimoire_felguard", 237562 )
 spec:RegisterTotem( "dreadstalker", 1378282 )
