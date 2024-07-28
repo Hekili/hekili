@@ -1749,6 +1749,12 @@ spec:RegisterAbilities( {
             if stealthed.ambush and talent.deathstalkers_mark.enabled then
                 applyDebuff( "target", "deathstalkers_mark", nil, 3 )
             end
+
+            if talent.unseen_blade.enabled and buff.unseen_blade.down then
+                applyDebuff( "target", "unseen_blade" )
+                applyBuff( "unseen_blade" )
+            end
+
             if talent.venom_rush.enabled and debuff.poisoned.up then gain( 7, "energy" ) end
         end,
 
