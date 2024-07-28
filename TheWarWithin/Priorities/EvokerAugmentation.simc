@@ -22,7 +22,7 @@ actions.precombat+=/blistering_scales,if=active_dot.blistering_scales=0
 actions.precombat+=/living_flame
 
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
-actions+=/prescience,cycle_targets=1,if=active_dot.prescience<group_members&((full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*0.4|variable.temp_wound>=(gcd.max+action.eruption.cast_time)|boss&fight_remains<=30)&(buff.trembling_earth.stack+evoker.prescience_buffs)<=(5+(full_recharge_time<=gcd.max*3)))
+actions+=/prescience,cycle_targets=1,if=(full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*0.4|variable.temp_wound>=(gcd.max+action.eruption.cast_time)|boss&fight_remains<=30)&(buff.trembling_earth.stack+evoker.prescience_buffs)<=(5+(full_recharge_time<=gcd.max*3))
 actions+=/call_action_list,name=ebon_logic,if=(buff.ebon_might_self.remains-cast_time)<=buff.ebon_might_self.duration*0.4&(active_enemies>0|raid_event.adds.in<=3)&(evoker.prescience_buffs>=2&time<=10|evoker.prescience_buffs>=3|!group&!raid|buff.ebon_might_self.remains>=action.ebon_might.cast_time|group_members<=3)
 actions+=/run_action_list,name=opener_filler,if=variable.opener_delay>0&boss
 actions+=/potion,if=debuff.temporal_wound.up&buff.ebon_might_self.up
@@ -38,7 +38,7 @@ actions+=/breath_of_eons,if=((cooldown.ebon_might.remains<=4|buff.ebon_might_sel
 actions+=/living_flame,if=buff.leaping_flames.up&cooldown.fire_breath.up&!boss
 actions+=/living_flame,if=cooldown.breath_of_eons.up&evoker.allied_cds_up=0&target.time_to_die>15&boss
 actions+=/call_action_list,name=fb,if=(raid_event.adds.remains>13|raid_event.adds.in>20|evoker.allied_cds_up>0|solo|!raid_event.adds.exists)&(!talent.bombardments|variable.bombardment_clause|!dot.fire_breath_damage.ticking&talent.molten_embers)|empowering.fire_breath
-+actions+=/upheaval,empower_to=1,if=target.time_to_die>duration+0.2&buff.ebon_might_self.remains>duration&(raid_event.adds.remains>13|!raid_event.adds.exists|raid_event.adds.in>20)&(!talent.bombardments|variable.bombardment_clause)|empowering.upheaval
+actions+=/upheaval,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might_self.remains>cast_time&(raid_event.adds.remains>13|!raid_event.adds.exists|raid_event.adds.in>20)&(!talent.bombardments|variable.bombardment_clause)|empowering.upheaval
 actions+=/time_skip,if=(cooldown.fire_breath.remains+cooldown.upheaval.remains+cooldown.prescience.full_recharge_time)>=35
 actions+=/emerald_blossom,if=talent.dream_of_spring&buff.essence_burst.up&(variable.spam_heal=2|variable.spam_heal=1&!buff.ancient_flame.up)&(buff.ebon_might_self.up|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4)
 actions+=/eruption,if=buff.ebon_might_self.remains>execute_time|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4
