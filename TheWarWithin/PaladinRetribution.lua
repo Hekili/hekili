@@ -196,9 +196,13 @@ spec:RegisterAuras( {
     -- Talent: $?$w2>0&$w4>0[Damage, healing and critical strike chance increased by $w2%.]?$w4==0&$w2>0[Damage and healing increased by $w2%.]?$w2==0&$w4>0[Critical strike chance increased by $w4%.][]$?a53376[ ][]$?a53376&a137029[Holy Shock's cooldown reduced by $w6%.]?a53376&a137028[Judgment generates $53376s3 additional Holy Power.]?a53376[Each Holy Power spent deals $326731s1 Holy damage to nearby enemies.][]
     -- https://wowhead.com/beta/spell=31884
     avenging_wrath = {
-        id = 31884,
-        duration = function() return talent.divine_wrath.enabled and 23 or 20 end,
-        max_stack = 1
+        id = function() return talent.radiant_glory.enabled and 454351 or 31884 end,
+        duration = function()
+            if talent.radiant_glory.enabled then return 8 end
+            return talent.divine_wrath.enabled and 23 or 20
+        end,
+        max_stack = 1,
+        copy = { 31884, 454351 }
     },
     avenging_wrath_autocrit = {
         id = 294027,
@@ -343,10 +347,14 @@ spec:RegisterAuras( {
         end
     },
     crusade = {
-        id = 231895,
-        duration = function() return 27 + 3 * talent.divine_wrath.rank end,
+        id = function() return talent.radiant_glory.enabled and 454373 or 231895 end,
+        duration = function()
+            if talent.radiant_glory.enabled then return 10 end
+            return 27 + 3 * talent.divine_wrath.rank
+        end,
         type = "Magic",
         max_stack = 10,
+        copy = { 231895, 454373 }
     },
     -- Mounted speed increased by $w1%.$?$w5>0[  Incoming fear duration reduced by $w5%.][]
     -- https://wowhead.com/beta/spell=32223
