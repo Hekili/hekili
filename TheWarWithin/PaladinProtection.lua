@@ -1644,7 +1644,7 @@ spec:RegisterAbilities( {
         school = "holy",
 
         spend = function ()
-            if buff.bastion_of_light.up or buff.divine_purpose.up then return 0 end
+            if buff.divine_purpose.up then return 0 end
             return 3 - ( buff.the_magistrates_judgment.up and 1 or 0 )
         end,
         spendType = "holy_power",
@@ -1654,7 +1654,6 @@ spec:RegisterAbilities( {
         usable = function() return equipped.shield, "requires a shield" end,
 
         handler = function ()
-            removeStack( "bastion_of_light" )
             removeBuff( "bulwark_of_righteous_fury" )
             removeBuff( "divine_purpose" )
             removeBuff( "the_magistrates_judgment" )
