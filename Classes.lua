@@ -1580,14 +1580,25 @@ all:RegisterAuras( {
         id = 10060,
         duration = 20,
         max_stack = 1,
-        shared = "player"
+        shared = "player",
+        dot = "buff"
     },
 
     battle_shout = {
         id = 6673,
         duration = 3600,
         max_stack = 1,
-        shared = "player"
+        shared = "player",
+        dot = "buff"
+    },
+
+    -- Mastery increased by $w1% and auto attacks have a $h% chance to instantly strike again.
+    skyfury = {
+        id = 462854,
+        duration = 3600.0,
+        max_stack = 1,
+        shared = "player",
+        dot = "buff"
     },
 
     -- SL Season 3

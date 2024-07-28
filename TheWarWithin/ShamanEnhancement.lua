@@ -623,6 +623,8 @@ spec:RegisterAuras( {
         id = 462854,
         duration = 3600.0,
         max_stack = 1,
+        shared = "player",
+        dot = "buff"
     },
     -- Talent: Increases movement speed by $s1%.
     -- https://wowhead.com/ptr-2/spell=58875
