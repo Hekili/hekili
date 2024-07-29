@@ -2426,9 +2426,7 @@ end
 end ]]
 
 RegisterEvent( "UPDATE_BINDINGS", DelayedUpdateKeybindings )
-RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
-    if login or reload then DelayedUpdateKeybindings() end
-end )
+RegisterEvent( "SPELLS_CHANGED", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_SHOWGRID", DelayedUpdateKeybindings )
 RegisterEvent( "ACTIONBAR_HIDEGRID", DelayedUpdateKeybindings )
 -- RegisterEvent( "ACTIONBAR_PAGE_CHANGED", DelayedUpdateKeybindings )
@@ -2437,7 +2435,7 @@ RegisterEvent( "ACTIONBAR_HIDEGRID", DelayedUpdateKeybindings )
 if Hekili.IsWrath() then
     RegisterEvent( "ACTIVE_TALENT_GROUP_CHANGED", DelayedUpdateKeybindings )
 else
-    RegisterUnitEvent( "PLAYER_SPECIALIZATION_CHANGED", "player", nil, DelayedUpdateKeybindings )
+    RegisterEvent( "ACTIVE_PLAYER_SPECIALIZATION_CHANGED", DelayedUpdateKeybindings )
     RegisterEvent( "TRAIT_CONFIG_UPDATED", DelayedUpdateKeybindings )
 end
 
