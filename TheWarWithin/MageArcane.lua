@@ -1,5 +1,5 @@
 -- MageArcane.lua
--- September 2022
+-- July 2024
 
 if UnitClassBase( "player" ) ~= "MAGE" then return end
 
@@ -35,115 +35,161 @@ spec:RegisterResource( Enum.PowerType.Mana )
 -- Talents
 spec:RegisterTalents( {
     -- Mage
-    accumulative_shielding     = { 62093, 382800, 1 }, -- Your barrier's cooldown recharges 30% faster while the shield persists.
-    alter_time                 = { 62115, 342245, 1 }, -- Alters the fabric of time, returning you to your current location and health when cast a second time, or after 10 sec. Effect negated by long distance or death.
-    arcane_warding             = { 62114, 383092, 2 }, -- Reduces magic damage taken by 3%.
-    blast_wave                 = { 62103, 157981, 1 }, -- Causes an explosion around yourself, dealing 1,054 Fire damage to all enemies within 8 yds, knocking them back, and reducing movement speed by 70% for 6 sec.
-    cryofreeze                 = { 62107, 382292, 2 }, -- While inside Ice Block, you heal for 40% of your maximum health over the duration.
-    displacement               = { 62095, 389713, 1 }, -- Teleports you back to where you last Blinked and heals you for 11,036 health. Only usable within 8 sec of Blinking.
-    diverted_energy            = { 62101, 382270, 2 }, -- Your Barriers heal you for 10% of the damage absorbed.
-    dragons_breath             = { 62091, 31661 , 1 }, -- Enemies in a cone in front of you take 1,300 Fire damage and are disoriented for 4 sec. Damage will cancel the effect.
-    energized_barriers         = { 62100, 386828, 1 }, -- When your barrier receives melee attacks, you have a 10% chance to be granted Clearcasting. Casting your barrier removes all snare effects.
-    flow_of_time               = { 62096, 382268, 2 }, -- The cooldowns of Blink and Shimmer are reduced by 2 sec.
-    freezing_cold              = { 62087, 386763, 1 }, -- Enemies hit by Cone of Cold are frozen in place for 5 sec instead of snared. When your roots expire or are dispelled, your target is snared by 90%, decaying over 3 sec.
-    frigid_winds               = { 62128, 235224, 2 }, -- All of your snare effects reduce the target's movement speed by an additional 10%.
-    greater_invisibility       = { 93524, 110959, 1 }, -- Makes you invisible and untargetable for 20 sec, removing all threat. Any action taken cancels this effect. You take 60% reduced damage while invisible and for 3 sec after reappearing. Increases your movement speed by 16% for 6 sec.
-    ice_block                  = { 62122, 45438 , 1 }, -- Encases you in a block of ice, protecting you from all attacks and damage for 10 sec, but during that time you cannot attack, move, or cast spells. Causes Hypothermia, preventing you from recasting Ice Block for 30 sec.
-    ice_cold                   = { 62085, 414659, 1 }, -- Ice Block now reduces all damage taken by 70% for 6 sec but no longer grants Immunity, prevents movement, attacks, or casting spells. Does not incur the Global Cooldown.
-    ice_floes                  = { 62105, 108839, 1 }, -- Makes your next Mage spell with a cast time shorter than 10 sec castable while moving. Unaffected by the global cooldown and castable while casting.
-    ice_nova                   = { 62126, 157997, 1 }, -- Causes a whirl of icy wind around the enemy, dealing 2,677 Frost damage to the target and reduced damage to all other enemies within 8 yds, and freezing them in place for 2 sec.
-    ice_ward                   = { 62086, 205036, 1 }, -- Frost Nova now has 2 charges.
-    improved_frost_nova        = { 62108, 343183, 1 }, -- Frost Nova duration is increased by 2 sec.
-    incantation_of_swiftness   = { 62112, 382293, 2 }, -- Invisibility increases your movement speed by 40% for 6 sec.
-    incanters_flow             = { 62118, 1463  , 1 }, -- Magical energy flows through you while in combat, building up to 10% increased damage and then diminishing down to 2% increased damage, cycling every 10 sec.
-    mass_barrier               = { 62092, 414660, 1 }, -- Cast Prismatic Barrier on yourself and 4 nearby allies.
-    mass_invisibility          = { 62092, 414664, 1 }, -- You and your allies within 40 yards instantly become invisible for 12 sec. Taking any action will cancel the effect. Does not affect allies in combat.
-    mass_polymorph             = { 62106, 383121, 1 }, -- Transforms all enemies within 10 yards into sheep, wandering around incapacitated for 1 min. While affected, the victims cannot take actions but will regenerate health very quickly. Damage will cancel the effect. Only works on Beasts, Humanoids and Critters.
-    mass_slow                  = { 62109, 391102, 1 }, -- Slow applies to all enemies within 5 yds of your target.
-    master_of_time             = { 62102, 342249, 1 }, -- Reduces the cooldown of Alter Time by 10 sec. Alter Time resets the cooldown of Blink and Shimmer when you return to your original location.
-    mirror_image               = { 62124, 55342 , 1 }, -- Creates 3 copies of you nearby for 40 sec, which cast spells and attack your enemies. While your images are active damage taken is reduced by 20%. Taking direct damage will cause one of your images to dissipate.
-    overflowing_energy         = { 62120, 390218, 1 }, -- Your spell critical strike damage is increased by 10%. When your direct damage spells fail to critically strike a target, your spell critical strike chance is increased by 2%, up to 10% for 8 sec. When your spells critically strike Overflowing Energy is reset.
-    quick_witted               = { 62104, 382297, 1 }, -- Successfully interrupting an enemy with Counterspell reduces its cooldown by 4 sec.
-    reabsorption               = { 62125, 382820, 1 }, -- You are healed for 5% of your maximum health whenever a Mirror Image dissipates due to direct damage.
-    reduplication              = { 62125, 382569, 1 }, -- Mirror Image's cooldown is reduced by 10 sec whenever a Mirror Image dissipates due to direct damage.
-    remove_curse               = { 62116, 475   , 1 }, -- Removes all Curses from a friendly target.
-    rigid_ice                  = { 62110, 382481, 1 }, -- Frost Nova can withstand 80% more damage before breaking.
-    ring_of_frost              = { 62088, 113724, 1 }, -- Summons a Ring of Frost for 10 sec at the target location. Enemies entering the ring are incapacitated for 10 sec. Limit 10 targets. When the incapacitate expires, enemies are slowed by 65% for 4 sec.
-    shifting_power             = { 62113, 382440, 1 }, -- Draw power from the Night Fae, dealing 4,730 Nature damage over 3.5 sec to enemies within 18 yds. While channeling, your Mage ability cooldowns are reduced by 12 sec over 3.5 sec.
-    shimmer                    = { 62105, 212653, 1 }, -- Teleports you 20 yds forward, unless something is in the way. Unaffected by the global cooldown and castable while casting. Gain a shield that absorbs 3% of your maximum health for 15 sec after you Shimmer.
-    slow                       = { 62097, 31589 , 1 }, -- Reduces the target's movement speed by 60% for 15 sec.
-    spellsteal                 = { 62084, 30449 , 1 }, -- Steals a beneficial magic effect from the target. This effect lasts a maximum of 2 min.
-    tempest_barrier            = { 62111, 382289, 2 }, -- Gain a shield that absorbs 3% of your maximum health for 15 sec after you Blink.
-    temporal_velocity          = { 62099, 382826, 2 }, -- Increases your movement speed by 5% for 3 sec after casting Blink and 20% for 6 sec after returning from Alter Time.
-    temporal_warp              = { 62094, 386539, 1 }, -- While you have Temporal Displacement or other similar effects, you may use Time Warp to grant yourself 30% Haste for 40 sec.
-    time_anomaly               = { 62094, 383243, 1 }, -- At any moment, you have a chance to gain Arcane Surge for 6 sec, Clearcasting, or Time Warp for 6 sec.
-    time_manipulation          = { 62129, 387807, 1 }, -- Casting Clearcasting Arcane Missiles reduces the cooldown of your loss of control abilities by 2 sec.
-    tome_of_antonidas          = { 62098, 382490, 1 }, -- Increases Haste by 2%.
-    tome_of_rhonin             = { 62127, 382493, 1 }, -- Increases Critical Strike chance by 2%.
-    volatile_detonation        = { 62089, 389627, 1 }, -- Greatly increases the effect of Blast Wave's knockback. Blast Wave's cooldown is reduced by 5 sec.
-    winters_protection         = { 62123, 382424, 2 }, -- The cooldown of Ice Block is reduced by 30 sec.
+    accumulative_shielding     = {  62093, 382800, 1 }, -- Your barrier's cooldown recharges 30% faster while the shield persists.
+    alter_time                 = {  62115, 342245, 1 }, -- Alters the fabric of time, returning you to your current location and health when cast a second time, or after 10 sec. Effect negated by long distance or death.
+    arcane_warding             = {  62114, 383092, 2 }, -- Reduces magic damage taken by 3%.
+    barrier_diffusion          = {  62091, 455428, 1 }, -- Whenever one of your Barriers is removed, reduce its cooldown by 4 sec.
+    blast_wave                 = {  62103, 157981, 1 }, -- Causes an explosion around yourself, dealing 6,075 Fire damage to all enemies within 8 yds, knocking them back, and reducing movement speed by 80% for 6 sec.
+    cryofreeze                 = {  62107, 382292, 2 }, -- While inside Ice Block, you heal for 40% of your maximum health over the duration.
+    displacement               = {  62095, 389713, 1 }, -- Teleports you back to where you last Blinked and heals you for 106,028 health. Only usable within 8 sec of Blinking.
+    diverted_energy            = {  62101, 382270, 2 }, -- Your Barriers heal you for 10% of the damage absorbed.
+    dragons_breath             = { 101883,  31661, 1 }, -- Enemies in a cone in front of you take 7,490 Fire damage and are disoriented for 4 sec. Damage will cancel the effect.
+    energized_barriers         = {  62100, 386828, 1 }, -- When your barrier receives melee attacks, you have a 10% chance to be granted Clearcasting. Casting your barrier removes all snare effects.
+    flow_of_time               = {  62096, 382268, 2 }, -- The cooldowns of Blink and Shimmer are reduced by 2 sec.
+    freezing_cold              = {  62087, 386763, 1 }, -- Enemies hit by Cone of Cold are frozen in place for 5 sec instead of snared. When your roots expire or are dispelled, your target is snared by 90%, decaying over 3 sec.
+    frigid_winds               = {  62128, 235224, 2 }, -- All of your snare effects reduce the target's movement speed by an additional 10%.
+    greater_invisibility       = {  93524, 110959, 1 }, -- Makes you invisible and untargetable for 20 sec, removing all threat. Any action taken cancels this effect. You take 60% reduced damage while invisible and for 3 sec after reappearing.
+    ice_block                  = {  62122,  45438, 1 }, -- Encases you in a block of ice, protecting you from all attacks and damage for 10 sec, but during that time you cannot attack, move, or cast spells. While inside Ice Block, you heal for 40% of your maximum health over the duration. Causes Hypothermia, preventing you from recasting Ice Block for 30 sec.
+    ice_cold                   = {  62085, 414659, 1 }, -- Ice Block now reduces all damage taken by 70% for 6 sec but no longer grants Immunity, prevents movement, attacks, or casting spells. Does not incur the Global Cooldown.
+    ice_floes                  = {  62105, 108839, 1 }, -- Makes your next Mage spell with a cast time shorter than 10 sec castable while moving. Unaffected by the global cooldown and castable while casting.
+    ice_nova                   = {  62088, 157997, 1 }, -- Causes a whirl of icy wind around the enemy, dealing 15,430 Frost damage to the target and reduced damage to all other enemies within 8 yds, and freezing them in place for 2 sec.
+    ice_ward                   = {  62086, 205036, 1 }, -- Frost Nova now has 2 charges.
+    improved_frost_nova        = {  62108, 343183, 1 }, -- Frost Nova duration is increased by 2 sec.
+    incantation_of_swiftness   = {  62112, 382293, 2 }, -- Greater Invisibility increases your movement speed by 40% for 6 sec.
+    incanters_flow             = {  62118,   1463, 1 }, -- Magical energy flows through you while in combat, building up to 10% increased damage and then diminishing down to 2% increased damage, cycling every 10 sec.
+    inspired_intellect         = {  62094, 458437, 1 }, -- Arcane Intellect grants you an additional 3% Intellect.
+    mass_barrier               = {  62092, 414660, 1 }, -- Cast Prismatic Barrier on yourself and 4 allies within 40 yds.
+    mass_invisibility          = {  62092, 414664, 1 }, -- You and your allies within 40 yards instantly become invisible for 12 sec. Taking any action will cancel the effect. Does not affect allies in combat.
+    mass_polymorph             = {  62106, 383121, 1 }, -- Transforms all enemies within 10 yards into sheep, wandering around incapacitated for 15 sec. While affected, the victims cannot take actions but will regenerate health very quickly. Damage will cancel the effect. Only works on Beasts, Humanoids and Critters.
+    master_of_time             = {  62102, 342249, 1 }, -- Reduces the cooldown of Alter Time by 10 sec. Alter Time resets the cooldown of Blink and Shimmer when you return to your original location.
+    mirror_image               = {  62124,  55342, 1 }, -- Creates 3 copies of you nearby for 40 sec, which cast spells and attack your enemies. While your images are active damage taken is reduced by 20%. Taking direct damage will cause one of your images to dissipate.
+    overflowing_energy         = {  62120, 390218, 1 }, -- Your spell critical strike damage is increased by 10%. When your direct damage spells fail to critically strike a target, your spell critical strike chance is increased by 2%, up to 10% for 8 sec. When your spells critically strike Overflowing Energy is reset.
+    prismatic_barrier          = {  62121, 235450, 1 }, -- Shields you with an arcane force, absorbing 116,683 damage and reducing magic damage taken by 25% for 1 min. The duration of harmful Magic effects against you is reduced by 40%.
+    quick_witted               = {  62104, 382297, 1 }, -- Successfully interrupting an enemy with Counterspell reduces its cooldown by 4 sec.
+    reabsorption               = {  62125, 382820, 1 }, -- You are healed for 3% of your maximum health whenever a Mirror Image dissipates due to direct damage.
+    reduplication              = {  62125, 382569, 1 }, -- Mirror Image's cooldown is reduced by 10 sec whenever a Mirror Image dissipates due to direct damage.
+    remove_curse               = {  62116,    475, 1 }, -- Removes all Curses from a friendly target.
+    rigid_ice                  = {  62110, 382481, 1 }, -- Frost Nova can withstand 80% more damage before breaking.
+    ring_of_frost              = {  62088, 113724, 1 }, -- Summons a Ring of Frost for 10 sec at the target location. Enemies entering the ring are incapacitated for 10 sec. Limit 10 targets. When the incapacitate expires, enemies are slowed by 75% for 4 sec.
+    shifting_power             = {  62113, 382440, 1 }, -- Draw power from within, dealing 28,908 Arcane damage over 3.4 sec to enemies within 18 yds. While channeling, your Mage ability cooldowns are reduced by 12 sec over 3.4 sec.
+    shimmer                    = {  62105, 212653, 1 }, -- Teleports you 20 yds forward, unless something is in the way. Unaffected by the global cooldown and castable while casting.
+    slow                       = {  62097,  31589, 1 }, -- Reduces the target's movement speed by 60% for 15 sec.
+    spellsteal                 = {  62084,  30449, 1 }, -- Steals a beneficial magic effect from the target. This effect lasts a maximum of 2 min.
+    supernova                  = { 101883, 157980, 1 }, -- Pulses arcane energy around the target enemy or ally, dealing 4,936 Arcane damage to all enemies within 8 yds, and knocking them upward. A primary enemy target will take 100% increased damage.
+    tempest_barrier            = {  62111, 382289, 2 }, -- Gain a shield that absorbs 3% of your maximum health for 15 sec after you Blink.
+    temporal_velocity          = {  62099, 382826, 2 }, -- Increases your movement speed by 5% for 3 sec after casting Blink and 20% for 6 sec after returning from Alter Time.
+    time_anomaly               = {  62094, 383243, 1 }, -- At any moment, you have a chance to gain Arcane Surge for 4 sec, Clearcasting, or Time Warp for 6 sec.
+    time_manipulation          = {  62129, 387807, 1 }, -- Casting Clearcasting Arcane Missiles reduces the cooldown of your loss of control abilities by 2 sec.
+    tome_of_antonidas          = {  62098, 382490, 1 }, -- Increases Haste by 2%.
+    tome_of_rhonin             = {  62127, 382493, 1 }, -- Increases Critical Strike chance by 2%.
+    volatile_detonation        = {  62089, 389627, 1 }, -- Greatly increases the effect of Blast Wave's knockback. Blast Wave's cooldown is reduced by 5 sec
+    winters_protection         = {  62123, 382424, 2 }, -- The cooldown of Ice Block is reduced by 30 sec.
 
     -- Arcane
-    amplification              = { 62225, 236628, 1 }, -- When Clearcast, Arcane Missiles fires 3 additional missiles.
-    arcane_bombardment         = { 62234, 384581, 1 }, -- Arcane Barrage deals an additional 100% damage against targets below 35% health.
-    arcane_echo                = { 62131, 342231, 1 }, -- Direct damage you deal to enemies affected by Touch of the Magi, causes an explosion that deals 194 Arcane damage to all nearby enemies. Deals reduced damage beyond 8 targets.
-    arcane_familiar            = { 62145, 205022, 1 }, -- Summon a Familiar that attacks your enemies and increases your maximum mana by 10% for 1 |4hour:hrs;.
-    arcane_harmony             = { 62135, 384452, 1 }, -- Each time Arcane Missiles hits an enemy, the damage of your next Arcane Barrage is increased by 5%. This effect stacks up to 20 times.
-    arcane_missiles            = { 62238, 5143  , 1 }, -- Launches five waves of Arcane Missiles at the enemy over 2.2 sec, causing a total of 5,540 Arcane damage.
-    arcane_orb                 = { 62239, 153626, 1 }, -- Launches an Arcane Orb forward from your position, traveling up to 40 yds, dealing 3,060 Arcane damage to enemies it passes through. Grants 1 Arcane Charge when cast and every time it deals damage.
-    arcane_surge               = { 62230, 365350, 1 }, -- Expend all of your current mana to annihilate your enemy target and nearby enemies for up to ${$s1*$s2} Arcane damage based on Mana spent. Deals reduced damage beyond $s3 targets.; For the next $365362d, your Mana regeneration is increased by $365362s3% and spell damage is increased by $365362s1%.
-    arcane_tempo               = { 62144, 383980, 1 }, -- Consuming Arcane Charges increases your Haste by 2% for 12 sec, stacks up to 5 times.
-    arcing_cleave              = { 62140, 231564, 1 }, -- For each Arcane Charge, Arcane Barrage hits 1 additional nearby target for 40% damage.
-    cascading_power            = { 62133, 384276, 1 }, -- Consuming a Mana Gem grants up to 2 Clearcasting stacks.
-    charged_orb                = { 62241, 384651, 1 }, -- Arcane Orb gains 1 additional charge.
-    chrono_shift               = { 62141, 235711, 1 }, -- Arcane Barrage slows enemies by 50% and increases your movement speed by 50% for 5 sec.
-    concentrated_power         = { 62229, 414379, 1 }, -- Clearcasting makes your next Arcane Missiles channel 20% faster or Arcane Explosion echo for 40% damage.
-    concentration              = { 62134, 384374, 1 }, -- Arcane Blast has a chance to grant Concentration, which causes your next Clearcasting to not be consumed.
-    conjure_mana_gem           = { 62132, 759   , 1 }, -- Conjures a Mana Gem that can be used to instantly restore 25% mana and grant 5% spell damage for 12 sec. Holds up to 3 charges. Conjured Items Conjured items disappear if logged out for more than 15 min.
-    crackling_energy           = { 62228, 321752, 2 }, -- Increases Arcane Explosion and Arcane Blast damage by 10%.
-    enlightened                = { 62143, 321387, 1 }, -- Arcane damage dealt while above 70% mana is increased by 6%, Mana Regen while below 70% is increased by 20%.
-    evocation                  = { 62147, 12051 , 1 }, -- Increases your mana regeneration by 750% for 5.3 sec.
-    foresight                  = { 62142, 384861, 1 }, -- Standing still for 10 sec grants you Foresight, allowing you to cast while moving for 4 sec. This duration begins when you start moving.
-    harmonic_echo              = { 62236, 384683, 1 }, -- Damage dealt to enemies affected by Radiant Spark's vulnerability echo to your current enemy target and 4 nearby enemies for 20% of the damage dealt.
-    illuminated_thoughts       = { 62223, 384060, 2 }, -- Clearcasting has a 5% increased chance to proc.
-    impetus                    = { 62222, 383676, 1 }, -- Arcane Blast has a 10% chance to generate an additional Arcane Charge. If you were to gain an Arcane Charge while at maximum charges instead gain 10% Arcane damage for 10 sec.
-    improved_arcane_missiles   = { 62240, 383661, 2 }, -- Increases Arcane Missiles damage by 10%.
-    improved_clearcasting      = { 62224, 321420, 1 }, -- Clearcasting can stack up to 2 additional times.
-    improved_prismatic_barrier = { 62232, 321745, 1 }, -- Prismatic Barrier further reduces magical damage taken by an additional 10% and duration of harmful Magic effects by 15%.
-    mana_adept                 = { 62231, 321526, 1 }, -- Arcane Barrage grants you 2% of your maximum mana per Arcane Charge spent.
-    nether_precision           = { 62226, 383782, 1 }, -- Consuming Clearcasting increases the damage of your next 2 Arcane Blasts by 20%.
-    nether_tempest             = { 62138, 114923, 1 }, -- Places a Nether Tempest on the target which deals 498 Arcane damage over 12 sec to the target and nearby enemies within 10 yds. Limit 1 target. Deals reduced damage to secondary targets. Damage increased by 72% per Arcane Charge.
-    orb_barrage                = { 62136, 384858, 1 }, -- Arcane Barrage has a 10% chance per Arcane Charge consumed to launch an Arcane Orb in front of you.
-    presence_of_mind           = { 62146, 205025, 1 }, -- Causes your next 2 Arcane Blasts to be instant cast.
-    prismatic_barrier          = { 62121, 235450, 1 }, -- Shields you with an arcane force, absorbing 11,888 damage and reducing magic damage taken by 15% for 1 min. The duration of harmful Magic effects against you is reduced by 25%.
-    prodigious_savant          = { 62137, 384612, 2 }, -- Arcane Charges further increase Mastery effectiveness of Arcane Blast and Arcane Barrage by 20%.
-    radiant_spark              = { 62235, 376103, 1 }, -- Conjure a radiant spark that causes 2,469 Arcane damage instantly, and an additional 1,509 damage over 12 sec. The target takes 10% increased damage from your direct damage spells, stacking each time they are struck. This effect ends after 4 spells.
-    resonance                  = { 62139, 205028, 1 }, -- Arcane Barrage deals 12% increased damage per target it hits.
-    reverberate                = { 93427, 281482, 1 }, -- If Arcane Explosion hits at least 3 targets, it has a 50% chance to generate an extra Arcane Charge.
-    rule_of_threes             = { 62145, 264354, 1 }, -- When you gain your third Arcane Charge, the cost of your next Arcane Blast or Arcane Missiles is reduced by 100%.
-    siphon_storm               = { 62148, 384187, 1 }, -- Evocation grants $384265s1 Arcane Charge, channels $s1% faster and while channeling Evocation, your Intellect is increased by $384267s1% every $12051t2 sec. Lasts $384267d.
-    slipstream                 = { 62227, 236457, 1 }, -- Clearcasting allows Arcane Missiles to be channeled while moving. Evocation can be channeled while moving.
-    supernova                  = { 62221, 157980, 1 }, -- Pulses arcane energy around the target enemy or ally, dealing 812 Arcane damage to all enemies within 8 yds, and knocking them upward. A primary enemy target will take 100% increased damage.
-    touch_of_the_magi          = { 62233, 321507, 1 }, -- Applies Touch of the Magi to your current target, accumulating 20% of the damage you deal to the target for 12 sec, and then exploding for that amount of Arcane damage to the target and reduced damage to all nearby enemies. Generates 4 Arcane Charges.
+    aether_attunement          = { 102476, 453600, 1 }, -- Every 3 times you consume Clearcasting, gain Aether Attunement. Aether Attunement: Your next Arcane Missiles deals 100% increased damage to your primary target and fires at up to 4 nearby enemies dealing 50% increased damage.
+    amplification              = { 102445, 236628, 1 }, -- Arcane Missiles fires 3 additional missiles.
+    arcane_bombardment         = { 102465, 384581, 1 }, -- Arcane Barrage deals an additional 100% damage against targets below 35% health.
+    arcane_debilitation        = { 102463, 453598, 2 }, -- Damaging a target with Arcane Missiles increases the damage they take from Arcane Missiles, Arcane Barrage, and Arcane Blast by 0.0% for 6 sec. Multiple instances may overlap.
+    arcane_echo                = { 102457, 342231, 1 }, -- Direct damage you deal to enemies affected by Touch of the Magi, causes an explosion that deals 1,180 Arcane damage to all nearby enemies. Deals reduced damage beyond 8 targets.
+    arcane_familiar            = { 102439, 205022, 1 }, -- Casting Arcane Intellect summons a Familiar that attacks your enemies and increases your maximum mana by 10% for 1 |4hour:hrs;.
+    arcane_harmony             = { 102447, 384452, 1 }, -- Each time Arcane Missiles hits an enemy, the damage of your next Arcane Barrage is increased by 5%. This effect stacks up to 20 times.
+    arcane_missiles            = { 102467,   5143, 1 }, -- Only castable when you have Clearcasting. Launches five waves of Arcane Missiles at the enemy over 2.1 sec, causing a total of 50,012 Arcane damage.
+    arcane_surge               = { 102449, 365350, 1 }, -- Expend all of your current mana to annihilate your enemy target and nearby enemies for up to 61,734 Arcane damage based on Mana spent. Deals reduced damage beyond 5 targets. Generates Clearcasting. For the next 15 sec, your Mana regeneration is increased by 425% and spell damage is increased by 35%.
+    arcane_tempo               = { 102436, 383980, 1 }, -- Consuming Arcane Charges increases your Haste by 2% for 12 sec, stacks up to 5 times.
+    arcing_cleave              = { 102458, 231564, 1 }, -- For each Arcane Charge, Arcane Barrage hits 1 additional nearby target for 40% damage.
+    big_brained                = { 102446, 461261, 1 }, -- Gaining Clearcasting increases your Intellect by 1% for 8 sec. Multiple instances may overlap.
+    charged_orb                = { 102466, 384651, 1 }, -- Arcane Orb gains 1 additional charge.
+    concentrated_power         = { 102461, 414379, 1 }, -- Arcane Missiles channels 20% faster. Clearcasting makes Arcane Explosion echo for 40% damage.
+    concentration              = { 102438, 384374, 1 }, -- Arcane Blast has a small chance to make your next cast of Arcane Blast free.
+    consortiums_bauble         = { 102448, 461260, 1 }, -- Reduces Arcane Blast's mana cost by 3% and increases its damage by 3%.
+    dematerialize              = { 102456, 461456, 1 }, -- Spells empowered by Nether Precision cause their target to suffer an additional 8% of the damage dealt over 6 sec.
+    energized_familiar         = { 102462, 452997, 1 }, -- During Arcane Surge, your Familiar fires 4 bolts instead of 1. Damage from your Arcane Familiar has a small chance to grant you up to 2% of your maximum mana.
+    energy_reconstitution      = { 102454, 461457, 1 }, -- Damage from Dematerialize has a small chance to summon an Arcane Explosion at its target's location at 50% effectiveness. Arcane Explosions summoned from Energy Reconstitution do not generate Arcane Charges.
+    enlightened                = { 102470, 321387, 1 }, -- Arcane damage dealt while above 70% mana is increased by 6%, Mana Regen while below 70% is increased by 20%.
+    eureka                     = { 102455, 452198, 1 }, -- When a spell consumes Clearcasting, its damage is increased by 10%.
+    evocation                  = { 102459,  12051, 1 }, -- Increases your mana regeneration by 1,500% for 2.6 sec and grants Clearcasting. While channeling Evocation, your Intellect is increased by 2% every 0.4 sec. Lasts 20 sec.
+    high_voltage               = { 102472, 461248, 1 }, -- Damage from Arcane Missiles has a 10% chance to grant you 1 Arcane Charge. Chance is increased by 10% every time your Arcane Missiles fails to grant you an Arcane Charge.
+    illuminated_thoughts       = { 102444, 384060, 1 }, -- Clearcasting has a 5% increased chance to proc.
+    impetus                    = { 102480, 383676, 1 }, -- Arcane Blast has a 10% chance to generate an additional Arcane Charge. If you were to gain an Arcane Charge while at maximum charges instead gain 10% Arcane damage for 10 sec.
+    improved_clearcasting      = { 102471, 321420, 1 }, -- Clearcasting can stack up to 2 additional times.
+    improved_touch_of_the_magi = { 102452, 453002, 1 }, -- Your Touch of the Magi now accumulates 25% of the damage you deal.
+    leydrinker                 = { 102474, 452196, 1 }, -- Consuming Nether Precision has a 20% chance to make your next Arcane Blast or Arcane Barrage echo, repeating its damage at 60% effectiveness to the primary target and up to four nearby enemies.
+    leysight                   = { 102477, 452187, 1 }, -- Nether Precision damage bonus increased to 30%.
+    magis_spark                = { 102435, 454016, 1 }, -- Your Touch of the Magi now also conjures a spark, causing the damage from your next Arcane Barrage, Arcane Blast, and Arcane Missiles to echo for 100% of their damage. Upon receiving damage from all three spells, the spark explodes, dealing 47,407 Arcane damage to all nearby enemies.
+    nether_munitions           = { 102435, 450206, 1 }, -- When your Touch of the Magi detonates, it increases the damage all affected targets take from you by 8% for 12 sec.
+    nether_precision           = { 102473, 383782, 1 }, -- Consuming Clearcasting increases the damage of your next 2 Arcane Blasts or Arcane Barrages by 20%.
+    orb_barrage                = { 102443, 384858, 1 }, -- Arcane Barrage has a 10% chance per Arcane Charge consumed to launch an Arcane Orb in front of you at 100% effectiveness.
+    presence_of_mind           = { 102460, 205025, 1 }, -- Causes your next 2 Arcane Blasts to be instant cast.
+    prodigious_savant          = { 102450, 384612, 2 }, -- Arcane Charges further increase Mastery effectiveness of Arcane Blast and Arcane Barrage by 20%.
+    resonance                  = { 102437, 205028, 1 }, -- Arcane Barrage deals 10% increased damage per target it hits.
+    resonant_orbs              = { 102453, 461453, 1 }, -- Arcane Orb damage increased by 10%.
+    reverberate                = { 102441, 281482, 1 }, -- If Arcane Explosion hits at least 3 targets, it has a 50% chance to generate an extra Arcane Charge.
+    slipstream                 = { 102469, 236457, 1 }, -- Arcane Missiles can now be channeled while moving. Evocation can be channeled while moving.
+    static_cloud               = { 102475, 461257, 1 }, -- Each time you cast Arcane Explosion, its damage increases by 25%. Bonus resets after reaching 100% damage.
+    surging_urge               = { 102440, 457521, 1 }, -- Arcane Surge damage increased by 5% per Arcane Charge.
+    time_loop                  = { 102451, 452924, 1 }, -- When you apply a stack of Arcane Debilitation, you have a 10% chance to apply another stack of Arcane Debilitation. This effect can trigger off of itself.
+    touch_of_the_magi          = { 102468, 321507, 1 }, -- Applies Touch of the Magi to your current target, accumulating 25% of the damage you deal to the target for 12 sec, and then exploding for that amount of Arcane damage to the target and reduced damage to all nearby enemies. Generates 4 Arcane Charges.
+
+    -- Spellslinger
+    augury_abounds             = {  94662, 443783, 1 }, -- Casting Arcane Surge conjures 8 Arcane Splinters. During Arcane Surge, whenever you conjure an Arcane Splinter, you have a 100% chance to conjure an additional Arcane Splinter.
+    controlled_instincts       = {  94663, 444483, 1 }, -- For 8 seconds after being struck by an Arcane Orb, 20% of the direct damage dealt by an Arcane Splinter is also dealt to nearby enemies. Damage reduced beyond 5 targets.
+    force_of_will              = {  94656, 444719, 1 }, -- Gain 2% increased critical strike chance. Gain 5% increased critical strike damage.
+    look_again                 = {  94659, 444756, 1 }, -- Displacement has a 50% longer duration and 25% longer range.
+    phantasmal_image           = {  94660, 444784, 1 }, -- Your Mirror Image summons one extra clone. Mirror Image now reduces all damage taken by an additional 5%.
+    reactive_barrier           = {  94660, 444827, 1 }, -- Your Prismatic Barrier can absorb up to 50% more damage based on your missing Health. Max effectiveness when under 50% health.
+    shifting_shards            = {  94657, 444675, 1 }, -- Shifting Power fires a barrage of 8 Arcane Splinters at random enemies within 40 yds over its duration.
+    slippery_slinging          = {  94659, 444752, 1 }, -- You have 40% increased movement speed during Alter Time and Evocation.
+    spellfrost_teachings       = {  94655, 444986, 1 }, -- Direct damage from Arcane Splinters has a 2% chance to launch an Arcane Orb and increase all damage dealt by Arcane Orb by 10% for 10 sec.
+    splintering_orbs           = {  94661, 444256, 1 }, -- The first enemy damaged by your Arcane Orb conjures 4 Arcane Splinters. Arcane Orb damage is increased by 10%.
+    splintering_sorcery        = {  94664, 443739, 1 }, -- When you consume Nether Precision, conjure 2 Arcane Splinters that fire at your target. Arcane Splinter:
+    splinterstorm              = {  94654, 443742, 1 }, -- Whenever you have 8 or more active Embedded Arcane Splinters, you automatically cast a Splinterstorm at your target. Splinterstorm: Shatter all Embedded Arcane Splinters, dealing their remaining periodic damage instantly. Conjure an Arcane Splinter for each Splinter shattered, then unleash them all in a devastating barrage, dealing 4,149 Arcane damage to your target for each Splinter in the Splinterstorm. Splinterstorm has a 20% chance to grant you Clearcasting.
+    unerring_proficiency       = {  94658, 444974, 1 }, -- Each time you conjure an Arcane Splinter, increase the damage of your next Supernova by 16%. Stacks up to 30 times.
+    volatile_magic             = {  94658, 444968, 1 }, -- Whenever an Embedded Arcane Splinter is removed, it explodes, dealing 1,185 Arcane damage to nearby enemies. Deals reduced damage beyond 5 targets.
+
+    -- Sunfury
+    burden_of_power            = {  94644, 451035, 1 }, -- Conjuring a Spellfire Sphere increases the damage of your next Arcane Blast by 15% or your next Arcane Barrage by 30%.
+    codex_of_the_sunstriders   = {  94643, 449382, 1 }, -- Over its duration, your Arcane Phoenix will consume each of your Spellfire Spheres to cast an exceptional spell. Upon consuming a Spellfire Sphere, your Arcane Phoenix will grant you Lingering Embers.  Lingering Embers
+    glorious_incandescence     = {  94645, 449394, 1 }, -- Consuming Burden of Power causes your next cast of Arcane Barrage to grant 4 Arcane Charges and call down a storm of 4 Meteorites on its target.
+    gravity_lapse              = {  94651, 458513, 1 }, -- Your Supernova becomes Gravity Lapse. Gravity Lapse
+    ignite_the_future          = {  94648, 449558, 1 }, -- Generating a Spellfire Sphere while your Phoenix is active causes it to cast an exceptional spell.
+    invocation_arcane_phoenix  = {  94652, 448658, 1 }, -- When you cast Arcane Surge, summon an Arcane Phoenix to aid you in battle.  Arcane Phoenix Your Arcane Phoenix aids you for the duration of your Arcane Surge, casting random Arcane and Fire spells.
+    lessons_in_debilitation    = {  94651, 449627, 1 }, -- Your Arcane Phoenix will Spellsteal when it is summoned and when it expires.
+    mana_cascade               = {  94653, 449293, 1 }, -- Casting Arcane Blast or Arcane Barrage grants you 1.0% Haste for 10 sec. Stacks up to 10 times. Multiple instances may overlap.
+    memory_of_alar             = {  94646, 449619, 1 }, -- While under the effects of a casted Arcane Surge, you gain twice as many stacks of Mana Addiction. When your Arcane Phoenix expires, it empowers you, granting Arcane Soul for 3 sec, plus an additional 0.5 sec for each exceptional spell it had cast. Arcane Soul:
+    merely_a_setback           = {  94649, 449330, 1 }, -- Your Prismatic Barrier now grants 5% avoidance while active and 5% leech for 5 seconds when it breaks or expires.
+    rondurmancy                = {  94648, 449596, 1 }, -- Spellfire Spheres can now stack up to 5 times.
+    savor_the_moment           = {  94650, 449412, 1 }, -- When you cast Arcane Surge, its duration is extended by 0.5 sec for each Spellfire Sphere you have, up to 2.5 sec.
+    spellfire_spheres          = {  94647, 448601, 1 }, -- Every 6 times you cast Arcane Blast or Arcane Barrage, conjure a Spellfire Sphere. While you're out of combat, you will slowly conjure Spellfire Spheres over time.  Spellfire Sphere Increases your spell damage by 2%. Stacks up to 3 times.
+    sunfury_execution          = {  94650, 449349, 1 }, -- Arcane Bombardment damage bonus increased to 130%.  Arcane Bombardment Arcane Barrage deals an additional 100% damage against targets below 35% health.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    arcanosphere               = 5397, -- (353128) Builds a sphere of Arcane energy, gaining power over 4 sec. Upon release, the sphere passes through any barriers, knocking enemies back and dealing up to 11,300 Arcane damage.
-    ethereal_blink             = 5601, -- (410939) Blink and Shimmer apply Slow at 100% effectiveness to all enemies you Blink through. For each enemy you Blink through, the cooldown of Blink and Shimmer are reduced by 1 sec, up to 5 sec.
+    arcanosphere               = 5397, -- (353128) Builds a sphere of Arcane energy, gaining power over 4 sec. Upon release, the sphere passes through any barriers, knocking enemies back and dealing up to 85,845 Arcane damage.
+    ethereal_blink             = 5601, -- (410939)
     ice_wall                   = 5488, -- (352278) Conjures an Ice Wall 30 yards long that obstructs line of sight. The wall has 40% of your maximum health and lasts up to 15 sec.
-    improved_mass_invisibility = 637 , -- (415945) The cooldown of Mass Invisibility is reduced by 4 min and can affect allies in combat.
-    kleptomania                = 3529, -- (198100) Unleash a flurry of disruptive magic onto your target, stealing a beneficial magic effect every 0.4 sec for 3.5 sec. Castable while moving, but movement speed is reduced by 40% while channeling.
-    master_of_escape           = 635 , -- (210476) Reduces the cooldown of Greater Invisibility by 45 sec.
-    master_shepherd            = 5589, -- (410248) While an enemy player is affected by your Polymorph or Mass Polymorph, your movement speed is increased by 25% and your Versatility is increased by 6%. Additionally, Polymorph and Mass Polymorph no longer heal enemies.
-    ring_of_fire               = 5491, -- (353082) Summons a Ring of Fire for 8 sec at the target location. Enemies entering the ring burn for 24% of their total health over 6 sec.
-    temporal_shield            = 3517, -- (198111) Envelops you in a temporal shield for 4 sec. 100% of all damage taken while shielded will be instantly restored when the shield ends.
+    improved_mass_invisibility =  637, -- (415945)
+    kleptomania                = 3529, -- (198100) Unleash a flurry of disruptive magic onto your target, stealing a beneficial magic effect every 0.4 sec for 3.4 sec. Castable while moving, but movement speed is reduced by 40% while channeling.
+    master_of_escape           =  635, -- (210476)
+    master_shepherd            = 5589, -- (410248)
+    ring_of_fire               = 5491, -- (353082) Summons a Ring of Fire for 8 sec at the target location. Enemies entering the ring burn for 18% of their total health over 6 sec.
+    temporal_shield            = 3517, -- (198111) Envelops you in a temporal shield for 4 sec. 60% of all damage taken while shielded will be instantly restored when the shield ends.
 } )
 
 
 -- Auras
 spec:RegisterAuras( {
+    aether_attunement = {
+        id = 453601,
+        duration = 30,
+        max_stack = 1
+    },
+    aether_attunement_stack = {
+        id = 458388,
+        duration = 180,
+        max_stack = 3
+    },
     -- Talent: Altering Time. Returning to past location and health when duration expires.
     -- https://wowhead.com/beta/spell=342246
     alter_time = {
@@ -176,6 +222,11 @@ spec:RegisterAuras( {
             ac.expires = 0
             ac.caster = "nobody"
         end,
+    },
+    arcane_debilitation = {
+        id = 453599,
+        duration = 20,
+        max_stack = 5
     },
     -- Talent: Maximum mana increased by $s1%.
     -- https://wowhead.com/beta/spell=210126
@@ -235,6 +286,11 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 5
     },
+    big_brained = {
+        id = 461531,
+        duration = 8,
+        max_stack = 10
+    },
     -- Talent: Movement speed reduced by $s2%.
     -- https://wowhead.com/beta/spell=157981
     blast_wave = {
@@ -272,21 +328,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Talent: Movement speed increased by $s1%.
-    -- https://wowhead.com/beta/spell=236298
-    chrono_shift = {
-        id = 236298,
-        duration = 5,
-        max_stack = 1,
-        copy = "chrono_shift_buff"
-    },
-    -- Talent: Movement speed slowed by $s1%.
-    -- https://wowhead.com/beta/spell=236299
-    chrono_shift_snare = {
-        id = 236299,
-        duration = 5,
-        max_stack = 1
-    },
     -- Talent: Your next Arcane Missiles or Arcane Explosion costs no mana$?s321758[ and Arcane Missiles fires an additional missile][].
     -- https://wowhead.com/beta/spell=263725
     clearcasting = {
@@ -310,12 +351,27 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
+    dematerialize = {
+        id = 461498,
+        duration = 6,
+        max_stack = 1
+    },
+    embedded_arcane_splinter = {
+        id = 444735,
+        duration = 18,
+        max_stack = 99
+    },
+    expanded_potential = {
+        id = 327495,
+        duration = 300,
+        max_stack = 1
+    },
     -- Talent: Mana regeneration increased by $s1%.
     -- https://wowhead.com/beta/spell=12051
     evocation = {
         id = 12051,
-        duration = function () return 6 * haste end,
-        tick_time = function () return haste end,
+        duration = function () return 2.8 * haste end,
+        tick_time = function () return 0.5 * haste end,
         max_stack = 1,
     },
     freezing_cold = {
@@ -331,6 +387,16 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1,
         copy = 235235
+    },
+    glorious_incandescence = {
+        id = 449394,
+        duration = 3600,
+        max_stack = 1
+    },
+    high_voltage = {
+        id = 461525,
+        duration = 3600,
+        max_stack = 10
     },
     hypothermia = {
         id = 41425,
@@ -378,6 +444,38 @@ spec:RegisterAuras( {
             stack = function() return state.incanters_flow_stacks end,
             stacks = function() return state.incanters_flow_stacks end,
         }
+    },
+    intuition = {
+        id = 455681,
+        duration = 10,
+        max_stack = 1
+    },
+    leydrinker = {
+        id = 453758,
+        duration = 30,
+        max_stack = 1
+    },
+    magis_spark = {
+        id = 450004,
+        duration = 12,
+        max_stack = 1
+    },
+    magis_spark_arcane_barrage = {
+        duration = 12,
+        max_stack = 1
+    },
+    magis_spark_arcane_blast = {
+        duration = 12,
+        max_stack = 1
+    },
+    magis_spark_arcane_missiles = {
+        duration = 12,
+        max_stack = 1
+    },
+    mass_polymorph = {
+        id = 383121,
+        duration = 15,
+        max_stack = 1
     },
     mirror_image = {
         id = 55342,
@@ -446,34 +544,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Talent: Suffering $w2 Arcane damage every $t2 sec.
-    -- https://wowhead.com/beta/spell=376103
-    radiant_spark = {
-        id = 376103,
-        duration = 12,
-        type = "Magic",
-        max_stack = 1,
-        copy = 307443
-    },
-    -- Damage taken from $@auracaster  increased by $w1%.
-    -- https://wowhead.com/beta/spell=376104
-    radiant_spark_vulnerability = {
-        id = 376104,
-        duration = 12,
-        max_stack = 4,
-        copy = 307454
-    },
-    radiant_spark_consumed = {
-        id = 376105,
-        duration = 10,
-        max_stack = 1,
-        copy = 307747
-    },
-    rule_of_threes = {
-        id = 264774,
-        duration = 15,
-        max_stack = 1,
-    },
     -- Talent: Every $t1 sec, deal $382445s1 Nature damage to enemies within $382445A1 yds and reduce the remaining cooldown of your abilities by ${-$s2/1000} sec.
     -- https://wowhead.com/beta/spell=382440
     shifting_power = {
@@ -506,6 +576,11 @@ spec:RegisterAuras( {
         mechanic = "snare",
         type = "Magic",
         max_stack = 1
+    },
+    static_cloud = {
+        id = 461515,
+        duration = 60,
+        max_stack = 4
     },
     -- Talent: Absorbs $w1 damage.
     -- https://wowhead.com/beta/spell=382290
@@ -544,6 +619,11 @@ spec:RegisterAuras( {
         tick_time = 2,
         type = "Magic",
         max_stack = 1
+    },
+    unerring_proficiency = {
+        id = 444981,
+        duration = 60,
+        max_stack = 30
     },
 
     -- Azerite Powers
@@ -810,9 +890,6 @@ spec:RegisterHook( "gain", function( amt, resource )
         if arcane_charges.current == 0 then
             removeBuff( "arcane_charge" )
         else
-            if talent.rule_of_threes.enabled and arcane_charges.current >= 3 and arcane_charges.current - amt < 3 then
-                applyBuff( "rule_of_threes" )
-            end
             applyBuff( "arcane_charge", nil, arcane_charges.current )
         end
     end
@@ -992,38 +1069,6 @@ spec:RegisterStateTable( "incanters_flow_time_to", setmetatable( {}, {
     end
 } ) )
 
-
-spec:RegisterStateExpr( "mana_gem_charges", function ()
-    return 0
-end )
-
-
---[[ spec:RegisterStateFunction( "start_burn_phase", function ()
-    burn_info.start = query_time
-end )
-
-
-spec:RegisterStateFunction( "stop_burn_phase", function ()
-    if burn_info.start > 0 then
-        burn_info.average = burn_info.average * burn_info.n
-        burn_info.average = burn_info.average + ( query_time - burn_info.start )
-        burn_info.n = burn_info.n + 1
-
-        burn_info.average = burn_info.average / burn_info.n
-        burn_info.start = 0
-    end
-end )
-
-
-spec:RegisterStateExpr( "burn_phase", function ()
-    return burn_info.start > 0
-end )
-
-spec:RegisterStateExpr( "average_burn_length", function ()
-    return burn_info.average or 15
-end ) ]]
-
-
 spec:RegisterStateExpr( "tick_reduction", function ()
     return action.shifting_power.cdr / 4
 end )
@@ -1033,124 +1078,13 @@ spec:RegisterStateExpr( "full_reduction", function ()
 end )
 
 
--- Dragonflight APL 20230711
---
--- aoe_spark_phase starts:
---    active_enemies>=variable.aoe_target_count&(action.arcane_orb.charges>0|buff.arcane_charge.stack>=3)&cooldown.radiant_spark.ready&cooldown.touch_of_the_magi.remains<=(gcd.max*2)
--- aoe_spark_phase ends:
---     variable.aoe_spark_phase&debuff.radiant_spark_vulnerability.down&dot.radiant_spark.remains<7&cooldown.radiant_spark.remains
-
-local realAoeSparkPhase = {}
-local virtualAoeSparkPhase = false
-
-local SetAoeSparkPhase = setfenv( function()
-    if realAoeSparkPhase[ display ] == nil then realAoeSparkPhase[ display ] = false end
-
-    if not realAoeSparkPhase[ display ] and active_enemies >= ( variable.aoe_target_count or 3 ) and ( cooldown.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and cooldown.radiant_spark.remains < gcd.max and cooldown.touch_of_the_magi.remains <= gcd.max * 2 then
-        realAoeSparkPhase[ display ] = true
-    end
-
-    if realAoeSparkPhase[ display ] and active_dot.radiant_spark_vulnerability == 0 and debuff.radiant_spark.remains < 7 and cooldown.radiant_spark.remains > gcd.max then
-        realAoeSparkPhase[ display ] = false
-    end
-
-    virtualAoeSparkPhase = realAoeSparkPhase[ display ]
-end, state )
-
-local UpdateAoeSparkPhase = setfenv( function()
-    if not virtualAoeSparkPhase and active_enemies >= ( variable.aoe_target_count or 3 ) and ( action.arcane_orb.charges > 0 or buff.arcane_charge.stack >= 3 ) and cooldown.radiant_spark.remains < gcd.max and cooldown.touch_of_the_magi.remains <= 2 * gcd.max then
-        virtualAoeSparkPhase = true
-    end
-
-    if virtualAoeSparkPhase and active_dot.radiant_spark_vulnerability == 0 and dot.radiant_spark.remains < 7 and cooldown.radiant_spark.remains > gcd.max then
-        virtualAoeSparkPhase = false
-    end
-end, state )
-
-spec:RegisterVariable( "aoe_spark_phase", function ()
-    return virtualAoeSparkPhase
-end )
-
-
--- spark_phase starts:
---     actions+=/variable,name=spark_phase,op=set,value=1,if=buff.arcane_charge.stack>3&active_enemies<variable.aoe_target_count&cooldown.radiant_spark.ready&cooldown.touch_of_the_magi.remains<=(gcd.max*(7-(3*equipped.balefire_branch)))&(cooldown.arcane_surge.remains<=(gcd.max*5)|cooldown.arcane_surge.remains>40)
--- spark_phase ends:
---     actions+=/variable,name=spark_phase,op=set,value=0,if=variable.spark_phase&debuff.radiant_spark_vulnerability.down&dot.radiant_spark.remains<7&cooldown.radiant_spark.remains
-
-local realSparkPhase = {}
-local virtualSparkPhase = false
-
-local SetSparkPhase = setfenv( function()
-    if realSparkPhase[ display ] == nil then realSparkPhase[ display ] = false end
-
-    if not realSparkPhase[ display ] and buff.arcane_charge.stack > 3 and active_enemies < variable.aoe_target_count and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= ( gcd.max * ( 7 - ( 3 * ( equipped.balefire_branch and 1 or 0 ) ) ) ) and ( cooldown.arcane_surge.remains <= ( gcd.max * 5 ) or cooldown.arcane_surge.remains > 40 ) then
-        realSparkPhase[ display ] = true
-    end
-
-    if realSparkPhase[ display ] and debuff.radiant_spark_vulnerability.down and dot.radiant_spark.remains < 7 and cooldown.radiant_spark.remains > gcd.max then
-        realSparkPhase[ display ] = false
-    end
-
-    virtualSparkPhase = realSparkPhase[ display ]
-end, state )
-
-local UpdateSparkPhase = setfenv( function()
-    if not realSparkPhase[ display ] and buff.arcane_charge.stack > 3 and active_enemies < variable.aoe_target_count and cooldown.radiant_spark.ready and cooldown.touch_of_the_magi.remains <= ( gcd.max * ( 7 - ( 3 * ( equipped.balefire_branch and 1 or 0 ) ) ) ) and ( cooldown.arcane_surge.remains <= ( gcd.max * 5 ) or cooldown.arcane_surge.remains > 40 ) then
-        virtualSparkPhase = true
-    end
-
-    if realSparkPhase[ display ] and debuff.radiant_spark_vulnerability.down and dot.radiant_spark.remains < 7 and cooldown.radiant_spark.remains > gcd.max then
-        virtualSparkPhase = false
-    end
-end, state )
-
-spec:RegisterVariable( "spark_phase", function ()
-    return virtualSparkPhase
-end )
-
-
--- rop_phase starts:
---     talent.rune_of_power&!talent.radiant_spark&buff.arcane_charge.stack>=3&cooldown.rune_of_power.ready&active_enemies<variable.aoe_target_count
--- rop_phase ends:
---     debuff.touch_of_the_magi.up|!talent.rune_of_power
-
-local realRopPhase = {}
-local virtualRopPhase = false
-
-local SetRopPhase = setfenv( function()
-    if realRopPhase[ display ] == nil then realRopPhase[ display ] = false end
-
-    if not realRopPhase[ display ] and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.remains < gcd.max and active_enemies < variable.aoe_target_count then
-        realRopPhase[ display ] = true
-    end
-
-    if realRopPhase[ display ] and ( debuff.touch_of_the_magi.up or not talent.rune_of_power.enabled ) then
-        realRopPhase[ display ] = false
-    end
-
-    virtualRopPhase = realRopPhase[ display ]
-end, state )
-
-local UpdateRopPhase = setfenv( function()
-    if not virtualRopPhase and talent.rune_of_power.enabled and not talent.radiant_spark.enabled and buff.arcane_charge.stack >= 3 and cooldown.rune_of_power.remains < gcd.max and active_enemies < variable.aoe_target_count then
-        virtualRopPhase = true
-    end
-
-    if virtualRopPhase and debuff.touch_of_the_magi.up or not talent.rune_of_power.enabled then
-        virtualRopPhase = false
-    end
-end, state )
-
-spec:RegisterVariable( "rop_phase", function ()
-    return virtualRopPhase
-end )
-
-spec:RegisterVariable( "opener", function ()
-    return combat == 0 or action.touch_of_the_magi.lastCast < combat
-end )
-
-
 local abs = math.abs
+
+
+local NetherMunitions = setfenv( function()
+    applyDebuff( "target", "nether_munitions" )
+    active_dot.nether_munitions = true_active_enemies
+end, state )
 
 
 spec:RegisterHook( "reset_precast", function ()
@@ -1163,53 +1097,20 @@ spec:RegisterHook( "reset_precast", function ()
 
     if arcane_charges.current > 0 then applyBuff( "arcane_charge", nil, arcane_charges.current ) end
 
-    mana_gem_charges = C_Item.GetItemCount( 36799, nil, true )
-
-    if prev[1].conjure_mana_gem and now - action.conjure_mana_gem.lastCast < 1 and mana_gem_charges == 0 then
-        mana_gem_charges = 3
-    end
-
     if buff.arcane_surge.up and set_bonus.tier30_4pc > 0 then
         state:QueueAuraEvent( "arcane_overload", TriggerArcaneOverloadT30, buff.arcane_surge.expires, "AURA_EXPIRATION" )
     end
 
     incanters_flow.reset()
 
-    SetAoeSparkPhase( display )
-    SetSparkPhase( display )
-    SetRopPhase( display )
+    if buff.magis_spark.up then
+        if action.arcane_barrage.lastCast < buff.magis_spark.applied then applyBuff( "magis_spark_arcane_barrage", buff.magis_spark.remains ) end
+        if action.arcane_blast.lastCast < buff.magis_spark.applied then applyBuff( "magis_spark_arcane_blast", buff.magis_spark.remains ) end
+        if action.arcane_missiles.lastCast < buff.magis_spark.applied then applyBuff( "magis_spark_arcane_missiles", buff.magis_spark.remains ) end
+    end
 
-    if Hekili.ActiveDebug then Hekili:Debug( "Arcane Phases (reset): aoe_spark_phase[%s], spark_phase[%s], rop_phase[%s]", tostring( virtualAoeSparkPhase ), tostring( virtualSparkPhase ), tostring( virtualRopPhase ) ) end
-end )
-
-spec:RegisterHook( "runHandler", function()
-    UpdateAoeSparkPhase()
-    UpdateSparkPhase()
-    UpdateRopPhase()
-
-    if Hekili.ActiveDebug then Hekili:Debug( "Arcane Phases (handler): aoe_spark_phase[%s], spark_phase[%s], rop_phase[%s]", tostring( virtualAoeSparkPhase ), tostring( virtualSparkPhase ), tostring( virtualRopPhase ) ) end
-end )
-
-spec:RegisterHook( "advance", function()
-    UpdateAoeSparkPhase()
-    UpdateSparkPhase()
-    UpdateRopPhase()
-
-    if Hekili.ActiveDebug then Hekili:Debug( "Arcane Phases (advance): aoe_spark_phase[%s], spark_phase[%s], rop_phase[%s]", tostring( virtualAoeSparkPhase ), tostring( virtualSparkPhase ), tostring( virtualRopPhase ) ) end
-end )
-
-
-spec:RegisterStateFunction( "handle_radiant_spark", function()
-    if debuff.radiant_spark_vulnerability.down then
-        applyDebuff( "target", "radiant_spark_vulnerability" )
-    else
-        debuff.radiant_spark_vulnerability.count = debuff.radiant_spark_vulnerability.count + 1
-
-        -- Implemented with max of 5 stacks (application of 5th stack makes the debuff expire in 0.1 seconds, to give us time to Arcane Barrage).
-        if debuff.radiant_spark_vulnerability.stack == debuff.radiant_spark_vulnerability.max_stack then
-            debuff.radiant_spark_vulnerability.expires = query_time + 0.1
-            applyBuff( "radiant_spark_consumed", debuff.radiant_spark.remains )
-        end
+    if talent.nether_munitions.enabled and debuff.touch_of_the_magi.up then
+        state:QueueAuraEvent( "touch_of_the_magi", NetherMunitions, debuff.touch_of_the_magi.expires, "AURA_EXPIRATION" )
     end
 end )
 
@@ -1253,18 +1154,27 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            if talent.mana_adept.enabled then gain( 0.02 * mana.modmax * arcane_charges.current, "mana" ) end
+            gain( 0.02 * mana.modmax * arcane_charges.current, "mana" )
 
             spend( arcane_charges.current, "arcane_charges" )
             removeBuff( "arcane_harmony" )
             removeBuff( "bursting_energy" )
+            removeBuff( "leydrinker" )
 
-            if talent.chrono_shift.enabled then
-                applyBuff( "chrono_shift_buff" )
-                applyDebuff( "target", "chrono_shift_snare" )
+            if buff.intuition.up then
+                gain( 4, "arcane_charges" )
+                removeBuff( "intuition" )
             end
 
-            if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
+            if buff.nether_precision.up then
+                removeStack( "nether_precision" )
+                if talent.dematerialize.enabled then applyDebuff( "target", "dematerialize" ) end
+            end
+
+            if debuff.magis_spark_arcane_barrage.up then
+                removeDebuff( "target", "magis_spark_arcane_barrage" )
+                if debuff.magis_spark_arcane_blast.down and debuff.magis_spark_arcane_missiles.down then removeBuff( "magis_spark" ) end
+            end
         end,
     },
 
@@ -1280,8 +1190,8 @@ spec:RegisterAbilities( {
         school = "arcane",
 
         spend = function ()
-            if buff.rule_of_threes.up then return 0 end
-            local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 )
+            if buff.concentration.up then return 0 end
+            local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( 1 - 0.03 * talent.consortiums_bauble.rank )
             -- if azerite.equipoise.enabled and mana.pct < 70 then return ( mana.modmax * mult ) - 190 end
             return mana.modmax * mult, "mana"
         end,
@@ -1294,16 +1204,24 @@ spec:RegisterAbilities( {
                 removeStack( "presence_of_mind" )
                 if buff.presence_of_mind.down then setCooldown( "presence_of_mind", 60 ) end
             end
-            removeBuff( "rule_of_threes" )
-            removeStack( "nether_precision" )
+            removeStack( "concentration" )
+            removeBuff( "leydrinker" )
+
+            if buff.nether_precision.up then
+                removeStack( "nether_precision" )
+                if talent.dematerialize.enabled then applyDebuff( "target", "dematerialize" ) end
+            end
+
+            if debuff.magis_spark_arcane_blast.up then
+                removeDebuff( "target", "magis_spark_arcane_blast" )
+                if debuff.magis_spark_arcane_barrage.down and debuff.magis_spark_arcane_missiles.down then removeBuff( "magis_spark" ) end
+            end
 
             if arcane_charges.current == arcane_charges.max then
                 applyBuff( "arcane_blast_overcapped" )
                 if talent.arcane_echo.enabled then echo_opened = true end
             end -- Use this to catch "5th" cast of Arcane Blast.
             gain( 1, "arcane_charges" )
-
-            if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
         end,
     },
 
@@ -1317,7 +1235,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if not pvptalent.arcane_empowerment.enabled and buff.clearcasting.up then return 0 end
-            return 0.1 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 )
+            return 0.1
         end,
         spendType = "mana",
 
@@ -1330,7 +1248,18 @@ spec:RegisterAbilities( {
                 if buff.concentration.up then removeBuff( "concentration" )
                 else
                     if buff.clearcasting.up then
-                        removeStack( "clearcasting" )
+                        if buff.expanded_potential.up then removeBuff( "expanded_potential" )
+                        else removeStack( "clearcasting" ) end
+                        if talent.aether_attunement.enabled then
+                            if buff.aether_attunement_stack.stack == 2 then
+                                removeBuff( "aether_attunement_stack" )
+                                applyBuff( "aether_attunement" )
+                            else
+                                addStack( "aether_attunement_stack" )
+                            end
+                        end
+                        if talent.arcane_debilitation.enabled then addStack( "arcane_debilitation" ) end
+                        if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
                         if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
                         if set_bonus.tier31_4pc > 0 then
                             if buff.arcane_battery.stack == 2 then
@@ -1341,15 +1270,21 @@ spec:RegisterAbilities( {
                             end
                         end
                     end
-                    if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
                 end
                 if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
+            end
+            if talent.static_cloud.enabled then
+                if buff.static_cloud.stack == 4 then
+                    removeStack( "static_cloud", nil, 3 )
+                else
+                    addStack( "static_cloud" )
+                end
             end
             gain( 1, "arcane_charges" )
         end,
     },
 
-    -- Talent: Summon a Familiar that attacks your enemies and increases your maximum mana by 10% for 1 |4hour:hrs;.
+    --[[ Talent: Summon a Familiar that attacks your enemies and increases your maximum mana by 10% for 1 |4hour:hrs;.
     arcane_familiar = {
         id = 205022,
         cast = 0,
@@ -1368,7 +1303,7 @@ spec:RegisterAbilities( {
         end,
 
         copy = "summon_arcane_familiar"
-    },
+    }, ]]
 
     -- Infuses the target with brilliance, increasing their Intellect by 5% for 1 |4hour:hrs;. If the target is in your party or raid, all party and raid members will be affected.
     arcane_intellect = {
@@ -1378,7 +1313,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        spend = function () return 0.04 * ( buff.arcane_surge.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.04,
         spendType = "mana",
 
         startsCombat = false,
@@ -1387,6 +1322,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "arcane_intellect" )
+            if talent.arcane_familiar.enabled then
+                if buff.arcane_familiar.down then mana.max = mana.max * 1.10 end
+                applyBuff( "arcane_familiar" )
+            end
         end,
     },
 
@@ -1400,13 +1339,15 @@ spec:RegisterAbilities( {
         school = "arcane",
 
         spend = function ()
-            if buff.rule_of_threes.up or buff.clearcasting.up then return 0 end
-            return 0.15 * ( buff.arcane_surge.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 )
+            if buff.clearcasting.up then return 0 end
+            return 0.15
         end,
         spendType = "mana",
 
         talent = "arcane_missiles",
         startsCombat = true,
+        buff = "clearcasting",
+
         aura = function () return buff.clearcasting_channel.up and "clearcasting_channel" or "casting" end,
         breakchannel = function ()
             removeBuff( "clearcasting_channel" )
@@ -1421,10 +1362,24 @@ spec:RegisterAbilities( {
             removeBuff( "arcane_blast_overcapped" )
             removeBuff( "arcane_artillery" )
 
+            if debuff.magis_spark_arcane_missiles.up then
+                removeDebuff( "target", "magis_spark_arcane_missiles" )
+                if debuff.magis_spark_arcane_blast.down and debuff.magis_spark_arcane_barrage.down then removeBuff( "magis_spark" ) end
+            end
+
             if buff.clearcasting.up then
                 if buff.concentration.up then removeBuff( "concentration" )
                 else
-                    removeStack( "clearcasting" )
+                    if buff.expanded_potential.up then removeBuff( "expanded_potential" )
+                    else removeStack( "clearcasting" ) end
+                    if buff.aether_attunement_stack.stack == 2 then
+                        removeBuff( "aether_attunement_stack" )
+                        applyBuff( "aether_attunement" )
+                    else
+                        addStack( "aether_attunement_stack" )
+                    end
+                    if talent.arcane_debilitation.enabled then addStack( "arcane_debilitation" ) end
+                    if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
                     if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
                     if set_bonus.tier31_4pc > 0 then
                         if buff.arcane_battery.stack > 1 then
@@ -1434,15 +1389,21 @@ spec:RegisterAbilities( {
                             addStack( "arcane_battery" )
                         end
                     end
-                    if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
                 end
                 if talent.amplification.enabled then applyBuff( "clearcasting_channel" ) end
                 if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
-            else
-                if buff.rule_of_threes.up then removeBuff( "rule_of_threes" ) end
             end
 
             if buff.expanded_potential.up then removeBuff( "expanded_potential" ) end
+
+            if talent.high_voltage.enabled then
+                if buff.high_voltage.stack == 10 then
+                    removeBuff( "high_voltage" )
+                    gain( 1, "arcane_charges" )
+                else
+                    addStack( "high_voltage" )
+                end
+            end
 
             if conduit.arcane_prodigy.enabled and cooldown.arcane_surge.remains > 0 then
                 reduceCooldown( "arcane_surge", conduit.arcane_prodigy.mod * 0.1 )
@@ -1451,7 +1412,6 @@ spec:RegisterAbilities( {
 
         tick = function ()
             if talent.arcane_harmony.enabled or legendary.arcane_harmony.enabled then addStack( "arcane_harmony", nil, 1 ) end
-            if debuff.radiant_spark.up and buff.radiant_spark_consumed.down then handle_radiant_spark() end
         end,
     },
 
@@ -1465,10 +1425,9 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        spend = function () return 0.01 * ( buff.arcane_surge.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.01,
         spendType = "mana",
 
-        talent = "arcane_orb",
         startsCombat = true,
 
         handler = function ()
@@ -1494,6 +1453,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "arcane_surge" )
+            addStack( "clearcasting" )
             mana.regen = mana.regen * 5.25
             forecastResources( "mana" )
             if talent.rune_of_power.enabled then applyBuff( "rune_of_power" ) end
@@ -1528,7 +1488,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         icd = 6,
 
-        spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.4 or 0.7 ) or 1 ) end,
+        spend = 0.02,
         spendType = "mana",
 
         startsCombat = false,
@@ -1543,63 +1503,6 @@ spec:RegisterAbilities( {
         copy = { 212653, 1953, "shimmer", "blink_any", "any_blink" }
     },
 
-    -- Talent: Conjures a Mana Gem that can be used to instantly restore 25% mana and grant 5% spell damage for 12 sec. Holds up to 3 charges. Conjured Items Conjured items disappear if logged out for more than 15 minutes.
-    conjure_mana_gem = {
-        id = 759,
-        cast = 3,
-        cooldown = 0,
-        icd = 10, -- Probably don't want to recast within 10 seconds.
-        gcd = "spell",
-
-        spend = 0.18,
-        spendType = "mana",
-
-        talent = "conjure_mana_gem",
-        startsCombat = false,
-
-        usable = function ()
-            if mana_gem_charges > 0 then return false, "already has a mana_gem" end
-            return true
-        end,
-
-        handler = function ()
-            mana_gem_charges = 3
-        end,
-    },
-
-    mana_gem = {
-        name = "|cff00ccff[Mana Gem]|r",
-        known = function ()
-            return state.mana_gem_charges > 0
-        end,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-
-        startsCombat = false,
-        texture = 134132,
-
-        item = 36799,
-        bagItem = true,
-
-        usable = function ()
-            return mana_gem_charges > 0, "requires mana_gem in bags"
-        end,
-
-        readyTime = function ()
-            local start, duration = GetItemCooldown( 36799 )
-            return max( 0, start + duration - query_time )
-        end,
-
-        handler = function ()
-            gain( 0.25 * mana.max, "mana" )
-            if talent.cascading_power.enabled then gain( 2, "arcane_charges" ) end
-            mana_gem_charges = mana_gem_charges - 1
-        end,
-
-        copy = "use_mana_gem"
-    },
-
     -- Counters the enemy's spellcast, preventing any spell from that school of magic from being cast for 6 sec.
     counterspell = {
         id = 2139,
@@ -1608,7 +1511,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "arcane",
 
-        spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.02,
         spendType = "mana",
 
         startsCombat = true,
@@ -1643,7 +1546,7 @@ spec:RegisterAbilities( {
     -- Talent: Increases your mana regeneration by 750% for 5.3 sec.
     evocation = {
         id = 12051,
-        cast = function () return 6 * ( 1 - 0.5 * talent.siphon_storm.rank ) * haste end,
+        cast = function () return 2.8 * haste end,
         charges = 1,
         cooldown = 90,
         recharge = 90,
@@ -1656,16 +1559,12 @@ spec:RegisterAbilities( {
         talent = "evocation",
         startsCombat = false,
         aura = "evocation",
-        tick_time = function () return haste end,
+        tick_time = function () return 0.5 * haste end,
 
         start = function ()
             -- stop_burn_phase()
 
             applyBuff( "evocation" )
-
-            if talent.siphon_storm.enabled or legendary.siphon_storm.enabled then
-                applyBuff( "siphon_storm" )
-            end
 
             if azerite.brain_storm.enabled then
                 gain( 2, "arcane_charges" )
@@ -1676,9 +1575,7 @@ spec:RegisterAbilities( {
         end,
 
         tick = function ()
-            if talent.siphon_storm.enabled or legendary.siphon_storm.enabled then
-                addStack( "siphon_storm", nil, 1 )
-            end
+            addStack( "siphon_storm", nil, 1 )
         end,
 
         finish = function ()
@@ -1921,7 +1818,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        spend = function () return 0.02 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.02,
         spendType = "mana",
 
         talent = "mirror_image",
@@ -1931,25 +1828,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "mirror_image", nil, 3 )
-        end,
-    },
-
-    -- Talent: Places a Nether Tempest on the target which deals 459 Arcane damage over 12 sec to the target and nearby enemies within 10 yards. Limit 1 target. Deals reduced damage to secondary targets. Damage increased by 72% per Arcane Charge.
-    nether_tempest = {
-        id = 114923,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "arcane",
-
-        spend = function () return 0.015 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
-        spendType = "mana",
-
-        talent = "nether_tempest",
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "nether_tempest" )
         end,
     },
 
@@ -1995,7 +1873,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        spend = function() return 0.03 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.03,
         spendType = "mana",
 
         talent = "prismatic_barrier",
@@ -2010,26 +1888,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Conjure a radiant spark that causes 2,275 Arcane damage instantly, and an additional 1,158 damage over 10 sec. The target takes 10% increased damage from your direct damage spells, stacking each time they are struck. This effect ends after 4 spells.
-    radiant_spark = {
-        id = function() return talent.radiant_spark.enabled and 376103 or 307443 end,
-        cast = 1.5,
-        cooldown = 30,
-        gcd = "spell",
-        school = "arcane",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = true,
-
-        handler = function ()
-            applyDebuff( "target", "radiant_spark" )
-        end,
-
-        copy = { 376103, 307443 }
-    },
-
     -- Talent: Removes all Curses from a friendly target.
     remove_curse = {
         id = 475,
@@ -2038,7 +1896,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        spend = function () return 0.013 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.013,
         spendType = "mana",
 
         talent = "remove_curse",
@@ -2076,7 +1934,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "frost",
 
-        spend = function () return 0.08 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.08,
         spendType = "mana",
 
         talent = "ring_of_frost",
@@ -2115,7 +1973,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        spend = function () return 0.01 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.01,
         spendType = "mana",
 
         talent = "slow",
@@ -2123,7 +1981,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "slow" )
-            if active_enemies > 1 and talent.mass_slow.enabled then active_dot.slow = active_enemies end
         end,
     },
 
@@ -2135,7 +1992,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        spend = function () return 0.21 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.21,
         spendType = "mana",
 
         talent = "spellsteal",
@@ -2152,7 +2009,7 @@ spec:RegisterAbilities( {
     supernova = {
         id = 157980,
         cast = 0,
-        cooldown = 25,
+        cooldown = 45,
         gcd = "spell",
         school = "arcane",
 
@@ -2189,7 +2046,7 @@ spec:RegisterAbilities( {
         cooldown = 300,
         gcd = "off",
 
-        spend = function () return 0.04 * ( buff.arcane_power.up and ( talent.overpowered.enabled and 0.5 or 0.7 ) or 1 ) end,
+        spend = 0.04,
         spendType = "mana",
 
         nobuff = "bloodlust",
@@ -2218,6 +2075,15 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "touch_of_the_magi" )
+            if talent.nether_munitions.enabled then
+                state:QueueAuraEvent( "touch_of_the_magi", NetherMunitions, debuff.touch_of_the_magi.expires, "AURA_EXPIRATION" )
+            end
+            if talent.magis_spark.enabled then
+                applyDebuff( "target", "magis_spark" )
+                applyDebuff( "target", "magis_spark_arcane_barrage" )
+                applyDebuff( "target", "magis_spark_arcane_blast" )
+                applyDebuff( "target", "magis_spark_arcane_missiles" )
+            end
             gain( 4, "arcane_charges" )
         end,
     },
@@ -2253,4 +2119,4 @@ spec:RegisterSetting( "check_explosion_range", true, {
 } )
 
 
-spec:RegisterPack( "Arcane", 20240508, [[Hekili:T3ZAVnUrs(BXybuOMXwJEA7zpjdKKlFibxYSy9KBbUpyjkkklUdfPo(WE8cd9B)QQ7MK9B2s(X45W(LepInRU6QQU66zZBgCZNV56v(fH38hd7pCC)j9VS3GHJgmE0nxx8WUWBUENFWx8Vf(Je)TW)9hZc8ti)8dXP(RWxppTmla(Pnff7Y)RF4d3gvSPCzVG0TFipABzSFruAsqM)6c8Fh8HBUEzzuCXVMCZs9Z9qaM7cdU5poh(RnrRwfshAyEWnxJd9S(toR)L)19lUoA7pVFr5oek92)B7)n4PJoBWWZgmgE6(f)TSYKW9l(8WpUFrC6Trb7xuSXVy)IO89lwgNg8LOKBfFX(Kx8)cayEr1eeSXp52WCUboOAG)kSYc3gMu4hBeDga4lfD8lc2SFXG(9g284(xE2WZjp(3JssZ2VyxwuAwuXdQqQ)fNn4s(HshaSOs3VGYz2V4tzlpT5F9t(zza7d(LpNw87IGAGesnO3eTZz)HKb(ZBcd(Y(fRcxwUEDVCyuR6vUB)I1iM85WT7sZqIW)WpBh3RF(zdP8IFk0pin5dfzrjFjSOMFqNVv)haGtt(b43)L7sdiImiLi8SDLXaqJw3SKUUm72qKfsgEwO)kGu5Hirr6T3ghUA)I01R7YHdtQOWF((q)VisU(Py)8cqAaLk2eDlqj2a)qO4BtPu)9WZct8xghkGKPLf4ecYtP5aCwdWOix81PIk)YDHWW3MMbVV)Q)zzEbk3KtrNIOTiI3W7HhLffkcObty4rS)x3VipDlaP4iCveKMgVk9(eg02egVdbrEjozfz(j5ruSnkHFXtiLItXiv5lXbqfg(ryxjGVFEuFEKEDw6w62aH3Hja9NmPvIadrE7MRJJaQpQfjlTGqqH)(piALOK6v38t3CDaa9WSiFuZbi65tW(5WUse7Zl8rXYP7xmA)IoGKaWjWrbBVtxfdu5EiHz)IhFei((j(92famSR2V4ca17EZ1(bKP9AgutZwEtbOrYjuiNq)OWVtdxq8XG(b)iKZaZ54jKbsesMZ)GbtAWK8nrRlaftZ3LEFygInJmInE4oG1zH5BOcM4Q8euCIOAdwGK5l8)TmA3oy)AsymOae4xj5Zd8JJNxKI0X0CTO1maVg2GxjHfBcZMxaB1bLJiEn2jQKbgvb(Rf92e6d4eLRGpBc7HXWoGkiSmD7s)Sv4(LEvtxnAbAjYdtcaw365BJswHi2eJigdW4(T5(jPB9JFOcKKjwL9I640(GAc1uGqDUIK0suZcImNBNkjJ)vt4tJ(OGZQCbZy8fsyS042gLNhfhMFZ1G6KWSSYDfZJwFZ1NCBWQkQshYCZezGLyquoacyT1PAt4vJ635eEm0pRikoom7byucGElOBmcnu46bkuVG4q81ZXnmWC7JKPQvUWZyl8z6E2w)VoN8C(P9240L(X4CcuKlFI7anZjMP9H1yKGoTc2PSZVhpKfLte1Qnf1R2Gcuzer1jnYhQiMK6SdwDWhpc1bUS8fwGt6t(TM1xy1zXcI(QQyh2xvGNADeI7d6)AG8xqr(7avW4ebgjNKhMDhSLcgvd)O5SlMUG6twksld2GAkaAp8s3gjC8IPtxAzPlFE73RB3b3mqZMOcdAuBFqmpJQcg4MTbh0K1GQAiHM1tpWSHbpnurqO98wfADu8CqFXr3SZvWgP(hNuSSXiFNkfRm716JpHJhKUlmbSn0OmkXaiTInCKiCGNRBGmQQWqH3SIXnFh4JuODl1b8)U5iPDqpzOwnBkcl3CDzoAg0A8frGFSgI3C4qMpWeskMNVZp7lQ2oEGMAxl5kcwMpO4XUWGqydBoa(ZwWbo65MdjOfZ1zHxE(DLXaN0Fzum4cfBj0TDZgM2M2l9(1y2ID7RnoJqmHodRPahnwlQEObZ7jyeckvTf9aURoh4QvoA2haPDrgmy0bJjbLssQ0KjEvEiuD2ClBX9iYUM0VqjW6FQGZiECeP3bkW5KOYdla3fskZbxGcZgny(4DbhNUsEvIg1BEm6k3aGN8xguUz2FkDmwtoLxjwtpedLRKEB0zmj7YYJ2TjnbKvtZ2kEY2fv6DKOV91sFn6O1lHmAT6NVFesDLo(2wo1SpJIEVdkb3MMyomevpVrh6GjvmcpfX2Mxx0lIUCmgdYqUjG0162QMHos1CT328lf3xRFH3uld3pX2gV2R2ejf8Ixo0ZU2GAjkLNZljWVnFe328xufjMTnUpVjVc0ozJJnBER4o4WGnPQgxkfGKRXq1phmS9AyNrTFKsIwKTrYOHzBsvTYoNMDeK0X9qrur5XcebRgYc)849loJ8hdjKBgLaSsRYcFHqm11vlFB8oDm5vAOWO95Ou8D8q(GCfSHG5oIuBBN3HG(tjOpJawRzMCE)8LHXP3Ju8JIKy3y3bMT2LnrwCnFAJr13ynS6do8qzBbLvm(5nU(wVwvhAtNBxr3Jm4oXqJgPZl0OYlzNW39aKyB0G724L3GQXdFK12M23lDlYeW)0pnKHihx8gOyt72QG5cKl9BWqccJNJ0dQy9CAPpOBdH5Ot8Cf)JrUEy1XMlofMbgPGMZQgy3v6N05GGsRk35C4yqZ(k1UTOxm5O052HpusAoHZ2HqwZy0bHidDwiMxlZbnfdCzkMwpfpf6ISv2ggjPCFYI2rF4NG))2O)fyydmBGgu6GqDqPbaMTQmJKRnM9lyTCaIC4ckNvCg8lCWyMt3Vi8RbH7kOdEcc39lwhEp6)enXRayVheBbO8qAjmmc6btnvRcwlfKPyu2Q65LrpXIvjcFFuPSFYkge2agWqQLia65pf5HbuE8b9odpo5cAM6vmeSYpWdgng3EGnDj9ewK8umWxrTTZ247D40RHhbnzKtBPoWT21BATsTSBsP5d3CdhKvLYZwBkTIdAzjlzQcY6aO3gb1IoQcIutawuff1wDinA08gW4Xa5eQOZPU1(Bb03ptAOchThKM8plZO5uB(THBB509uWIvuWUObcvEBG)vCj8)gr(nM1lOXuufBZdslt0gHCeO2b5ft63VFL)FS)X74j0SvSsiT6YJlsXxvxmDBhvQRPPBJrbMI0SCGfUQY536hhLfTkSmF(AG5IfiJ0JZ3LgfNJkhy1gvzU0iWsfAjAe)g0ruyDMMinc)8nH5vgYfUDzywEAzS0GsEyBjmQYKm4CGyeu57a1rXYh19FZwOyT6Tkkalev4KK8q65y(y58XQGsAPSUmnLuaJWwJcUJcxwMH2A1q0ZH9UPrRMZE95viMotRAN6t1n2kfOtB0XMD)wyyUaLUUqgxLws(j8DiK0AAjSAl3LZtViGEo9nMd)fmEDM19IqQmkRCeeSddwGJAHRJa9qlZa3G28ua12OSS0mCLciwqbOCde(s3Mc)695hcGf0DWgQcFr2SsN4loscnXYeqm6GuWlrJry0KOTkPxV1QWH5JSGq(VScorEfTMF9Vd2Dd2SsdPGqjkVmS4(qS4JZ36Jvtnwt152kQ6qsPktcKCpsDtVblyE)4CCEciNFKZQJxAnxN3J38aUApJpHz1hgGskT7od17qlwHyzoAOE11ystmfO(D7qmfmhSitbOYAib0es1PAnosXG4r7fsFZXy3SnxYoMQict4Vcm5lYaPhf(1DXP5uwcNyFb2RhogIh(QQSJJ596M2JcX4j2zBonp2J9N2N9VRHal1B1XeO22YVNzX8JPUb0lc88unbtmO93Ay(EPLt)(Qoc(oqE01OQ(VRpGVD8iHGtBl87MJoTNyLBsieZjjeKEYxtyTQZzWy5mY6abDggsZWGYcWaNOTnMKxd0j9KW)wpzKAbM1azFICzeWGICre41YQZfkullOQdOSM6BfroAMg04abx6fqmHstfk)WoYu8Pofdl(qZ5Pj2jABMhCrPPHGq8zu9Eopxyg1KMZ1L2FN4Nw5auMjZw3ujXvk9QYcoZJiCoVMI(9M4UqI5JoT0IhoW24IMPnBPTepzJPeSI5jspQIxjy3W6yXIHh3S3VhlyZC6g5EchDWP8mQTAu0wX4J0nqdvm(QW1(LXf6SRx0rwkxFfX1ZSh2VGUHIKHfyQqhnjEGENFumH9FdxGtlrv357cJJTBiVfl6Aa3UuMZIkMlQ6rP4AG6KmbnXmuf8f8u1TH(0MWncS5buKuLoP1WcH63oivCgfKWZUpQyd2aTOHHW)NyzOJU8seIQ1dj3QfgpfEIDJkRAxsHgpJFgvAhCQOSvRNj2zq6w6ok95bXJ4(I1kHamQSH1Y7Bz(zJ69afAC1bg8BvW2cfxJ2TptfRQnQ1yfAupc5yaqmSUbfiB1ZN)plxrIeLUGJ)0rKMPBP)TKNMbEwNRZqM6bc7XcZqVVLK7)FO)kOiIK0uq1ciz4VUan1KvnAPLf5rRyHWUkiSOLNNIC4I6Htq2QDb8JtYQdJL9w9Hp01Us7sA003UTlXzV2BSBPKbeMJ6Ii081Lzpy3wKwbeg8wcWA5eVwbewfm5fi1dBuCThTjig8NCXtpNQVlhelqoi1WfzHcKltU8ekg1)u9IaSNGPqFz4AYnNqvGkbW)JF6x4YJ)W(NLhgKIJTblUFtecnF8nPcMuaZmxHhfib68pstoJLOeEWW)(BGnU3Hykrpo7sRGLB)MBHb6MCgUxjjBhY4sknBfcACBcPJKaPFyYIRiNBZRwaedqJipSx1DZICqSD8Sprt60xROAuYY3nEkZSUa3wlyPnA6h2o8M8vegNMLb)NCc4YltqPvMxUsEEPjc91g9Q4KCJobTR9A1fAcQRq0FKZ7AB(h7adrxABAHmOQutiEtnvhIn6UbAuNw7OZZP30g85jrH9xOPoNRDq1CQtdKQwdDSshSdsnmsJvwBYb9GWPA4f6MwpHoPDwt35Bj(FOXBFKJ2kTO0L)RJvkE8BdPy3eKLMqBLZS5yckKdrnYtfAkECEBdLY8SQ83lHGg7D1koOjl1hR0W3wDAv8gDu5cR13UrvwFdxnT7JdFm(rVXHvZwI93k1yF1OW87chUcgiKppFJpGAKYesqcuvVcVvVwv40Xj53Mdl0BNCTqA7DDaCWWLs5c2(M6lBrcgJ693qEELeSE(uHMgEOX1k9k9Ks(ztSVk0xkpMoBH6ti(S2R4IQvHrCQOQg(1UqW74n8sLcFNLHpKI1B5XSi0klx7BRfZzyX(OBZ6qdkHRbt1HCua1)P5Rc9l2KNawOFClb94FTX6AMgm6vYESvHwGVw7cZ8lWkp8U0VGcxbPRc)6lbUzCUqe0uzQWkGXvZbn3XXysueOBcx9ANpr3zzhdkZXP1HaicBYpKvWPRBtXtpdd(Y8SOTVi8znZcIuMm1vC4RqNWF5Xk60GOLjBFehFuY6WSK0xEeRAIqut2aa24bDZBxgHABNdBN2wD4XTWVd62FiiMlKgUmyCQmDcm6MRFm1Xf)myxlCgfUyvINoNd56hFdHJl69K5(Wlft6d6XhY(ECPSAkxV9DxD1Qj1rIKP2C4RmAiJUIaIlzidnPKLlg6Iz6TUl(M9XjDort4UF8rV6XiGnVBC3oN4j8txnOFhRg0mDq3NJOPwPmZtZDXM7(SGgG39Gmicn4rUUx)zs3Rrk)pAf(DFyv4PctslVDtvnQWImfx4Res7qvEaXTTK0VSMLogcfMuNXSQleZ4rwzscjgWPLKG)mY0XyQL5Ua2)7(FjKK)KKW7XakVLBIdtyP6HoLGJb32SMiRgIZprkbAeZYcwo)K8Xqw7GcPGVe)WnQza0cd2I0r7wnpYw(ykYkft4P02SoKZjRizZRAHiKoBoBJFlxqh(AXSacUkBTgqb9DbGxZQxYHD0vrlCLWObcbFHdkGjMRHSMmNBdzAnS7cZMUU(O1IAUnwIAii8i9u27j)r7z)3ClFw5FMTKPW7(NhPYwPiGY99YqwlpFI(7cgP5IFIsVlmdVCY5CiTLauoMVEPCu5RAmCCvZ9v1667OPIGT6LkJS2cl(Q6TNETf)seGRsLVN0QHe5XTxBecE(7cjqJqytno3wtUFWun5Zi)f6PivikSRCdjZ8yUDGFEvolVm1LBa9iWG0T0Z4wVM)LtXDk3hHaGvUdSJCy3O1nxq28gGv9(0cFEoTkeW98oCTLP9DB0GI3RZ0)XC861MEjBRDAjtO5Slxy5o0JWgeO581X915ycLli2c7eEjdaeXmxsDwLq0iEyn2phhYY3ebiYA245xbKP(YthXet2CBfkCqOqcMwRjFp(sgtZnXRGor9kFXakYhBBXZxOQ20dpRj0sdivLx0d3wUftRbUfdO8KMAQDoRixMH87GKxlIx2H1tgtVVORE4yz2prQlT(6jpgajxvVOElyATjwEXVURTtxv2prYVtfE4wVolvuOfU2dmIfOU7N39(QkJ(kXvNsjTR4nnFRfzUmT0qwyTwuTXrcwa3CsQvoLMRi(gN7DR8OuGP7(eJYQxQGbSEmYTAI6aL9qILKh82OaKdOKESX(CcBg3WmYtWV3nJgmexC37NHooNJLpi68kwWsfSwR7h4vd)d4(oWV1musM(P)WVSiDRpXd9G6Vqn)xKVhi4hSKFonbMqYJ)bzf0)a1efLFVAZc8CVbFTBBWJFpQei1P(2rOQisibAJQXDe(C6ILGSgT0YWCOEyYPWrcMAuf1aZ9)Mg2UOnAhgJ3a6jycNecQ18o5L9LwfayDGIEraP2xrgYFupKLBWdjyB6slureWUKl69QESM3VwfGo6zviWoq95Va8uX1iLlhVwKUy(OCyIvgWn(aZkHA6krz5L8yd7)5lBt59(6kezz4oYWUaPaZiV5xFyBuaUbAXZdWnqseTxr)EbPy14kOFs7egD(ZU(gTcT1xhlhMy7KxmTwM0R8e3rmWGK7rdwTutohTFRqpnC(YZGCVHZxQSMRPzR0J3A6glhNHxoC)jbzTsehNvM21O8CqAniWX)17sc26(WEjdvdkTEgXBdIZIoAlVrw73Pjhfjocl71kiifhUdtEWU6HJ7eMlEbm1Ya35jbtd8LNemnDiZBqG(C7w0VsKkrqDzvyVWV1L5KpTMGZ2LfBsZU56RR)aZ(Z4hywSyqtxh1uZh59QTC49Z(atCR(QBB)VzzuvxAB6hKCAk1pQQW8EkgK1zYX6900DZi3HBNssE3Sr7)T)YFPA1AdqcFaMqO0aJ(UGis3ifIqGCRUDMh5)9Ute3OYoeVlGO7x8CErL5cwBQSIer)6kCu(AH7XhnEBpX9inxhCCpvtXjZ9u9D2a3amFnxzKE22nwMleUc1AexKM551YAOJnkq3hF0ZiP1(B21f0xxhpC04VrwGJRc3EFPBrTd91TEZP5cWCIUQPDOKiRoqp0tVnm)83(zer(3q3FzwplGuTCNgTEM(ksZAcPUAWe9WU20meWAGlEmisJo0wJVE2MX3A81)kmZ0EChNwB17oo5Vu90op20gDOdUGN2AP8nHhM19XnhmfcDuhP(wVJNfsXJpIfazhHkzA6SX9H9S6kDOo6gTr4tE(7hmUl3Uwyfi1g446qFAX6yTqV6iMwORMnKFseA(7JDkickVgnbUaMx3n6iA7zOSQ6CcLbj3i407qi(MaVBxtmtl1AGadRPdUrmYutjX9c1DQTJJxSHST(s)f0oY)2V(HRl3UfjPmk7FNg5nytiR9NP17ctWSQQxQkZLYDaJ5hllk3MudHpt5nPv1K5VdecSIziw1LbCEElybCM2)aZd)k82j(0pQc0tFio5If4DzoBRVNxL2vHie2XWQezyTnEXhyx)Xmpw1i9UrKTIUUqaXZCSr3rzJCc9MSyE7SwoULIpHXlCgHXu1E1eIoG)9naGWEPGxVBaaE1evntiLLkB5wlh63XydU94JshOnSV5zvVvH21u3y8SHopRJ3jnLnLQTRp(4jsn8kQtxbPHDAEYNjASAS6ACFMvALOVagxoglo2RgmeGGjkLYQSJ5cS6QZ731mBYOdem1XsZKZkDgZHsAQ6uK8id66M6y6SbapIABMM2vD6GpclyoutN3HUjkm(1suODzboGBuj70AY75DTWt14MnLB(CW8iJvG8Rj2cUr9FD2iQJoLBX0PxfKsV7edMyMPQTLIjSv1nkvw3Ay3JzhDyJyiB3NKDWaxVTw6(Ql5Cf2SC8LAehgm5vHYlBkK8wh4i5S54UNInCHaSfFLjlHohNNtMqftkkiXGO1gTuN(tC(CluKMXj1oP2v8rJCkH8y8iqWFFlk50080UIj6reZtLPEH(LA(00fZ4uv3ZJNpHx97HoVwOPQnQ8l1sutZh)6mvS2j(fBYAV9ITBOUUEf(uUwlE2ae156yyz9zQ5BIlxUIb3LakNv42XJojv7v5k98R6lEGbFj3E1Sr2nf0f7EAmnzOIc8dyb3hxWclqUH2XHMCIQp3uVsn9IwmBYoQBNpzK(osk(EtnZbF(ydExCM3O3zkzhDr7ZD1yZjDBl65J73ct3rg(BjMn1Q4kSfWslXyu2DpL88QaDPw7xKOiUnw6YcyAv)4Xh1r2iPPQNimQA86qs8F(2365gtRWXyDwhVgNs5Z(G5Tid731jlGhmP7P8x7bZE1V1di8Rx3MTNN3ix9ew3dyWqrYpBFDoYeHGVH7Nkq86CICRP)wcVpcugnFGhDzcxs1JmfpvBs(Pd1ScawRLj4edZGLKvSFXN)0)5N(R7x83dVlkhLPOnbjSJp2)26p2Q5e5s4jK01IcWHaaWGPEFAtOxNZAMx2iRKixvga)4p)3(tCKj5LBj9cmfoFR6hyZ6Wfxm0o8TkR8UE2Q3G3xLubr3G7uOu9DDnK)RkvkW59E66q)oNOR38jqJhyCDKV1OvogCUXZbfOnXQYf9Txb6LD2ojGmy3GeyZPNnBPE8rJMnapQDlpiHAP9fLqoEQbS2Su68AxW7q52fwNGPGfw6KzBhGY2St35tn7vBkXmzcVBtfxBBlmv2SaZzVKCdfQ0dim)pJZrTEMFRES94Nx4ffl1ysGeRuBxVPKBNL6g1bdXOalQhHfav77EeErfQTt7Mrqy4y1MuiZ1jFkNLY1q0iWGD8gDUDwF1fK0R31ivwuRlHkZ160p(4jSMMwC5W7FNoh)QBxvJebjzPZXzsPOBnJ2miw14XYMpZ3c0UOO69t6EL(3V2xj7icNRhslTPZgZoNrQ5MTqrh120b0iBUCpZfpbUAWLTnn8ouDmC)hFKZ5K2MS6MswwNaN(Zzbe334lrdPVC6iUQAfhXhs72RE1ftmoTasQqgvJ5LMPL9PZXcCf)2ezzGUX5No6u2xgRzdSbn1T9Q2B1ajRugEIjRQE(h(rsvnaABzoTo4HFBxS)dHzKQDmo9EI9PzvL9dRMhWxikjayoH4VskSaCbkg1cnOZ9WCFAEyWS(96pbxyTX11y0pvCPsHKIigpD5argdoy8uaPDtTH1Nd2ZXu742sUvrbo1gpFi34oAoG4WqgpNNSHTQRapr2zWnOfxLbWPF1bscFc8bCB0)I4o3sS(wzFnU2LLgW1HcSTn(fSyJeKI33Zyf6WJqW5rC1Ieo4ju3exhskJhQrCKkske38skEikkdtnURO2r39lgLTQEEz3nfyOziB9XiRqIadbcS6osYX)NzE2aN8CHXFpeUNC8RVAs3dyQgFSwoDys7Y7yDHkxvW4EUtlgEaR8rAfQDCJtvCJA1OWNpbOXAdJKJ4BLOIE7DnS9wvxpNRFAI3IMoQYMBHvAR(yvAAoJZpyoyjsqfrb2sXfdTDamwnt2I9WDnN(oRBICaLAZGQHoadTMUkgQHNSjK8skkG2nbfBreYTa3XxWdQyHQh763n0rBDhBbWISQwISLsf6m0fJmi7snRQEQBszMW8AvT2qDXITuuiukWNoJAwJRWmwW56AJPQrbGu2(0exES2(kmfV(R63sIjNoXW3pzAOdm(juwujHIp8CrJ8CGvR7de)Pb43AzCViFMVe(YoxNIRr9pIVYZNQ5J8SW0r)WoZ78wRYuYSdtBHrrme7Vs(nQBYwZfL3vdUqFy0BhpFoLC4nm)BOOJwkX3tYo88erh)zDpTGIWn8F72NoaZ)HwgPqVkPlOxuMBBCqZfojDaJ6)9kP2Q2FtKlP8JvVayhxOvsNr8vEwfjSjRmDFU2u8TNxujvyHN4Qbhhu4Xg1VDPaU0iBCOhvWIABI5S42y5KBPFAm1BxAmZYB8zEdFNg)166I9xvUG1qNJQV04CW8K6ddDDQaJqC2TUPJ5BgePsx6awCwTZsxGSBZZUPZKlgQ2jqeikpzcEV5IMmplkFmPjRo79AoyFOwZXS2xRDDIbs1g6YiRKaneo4Vt0WXJY8EJEW5qA6i2bmnNQtPL1R1lKQ6r(54aDiv358aTuXPuljZ6LfzMwJm91stD21x7l5Xt6ivMCt0oDUN12MMPOUprYj9Mn2Jea)ovQmjVA2GHANsD6NSi7qJKCVnH(W0sYa4Ojs10d3vuMn50AnxvjKN7YttBe7S0WgZo3PzYKoYdCvzoAcJSHgkXAZDhK0m(6qbyr9Lrvw861E6QVEIIYMOM2dJU(lxbHmt3u7bIBJnwchUTJXxXcSJBfuJPt63rPcyKWLH6vp9SJkx0VJ(yjR6jOlLIGSAp7ld33GKc7FtkOvITSMbNx1Vr34OvP1HU2mUcEDeJo3OyKdcn8LqUMY0S)lJmLEtEL7M4VdKzCGdZBaPyE2u1AxPNwUxquviu7)64jMaVgMsRG9GdM431HH2Ou0ZPKJ90gFiXDwLBD8rI(BRuZBJqq)Mwc5))hD5Vb0wdHUSn1Y89HnUoNtIEf9TOhgxhVJXIKSwOtZcP35FKMYRlxKcNicgTrRuRydn4MrC15TulH45zexBBvAbb721seqDvxyD7jssQAhEAZuhI9uLCLC5QZ5m5JpQ485vZgbIZg6FM6L05YrU1a11i9PZjs1EovqGUgXt8n)0MgyRFVjTZKE1lFurMQsa4fxy0grvEHXRw4azfyarpuMH7BN4Ss3bjqw0pnbZNsTRi3x(v3O2Wr9RJfVIv63B4JpYrrj)s32wOIwZAJyq(exDZ)3d]] )
+spec:RegisterPack( "Arcane", 20240728, [[Hekili:LZZAVnUrs(BXyXPrAJJgj5hJNCwgijiaBcUKn3PK9(WHtuTiBzXmKS5Yh2Jbe4V9RQ(bzZMDtr5iVBWEZh8yt2S6QR3VixpF9VSEvaPGU(NwmBX1Z(WI7Mo)URVEXvRxv8skD9QuI)Nipc)scjg(5xN5ts4x(LigjaF8CwzMpCP9ffP5F17F)JHf7l3o1Nf)(8W4YisrilXpJSRa)B)3VE12YWOIVpz9wR79SpcWmL6V(NUDba1WGaQyP0C)1RWL(LZ(WxU4UVQAZVSNwT5)MKb)a20WK1RIcZlYrSYpWJLstOzWF8t8Jzzo1JTBN3J(b4vwrtiBJObR)gyXzHf0SqcCUYOpHRy68Pe(r1BljldiavBgvTzC1gIpECmU50WeVDrHpUVWlJgtctYR2C)YQnZMEt1MdhQ2GqS7DMSELaCaXMv6VhqpVI9uVyYJHRlaYcI2wrZa62YD7M25PAVj4Ugt(mh15RVeOhzHjp6LMX2f6hst8FzAEbWIR2aR)QzniuEzknlH9erq4Zctfx)xZbsXpZ(XQnmGSVsTQQnH7Q28cRSAZEYtWs(v5wblUzVQ2uWQ2qtcawhI6aqGNQa5I)iG9vBEomjG9mG(FPaG8ncUFs1gGE7tJGlxamHDaDqaSISWhFK)hiu8zSiaajI7rawscc0cyN2vwuMrR3y5oHK5RqYmsF8eY4GmqoGTO0IxmSSgIIah8W1(6LNIi5fnSeZntJDmhrURp3YajuyHzGea1pmhfLlt53epJpr9avM4qk(WvBEIaBeSXtjmQxbj7rAHNpRmrG(xaezsenPWUyLcNRjEDiRWP7gJtNATptclqLzGEbu3vZVbeiblcRMnD2n60a7KWYue236KY58PQ3FDEfcRp4apLRJLTvh(10nPfiTdYmeA35eZuYVkHL8sGORXq14N)5QnlAqe6tmFUHwe(F0a(DvG5klFBef3M8cUA6UmwC1MVtbhdTRFIl1GkZsXMlR28xizXSKxGFZFpkCKRaYFbSewT5VXIkaBJWTjOcFi4dGgtrHNVMdSouX4W88WiAEB61QWeG4KvMw4fcADxOzkT19IJPbHO3KvZ7Lx08ipgX2sIW1d0myN(LoyeN8RtkXfo)OuxWP1obr9NzpJuTNbly0NWFJebMWIj)gA8uXSZrRr413vgfb2i3clExybs4cacNWLB1M)A2wjtbzEOJoHnYWcaaF9F97W1d)2QuAuuoqb58nUfz45R2uk47H5iRWyZr7JjaKdiXCxDrmqSVXvG844LINgtgY4Az2AzqG)qcEzuVcZ3F1KHW(gZD6YvyBbfHrELnT8W09SeV8cwwCZTCAGSEfwrDPU2dGb4BAVQEm1kx9evycMNDWcrZIhzggbE3ADim6afK21oMcCxe3ddQa2MJgUsxkhAUhFANuh1c6J4agIwuJKsVa1Ij5Wjjix5aGhMJlLo3r4OJ4csJYZiU3DiZhH1CN4iDrx3CpSSx)CtSBRVLo)pdiHHA6ou)2EioOYNqBLHwbFoe1l)TsuBwOIc6HGrwg3CrTqXZ8yGaT53LX1pFEn6xAvgRGZz8amVoqxR0Zt8C3N6JmGbjBhVuUxEkj7tn(8B55UfX6B5r)8nIGGK0IobpIuQ3XTLbq1Txz3spJRrp5ZuqJtznIKJARziURv3Sn6AkTjqwUmSqlYjd1S2sRlTEta0EYfiLlB4frGcVKTY3(jhj2Tgm8OX3PL4csdNs)m1Vu4PQRGU0sInhCFJYidkSIeTccNvkvb(fKCEP4UbSs4ub)FyQLOi0eSR9qb)GSL9e3hxcg(aQlvlGaYOW9R2CDQpA(J5xhbV7WZAcSO7r5hL3tP49igLa4hQw37sCpvxZwyq8OBKmtzirVxeHZLilbq3NXJu0ZKx4(ELwcLzYaxkNHec83szaYGcbGS8EcMp78FVX)WLj81I0dDo7xOeCh7uYBuFs13FmPAPqPyrcjssrbKOqmpHbPlM26O7fepnhh)dclVOx1lNEVCNA2R2CGtLqvUsg3M(5uiwn(v0dsTGNTLplElPO2TGXJIhQOiQFHr8TMgvzqAryQsAbeQ4f8FtM0SPleuxBhPmc(Lf2urrW6eOrLW)9X(bFd1(cDbjmaeuC)jAT3ilSQJV7Z13DzUdwsy9ebKUWR(rqI)7HW98EsK3Ko6BMk7X3v6FVmmnLgm9XicAwGLLdYsbOnBuIV(2HzHb0YCVDGuMi5Sw3opLfgLJE)tOrfGWAzUXkkcJPBrtk7rkpCoqTYwRGKVNMRcGGgVLMLZkJmwuYlXLWQktYaoxepkYuiP8it8np8rqlvbT0Sqw2lglHteZtPKpb7KhXhs7uyRW4K9smyqexYZ0TMhk(bIMXaktrgjjpoSOat9PHtIpklmaUDyYNams9Sg(y(BsgdA4piecJg90WD0HHfs4zyJpp64Ja)Clds9kN7pb)VGsrn02wMzTqeQIjOKdIdZYyzGZasN8wnlkGn9NMi97u9gZyVe5lBfEhhy6vRqZsHPLkUMoWHWmApIvkdBVTsiu5TzSEnR6GDTt1ZiLviD2wHiLYKyFh7A2DcyK06XZm1w46AL7HxR5CVFRmGR12V3OUjjkRRHcAOkjn7tGKMntCNcGIySaVDLzV0Fb4okG2fMr5aZwX3ob4G1Rnh0GJ88jGmuV1EZbWeYoA3K2uImEioqmB2YvxMISz49UTBOWzSUYaofN3rRDRrkoVcmEYGYT)dd4OP6iKdZTDTryI9V6dWinYPWZ8qpx3EcNlx(aSvcqPlHwUuAyOMx)mWdLzD6(CC3mve2ymtt3tHip2pnfd8hU7v3uly2oe8TyiJzb8G01dd)4uTovZzRHlMJQbOLXGL65jnG70)9iRN1heN1jkwebm1b8YcpUpLDSmrO1ZV6ndZv7CmjW7VxsPj5GL(eEBpXn(63(nMMrJciaDQGjmbo30cVyHodbRrsUNLm8EySKZi17JX1D1FT5)TxHq0)418tNPBhXPBlnILbucwo3BBEzc6rqVleUxXzKPGiOP)mfcs8H1wW47(w6lm9opA)UNzeZ03OaXc9fUI9cOKI95jKmnjcR38mJwMrUkqlim7uEvzGmzFIXD(4ZcOFUb3CVIZlcUWmuybcc8RFRmJgaj5hgfHvoGQhARLB2GwGjcsTfSBfTH4SGQ29CfaAyXBbnzAMhWnJvXK(iCDiH7x81ncmKfJBLzi61ImqkNqaz8SbjzGqJNWqE3oQ3qpAv0lPyPlWG79PxTHzwY3xdbowXWnBZiIeUJi3Ih0UzA1u5NfUAtoAGYt8hEydbns(87WSN0hkI09em1trnx9dGTMGTtG8ejmcbUOwR(SyEsNaRq)H1AxHmHnzntRlghpD8WIxeJHJKw2mio4jX04S7tIFVTUyCVDV4lQJRjmoLwuQ1mQMBLNgXlSh3nglZNM9sREwPDgA1Mf8y4AEa6EmSbfv(UiKAL(UzL31t5TWcaS0Xhdqn8sF3PW3YkBBRK36fXUvH5VU(PxpOkypA8fwlS7HdUkH6Y(kF6GAP8rQiU9kb3ki0UqqBgQu2QhKuwnips5T7GpAtj0XlcUi(k3fYU3(O9QRLTwX7h2zySdIRQ(ncrB121QN5pO1ZCSIK8biR96fD8c)Hh4NjGtyMnDwtx71plQwrirrSfYl0zx923zEWQ9jmPoqx0xtuv9(BI(((7RPMgHDVqh48NuV1MUTk1YsY)zjTuVJG8jhc7HxofIXXM9J6MLvIHqa0sAMO9H4657o2Znirj(46P1v4ejKsBG0wkKdh6qIX9yjgVf0AgSfzfgd73L69QK3JsPjoE9y5nu0E74gqD(6r4ErB7ghvn4cRJ1HOH5w6sRQGSdRBugfICmssuHAIf(zwVLbTzIkU(KgnMB1LH5Bi4bl0pueFR6AC5sh6T(m(XVBIIovan1uBpftAQP2hvhZk(2RsW3cYS0mugfpi19V(dZ(3ubBPnxDOi6UYmHSCXEIO93zO89NvIS9xh2b6DrxQZQb8hutstF(8CjY1McihOd(CVSletBUo0a(eRKWKJ7HyKdKrAYvUjrsQTqlpNft7mrHKeMGEr3TdBzPQ6YdlWjazFcY(dxPyuZVz2D4mMMLa0nisf(yKdrkYYuhH3vh167WHcaYUkdPOcCJuwWIH4kc4OzcGMtR(H)JqCYhU(RQ2acdWUXV976zazFNWqvFlrXkHLoE(NNuVlZNBFBmMalJDWX8z1a8QFWcHqgQ5Prgwyh)QRHPbM1PxmMh4p(v4aLNxMIygvyXMxJCLXIQn)pG8J9kr))(VJEtkW(egeMZHFdLC2GGSJAb3lKDWJ6wOvdIH7kX2rmyXGqEl18Sxe)Qbb1U1ZSxGE9WaARAv2haxCRDYRmFpdAQrwGMesxaZI1vtDk32FpIEv98zCAAwx5uQQzWh6kq1DOimjb3yhU6dKGbyTnRc20BpN2b4QRNhaALPONN)PXxCOTRfxVbQzjI)oIL9AbHhEVDBhTYlWeQULG0s8XoCngqRHsmFvUqC5I78Os2lb(pGmnhQNNjQr1p89Xk7Y30yqM)U0b3gBnoetstnGZNwB96lw(Ej(xppzv)GTvPkWXLyTWwAwYUlzPl5dz2LsHLLlETGbbcVMUl)4LH7wEHnRGdb2IW)AdX5d5b1RGJ6XbeXIzZgO(NQ2CoNuOHGMUAHq7tSZ5i7WbNZqM2TSm)yA31YSJPDx7ZnM2cC2nsDeWY8IPDBhHm26eO3NzDK3EmH2j95jK089Scpb3Y6A0NDl7Rqp)lDz7MzdW6JvFBnXqThP(HGLQpXv6xxmVt4ZBB8QoCyChuX5B)dKQ3eDqBmkt17rNcwmQ3PMAePvxcEqZacSjnt4ecFxZCH(dupjtd8bQNyPbU(2tMuVp0FcSo8ZF)7xvghZFfYeV8R)xO(i2Sd(ljrDtDAETU4T2r1lNY0lR281LfLXj1qW(7NIFGS6z5IDUbLfDr1J(z4PtiIxdwHTeEjvapa7kZLIj9Eygcib7u55OonWOZ5N8ZoyjCYbc2JxgRhUrN5vpIw9GthoyB6DoCaNGHrTAa49lMD4WfhV3UwqaXHYHvme5gFsy3KdhCpbv3)bhiVBeZHnsoIDIy2iJoS2pQERtuTTGsaZZbocUJY)0LADKE5C3M)orYsBFkVc20OXw2X7aPOoJa19xDdiBv4Q0ctozC3s1e4UIoQ4RSLEDglbW5HdNTJ6CAE4QBM4g16wsIFFywp7uR6u8wTloJVPLjlILs0F)YXYg98NVwxrPRRyR8)LlU2nw5AmPEROc2M8P3Q9YY0m9wTvUgoP3Q9ZYahHBLQ7ppC7nJEl22bmSq9WoCmIpDnlRnsb6GRVm6GNQNH6X0DJmDOwggB30beGgMr5519pRHWPvy9gJLIuKq1JJJVu9cJHhuZGTh7CyC(I2LG9lCxxIjNaAOo7o5gAP1mT(CcRQdVURSKLMVkG5OXciAC5UF8FUF5SPGBxnHs(vMWLh(xSpGo2jZ1F9G6vnRM4iDwnIVo3FKIwE1m7BNFZ3LhzcjgFCxgexgtRwGcMpUC7NBF37SzN(z2YiIyKq79o1WgPcVZgHZogJFEDUmN6Ve)E6uhwBNtnK0O8f5F58BSdjZss4cq9(0SmEqWMMCR3BhC9w11O)4HurdTOrfS4paFcC6LQOgDpBKg9jQBP(a1DPL5Fdf4ng8l4shJ6AKFTKQ9VeFABCyZQ1aIiYr1rLOShf0rkqL70vFy(nJgqjiMFdK4xpFyzg129K2aYTC2K2H4)W8zqEbwY6S2vx3toMOBprm1B(4laeq55V9yimPTS8R)Rj0GL85cZ)t5B2Yqmc6AADUFHgVVhzK7G09nJoZPRJjyysa140)OS0Cu0dn0IdHbJlU1EaFHD7)wlptkRt)r67sYrPqnPnm2sNahPli0AuovoZqfyHAQ(yB2wZDWtoTEbi1BG1Kjodqb3)EdEX5xBgTaH)J5NFLJX70DnZjbDhN8rJhBLGoYPcEFSNjQbI3YNsfSQFw6s)KZogCHtjHZr8i8xxa9qSpQAZRsq)yWV(lQI004B)BkHfmsME7jkWzN9iRXA3NsMsvD6d2sjhEWEKHSpkZlN7wc76j9iRCUFzqEfYEad))pmq7drKt3)0RI(pASdjsLuYylcLO5mNHX(agfzym9lT5DP(n74E(B1XKwcHTEFoEy(cuW(yJqUlfkefVOBajtG)bq90CLxxM(ftuM41DMpi(uRuVDqSx40xTIzCHJcIi8vF2hW9bDYSBQxlpSXQYxF)hM1FccpC9GsX6wKfQ)ck8Wy1RMGvHo81syIEhwCilPlUz7frOdYx)siiO))JD86heZXCiuS4(qj0zXYXdlC4cbjctgecOM1FszXEw26vRQ)yZ)T4hBE(C)V()7d]] )

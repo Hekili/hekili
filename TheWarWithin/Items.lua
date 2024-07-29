@@ -15,7 +15,7 @@ all:RegisterAbilities( {
     spymasters_web = {
         cast = 0,
         cooldown = 20,
-        gcd = "spell",
+        gcd = "off",
 
         item = 220202,
         toggle = "cooldowns",
@@ -43,4 +43,25 @@ all:RegisterAbilities( {
             }
         },
     },
+
+    treacherous_transmitter = {
+        cast = 0,
+        cooldown = 60,
+        gcd = "off",
+
+        item = 221023,
+        toggle = "cooldowns",
+
+        buff = "ethereal_powerlink",
+        proc = "primary",
+        self_buff = "ethereal_powerlink",
+
+        auras = {
+            ethereal_powerlink = {
+                id = 449954,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    }
 } )
