@@ -2875,7 +2875,7 @@ spec:RegisterAbilities( {
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
             if talent.invigorating_shadowdust.enabled then
                 for name, cd in pairs( cooldown ) do
-                    if cd.remains > 0 then reduceCooldown( name, 15 * talent.invigorating_shadowdust.rank ) end
+                    if cd.remains > 0 then reduceCooldown( name, 10 * talent.invigorating_shadowdust.rank ) end
                 end
             end
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
