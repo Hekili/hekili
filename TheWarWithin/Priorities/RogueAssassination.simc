@@ -6,7 +6,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_sta
 actions.precombat+=/variable,name=effective_spend_cp,value=cp_max_spend-2<?5*talent.hand_of_fate
 # Pre-cast Slice and Dice if possible
 actions.precombat+=/stealth
-actions.precombat+=/slice_and_dice,precombat_seconds=1
+actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 
 # Restealth if possible (no vulnerable enemies in combat)
 actions+=/stealth
