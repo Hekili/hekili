@@ -22,7 +22,7 @@ actions.precombat+=/blistering_scales,if=active_dot.blistering_scales=0
 actions.precombat+=/living_flame
 
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
-actions+=/prescience,cycle_targets=1,if=(full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*0.4|variable.temp_wound>=(gcd.max+action.eruption.cast_time)|boss&fight_remains<=30)&(buff.trembling_earth.stack+evoker.prescience_buffs)<=(5+(full_recharge_time<=gcd.max*3))
+actions+=/prescience,cycle_targets=1,if=(active_dot.prescience<group_members|solo&buff.prescience.down)&((full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*0.4|variable.temp_wound>=(gcd.max+action.eruption.cast_time)|boss&fight_remains<=30)&(buff.trembling_earth.stack+evoker.prescience_buffs)<=(5+(full_recharge_time<=gcd.max*3)))
 actions+=/call_action_list,name=ebon_logic,if=(buff.ebon_might_self.remains-cast_time)<=buff.ebon_might_self.duration*0.4&(active_enemies>0|raid_event.adds.in<=3)&(evoker.prescience_buffs>=2&time<=10|evoker.prescience_buffs>=3|!group&!raid|buff.ebon_might_self.remains>=action.ebon_might.cast_time|group_members<=3)
 actions+=/run_action_list,name=opener_filler,if=variable.opener_delay>0&boss
 actions+=/potion,if=debuff.temporal_wound.up&buff.ebon_might_self.up
