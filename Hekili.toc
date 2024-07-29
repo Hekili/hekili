@@ -62,7 +62,7 @@ TheWarWithin\PaladinProtection.lua
 TheWarWithin\PaladinRetribution.lua
 # TheWarWithin\PriestDiscipline.lua
 # TheWarWithin\PriestHoly.lua
-# TheWarWithin\PriestShadow.lua
+TheWarWithin\PriestShadow.lua
 TheWarWithin\RogueAssassination.lua
 TheWarWithin\RogueOutlaw.lua
 TheWarWithin\RogueSubtlety.lua
