@@ -805,7 +805,7 @@ spec:RegisterHook( "runHandler", function( ability )
             if buff.take_em_by_surprise.up then
                 buff.take_em_by_surprise.expires = query_time + 10 * talent.take_em_by_surprise.rank
             end
-            if talent.underhanded_upper_hand.enabled then
+            if talent.subterfuge.enabled then
                 applyBuff( "subterfuge" )
             end
         end
