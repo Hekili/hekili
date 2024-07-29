@@ -1628,7 +1628,7 @@ do
 
         function d:RefreshCooldowns( event )
             local gStart = GetSpellCooldown( 61304 )
-            local cStart = ( select( 4, UnitCastingInfo( "player" ) ) or select( 4, UnitCastingInfo( "player" ) ) or 0 ) / 1000
+            local cStart = ( select( 4, UnitCastingInfo( "player" ) ) or select( 4, UnitChannelInfo( "player" ) ) or 0 ) / 1000
 
             local now = GetTime()
             local conf = Hekili.DB.profile.displays[ self.id ]

@@ -3144,7 +3144,7 @@ do
                     if not state:IsKnown( t.key ) then return ability.charges or 1 end
                 end
 
-                return floor( t.charges_fractional )
+                return floor( t[ raw and "true_charges_fractional" or "charges_fractional" ] )
 
             elseif k == "charges_max" or k == "max_charges" then
                 return ability.charges or 1
