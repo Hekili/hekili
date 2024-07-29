@@ -504,6 +504,11 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 3,
     },
+    nether_munitions = {
+        id = 454004,
+        duration = 12,
+        max_stack = 1
+    },
     nether_precision = {
         id = 383783,
         duration = 10,
@@ -1110,7 +1115,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if talent.nether_munitions.enabled and debuff.touch_of_the_magi.up then
-        state:QueueAuraEvent( "touch_of_the_magi", NetherMunitions, debuff.touch_of_the_magi.expires, "AURA_EXPIRATION" )
+        state:QueueAuraExpiration( "touch_of_the_magi", NetherMunitions, debuff.touch_of_the_magi.expires )
     end
 end )
 
@@ -1152,6 +1157,9 @@ spec:RegisterAbilities( {
         school = "arcane",
 
         startsCombat = true,
+
+        -- TODO: Determine if I need to separate what is consumed/built on impact vs. on cast.
+        -- velocity = 24,
 
         handler = function ()
             gain( 0.02 * mana.modmax * arcane_charges.current, "mana" )
