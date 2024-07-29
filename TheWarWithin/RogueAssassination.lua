@@ -1719,7 +1719,6 @@ spec:RegisterAbilities( {
     -- Ambush the target, causing $s1 Physical damage.$?s383281[    Has a $193315s3% chance to hit an additional time, making your next Pistol Shot half cost and double damage.][]    |cFFFFFFFFAwards $s2 combo $lpoint:points;$?s383281[ each time it strikes][].|r
     ambush = {
         id = 8676,
-        flash = { 8676, 430023 },
         cast = 0,
         cooldown = 0,
         gcd = "spell",
