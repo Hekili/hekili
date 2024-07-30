@@ -19,8 +19,6 @@ actions+=/potion
 actions+=/pummel,if=target.debuff.casting.react
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=variables
-actions+=/ravager,if=cooldown.recklessness.remains<3|buff.recklessness.up
-actions+=/bladestorm,if=cooldown.recklessness.remains<3|buff.recklessness.up
 actions+=/lights_judgment,if=buff.recklessness.down
 actions+=/berserking,if=buff.recklessness.up
 actions+=/blood_fury
@@ -53,11 +51,13 @@ actions.multi_target+=/raging_blow
 actions.multi_target+=/execute
 actions.multi_target+=/whirlwind
 
-actions.single_target+=/recklessness
-actions.single_target+=/avatar,if=!talent.titans_torment|(talent.titans_torment&(buff.enrage.up|talent.titanic_rage)&(!set_bonus.tier31_4pc|(!buff.avatar.up&(cooldown.odyns_fury.remains&set_bonus.tier31_4pc))))
+actions.single_target+=/ravager,if=cooldown.recklessness.remains<gcd|buff.recklessness.up
+actions.single_target+=/recklessness,if=!talent.anger_management|(talent.anger_management&cooldown.avatar.ready|cooldown.avatar.remains<gcd|cooldown.avatar.remains>30)
+actions.single_target+=/avatar,if=!talent.titans_torment|(talent.titans_torment&(buff.enrage.up|talent.titanic_rage))
 actions.single_target+=/champions_spear,if=buff.enrage.up&((buff.furious_bloodthirst.up&talent.titans_torment)|!talent.titans_torment|boss&fight_remains<20|active_enemies>1|!set_bonus.tier31_2pc)&raid_event.adds.in>15
 actions.single_target+=/whirlwind,if=spell_targets.whirlwind>1&talent.improved_whirlwind&!buff.meat_cleaver.up|raid_event.adds.in<2&talent.improved_whirlwind&!buff.meat_cleaver.up
 actions.single_target+=/execute,if=buff.ashen_juggernaut.up&buff.ashen_juggernaut.remains<gcd
+actions.single_target+=/bladestorm,if=buff.enrage.up&(buff.avatar.up|buff.recklessness.up&talent.anger_management)
 actions.single_target+=/odyns_fury,if=buff.enrage.up&(spell_targets.whirlwind>1|raid_event.adds.in>15)&(talent.dancing_blades&buff.dancing_blades.remains<5|!talent.dancing_blades)
 actions.single_target+=/rampage,if=talent.anger_management&(buff.recklessness.up|buff.enrage.remains<gcd|rage.pct>85)
 actions.single_target+=/bloodbath,if=set_bonus.tier30_4pc&action.bloodthirst.crit_pct_current>=95
