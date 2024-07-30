@@ -1,5 +1,7 @@
+actions.precombat+=/mark_of_the_wild
 actions.precombat+=/bear_form
 
+actions+=/skull_bash
 actions+=/use_items
 actions+=/incarnation
 actions+=/berserk
@@ -8,14 +10,16 @@ actions+=/natures_vigil
 actions+=/convoke_the_spirits
 ## actions+=/stampeding_roar
 ## actions+=/growl
-actions+=/frenzied_regeneration,if=health.pct<70&(buff.frenzied_regeneration.down|rage.deficit<20)
-actions+=/barkskin
-actions+=/survival_instincts
+actions+=/renewal,if=health.pct<70
+actions+=/frenzied_regeneration,if=health.pct<70&(buff.frenzied_regeneration.down|rage.deficit<20)&tanking
+actions+=/survival_instincts,if=down&health.pct<70&tanking
+actions+=/barkskin,if=down&health.pct<70&tanking
 actions+=/pulverize
 actions+=/rage_of_the_sleeper
 actions+=/lunar_beam
 actions+=/bristling_fur
-actions+=/ironfur,if=!buff.ironfur.up|rage.deficit<20
+actions+=/ironfur,if=tanking&(!buff.ironfur.up|rage.deficit<20)
+actions+=/thrash_bear,if=!ticking
 actions+=/moonfire,cycle_targets=1,if=refreshable
 actions+=/raze,if=active_enemies>1
 actions+=/maul
