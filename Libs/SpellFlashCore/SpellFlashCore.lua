@@ -15,7 +15,7 @@ if SpellFlashCore and not SpellFlashCore.LS then
     a.print(L["Old uncompletable version of SFC detected, shuttingdown. \r\n Please update other copies of SFC before use."])
     return
 end
-SpellFlashCore = LibStub:NewLibrary("SpellFlashCore", tonumber("20240729150302") or tonumber(date("%Y%m%d%H%M%S")))
+SpellFlashCore = LibStub:NewLibrary("SpellFlashCore", tonumber("20240730150302") or tonumber(date("%Y%m%d%H%M%S")))
 if not SpellFlashCore then return end
 SpellFlashCore.LS = true
 local FrameNames = {}
@@ -804,7 +804,7 @@ function SpellFlashCore.Flashable(SpellName, NoMacros)
 
             local sInfo = GetSpellInfo(SpellName)
             if not NoMacros and type(SpellName) == "string" and ( sInfo and sInfo.name or C_Item.GetItemCount(SpellName) > 0 ) then
-                local SpellTexture = sInfo.iconID
+                local SpellTexture = sInfo and sInfo.iconID
                 local ItemTexture = C_Item.GetItemIconByID(SpellName)
                 for ID in pairs(Buttons.Macro) do
                     local mInfo = GetSpellInfo(ID)
@@ -880,7 +880,7 @@ function SpellFlashCore.FlashAction(SpellName, color, size, brightness, blink, N
 
             local sInfo = GetSpellInfo(SpellName)
             if not NoMacros and type(SpellName) == "string" and ( sInfo and sInfo.name or C_Item.GetItemCount(SpellName) > 0 ) then
-                local SpellTexture = GetSpellTexture(SpellName)
+                local SpellTexture = sInfo and sInfo.iconID
                 local ItemTexture = C_Item.GetItemIconByID(SpellName)
                 for ID, Table in pairs(Buttons.Macro) do
                     local mInfo = GetSpellInfo(ID)
