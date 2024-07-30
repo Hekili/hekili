@@ -3,7 +3,7 @@ actions.precombat+=/heart_of_the_wild
 actions.precombat+=/cat_form,if=talent.rake.enabled
 actions.precombat+=/prowl,if=talent.rake.enabled
 
-# Executed every time the actor is available.
+actions+=/skull_bash
 actions+=/berserking
 actions+=/natures_vigil,if=!buff.prowl.up&!buff.shadowmeld.up
 ## actions+=/run_action_list,name=healing,if=!buff.prowl.up&!buff.shadowmeld.up&druid.time_spend_healing,line_cd=20
@@ -21,7 +21,6 @@ actions+=/starfire,if=spell_targets.starfire>1|buff.heart_of_the_wild.up
 actions+=/wrath
 
 actions.cat+=/rake,if=buff.shadowmeld.up|buff.prowl.up|buff.sudden_ambush.up
-actions.cat+=/auto_attack,if=!buff.prowl.up&!buff.shadowmeld.up
 actions.cat+=/heart_of_the_wild,if=(cooldown.convoke_the_spirits.remains<40|!talent.convoke_the_spirits.enabled)|fight_remains<46
 actions.cat+=/rip,cycle_targets=1,if=((refreshable|energy>90&remains<=10)&(combo_points=5&time_to_die>remains+24|(remains+combo_points*4<time_to_die&remains+4+combo_points*4>time_to_die))|!ticking&combo_points>2+spell_targets.swipe_cat*2)
 actions.cat+=/pool_resource,for_next=1

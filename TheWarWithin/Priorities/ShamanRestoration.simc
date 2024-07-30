@@ -16,7 +16,6 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
 actions+=/healing_rain,if=!moving&talent.acid_rain
-actions+=/stormkeeper
 actions+=/flame_shock,cycle_targets=1,if=active_enemies<3&refreshable
 # actions+=/primordial_wave
 actions+=/lava_burst,if=(active_enemies=1|active_enemies=2&buff.lava_surge.up)&dot.flame_shock.remains>cast_time&cooldown_react

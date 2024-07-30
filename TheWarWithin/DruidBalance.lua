@@ -123,6 +123,7 @@ spec:RegisterTalents( {
     wellhoned_instincts         = { 82246, 377847, 1 }, -- When you fall below 40% health, you cast Frenzied Regeneration, up to once every 120 sec.
     wild_charge                 = { 82198, 102401, 1 }, -- Fly to a nearby ally's position.
     wild_growth                 = { 82241, 48438 , 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 20,949 over 7 sec. Healing starts high and declines over the duration.
+
     -- Balance
     aetherial_kindling          = { 88209, 327541, 1 }, -- Casting Starfall extends the duration of active Moonfires and Sunfires by 3 sec, up to 28 sec.
     astral_communion            = { 88235, 450598, 1 }, -- Increases maximum Astral Power by 20. Entering Eclipse grants 20 Astral Power.
@@ -169,6 +170,7 @@ spec:RegisterTalents( {
     warrior_of_elune            = { 88210, 202425, 1 }, -- Your next 3 Starfires are instant cast and generate 40% increased Astral Power.
     wild_mushroom               = { 88220, 88747 , 1 }, -- Grow a magical mushroom at the target enemy's location. After 1 sec, the mushroom detonates, dealing 33,424 Nature damage and then an additional 18,884 Nature damage over 10 sec. Affected targets are slowed by 50%. Generates up to 16 Astral Power based on targets hit.
     wild_surges                 = { 91048, 406890, 1 }, -- Your Wrath and Starfire chance to critically strike is increased by 10% and they generate 2 additional Astral Power.
+
     -- Elune's Chosen
     arcane_affinity             = { 94586, 429540, 1 }, -- All Arcane damage from your spells and abilities is increased by 3%.
     astral_insight              = { 94585, 429536, 1 }, -- Incarnation: Chosen of Elune increase Arcane damage from spells and abilities by 10% while active. Increases the duration and number of spells cast by Convoke the Spirits by 25%.
@@ -185,6 +187,7 @@ spec:RegisterTalents( {
     stellar_command             = { 94590, 429668, 1 }, -- Increases the damage of Fury of Elune by 15% and the damage of Full Moon by 25%.
     the_eternal_moon            = { 94587, 424113, 1 }, -- Further increases the power of Boundless Moonlight.  Fury of Elune The flash of energy now generates 6 Astral Power and its damage is increased by 50%.  Full Moon New Moon and Half Moon now also call down 1 Minor Moon.
     the_light_of_elune          = { 94585, 428655, 1 }, -- Moonfire damage has a chance to call down a Fury of Elune to follow your target for 3 sec.  Fury of Elune Calls down a beam of pure celestial energy, dealing 20,975 Astral damage over 3 sec within its area. Generates 15 Astral Power over its duration.
+
     -- Keeper of the Grove
     blooming_infusion           = { 94601, 429433, 1 }, -- Every 5 Regrowths you cast makes your next Wrath, Starfire, or Entangling Roots instant and increases damage it deals by 100%. Every 5 Starsurges or Starfalls you cast makes your next Regrowth or Entangling roots instant.
     bounteous_bloom             = { 94591, 429215, 1 }, -- Your Force of Nature treants generate 7 Astral Power every 2 sec.
@@ -2540,7 +2543,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
 
-        spend = 0.10,
+        spend = function() return 0.10 * ( 1 - 0.08 * buff.abundance.stack ) end,
         spendType = "mana",
 
         startsCombat = false,

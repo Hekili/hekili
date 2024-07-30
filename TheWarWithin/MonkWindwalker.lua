@@ -1291,7 +1291,7 @@ spec:RegisterAbilities( {
         id = function() return talent.jadefire_stomp.enabled and 388193 or 327104 end,
         cast = 0,
         -- charges = 1,
-        cooldown = function() return state.spec.mistweaver and 10 or 30 end,
+        cooldown = function() return state.spec.mistweaver and 15 or 30 end,
         -- recharge = 30,
         gcd = "spell",
         school = "nature",

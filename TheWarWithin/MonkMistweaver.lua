@@ -95,7 +95,9 @@ spec:RegisterTalents( {
     gift_of_the_celestials        = { 101113, 388212, 1 }, -- Reduces the cooldown of Invoke Yul'on, the Jade Serpent by 2 min, but decreases its duration to 12 sec.
     healing_elixir                = { 101109, 122280, 1 }, -- You consume a healing elixir when you drop below 40% health or generate excess healing elixirs, instantly healing you for 20% of your maximum health. You generate 1 healing elixir every 30 sec, stacking up to 2 times.
     invigorating_mists            = { 101110, 274586, 1 }, -- Vivify heals all allies with your Renewing Mist active for 9,517, reduced beyond 5 allies.
+    invoke_chiji                  = { 101129, 325197, 1 }, -- Summon an effigy of Chi-Ji for 12 sec that kicks up a Gust of Mist when you Blackout Kick, Rising Sun Kick, or Spinning Crane Kick, healing up to 2 allies for 12,314, and reducing the cost and cast time of your next Enveloping Mist by 33%, stacking. Chi-Ji's presence makes you immune to movement impairing effects.
     invoke_chiji_the_red_crane    = { 101129, 325197, 1 }, -- Summon an effigy of Chi-Ji for 12 sec that kicks up a Gust of Mist when you Blackout Kick, Rising Sun Kick, or Spinning Crane Kick, healing up to 2 allies for 12,314, and reducing the cost and cast time of your next Enveloping Mist by 33%, stacking. Chi-Ji's presence makes you immune to movement impairing effects.
+    invoke_yulon                  = { 101129, 322118, 1 }, -- Summons an effigy of Yu'lon, the Jade Serpent for 12 sec. Yu'lon will heal injured allies with Soothing Breath, healing the target and up to 2 allies for 14,599 over 7.6 sec. Enveloping Mist costs 50% less mana while Yu'lon is active.
     invoke_yulon_the_jade_serpent = { 101129, 322118, 1 }, -- Summons an effigy of Yu'lon, the Jade Serpent for 12 sec. Yu'lon will heal injured allies with Soothing Breath, healing the target and up to 2 allies for 14,599 over 7.6 sec. Enveloping Mist costs 50% less mana while Yu'lon is active.
     invokers_delight              = { 101123, 388661, 1 }, -- You gain 20% haste for 8 sec after summoning your Celestial.
     jade_bond                     = { 101113, 388031, 1 }, -- Abilities that activate Gust of Mist reduce the cooldown on Invoke Yul'on, the Jade Serpent by 0.3 sec, and Chi-Ji's Gusts of Mists healing is increased by 60% and Yu'lon's Soothing Breath healing is increased by 300%.
@@ -239,11 +241,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 389574
     },
-    clouded_focus = {
-        id = 388048,
-        duration = 8,
-        max_stack = 2
-    },
     crackling_jade_lightning = {
         id = 117952,
         duration = 4,
@@ -277,13 +274,6 @@ spec:RegisterAuras( {
         duration = 6,
         tick_time = 1,
         max_stack = 1
-    },
-    essence_font = {
-        id = 344006,
-        duration = 8,
-        tick_time = 2,
-        max_stack = 1,
-        copy = 191840
     },
     eye_of_the_tiger = {
         id = 196608,
@@ -476,6 +466,11 @@ spec:RegisterAuras( {
         duration = function() return 3 * gust_of_mist.count end,
         max_stack = 1
     },
+    refreshing_jade_wind = {
+        id = 196725,
+        duration = 6,
+        max_stack = 1
+    },
     renewing_mist = {
         id = 119611,
         duration = function() return 20 + ( buff.tea_of_serenity_rm.up and 10 or 0 ) + ( buff.tea_of_plenty_rm.up and 10 or 0 ) end,
@@ -520,11 +515,6 @@ spec:RegisterAuras( {
         id = 388686,
         duration = 30,
         max_stack = 1
-    },
-    tea_of_plenty_ef = {
-        id = 388524,
-        duration = 30,
-        max_stack = 3
     },
     tea_of_plenty_rm = {
         id = 393988,
@@ -594,6 +584,11 @@ spec:RegisterAuras( {
     zen_flight = {
         id = 125883,
         duration = 3600,
+        max_stack = 1
+    },
+    zen_pulse = {
+        id = 446334,
+        duration = 20,
         max_stack = 1
     },
     zen_focus_tea = {
@@ -679,6 +674,7 @@ spec:RegisterAbilities( {
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
                 gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
+                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
             end
         end,
     },
@@ -693,7 +689,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            return ( pet.yulon.up and 0.12 or 0.24 ) * ( buff.mana_tea.up and 0.5 or 1 ) * ( 1 - 0.15 * buff.clouded_focus.stack )
+            return ( pet.yulon.up and 0.12 or 0.24 ) * ( buff.mana_tea.up and 0.5 or 1 )
         end,
         spendType = "mana",
 
@@ -701,7 +697,9 @@ spec:RegisterAbilities( {
         texture = 775461,
 
         handler = function ()
-            if buff.thunder_focus_tea.up then removeBuff( "thunder_focus_tea" )
+            if buff.thunder_focus_tea.up then
+                removeStack( "thunder_focus_tea" )
+                if buff.thunder_focus_tea.down and talent.deep_clarity.enabled then applyBuff( "zen_pulse" ) end
             elseif buff.tea_of_serenity_em.up then removeStack( "tea_of_serenity_em" )
             else removeBuff( "invoke_chiji" ) end
             gust_of_mist.count = 0
@@ -713,29 +711,6 @@ spec:RegisterAbilities( {
 
             applyBuff( "enveloping_mist" )
             if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_versatility" ) end
-        end,
-    },
-
-    essence_font = {
-        id = 191837,
-        cast = function() return ( buff.tea_of_plenty_ef.up and 1.5 or 3 ) * haste end,
-        cooldown = 12,
-        channeled = true,
-        gcd = "spell",
-
-        spend = function() return 0.36 * ( buff.mana_tea.up and 0.5 or 1 ) end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 1360978,
-
-        start = function ()
-            applyBuff( "essence_font" )
-            removeStack( "tea_of_plenty_ef" )
-            if talent.ancient_teachings.enabled then
-                applyBuff( "ancient_teachings" )
-            end
-            if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
     },
 
@@ -836,7 +811,7 @@ spec:RegisterAbilities( {
         buff = "mana_tea_stack",
 
         start = function ()
-            if set_bonus.tier30_4pc > 0 then applyBuff( "soulfang_vitality" ) end
+            if set_bonus.tier30_4pc > 0 or set_bonus.tier31_4pc > 0 then applyBuff( "soulfang_vitality" ) end
         end,
 
         finish = function ()
@@ -918,7 +893,6 @@ spec:RegisterAbilities( {
             applyBuff( "renewing_mist" )
             removeStack( "tea_of_plenty_rm" )
             removeStack( "tea_of_serenity_rm" )
-            if set_bonus.tier31_2pc > 0 then applyBuff( "chi_harmony" ) end
             if talent.secret_infusion.enabled and buff.thunder_focus_tea.stack == buff.thunder_focus_tea.max_stack then applyBuff( "secret_infusion_haste" ) end
         end,
     },
@@ -1000,8 +974,12 @@ spec:RegisterAbilities( {
                 if pet.chiji.up then
                     addStack( "invoke_chiji" )
                     gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
+                    if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
                 end
-                removeStack( "thunder_focus_tea" )
+                if buff.thunder_focus_tea.up then
+                    removeStack( "thunder_focus_tea" )
+                    if buff.thunder_focus_tea.down and talent.deep_clarity.enabled then applyBuff( "zen_pulse" ) end
+                end
                 if buff.lifecycles_em_rsk.up then
                     addStack( "mana_tea_stack" )
                     removeBuff( "lifecycles_em_rsk" )
@@ -1101,6 +1079,7 @@ spec:RegisterAbilities( {
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
                 gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
+                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
             end
         end,
     },
@@ -1117,6 +1096,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             addStack( "thunder_focus_tea", nil, talent.focused_thunder.enabled and 2 or 1 )
+            if talent.refreshing_jade_wind.enabled then applyBuff( "refreshing_jade_wind" ) end
+            if set_bonus.tier30_4pc > 0 or set_bonus.tier31_4pc > 0 then applyBuff( "soulfang_vitality" ) end
         end,
     },
 
@@ -1135,9 +1116,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "eye_of_the_tiger" )
                 applyBuff( "eye_of_the_tiger" )
             end
-            if talent.teachings_of_the_monastery.enabled then
-                addStack( "teachings_of_the_monastery" )
-            end
+            addStack( "teachings_of_the_monastery" )
         end,
     },
 
@@ -1151,7 +1130,7 @@ spec:RegisterAbilities( {
 
         spend = function()
             if buff.tea_of_serenity_v.up then return 0 end
-            return 0.034 * ( buff.mana_tea.up and 0.5 or 1 ) * ( 1 - 0.15 * buff.clouded_focus.stack )
+            return 0.03 * ( buff.mana_tea.up and 0.5 or 1 )
         end,
         spendType = "mana",
 
@@ -1165,6 +1144,7 @@ spec:RegisterAbilities( {
                 addStack( "mana_tea_stack" )
                 removeBuff( "lifecycles_vivify" )
             end
+            removeBuff( "zen_pulse" )
             removeBuff( "vivacious_vivification" )
         end,
     },
@@ -1180,24 +1160,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "zen_focus_tea" )
-            if set_bonus.tier30_4pc > 0 then applyBuff( "soulfang_vitality" ) end
-        end,
-    },
-
-    -- Trigger a Zen Pulse around an ally. Deals 2,013 damage to all enemies within 8 yds of the target. The ally is healed for 2,127 per enemy damaged.
-    zen_pulse = {
-        id = 124081,
-        cast = 0,
-        cooldown = 30,
-        gcd = "spell",
-
-        spend = function() return 0.05 * ( buff.mana_tea.up and 0.5 or 1 ) end,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 613397,
-
-        handler = function ()
+            if set_bonus.tier30_4pc > 0 or set_bonus.tier31_4pc > 0 then applyBuff( "soulfang_vitality" ) end
         end,
     },
 } )
@@ -1248,10 +1211,9 @@ spec:RegisterSetting( "aoe_rsk", false, {
 
 spec:RegisterSetting( "single_zen_pulse", false, {
     type = "toggle",
-    name = strformat( "%s: Single Target", Hekili:GetSpellLinkWithTexture( spec.abilities.zen_pulse.id ) ),
-    desc = strformat( "If checked, %s may be recommended when there is only one enemy detected.\n\n"
-        .. "This can result in %s going on cooldown for 30 seconds before additional enemies come in range.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.zen_pulse.id ), spec.abilities.zen_pulse.name ),
+    name = strformat( "%s (%s): Single Target", Hekili:GetSpellLinkWithTexture( spec.abilities.vivify.id ), Hekili:GetSpellLinkWithTexture( spec.auras.zen_pulse.id ) ),
+    desc = strformat( "If checked, %s may be recommended with %s when there is only one enemy detected.\n\n",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.vivify.id ), spec.auras.zen_pulse.name ),
     width = "full",
 } )
 
@@ -1279,4 +1241,4 @@ spec:RegisterOptions( {
 
 
 
-spec:RegisterPack( "Mistweaver", 20240207, [[Hekili:9I17VTTnt4)wYxYpWIDTStI72IdqFl2aA276gMZ(Y(GKOLOSzTePgjvCtHH(BFhPSKPO(HDAtkksIQ4P7o(Cp3X7ORJ7dUZdrsS7hhpA8vJgpA6qNXJVz8nUZLpLIDNNIcwJwcpqrjWV)DIqUbJEeZvl9umdfQuHGLXdGLDNViJel)a1DrR6D01GSP4a41th5oFfjmexilwe4oxj7GrJhmA6pL7)Hi4h6JS14C)3VIm4EsUprK7NjWHxQ)tUpkwI5uWo5(PCcJtKpL7hd(4W87ZVVqDodCUbu3FNgQLtIIXuPOuGjdCgpy81kbuk8FW0C))mlwG)zq7HH5()frqOlZ9NNbR8BKG1Gxap9U)4xY9zPscJwtvoxvQQFfHJju4H5swskyyMYjzbW3sdiGpK7)agfSc0UP34my8BbvStjpqwI5GhHItY9tyCCnj1gdmqckogmaeywdaued(cNrdhVxwat1GayBaXdl98cNc9iJaVIJdqcPEVA76BwPGfHerd1RRaae8d(ZKDFru5xCU26jikcwokIO2PbpDHHRmPaU1UcaVS443aHxyRY4P4qWF2qKRaRb0eckM8fuHNUdRDNRcVcnVfhHYILWJFuZJrbkj0eme3Bf4SEcjNSg4LykArmo09)5kbQNPWanYJiXjclHMyk0Iygl0lkJ)KLuxvtkmxG5Rb8WsQRnLkMSCLu49PSWLjajWs0BmfnIWXAtBj0utHq0amSnrXEbalWsY3wZ)ql9yrEaKeS2E7(JMcMYk(BnjCgPez)RMhazByobbYJLdbE8NidZsb4xza1hSxH8mQxXZEQOxrm0ROIsahrXAd40PbobOdyPuNPiGIpEv0TTBlZOhIkYQ8cy0agpuHld3PTC)tZ9xKff1QqHSn06AAdAnMIdlntlQXwIM6yNHKvP4D6l7frPL9O2NqadhOaalgYc1q04oHi1hbad4ujemue4Uz5(tAnyOOjDgnqSIyXKJ2q3(vzh4)Q(38uOQdlzbQzwCRKWAPUaO5TiJlSZHMyl0gGYuxgzXoT0Mh3gTarlvSCvgneZ9IybzcvmSH)9fm1lvDusB(3XBYcAvf)h8BpUyTrYL(akpbKJTgYSRkl1vM0ocAfRtxtyf2lHrH6)y(t7zQkdRPQ9iCwQMrFa0Arm0hbltw5IxF4Gu9IHDfTNwV0pHsvOHUQsHXSd8IMCTMXYEOD249XgCF(q)55(N8mkkDGG0XemHJ4vn4CNM2DHw1bmwSQU0qR99qoobrOcT0ldchMG(CpX7UPK7RSd)og7zK20mt6vJ5ivnA5Lc9z1GWuCcvV1kKKeSNK5byGxWkeFzzkqdGHdXWnkCmHORb(XUlP)TCssvW52w8HwlD1nX9vZpWcb0CiCAoJk7NJ8Q5cnpJ96oDcT(j6js8kA3zF6IX5Ey6J4ywQzm(MJV(X0J(WH7QoBOLvC0iYjhDZrTuNPeAkLR)QSnA2SwbGEA2S7epi1dMZuOKQykshhyS0niUY2qdSpScAaKKKY4YDd9C2UrcotnnZ)MbopS7eSe1KIzqaggaeEbKGsHeuyKK)VUhshhyCK3ZGWgxV(zDJzNvmXupsuIwGKN785loSrSkRBBHoQ6F0Q3oDOJDqJmQ9gi)(waAOlKNhiFv7(x3Nfz5Oh(mZd4XINjRyY3rhUxl(nZqAfo0PUppez8RgfR)9)lL(7Gc(IP)PFhkJ0LnSlA3fjXUOUjl5dAcIsTxxCMI6Ax032cSSAunwejUQRmXWQz3(HzVPyAT87BBTQ(V6EzvlCkxy36WBBCjoMlwDPnMVC)L0u7TvxkJ5BTUegZLQU0fZxw)swQPFZlvXCblebEJ1TGCPAs4z68WllgFEMZLKOzM3MI5NxVvfLKN06LISDB30Qt79sq2)Lw1uoT7l9OH1QstoTNl5WCFzFpbf4cCatnuPEpo3nBYHvb83U1WTtm4BqJCGwA0wS16wnUzTATgE0rNdEqW2TNFsViEVt0TD7HKr3E6DtU40dnd3D76l2Alvn2LA705yAwF0(05gV2QiqbOx1(Nz8aI(TfqAjmAqe29vT4yflyT5BvzB3AFrl2A5RkoFOivw6PhCF1ey3)ElKTyHwAt3eJ1VvblMtKQ2qTmm7TZAWqk)8wdsp3Ac74H32Pvmhv8vXanRU(IBcRbdv2OJrkVZPLWuxvFkfOLWDlfobgU1BCo9KEoWOrbQsGQPdulZOfIIXGEqxMRyC35VJSgrrRr6P9C)Vp]] )
+spec:RegisterPack( "Mistweaver", 20240730, [[Hekili:nJvBVTTnq4Fl5lUjynE2XX1BfXbyV8H1GTIb4c0VjjAjkBglrQrsL0myOF77iLLeffLStBsXqbssjF0X7LN74D0BQ3N8wfHKyVpE1KRUEYIztgp5NMVy(78wjFkd7TkdfUdTb(dkkf(5FreYhXOhWC1wpLWqrkriy58qyBVvRZjjYpq9w7qUxpfqMHdHfxmXB1wsueUejwe6T6pWOemViiJtyCIKGffbioUi43)7vxcRGPsCuraJM8uXDf3Pe8LtwC5SjVVi4tBbCFgbF9NjYTeQ3QeqtfAZdhJYtKWF(rT5IcLegvRjiU)wenYxi5KDG6JPO1j4iVF1tc6Oj4Cb2NiXPclqZmbToHXI8JZ5pzH66wOWCbMVJq3yHAUjQeYMTsH)95rBsbd3c67mHgt4y9rBbAHjienedMjkXpeLKyH8NAPFOn(SyFWLeUZ2C)ztGzSYF3cX0jkinlTkecLyobb4XYXHBj3tgNNbUF1bO(GgbYZP(L)TVk6vgd9ljEHCefRpGP9EaNveiWsj4zfJfah1pgHtiuGzSFFrGeyxu5yWrOys(HmAiJhP8lJpiTIGrfbRZJJDckI9iTTKEeTdtXrvhJdXyJORmoCqsmcCnkfVxDPbIsknET7radhOaalMLMPDrx1Rls9rGJbuQuD(1TllcM5myOOj9gnqSYyXSt(GU5R6CG)R6FRY44qw6Au3SyNKWwPUGtZFDoxyLdjlTIk5DAgrP3QsYYT50im3pMfMluXN6Z2P00rZ)ft9ZYteyDsqLKEG8aj(P6ckNUYusMQz9Gf5Zf7msPicydFbKzTdYNRlg1x(ZbAznxtxjyl2pLrrca2tn8t1bRnPbaNNP5XhXpUobUKHLlRvX5Nq8RDnqrgHsvwQUorPGSd3IUSNUrWbis2(sh3e8c5wpVi4SNrzMJeaoLaLqcHaOCGMsDHw0HmwIQsZyl7EmhNIiuHg9MWOXPOVmqSSF6wtTA4Njy)6uJgl7yzlpFIIKSbI3zOK0o8JYRygSGGKKI9LmFWK9d3I4BQyZD8dCiK9OYTLs0fXgOUW3Yvb1XIBCOdoRp1pp9vtpWcbgUbf0dQCykXRMk09sY5dxNMqFGTd7x2Vst2HXfxy6d4ewMzm(DNE5IfNCD(BRlZ7yNPApYzNC3nokRu5AQWnCr1oDl2kFFGUf7pXds9G5jekuLtlC1KfEREeXvNn0bQU3EsAgJllcIzqp(V5qp9VPiGJ)NCq5bRtWsbCOCiaJ0dkajOuibDCXD)PUjWPtHbf(nge2469Ft)(mqWs2GiQ8waYZN(Llo(Hyvf3(e6Pi)jlE70HESGozunhqXDoC0qdfppN81U1V(V6Xsrp(vKnASwFJzjjmvLwLAXrqAXJy1qJWeBW5tG2TLkyL0WIavZLQsiYkCuM2yHkLMOJIuGHjyrRrc87bVtWLfbn3q52BjEMmYzFhDwdEIFZSZ)3fk0LSEErJRE1sTg23)sj)Es9EXK)IVdLp77mSVSQpcQ9LzML3(GMGOe782KqffqnJjlMKGRUXsmUEOZFy5pwoMzXDU2RUVt1HCaaSCN3xYCZ63tYCXM3pQ1Q1VxK5QwVpK5w1VhK5ITF)NwY389Em3WYMHvSEGM3QgsFPot7TLt2VC6BjXlnFOhZpVDtykKN589A2VVFIZObFFMMV0QI1O(FpMoNwDIWObE)ft7Y(jmk9lWvNT8kT7E72LZoUiGF3VeUzMbFdArfKsNg(T23QLuRDB1kNo6C0Rz2V)8Zg0Jp4OP73Fmm6gVVD2fJo2WO3EOJFltQCsrLT07WMJ6mOPLmmsVB7SRBO1moarDxbchHpdcWHVQrBhqNkHA5gCk(97TFxiBP8vfXpwmlpB0rTuh(0YnCmYHP3vVQY8nNUwP4ogm)MLD4evFUZWZZTkWbM3n9EkMJ9(QCaDRN(IFewd5wZn7oE8TtDeM6REtfahHBhLkbMS1kthD2axr0PKuLJQRc0kdWbrXyOvOZXTmU3QFHSdrr7q6jx9(V]] )

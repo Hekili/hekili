@@ -1590,6 +1590,8 @@ spec:RegisterAbilities( {
                 state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 5 , "AURA_PERIODIC" )
                 state:QueueAuraEvent( "divine_toll", spellToCast, buff.divine_resonance.expires - 10, "AURA_PERIODIC" )
             end
+
+            if talent.rising_sunlight.enabled then addStack( "rising_sunlight", nil, 2 ) end
         end,
 
         copy = { 375576, 304971 }
