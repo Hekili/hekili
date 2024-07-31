@@ -324,10 +324,10 @@ spec:RegisterAuras( {
                 if dropped and expires > query_time then
                     c.expires = expires
                     c.applied = dropped
-                c.count = 1
-                c.caster = "player"
-                return
-            end
+                    c.count = 1
+                    c.caster = "player"
+                    return
+                end
             end
 
             c.count = 0

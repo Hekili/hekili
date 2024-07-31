@@ -278,8 +278,42 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    -- Damage every $t1 sec.
+    -- https://wowhead.com/beta/spell=26573
     consecration = {
         id = 26573,
+        duration = 12,
+        tick_time = 1,
+        type = "Magic",
+        max_stack = 1,
+        generate = function( c, type )
+            if type == "buff" then
+                local dropped, expires
+
+                for i = 1, 5 do
+                    local up, name, start, duration = GetTotemInfo( i )
+
+                    if up and name == class.abilities.consecration.name then
+                        dropped = start
+                        expires = dropped + duration
+                        break
+                    end
+                end
+
+                if dropped and expires > query_time then
+                    c.expires = expires
+                    c.applied = dropped
+                    c.count = 1
+                    c.caster = "player"
+                    return
+                end
+            end
+
+            c.count = 0
+            c.expires = 0
+            c.applied = 0
+            c.caster = "unknown"
+        end
     },
     contemplation = {
         id = 121183,
