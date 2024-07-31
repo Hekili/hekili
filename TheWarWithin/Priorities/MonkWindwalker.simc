@@ -47,6 +47,8 @@ actions.default_aoe+=/crackling_jade_lightning,if=buff.the_emperors_capacitor.st
 actions.default_aoe+=/jadefire_stomp
 actions.default_aoe+=/tiger_palm,cycle_targets=1,if=combo_strike&buff.ordered_elements.up&chi.deficit>=1
 
+# <3 Targets
+actions.default_st+=/tiger_palm,cycle_targets=1,if=(energy>55&talent.inner_peace|energy>60&!talent.inner_peace)&combo_strike&chi.max-chi>=2&buff.teachings_of_the_monastery.stack<buff.teachings_of_the_monastery.max_stack&!buff.ordered_elements.up&(!set_bonus.tier30_2pc|set_bonus.tier30_2pc&buff.dance_of_chiji.up&!buff.blackout_reinforcement.up&talent.energy_burst)
 actions.default_st+=/touch_of_death
 actions.default_st+=/celestial_conduit,if=buff.storm_earth_and_fire.up&buff.ordered_elements.up&cooldown.strike_of_the_windlord.remains
 actions.default_st+=/rising_sun_kick,cycle_targets=1,if=!pet.xuen_the_white_tiger.active&prev.tiger_palm|buff.storm_earth_and_fire.up&talent.ordered_elements
