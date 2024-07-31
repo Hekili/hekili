@@ -603,7 +603,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=155625
     moonfire_cat = {
         id = 155625,
-        duration = function () return mod_circle_dot( 18 ) * haste end,
+        duration = function () return mod_circle_dot( 18 ) end,
         tick_time = function() return mod_circle_dot( 2 ) * haste end,
         max_stack = 1,
         copy = "lunar_inspiration",
@@ -620,7 +620,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=164812
     moonfire = {
         id = 164812,
-        duration = function () return mod_circle_dot( 16 ) * haste end,
+        duration = function () return mod_circle_dot( 16 ) end,
         tick_time = function () return mod_circle_dot( 2 ) * haste end,
         type = "Magic",
         max_stack = 1
@@ -648,7 +648,7 @@ spec:RegisterAuras( {
     -- Stub for snapshot calcs. ???
     primal_wrath = {
         id = 285381,
-        duration = function () return ( talent.veinripper.enabled and 1.25 or 1 ) * mod_circle_dot( 2 + 2 * combo_points.current ) * haste end,
+        duration = function () return ( talent.veinripper.enabled and 1.25 or 1 ) * mod_circle_dot( 2 + 2 * combo_points.current ) end,
         tick_time = function () return mod_circle_dot( 2 ) * haste end,
         meta = {
             remains = function () return dot.rip.remains end,
@@ -677,7 +677,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=155722
     rake = {
         id = 155722,
-        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) * haste end,
+        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) end,
         tick_time = function() return mod_circle_dot( 3 ) * haste end,
         mechanic = "bleed",
         copy = "rake_bleed",
@@ -696,7 +696,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=8936
     regrowth = {
         id = 8936,
-        duration = function () return mod_circle_hot( 12 ) * haste end,
+        duration = function () return mod_circle_hot( 12 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -835,13 +835,13 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=192090
     thrash_bear = {
         id = 192090,
-        duration = function () return mod_circle_dot( 15 ) * haste end,
+        duration = function () return mod_circle_dot( 15 ) end,
         tick_time = function () return mod_circle_dot( 3 ) * haste end,
         max_stack = 3,
     },
     thrash_cat = {
         id = 405233,
-        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) * haste end,
+        duration = function () return mod_circle_dot( ( talent.veinripper.enabled and 1.25 or 1 ) * 15 ) end,
         tick_time = function() return mod_circle_dot( 3 ) * haste end,
         meta = {
             ticks_gained_on_refresh = function( t )
@@ -2186,11 +2186,11 @@ spec:RegisterAbilities( {
         aura = "rip",
 
         apply_duration = function ()
-            return ( talent.veinripper.enabled and 1.25 or 1 ) * mod_circle_dot( 2 + 2 * combo_points.current ) * haste
+            return ( talent.veinripper.enabled and 1.25 or 1 ) * mod_circle_dot( 2 + 2 * combo_points.current )
         end,
 
         max_apply_duration = function ()
-            return ( talent.veinripper.enabled and 1.25 or 1 ) * mod_circle_dot( 12 ) * haste
+            return ( talent.veinripper.enabled and 1.25 or 1 ) * mod_circle_dot( 12 )
         end,
 
         ticks_gained_on_refresh = function()
@@ -2504,7 +2504,7 @@ spec:RegisterAbilities( {
         form = "cat_form",
 
         apply_duration = function ()
-            return ( talent.veinripper.enabled and 1.25 or 1 ) * mod_circle_dot( 4 + 4 * combo_points.current ) * haste
+            return ( talent.veinripper.enabled and 1.25 or 1 ) * mod_circle_dot( 4 + 4 * combo_points.current )
         end,
 
         usable = function ()
