@@ -2,8 +2,9 @@ actions.precombat+=/use_item,name=imperfect_ascendancy_serum
 actions.precombat+=/stealth,precombat_seconds=2
 # Cancel Stealth to activate Double Jeopardy
 actions.precombat+=/cancel_buff,name=stealth,if=talent.double_jeopardy
+actions.precombat+=/adrenaline_rush,precombat_seconds=2,if=settings.use_ld_opener&talent.improved_adrenaline_rush&buff.adrenaline_rush.down
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=buff.roll_the_bones.down
-actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=talent.improved_adrenaline_rush&buff.adrenaline_rush.down
+actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=!settings.use_ld_opener&talent.improved_adrenaline_rush&buff.adrenaline_rush.down
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
 actions.precombat+=/stealth
 
