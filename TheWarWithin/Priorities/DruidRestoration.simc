@@ -27,7 +27,7 @@ actions.cat+=/pool_resource,for_next=1
 actions.cat+=/thrash_cat,cycle_targets=1,if=refreshable&target.time_to_die>7&spell_targets.thrash_cat>2
 actions.cat+=/sunfire,cycle_targets=1,if=(refreshable&target.time_to_die>5)&!prev_gcd.1.cat_form&(active_enemies=1|talent.improved_sunfire.enabled)
 actions.cat+=/rake,cycle_targets=1,if=refreshable&time_to_die>10&spell_targets.swipe_cat<10
-actions.cat+=/cat_form,if=!buff.cat_form.up&energy>50&(dot.rake.refreshable&spell_targets.thrash_cat>3&spell_targets.thrash_cat<7&talent.thrash.enabled)&(cooldown.healing.remains>(gcd.max*2)|!druid.time_spend_healing)
+actions.cat+=/cat_form,if=!buff.cat_form.up&energy>50&(dot.rake.refreshable&spell_targets.thrash_cat>3&spell_targets.thrash_cat<7&talent.thrash.enabled)
 actions.cat+=/moonfire,cycle_targets=1,if=(refreshable&time_to_die>12&!ticking|(prev_gcd.1.sunfire&remains<duration*0.8&spell_targets.sunfire=1))&!prev_gcd.1.cat_form&spell_targets.swipe_cat<6
 actions.cat+=/sunfire,if=prev_gcd.1.moonfire&remains<duration*0.8
 actions.cat+=/starsurge,if=active_enemies=1|(active_enemies<8&!buff.cat_form.up)
