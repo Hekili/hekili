@@ -33,7 +33,7 @@ local GetItemSpell, GetItemCount, IsUsableItem = C_Item.GetItemSpell, C_Item.Get
 local GetSpellInfo = C_Spell.GetSpellInfo
 local GetSpellLink = C_Spell.GetSpellLink
 
-local UnitBuffByID, UnitDebuffByID = ns.UnitBuffByID, ns.UnitDebuffByID
+local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 
 local specTemplate = {
     enabled = true,
@@ -2054,13 +2054,13 @@ all:RegisterAuras( {
     dispellable_curse = {
         generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
             while( name ) do
                 if debuffType == "Curse" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
             end
 
             if name then
@@ -2081,13 +2081,13 @@ all:RegisterAuras( {
     dispellable_poison = {
         generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
             while( name ) do
                 if debuffType == "Poison" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
             end
 
             if name then
@@ -2108,13 +2108,13 @@ all:RegisterAuras( {
     dispellable_disease = {
         generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
             while( name ) do
                 if debuffType == "Disease" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime = UnitDebuffByID(Co "player", i, "RAID" )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
             end
 
             if name then
@@ -2136,13 +2136,13 @@ all:RegisterAuras( {
         generate = function( t, auraType )
             if auraType == "buff" then
                 local i = 1
-                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuffByID( "target", i )
+                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
 
                 while( name ) do
                     if debuffType == "Magic" and canDispel then break end
 
                     i = i + 1
-                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuffByID( "target", i )
+                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
                 end
 
                 if canDispel then
@@ -2155,13 +2155,13 @@ all:RegisterAuras( {
 
             else
                 local i = 1
-                local name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+                local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
                 while( name ) do
                     if debuffType == "Magic" then break end
 
                     i = i + 1
-                    name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+                    name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
                 end
 
                 if name then
@@ -2185,13 +2185,13 @@ all:RegisterAuras( {
         generate = function( t )
             if UnitCanAttack( "player", "target" ) then
                 local i = 1
-                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuffByID( "target", i )
+                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
 
                 while( name ) do
                     if debuffType == "Magic" and canDispel then break end
 
                     i = i + 1
-                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuffByID( "target", i )
+                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
                 end
 
                 if canDispel then
@@ -2213,13 +2213,13 @@ all:RegisterAuras( {
     reversible_magic = {
         generate = function( t )
             local i = 1
-            local name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+            local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
             while( name ) do
                 if debuffType == "Magic" then break end
 
                 i = i + 1
-                name, _, count, debuffType, duration, expirationTime = UnitDebuffByID( "player", i, "RAID" )
+                name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
             end
 
             if name then
@@ -2241,13 +2241,13 @@ all:RegisterAuras( {
         generate = function( t )
             if UnitCanAttack( "player", "target" ) then
                 local i = 1
-                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuffByID( "target", i )
+                local name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
 
                 while( name ) do
                     if debuffType == "" and canDispel then break end
 
                     i = i + 1
-                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuffByID( "target", i )
+                    name, _, count, debuffType, duration, expirationTime, _, canDispel = UnitBuff( "target", i )
                 end
 
                 if canDispel then
