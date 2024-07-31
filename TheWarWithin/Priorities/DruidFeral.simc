@@ -1,5 +1,5 @@
-actions.precombat+=/cat_form,if=!buff.cat_form.up
 actions.precombat+=/prowl,if=!buff.prowl.up
+actions.precombat+=/cat_form,if=!buff.cat_form.up
 # check if trinket slot contains a stat on use
 actions.precombat+=/variable,name=trinket_1_buffs,value=trinket.1.has_buff.agility|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit
 actions.precombat+=/variable,name=trinket_2_buffs,value=trinket.2.has_buff.agility|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit
