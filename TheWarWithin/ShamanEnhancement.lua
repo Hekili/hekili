@@ -2156,7 +2156,7 @@ spec:RegisterAbilities( {
         id = 58875,
         cast = 0.0,
         cooldown = 60.0,
-        gcd = "none",
+        gcd = "off",
 
         talent = "spirit_walk",
         startsCombat = false,

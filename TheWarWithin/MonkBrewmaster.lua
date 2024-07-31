@@ -1596,7 +1596,7 @@ spec:RegisterAbilities( {
         id = 198898,
         cast = function() return 1.8 - 0.5 * talent.peace_and_prosperity.rank end,
         cooldown = 30.0,
-        gcd = "global",
+        gcd = "spell",
 
         talent = "song_of_chiji",
         startsCombat = false,
@@ -1742,7 +1742,7 @@ spec:RegisterAbilities( {
         id = 116670,
         cast = 1.3,
         cooldown = 0.0,
-        gcd = "global",
+        gcd = "spell",
 
         spend = 30,
         spendType = 'energy',
