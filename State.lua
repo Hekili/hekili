@@ -508,17 +508,26 @@ setmetatable( state.trinket.main_hand.is, mt_trinket_is )
 setmetatable( state.trinket.t1.cooldown, mt_trinket_cooldown )
 setmetatable( state.trinket.t2.cooldown, mt_trinket_cooldown ) ]]
 
-
 local mt_trinket_has_stacking_stat = {
     __index = function( t, k )
-        local trinket = state.trinket[ t.slot ].id
+        local trinket = state.trinket[ t.slot ]
+        trinket = trinket and trinket.__ability
+        trinket = trinket and class.abilities[ trinket ]
 
-        if trinket == 0 then return false end
+        if not trinket then return false end
 
-        if k == "any" or k == "any_dps" then return class.trinkets[ trinket ].stacking_stat ~= nil end
-        if k == "ms" then k = "multistrike" end
+        local buff = trinket.self_buff
+        buff = buff and class.auras[ buff ]
 
-        return class.trinkets[ trinket ].stacking_stat == k
+        if not buff or buff.max_stack == 1 then return false end
+
+        if k == "any" then return true end
+
+        local proc = trinket.proc or "none"
+        if not proc then return false end
+
+        if k == "any_dps" then return not ( proc == "damage" or proc == "healing" or proc == "health" or proc == "absorb" or proc == "mana" or proc == "speed" or proc == "leech" or proc == "avoidance" ) end
+        return proc == k
     end
 }
 
@@ -529,14 +538,30 @@ setmetatable( state.trinket.main_hand.has_stacking_stat, mt_trinket_has_stacking
 
 local mt_trinket_has_stat = {
     __index = function( t, k )
-        local trinket = state.trinket[ t.slot ].id
+        local trinket = state.trinket[ t.slot ]
+        trinket = trinket and trinket.__ability
+        trinket = trinket and class.abilities[ trinket ]
 
-        if trinket == 0 then return false end
+        if not trinket then
+            return false
+        end
 
-        if k == "any" or k == "any_dps" then return class.trinkets[ trinket ].stat ~= nil end
-        if k == "ms" then k = "multistrike" end
+        local buff = trinket.self_buff
+        buff = buff and class.auras[ buff ]
 
-        return class.trinkets[ trinket ].stat == k
+        if not buff then
+            return false
+        end
+
+        if k == "any" then return true end
+
+        local proc = trinket.proc or "none"
+        if not proc then
+            return false
+        end
+
+        if k == "any_dps" then return not ( proc == "damage" or proc == "healing" or proc == "absorb" or proc == "mana" or proc == "speed" or proc == "leech" or proc == "avoidance" ) end
+        return proc == k
     end
 }
 
@@ -547,13 +572,7 @@ setmetatable( state.trinket.main_hand.has_stat, mt_trinket_has_stat )
 
 local mt_trinkets_has_stat = {
     __index = function( t, k )
-        if k == "ms" then k = "multistrike" end
-
-        if k == "any" then
-            return class.trinkets[ state.trinket.t1.id ].stat ~= nil or class.trinkets[ state.trinket.t2.id ].stat ~= nil
-        end
-
-        return class.trinkets[ state.trinket.t1.id ].stat == k or class.trinkets[ state.trinket.t2.id ].stat == k
+        return state.trinket.t1.has_stat[ k ] or state.trinket.t2.has_stat[ k ]
     end
 }
 
@@ -562,13 +581,7 @@ setmetatable( state.trinket.has_stat, mt_trinkets_has_stat )
 
 local mt_trinkets_has_stacking_stat = {
     __index = function( t, k )
-        if k == "ms" then k = "multistrike" end
-
-        if k == "any" then
-            return class.trinkets[ state.trinket.t1.id ].stacking_stat ~= nil or class.trinkets[ state.trinket.t2.id ].stacking_stat ~= nil
-        end
-
-        return class.trinkets[ state.trinket.t1.id ].stacking_stat == k or class.trinkets[ state.trinket.t2.id ].stacking_stat == k
+        return state.trinket.t1.has_stacking_stat[ k ] or state.trinket.t2.has_stacking_stat[ k ]
     end
 }
 
