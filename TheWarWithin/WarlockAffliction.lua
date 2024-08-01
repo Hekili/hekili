@@ -573,7 +573,8 @@ spec:RegisterAuras( {
         id = 32390,
         duration = 16,
         type = "Magic",
-        max_stack = 3,
+        max_stack = function() return talent.drain_soul.enabled and 4 or 2 end,
+        copy = { 453206 }
     },
     -- If the target dies and yields experience or honor, Shadowburn restores ${$245731s1/10} Soul Shard and refunds a charge.
     -- https://wowhead.com/beta/spell=17877
