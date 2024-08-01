@@ -847,12 +847,6 @@ spec:RegisterStateExpr( "time_to_shard", function ()
     return 1 / ( 0.16 / sqrt( num_agony ) * ( num_agony == 1 and 1.15 or 1 ) * num_agony / debuff.agony.tick_time )
 end )
 
-
-local SoulSwapSource = "nobody"
-local SoulSwapCorruption = false
-local SoulSwapAgony = false
-local SoulSwapUnstableAffliction = false
-
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
     if sourceGUID == GUID then
         if spellName == class.abilities.seed_of_corruption.name then
