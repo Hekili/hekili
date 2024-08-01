@@ -4,21 +4,20 @@ actions.precombat+=/use_item,name=algethar_puzzle_box
 
 actions+=/muzzle
 actions+=/tranquilizing_shot
+actions+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.time_to_pct_80>20
 actions+=/call_action_list,name=cds
-actions+=/hunters_mark,if=active_dot.hunters_mark=0&target.time_to_pct_80>20
 actions+=/call_action_list,name=cleave,if=active_enemies>2
 actions+=/call_action_list,name=st,if=active_enemies<3
 actions+=/arcane_torrent
 actions+=/bag_of_tricks
 
+actions.cds+=/harpoon,if=settings.use_harpoon
 actions.cds+=/blood_fury,if=buff.coordinated_assault.up|!talent.coordinated_assault&cooldown.spearhead.remains|!talent.spearhead&!talent.coordinated_assault
 ## actions.cds+=/invoke_external_buff,name=power_infusion,if=buff.coordinated_assault.up|!talent.coordinated_assault&cooldown.spearhead.remains|!talent.spearhead&!talent.coordinated_assault
-actions.cds+=/harpoon,if=prev.kill_command
 actions.cds+=/ancestral_call,if=buff.coordinated_assault.up|!talent.coordinated_assault&cooldown.spearhead.remains|!talent.spearhead&!talent.coordinated_assault
 actions.cds+=/fireblood,if=buff.coordinated_assault.up|!talent.coordinated_assault&cooldown.spearhead.remains|!talent.spearhead&!talent.coordinated_assault
 actions.cds+=/lights_judgment
 actions.cds+=/berserking,if=buff.coordinated_assault.up|!talent.coordinated_assault&cooldown.spearhead.remains|!talent.spearhead&!talent.coordinated_assault|time_to_die<13
-actions.cds+=/muzzle
 actions.cds+=/potion,if=boss&fight_remains<25|buff.coordinated_assault.up|!talent.coordinated_assault&cooldown.spearhead.remains|!talent.spearhead&!talent.coordinated_assault
 actions.cds+=/use_item,name=algethar_puzzle_box,use_off_gcd=1
 actions.cds+=/use_item,name=manic_grieftorch
