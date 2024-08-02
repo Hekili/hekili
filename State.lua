@@ -5001,8 +5001,10 @@ do
 
             elseif k == "stack_pct" then
                 if t.remains == 0 then return 0 end
-                if aura then aura.max_stack = max( aura.max_stack or 1, t.count ) end
-                return ( 100 * t.count / aura and aura.max_stack or t.count )
+                if aura then
+                    return ( 100 * t.count / max( aura and aura.max_stack or 1, t.count ) )
+                end
+                return 100
 
             elseif k == "value" then
                 if t.remains == 0 then return 0 end
