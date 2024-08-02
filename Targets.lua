@@ -381,7 +381,7 @@ do
                         local npcid = guid:match( "(%d+)-%x-$" )
                         npcid = tonumber( npcid )
 
-                        local _, range
+                        local _, range = nil, -1
 
                         if debugging then details = format( "%s\n - Checking nameplate list for %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
@@ -411,12 +411,12 @@ do
 
                             if not excluded and checkPlates then
                                 local _, maxR = RC:GetRange( unit )
-                                excluded = maxR and maxR > checkPlates
+                                excluded = maxR == nil or maxR > checkPlates
 
-                                range = maxR
+                                range = maxR or range
 
                                 if debugging and excluded then
-                                    details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
+                                    details = format( "%s\n    - Excluded by range (%d > %d).", details, range, checkPlates )
                                 end
                             end
 
@@ -454,7 +454,7 @@ do
                             local npcid = guid:match( "(%d+)-%x-$" )
                             npcid = tonumber(npcid)
 
-                            local range
+                            local _, range = nil, -1
 
                             if debugging then details = format( "%s\n - Checking %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
@@ -480,9 +480,9 @@ do
 
                                 if not excluded and checkPlates then
                                     local _, maxR = RC:GetRange( unit )
-                                    excluded = maxR and maxR > checkPlates
+                                    excluded = maxR == nil or maxR > checkPlates
 
-                                    range = maxR
+                                    range = maxR or range
 
                                     if debugging and excluded then
                                         details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
