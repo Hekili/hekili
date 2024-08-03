@@ -124,7 +124,7 @@ state.off_hand = {
 
 state.gcd = {}
 
-state.hero_tree = setmetatable( {}, { __index = function( t, k ) return false end } ) -- TODO: Update hero tree detection for 11.0 launch.
+state.hero_tree = setmetatable( {}, { __index = function( t, k ) return state.talent[ k ].enabled end } ) -- TODO: Update hero tree detection for 11.0 launch.
 
 state.history = {
     casts = {},
@@ -2566,7 +2566,7 @@ do
 
                 if totemIcon then
                     -- This is actually a totem; check them.
-                    local present, name, start, duration
+                    local present, name, start, duration, icon
 
                     for i = 1, 5 do
                         present, name, start, duration, icon = GetTotemInfo( i )

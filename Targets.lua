@@ -9,6 +9,7 @@ local state = Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
+local FindExclusionAuraByID
 
 local targetCount = 0
 local targets = {}

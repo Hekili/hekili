@@ -704,9 +704,6 @@ do
             return
         end
 
-        lastUpdate = GetTime()
-        updateIsQueued = false
-
         wipe( state.set_bonus )
 
         for _, hook in ipairs( GearHooks ) do
@@ -1233,7 +1230,7 @@ do
         empowerment.start = start
 
         for i = 1, 4 do
-            n = GetUnitEmpowerStageDuration( "player", i - 1 )
+            local n = GetUnitEmpowerStageDuration( "player", i - 1 )
             if n == 0 then break end
 
             if i == 1 then insert( stages, start + n * 0.001 )

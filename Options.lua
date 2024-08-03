@@ -1759,7 +1759,7 @@ do
     end
 
     local function WrapDesc( db, data )
-        local option, _, _, descfunc = GetOptionData( db, data )
+        local option, getfunc, _, descfunc = GetOptionData( db, data )
         if descfunc and modified[ descfunc ] then
             return descfunc
         end
