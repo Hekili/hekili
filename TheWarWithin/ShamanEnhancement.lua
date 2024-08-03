@@ -85,6 +85,7 @@ spec:RegisterTalents( {
     wind_rush_totem           = { 103627, 192077, 1 }, -- Summons a totem at the target location for 15 sec, continually granting all allies who pass within 10 yards 50% increased movement speed for 5 sec.
     wind_shear                = { 103615, 57994 , 1 }, -- Disrupts the target's concentration with a burst of wind, interrupting spellcasting and preventing any spell in that school from being cast for 2 sec.
     winds_of_alakir           = { 103614, 382215, 1 }, -- Increases the movement speed bonus of Ghost Wolf by 10%. When you have 3 or more totems active, your movement speed is increased by 15%.
+
     -- Enhancement
     alpha_wolf                = { 80970, 198434, 1 }, -- While Feral Spirits are active, Chain Lightning and Crash Lightning causes your wolves to attack all nearby enemies for 3,639 Physical damage every 2 sec for the next 8 sec.
     ascendance                = { 92219, 114051, 1 }, -- Transform into an Air Ascendant for 15 sec, immediately dealing 72,277 Nature damage to any enemy within 8 yds, reducing the cooldown and cost of Stormstrike by 60%, and transforming your auto attack and Stormstrike into Wind attacks which bypass armor and have a 30 yd range. While Ascendance is active, generate 2 Maelstrom Weapon stacks every 1 sec.
@@ -127,6 +128,7 @@ spec:RegisterTalents( {
     unruly_winds              = { 80968, 390288, 1 }, -- Windfury Weapon has a 100% chance to trigger a third attack.
     windfury_weapon           = { 80958, 33757 , 1 }, -- Imbue your main-hand weapon with the element of Wind for 1 |4hour:hrs;. Each main-hand attack has a 32% chance to trigger three extra attacks, dealing 6,250 Physical damage each. Windfury causes each successive Windfury attack within 15 sec to increase the damage of Windfury by 20%, stacking up to 5 times.
     witch_doctors_ancestry    = { 80971, 384447, 2 }, -- Increases the chance to gain a stack of Maelstrom Weapon by 2%, and whenever you gain a stack of Maelstrom Weapon, the cooldown of Feral Spirits is reduced by 1.0 sec.
+
     -- Totemic
     amplification_core        = { 94874, 445029, 1 }, -- While Surging Totem is active, your damage and healing done is increased by 3%.
     earthsurge                = { 94881, 455590, 1 }, -- Casting Sundering within 40 yards of your Surging Totem causes it to create a Tremor at 200% effectiveness at the target area.
@@ -137,12 +139,13 @@ spec:RegisterTalents( {
     pulse_capacitor           = { 94866, 445032, 1 }, -- Increases the damage of Surging Totem by 25%.
     reactivity                = { 94872, 445035, 1 }, -- Frost Shocks empowered by Hailstorm, Lava Lash, and Fire Nova cause your Searing totems to shoot a Searing Volley at up to 5 nearby enemies for 31,147 Fire damage.
     supportive_imbuements     = { 94866, 445033, 1 }, -- Increases the critical strike chance of Flametongue Weapon by 25%, and its critical strike damage by 100%.
-    surging_totem             = { 94877, 444995, 1 }, -- Summons a totem at the target location that creates a Seismic Wave immediately and every 6 sec for 26,170 Physical damage. Damage reduced beyond 5 targets. Lasts 24 sec. Replaces Windfury Totem. Passive: Your Windfury Weapon enchant grants the effects of Windfury Totem to nearby party members within 30 yards.
+    surging_totem             = { 94877, 444995, 1, "totemic" }, -- Summons a totem at the target location that creates a Seismic Wave immediately and every 6 sec for 26,170 Physical damage. Damage reduced beyond 5 targets. Lasts 24 sec. Replaces Windfury Totem. Passive: Your Windfury Weapon enchant grants the effects of Windfury Totem to nearby party members within 30 yards.
     swift_recall              = { 94859, 445027, 1 }, -- Successfully removing a harmful effect with Tremor Totem or Poison Cleansing Totem, or controlling an enemy with Capacitor Totem or Earthgrab Totem reduces the cooldown of the totem used by 5 sec. Cannot occur more than once every 20 sec per totem.
     totemic_coordination      = { 94881, 445036, 1 }, -- Increases the critical strike chance of your Searing Totem's attacks by 15%, and its critical strike damage by 30%.
     totemic_rebound           = { 94890, 445025, 1 }, -- Stormstrike has a chance to unleash a Surging Bolt at your Surging Totem, increasing the totem's damage by 10%, and then redirecting the bolt to your target for 30,838 Nature damage. The damage bonus effect can stack.
     whirling_elements         = { 94879, 445024, 1 }, -- Elemental motes orbit around your Surging Totem. Your abilities consume the motes for enhanced effects. Air: Your next Stormstrike or Windstrike deals 25% increased damage and damages 1 nearby enemy at 75% effectiveness. Earth: Casting Sundering or Elemental Blast refunds 12 seconds from its cooldown. Fire: Increases the critical strike chance of your next Fire Nova or Lava Lash by 25%, and its critical strike damage by 75%.
     wind_barrier              = { 94891, 445031, 1 }, -- If you have a totem active, your totem grants you a shield absorbing 61,011 damage for 30 sec every 30 sec.
+
     -- Stormbringer
     arc_discharge             = { 94885, 455096, 1 }, -- When Tempest strikes more than one target, your next 3 Chain Lightning spells are instant cast and deal 75% increased damage.
     awakening_storms          = { 94867, 455129, 1 }, -- Stormstrike, Lightning Bolt, and Chain Lightning have a chance to strike your target for 9,640 Nature damage. Every 3 times this occurs, your next Lightning Bolt is replaced by Tempest.
@@ -154,7 +157,7 @@ spec:RegisterTalents( {
     stormcaller               = { 94893, 454021, 1 }, -- Increases the critical strike chance of your Nature damage spells by 10% and the critical strike damage of your Nature spells by 5%.
     supercharge               = { 94873, 455110, 1 }, -- Lightning Bolt and Chain Lightning have a 35% chance to refund 3 Maelstrom Weapon stacks.
     surging_currents          = { 94880, 454372, 1 }, -- After using Tempest, your next Chain Heal, or Healing Surge will be instant cast and consume no Mana.
-    tempest                   = { 94892, 454009, 1 }, -- Every 40 Maelstrom Weapon stacks spent replaces your next Lightning Bolt with Tempest.
+    tempest                   = { 94892, 454009, 1, "stormbringer" }, -- Every 40 Maelstrom Weapon stacks spent replaces your next Lightning Bolt with Tempest.
     unlimited_power           = { 94886, 454391, 1 }, -- Spending Maelstrom Weapon stacks grants you 3% haste for 15 sec, stacking. Gaining a new stack does not refresh the duration.
     voltaic_surge             = { 94870, 454919, 1 }, -- Crash Lightning, Chain Lightning, and Earthquake damage increased by 15%.
 } )

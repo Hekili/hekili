@@ -64,6 +64,7 @@ spec:RegisterTalents( {
     unbound_freedom                 = { 93174, 305394, 1 }, -- Blessing of Freedom increases movement speed by 30%, and you gain Blessing of Freedom when cast on a friendly target.
     unbreakable_spirit              = { 81615, 114154, 1 }, -- Reduces the cooldown of your Divine Shield, Divine Protection, and Lay on Hands by 30%.
     vengeful_wrath                  = { 93177, 406835, 1 }, -- Hammer of Wrath deals 50% increased damage to enemies below 35% health.
+
     -- Retribution
     adjudication                    = { 81537, 406157, 1 }, -- Critical Strike damage of your abilities increased by 5% and Hammer of Wrath also has a chance to cast Highlord's Judgment.
     aegis_of_protection             = { 81550, 403654, 1 }, -- Divine Protection reduces damage you take by an additional 20%.
@@ -120,10 +121,11 @@ spec:RegisterTalents( {
     vanguards_momentum              = { 92688, 383314, 1 }, -- Hammer of Wrath has 1 extra charge and on enemies below 20% health generates 1 additional Holy Power.
     wake_of_ashes                   = { 81525, 255937, 1 }, -- Lash out at your enemies, dealing 82,040 Radiant damage to all enemies within 14 yds in front of you, and applying Truth's Wake, burning the targets for an additional 58,137 damage over 9 sec. Demon and Undead enemies are also stunned for 5 sec. Generates 3 Holy Power.
     zealots_fervor                  = { 92952, 403509, 1 }, -- Auto-attack speed increased by 20%.
+
     -- Herald of the Sun
     aurora                          = { 95069, 439760, 1 }, -- After you cast Wake of Ashes, gain Divine Purpose.  Divine Purpose Holy Power abilities have a 10% chance to make your next Holy Power ability free and deal 10% increased damage and healing.
     blessing_of_anshe               = { 95071, 445200, 1 }, -- Your damage and healing over time effects have a chance to increase the damage of your next Hammer of Wrath by 200% and make it usable on any target, regardless of their health.
-    dawnlight                       = { 95099, 431377, 1 }, -- Casting Wake of Ashes causes your next 2 Holy Power spending abilities to apply Dawnlight on your target, dealing 94,739 Radiant damage or 144,371 healing over 8 sec. 10% of Dawnlight's damage and healing radiates to nearby allies or enemies, reduced beyond 5 targets.
+    dawnlight                       = { 95099, 431377, 1, "herald_of_the_sun" }, -- Casting Wake of Ashes causes your next 2 Holy Power spending abilities to apply Dawnlight on your target, dealing 94,739 Radiant damage or 144,371 healing over 8 sec. 10% of Dawnlight's damage and healing radiates to nearby allies or enemies, reduced beyond 5 targets.
     eternal_flame                   = { 95095, 156322, 1 }, -- Heals an ally for 101,844 and an additional 44,214 over 16 sec. Healing increased by 25% when cast on self.
     gleaming_rays                   = { 95073, 431480, 1 }, -- While a Dawnlight is active, your Holy Power spenders deal 6% additional damage or healing.
     illumine                        = { 95098, 431423, 1 }, -- Dawnlight reduces the movement speed of enemies by 50% and increases the movement speed of allies by 20%.
@@ -135,6 +137,7 @@ spec:RegisterTalents( {
     sun_sear                        = { 95072, 431413, 1 }, -- Hammer of Wrath and Divine Storm critical strikes cause the target to burn for an additional 7,579 Radiant damage over 4 sec.
     suns_avatar                     = { 95105, 431425, 1 }, -- During Avenging Wrath, you become linked to your Dawnlights, causing 3,394 Radiant damage to enemies or 1,293 healing to allies that pass through the beams, reduced beyond 5 targets. Activating Avenging Wrath applies up to4 Dawnlights onto nearby allies or enemies and increases Dawnlight's duration by 25%.
     will_of_the_dawn                = { 95098, 431406, 1 }, -- Movement speed increased by 5% while above 80% health. When your health is brought below 35%, your movement speed is increased by 40% for 5 sec. Cannot occur more than once every 1 min.
+
     -- Templar
     bonds_of_fellowship             = { 95181, 432992, 1 }, -- You receive 20% less damage from Blessing of Sacrifice and each time its target takes damage, you gain 4% movement speed up to a maximum of 40%.
     endless_wrath                   = { 95185, 432615, 1 }, -- Calling down an Empyrean Hammer has a 10% chance to reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.
@@ -142,7 +145,7 @@ spec:RegisterTalents( {
     hammerfall                      = { 95184, 432463, 1 }, -- Templar's Verdict and Divine Storm calls down an Empyrean Hammer on a nearby enemy. While Shake the Heavens is active, this effect calls down an additional Empyrean Hammer.
     higher_calling                  = { 95178, 431687, 1 }, -- Crusader Strike, Hammer of Wrath and Blade of Justice extend the duration of Shake the Heavens by 1 sec.
     lights_deliverance              = { 95182, 425518, 1 }, -- You gain a stack of Light's Deliverance when you call down an Empyrean Hammer. While Wake of Ashes and Hammer of Light are unavailable, you consume 60 stacks of Light's Deliverance, empowering yourself to cast Hammer of Light an additional time for free.
-    lights_guidance                 = { 95180, 427445, 1 }, -- Wake of Ashes is replaced with Hammer of Light for 12 sec after it is cast.  Hammer of Light: Hammer down your enemy with the power of the Light, dealing 155,051 Holy damage and 77,525 Holy damage up to 4 nearby enemies. Additionally, calls down Empyrean Hammers from the sky to strike 3 nearby enemies for 13,084 Holy damage each. Costs 5 Holy Power.
+    lights_guidance                 = { 95180, 427445, 1, "templar" }, -- Wake of Ashes is replaced with Hammer of Light for 12 sec after it is cast.  Hammer of Light: Hammer down your enemy with the power of the Light, dealing 155,051 Holy damage and 77,525 Holy damage up to 4 nearby enemies. Additionally, calls down Empyrean Hammers from the sky to strike 3 nearby enemies for 13,084 Holy damage each. Costs 5 Holy Power.
     sacrosanct_crusade              = { 95179, 431730, 1 }, -- Wake of Ashes surrounds you with a Holy barrier for 20% of your maximum health. Hammer of Light heals you for 20% of your maximum health, increased by 2% for each additional target hit. Any overhealing done with this effect gets converted into a Holy barrier instead.
     sanctification                  = { 95185, 432977, 1 }, -- Casting Judgment increases the damage of Empyrean Hammer by 10% for 10 sec. Multiple applications may overlap.
     shake_the_heavens               = { 95187, 431533, 1 }, -- After casting Hammer of Light, you call down an Empyrean Hammer on a nearby target every 2 sec, for 8 sec.

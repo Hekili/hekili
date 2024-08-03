@@ -125,7 +125,7 @@ spec:RegisterTalents( {
     -- Herald of the Sun
     aurora                          = {  95069, 439760, 1 }, -- After you cast Holy Prism or Barrier of Faith, gain Divine Purpose.  Divine Purpose Holy Power abilities have a 15% chance to make your next Holy Power ability free and deal 15% increased damage and healing.
     blessing_of_anshe               = {  95071, 445200, 1 }, -- Your damage and healing over time effects have a chance to increase the healing or damage of your next Holy Shock by 200%.
-    dawnlight                       = {  95099, 431377, 1 }, -- Casting Holy Prism or Barrier of Faith causes your next 2 Holy Power spending abilities to apply Dawnlight on your target, dealing 52,908 Radiant damage or 84,652 healing over 8 sec. 10% of Dawnlight's damage and healing radiates to nearby allies or enemies, reduced beyond 5 targets.
+    dawnlight                       = {  95099, 431377, 1, "herald_of_the_sun" }, -- Casting Holy Prism or Barrier of Faith causes your next 2 Holy Power spending abilities to apply Dawnlight on your target, dealing 52,908 Radiant damage or 84,652 healing over 8 sec. 10% of Dawnlight's damage and healing radiates to nearby allies or enemies, reduced beyond 5 targets.
     eternal_flame                   = {  95095, 156322, 1 }, -- Heals an ally for 60,214 and an additional 15,843 over 16 sec. Healing increased by 25% when cast on self.
     gleaming_rays                   = {  95073, 431480, 1 }, -- While a Dawnlight is active, your Holy Power spenders deal 6% additional damage or healing.
     illumine                        = {  95098, 431423, 1 }, -- Dawnlight reduces the movement speed of enemies by 50% and increases the movement speed of allies by 20%.
@@ -147,7 +147,7 @@ spec:RegisterTalents( {
     fear_no_evil                    = {  95232, 432834, 1 }, -- While wielding an Armament the duration of Fear effects is reduced by 50%.
     forewarning                     = {  95231, 432804, 1 }, -- The cooldown of Holy Armaments is reduced by 20%.
     hammer_and_anvil                = {  95238, 433718, 1 }, -- Judgment critical strikes cause a shockwave around the target, dealing 30,124 healing at the target's location.
-    holy_armaments                  = {  95234, 432459, 1 }, -- Will the Light to coalesce and become manifest as a Holy Armament, wielded by your friendly target.  Holy Bulwark: While wielding a Holy Bulwark, gain an absorb shield for 15.0% of your max health and an additional 2.0% every 2 sec. Lasts 20 sec. Becomes Sacred Weapon after use.
+    holy_armaments                  = {  95234, 432459, 1, "lightsmith" }, -- Will the Light to coalesce and become manifest as a Holy Armament, wielded by your friendly target.  Holy Bulwark: While wielding a Holy Bulwark, gain an absorb shield for 15.0% of your max health and an additional 2.0% every 2 sec. Lasts 20 sec. Becomes Sacred Weapon after use.
     laying_down_arms                = {  95236, 432866, 1 }, -- When an Armament fades from you, the cooldown of Lay on Hands is reduced by 15.0 sec and you gain Infusion of Light.
     rite_of_adjuration              = {  95233, 433583, 1 }, -- Imbue your weapon with the power of the Light, increasing your Stamina by 3% and causing your Holy Power abilities to sometimes unleash a burst of healing around a target. Lasts 1 |4hour:hrs;.
     rite_of_sanctification          = {  95233, 433568, 1 }, -- Imbue your weapon with the power of the Light, increasing your armor by 5% and your primary stat by 1%. Lasts 1 |4hour:hrs;.
