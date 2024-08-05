@@ -2,7 +2,7 @@ actions.precombat+=/variable,name=major_trinket,value=trinket.1.cooldown.duratio
 actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
 actions.precombat+=/arcane_torrent
-actions.precombat+=/immolation_aura
+actions.precombat+=/immolation_aura,if=buff.immolation_aura.down
 
 ## actions+=/retarget_auto_attack,line_cd=1,target_if=mindebuff.burning_wound.remains,if=talent.burning_wound&talent.demon_blades&active_dot.burning_wound<(spell_targets>?3)
 ## actions+=/retarget_auto_attack,line_cd=1,target_if=min!target.is_boss,if=talent.burning_wound&talent.demon_blades&active_dot.burning_wound=(spell_targets>?3)
@@ -18,7 +18,7 @@ actions+=/immolation_aura,if=active_enemies>2&talent.ragefire&raid_event.adds.up
 actions+=/fel_rush,if=buff.unbound_chaos.up&active_enemies>2&(!talent.inertia|cooldown.eye_beam.remains+2>buff.unbound_chaos.remains)
 actions+=/vengeful_retreat,use_off_gcd=1,if=talent.initiative&(cooldown.eye_beam.remains>15&gcd.remains<0.3|gcd.remains<0.1&cooldown.eye_beam.remains<=gcd.remains&(cooldown.metamorphosis.remains>10|cooldown.blade_dance.remains<gcd.max*2))&time>4
 actions+=/run_action_list,name=fel_barrage,if=variable.fel_barrage|!talent.demon_blades&talent.fel_barrage&(buff.fel_barrage.up|cooldown.fel_barrage.up)&buff.metamorphosis.down
-actions+=/run_action_list,name=meta,if=buff.metamorphosis.up
+actions+=/run_action_list,name=meta,strict=1,if=buff.metamorphosis.up
 actions+=/fel_rush,if=buff.unbound_chaos.up&talent.inertia&buff.inertia.down&cooldown.blade_dance.remains<4&cooldown.eye_beam.remains>5&(action.immolation_aura.charges>0|action.immolation_aura.recharge_time+2<cooldown.eye_beam.remains|cooldown.eye_beam.remains>buff.unbound_chaos.remains-2)
 actions+=/fel_rush,if=talent.momentum&cooldown.eye_beam.remains<gcd.max*2
 actions+=/immolation_aura,if=buff.unbound_chaos.down&full_recharge_time<gcd.max*2&(raid_event.adds.in>full_recharge_time|active_enemies>desired_targets)

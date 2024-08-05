@@ -158,7 +158,15 @@ local oneTimeFixes = {
             end
         end
     end,
-}
+
+    fixHavocPriorityVersion_20240805 = function( p )
+        local havoc = p.packs[ "Havoc" ]
+        if havoc and ( havoc.date == 20270727 or havoc.version == 20270727 ) then
+            havoc.date = 20240727
+            havoc.version = 20240727
+        end
+    end,
+  }
 
 
 function Hekili:RunOneTimeFixes()
