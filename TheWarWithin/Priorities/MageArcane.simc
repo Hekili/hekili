@@ -41,7 +41,7 @@ actions+=/variable,name=opener,op=set,if=debuff.touch_of_the_magi.up&variable.op
 actions+=/arcane_barrage,if=fight_remains<2
 # Enter cooldown phase when cds are available or coming off cooldown otherwise default to rotation priority
 actions+=/call_action_list,name=cd_opener
-actions+=/call_action_list,name=rotation_aoe,if=active_enemies>=(variable.aoe_target_count+talent.impetus.rank+talent.splintering_sorcery.rank)
+actions+=/call_action_list,name=rotation_aoe,strict=1,if=active_enemies>=(variable.aoe_target_count+talent.impetus.rank+talent.splintering_sorcery.rank)
 actions+=/call_action_list,name=rotation_default
 actions+=/arcane_barrage
 
