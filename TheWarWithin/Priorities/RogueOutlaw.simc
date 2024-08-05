@@ -31,8 +31,8 @@ actions+=/variable,name=finish_condition,value=effective_combo_points>=cp_max_sp
 actions+=/variable,name=blade_flurry_sync,value=spell_targets.blade_flurry<2&raid_event.adds.in>20|buff.blade_flurry.remains>gcd
 actions+=/call_action_list,name=cds
 # High priority stealth list, will fall through if no conditions are met
-actions+=/call_action_list,name=stealth,if=stealthed.all
-actions+=/run_action_list,name=finish,if=variable.finish_condition
+actions+=/call_action_list,name=stealth,strict=1,if=stealthed.all
+actions+=/run_action_list,name=finish,strict=1,if=variable.finish_condition
 actions+=/call_action_list,name=build
 actions+=/arcane_torrent,if=energy.base_deficit>=15+energy.regen
 actions+=/arcane_pulse
