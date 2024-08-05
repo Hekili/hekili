@@ -12,18 +12,18 @@ actions.precombat+=/variable,name=damage_trinket_priority,op=setif,value=2,value
 actions+=/mind_freeze
 # Call Action Lists
 actions+=/call_action_list,name=variables
-actions+=/call_action_list,name=san_trinkets,if=talent.vampiric_strike
-actions+=/call_action_list,name=trinkets,if=!talent.vampiric_strike
+actions+=/call_action_list,name=san_trinkets,strict=1,if=talent.vampiric_strike
+actions+=/call_action_list,name=trinkets,strict=1,if=!talent.vampiric_strike
 actions+=/call_action_list,name=racials
 actions+=/call_action_list,name=cds_shared
-actions+=/call_action_list,name=cds,if=!talent.vampiric_strike
-actions+=/call_action_list,name=cds_san,if=talent.vampiric_strike
-actions+=/call_action_list,name=cleave,if=active_enemies<4&active_enemies>=2
-actions+=/call_action_list,name=aoe_burst,if=active_enemies>=4&buff.death_and_decay.up
+actions+=/call_action_list,name=cds,strict=1,if=!talent.vampiric_strike
+actions+=/call_action_list,name=cds_san,strict=1,if=talent.vampiric_strike
+actions+=/call_action_list,name=cleave,strict=1,if=active_enemies<4&active_enemies>=2
+actions+=/call_action_list,name=aoe_burst,strict=1,if=active_enemies>=4&buff.death_and_decay.up
 actions+=/call_action_list,name=aoe,if=active_enemies>=4&!buff.death_and_decay.up
 actions+=/run_action_list,name=san_fishing,if=talent.gift_of_the_sanlayn&!buff.gift_of_the_sanlayn.up&buff.essence_of_the_blood_queen.remains<cooldown.dark_transformation.remains+2
-actions+=/call_action_list,name=san_st,if=active_enemies=1&talent.vampiric_strike
-actions+=/call_action_list,name=st,if=active_enemies=1&!talent.vampiric_strike
+actions+=/call_action_list,name=san_st,strict=1,if=active_enemies=1&talent.vampiric_strike
+actions+=/call_action_list,name=st,strict=1,if=active_enemies=1&!talent.vampiric_strike
 
 # AOE
 actions.aoe+=/any_dnd,if=!buff.death_and_decay.up&(!talent.bursting_sores|death_knight.fwounded_targets>=cycle_enemies|death_knight.fwounded_targets>=8|raid_event.adds.exists&raid_event.adds.remains<=11&raid_event.adds.remains>5)

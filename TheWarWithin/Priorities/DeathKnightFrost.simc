@@ -33,10 +33,10 @@ actions+=/call_action_list,name=high_prio
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=racials
 actions+=/call_action_list,name=cold_heart,if=talent.cold_heart&(!buff.killing_machine.up|talent.breath_of_sindragosa)&((debuff.razorice.stack=5|!death_knight.runeforge.razorice&!talent.glacial_advance&!talent.avalanche&!talent.arctic_assault)|boss&fight_remains<=gcd)
-actions+=/run_action_list,name=breath,if=buff.breath_of_sindragosa.up
+actions+=/run_action_list,name=breath,strict=1,if=buff.breath_of_sindragosa.up
 actions+=/run_action_list,name=obliteration,if=talent.obliteration&buff.pillar_of_frost.up&!buff.breath_of_sindragosa.up
-actions+=/call_action_list,name=aoe,if=active_enemies>=2
-actions+=/call_action_list,name=single_target,if=active_enemies=1
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=2
+actions+=/call_action_list,name=single_target,strict=1,if=active_enemies=1
 
 # AoE Action List
 actions.aoe+=/obliterate,if=buff.killing_machine.up&talent.cleaving_strikes&buff.death_and_decay.up
