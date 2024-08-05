@@ -1,5 +1,7 @@
 actions.precombat+=/battle_stance,toggle=on
+actions.precombat+=/battle_shout
 
+actions+=/pummel
 actions+=/charge,if=time=0
 actions+=/use_items
 actions+=/avatar
@@ -22,7 +24,7 @@ actions+=/shockwave,if=talent.rumbling_earth.enabled&spell_targets.shockwave>=3
 actions+=/shield_charge
 actions+=/shield_block,if=buff.shield_block.duration<=10
 actions+=/demolish
-actions+=/run_action_list,name=aoe,if=spell_targets.thunder_clap>=3
+actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.thunder_clap>=3
 actions+=/call_action_list,name=generic
 
 actions.aoe+=/thunder_blast,if=dot.rend.remains<=1
