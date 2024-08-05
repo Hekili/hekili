@@ -19,6 +19,6 @@ actions+=/holy_shock
 actions+=/crusader_strike,if=cooldown.holy_shock.remains>gcd.max
 actions+=/arcane_torrent
 
-actions.spenders+=/shield_of_the_righteous,if=!talent.awakening|active_enemies>1
-actions.spenders+=/light_of_dawn,if=talent.awakening&group
-actions.spenders+=/word_of_glory,if=talent.awakening
+actions.spenders+=/word_of_glory,if=solo&health.pct<70&buff.shining_righteousness_ready.up|buff.empyrean_legacy.up
+actions.spenders+=/light_of_dawn,if=group&buff.shining_righteousness_ready.up
+actions.spenders+=/shield_of_the_righteous
