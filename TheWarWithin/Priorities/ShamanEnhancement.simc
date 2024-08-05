@@ -29,9 +29,9 @@ actions+=/primordial_wave,if=set_bonus.tier31_2pc&(raid_event.adds.in>(action.pr
 actions+=/feral_spirit
 actions+=/ascendance,if=dot.flame_shock.ticking&((ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)|(ti_chain_lightning&active_enemies>1))
 actions+=/doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown|active_enemies>1
-actions+=/call_action_list,name=single,if=active_enemies=1
-actions+=/call_action_list,name=aoe,if=active_enemies>1&(rotation.standard|rotation.simple)
-actions+=/call_action_list,name=funnel,if=active_enemies>1&rotation.funnel
+actions+=/call_action_list,name=single,strict=1,if=active_enemies=1
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1&(rotation.standard|rotation.simple)
+actions+=/call_action_list,name=funnel,strict=1,if=active_enemies>1&rotation.funnel
 
 actions.single+=/primordial_wave,if=!dot.flame_shock.ticking&talent.lashing_flames.enabled&(raid_event.adds.in>(action.primordial_wave.cooldown%(1+set_bonus.tier31_4pc))|raid_event.adds.in<6)
 actions.single+=/flame_shock,if=!ticking&talent.lashing_flames.enabled
