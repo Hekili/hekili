@@ -212,16 +212,25 @@ spec:RegisterAuras( {
         id = 156910,
         duration = 3600,
         max_stack = 1,
+        dot = "buff",
+        friendly = true,
+        no_ticks = true,
     },
     beacon_of_light = {
         id = 53563,
         duration = 3600,
         max_stack = 1,
+        dot = "buff",
+        friendly = true,
+        no_ticks = true,
     },
     beacon_of_virtue = {
         id = 200025,
         duration = 8,
         max_stack = 1,
+        dot = "buff",
+        friendly = true,
+        no_ticks = true,
     },
     bestow_faith = {
         id = 223306,
@@ -685,6 +694,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "beacon_of_faith" )
+            active_dot.beacon_of_faith = 1
         end,
     },
 
@@ -703,6 +713,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "beacon_of_light" )
+            active_dot.beacon_of_light = 1
         end,
     },
 
@@ -1700,4 +1711,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Holy Paladin", 20240805, [[Hekili:nAvWUnUnq0VL9sslAIQCCsC2I17H2EOBArWcOfi3KenfLeRPivjPIJbm43EhszztrBLeeGeBopY5nCECEjDw6pstkqAs6t3eFZTXpeFxu89ZVD(dPj6TTK0KweEnQc(ah1a)(VeSTM8VJyOck3gDltGkSNIs0jXaI0KvDuM(B80vN)OVhW2sWPpD)DPj10IcspuIcdNpbXistERKkKunLOm5ijXK)NFp56sbUtrkm5coWIhnpAp4RJxC984FZK)JAa2ZiyZpt11o2jfLugWjewtfC1VS8xLKvDRjMhpUc6fcVIYRY2ir66Zgbl7uOcGwEbxXikLnOOmt110mDuuNURHpv0nuU(noz4EGx5hLrRQ1QS)TROQHW1(HAf2p5VsjfQxMquCfTC5QUYYi33yDkDux7UDULgFbCM1hkFiK)HdTImQM0O8xeJySS(VMXOk9vwzZsOFZHdqDLslPy9Yzw(8jn0Q56tZZUDyHGvi2WpdhKKgeLR(AfUiQb96UD1GImRvSbIvqkPyQEzSpJkOVq5KmTGX8xUFBsQQze9H)qWW9a8Dhh9xaQ)l6HgnqNmBbTMer5zseVAKWQgzvfUECOY6CDphHu1c86reACISC6WLZXDeERmsflXix9lLUmEiw0qxbaTrilSmTIjKBTjrjyIlQHhJGIOfR)YI4lCIcf8WY2pKwzir0P4GyntsqfBpQCinTBHLafaPcH36RB8tQtkBZAbAJ72UskGR4pqEo7XbBHWCvHUMCCJPjVaXbW7NdTy(S0KniP94HGUPg0MwHuBYlfW0JlbzeQJPV0Klj)xh8ecM4Oenao4PSObgPblGRT9BvK5X)bKxM8z3aJG(dbhsMl(LtPUHJvlEJ4reocgbua4(PzV(Zr2o23C8ZESZbs4kDtU95Ln)PjUp5MbV)2a(8tUr77pR0FpnbdJtjskYoPMbe4ct(X(Rj)lM8fXUv)i3)572Th4P96HXTWTSVQkvdnGj5KR1)rt)XmmsczZWCBggIoPI4if0Wpj7B4hU1g2FVzXy491WaIXZodqo)Sih6ZbGV1h8PMlbOVBk09MnbOVFk09MpbOxmjtCMrbOFWhDG5ua0p7dT3SkaXS4jfiN4E5PbpXb7CX8CXoYIdgKUSpQ5FWElKJtlI)e80(DEv3ZS33FZK)vt(W0C3Eo1NZKV0KhdYCNPQv7EG8H2W9ZiY6)F4omLWUNrIupVYWQEK(8O5ziS7ERlNaZu3Z93Xq1RK82SlvJu1bMTH0AKMEc55ShoPeDMRHW(8KL4B4m73p9QPXvTB8s8OPgJmVpzWvRKGfnRqNo6cgTl1zWBxch7nbBLBFWoH5e1c4L)Fd6vXA4FNNtDbs))]] )
+spec:RegisterPack( "Holy Paladin", 20240805, [[Hekili:nE12UnUnq0VL9LCbnrvox3Ty9(qBFOBArWc4fyFts0s0wSHIuLKYEnGb)27murYKYsobbi2MZHZmKZzMJuYSKVNSOGyOjpFt8n3f)X47JIF4U7U9XKfMD10Kf1K8xiRHViivW))ljFNn7BeoPGjqR74ssb6fTSrLdiswSSHXnFvKSCCxFpGTMMN88dW3kzff0wOuDo4FkHtv2SAftQyggvBZikQn7p)2IRxjZB00cBMuazXt2NqhFD8JxFB8VzZ(Eja7heyZ)GzkXSJZ0gTl3QPIcQc)(ZUJmvqwYPfj)EYICimufJGNaU0MDMn7cBwjKhMYO6CJn7Z2ShJTz73BZ(GnJ(FnS6AArKUKr5qYCPBplBwTcxsWeRtvS1LgQSrlOADQIsk2f1u36chqAv9oyzrkNUMKJgtwqYnmjK1BLQIu5Q01CPAxIbU(MmJxRKOBFFH)qe4ODmefKTcmc3IrOZA75cnBkPh8LFkyG)Gc2ksd30FN2TFfDzZl0q4TNHoeKnuXAmr3QiMYbiVDuK5QgnbkHdaFNpyyzTgbdPUUPQ6i03pfAsJPPsma9dtHEltyoY3pozMauzX6bO)OpAx5qN(VnfRROcZaOFYhATS9ZaeZINKG4Ofl5szbVrBc5GHvHjS1DVhWFwXGAm6ux0dk(q)zke8k9WCCAsm0tzGMEHzKO(6gAZSCPKxi3kgbNIwrycywXxSzRZlIQi)SDpLW8Q0A5wadWxz5mOFEUnlgO5gflhZSdjFoHZtB)rko7ODcsA7KV(zi4EciPfSnmbn1i58HN6a(zBUOy6QHWU)0D4EelkjhsoGwTHPmnu3UF4uxTaCnnhQWW(JEDyrR3I6U9sXRIxOrmrQIiWz99xiEB2fQawEjb7XCDeJ0hplGJpb5E2No6csxkZFz40JPz49KIdBEm2G3zk8u7CFafMOYjUYPsDucd)SwrZLvljMtlM4AJQB1jH5lkseMLEKg6gxVSZ2PNYJBzdnTqAIou)Ddn64YhtpCM7hN(gIhJgGveqfD6a4m7UrG7KnqFbAVxPhuXikulcMd40Lzv1sfKVRKG(85VkDCUntHYPkSdxlRaCWKyzf8qdWc5LizuhzF6FG2lB2SBar()qkGG5SF(utna3AKNWE3ufa3fZ(5Lr4ts8vx(HU92U(dBM75haZyrxUIX77m0r9SGFz(VgukVITA(41E7tJT5bLmC7txVNh)woXvwqN4QUNnDLfDvVZax0QA7VsO(WOw6Ur9nESk8uwBvDNYARk7KE2PQ6BDGkQVPwvt)v6vW6lx(IK73pUa5W19eh9DEVgO)Id1wUcvvM3jQCvRA08zy(8HPiU73)2sGF51bE73FS0Nh9bPThKT8x(GkvWD)aHNEkwWz0tUWDqgi(Cwl0jfEcsJqXfFtJvIpm9piHcdeMtNqVO7QlGQhig41Ye1v6aqbpXoge8njo7IdVdXNFmE)(pm4nhU8S3XdT)kL743xy0ej4b7pmf4DeNrD3KVja05wkHNa(VbIQ8fyqNG5ecs()p]] )
