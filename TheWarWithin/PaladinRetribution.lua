@@ -1999,24 +1999,6 @@ spec:RegisterAbilities( {
         end,
     }, ]]
 
-    -- Interrupts spellcasting and prevents any spell in that school from being cast for $d.
-    rebuke = {
-        id = 96231,
-        cast = 0.0,
-        cooldown = 15.0,
-        gcd = "off",
-
-        talent = "rebuke",
-        startsCombat = true,
-        interrupt = true,
-
-        readyTime = state.timeToInterrupt,
-
-        handler = function()
-            interrupt()
-        end,
-    },
-
     -- Talent: Forces an enemy target to meditate, incapacitating them for $d.    Usable against Humanoids, Demons, Undead, Dragonkin, and Giants.
     repentance = {
         id = 20066,
