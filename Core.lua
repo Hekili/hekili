@@ -751,10 +751,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                     end
 
                 elseif state.whitelist and not state.whitelist[ action ] and ( ability.id < -99 or ability.id > 0 ) then
-                    -- if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
+                    if debug then self:Debug( "[---] %s ( %s - %d) not castable while casting a spell; skipping...", action, listName, actID ) end
 
                 elseif rWait <= state.cooldown.global_cooldown.remains and not state.spec.can_dual_cast and ability.gcd ~= "off" then
-                    -- if debug then self:Debug( "Only off-GCD abilities would be usable before the currently selected ability; skipping..." ) end
+                    if debug then self:Debug( "Only off-GCD abilities would be usable before the currently selected ability; skipping..." ) end
 
                 else
                     local entryReplaced = false
