@@ -19,10 +19,10 @@ actions.precombat+=/unstable_affliction,if=!talent.soul_swap
 actions.precombat+=/shadow_bolt
 
 actions+=/spell_lock
-actions+=/variable,name=ps_up,op=set,value=dot.phantom_singularity.ticking|!talent.phantom_singularity
-actions+=/variable,name=vt_up,op=set,value=dot.vile_taint_dot.ticking|!talent.vile_taint
-actions+=/variable,name=vt_ps_up,op=set,value=dot.vile_taint_dot.ticking|dot.phantom_singularity.ticking|(!talent.vile_taint&!talent.phantom_singularity)
-actions+=/variable,name=sr_up,op=set,value=dot.soul_rot.ticking|!talent.soul_rot
+actions+=/variable,name=ps_up,op=set,value=active_dot.phantom_singularity>0|cooldown.phantom_singularity.true_remains>35|!talent.phantom_singularity
+actions+=/variable,name=vt_up,op=set,value=active_dot.vile_taint_dot>0|cooldown.vile_taint.true_remains>20|!talent.vile_taint
+actions+=/variable,name=vt_ps_up,op=set,value=active_dot.vile_taint_dot>0|cooldown.vile_taint.true_remains>20|active_dot.phantom_singularity>0|cooldown.phantom_singularity.true_remains>35|(!talent.vile_taint&!talent.phantom_singularity)
+actions+=/variable,name=sr_up,op=set,value=dot.soul_rot.ticking|cooldown.soul_rot.true_remains>48|!talent.soul_rot
 actions+=/variable,name=cd_dots_up,op=set,value=variable.ps_up&variable.vt_up&variable.sr_up
 actions+=/variable,name=has_cds,op=set,value=talent.phantom_singularity|talent.vile_taint|talent.soul_rot|talent.summon_darkglare
 actions+=/variable,name=cds_active,op=set,value=!variable.has_cds|(variable.cd_dots_up&(cooldown.summon_darkglare.remains>20|!talent.summon_darkglare))
@@ -109,7 +109,7 @@ actions.items+=/use_item,use_off_gcd=1,name=belorrelos_the_suncaller,if=((time>2
 # We want to use trinkets with Darkglare. The trinket with highest estimated value, will be used first.
 actions.items+=/use_item,slot=trinket1,if=(variable.cds_active)&(variable.trinket_priority=1|variable.trinket_2_exclude|!trinket.2.has_cooldown|(trinket.2.cooldown.remains|variable.trinket_priority=2&cooldown.summon_darkglare.remains>20&!pet.darkglare.active&trinket.2.cooldown.remains<cooldown.summon_darkglare.remains))&variable.trinket_1_buffs&!variable.trinket_1_manual|boss&(variable.trinket_1_buff_duration+1>=fight_remains)
 actions.items+=/use_item,slot=trinket2,if=(variable.cds_active)&(variable.trinket_priority=2|variable.trinket_1_exclude|!trinket.1.has_cooldown|(trinket.1.cooldown.remains|variable.trinket_priority=1&cooldown.summon_darkglare.remains>20&!pet.darkglare.active&trinket.1.cooldown.remains<cooldown.summon_darkglare.remains))&variable.trinket_2_buffs&!variable.trinket_2_manual|boss&(variable.trinket_2_buff_duration+1>=fight_remains)
-actions.items+=/use_item,name=time_thiefs_gambit,if=variable.cds_active|boss&fight_remains<15|((trinket.1.cooldown.duration<cooldown.summon_darkglare.remains_expected+5)&active_enemies=1)|(active_enemies>1&havoc_active)
+actions.items+=/use_item,name=time_thiefs_gambit,if=variable.cds_active|boss&fight_remains<15|(boss&(action_cooldown<cooldown.summon_darkglare.remains_expected+5)&active_enemies=1)|(active_enemies>1&havoc_active)
 # If only one on use trinket provied a buff, use the other on cooldown, Or if neither trinket provied a buff, use both on cooldown.
 actions.items+=/use_item,use_off_gcd=1,slot=trinket1,if=!variable.trinket_1_buffs&!variable.trinket_1_manual&(!variable.trinket_1_buffs&(trinket.2.cooldown.remains|!variable.trinket_2_buffs)|talent.summon_darkglare&cooldown.summon_darkglare.remains_expected>20|!talent.summon_darkglare)
 actions.items+=/use_item,use_off_gcd=1,slot=trinket2,if=!variable.trinket_2_buffs&!variable.trinket_2_manual&(!variable.trinket_2_buffs&(trinket.1.cooldown.remains|!variable.trinket_1_buffs)|talent.summon_darkglare&cooldown.summon_darkglare.remains_expected>20|!talent.summon_darkglare)
