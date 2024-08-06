@@ -360,6 +360,11 @@ spec:RegisterAuras( {
         duration = 360,
         max_stack = 1
     },
+    furious_assault = {
+        id = 448814,
+        duration = 12,
+        max_stack = 1
+    },
     -- Talent: Rooted.
     -- https://wowhead.com/beta/spell=190925
     harpoon = {
@@ -722,6 +727,14 @@ spec:RegisterHook( "reset_precast", function()
     end
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
+
+    if talent.mongoose_bite.enabled then
+        class.abilities.raptor_bite = class.abilities.mongoose_bite
+        class.abilities.mongoose_strike = class.abilities.mongoose_bite
+    else
+        class.abilities.raptor_bite = class.abilities.raptor_strike
+        class.abilities.mongoose_strike = class.abilities.raptor_strike
+    end
 end )
 
 spec:RegisterHook( "spend", function( amt, resource )
@@ -1115,14 +1128,18 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return 30 - ( buff.bestial_barrage.up and 10 or 0 ) end,
+        spend = function()
+            if buff.furious_assault.up then return 0 end
+            return 30 - ( buff.bestial_barrage.up and 10 or 0 )
+        end,
         spendType = "focus",
 
         talent = "mongoose_bite",
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "bestial_barrage" )
+            if buff.furious_assault.up then removeBuff( "furious_assault" )
+            else removeBuff( "bestial_barrage" ) end
             -- removeBuff( "tip_of_the_spear" )
             removeDebuff( "target", "latent_poison" )
             removeDebuff( "target", "latent_poison_injection" )
@@ -1134,6 +1151,9 @@ spec:RegisterAbilities( {
                 buff.mongoose_fury.expires = r
             end
 
+            if talent.vipers_venom.enabled then applyDebuff( "target", "serpent_sting" ) end
+
+
             if azerite.wilderness_survival.enabled then
                 gainChargeTime( "wildfire_bomb", 1 )
             end
@@ -1144,7 +1164,7 @@ spec:RegisterAbilities( {
             if legendary.butchers_bone_fragments.enabled then addStack( "butchers_bone_fragments", nil, 1 ) end
         end,
 
-        copy = { 265888, "mongoose_bite_eagle" }
+        copy = { 265888, "mongoose_bite_eagle", "mongoose_strike" }
     },
 
     -- Talent: A vicious slash dealing $s1 Physical damage.
@@ -1155,7 +1175,10 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return 30 - ( buff.bestial_barrage.up and 10 or 0 ) end,
+        spend = function()
+            if buff.furious_assault.up then return 0 end
+            return 30 - ( buff.bestial_barrage.up and 10 or 0 )
+        end,
         spendType = "focus",
 
         talent = "raptor_strike",
@@ -1165,7 +1188,8 @@ spec:RegisterAbilities( {
         notalent = "mongoose_bite",
 
         handler = function ()
-            removeBuff( "bestial_barrage" )
+            if buff.furious_assault.up then removeBuff( "furious_assault" )
+            else removeBuff( "bestial_barrage" ) end
             -- removeBuff( "tip_of_the_spear" )
             removeDebuff( "target", "latent_poison" )
             removeDebuff( "target", "latent_poison_injection" )
@@ -1174,6 +1198,8 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "spearhead_damage" )
                 if talent.deadly_duo.enabled then addStack( "deadly_duo" ) end
             end
+
+            if talent.vipers_venom.enabled then applyDebuff( "target", "serpent_sting" ) end
 
             if azerite.wilderness_survival.enabled then
                 gainChargeTime( "wildfire_bomb", 1 )
@@ -1192,7 +1218,7 @@ spec:RegisterAbilities( {
             end
         end,
 
-        copy = { "raptor_strike_eagle", 265189 },
+        copy = { "raptor_strike_eagle", 265189, "raptor_bite" },
     },
 
     -- You give the signal, and your pet charges your target, bleeding them for $378957o1 damage over $378957d and increasing your chance to critically strike your target by $378957s2% for $378957d.
@@ -1314,4 +1340,4 @@ spec:RegisterStateExpr( "coordinated_assault_kill_shot", function()
 end )
 
 
-spec:RegisterPack( "Survival", 20240805, [[Hekili:TRvwZTTnq4FlzYmojno0Is2XoPs(HMxA80KhQYm9nscrckHAscgaqFKrd)T3fGI3Ghwo1hD6l2Ycl2lS73UyHTmT(M1spKaB91PtME8KZMCIXKtnpEYuRLIBJXwlJrUxIwdFicfc)Czc7kYvOa5c3gqrEsgWPjmxyXxM6SriI5F8OJwteBswz4sdpItctcqccnYLH8fY)29iRLRsibIphzTsVcyATeLi2qzGmjHFYA5gINhoJCm31APK83n5S3nX8JPo)jMhJDfPo)EsKaZEfp15li2LPoCSqqIwNEr6fzB403n9uydFHerzWYKWuNKyPc8RWh44wCO6gNbB8BBaA(leS3)cmrsK1YacxWv(rSpkjqaF8Rk)kYvA0wldt(Xpca3docTka7z9BwcWARsHGHI(o4pi)a0vB(gQOb1ZKux(nlDzeqjjiRLVUWg5gHGcBJIUn1z72uhbITglmiC7vuoyoVj15GuhPiVcB7rfgBuwk3ou5PwK6mrrXU9jiHyBb1o2vyFgSY5PotNuQYv3SudpUHgMtNlkiWo7pSLEQm)LDw0KRhxU3t6062PT4iCibZZuciEtWiUcPxEKIjaJUclL07hTKMN6m7Ulj4pbQpT6zlI5IIKEsgdh18C9SQuUcT2M6Blf5L86ekkmI8GlTgHlLg4rVocY7Ompseew7zJ4CzyPbdhIir8s5bPmi2gmKdNhpQLPRs89HOHyLUTbBR2MbxaadQdKSOMcrFnjWZNWWquxiaaSrgnXT9zzsffO2JPXPzbP31T9HgBRhdvDgon15xsDw76bjh3uA61Kw)jyVqMreahDgsArG0WmJDuMNO15Y3nhdOVvd0ABA6s0g5b1CvMtoV9dqrxQWAGOTlX9NeoyaqjFX3ehq5YejfiwVzC3b26NWUnNmmADaUiltdIZLeibfk8eII8QkpFQBceu8w4ibbjSm8ACKYVOwil(W9winZodbKlZ0YZrVVwqRaUp0pxdXmxsaMdG3b0R5gjXvQNqJwtPCGxWwK8YCY(ZmgkgGMQehywR21QeH7gm72g4wM1kFP84AQAzoRwzWAQDdkpUkL11PwaHE8(rblQhc1ZTH0SyQchoVW1UVyympDyljXz58LOc6OsB(FbCBjavDovsq19pkjv5alGs9SLjm9dR981crrUyi0abj5qP4raj(S0kLGfQZYcS58vciR3i42)DI36W2DumaE7ZiFXUIR7AdfQRMvGCwLyDObumtwhtx9GkwUQ)xqU(sxNDT(dojtmp3CoLoHyQ63AkuvKWeavZayp7y1frGsq3KFDoTljHnP((2qxt7kb2Syv2MHcSex71mc2hGRD3ubQV5k6ksLXKvyKl0jnCclRGUcFlnQkAMUvlksP9WECTgwRjYwhuLkG0xaCoKxw1tRu3DPjp4Qas8jO8pCFQ3x5mqD)0M9Wiu3y4)BP))BPV7wzaEhbTNkaLyMP90y3(AlEjrERCwsmezzEp6QFWBlCpARVMhMd4e4W2OALTu2pY(qcRVRM0fE5p7lqmqR(Jt9BfENHNoQMRnhFZ1XmSRmOV9uS4jHGqSJXn74OByMNkZMQjsqp1(6RMPiZfDfWAjn5dSeYVVgXIKwP1s14bjHXuMqgxWsDEfCFLxL6WWFpbo(aaeoneObLiOHsGaiAAdkcWnmsV4pirWst)yQZNOrGCul)QU7ga4RG2lf5zwaLV28M3mKmkQF0GZT6uzK87NQop7Xtg7TF5HqNp(Xtg7TF5HqNF)JNm2B)YdHoF6JNm2B)Y)U6C6fAWT5I7gSDhP6L9q2qZA3C5ibpUhCSRWvvxynptQ1A2aoRSxN4)soS0l(SYcLm6KSEtOq7EQx7dwwDxlxOjGtor21e1NiB)oJkUrrBuVDXrLnoLEHU1R2TYHe)fVUvptB3wVFP3CqhDkTyYbA7q68Pt0l78R3EOSLOfAA6r6h2TrG8SxYS630(LlRU6dSPbsS5RZLzyqlyJGivi8Hzp53ctP(Utx29OGNpDyMa)UBgmFwvgu)HbRUsThcSYjGbyhsVA2eSL8x3OUBsE5eHL7ONbDTD7l6g08GUNws5(kw6GE4u6fV8L55t56ij6k6LGF6g48gU3STulZCOX0RXmBsKFISP7NkwqDTV(ePFAQJfZt(PP61yO2TIHlM07td1hGTkNl9CZzn13SHYQ0vau7GAZDE(0t2U9X3eAQYdwk4WkZfEHz)BV5aG7NADt5TRDWLov3rmRWTB72v1kbU90zLIPXqDpFX7RbgRQxilWNZ(XQAA4rTX7ueJRF0qNpPmkyOjqEUPXPv8eJG8puH8ESH5t)fioqJLOzps75fTA5sw6VXxnE7AUPgr3yoLd4gNpvdlQpLWbpi0Penhk7(WKQJG8WAZumRVc1ehFB5yiNxmcY7DSLgguB4IfmO9)vbA2ATPnE32A()6bD5EQ1Szhk7qAu18zU4(LlR2)DZxp(49hS8yLv8WNdReRMuN8NZilSx3ZH0Kh7ngGA7frwdE2vy6z3tUbF2BCKsT4EM(VhHJn2ChzsQ1A(VnKWY6F(d]] )
+spec:RegisterPack( "Survival", 20240806, [[Hekili:T31EZTTns8plE6mkwnoYsYYXo9K1m5C816exNov(U(FIKIescN5RscAh3rd)SF7c(Me8HKLuS7PzssTfawSyX(43UaqDsVj3nzSMcJm52(D7pO75DFFNUNFY7h8HjJzpztMm2wr9EL5WpyQya)7ypNhOpOOJn8KULIgsaxlphvOXFWxEbJz7(thF8CkBH30oQwgh7sn80vyultvhLzm83vpEY4PEuD21MtMkIbgm4KjJv8ylSCG5KAC5KXlOAAKGUtCvNmg7(76E(7627N8L)DIRnrL5l)lEMmIZBC9L)vfN79LDjmg1CU)N9)CWao7D9pdgWVsnTCGMPg(YE2id8pGFWLuGcPh4jWaVBb0N)qbg7FalrQ5KX6uxMlxmqmzQ6eLhiWVDlx0smvMQt0M8pNmw1Hc0LQa)KLLUM1JMG0XYrJActUMKIRRINoRJdXqHA6cREvuKbu1MO4SGasA(c3HAh85JV627U(2RUXxE5sF5pD1)6J)7BUZx(JF9k4FU8UR)6T3C947MWabBPCYuVzZGzuhyCDIRRKTd1qrxAgXXsLYEQJNTVClFzE3yuBjRzsSfejol1XLbQg(Yd9L7LWT3t11LGDDdftGHvFcKhsmfN5eqebIeGBoPAUzQLXufqQqCkkkiFZw3YL(aWblSyiXgunXkJNh5l3LVYI3kEKQRnJ6qKW5VJ6cKLDLM5em1k68X0RZzbs7vDyFi3WQyJNlq77l)J(YZv16yO8TK1FMzdx(Nw6Y)aFzMcUVMwGg2ZaMPIMxnbtwfablnKtF)6TrHYIeAptxX8EWAwYL5qVNG09SsP7H1O3gOdGsIs078LBNvuu5UgqU(Dx1T5QuTpF9Ky4YkLeZZ5POUruMRZLzFOAk7svLigjmkicqYbSgXKyqjb8(GC28rSDVULs9zwQEWGFliHuCzsoK5etoT4nKvvVE)i9k3b7kiGkys1RgVLgehvk3z5uDRhDbxKjeZrXMz5Ks7Sh3zxuZt9yQliopLM8yNgKUtjcZC96009k7mLPNmmoXmUDxuuOOrz49x)LEUUheDiQhmhfZ)ecmt)lUzwr2OCV3hghSf3kDUxsX8Pipn4(whkiYSCJnRc1P0SyDwWd56kzWdzFrKZ5WXXOgWEVLKTkt68UHwAjSC6blkKqSJjfqWg8lsyi7Ga3sbWAu1CR2FQalGtczsUB0hOQulpxjKBICKcXUH9hvCZRHSHTUBnElZZhJ4bl288rioMk9WwQm5Gnm7GaRCRXPyPcMTbZKiDY7lndenaDPToyeGoyawYA2mFzk8xWNKdGIKcFMYuxlDpgb7MPfcOCUVmrhbIYS8LTHb62jHZuCuvmrRbhhGns83g7Irzo3PhSKU3nVhKm(c0PZxWCL(VEAZnqsL3hcmZQyiXIErC9mmabJnjVVHY9C(sX3qEVxb7Ok6aPaGns2C)JaNKkqKOgdeq67oS()2hV8l(Y3C1h)0v)(Ei(nom)QIKDpe)9q83dXFpe)xbq8raRvg4joERNlrcmPTT4rZIcmg9bzcZC5x)6nF6R)XTJxXWlImcW4kOLsIxkr9sO)O4OGjkOzPushsp(gntP2Q0TS0KqRNgeY6v5kuXuLaQpq0EeqBdIL(QCvIM289YQJw(ABbggbpeFle0kik8jPuGbKTehmyznrF5aRBHPHaq(LYeD60uHhFfjCsec2w8)Bemb0zhKMLeGRINrxkbsva6RirabHPd6me2cIIo3HsMb(PvxKmdfArqa5aAmLOOcPsbBWymSPKNSmt7HsuRvh)Tz4sYGGPW(ucdGstGYgU1emomzmnijz0NdeagYt79Pe58dNjpifwy9oeegRHqeYLK0n(YoKhOUugI3GHzydGpgFh(Bo(YgASJ1CdpZhBpiaOlpRCoh)i8xaDg8VJhWtwTJV8HF63UcgSgMYoaIaWbpfAxZrXqHrrxQqoSlaBkIt7uZmdpGitcQoZNwaKInpR(Vmw8KfpYFbOfMYpfs8F8ySHzq6)lWAgC8JlqGuF1Jb4Jbk)FiMwgbvqyg9BeToPiJlXuJpHWmJOya2og4RV8vaHvMXWFm9hdujKFNAXwei14ZeKSzNmYvNOeqbcDn0ld0RcSY8y2ehOzduyHKGqX6CGL9iuO8rlyy4UKPfSXbu9DbWoTmD7eKl9BV44ieuhrNDrXurg1VZ5TACIld7150u8oUbGsxqV9POvcYsbS7LE4omNr)fIdkrrTznqabJkyLfOCRzHQnps01pc9CY4fUb1nyCPk4aXe3EFmAR8lJH(bgypGtkO1WlduG1SV8jOIgkSXTsvpEzDq9klqP2G6gRf9LlDTvmokU(raX1vEYL9Ko8JWgUlEmMHkdqNybeuhGoIulM3SWoZarg(PoenRWDzMY9Kq6I13kqaIf9cAhRsfqcfxIo1KaSB2Qrm(6B)5BaP4DF83)z0Cjb5yhr5QTbkfbK1w1GsBIxqrfDPsCGhG78qulIJnSaaC5GngWMQ3ZT1kwskEiBS0abLH8WSH2az8CEXiDa3Hy5nZg3pmBSctyufWAxAEcIYJQCyFnHFAvf7mSyMJTejOki1BaBxdyU)Ux5NYr09sRYpBIk0ebkmOYeXCB7sQbXAw6KAl2u5fo5WAaUMXa39jJPuaAQQKIg4sxH75mxVBOGPPLUsaEBrfSsq3c0jBZ)d23d5)PrRKAr03ElTAR0iBTkuxgDTI1QRcq3rRUzEoCxOPtEQU4zbR82f1GmSmNBbyeLMcttwbEqrQIAhRGrkQnOIGdIqX3qO2nOSz16poy95Oq1KipGRrfnnioZ3W7pvWkRS2AvSjeAp6(90mR3I16JhqNIhdKJNnKYrVY3e34m3GSrQfwP2ELhCoFG1rCSpTsBDMVuLPDXiSwMOTqEZ2sjsBbf2mUoL1ezQcifReiGE5dd28XYIp54nvkM4DU71ysMDEXNLPfML5DN0dZzXKKjvOi7mxkFDPd2zGu6mW2cbSa7JehKbT055CfNdZXH3cMOCmXSz6e0emd6fY4Y8jkMkM4Bv5(KC2NKZ(KCwn4u)DmjNgaKaCRdZKPNlS3rCoPNuFB1AWaSpzM9jZ8sjzMgU0eMUEj5QxXjhu)9fiL6ytcTgUL3KU2GOWHAsngT4(SKwdMBFwsFNZsc2VFaWqJ9p(rybkjkoM4fizYy(tEIAyB5eDaqVj5sW(gmNG)0d0MarHRLb0vfpMLb6BIJq3CoEwpF(goS(t)jF5lTmHPJ38Bkec)nbhsrXgIelqhoS33AVvOO)NfSudtJyJSotFdKZXxIUCY5xRVFRq1Z2ku98nmvfU3GNF8QTXCIy2sGDyoURcl18l9b7G5OevH1sTFBrXsuScWmKJAzbsKNsFOekfbrlpXYdDRP0ta8W8KUceKVSML1v20RRycMPG05iQWIvxGWLyxKlWAEsloS7UL4L4oFdzrl01MQM7Q5zRFz8yHufkWJLEpRYlikzowBDTDbpxQh)T)CS2YLDbpxAuQT)CS2YLDbpxQT(2FowB5YUGNlbFWUyowB5Y2LNlbs6)NKxuWrRTAlZ9OV3DuCtJl87lA2DZSSUYMYWmVgP6SDbYUvj(2gL81C)piPpl6qDXJl2LHoyWxSS1mk(1BqqtUDIFcZV9IJtE0Y(Fwu7PFPW4vp(WcVx5LlZ(wLB3k1bgME4x0TLWxN8O(Dfp3rxZ(JWhfWfcEec4IpCGq3d(wCi9Nu8BTH0TUJxAWmM)9ZhSWGmAQVtyfDok4j5FrpKBZwE3HN0kuNjD1IAczdIkxbPh1F9iDqCWQ55dwBk3e2wm1)b(LqzJ89pqAwn73abPBjZ39aPBi3x1aO2mWCcFSHjgiG2cQ7g8ofXLTOh0y(UN8M(WruXRAA5YdI99uO9wLF(IjJlUPwvqjyH(dPEJdCEKA(G19W233aRkikLeYLHkPwpsCKOMZ8WAX)szfKL7Z(McFzYJXViWxMSxY727Lb)bE)tUnpd7DsE(n4j2X5vi2qRmVIWH9pD5YV)lH8SCTrupk1df8IEvp88pNVQ7TOhTxzJWL)iNAWH6VCz5IQcwOUfESD40K7n6n6I3h6hE)ZMBRCHg3)S52)S5wZNnxQSea0WWMB6BDYrzoc)aeHhw)1DPvfx(KH9AxykJDZ0uxufOq4npaprir88bLEptZNIbyPnQx)whEq5zlUCziO4ce9IUfxB1WzLpnTkBwgMftERsVAOf4Lm2IX4beVpnQBZTHh1RZzPIA0GU)HuDVI95H9)riMzH1HGrW3LdfMj(mXCnZ9rnFvnSNyBdmL3edHYKEXtDqfykQyK7kuwZ2XW(fiq2BAhNJkaJjwpwubRAv3kOKRuy7kWsbjNxf(HH9B3E5YdpScUsaAS2BaoTcTSS8CLQJvBFhRuu8XzvLlXrDBNSrL50TdxycE(vJguKvQYZ9Z1xWHhi(U2TCP4pVvX7F3OENkWki)fW7O4lgyy4MnWepqGF50yyY6qDuVwr6N5kgzRsV)EjkT5ADLdiurGNvHur4TR67YV00lgB3ZkwCmvQdeXZfdHWjTOdXYUt0Ig9kAq04Wi7WGJXRLVhbiJN8NtGTk2lFPecq8AUOBSAuGk3SjJYB2V88AL1t1WbRLXh)6U)2K7a)WK7)(Z3WqijYfKuOBui1irdnYpD1YR6M1q3H7FsLBRkq869jvMO6eC4knWaAtMcC8K(mc8gtJ6Ww8Din4MYB7MeHJ5MvZPwZJjUZI2hVs29X6JN6AbVl65jkIoRnIHysSpz4vHt3miHezLxebtdlqYA4gUCCmWwD9UObrF9DQs)4W(3Z31YMib3mzw3CZZnXupqOZ(DF21nnotJYVUjelfKY6))mwzj9Miz7m0PolLNPEEVsM21iH7mJFfTuACWQDAq4VJjDNz6FEbrFvL4D219Zi17IgrRxY3RKXyts)(zyMucrw1uWZm4IjHlwYv)CZ)YHrDYT9p9u(JbEY)7d]] )
