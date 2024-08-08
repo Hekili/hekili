@@ -126,9 +126,9 @@ actions.st+=/deep_breath,if=!buff.dragonrage.up&(talent.imminent_destruction&!de
  # Get Ancient Flame as Filler
 actions.st+=/call_action_list,name=green,if=talent.ancient_flame&!buff.ancient_flame.up&!buff.shattering_star_debuff.up&talent.scarlet_adaptation&!buff.dragonrage.up&!buff.burnout.up
 # Cast LF outside of DR, In DR only cast with Iridescence.
-actions.st+=/living_flame,if=!buff.dragonrage.up|(buff.iridescence_red.remains>execute_time|!talent.engulfing_blaze|buff.iridescence_blue.up|buff.burnout.up|buff.leaping_flames.up&cooldown.fire_breath.remains<=5)&active_enemies==1
+actions.st+=/living_flame,if=!buff.dragonrage.up|(buff.iridescence_red.remains>execute_time|!talent.engulfing_blaze|buff.iridescence_blue.up|buff.burnout.up|buff.leaping_flames.up&cooldown.fire_breath.remains<=5)&active_enemies=1
  # Fallback for movement
- actions.st+=/azure_strike
+actions.st+=/azure_strike
 
 # Use Dreambinder on CD
 actions.trinkets+=/use_item,name=dreambinder_loom_of_the_great_cycle,use_off_gcd=1,if=gcd.remains>0.5
