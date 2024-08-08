@@ -233,6 +233,11 @@ spec:RegisterAuras( {
         duration = 4.0,
         max_stack = 1,
     },
+    chi_burst = {
+        id = 460490,
+        duration = 20,
+        max_stack = 1,
+    },
     -- Increases the damage done by your next Chi Explosion by $s1%.    Chi Explosion is triggered whenever you use Spinning Crane Kick.
     -- https://wowhead.com/beta/spell=393057
     chi_energy = {
@@ -1133,17 +1138,19 @@ spec:RegisterAbilities( {
 
     -- Talent: Hurls a torrent of Chi energy up to 40 yds forward, dealing $148135s1 Nature damage to all enemies, and $130654s1 healing to the Monk and all allies in its path. Healing reduced beyond $s1 targets.  $?c1[    Casting Chi Burst does not prevent avoiding attacks.][]$?c3[    Chi Burst generates 1 Chi per enemy target damaged, up to a maximum of $s3.][]
     chi_burst = {
-        id = 123986,
+        id = 461404,
         cast = function () return 1 * haste end,
         cooldown = 30,
         gcd = "spell",
         school = "nature",
 
-        --[[ spend = function() return max( -2, true_active_enemies ) end,
-        spendType = "chi", ]]
-
         talent = "chi_burst",
         startsCombat = false,
+        buff = "chi_burst",
+
+        handler = function()
+            removeBuff( "chi_burst" )
+        end,
     },
 
     -- Talent: Torpedoes you forward a long distance and increases your movement speed by $119085m1% for $119085d, stacking up to 2 times.
@@ -1950,9 +1957,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "physical",
 
-        talent = "touch_of_karma",
         startsCombat = true,
-
         toggle = "defensives",
 
         usable = function ()
