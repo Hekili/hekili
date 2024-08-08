@@ -5931,7 +5931,7 @@ do
                 elseif type == "CHANNEL_START" then
                     time = start
 
-                elseif type == "CHANNEL_FINISH" or type == "CAST_FINISH" then
+                elseif not time and ( type == "CHANNEL_FINISH" or type == "CAST_FINISH" ) then
                     time = start + ability.cast
 
                 end

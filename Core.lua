@@ -1407,7 +1407,6 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     end
 
     if pack.lists.default and wait > 0 then
-        local list = pack.lists.default
         local listName = "default"
 
         if debug then self:Debug( 1, "\nProcessing default action list [ %s - %s ].", packName, listName ); self:Debug( 2, "" ) end
@@ -1415,6 +1414,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         if debug then self:Debug( 1, "\nCompleted default action list [ %s - %s ].", packName, listName ) end
     end
 
+    state:SetWhitelist( nil )
     if debug then self:Debug( "Recommendation is %s at %.2f + %.2f.", action or "NO ACTION", state.offset, wait ) end
 
     return action, wait, depth
