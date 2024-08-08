@@ -779,7 +779,7 @@ spec:RegisterAbilities( {
 
     -- Fly to the targeted location, exposing Temporal Wounds on enemies in your path for $409560d.; Temporal Wounds accumulate $409560s1% of damage dealt by your allies affected by Ebon Might, then critically strike for that amount as Arcane damage.$?s395153[; Applies Ebon Might for ${$395153s3/1000} sec.][]; Removes all root effects. You are immune to movement impairing and loss of control effects while flying.
     breath_of_eons = {
-        id = 403631,
+        id = function() return talent.maneuverability.enabled and 442204 or 403631 end,
         color = "bronze",
         cast = 4.0,
         channeled = true,
@@ -799,6 +799,8 @@ spec:RegisterAbilities( {
         finish = function()
             removeBuff( "breath_of_eons" )
         end,
+
+        copy = { 403631, 442204 }
     },
 
     -- Attune to Bronze magic...
