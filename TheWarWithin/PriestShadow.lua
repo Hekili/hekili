@@ -1404,7 +1404,7 @@ spec:RegisterAbilities( {
 
     -- Blasts the target's mind for $s1 Shadow damage$?s424509[ and increases your spell damage to the target by $424509s1% for $214621d.][.]$?s137033[; Generates ${$s2/100} Insanity.][]
     mind_blast = {
-        id = function() return talent.void_blast.enabled and buff.entropic_rift.enabled and 450405 or 8092 end,
+        id = function() return talent.void_blast.enabled and buff.entropic_rift.up and 450405 or 8092 end,
         cast = function () return buff.shadowy_insight.up and 0 or ( 1.5 * haste ) end,
         charges = function ()
             if talent.thought_harvester.enabled then return 2 end
