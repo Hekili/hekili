@@ -691,6 +691,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 1030095,
+        talent = "beacon_of_faith",
 
         handler = function ()
             applyBuff( "beacon_of_faith" )
@@ -710,6 +711,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 236247,
+        talent = "beacon_of_light",
 
         handler = function ()
             applyBuff( "beacon_of_light" )
@@ -729,6 +731,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 1030094,
+        talent = "beacon_of_virtue",
 
         handler = function ()
             applyBuff( "beacon_of_virtue" )
