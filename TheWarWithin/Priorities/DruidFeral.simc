@@ -14,6 +14,8 @@ actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1
 
 actions+=/prowl,if=buff.bs_inc.down&!buff.prowl.up
 actions+=/cat_form,if=!buff.cat_form.up&!talent.fluid_form
+actions+=/skull_bash
+actions+=/soothe
 ## Line up <a href='https://www.wowhead.com/spell=10060/power-infusion'>Power Infusion</a> with Berserk.
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.bs_inc.up|!talent.berserk_heart_of_the_lion
 actions+=/call_action_list,name=variable
@@ -96,6 +98,7 @@ actions.cooldown+=/use_item,slot=trinket2,if=(buff.bs_inc.up|((buff.tigers_fury.
 # non-stat on use trinkets get used on cooldown, so long as it wont interfere with a stat on-use trinket
 actions.cooldown+=/use_item,slot=trinket1,if=!variable.trinket_1_buffs&(trinket.2.cooldown.remains>20|!variable.trinket_2_buffs|trinket.2.cooldown.remains&cooldown.tigers_fury.remains>20)
 actions.cooldown+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(trinket.1.cooldown.remains>20|!variable.trinket_1_buffs|trinket.1.cooldown.remains&cooldown.tigers_fury.remains>20)
+actions.cooldown+=/use_item,slot=main_hand
 actions.cooldown+=/convoke_the_spirits,if=boss&fight_remains<5|(buff.tigers_fury.up&(combo_points<=2|buff.bs_inc.up&combo_points<=3)&(target.time_to_die>5-talent.ashamanes_guidance.rank|target.time_to_die=fight_remains))
 
 # ravage prio over pw if pw won't upgrade, pw prio over regular bite (with DOTC)
