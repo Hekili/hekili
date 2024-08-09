@@ -1414,7 +1414,7 @@ spec:RegisterAbilities( {
 
         cycle = function ()
             if debuff.mark_of_fyralath.up then return "mark_of_fyralath" end
-            if death_knight.runeforge.razorice then return "razorice" end
+            if death_knight.runeforge.razorice and debuff.razorice.stack == 5 then return "razorice" end
         end,
 
         handler = function ()
@@ -1614,7 +1614,7 @@ spec:RegisterAbilities( {
 
         cycle = function ()
             if debuff.mark_of_fyralath.up then return "mark_of_fyralath" end
-            if death_knight.runeforge.razorice then return "razorice" end
+            if death_knight.runeforge.razorice and debuff.razorice.stack == 5 then return "razorice" end
         end,
 
         handler = function ()
