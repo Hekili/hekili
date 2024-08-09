@@ -2098,7 +2098,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-        texture = 1109506,
+        texture = 1112940,
         talent = "templar_strikes",
         buff = "templar_strikes",
 
