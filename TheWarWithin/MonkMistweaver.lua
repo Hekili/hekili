@@ -225,11 +225,6 @@ spec:RegisterAuras( {
         duration = 4,
         max_stack = 1
     },
-    chi_burst = { -- TODO: Hidden aura that procs Chi per enemy targeted.
-        id = 123986,
-        duration = 1,
-        max_stack = 1
-    },
     chi_torpedo = { -- Movement buff.
         id = 119085,
         duration = 10,
