@@ -2331,6 +2331,21 @@ spec:RegisterAbilities( {
     }
 } )
 
+spec:RegisterSetting( "default_pet", "summon_sayaad", {
+    name = "|T136082:0|t Preferred Demon",
+    desc = "Specify which demon should be summoned if you have no active pet.",
+    type = "select",
+    values = function()
+        return {
+            summon_sayaad = class.abilityList.summon_sayaad,
+            summon_imp = class.abilityList.summon_imp,
+            summon_felhunter = class.abilityList.summon_felhunter,
+            summon_voidwalker = class.abilityList.summon_voidwalker,
+        }
+    end,
+    width = "full"
+} )
+
 spec:RegisterSetting( "manage_ds_ticks", false, {
     name = "Model |T136163:0|t Drain Soul Ticks",
     desc = "If checked, the addon will expend |cFFFF0000more CPU|r determining when to break |T136163:0|t Drain Soul channels in favor of " ..
