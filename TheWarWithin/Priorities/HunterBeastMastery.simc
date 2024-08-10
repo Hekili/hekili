@@ -40,7 +40,7 @@ actions.cleave+=/arcane_torrent,if=(focus+focus.regen+30)<focus.max
 actions.st+=/barbed_shot,cycle_targets=1,if=buff.frenzy.up&buff.frenzy.remains<=gcd+0.25|buff.frenzy.stack<3&(talent.scent_of_blood&(cooldown.bestial_wrath.ready|talent.call_of_the_wild&cooldown.call_of_the_wild.ready)|!cooldown.bestial_wrath.ready)
 actions.st+=/bestial_wrath
 actions.st+=/kill_command,if=(full_recharge_time<gcd&talent.alpha_predator)|talent.call_of_the_wild
-actions.st+=/dire_beast,if=talent.huntmasters_call&(!buff.bestial_wrath.up&talent.killer_cobra|talent.call_of_the_wild&cooldown.call_of_the_wild.ready)
+actions.st+=/dire_beast,if=talent.huntmasters_call&(!buff.bestial_wrath.up&talent.killer_cobra|cooldown.call_of_the_wild.ready)
 actions.st+=/kill_shot,cycle_targets=1,if=talent.venoms_bite&dot.serpent_sting.refreshable
 actions.st+=/call_of_the_wild
 actions.st+=/bloodshed
