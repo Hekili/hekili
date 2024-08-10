@@ -329,6 +329,11 @@ spec:RegisterAuras( {
             c.caster = "unknown"
         end
     },
+    consecration_strength_of_conviction = {
+        id = 188370,
+        duration = 12,
+        max_stack = 1,
+    },
     contemplation = {
         id = 121183,
         duration = 8,
