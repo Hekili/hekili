@@ -1,3 +1,4 @@
+actions.precombat+=/mark_of_the_wild
 actions.precombat+=/prowl,if=!buff.prowl.up
 actions.precombat+=/cat_form,if=!buff.cat_form.up
 # check if trinket slot contains a stat on use
