@@ -1454,7 +1454,7 @@ local displayRules = {
     Defensives = { function( p ) return p.toggles.defensives.value and p.toggles.defensives.separate end, false, "Cooldowns"  },
     Cooldowns  = { function( p ) return p.toggles.cooldowns.value  and p.toggles.cooldowns.separate  end, false, "Primary"    },
     Primary    = { function(   ) return true                                                         end, true , "AOE"        },
-    AOE        = { aoeDisplayRule                                                                       , false, "Interrupts" }
+    AOE        = { aoeDisplayRule                                                                       , true , "Interrupts" }
 }
 local lastDisplay = "AOE"
 

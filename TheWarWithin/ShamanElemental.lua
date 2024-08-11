@@ -408,6 +408,11 @@ spec:RegisterAuras( {
     flametongue_weapon = {
         id = 319778,
         duration = 3600,
+        max_stack = 1,
+    },
+    improved_flametongue_weapon = {
+        id = 382028,
+        duration = 3600,
         max_stack = 1
     },
     -- Talent: Your next Lava Burst will deal $s1% increased damage.
@@ -1212,6 +1217,9 @@ local TriggerStormkeeperTier30 = setfenv( function()
     addStack( "stormkeeper" )
     t30_2pc_timer.last_tick = query_time
 end, state )
+
+
+local debugstack = debugstack
 
 spec:RegisterHook( "reset_precast", function ()
     local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
@@ -2046,6 +2054,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "flametongue_weapon" )
+            if talent.improved_flametongue_weapon.enabled then applyBuff( "improved_flametongue_weapon" ) end
         end,
     },
 
