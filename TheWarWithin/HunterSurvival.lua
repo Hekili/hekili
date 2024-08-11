@@ -1337,7 +1337,7 @@ spec:RegisterSetting( "mark_any", false, {
     width = "full"
 } )
 
--- TODO: If this approach isn't sufficient, I'll need to check for pet Basic Attack abilities being set to manual.
+--[[ TODO: If this approach isn't sufficient, I'll need to check for pet Basic Attack abilities being set to manual.
 spec:RegisterSetting( "manual_kill_shot", false, {
     name = strformat( "%s: %s Macro", Hekili:GetSpellLinkWithTexture( spec.auras.coordinated_assault.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.kill_shot.id ) ),
     desc = strformat( "During |W%s|w, some guides recommend using a macro to manually control your pet's attacks to empower |W%s|w.  These macros prevent the |W%s|w empowerment "
@@ -1346,10 +1346,10 @@ spec:RegisterSetting( "manual_kill_shot", false, {
         spec.auras.coordinated_assault_empower.name, spec.abilities.kill_shot.name, spec.abilities.kill_shot.name, spec.auras.coordinated_assault.name ),
     type = "toggle",
     width = 1.49
-} )
+} ) ]]
 
 spec:RegisterStateExpr( "coordinated_assault_kill_shot", function()
-    return ( settings.manual_kill_shot or false ) and buff.coordinated_assault.up
+    return false -- ( settings.manual_kill_shot or false ) and buff.coordinated_assault.up
 end )
 
 
