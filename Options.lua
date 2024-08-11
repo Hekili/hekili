@@ -12061,14 +12061,20 @@ do
     }
 
     local toggles = setmetatable( {
-        custom1 = "Custom #1",
-        custom2 = "Custom #2",
     }, {
         __index = function( t, k )
-            if k == "essences" then k = "covenants" end
-
             local name = k:gsub( "^(.)", strupper )
-            t[k] = name
+            local toggle = Hekili.DB.profile.toggles[ k ]
+            if k == "custom1" or k == "custom2" then
+                name = toggle and toggle.name or name
+            elseif k == "essences" or k == "covenants" then
+                name = "Minor Cooldowns"
+                t[ k ] = name
+            elseif k == "cooldowns" then
+                name = "Major Cooldowns"
+                t[ k ] = name
+            end
+
             return name
         end,
     } )
