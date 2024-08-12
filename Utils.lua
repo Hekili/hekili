@@ -945,6 +945,8 @@ function Hekili:IsValidSpec()
 end
 
 
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+
 function Hekili:GetLoadoutExportString()
     -- Current as of 10.1.0.48480
     local bitWidthHeaderVersion = 8
@@ -952,7 +954,7 @@ function Hekili:GetLoadoutExportString()
     local bitWidthRanksPurchased = 6
 
     -- Cannot force-load as needed without causing taint, so this simply replicates existing Blizzard functionality.
-    if C_AddOns.IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then
+    if IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then
         bitWidthHeaderVersion = ClassTalentImportExportMixin.bitWidthHeaderVersion
         bitWidthSpecID = ClassTalentImportExportMixin.bitWidthSpecID
         bitWidthRanksPurchased = ClassTalentImportExportMixin.bitWidthRanksPurchased
