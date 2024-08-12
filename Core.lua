@@ -681,7 +681,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
     local debug = self.ActiveDebug
 
-    if debug then self:Debug( "Current recommendation was %s at +%.2fs.", action or "NO ACTION", wait or state.delayMax ) end
     -- if debug then self:Debug( "ListCheck: Success(%s-%s)", packName, listName ) end
 
     local precombatFilter = listName == "precombat" and state.time > 0
@@ -693,6 +692,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local strict = false -- disabled for now.
     local force_channel = false
     local stop = false
+
+    if debug then self:Debug( "Current recommendation was %s at +%.2fs.", action or "NO ACTION", wait or state.delayMax ) end
 
     if self:IsListActive( packName, listName ) then
         local actID = 1
