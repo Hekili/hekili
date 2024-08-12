@@ -141,7 +141,7 @@ spec:RegisterTalents( {
     rip_and_tear                   = { 82093, 391347, 1 }, -- Applying Rip to a target also applies a Tear that deals 15% of the new Rip's damage over 8 sec.
     saber_jaws                     = { 82094, 421432, 2 }, -- When you spend extra Energy on Ferocious Bite, the extra damage is increased by 40%.
     sabertooth                     = { 82102, 202031, 1 }, -- Ferocious Bite deals 15% increased damage. For each Combo Point spent, Ferocious Bite's primary target takes 3% increased damage from your Cat Form bleed and other periodic abilities for 4 sec.
-    savage_fury                    = { 82099, 449645, 1 }, -- Tiger's Fury increases your Haste by 8% and Energy recovery rate by 20% for 6 sec.
+    savage_fury                    = { 82099, 449645, 1 }, -- Tiger's Fury increases your Haste by 10% and Energy recovery rate by 25% for 6 sec.
     soul_of_the_forest             = { 82096, 158476, 1 }, -- Your finishing moves grant 2 Energy per combo point spent and deal 5% increased damage.
     sudden_ambush                  = { 82104, 384667, 1 }, -- Finishing moves have a 6% chance per combo point spent to make your next Rake or Shred deal damage as though you were stealthed.
     survival_instincts             = { 82116, 61336 , 1 }, -- Reduces all damage you take by 50% for 6 sec.
@@ -1287,7 +1287,7 @@ spec:RegisterHook( "reset_precast", function ()
     last_bloodtalons = nil
 
     if buff.jungle_stalker.up then buff.jungle_stalker.expires = buff.bs_inc.expires end
-    if talent.ashamanes_guidance.enabled and buff.incarnation.up then buff.ashamanes_frenzy.expires = buff.bs_inc.expires + 30 end
+    if talent.ashamanes_guidance.enabled and buff.incarnation.up then buff.ashamanes_frenzy.expires = buff.bs_inc.expires + 40 end
 
     --[[ if buff.lycaras_fleeting_glimpse.up then
         state:QueueAuraExpiration( "lycaras_fleeting_glimpse", LycarasHandler, buff.lycaras_fleeting_glimpse.expires )
@@ -1604,7 +1604,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.clearcasting.up then return 0 end
-            return max( 0, 25 * ( buff.incarnation.up and 0.8 or 1 ) + buff.scent_of_blood.v1 )
+            return max( 0, 25 * ( buff.incarnation.up and 0.75 or 1 ) + buff.scent_of_blood.v1 )
         end,
         spendType = "energy",
 
@@ -1756,7 +1756,7 @@ spec:RegisterAbilities( {
         end,
 
         spend = function ()
-            return 25 * ( buff.incarnation.up and 0.8 or 1 ), "energy"
+            return 25 * ( buff.incarnation.up and 0.75 or 1 ), "energy"
         end,
         spendType = "energy",
 
@@ -1789,8 +1789,8 @@ spec:RegisterAbilities( {
         spend = function ()
             if buff.apex_predator.up or buff.apex_predators_craving.up then return 0 end
             -- Support true/false or 1/0 through this awkward transition.
-            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.8 or 1 ) * ( talent.relentless_predator.enabled and 0.9 or 1 ) end
-            return max( 25, min( 50 * ( buff.incarnation.up and 0.8 or 1 ), energy.current ) ) * ( talent.relentless_predator.enabled and 0.9 or 1 )
+            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.75 or 1 ) * ( talent.relentless_predator.enabled and 0.9 or 1 ) end
+            return max( 25, min( 50 * ( buff.incarnation.up and 0.75 or 1 ), energy.current ) ) * ( talent.relentless_predator.enabled and 0.9 or 1 )
         end,
         spendType = "energy",
 
@@ -1961,7 +1961,7 @@ spec:RegisterAbilities( {
             if buff.cat_form.down then shift( "cat_form" ) end
             applyBuff( "incarnation" )
             applyBuff( "jungle_stalker" )
-            if talent.ashamanes_guidance.enabled then applyBuff( "ashamanes_guidance", buff.incarnation.remains + 30 ) end
+            if talent.ashamanes_guidance.enabled then applyBuff( "ashamanes_guidance", buff.incarnation.remains + 40 ) end
             setCooldown( "prowl", 0 )
             applyBuff( "overflowing_power", nil, 0 )
             energy.max = energy.max + 50
@@ -1998,7 +1998,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 30 * ( buff.incarnation.up and 0.8 or 1 ) end,
+        spend = function () return 30 * ( buff.incarnation.up and 0.75 or 1 ) end,
         spendType = "energy",
 
         talent = "maim",
@@ -2101,7 +2101,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return 30 * ( buff.incarnation.up and 0.8 or 1 ) end,
+        spend = function () return 30 * ( buff.incarnation.up and 0.75 or 1 ) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2187,7 +2187,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 25 * ( buff.incarnation.up and 0.8 or 1 ) end,
+        spend = function () return 25 * ( buff.incarnation.up and 0.75 or 1 ) end,
         spendType = "energy",
 
         talent = "primal_wrath",
@@ -2276,7 +2276,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function ()
-            return 35 * ( buff.incarnation.up and 0.8 or 1 ), "energy"
+            return 35 * ( buff.incarnation.up and 0.75 or 1 ), "energy"
         end,
         spendType = "energy",
 
@@ -2337,8 +2337,8 @@ spec:RegisterAbilities( {
         spend = function ()
             if buff.apex_predator.up or buff.apex_predators_craving.up then return 0 end
             -- Support true/false or 1/0 through this awkward transition.
-            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.8 or 1 ) * ( talent.relentless_predator.enabled and 0.9 or 1 ) end
-            return max( 25, min( 50 * ( buff.incarnation.up and 0.8 or 1 ), energy.current ) ) * ( talent.relentless_predator.enabled and 0.9 or 1 )
+            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.75 or 1 ) * ( talent.relentless_predator.enabled and 0.9 or 1 ) end
+            return max( 25, min( 50 * ( buff.incarnation.up and 0.75 or 1 ), energy.current ) ) * ( talent.relentless_predator.enabled and 0.9 or 1 )
         end,
         spendType = 'energy',
 
@@ -2494,7 +2494,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function () return 30 * ( buff.incarnation.up and 0.8 or 1 ) end,
+        spend = function () return 30 * ( buff.incarnation.up and 0.75 or 1 ) end,
         spendType = "energy",
 
         talent = "rip",
@@ -2553,7 +2553,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.clearcasting.up then return 0 end
-            return 40 * ( buff.incarnation.up and 0.8 or 1 )
+            return 40 * ( buff.incarnation.up and 0.75 or 1 )
         end,
         spendType = "energy",
 
@@ -2693,7 +2693,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.clearcasting.up then return 0 end
-            return max( 0, ( 35 * ( buff.incarnation.up and 0.8 or 1 ) ) + buff.scent_of_blood.v1 )
+            return max( 0, ( 35 * ( buff.incarnation.up and 0.75 or 1 ) ) + buff.scent_of_blood.v1 )
         end,
         spendType = "energy",
 
@@ -2764,7 +2764,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.clearcasting.up then return 0 end
-            return 40 * ( buff.incarnation.up and 0.8 or 1 )
+            return 40 * ( buff.incarnation.up and 0.75 or 1 )
         end,
         spendType = "energy",
 
@@ -2851,6 +2851,7 @@ spec:RegisterAbilities( {
             shift( "cat_form" )
             applyBuff( "tigers_fury" )
             if azerite.jungle_fury.enabled then applyBuff( "jungle_fury" ) end
+            if talent.savage_fury.enabled then applyBuff( "savage_fury" ) end
             if talent.tigers_tenacity.enabled then addStack( "tigers_tenacity", nil, 3 ) end
 
             if legendary.eye_of_fearful_symmetry.enabled then

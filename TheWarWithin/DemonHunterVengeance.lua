@@ -1111,7 +1111,7 @@ spec:RegisterAbilities( {
             if talent.demonic.enabled then applyBuff( "metamorphosis", 6 ) end
             if talent.ruinous_bulwark.enabled then applyBuff( "ruinous_bulwark" ) end
             if talent.darkglare_boon.enabled then
-                gain( 10, "fury" )
+                gain( 15, "fury" )
                 reduceCooldown( "fel_devastation", 6 )
             end
         end
@@ -1142,8 +1142,8 @@ spec:RegisterAbilities( {
         id = 204021,
         cast = 0,
         charges = function() return talent.down_in_flames.enabled and 2 or nil end,
-        cooldown = function () return ( talent.down_in_flames.enabled and 45 or 60 ) + ( conduit.fel_defender.mod * 0.001 ) end,
-        recharge = function() return talent.down_in_flames.enabled and 45 + ( conduit.fel_defender.mod * 0.001 ) or nil end,
+        cooldown = function() return ( talent.down_in_flames.enabled and 48 or 60 ) + ( conduit.fel_defender.mod * 0.001 ) end,
+        recharge = function() return talent.down_in_flames.enabled and ( 48 + ( conduit.fel_defender.mod * 0.001 ) ) or nil end,
         gcd = "spell",
         school = "fire",
 

@@ -488,6 +488,11 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    cryogenic_chamber = {
+        id = 456370,
+        duration = 30,
+        max_stack = 20
+    },
     -- Taunted.
     -- https://wowhead.com/beta/spell=56222
     dark_command = {
@@ -1419,8 +1424,15 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "razorice", 20, 2 )
+
             if talent.obliteration.enabled and buff.pillar_of_frost.up then addStack( "killing_machine" ) end
             removeBuff( "eradicating_blow" )
+
+            if talent.shattering_blade.enabled then
+                if debuff.razorice.stack == 5 then removeDebuff( "target", "razorice" )
+                elseif debuff.razorice.stack > 5 then applyDebuff( "target", "razorice", nil, debuff.razorice.stack - 5 ) end
+            end
+
             if conduit.unleashed_frenzy.enabled then addStack( "eradicating_frenzy", nil, 1 ) end
             if pvptalent.bitter_chill.enabled and debuff.chains_of_ice.up then
                 applyDebuff( "target", "chains_of_ice" )
@@ -1748,6 +1760,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "remorseless_winter" )
+            removeBuff( "cryogenic_chamber" )
 
             if active_enemies > 2 and legendary.biting_cold.enabled then
                 applyBuff( "rime" )

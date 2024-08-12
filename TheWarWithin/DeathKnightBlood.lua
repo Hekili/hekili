@@ -414,7 +414,7 @@ spec:RegisterAuras( {
     blood_plague = {
         id = 55078,
         duration = function() return 24 * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
-        tick_time = function() return 3 * ( talent.rapid_decomposition.enabled and 0.82 or 1 ) * ( buff.consumption.up and 0.5 or 1 ) * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.rapid_decomposition.enabled and 0.85 or 1 ) * ( buff.consumption.up and 0.7 or 1 ) * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
         type = "Disease",
         max_stack = 1
     },
@@ -483,7 +483,7 @@ spec:RegisterAuras( {
         id = 463730,
         duration = 3600,
         max_stack = 100
-    } or nil,
+    } or {},
     -- Talent: Blood Plague damage is increased by $s1%.
     -- https://wowhead.com/beta/spell=391481
     coagulopathy = {
@@ -501,7 +501,7 @@ spec:RegisterAuras( {
     -- Your Blood Plague deals damage $w5% more often.
     consumption = {
         id = 274156,
-        duration = 8.0,
+        duration = 6,
         max_stack = 1,
     },
     -- Talent: Controlled.
@@ -524,7 +524,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=81256
     dancing_rune_weapon = {
         id = 81256,
-        duration = function () return ( pvptalent.last_dance.enabled and 6 or 8 ) + ( talent.everlasting_bond.enabled and 8 or 0 ) end,
+        duration = function () return ( pvptalent.last_dance.enabled and 6 or 8 ) + ( talent.everlasting_bond.enabled and 6 or 0 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -1348,8 +1348,10 @@ spec:RegisterAbilities( {
         buff = "bone_shield",
 
         handler = function ()
-            applyBuff( "bonestorm", buff.bone_shield.stack )
-            removeBuff( "bone_shield" )
+            local consume = min( 5, buff.bone_shield.stack )
+            gain( consume * 0.02 * health.max, "health" )
+            applyBuff( "bonestorm", 2 * consume )
+            removeStack( "bone_shield", nil, consume )
         end,
 
         -- TODO Bone Shield regeneration (1 per sec.)
@@ -1742,7 +1744,7 @@ spec:RegisterAbilities( {
             if buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
 
             if talent.heartbreaker.enabled then
-                gain( min( action.heart_strike.max_targets, true_active_enemies ), "runic_power" )
+                gain( 2 * min( action.heart_strike.max_targets, true_active_enemies - 1 ) + ( 3 * buff.dancing_rune_weapon.stack ), "runic_power" )
             end
 
             if buff.ashen_decay_proc.up then

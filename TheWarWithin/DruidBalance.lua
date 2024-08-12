@@ -1549,6 +1549,8 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         if set_bonus.tier29_2pc > 0 then applyBuff( "celestial_infusion" ) end
         applyBuff( "eclipse_solar", ( duration or class.auras.eclipse_solar.duration ) + buff.eclipse_solar.remains )
 
+        if talent.astral_communion.enabled then gain( 25, "astral_power" ) end
+
         if buff.parting_skies.up then
             removeBuff( "parting_skies" )
             applyDebuff( "target", "fury_of_elune", 8 )
@@ -1573,6 +1575,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
                 if set_bonus.tier29_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
                 state:RemoveAuraExpiration( "eclipse_solar" )
                 state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
+                if talent.astral_communion.enabled then gain( 25, "astral_power" ) end
                 if talent.solstice.enabled then applyBuff( "solstice" ) end
                 if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
                 eclipse.state = "IN_SOLAR"
@@ -1594,6 +1597,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
                 if set_bonus.tier29_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
                 state:RemoveAuraExpiration( "eclipse_lunar" )
                 state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
+                if talent.astral_communion.enabled then gain( 25, "astral_power" ) end
                 if talent.solstice.enabled then applyBuff( "solstice" ) end
                 if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
                 eclipse.state = "IN_LUNAR"
