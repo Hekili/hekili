@@ -479,6 +479,11 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    coagulating_blood = PTR and {
+        id = 463730,
+        duration = 3600,
+        max_stack = 100
+    } or nil,
     -- Talent: Blood Plague damage is increased by $s1%.
     -- https://wowhead.com/beta/spell=391481
     coagulopathy = {
@@ -1616,7 +1621,10 @@ spec:RegisterAbilities( {
             removeBuff( "blood_draw" )
             removeBuff( "heartrend" )
             applyBuff( "blood_shield" ) -- gain absorb shield
-            gain( 0.075 * health.max * ( 1.2 * buff.haemostasis.stack ) * ( 1.08 * buff.hemostasis.stack ), "health" )
+            if buff.coagulating_blood.up then
+                gain( 0.01 * buff.coagulating_blood.stack * health.max * ( 1.2 * buff.haemostasis.stack ) * ( 1.08 * buff.hemostasis.stack ), "health" )
+                removeBuff( "coagulating_blood" )
+            end
             removeBuff( "haemostasis" )
             removeBuff( "hemostasis" )
 
