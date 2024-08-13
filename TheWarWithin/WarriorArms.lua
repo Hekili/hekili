@@ -264,6 +264,11 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1
     },
+    brutal_finish = {
+        id = 446918,
+        duration = 10,
+        max_stack = 1
+    },
     champions_might = {
         id = 386286,
         duration = 8,
@@ -286,6 +291,11 @@ spec:RegisterAuras( {
         id = 334783,
         duration = 30,
         max_stack = 20
+    },
+    colossal_might = {
+        id = 440989,
+        duration = 24,
+        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 10 ) end
     },
     colossus_smash = {
         id = 208086,
@@ -389,6 +399,11 @@ spec:RegisterAuras( {
         id = 383290,
         duration = 12,
         max_stack = 15
+    },
+    opportunist = {
+        id = 456120,
+        duration = 8,
+        max_stack = 1
     },
     overpower = {
         id = 7384,
@@ -838,6 +853,12 @@ spec:RegisterAbilities( {
             if talent.merciless_bonegrinder.enabled then
                 state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
             end
+            -- the final tick brutal finish gets applied before the final Bladestorm tick goes off.
+            -- If using imminent demise, it will affect the final MS instead of the one that
+            -- comes after the bladestorm, which means we dont need to track it.
+            if talent.brutal_finish.enabled and not talent.imminent_demise.enabled then
+                applyBuff( "brutal_finish" )
+            end
         end,
 
         copy = { 227847, 389774 }
@@ -884,6 +905,11 @@ spec:RegisterAbilities( {
             applyDebuff( "target" , "deep_wounds" )
             active_dot.deep_wounds = max( active_dot.deep_wounds, active_enemies )
             removeBuff( "overpower" )
+
+            if talent.demolish.enabled and active_enemies > 2 then
+                if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+                if talent.colossal_might.enabled then addStack( "colossal_might" ) end
+            end
         end,
     },
 
@@ -1037,6 +1063,8 @@ spec:RegisterAbilities( {
             if talent.executioners_precision.enabled then applyDebuff( "target", "executioners_precision", nil, min( 2, debuff.executioners_precision.stack + 1 ) ) end
             if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
 
         auras = {
@@ -1227,6 +1255,8 @@ spec:RegisterAbilities( {
             if target.health.pct < 35 and talent.bloodletting.enabled then
                 applyDebuff ( "target", "rend" )
             end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
     },
 
@@ -1247,6 +1277,7 @@ spec:RegisterAbilities( {
         texture = 132223,
 
         handler = function ()
+            removeBuff( "opportunist" )
             if talent.martial_prowess.enabled then applyBuff( "overpower" ) end
         end,
     },

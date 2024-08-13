@@ -293,7 +293,7 @@ spec:RegisterAuras( {
     colossal_might = {
         id = 440989,
         duration = 24,
-        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 0 ) end
+        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 10 ) end
     },
     concussive_blows = {
         id = 383116,
@@ -1088,7 +1088,8 @@ spec:RegisterAbilities( {
             end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
 
-            if talent.colossal_might then addStack( "colossal_might" ) end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
     },
 
@@ -1461,7 +1462,7 @@ spec:RegisterAbilities( {
 
             if talent.demolish.enabled and active_enemies > 2 then
                 if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
-                addStack( "colossal_might" )
+                if talent.colossal_might.enabled then addStack( "colossal_might" ) end
              end
         end,
     },
@@ -1613,6 +1614,9 @@ spec:RegisterAbilities( {
                 removeDebuff( "target", "thunderous_roar" )
                 if set_bonus.tier31_4pc > 0 then applyBuff( "fervid_opposition" ) end
             end
+
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might then addStack( "colossal_might" ) end
         end,
     },
 

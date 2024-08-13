@@ -315,6 +315,11 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
+    brutal_finish = {
+        id = 446918,
+        duration = 10,
+        max_stack = 1
+    },
     burst_of_power = {
         id = 437121,
         duration = 15,
@@ -408,6 +413,11 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1,
         copy = { "odyns_fury_torment", "odyns_fury_torment_mh" }
+    },
+    opportunist = {
+        id = 456120,
+        duration = 8,
+        max_stack = 1,
     },
     piercing_howl = {
         id = 12323,
@@ -944,6 +954,8 @@ spec:RegisterAbilities( {
             if talent.merciless_bonegrinder.enabled then
                 state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
             end
+
+            if talent.brutal_finish.enabled then applyBuff( "brutal_finish" ) end
         end,
 
         copy = { 227847, 389774 }
@@ -1187,6 +1199,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "whirlwind" )
+            removeBuff( "opportunist" )
             removeBuff( "reckless_abandon" )
             spendCharges( "raging_blow", 1 )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
@@ -1561,6 +1574,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeStack( "whirlwind" )
             spendCharges( "crushing_blow", 1 )
+            removeBuff( "opportunist" )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
             if talent.slaughtering_strikes.enabled then addStack( "slaughtering_strikes_raging_blow" ) end
         end,
@@ -1611,6 +1625,7 @@ spec:RegisterAbilities( {
                 applyBuff( "reckless_abandon_crushing_blow" )
             end
             if set_bonus.tier30_4pc > 0 then addStack( "merciless_assault" ) end
+            removeBuff( "brutal_finish" )
         end,
     },
 
