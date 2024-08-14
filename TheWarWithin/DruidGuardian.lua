@@ -160,7 +160,7 @@ spec:RegisterTalents( {
     untamed_savagery              = { 82152, 372943, 1 }, -- Increases the damage and radius of Thrash by 25%.
     ursocs_endurance              = { 82130, 393611, 1 }, -- Increases the duration of Barkskin and Ironfur by 2.0 sec.
     ursocs_fury                   = { 82151, 377210, 1 }, -- Thrash and Maul grant you an absorb shield for 25% of the damage dealt for 15 sec.
-    ursocs_guidance               = { 82135, 393414, 1 }, --  Incarnation: Guardian of Ursoc: Every 25 Rage you spend reduces the cooldown of Incarnation: Guardian of Ursoc by 1 sec.  Convoke the Spirits: Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
+    ursocs_guidance               = { 82135, 393414, 1 }, -- Incarnation: Guardian of Ursoc: Every 25 Rage you spend reduces the cooldown of Incarnation: Guardian of Ursoc by 1 sec.  Convoke the Spirits: Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
     vicious_cycle                 = { 82158, 371999, 1 }, -- Mangle increases the damage of your next cast of Maul or Raze, and casting Maul or Raze increases the damage of your next Mangle by 15%. Stacks up to 3.
     vulnerable_flesh              = { 82159, 372618, 2 }, -- Maul and Raze have an additional 30% chance to critically strike.
 
@@ -1028,11 +1028,13 @@ end )
 
 
 spec:RegisterHook( "spend", function( amt, resource )
-    if talent.after_the_wildfire.enabled and resource == "rage" and amt > 0 then
-        buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 - amt
-        if buff.after_the_wildfire.v1 < 0 then
-            -- Heal ticked.
-            buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 + 200
+    if resource == "rage" and amt > 0 then
+        if talent.after_the_wildfire.enabled and buff.after_the_wildfire.up then
+            buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 - amt
+            if buff.after_the_wildfire.v1 < 0 then
+                -- Heal ticked.
+                buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 + 200
+            end
         end
     end
 end )
@@ -1954,8 +1956,8 @@ spec:RegisterAbilities( {
         id = 61336,
         cast = 0,
         charges = function() return talent.improved_survival_instincts.enabled and 2 or nil end,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.survival_of_the_fittest.enabled and ( 2/3 ) or 1 ) * 180 end,
-        recharge = function () return talent.improved_survival_instincts.enabled and ( ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.survival_of_the_fittest.enabled and ( 2/3 ) or 1 ) * 180 ) or nil end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( 1 - 0.12 * talent.survival_of_the_fittest.rank ) * 180 end,
+        recharge = function () return talent.improved_survival_instincts.enabled and ( ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( 1 - 0.12 * talent.survival_of_the_fittest.rank ) * 180 ) or nil end,
         gcd = "off",
         school = "physical",
 

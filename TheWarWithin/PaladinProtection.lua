@@ -45,7 +45,7 @@ spec:RegisterTalents( {
     judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 3,499.
     justification                   = { 81509, 377043, 1 }, -- Judgment's damage is increased by 10%.
     lay_on_hands                    = { 81597, 633   , 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
-    lightforged_blessing            = { 93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 4 nearby allies for 1% of maximum health.
+    lightforged_blessing            = { 93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 2 nearby allies for 1% of maximum health.
     obduracy                        = { 81630, 385427, 1 }, -- Speed increased by 2% and damage taken from area of effect attacks reduced by 2%.
     of_dusk_and_dawn                = { 93356, 409441, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 30% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 5%, armor increased by 10%, and Holy Power generating abilities cool down 10% faster For 10 sec.
     punishment                      = { 93165, 403530, 1 }, -- Successfully interrupting an enemy with Rebuke or Avenger's Shield casts an extra Blessed Hammer.
@@ -204,7 +204,7 @@ spec:RegisterAuras( {
         alias = { "avenging_wrath", "sentinel" },
         aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
         aliasType = "buff",
-        duration = 20,
+        duration = 16,
     },
     -- Talent: Block chance increased by $s1%.
     -- https://wowhead.com/beta/spell=385724
@@ -894,9 +894,9 @@ spec:RegisterHook( "reset_precast", function ()
 
     if talent.righteous_protector.enabled then
         local lastAbility = prev.last and class.abilities[ prev.last ]
-        if lastAbility and lastAbility.spendType == "holy_power" and now - ability.lastCast < 1 then
+        if lastAbility and lastAbility.spendType == "holy_power" and now - lastAbility.lastCast < 1 then
             applyBuff( "righteous_protector_icd" )
-            buff.righteous_protector_icd.expires = ability.lastCast + 1
+            buff.righteous_protector_icd.expires = lastAbility.lastCast + 1
         end
     end
 
@@ -926,8 +926,8 @@ end )
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "holy_power" then
         if talent.righteous_protector.enabled then
-            reduceCooldown( "avenging_wrath", 2 )
-            reduceCooldown( "guardian_of_ancient_kings", 2 )
+            reduceCooldown( "avenging_wrath", 1.5 )
+            reduceCooldown( "guardian_of_ancient_kings", 1.5 )
             applyBuff( "righteous_protector_icd" )
         end
         if talent.fist_of_justice.enabled then

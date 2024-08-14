@@ -201,7 +201,7 @@ spec:RegisterAuras( {
     },
     earthliving_weapon_hot = {
         id = 382024,
-        duration = 12,
+        duration = 6,
         max_stack = 1
     },
     -- Your Healing Rain is currently active.  $?$w1!=0[Magic damage taken reduced by $w1%.][]
@@ -407,10 +407,11 @@ spec:RegisterAbilities( {
         texture = 136042,
 
         handler = function ()
+            if buff.tidebringer.up and buff.natures_swiftness.down and buff.ancestral_swiftness.down then removeStack( "tidebringer" ) end
             removeStack( "tidal_waves" )
-            removeStack( "tidebringer" )
             removeBuff( "swelling_rain" ) -- T30
             removeStack( "natures_swiftness" )
+            removeStack( "ancestral_swiftness" )
 
             if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,

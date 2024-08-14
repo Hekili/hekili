@@ -1138,24 +1138,6 @@ spec:RegisterAbilities( {
     }, ]]
 
 
-    explosive_shot = {
-        id = 212431,
-        cast = 0,
-        cooldown = 30,
-        gcd = "spell",
-
-        spend = 20,
-        spendType = "focus",
-
-        talent = "explosive_shot",
-        startsCombat = false,
-        texture = 236178,
-
-        handler = function ()
-        end,
-    },
-
-
     interlope = {
         id = 248518,
         cast = 0,

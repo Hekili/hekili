@@ -1524,7 +1524,7 @@ spec:RegisterAbilities( {
     meteor = {
         id = 153561,
         cast = 0,
-        cooldown = function() return talent.deep_impact.enabled and 30 or 45 end,
+        cooldown = function() return talent.deep_impact.enabled and 35 or 45 end,
         gcd = "spell",
         school = "fire",
 

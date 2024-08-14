@@ -10,6 +10,8 @@ local class, state = Hekili.Class, Hekili.State
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
 local UnitTokenFromGUID = _G.UnitTokenFromGUID
 
+local GetSpellInfo = C_Spell.GetSpellInfo
+
 local spec = Hekili:NewSpecialization( 265 )
 
 spec:RegisterResource( Enum.PowerType.SoulShards, {},
@@ -985,8 +987,9 @@ spec:RegisterHook( "reset_precast", function ()
     class.abilities.summon_pet = class.abilities.summon_felhunter
 
     if not SUMMON_DEMON_TEXT then
-        SUMMON_DEMON_TEXT = GetSpellInfo( 180284 )
-        class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. ( SUMMON_DEMON_TEXT or "Summon Demon" ) .. "]|r"
+        local summon_demon = GetSpellInfo( 180284 )
+        SUMMON_DEMON_TEXT = summon_demon and summon_demon.name or "Summon Demon"
+        class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. SUMMON_DEMON_TEXT .. "]|r"
     end
 end )
 

@@ -1746,8 +1746,13 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeStack( "bombardier" )
             applyDebuff( "target", "explosive_shot" )
+
+            -- If triggered by Kill Command, don't consume Bombardier or reduce WfB's cooldown.
+            if buff.sulfurlined_pockets_ready.up and buff.sulfurlined_pockets_ready.v1 == 259489 then return end
+
+            removeStack( "bombardier" )
+            if talent.grenade_juggler.enabled then reduceCooldown( "wildfire_bomb", 2 ) end
         end,
     },
 

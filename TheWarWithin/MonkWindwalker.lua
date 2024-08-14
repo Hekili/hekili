@@ -235,8 +235,8 @@ spec:RegisterAuras( {
     },
     chi_burst = {
         id = 460490,
-        duration = 20,
-        max_stack = 1,
+        duration = 30,
+        max_stack = 2,
     },
     -- Increases the damage done by your next Chi Explosion by $s1%.    Chi Explosion is triggered whenever you use Spinning Crane Kick.
     -- https://wowhead.com/beta/spell=393057
@@ -430,7 +430,7 @@ spec:RegisterAuras( {
     },
     fury_of_xuen_stacks = {
         id = 396167,
-        duration = 20,
+        duration = 30,
         max_stack = 100,
         copy = { "fury_of_xuen", 396168, 396167, 287062 }
     },
@@ -489,7 +489,7 @@ spec:RegisterAuras( {
     martial_mixture = {
         id = 451457,
         duration = 15.0,
-        max_stack = 12,
+        max_stack = 30,
     },
     -- Haste increased by ${$w1}.1%.
     memory_of_the_monastery = {
@@ -920,7 +920,7 @@ spec:RegisterHook( "runHandler", function( key, noStart )
             if talent.hit_combo.enabled then addStack( "hit_combo" ) end
             if azerite.fury_of_xuen.enabled or talent.fury_of_xuen.enabled then addStack( "fury_of_xuen" ) end
             if ( talent.xuens_bond.enabled or conduit.xuens_bond.enabled ) and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.2 ) end
-            if talent.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then reduceCooldown( "touch_of_death", 0.35 ) end
+            if talent.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then reduceCooldown( "touch_of_death", 0.6 ) end
         end
         virtual_combo = key
     end

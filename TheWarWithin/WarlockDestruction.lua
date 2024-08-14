@@ -9,7 +9,7 @@ local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local PTR = ns.PTR
-local GetSpellTexture = C_Spell.GetSpellTexture
+local GetSpellInfo, GetSpellTexture = C_Spell.GetSpellInfo, C_Spell.GetSpellTexture
 
 local strformat = string.format
 
@@ -74,7 +74,8 @@ spec:RegisterResource( Enum.PowerType.SoulShards, {
 
         interval = 0.5,
         value = 0.1
-    }
+    },
+    -- TODO: Summon Overfiend from Avatar of Destruction
 }, setmetatable( {
     actual = nil,
     max = nil,
@@ -199,7 +200,7 @@ spec:RegisterTalents( {
     rain_of_chaos                  = {  71960, 266086, 1 }, -- While your initial Infernal is active, every Soul Shard you spend has a 15% chance to summon an additional Infernal that lasts 8 sec.
     rain_of_fire                   = {  72069,   5740, 1 }, -- Calls down a rain of hellfire, dealing 28,756 Fire damage over 6.0 sec to enemies in the area.
     reverse_entropy                = {  71980, 205148, 1 }, -- Your spells have a chance to grant you 15% Haste for 8 sec.
-    ritual_of_ruin                 = {  71970, 387156, 1 }, -- Every 10 Soul Shards spent grants Ritual of Ruin, making your next Chaos Bolt or Rain of Fire consume no Soul Shards and have its cast time reduced by 50%.
+    ritual_of_ruin                 = {  71970, 387156, 1 }, -- Every 20 Soul Shards spent grants Ritual of Ruin, making your next Chaos Bolt or Rain of Fire consume no Soul Shards and have its cast time reduced by 50%.
     roaring_blaze                  = {  72065, 205184, 1 }, -- Conflagrate increases your Channel Demonfire, Immolate, Incinerate, and Conflagrate damage to the target by 25% for 8 sec.
     rolling_havoc                  = {  71961, 387569, 1 }, -- Each time your spells duplicate from Havoc, gain 1% increased damage for 6 sec. Stacks up to 5 times.
     ruin                           = {  71967, 387103, 1 }, -- Increases the critical strike damage of your Destruction spells by 5%.
@@ -1157,8 +1158,9 @@ spec:RegisterHook( "reset_precast", function ()
     class.abilities.summon_pet = class.abilities[ settings.default_pet ]
 
     if not SUMMON_DEMON_TEXT then
-        SUMMON_DEMON_TEXT = GetSpellInfo( 180284 )
-        class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. ( SUMMON_DEMON_TEXT or "Summon Demon" ) .. "]|r"
+        local summon_demon = GetSpellInfo( 180284 )
+        SUMMON_DEMON_TEXT = summon_demon and summon_demon.name or "Summon Demon"
+        class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. SUMMON_DEMON_TEXT .. "]|r"
     end
 
     for i = 1, 5 do

@@ -1101,7 +1101,7 @@ spec:RegisterAbilities( {
     clash = {
         id = 324312,
         cast = 0,
-        cooldown = 30,
+        cooldown = 60,
         gcd = "totem",
         school = "physical",
 
@@ -1163,7 +1163,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
 
-        spend = 20,
+        spend = 10,
         spendType = "energy",
 
         talent = "detox",

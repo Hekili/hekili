@@ -554,7 +554,12 @@ spec:RegisterAuras( {
     sulfurlined_pockets = {
         id = 459830,
         duration = 120.0,
-        max_stack = 1,
+        max_stack = 3,
+    },
+    sulfurlined_pockets_ready = {
+        id = 459834,
+        duration = 180,
+        max_stack = 1
     },
     terms_of_engagement = {
         id = 265898,
@@ -1054,6 +1059,13 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "deadly_duo" )
 
+            if buff.sulfurlined_pockets_ready.up then
+                buff.sulfurlined_pockets_ready.v1 = 259489
+                class.abilities.explosive_shot.handler()
+                buff.sulfurlined_pockets_ready.v1 = 0
+                removeBuff( "sulfurlined_pockets_ready" )
+            end
+
             if talent.bloodseeker.enabled then
                 applyBuff( "predator", 8 )
                 applyDebuff( "target", "kill_command", 8 )
@@ -1066,6 +1078,7 @@ spec:RegisterAbilities( {
             if talent.wildfire_infusion.enabled then
                 gainChargeTime( "wildfire_bomb", 0.5 )
             end
+
 
             if set_bonus.tier30_4pc > 0 then
                 applyDebuff( "target", "shredded_armor" )

@@ -669,7 +669,7 @@ spec:RegisterAbilities( {
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
                 gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
-                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
+                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.5 ) end
             end
         end,
     },
@@ -969,7 +969,7 @@ spec:RegisterAbilities( {
                 if pet.chiji.up then
                     addStack( "invoke_chiji" )
                     gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
-                    if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
+                    if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.5 ) end
                 end
                 if buff.thunder_focus_tea.up then
                     removeStack( "thunder_focus_tea" )
@@ -1074,7 +1074,7 @@ spec:RegisterAbilities( {
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
                 gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
-                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
+                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.5 ) end
             end
         end,
     },

@@ -239,7 +239,7 @@ spec:RegisterAuras( {
     },
     flourish = {
         id = 197721,
-        duration = 6,
+        duration = 8,
         max_stack = 1
     },
     grove_guardians = {
@@ -739,7 +739,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return ( buff.incarnation.up and 0.7 or 1 ) * 0.05 end,
+        spend = function() return ( buff.incarnation.up and 0.7 or 1 ) * 0.021 end,
         spendType = "mana",
 
         talent = "rejuvenation",

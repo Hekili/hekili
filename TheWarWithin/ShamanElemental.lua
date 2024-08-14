@@ -125,7 +125,7 @@ spec:RegisterTalents( {
     storm_elemental             = {  80981, 192249, 1 }, -- Calls forth a Greater Storm Elemental to hurl gusts of wind that damage the Shaman's enemies for 36 sec. While the Storm Elemental is active, each time you cast Lightning Bolt or Chain Lightning, the cast time of Lightning Bolt and Chain Lightning is reduced by 3%, stacking up to 10 times.
     storm_frenzy                = { 103635, 462695, 1 }, -- Your next Chain Lightning or Lightning Bolt has 40% reduced cast time after casting Earth Shock, Elemental Blast, or Earthquake. Can accumulate up to 2 charges.
     stormkeeper                 = {  80989, 191634, 1 }, -- Charge yourself with lightning, causing your next 2 Lightning Bolts to deal 150% more damage, and also causes your next 2 Lightning Bolts or Chain Lightnings to be instant cast and trigger an Elemental Overload on every target. If you already know Stormkeeper, instead gain 1 additional charge of Stormkeeper.
-    surge_of_power              = {  81000, 262303, 1 }, -- Earth Shock, Elemental Blast, and Earthquake enhance your next spell cast within 15 sec: Flame Shock: The next cast also applies Flame Shock to 1 additional target within 8 yards of the target. Lightning Bolt: Your next cast will cause 2 additional Elemental Overloads. Chain Lightning: Your next cast will chain to 1 additional target. Lava Burst: Reduces the cooldown of your Fire and Storm Elemental by 6.0 sec. Frost Shock: Freezes the target in place for 6 sec.
+    surge_of_power              = {  81000, 262303, 1 }, -- Earth Shock, Elemental Blast, and Earthquake enhance your next spell cast within 15 sec: Flame Shock: The next cast also applies Flame Shock to 1 additional target within 8 yards of the target. Lightning Bolt: Your next cast will cause 2 additional Elemental Overloads. Chain Lightning: Your next cast will chain to 1 additional target. Lava Burst: Reduces the cooldown of your Fire and Storm Elemental by 4.0 sec. Frost Shock: Freezes the target in place for 6 sec.
     swelling_maelstrom          = {  81016, 381707, 1 }, -- Increases your maximum Maelstrom by 50. Increases Earth Shock, Elemental Blast, and Earthquake damage by 5%.
     thunderstrike_ward          = { 103636, 462757, 1 }, -- Imbue your shield with the element of Lightning for 1 |4hour:hrs;, giving Lightning Bolt and Chain Lightning a chance to call down 2 Thunderstrikes on your target for 8,151 Nature damage.
     unrelenting_calamity        = {  80988, 382685, 1 }, -- Reduces the cast time of Lightning Bolt and Chain Lightning by 0.25 sec. Increases the duration of Earthquake by 1 sec.
@@ -775,7 +775,7 @@ spec:RegisterAuras( {
 
     -- Pet aura.
     call_lightning = {
-        duration = 15,
+        duration = 20,
         generate = function( t, db )
             if storm_elemental.up then
                 local name, _, count, _, duration, expires = FindUnitBuffByID( "pet", 157348 )
@@ -1284,10 +1284,6 @@ spec:RegisterHook( "reset_precast", function ()
 
     if buff.ascendance.down or not talent.further_beyond.enabled then
         fb_extension_remaining = 0
-    end
-
-    if IsActiveSpell( class.abilities.icefury.id ) then
-        applyBuff( "icefury" )
     end
 
     --[[ TODO: Not really needed; shift to Enhancement module.
@@ -2378,12 +2374,14 @@ spec:RegisterAbilities( {
             end
 
             if talent.surge_of_power.enabled then
-                gainChargeTime( "fire_elemental", 6 )
+                gainChargeTime( "fire_elemental", 4 )
+                gainChargeTime( "storm_elemental", 4 )
                 removeBuff( "surge_of_power" )
             end
 
             if buff.primordial_wave.up then
                 if state.spec.elemental and talent.splintered_elements.enabled then
+                    if buff.splintered_elements.down then stat.haste = state.haste + 0.1 * active_dot.flame_shock end
                     applyBuff( "splintered_elements", nil, active_dot.flame_shock )
                 end
 
@@ -2535,7 +2533,7 @@ spec:RegisterAbilities( {
     liquid_magma_totem = {
         id = 192222,
         cast = 0,
-        cooldown = function () return 60 - 6 * talent.totemic_surge.rank end,
+        cooldown = function () return 30 - 6 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "fire",
 
@@ -2891,6 +2889,9 @@ spec:RegisterAbilities( {
         cooldown = function () return 120 - 3 * talent.totemic_surge.rank end,
         gcd = "totem",
         school = "nature",
+
+        spend = 0.01,
+        spendType = "mana",
 
         talent = "wind_rush_totem",
         startsCombat = false,

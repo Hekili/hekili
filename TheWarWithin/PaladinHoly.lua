@@ -10,6 +10,8 @@ local class, state = Hekili.Class, Hekili.State
 local strformat = string.format
 local SPEC_ACTIVE = _G.SPEC_ACTIVE
 
+local PTR = ns.PTR
+
 local spec = Hekili:NewSpecialization( 65 )
 
 spec:RegisterResource( Enum.PowerType.HolyPower )
@@ -45,7 +47,7 @@ spec:RegisterTalents( {
     judgment_of_light               = {  81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 1,843.
     justification                   = {  81509, 377043, 1 }, -- Judgment's damage is increased by 10%.
     lay_on_hands                    = {  81597,    633, 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
-    lightforged_blessing            = {  93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 4 nearby allies for 1% of maximum health.
+    lightforged_blessing            = {  93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 2 nearby allies for 1% of maximum health.
     obduracy                        = {  81630, 385427, 1 }, -- Speed increased by 2% and damage taken from area of effect attacks reduced by 2%.
     of_dusk_and_dawn                = {  93357, 409439, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 30% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 5% For 10 sec.
     punishment                      = {  93165, 403530, 1 }, -- Successfully interrupting an enemy with Rebuke casts an extra Crusader Strike.
@@ -91,10 +93,10 @@ spec:RegisterTalents( {
     glistening_radiance             = {  81576, 461245, 1 }, -- Spending Holy Power has a 25% chance to trigger Saved By The Light's absorb effect at 50% effectiveness without activating its cooldown.
     glorious_dawn                   = {  93521, 461246, 1 }, -- Holy Shock has a 12% chance to refund a charge when cast and its healing is increased by 10%.
     hand_of_divinity                = {  81570, 414273, 1 }, -- Call upon the Light to empower your spells, causing your next 2 Holy Lights to heal 30% more, cost 50% less mana, and be instant cast.
-    holy_infusion                   = {  81564, 414214, 1 }, -- Crusader Strike generates 1 additional Holy Power and deals 25% more damage.
+    holy_infusion                   = not PTR and {  81564, 414214, 1 } or nil, -- Crusader Strike generates 1 additional Holy Power and deals 25% more damage.
     holy_prism                      = {  81577, 114165, 1 }, -- Fires a beam of light that scatters to strike a clump of targets. If the beam is aimed at an enemy target, it deals 25,277 Holy damage and radiates 36,862 healing to 5 allies within 30 yds. If the beam is aimed at a friendly target, it heals for 73,724 and radiates 14,745 Holy damage to 5 enemies within 30 yds.
     holy_shock                      = {  81555,  20473, 1 }, -- Triggers a burst of Light on the target, dealing 12,638 Holy damage to an enemy, or 27,910 healing to an ally. Generates 1 Holy Power.
-    imbued_infusions                = {  81557, 392961, 1 }, -- Consuming Infusion of Light reduces the cooldown of Holy Shock by 1.0 sec.
+    imbued_infusions                = {  81557, 392961, 1 }, -- Consuming Infusion of Light reduces the cooldown of Holy Shock by 1 sec.
     inflorescence_of_the_sunwell    = {  81591, 392907, 1 }, -- Infusion of Light has 1 additional charge, increases Greater Judgment's effect by an additional 50%, reduces the cost of Flash of Light by an additional 30%, and Holy Light's healing is increased by an additional 50%.
     liberation                      = { 102502, 461287, 1 }, -- Word of Glory and Light of Dawn have a chance equal to your haste to reduce the cost of your next Holy Light, Crusader Strike, or Judgment by 228.
     light_of_dawn                   = {  81565,  85222, 1 }, -- Unleashes a wave of Holy energy, healing up to 5 injured allies within a 15 yd frontal cone for 11,585.
@@ -196,7 +198,7 @@ spec:RegisterAuras( {
     awakening = {
         id = 414196,
         duration = 60,
-        max_stack = 12
+        max_stack = 15
     },
     awakening_ready = {
         id = 414193,
@@ -567,6 +569,8 @@ spec:RegisterHook( "reset_precast", function()
         if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
         if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
     end
+
+
 end )
 
 spec:RegisterHook( "spend", function( amt, resource )
@@ -762,7 +766,7 @@ spec:RegisterAbilities( {
         id = 388010,
         cast = 0,
         cooldown = 45,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.05,
         spendType = "mana",
@@ -874,7 +878,7 @@ spec:RegisterAbilities( {
         id = 388013,
         cast = 0,
         cooldown = 45,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.05,
         spendType = "mana",
@@ -922,7 +926,7 @@ spec:RegisterAbilities( {
         id = 388007,
         cast = 0,
         cooldown = 45,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.05,
         spendType = "mana",
@@ -947,7 +951,7 @@ spec:RegisterAbilities( {
                 duration = 3600,
                 max_stack = 1,
                 generate = function( t )
-                    if IsActiveSpell( 388007 ) then
+                    if IsActiveSpell( 388007 ) or IsActiveSpell( 328620 ) then
                         t.name = t.name or strformat( "%s %s", class.auras.blessing_of_summer.name, SPEC_ACTIVE )
                         t.count = 1
                         t.applied = now
@@ -970,7 +974,7 @@ spec:RegisterAbilities( {
         id = 388011,
         cast = 0,
         cooldown = 45,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.05,
         spendType = "mana",
@@ -1124,7 +1128,7 @@ spec:RegisterAbilities( {
         texture = 135891,
 
         handler = function ()
-            gain( talent.holy_infusion.enabled and 2 or 1, "holy_power" )
+            gain( 1, "holy_power" )
             removeBuff( "liberation" )
 
             if talent.crusaders_might.enabled then
@@ -1266,7 +1270,7 @@ spec:RegisterAbilities( {
     hammer_of_wrath = {
         id = 24275,
         cast = 0,
-        cooldown = 7.5,
+        cooldown = 22.5,
         gcd = "spell",
 
         spend = 0.01,
@@ -1373,9 +1377,9 @@ spec:RegisterAbilities( {
     holy_shock = {
         id = 20473,
         cast = 0,
-        cooldown = function() return 8.5 - ( 2 * talent.imbued_infusions.rank ) - ( 1.5 * talent.crusaders_might.rank ) end,
+        cooldown = function() return ( 8.5 - ( 1 * talent.imbued_infusions.rank ) - ( 2 * talent.crusaders_might.rank ) ) * ( talent.sanctified_wrath.enabled and buff.avenging_wrath.up and 0.5 or 1 ) end,
         charges = function() return talent.lights_conviction.enabled and 2 or nil end,
-        recharge = function() return talent.lights_conviction.enabled and ( 8.5 - ( 2 * talent.imbued_infusions.rank ) - ( 1.5 * talent.crusaders_might.rank ) ) or nil end,
+        recharge = function() return talent.lights_conviction.enabled and ( ( 8.5 - ( 2 * talent.imbued_infusions.rank ) - ( 2 * talent.crusaders_might.rank ) ) * ( talent.sanctified_wrath.enabled and buff.avenging_wrath.up and 0.5 or 1 ) ) or nil end,
         gcd = "spell",
 
         spend = 0.028,
@@ -1401,9 +1405,12 @@ spec:RegisterAbilities( {
                 if talent.boundless_salvation.enabled and buff.tyrs_deliverance.up then
                     buff.tyrs_deliverance.expires = buff.tyrs_deliverance.expires + 2
                 end
+
                 if talent.light_of_the_martyr.enabled and health.pct > ( talent.bestow_light.enabled and 70 or 80 ) then
                     applyDebuff( "player", "light_of_the_martyr" )
                 end
+
+                if talent.overflowing_light.enabled then applyBuff( "overflowing_light" ) end
             end
 
             removeStack( "rising_sunlight" )
@@ -1432,7 +1439,7 @@ spec:RegisterAbilities( {
     judgment = {
         id = 275773,
         cast = 0,
-        cooldown = function() return ( 12 - ( 0.5 * talent.seal_of_alacrity.rank ) )  * ( buff.avenging_crusader.up and 0.7 or 1 ) end,
+        cooldown = function() return ( 12 - ( 0.5 * talent.seal_of_alacrity.rank ) - ( 2 * talent.crusaders_might.rank ) )  * ( buff.avenging_crusader.up and 0.7 or 1 ) end,
         gcd = "spell",
 
         spend = 0.024,

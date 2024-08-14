@@ -107,7 +107,7 @@ spec:RegisterTalents( {
     shattering_star                 = { 93316, 370452, 1 }, -- Exhale bolts of concentrated power from your mouth at 2 enemies for 28,251 Spellfrost damage that cracks the targets' defenses, increasing the damage they take from you by 20% for 4 sec. Grants Essence Burst.
     snapfire                        = { 93277, 370783, 1 }, -- Pyre and Living Flame have a 15% chance to cause your next Firestorm to be instantly cast without triggering its cooldown, and deal 100% increased damage.
     spellweavers_dominance          = { 93323, 370845, 1 }, -- Your damaging critical strikes deal 230% damage instead of the usual 200%.
-    titanic_wrath                   = { 93272, 386272, 2 }, -- Essence Burst increases the damage of affected spells by 8.0%.
+    titanic_wrath                   = { 93272, 386272, 1 }, -- Essence Burst increases the damage of affected spells by 8.0%.
     tyranny                         = { 93328, 376888, 1 }, -- During Deep Breath and Dragonrage you gain the maximum benefit of Mastery: Giantkiller regardless of targets' health.
     volatility                      = { 93283, 369089, 2 }, -- Pyre has a 15% chance to flare up and explode again on a nearby target.
 
@@ -1136,7 +1136,7 @@ spec:RegisterAbilities( {
                 setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
             end
 
-            if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = buff.dragonrage.expires + 4 end
+            if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = min( buff.dragonrage.applied + class.auras.dragonrage.duration + 20, buff.dragonrage.expires + 5 ) end
             -- TODO: Determine if we need to model projectiles instead.
             if talent.charged_blast.enabled then addStack( "charged_blast", nil, spell_targets.eternity_surge ) end
             if talent.iridescence.enabled then addStack( "iridescence_blue", nil, 2 ) end
@@ -1198,7 +1198,7 @@ spec:RegisterAbilities( {
         critical_damage = function () return talent.tyranny.enabled and 2.2 or 2 end,
 
         handler = function()
-            if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = buff.dragonrage.expires + 6 end
+            if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = min( buff.dragonrage.applied + class.auras.dragonrage.duration + 20, buff.dragonrage.expires + 5 ) end
             if talent.iridescence.enabled then applyBuff( "iridescence_red", nil, 2 ) end
             if talent.leaping_flames.enabled then applyBuff( "leaping_flames", nil, empowerment_level ) end
             if talent.mass_disintegrate.enabled then addStack( "mass_disintegrate_stacks" ) end
