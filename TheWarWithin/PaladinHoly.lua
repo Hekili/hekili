@@ -180,6 +180,11 @@ spec:RegisterAuras( {
     afterimage = {
         id = 385414,
     },
+    afterimage_stacks = {
+        id = 400745,
+        duration = 3600,
+        max_stack = 39,
+    },
     aura_mastery = {
         id = 31821,
         duration = 8,
@@ -326,6 +331,11 @@ spec:RegisterAuras( {
             c.caster = "unknown"
         end
     },
+    consecration_strength_of_conviction = {
+        id = 188370,
+        duration = 12,
+        max_stack = 1,
+    },
     contemplation = {
         id = 121183,
         duration = 8,
@@ -469,7 +479,7 @@ spec:RegisterAuras( {
     rising_sunlight = {
         id = 414204,
         duration = 30,
-        max_stack = 2,
+        max_stack = 4,
     },
     rule_of_law = {
         id = 214202,
@@ -857,7 +867,7 @@ spec:RegisterAbilities( {
     blessing_of_sacrifice = {
         id = 6940,
         cast = 0,
-        cooldown = function() return talent.sacrifice_of_the_just.enabled and 45 or 60 end,
+        cooldown = function() return talent.sacrifice_of_the_just.enabled and 105 or 120 end,
         gcd = "spell",
 
         spend = 0.07,
@@ -1497,6 +1507,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             spend( 0.18 * mana.max, "mana" )
+            if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
             removeBuff( "divine_purpose" )
             removeBuff( "shining_righteousness_ready" )
             if talent.maraads_dying_breath.enabled then applyBuff( "maraads_dying_breath" ) end
@@ -1592,6 +1603,7 @@ spec:RegisterAbilities( {
         equipped = "shield",
 
         handler = function ()
+            if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
             removeBuff( "divine_purpose" )
             reduceCooldown( "crusader_strike", 1.5 )
 
@@ -1680,6 +1692,8 @@ spec:RegisterAbilities( {
         texture = 133192,
 
         handler = function ()
+            if buff.afterimage_stacks.stack >= 20 then removeStack( "afterimage_stacks", 20 ) end
+            if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
             removeBuff( "divine_purpose" )
             removeBuff( "shining_righteousness_ready" )
             removeBuff( "empyrean_legacy" )
