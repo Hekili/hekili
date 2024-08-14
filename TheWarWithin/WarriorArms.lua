@@ -1,5 +1,7 @@
 -- WarriorArms.lua
--- November 2022
+-- August 2024
+-- 11.0.2
+
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -98,7 +100,7 @@ spec:RegisterTalents( {
     leeching_strikes                = { 90371, 382258, 1 }, -- Leech increased by 3%.
     menace                          = { 90383, 275338, 1 }, -- Intimidating Shout will knock back all nearby enemies except your primary target, and cause them all to cower in fear for 15 sec instead of fleeing.
     overwhelming_rage               = { 90378, 382767, 2 }, -- Maximum Rage increased by 15.
-    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 3.50% of your maximum health. This can only occur once every 10 sec.
+    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 2% of your maximum health. This can only occur once every 10 sec.
     piercing_challenge              = { 90379, 382948, 1 }, -- Champion's Spear's damage increased by 50% and its Rage generation is increased by 100%.
     piercing_howl                   = { 90348, 12323 , 1 }, -- Snares all enemies within 12 yards, reducing their movement speed by 70% for 8 sec.
     rallying_cry                    = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 10% temporary and maximum health for 10 sec.
@@ -262,6 +264,11 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1
     },
+    brutal_finish = {
+        id = 446918,
+        duration = 10,
+        max_stack = 1
+    },
     champions_might = {
         id = 386286,
         duration = 8,
@@ -284,6 +291,11 @@ spec:RegisterAuras( {
         id = 334783,
         duration = 30,
         max_stack = 20
+    },
+    colossal_might = {
+        id = 440989,
+        duration = 24,
+        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 10 ) end
     },
     colossus_smash = {
         id = 208086,
@@ -387,6 +399,11 @@ spec:RegisterAuras( {
         id = 383290,
         duration = 12,
         max_stack = 15
+    },
+    opportunist = {
+        id = 456120,
+        duration = 8,
+        max_stack = 1
     },
     overpower = {
         id = 7384,
@@ -494,7 +511,7 @@ spec:RegisterAuras( {
     test_of_might = {
         id = 385013,
         duration = 12,
-        max_stack = 1, -- TODO: Possibly implement fake stacks to track the Strength % increase gained from the buff
+        max_stack = 1,
     },
     thunder_clap = {
         id = 6343,
@@ -836,7 +853,12 @@ spec:RegisterAbilities( {
             if talent.merciless_bonegrinder.enabled then
                 state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
             end
-            --TODO: Implement Unhinged - Every other time Bladestorm or Ravager deal damage, you automatically cast a Mortal Strike at your target or random nearby enemy.
+            -- the final tick brutal finish gets applied before the final Bladestorm tick goes off.
+            -- If using imminent demise, it will affect the final MS instead of the one that
+            -- comes after the bladestorm, which means we dont need to track it.
+            if talent.brutal_finish.enabled and not talent.imminent_demise.enabled then
+                applyBuff( "brutal_finish" )
+            end
         end,
 
         copy = { 227847, 389774 }
@@ -883,6 +905,11 @@ spec:RegisterAbilities( {
             applyDebuff( "target" , "deep_wounds" )
             active_dot.deep_wounds = max( active_dot.deep_wounds, active_enemies )
             removeBuff( "overpower" )
+
+            if talent.demolish.enabled and active_enemies > 2 then
+                if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+                if talent.colossal_might.enabled then addStack( "colossal_might" ) end
+            end
         end,
     },
 
@@ -1036,6 +1063,8 @@ spec:RegisterAbilities( {
             if talent.executioners_precision.enabled then applyDebuff( "target", "executioners_precision", nil, min( 2, debuff.executioners_precision.stack + 1 ) ) end
             if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
 
         auras = {
@@ -1226,6 +1255,8 @@ spec:RegisterAbilities( {
             if target.health.pct < 35 and talent.bloodletting.enabled then
                 applyDebuff ( "target", "rend" )
             end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
     },
 
@@ -1246,6 +1277,7 @@ spec:RegisterAbilities( {
         texture = 132223,
 
         handler = function ()
+            removeBuff( "opportunist" )
             if talent.martial_prowess.enabled then applyBuff( "overpower" ) end
         end,
     },
@@ -1541,7 +1573,6 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        --TODO: Verify Rage Cost on 11.0
         spend = 20,
         spendType = "rage",
 

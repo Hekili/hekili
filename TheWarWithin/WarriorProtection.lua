@@ -1,6 +1,6 @@
 -- WarriorProtection.lua
--- July 2024
--- TODO: Model Ravager better for rage generation
+-- August 2024
+-- 11.0.2
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -52,6 +52,21 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         interval = 1,
 
         value = 4,
+    },
+
+    ravager = {
+        aura = "ravager",
+
+        last = function ()
+            local app = state.buff.ravager.applied
+            local t = state.query_time
+
+            return app + floor( ( t - app ) / state.haste ) * state.haste
+        end,
+
+        interval = function () return state.haste end,
+
+        value = function () return state.talent.storm_of_steel.enabled and 20 or 10 end,
     },
 } )
 
@@ -134,7 +149,7 @@ spec:RegisterTalents( {
     fueled_by_violence              = { 90451, 383103, 1 }, -- You are healed for 110% of the damage dealt by Deep Wounds.
     heavy_repercussions             = { 90319, 203177, 1 }, -- Shield Slam generates 2 more Rage and extends the duration of Shield Block by 1.0 sec.
     ignore_pain                     = { 90295, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken, up to 1.8 million total damage prevented.
-    impenetrable_wall               = { 90310, 384072, 1 }, -- Shield Slam generates an additional 3 Rage and reduces the remaining cooldown of Shield Wall by 5 sec.
+    impenetrable_wall               = { 90310, 384072, 1 }, -- Shield Slam generates an additional 4 Rage and reduces the remaining cooldown of Shield Wall by 6 sec.
     indomitable                     = { 90434, 202095, 1 }, -- Your maximum health is increased by 6%, and every 20 Rage you spend heals you for 1% of your maximum health.
     instigate                       = { 90301, 394311, 1 }, -- Devastate deals 20% increased damage and generates 2 Rage. Devastator deals 10% increased damage and generates 1 Rage.
     into_the_fray                   = { 90319, 202603, 1 }, -- You gain 2% Haste for each enemy or ally within 10 yards, up to 8% Haste.
@@ -278,7 +293,7 @@ spec:RegisterAuras( {
     colossal_might = {
         id = 440989,
         duration = 24,
-        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 0 ) end
+        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 10 ) end
     },
     concussive_blows = {
         id = 383116,
@@ -1073,7 +1088,8 @@ spec:RegisterAbilities( {
             end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
 
-            if talent.colossal_might then addStack( "colossal_might" ) end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
     },
 
@@ -1446,7 +1462,7 @@ spec:RegisterAbilities( {
 
             if talent.demolish.enabled and active_enemies > 2 then
                 if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
-                addStack( "colossal_might" )
+                if talent.colossal_might.enabled then addStack( "colossal_might" ) end
              end
         end,
     },
@@ -1585,7 +1601,7 @@ spec:RegisterAbilities( {
             if talent.punish.enabled then applyDebuff( "target", "punish" ) end
 
             if ( legendary.the_wall.enabled or talent.impenetrable_wall.enabled ) and cooldown.shield_wall.remains > 0 then
-                reduceCooldown( "shield_wall", 5 )
+                reduceCooldown( "shield_wall", 6 )
             end
 
             if set_bonus.tier30_2pc > 0 then
@@ -1598,6 +1614,9 @@ spec:RegisterAbilities( {
                 removeDebuff( "target", "thunderous_roar" )
                 if set_bonus.tier31_4pc > 0 then applyBuff( "fervid_opposition" ) end
             end
+
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might then addStack( "colossal_might" ) end
         end,
     },
 
