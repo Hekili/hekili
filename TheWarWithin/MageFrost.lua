@@ -7,6 +7,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local GetSpellInfo = C_Spell.GetSpellInfo
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 64 )
@@ -275,7 +276,7 @@ spec:RegisterAuras( {
     deaths_chill = {
         id = 454371,
         duration = function() return buff.icy_veins.up and buff.icy_veins.remains or spec.auras.icy_veins.duration end,
-        max_stack = 10
+        max_stack = 15
     },
     -- Talent: Disoriented.
     -- https://wowhead.com/beta/spell=31661
@@ -1215,9 +1216,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
         velocity = 40,
 
-        usable = function() 
+        usable = function()
             if moving and settings.prevent_hardcasts and action.glacial_spike.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
-            return buff.icicles.stack == 5 or buff.glacial_spike_usable.up, "requires 5 icicles or glacial_spike!" 
+            return buff.icicles.stack == 5 or buff.glacial_spike_usable.up, "requires 5 icicles or glacial_spike!"
         end,
 
         handler = function ()
@@ -1380,8 +1381,8 @@ spec:RegisterAbilities( {
 
             if pvptalent.ice_form.enabled then applyBuff( "ice_form" )
             else
+                if buff.icy_veins.down then stat.haste = stat.haste + 0.30 end
                 applyBuff( "icy_veins" )
-                stat.haste = stat.haste + 0.30
 
                 if talent.snap_freeze.enabled then
                     if talent.flurry.enabled then gainCharges( "flurry", 1 ) end
@@ -1455,7 +1456,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        
+
         usable = function ()
             if moving and settings.prevent_hardcasts and action.shifting_power.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
             return true
@@ -1595,18 +1596,21 @@ spec:RegisterOptions( {
     package = "Frost Mage",
 } )
 
+
+local ice_floes = GetSpellInfo( 108839 )
+
 spec:RegisterSetting( "prevent_hardcasts", false, {
-    name = strformat( "%s, %s, %s: Instant-Only When Moving", 
+    name = strformat( "%s, %s, %s: Instant-Only When Moving",
         Hekili:GetSpellLinkWithTexture( spec.abilities.blizzard.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.glacial_spike.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.frostbolt.id )
     ),
     desc = strformat( "If checked, non-instant %s, %s, %s casts will not be recommended while you are moving.\n\nAn exception is made if %s is talented and active and your cast "
-        .. "would be complete before |W%s|w expires.", 
-        Hekili:GetSpellLinkWithTexture( spec.abilities.blizzard.id ), 
+        .. "would be complete before |W%s|w expires.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.blizzard.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.glacial_spike.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.frostbolt.id ),
-        Hekili:GetSpellLinkWithTexture( 108839 ), ( GetSpellInfo( 108839 ) ) 
+        Hekili:GetSpellLinkWithTexture( 108839 ), ( ice_floes and ice_floes.name or "Ice Floes" )
     ),
     type = "toggle",
     width = "full"
