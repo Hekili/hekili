@@ -16,7 +16,7 @@ local FindAura = AuraUtil.FindAura
 local UnpackAuraData = AuraUtil.UnpackAuraData
 
 local GetSpellBookItemInfo = function(index, bookType)
-    local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet
+    local spellBank = ( bookType == "spell" or bookType == Enum.SpellBookItemType.Spell ) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet
     local info = C_SpellBook.GetSpellBookItemInfo(index, spellBank)
     if info then return info.name, info.icon, info.spellID end
 end
