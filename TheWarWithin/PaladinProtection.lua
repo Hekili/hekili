@@ -12,6 +12,8 @@ local spec = Hekili:NewSpecialization( 66 )
 
 local strformat = string.format
 
+local GetSpellInfo = ns.GetUnpackedSpellInfo
+
 spec:RegisterResource( Enum.PowerType.HolyPower )
 spec:RegisterResource( Enum.PowerType.Mana )
 

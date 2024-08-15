@@ -12,6 +12,8 @@ local PTR = ns.PTR
 local FindPlayerAuraByID, FindUnitBuffByID, FindUnitDebuffByID = ns.FindPlayerAuraByID, ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local abs, ceil, strformat = math.abs, math.ceil, string.format
 
+local GetSpellInfo = ns.GetUnpackedSpellInfo
+
 local RC = LibStub( "LibRangeCheck-3.0" )
 
 

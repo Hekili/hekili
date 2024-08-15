@@ -10,6 +10,8 @@ local class, state = Hekili.Class, Hekili.State
 local insert, wipe = table.insert, table.wipe
 local strformat = string.format
 
+local GetSpellInfo = ns.GetUnpackedSpellInfo
+
 local spec = Hekili:NewSpecialization( 261 )
 
 spec:RegisterResource( Enum.PowerType.Energy, {

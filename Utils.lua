@@ -605,6 +605,18 @@ function ns.IsActiveSpell( id )
 end
 
 
+function ns.GetUnpackedSpellInfo( spellID )
+    if not spellID then
+        return nil;
+    end
+
+    local spellInfo = GetSpellInfo(spellID);
+    if spellInfo then
+        return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID;
+    end
+end
+
+
 function Hekili:GetSpellLinkWithTexture( id, size, color )
     if not id then return "" end
 

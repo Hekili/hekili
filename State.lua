@@ -19,11 +19,11 @@ local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local GetItemSpell = C_Item.GetItemSpell
 local GetItemCooldown = C_Item.GetItemCooldown
 local IsUsableItem = C_Item.IsUsableItem
-local GetSpellLossOfControlCooldown = C_Spell.GetSpellLossOfControlCooldown
+local GetSpellInfo, GetSpellCharges, GetSpellLossOfControlCooldown = ns.GetUnpackedSpellInfo, C_Spell.GetSpellCharges, C_Spell.GetSpellLossOfControlCooldown
 local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 
 local GetSpellCharges = function(spellID)
-    local spellChargeInfo = C_Spell.GetSpellCharges(spellID);
+    local spellChargeInfo = GetSpellCharges(spellID);
     if spellChargeInfo then
         return spellChargeInfo.currentCharges, spellChargeInfo.maxCharges, spellChargeInfo.cooldownStartTime, spellChargeInfo.cooldownDuration, spellChargeInfo.chargeModRate;
     end
@@ -616,7 +616,7 @@ state.GetPlayerAuraBySpellID = GetPlayerAuraBySpellID
 state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo
 state.GetSpellCount = C_Spell.GetSpellCastCount
-state.GetSpellInfo = GetSpellInfo
+state.GetSpellInfo = ns.GetUnpackedSpellInfo
 state.GetSpellLink = GetSpellLink
 state.GetSpellTexture = C_Spell.GetSpellTexture
 state.GetStablePetInfo = GetStablePetInfo
@@ -5499,7 +5499,7 @@ local all = class.specs[ 0 ]
 -- 04072017: Let's go ahead and cache aura information to reduce overhead.
 local autoAuraKey = setmetatable( {}, {
     __index = function( t, k )
-        local aura_name = C_Spell.GetSpellInfo( k ).name
+        local aura_name = GetSpellInfo( k )
 
         if not aura_name then return end
 

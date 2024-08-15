@@ -58,16 +58,7 @@ local GetSpellTabInfo = function(index)
     end
 end
 
-local GetSpellInfo = function( spellID )
-    if not spellID then
-        return nil;
-    end
-
-    local spellInfo = C_Spell.GetSpellInfo(spellID);
-    if spellInfo then
-        return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID;
-    end
-end
+local GetSpellInfo = ns.GetUnpackedSpellInfo
 
 local GetSpellDescription = C_Spell.GetSpellDescription
 
@@ -8817,8 +8808,8 @@ do
                             type = "toggle",
                             name = format( "%s Filter M+ Interrupts (DF Season 4)", NewFeature ),
                             desc = format( "If checked, low-priority enemy casts will be ignored when your target may use an ability that should be interrupted.\n\n"
-                                .. "Example:  In Everbloom, Earthshaper Telu's |W%s|w will be ignored and |W%s|w will be interrupted.", ( GetSpellInfo( 168040 ).name or "Nature's Wrath" ),
-                                ( GetSpellInfo( 427459 ).name or "Toxic Bloom" ) ),
+                                .. "Example:  In Everbloom, Earthshaper Telu's |W%s|w will be ignored and |W%s|w will be interrupted.", ( GetSpellInfo( 168040 ) or "Nature's Wrath" ),
+                                ( GetSpellInfo( 427459 ) or "Toxic Bloom" ) ),
                             width = 2,
                             order = 4
                         },
