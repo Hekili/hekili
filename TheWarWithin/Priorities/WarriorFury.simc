@@ -14,7 +14,7 @@ actions.precombat+=/berserker_stance,toggle=on
 actions.precombat+=/recklessness,if=!equipped.fyralath_the_dreamrender
 actions.precombat+=/avatar,if=!talent.titans_torment
 
-actions+=/charge,if=time<=0.5|movement.distance>5
+actions+=/charge,if=time<=0.5|movement.distance>8
 actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
 actions+=/potion
 actions+=/pummel,if=target.debuff.casting.react

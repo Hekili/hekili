@@ -12,7 +12,7 @@ actions.precombat+=/battle_shout
 actions.precombat+=/battle_stance,toggle=on
 actions.precombat+=/use_item,name=algethar_puzzle_box
 
-actions+=/charge,if=time<=0.5|movement.distance>5
+actions+=/charge,if=time<=0.5|movement.distance>8
 actions+=/potion,if=gcd.remains=0&debuff.colossus_smash.remains>8|boss&fight_remains<25
 actions+=/pummel,if=target.debuff.casting.react
 actions+=/call_action_list,name=variables
