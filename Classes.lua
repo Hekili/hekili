@@ -6231,7 +6231,7 @@ function Hekili:SpecializationChanged()
     end
 
     self.PendingSpecializationChange = false
-    self:ForceUpdate( "AACTIVE_PLAYER_SPECIALIZATION_CHANGED" )
+    self:ForceUpdate( "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" )
 
     insert( self.SpecChangeHistory, {
         spec = currentID,
