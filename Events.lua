@@ -29,6 +29,8 @@ local GetSpellCooldown = function(spellID)
     end
 end
 
+local GetSpellInfo = ns.GetUnpackedSpellInfo
+
 local FindStringInInventoryItemTooltip = ns.FindStringInInventoryItemTooltip
 local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache

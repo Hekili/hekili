@@ -6786,10 +6786,6 @@ end
 
 
 function state.advance( time )
-    if time <= 0 then
-        return
-    end
-
     if not state.resetting and not state.modified then
         state.modified = true
     end
@@ -6833,6 +6829,10 @@ function state.advance( time )
 
         eCount = eCount + 1
         if eCount == 10 then break end
+    end
+
+    if time <= 0 then
+        return
     end
 
     for k in pairs( class.resources ) do
