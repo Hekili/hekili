@@ -193,7 +193,7 @@ all:RegisterAuras({
 })
 
 all:RegisterAbilities( {
-    -- Phase 4
+    -- Cataclysm Trinkets
 
     figurine_demon_panther = {
         cast = 0,
@@ -204,6 +204,19 @@ all:RegisterAbilities( {
 
         toggle = "cooldowns",
     },
+
+    soul_casket = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 58183,
+
+        toggle = "cooldowns",
+    },
+
+
+    -- Phase 4
 
     abracadaver = {
         cast = 0,
