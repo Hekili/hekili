@@ -1786,7 +1786,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if ( talent.crashing_thunder.enabled ) then
-                if talent.improved_whirlwind.enabled then
+                if ( talent.improved_whirlwind.enabled ) then
                     applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
                 end
             end
@@ -1813,7 +1813,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if ( talent.crashing_thunder.enabled ) then
-                if talent.improved_whirlwind.enabled then
+                if ( talent.improved_whirlwind.enabled ) then
                     applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
                 end
             end
