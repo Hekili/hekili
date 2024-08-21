@@ -185,6 +185,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         shared = "target",
     },
+
+    curse_of_guldan = {
+        id = 86000,
+        duration = 15,
+        max_stack = 1,
+    },
     -- Speaking Demonic increasing casting time by $s1%.
     curse_of_tongues = {
         id = 1714,
@@ -362,6 +368,11 @@ spec:RegisterAuras( {
     fel_intelligence = {
         id = 54424,
         duration = 3600,
+        max_stack = 1,
+    },
+    fel_spark = {
+        id = 89937,
+        duration = 15,
         max_stack = 1,
     },
     -- Increases speed by $s2%.
@@ -820,9 +831,9 @@ local aliasesSet = {}
 
 spec:RegisterHook( "reset_precast", function()
     if settings.solo_curse == "bane_of_doom" and target.time_to_die < 65 then
-        class.abilities.solo_curse = class.abilities.bane_of_agony
+        class.abilities.solo_curse = class.abilities.solo_curse
     else
-        class.abilities.solo_curse = class.abilities[ settings.solo_curse or "bane_of_agony" ]
+        class.abilities.solo_curse= class.abilities[ settings.solo_curse or "bane_of_agony" ]
     end
 
     if settings.group_curse == "bane_of_doom" and target.time_to_die < 65 then
@@ -841,8 +852,16 @@ spec:RegisterHook( "reset_precast", function()
         aliasesSet.group_curse = true
     end
 
-    
+    if settings.bane_priority == "bane_of_doom" then
+        class.abilities.bane = class.abilities.bane_of_doom
+    else
+        class.abilities.bane = class.abilities.bane_of_agony
+    end
 
+    if not aliasesSet.bane_priority then
+        class.abilityList.bane = "|cff00ccff[Bane]|r"
+        aliasesSet.bane = true
+    end
 
     --[[ if IsCurrentSpell( class.abilities.shadow_cleave.id ) then
         start_shadow_cleave()
@@ -1436,7 +1455,6 @@ spec:RegisterAbilities( {
             if dot.unstable_affliction.ticking then dot.unstable_affliction.expires = dot.unstable_affliction.expires + 6 end
         end,
     },
-
     felstorm = {
         id = 89751,
         cast = 0,
@@ -1488,7 +1506,7 @@ spec:RegisterAbilities( {
     -- You send a ghostly soul into the target, dealing [((Spell power * 0.5577) * 1.25) +  922] Shadow damage and increasing all damage done by your Shadow damage-over-time effects on the target by 20% for 12 sec. When the Haunt spell ends or is dispelled, the soul returns to you, healing you for 100% of the damage it did to the target.
     haunt = {
         id = 48181,
-        cast = 0,
+        cast = 1.5,
         cooldown = 8,
         gcd = "spell",
 
@@ -1707,7 +1725,8 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Begins a ritual that creates a Soulwell.  Raid members can click the Soulwell to acquire a Healthstone.  The Soulwell lasts for 3 min or 25 charges.  Requires the caster and 2 additional party members to complete the ritual.  In order to participate, all players must right-click the soul portal and not move until the ritual is complete.
+	-- Commented out to fix issue #3441
+    --[[ Begins a ritual that creates a Soulwell.  Raid members can click the Soulwell to acquire a Healthstone.  The Soulwell lasts for 3 min or 25 charges.  Requires the caster and 2 additional party members to complete the ritual.  In order to participate, all players must right-click the soul portal and not move until the ritual is complete.
     ritual_of_souls = {
         id = 29893,
         cast = 60,
@@ -1743,7 +1762,7 @@ spec:RegisterAbilities( {
 
         handler = function()
         end,
-    },
+    }, ]]
 
     -- Inflict searing pain on the enemy target, causing 310 Fire damage.  Causes a high amount of threat.SoulburnSoulburn: Increases the critical effect chance of your next Searing Pain by 100%, and your subsequent Searing Pain casts by 50% for 6 sec.
     searing_pain = {
@@ -1822,6 +1841,7 @@ spec:RegisterAbilities( {
             if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
             if talent.everlasting_affliction.rank == 3 and dot.corruption.ticking then dot.corruption.expires = query_time + dot.corruption.duration end
             removeStack( "backdraft" )
+            applyDebuff( "target", "shadow_and_flame" )
         end,
 
     },
@@ -2048,7 +2068,6 @@ spec:RegisterAbilities( {
        
         handler = function()
             applyBuff( "soulburn" )
-            soul_shards = max( 0, soul_shards - 1 )
         end,
     },
 
@@ -2141,7 +2160,6 @@ spec:RegisterAbilities( {
             dismissPet( "succubus" )
             summonPet( "felguard" )
 
-            soul_shards = max( 0, soul_shards - 1 )
         end,
     },
     --Summons a Felhunter under the command of the Warlock.SoulburnSoulburn: Instant cast. In the Demonology Abilities category. Learn how to use this in our class guide.
@@ -2175,7 +2193,6 @@ spec:RegisterAbilities( {
             dismissPet( "succubus" )
             dismissPet( "felguard" )
 
-            soul_shards = max( 0, soul_shards - 1 )
         end,
 
     },
@@ -2238,7 +2255,6 @@ spec:RegisterAbilities( {
             summonPet( "succubus" )
             dismissPet( "felguard" )
 
-            soul_shards = max( 0, soul_shards - 1 )
         end,
 
     },
@@ -2292,7 +2308,6 @@ spec:RegisterAbilities( {
             summonPet( "succubus" )
             dismissPet( "felguard" )
 
-            soul_shards = max( 0, soul_shards - 1 )
         end,
     },
 
@@ -2325,7 +2340,6 @@ spec:RegisterAbilities( {
             dismissPet( "succubus" )
             dismissPet( "felguard" )
 
-            soul_shards = max( 0, soul_shards - 1 )
         end,
 
     },
@@ -2374,8 +2388,7 @@ spec:RegisterAbilities( {
 
 
 local curses = {}
-
-spec:RegisterSetting( "solo_curse", "bane_of_agony", {
+spec:RegisterSetting( "solo_curse", "curse_of_the_elements", {
     type = "select",
     name = "Preferred Curse when Solo",
     desc = "Select the Curse you'd like to use when playing solo.  It is referenced as |cff00ccff[Solo Curse]|r in your priority.\n\n"
@@ -2383,10 +2396,8 @@ spec:RegisterSetting( "solo_curse", "bane_of_agony", {
     width = "full",
     values = function()
         table.wipe( curses )
-
-        curses.bane_of_agony = class.abilityList.bane_of_agony
+        curses.none = "No Curse"
         curses.curse_of_the_elements = class.abilityList.curse_of_the_elements
-        curses.bane_of_doom = class.abilityList.bane_of_doom
         curses.curse_of_exhaustion = class.abilityList.curse_of_exhaustion
         curses.curse_of_tongues = class.abilityList.curse_of_tongues
         curses.curse_of_weakness = class.abilityList.curse_of_weakness
@@ -2407,10 +2418,9 @@ spec:RegisterSetting( "group_curse", "curse_of_the_elements", {
     width = "full",
     values = function()
         table.wipe( curses )
-
-        curses.bane_of_agony = class.abilityList.bane_of_agony
+        
+        curses.none = "No Curse"
         curses.curse_of_the_elements = class.abilityList.curse_of_the_elements
-        curses.bane_of_doom = class.abilityList.bane_of_doom
         curses.curse_of_exhaustion = class.abilityList.curse_of_exhaustion
         curses.curse_of_tongues = class.abilityList.curse_of_tongues
         curses.curse_of_weakness = class.abilityList.curse_of_weakness
@@ -2422,7 +2432,27 @@ spec:RegisterSetting( "group_curse", "curse_of_the_elements", {
         class.abilities.group_curse = class.abilities[ val ]
     end,
 } )
+local bane = {}
+spec:RegisterSetting( "bane_priority", "bane_of_doom", {
+    type = "select",
+    name = "Preferred Bane",
+    desc = "Select the Bane you'd like to use.  It is referenced as |cff00ccff[Bane]|r in your priority.",
+    width = "full",
+    values = function()
+        table.wipe( bane )
+        bane.none = "No Bane"
+        bane.bane_of_agony = class.abilityList.bane_of_agony
+        bane.bane_of_doom = class.abilityList.bane_of_doom
+        bane.bane_of_havoc = class.abilityList.bane_of_havoc
 
+        return bane
+    end,
+    
+    set = function( _, val )
+        Hekili.DB.profile.specs[ 9 ].settings.bane_priority = val
+        class.abilities.bane_priority = class.abilities[ val ]
+    end,
+} )
 spec:RegisterSetting( "inferno_enabled", false, {
     type = "toggle",
     name = "Inferno: Enabled?",
@@ -2481,10 +2511,11 @@ spec:RegisterOptions( {
     usePackSelector = true
 } )
 
-spec:RegisterPack( "Affliction", 20230226, [[Hekili:DRvwVrkoq4FlJgj0UkjmaD6CSIULM9HvAYoA0kX8mGdTjTv4sG7otl1IF7BzmnymMJC0AL2xMjbB)vhUQVQCP4A6(txNnik29hwgwlmSSUv3000WWY1HEid76KHcEg9e8djOy4F)AyyejGsstylDikfTHbrr6U8ayzxNh3rIOFlX9r14A66G2r3MM7683KO0axNTKnBW89JlGFNT)RmSUY62)O0)Vi)Q0)7KqCP)przL(rPprck9PPL(jP0s)CCyoUyBP)lFb(0trhYGFgb63ESURtePGwWuViab4))rL5IQv)nyeDRxqkjY1bNGEmcVX9pDPGg3zx5isIxfaD2fLbqiAxeTb42LDcYjuCobXXzp2dNGJj4Is)vL(ML(AGnGYFct13Irr0T6zbG1SU036MwrNVlXJ)ZEmlHBpE87HcAJMolXAx6FDLyLxy9hJ(GsXmfAXSvia7fFaYTadcce81dkyf4BpF8X)chSJwzBlhueYyVCEyxfuvfjLLJdsJFePmw6euH4ipuEml1HLPKtY4F)R)Z3l93Vq)ADZRm1VrFzP)Nf1Uh3fgQxDq9nPVKu6F8yPVWhZXXqiopgX8oJXJR(uPFg4n53Mv3FCfVkW2Ovzl2fhd2mOZB3LaND8GJxjQ7tjBEbf9mh2HV6FLWsIZg)EUIFrNDT5rrz617Pc4k)zZkm)Cl8N(md8Be5wYs5)Fh2NBhjsocNq1b1mpDpEJxXweiiVhtJOD0LcmLssEQqVEdXOcaHdvRTbxPPDxrsFfWLhEEkjqMbvP(3H9Cxb2du)4cPnnCOWMuQ(UKckBjput1MorPbGA7rjX87u2j2IGOS29SUZEUaizYr7H0NMFpcknLeWDjSp6rt92qG1wZ4NfYFvOktgZrjbpd(FEIMcTZE1mvVw1OcHXdoLfCgoVa4AGigVyOkfjlIGZRCnmvkinpFxfbIEw7YTcSD9MOw1xx84P4dEb7YlW1mmQ8QwxlGoBVEPHEONstomEuFmkb1qTAAWnUzNjkg2SuDk5DdNWjAdmPlycBpWCWzq5hGFpahHZrN8w3ZaKWy9yUqpsidPGNlwVYu736fpyVQjw4cH4GlQJboECImc7vCvs5EAHUgoT6YHcMgOwlbPO4Iu5MTU(3L7oc6(lQx3rSocgTZOZ(fRCvmfX2obhcIyhGzNfmTfuRF519RoMQZZurKngVX8e2IHfMmRZaPtVB5itY0LfAEWpIptMnrvW0K9VTuHEmkpIeRxt8tDfKrR5uVNU(5EllrZROzBqXxmsD2IjElHif)G1YpBfbgUPWUC9L(3BmlEYXBc49usFYluBz06vX9Su4FM2WBUUF7ZPKVsmxEMDmJ0IGYuJj1eypc0gVPwhu5lynFDJrf8TfGyp4K)nssiopj17eEnYTEHXByqvr0Xu97)VR4OPbt29ixDDSfFASYo8nhMHQgVnaNdkjOURjdzkVWi27FzincNYz7XodhRBne38pmxi(QgXfLB7PAGeJYI)k9rd1fdtqSGPoDZ0ie5kpnJBrmNsvb0HjLp3HKvUV9ScwWc1Jn04oxNxq5jSByxNVfNLMtzWFlV2Ak8wJQH8Px(a4rYWbSCkhiKjKeHDD(CPVQPJu(a)Wf6ndE5IvFPz(kxscxjn0KJh7pWeBZ7muJK8Wpya(P2jrOX34QXpD7qoEthhsCEDN70nb7uQVv16pKd1qXzngq9AZDysAgP5AdKIRn8SmkFOr4GiLMb3LSPVTQOs8DttG3N1JqCT1ntIf8uN(GzFTw3pS(nIolrVp8Rx82qREwoCFV05TNX5zx)SdlEQLc(B9c2TClPuvqynJZa3y1RE8OYUvxpCNQscDGwnRmvHxWEVH05u0gc7m96Bz9OpuxBQ3P37T4YQptwIUl(t)7oSGrvH5zxn3gkEDV5Y3Tz0TlhLoYPKH2jvuc66EWeIDf0D7v3yODQg1AldnPw5MwnvnkRUhsKJ8KOSnnoECweMN8GlLqLtxEzV0XvI5J8Tk0BGGx4uReGQOC)Nr22(rfwdRcI0e18qkQw0UsZ0JvU4WzTZk8v71MFlnYmv60SsHhFEFQGvnB67HVua7zLhOjncqvi9HNCi4xNfZUTPs9QDSsxkou2v))AMSDkbdoQxjzr9j69MIl78gHvMkBerbDnhVpSqIwKHET(ibUlSJy39gXj3x0305iPIDAAixmgKszQVt04uvtdYOwPqQLItPO)YEECPcuQhs7K9lm8Wz7ZYl1vU9cXOlwicZUA(tdP)sT)9GWEWQ7)c]] )
+spec:RegisterPack( "Affliction ", 20240708, [[Hekili:vN1)RnUnu8)wkdYTr78AsAAVDRPWDWyRLrhCPJ9dJZ2k2YXIkB5jj3Uaf)3(Esk2ww2ojTJbBCC3fl)(ME6959fz)P(p4VkgjX(3p78zxC(vN)EVzZMD58R8xj3wG9xvGIEeTb(rokd(3pMKqjrsclVk8tyjsrWwkdfReKGvYJaI8xTUKqL3M7V2r6Z9MU4Ilw8EG2cCK)9FV)QusCm2qjwe5V6HuIOku9xuv4oTxfYsGN3PxkriHxNW4vH)m(rcL4bMbNLqOGY)QQWFTaNJ5v3zyq4vWXrSS1i5Pl)UNy0iuojkOGPL2GeLGPbiEgJFgjz56YKep9tEXSNhHdrzwglpaymTmxI1mEsbw6HOKNWJWdRKgKI4pHfsf96NfWcXIRN3WIIWueO5G1mQMUyS2K2TkoBnhfHn2w4KQqjIVbuCkgrLPEfrYQWBQcNTWwIB4SYIGOsUaBjXSTML0YAI(NbAkXXDmhgLTFETPofboKZkbrXssc2efVCQ25SZm3XUMkVYIxEjMj39ehNHi5IRJqczGKKHpLcXs5rBpDQTcIXkpVY5PKBFFoqszUqIwtXbOMWxltFG32BxWlZdmpfOc)otHgwkK2KeHO0(0GyAVKA9NWbqCzgblUb2av3brQRi5BOq49dANrv4Nzsu3WsXRj6st8B)SDNYo(JxddrmoVSWXP2UyZ5OKe9O(C8F7WJ5og4AuUZErTsJaMUWH(rcx6Asdf10BNoPhy8MzUAlMd80e)2JHRx2JddYpHcXx22feZHYJWxFvVd0s66sUEpKXEcc5gGGGech3KURMfWL7ATnOnNxOYz2ysAHOwruG4pQp4gwZDZSnAQlR8A1Bt9RUQkecjEB5dF5LEoUjrmgvXONLlU(u9g3WkkjbhirfA)kkhPpTME(lVSHUTi1R(1E4CvCs8eTv2SADSI7H7RjnYSDPr(i7hhk3bWup4z3G4bqPZpZqsW(WYU64FmIzUReviuiLqaAdlFRf4TZ6da4ortqbNW4e5wp1l6e2zKUnKO9mhJJvIEaNcKxAsFFVJm7X(qWP3OyC4A5L9y7OZjytVb5fTnIQckvSiwoTxaKUybysYuWcO4mCUumGrTysD8snd1e3Emp5ehlZBl0VZnlQRhQYReU6zurv4VW2qIQc)6z1qyX3m0XyG4zdeSBWw34KE(9LZ8x9eMlaH10CkS0ZiEoeUi8x97F8Z3F79)0hQcHQZPq2gswbJl31257a9)UQqo(plH0MXvHcguwlevkzzqriyHOuu(gSWR6on3jmkL9SkseiIJG2xFgZH1HcFaXeitLurMz7zAXTkCDPSMUCMw1L5DOoowrm0HnAnsG)a4ed)wq1UUFLZ10w9UUKn9xNrecTfjklS2BBunpR88soj)rWT7P8b3knmP7FfKASYULPiyzm4i3QKTbZPmWiAj0np8kcyO8Ad7p(nbwjjCM4lNb7SusuQn1O8TTAD3Eg)xfqUcIK2kxBxqTs)byebETAEWiIQWPFrj0y7LMzP5NjuQ1oANiL1KQ9g6LYlZwJnNZuO)JQ7UvhmOw4cN5sGx6VcIdszC)vRYkt4Kh9xPFLAejiUb(V71ZDTRUG)NmJ(WjA0omJLD2C)vWlGw(iWOwhk3Dv41vHZbLeTJZgkQ5fsQRu2i87lbSGJLnM23tYCxZyasvAA(OAAFP61cVTtsvb(taKYqj9BTGossP7lgv3hr1aTjave0kVBAftRfTkUoXVsNlgvN9A56ieCpRtPIlhvf9K2YQWlpK4U6GXcn9IbEKRSexBXiLCEVJC6sMUgeiC7IqkeIuD9ah9(Pk00L4HkbzcoRJBgQyKrywOOHk)PSUPNVpu8bkLnoYYTY1Grdl7fMPRdcMLuzhjOsWNoqIMEGSxBxZdF6T3ehdocPshDMcTvWwdWEu5j6iyBNs9CSniERXmvUMHIj1ZwAReROKUZIQg9aI3CNhvhG1mtAv4PqHbZCP6FpD)PcAgQV1IAN4A)q8dCBghmFSlAVMCNR(WumlWCDGc5(W3UJYCaa80oIwvPSofW)bo3MBGwIbrvDb(JCNoog3aN0UxZZ)xGv7tkJu(SPc(GDRSxiYW3IJwQtx0VMFmJLTFGZRRXMU9EC40KhjARN5ylYRx2vMTxz0qWV3Az6XR2AU7MHBRPxvWX7RXPGL6gN0sqdNgiDNLuvKnouO31nzW4UMDZvuPf34aG321q107XRTKQH5bpRm459CPuArmF0IYthhFwFJvgGZ5gJy4BUsBfdE7vAMTcmRFVw3Uq43yzHzduwqQ(Gp7(skhmHS5Zb1QFNpb0(ZYQ32TF9NUbt613FY0Jpt)4hvwFyi3zRS)gs(T)X)Vd]] )
 
-spec:RegisterPack( "Demonology beta", 20240614, [[Hekili:nN1wVToUr4FlbfW5HEQBCsCoD36yGwu0DtqrEOol6dfRKOLOSjcfPwkQK6x0V9od1nkArjNt3w0hohelnZ3CHZnokyvWRb7siAAWl3EZT3FZdRUF5T3T(MvFnyN(uonyxoj(nYb4peKm4))l0mPqYLhovfTNQjibN4ssccuHSufdefSBFjJRFseSFe0VF96VdOnNgh8c8hhzjj0AkPfXb7E9iROkc)hPkQr6vrYu43XAMuufXzfA41Psvv0psFJXzld2zEiQecf8)VymmQGSNttc(Zb7IvmnvXa99QQinl(nM4qv0IQOePEzXrsI8JqIijmLdM5sfnJWeGm2ufftk0HAgA81kaO710VxY1bAW2CKfAhkwEnT)ubO9)iaDTn8dL8RtiGr8Xrk8)K3jmoYyp4hr1qMgEOKdegSRSGc)e(DCcAwG8U7sTnnrDGQxIkFOwgMWavzBv0D30lT9ebcFyIuMHyF))jyVbX28wG4e6(Y00L7jkrRawwMFUKjhKItOOxFbIUN9yPsvw7JbEFykEB0K6tT6dyBfX65iuF1luguYGdDQiee)quyIyMGQWGDaK)GxqA8BhPeU(4Y8yTXTD7AJBZiHeAmlJGOounLL8WuMYG)3H4pw4OLqXyZD5kASmBprpwsrhaLzqwDykLFOKOsCIGrvg0s9r4eoLD4i83FW0hRI(Rn03KkAiWuFOkAhOS1MdeJJX(aTfAPkZ2vuq1A4mTyzofYW(asGBdUGdn4zljC270XYWgC82aZmOmIXESuaOmDgL5ebOnKOYKQLGFw0dv3ZNnZPoaepb5mXBNFUIpTlhO9nVl5Xeblomxw)a7Z26q(wsZGsXGEKFuwWkCi0FaDN3X4Ug94Oxej4jBiQTthGBShiKuLux)8ohtfEZ70cDD4zrsF16UcdCPekexQo5yi(JcgAiT(B84HbhXCo7avepmFDO5mtaWa37W0EiyIBswdjLkY0bcnP3TcUlHBaIPTzkxyjXPQ0VAT)k9twYCoShVsFVaMUs)mLynEimShayzHggbamMhRIUVVgPDvylkwzOiwk5yI6sRwPHqV0bT1xDZzLeqfVUa40b4T5jmrkvjKHTu5Ix97j8Uc2oTY92YFqupOO)Q1BBL)XI6tBRJC8xsyUCm7ozNhQpSck(U9Lktp8v(ZVhv56QPIae2i350l)w0LQXJ0(yLB5JUHuiCOdH5hH4aQ1JPgwpkTqvxdKiPNvdCQ65(DtF(Av(R71K1ZeHzuoLgQiIdNncCxGL)AEWC(GpOgTcyShohNHXCm(GvgqZZhRO3it85f)EAmj5GeIpfZPTVVzaA3sFooiQF8BPyk0DRU11Xbl86fz8TtHQ)6rJmJJvpen2QlLuYhDcWPNXUZFm3iyZmD(3C3v3jGMmslJiiDduVE9WwbdLHVgbCwk63ZNU37CGIH2wv3loji5qL)ICfw5Pla0x3GVTz58xI0xPWoZOVO3ahZdxYuH2fW9hI()a9W5kmTTC)wI6uLcVfTXbwNUP8iGJw3ffoIhCFMUht1qhz8DkmCcnJrRX(2lZgXgst3pUzQJStHXLQcQLbI)m8GswMBpqK5b10oA)YPr2oAJl7GXuB7DQQaFv7cMGBB8brjmjA7(h)P)(lp9Yp89vrvrVI3oLLLlX7YAUV61Wz51vrk6VucDEG0MczgqdPulHRFJpi(i20Ryz1ZgUtLCU8dZ8cy)tWN(bfBLbjYaXmrZvGRv261uHPG6w6esJOlfdOojbjoHOj7jf0VV65QOFhQl9Z18C1ZZyjWj2LAj)nMaE1xbK(jrrzoIcsqRsFn2h66LxGmf))RZZENtOLuVsXCLmLXP17wmJvuyuMgFqJvbfMG4WyaEOw9ByFz06FsxZKzxkzurcQY6Je4Xuia8eIntcXWNqDlMxMGjCugOJQwD6FAwe4tAAwXp)fC9FS4J2uteN6LAJ5s)x5CwmtZ7X126Bf6FSkc09gX8AneqHKFUz1l9p6wlj)bJZTSOgi1TK2Vrhrz2EA9rmxQHJZNYAdAw7Stw4LqUAP(OufSBxwzQI9gUckJFV7j1logV6sMS65Ftv0VQlyQ65AvcAu0U6RF7J)EN2dFHL(4OnuwCv)QeMbO6X)rKUASnqnlsDlpcHyK1m5r(TBlYi4ZwR04m5mg14enOL04K03GgLEN9Ty8lv5x)BwbK5uOFBrBUdZvByciTD6tJL2UqcR33pJPpkCS7ohTBRFih3IR2HarYBNPCZfnp5Mv3ydKZGFiEtZ)2hwzZ)aA(I14IpoGS2wfdDNBxTW3uxlMyIRnpmZP54jt)3suoJP8fCaLhH(2(pkTdqCMFQMBHpMr1C2J4TRMv9GMXOego)12BXG7(CcWga(7x1P7B8LQDL)rPDHW56(Z7YA4R9YJDmm(glpZwSw)NDc5IZ3F42vR9XTzhHZW(M7UzXvJV0rxyD3S3qBAWog3(49lgF3IBFC1I52PODQ)qz3UfWb9CCwDOlRdxiONu)wX0VjgJFB0ncEgt(Qz4PR43(U(84vg0a98QwwJ)6x4Eu2pJ64ReXGKvqRTUadQWJDlLfdU7ZWc0T3AXhV9ALO)i18b9gKkm13QEt33P2mt1f(zNDe8Lf3j(SP73DJhM)8z7d(yYoOoZab2(2loDXWt)32TVi6GpdSRmKnFQwK8Z(GVBUDDBmQ1h61FiGDBdO3I7GbUV8Zx2VMphhZO7)1LN212AsIhDrVBFWLhRtPb758XvNJspTBodNUXdNfLwkphdtW7S8JuDoV2TjT)y16GG)n]] )
-spec:RegisterPack( "Destruction", 20230204, [[Hekili:1EvBloUnq4FlhhKV09CTDYMBlKeOh9d92wwkK(zBRylNiwzlJS8EeWOF7DKKF3YjPuklSjXAMNzMN5n5aVG)o4ycsGdEZ31FTRV7ghp3nF175GJIRf4GJfO43rNHVKJYG))B4sbVkwqy5QZUszOefgLSkEmCEWXtveQ475bNSd8Aq2cCCWB)sWXlKKeSrsCz8iWLr)aXPS43LrfCcJtexLrPmUm63XVtOKGJusPOuzAkjfdF(MowqnUwcgjUegZi0GJ4C0jkoj4BbcWBgjfhrYd1amskHcGuufv0bC)XhJbVbZjidoFGdX54mcUugTtg53JoVkp089qLZAC5qdpwk6CMhc5dYiVhdzedRGE9IqFbJOIlofXcJd)8JHRML0utbhhZYoHSsoTqLIPHiEgJBsUCsH55)6F9NYOpw7SXX9lEW)9LrFEO3DQkn1rROtc7hqDqDTmAWd54miNz4AVxCVnl(jO6blCmKzVVvwLLbHijR42m1z61IloQapuGkCAKrgTQXJ6or5P9W3(yf4BgwUvWmFoPutLXUbtwEbb4Ns1zHBwHSw7Ace)me0jqQdLhJnmLlO61yQYVuNwQmNfQRZMyCsilfAG48QMm3dyAGVfK43j5NTBUPuDR5iq(GQgwmo3DtS2SawdDzkjhhgNeCCRfmgyRm2hk7OZgL3PNpbRZ9zxdJR4L4MQui41)m8mNvva607p6hdCP4cqzuCgohS)9kBBcDt5Fct40srJBaSqHT0CpFKd1oN5A6D0OWPm4TJrlre6ml)QcPN))SfA7OO5cIvgEIbtMhhmF9FfB2xKmIp9TwgbO)Y9AJH1zdKOc4hW8zLtecAdxYlB6AfKmiWzHjevJ7Ez0wxnzLHYrMr2qZMV5zK8umpNf2rQQORbNjd53yvJbvpMd0(4sZHSplOP1zyRMcKLlUnkmjOax8fxtam6HQ5w2Qj8gvItYJbRBPc3B5sCB89Ho6(bBasySmTDwUbWAETZol4fRDVr3MEk1hyEP6yZTR88HjbWfMYbMfQ5(EwbJluveplJm4iJ03xYr(QA)nlLqbU6ZYiBRJLVA0P0PBt)pT)N7wO)ejD)KT011Z3qVd2oBhP(1VkO(u)gA7I3M3vcBFCYQ5JsSdLPZv(QmQ5VwPGZMC3NNu36zp8jy1X7725Fx1Gn6Z17G3D1tfckf77E35)CVZA7BTHzPk(0lFmLSkySvfVA0AQj63UerNxAgAwxBB9ZoVjQoynZKtkzu2T9Pjk8FmHBCNU9eZ8Z2PyZdY5BfgKRnQ3wbn6HDJ7NsNMPQkdnVrF3(TURAh2DW3D1KHZ11ZgLVBZmPwo6AgiVFRY8ndDxMNnc05p7EXTUU7hEUluV1p4DQFmCcP94)ae(pqXW4XFlqLauwmWAy(tpAqpPQyS)Y0pn6gH79S0XUE1KltROIPio7QYpeWTvEtHRRf0cilPJ1SUf9BRc61xvcaa0)2YZpAWRiJQexuVq3FqG3m)lFdcMeIwA9oPG)5d]] )
+spec:RegisterPack( "Demonology", 20240708, [[Hekili:9M1sZnUns4FlU2Q8EiEvKKhzNzJLpS1wjzMdZfn7PuHKqKqsOmialqq7vx4V9TBWxGqaKA8KS1uJljY(jq3F9dfTk6Rr7YiAA0xwVC9hw(4YFAX61RFCt0o95cA0Ucs6lKJWheKC4V)BAUui5YJNXxDMljzOekLvQu41r72xX46pjI27rSRwT(bG2cAA0x(y0UtSSmAdL0Y0ODF9eRSob)pPoPvV1jYdW3t1mPOoHZk1WRpiv1j)g9fgNTamdL8aJdkFxE1bf7L6KmWiR)8FRozNMO01j6tGCoWoEc(8Bm9P6KFHYpwruzTYYqGX1aEKv86K9vhq9kYm0wQLQ86p3ygLlku0uz(EI(h2(JLv5aBXhAf4DSdBlPAntCeOJQJ1Vb2m8TBVb(2ccN9kDobDQsOPkus38(efiJyIkxAKb6jl6FYIm5BIaga44XCM4fJMnS1)Ofvf(z6vjpLiyPXfsZvKxIYPAcO7ItYs421lj4vMig1hQ9E)7wVhaty)NiQxPLAZ1a(9s4bzLpDF9N7zciLbh1Ci604PAw6l4PAg14ZDVBHIMtyIYNW3hRz5uBjKkvQQc8B(KXWB9ZTZPw)10Odk8mpXMlo7anwtkqYZjcYIIu9tB2uNCBDsQuYXRwhr05dRwAlOYZcsrjnUSqHNTO8MM)NFyLn)JO5UkqsYdhIpMMTDez4fW(kLy8LXZRUTpKKbb6Co7ivKsb392ERyiCO3fEyMyb)5I)vPkvLiU5BXiO0Di642Ymv4Rs7GhcNFj3IqmJM5SxXpVAwZJinb84ZFLgtf0CgT851yQXqgf4da)75szw8Hk1z33ekr9MqN0wXWTIOnddnosLIm)rwlFhAbI7zyWw6VZ9W2EIadqJZKY8rjRqXHJG9JjNXAzCgJ(8QnH4MCukopd7pD)YBVPfcWwREmQ2qvM4avji8rLnAEOeUHi750mF25h2CRf8227Df)jOYfQ9Jv8mIiqkANPCIaHvh4qiIX)ADaRhJ5l9xVLfe1l(8Oqz7bQHfoE52MYVEVEhx(A0z5OkNxI30zFOZeu5bm23J5Gx8JHHmcab9b67psHubnvedvmOlk1qtppVD1a4K19ymCr6dpVrRHGugLCdg3rLSQioTsvAUSBVRZp38OgOgZhJnusZgdOZLtZ7GvjgcTI3d(44YKsDB8vm6GnbzD(wkPu3wXeAH7)ucTM9BMgXWob)1k(FhoiG(4orH)sELW4ywIJIVU4FX3k8W9ldW8FAOdgP6V5cVNTFhPTgPWePmbv12l0frKxqFt4ptziV1hprjC9jt3iR30LRKYYnq8EeXqqHDHhO6KBRfUV8BVWrdFohvTMDgKMqG0(NE0L(taKqNpctRazwnSuUO7np)Glpw3zPNt50ow2U6sPy1E4fYPV10zLshLxkJrH0ZkhKQlLHDX2(Q8r7ELQkbQ6hRBD0U3ikbcz2nax78yntYLZklXy3KYQIcjomMzGlaVLQyPWKxqhOVGwb0MqYN0nmzAQpNkYa4hy2mc8ykO4ZOSzsftdFccC5vWCJWRGj6OQ)jelL8pQt(DdGXN008Y)4oeMGLEYMAI48GwRtesu4)3colLP5dYnd)u7GHDk9NbiivNA(AJiQtw9hTZjo8O1wA(ngNB5rTIu3r6W4NIQ89ufQ4soapw)5pLJhy4d24mbm8YODKk9jPQFQ3ODMxHdJluWF)IzY(2wiI(xr7sbxaoZjr7Ub0ylKcwRDkW46KNGgp7aKbLAmdyg(HC4inem4OlCEEfROH2RebFq4JbVJ2zHEJUfOV7VwF7su46KNRtUF5G2Stwqz)HVhz)ekBZBVbxdHpS(l1SP4bQ6nxHQhyFafb59HP41BTHHgTSRp4EhBOgvWJbvGNQgdszOadkKFkOqUOwI5WC9g72bTQPyzMDvKq5)ru((csTukgXURFXb(sv6fW45jDIR)tD5s2hf(h(SnOAal2tE3Ol9RumE82M2ONorRpWzyTsdIQ)5ZMq13AE3AMCUyXN2NA09gN1Nm(YTjtOJ0rTg4qy4i6H9RHhxEpihuXWCbthHBnWwdqHJR2U6QM4tOP((iZE8I(HYDCKWHbJDKBSY3Dg8jK7mtaGBNxw59J7vB6aHjMMFuqvtQYvIuovbGvBcxaysK05K93xbGWrKHwoWuo5hAaphf3TDCC34Tq0h)6uXnyL5rrHF8V6kqRwEf5wnxVHZBNlry(1pmoTfxPGX4c3VLxJZDNexLDf2JUwl2dg)QWWh(wBXG6Uy1fG7TTZ)MBfgMuLvlVW06xBIX0CHF679XzDhnD)g38BujunyOz0dKkU3k8t3zv3KvZwIDMEYE3GNUf4Me8S7NcWCIEv)CaxC239llmn06CcfITFWcSW5xzOhAne4Y7RuD4KRqjrtS5FZbZdxtrF7u)WL8))GD40I6K4WZe158JgmkNc7hzAiypc3SrWRjCeV4(wsUNcTfzC4N3Wi71xNpsK0zWd9UYtJdAVY0bTzTTvVWztlz7OTUfV2GSHwQB3HtL(mdc)3uxCH9bN9QzcIFmy18WaA(x5wd(IvViTp3hMLh44GYFGMMSoGs7nM1UXb3McVOurq53rXus3fEJ40GOP10GAaF7uspm(KNPaT6YU7Fr)Vd]] )
+
+spec:RegisterPack( "Destruction", 20240708, [[Hekili:1IvxVTUnp4Fl9M0lwNNt6hNColjaB4fyRfd9I5EWUy4yBfB5yHil5xj52fGa)BFus(7yNKHHHc04ir9qYhsrsh)5(V57fJuy)xx4U4b3p5U0zXIflDF03tDih77LJI2J2bpWqzW))FyPsuePiCMEVduokwJHKxiIG9992wqOQNz(Bhd47DFcKnhh5)6N99sjXXyRKyzupWld)ajO8O9LH5ccxquhkdt4IYWFfVNqj(EuIuj1QMssWWNVA8fuLPfJrQ0GioH67HzOTuCS)p7RaRPNuceHfyaONuknajOcQQb42T9IaRbliiloVJdWmCgblldxvgUOfDrblW(CG2yTMCGLhLQgJ5QqEtz48RdzehRH((jHofJOQuN8iL1GF86W1WsgQjxGJ4zBrxGC2wKK4GezCHtm)diIE8yzyNff4mG9TS28LUTwrcMgye58u0nqQbw5yzQ2tllYYa7NKLFEAyh9qEQJ2RcuOCNkzkdNvzKn7On(w4Rxwd(dDZLY52phKhPdhJqtnwBkcWpHAO4Zg(V3yAkKyh40XqCbXIWwYd4UOdruTDP3vQv3iuxJoX44aEcC7qikYTRDfQg4BfjApHTBC1nKQRvhbIhuDLG(XUZI1dtGvxtMsy4GOyFVNgbJo6kJ)UwpMOH8c5SXytSp7qquHqIRsCbN381GDcEroCMg7XSGv2lMSw5Wg4I5kNAEP3fbTqbksgEe(RMJBjdgK4Sty42Ef5gsFN3b7KzWP8wV5X)lV78uppjfXLbB5q92(oYN(NqOTjhxIs7Kgbkz5KkP62M(WbkEqmrFHBDz4tUgLMHyiBDu4sYc7AsSsbgLdHLGfmEqd3OR(vH3GkWpC2t2jrWUH2K)8KMSnBFG5bkzPR1e6T4C3XdoW6V1vVrWvTrsZMp9fPXyUnne35Zc3IGl2q9PyopZOMPVwnAaQrn30Oj713kmBZo2mA2rT(r74SdM6gqA57yHuVB94mqFEycfgW1sFV)4N(9xF(1F5lLHLHVLc2a09HluvtSCRuDBzOa))licDMGKNbIGku8mGtHfG0F2oS0P8LFdiAiwba9vMSixdIwaRLbivLcCliA5lVLsK6XJ4jeQwNWxYisPj8xD4klyhunxqIaVvqy7HsKoAl9zL9qM25zywSwvQueSmgC3dDh9cYbOfX6(byIkfl(cyaHFFz4F(vjwJeot(T7GH2sjrPDLgXo0Q1Yqgxd(FLtjrefTf3y9tALJBv6pwgc2ELAEZcbKY(nnOXDxArhn)bHs74rvqQQf1WgMLyfzBX2WbfQDu(YZz1S9JTeUzityti5OqLctK45LvKii71tbz4960gPtZyrF36FOzeM7ijRhmi0XJNoe0kyaOYxgdP2Xz0qDt7epJlE9TyTWJxLE2PvOhhQ350ieJefyNSrhjQ(RwCqObtmENEwX1WNG67piXQfx8yWOsNEUnZV450(I(GTLvxT4XwJDSNQ9xP2r70exdZyfNM1R))GZx3G2eGQAknBSo8RAk2maHoDYhStBh5PmTbh4FzcG1CAAhFIDw338eF90MVt6TvfX0qCA97vRFYDwDtQnlCNnrBXJhpPz6QhMu6Zqs2gMnQC1s3JhB(YC3jYzA7joKI62PzCxCd4HxrKSbjtFOjylaQBoxpUnDccT4d3005wTV7XD9gGE98rUhE)SbV7HMCgI4jVzXvbCDI0q4AUyncitDMoQU6few)0yNVAoPoKIoPaaO9xo40TA)5c0Ze4)3d]] )
 
 
 spec:RegisterPackSelector( "affliction", "Affliction", "|T136145:0|t Affliction",
@@ -2493,7 +2524,7 @@ spec:RegisterPackSelector( "affliction", "Affliction", "|T136145:0|t Affliction"
         return tab1 > max( tab2, tab3 )
     end )
 
-spec:RegisterPackSelector( "demonology", "Demonology (wowtbc.gg)", "|T136172:0|t Demonology",
+spec:RegisterPackSelector( "demonology", "Demonology", "|T136172:0|t Demonology",
     "If you have spent more points in |T136172:0|t Demonology than in any other tree, this priority will be automatically selected for you.",
     function( tab1, tab2, tab3 )
         return tab2 > max( tab1, tab3 )

@@ -395,6 +395,13 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 2096, 10909 },
     },
+
+    mind_spike = { 
+        id = 73510,
+        duration = 3600,
+        max_stack = 3,
+        copy = { 87178, 87179 },
+    },
     -- Chance to hit with spells on the target increased by $s1%.
     misery = {
         id = 33198,
@@ -1349,7 +1356,7 @@ spec:RegisterAbilities( {
 
     -- Power infuses the target, increasing their Stamina by 3 for 30 min.
     power_word_fortitude = {
-        id = 21562,
+        id = 79105,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1843,4 +1850,3 @@ spec:RegisterSetting( "dots_in_aoe", true, {
     desc = "When enabled, the Shadow priority will recommend applying DoTs to your current target in multi-target scenarios before channeling |T237565:0|t Mind Sear.",
     width = "full",
 } )
-
