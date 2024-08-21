@@ -10283,15 +10283,15 @@ do
                 name = "Getting Started",
                 desc = "This sections serves as a quick tutorial and explanation of the addon.",
                 order = 11,
-                childGroups = "tree",
+                childGroups = "tab",
                 args = {
-                    q1 = {
+                    gettingStarted_welcome_header = {
                         type = "header",
                         name = "Welcome to Hekili\n",
                         order = 1,
                         width = "full"
                     },
-                    a1 = {
+                    gettingStarted_welcome_info = {
                         type = "description",
                         name = "This section is a quick overview of the addon basics. At the end, you will also find answers to a few of the most common questions we get on Github or Discord. \n\n" ..
                         "|cFF00CCFFTaking a couple minutes to read it is highly encouraged to improve your experience!|r\n\n",
@@ -10299,36 +10299,13 @@ do
                         fontSize = "medium",
                         width = "full",
                     },
-
-                    q2 = {
-                        type = "header",
-                        name = "Moving Your Displays",
-                        order = 3,
-                        width = "full"
-                    },
-                    a2 = {
-                        type = "description",
-                        name = "|cFFFFD100Displays|r are where Hekili shows you the recommended spells and items to cast, with the |cFF00CCFFPrimary|r display being your DPS rotation. When this options window is open, all displays are visible.\n" ..
-                            "\n|cFFFFD100Displays|r can be moved by:\n" ..
-                            "• Clicking and Dragging them\n" ..   
-                            "  - You can move this window out of the way by clicking the |cFFFFD100Hekili " .. Hekili.Version .. " |rtitle at the very top and dragging it out of the way.\n" ..
-                            "  - Or, you can type |cFFFFD100/hek move|r to allow displays to be moved, but without opening the options. Type it again to lock the displays.\n" ..
-                            "• Setting precise X/Y positioning in the |cFFFFD100Displays|r section, on each display's |cFFFFD100Icon|r tab.\n\n" ..
-                            "By default, the addon uses |cFFFFD100Automatic|r Mode, which decides whether to do a |cFF00CCFFSingle-Target|r or |cFF00CCFFAoE (Multi-Target)|r rotation based on the number of targets detected. You can enable other types of displays in the |cFFFFD100Toggles|r > |cFFFFD100Display Control|r section." ..
-                            " There are also other types of displays you can use, with options to display them separately from your |cFF00CCFFPrimary|r display.\n" ..
-                            "\nAdditional Displays:\n• |cFF00CCFFCooldowns|r\n" .. "• |cFF00CCFFInterrupts|r\n" .. "• |cFF00CCFFDefensives|r\n\n",
-                        order = 3.1,
-                        fontSize = "medium",
-                        width = "full",
-                    },
-
-                    q3 = {
-                        type = "header",
-                        name = "Using Toggles",
+                    gettingStarted_toggles = {
+                        type = "group",
+                        name = "How To Use Toggles",
                         order = 2,
                         width = "full",
-                    },
-                    a3 = {
+                        args = {
+                            gettingStarted_toggles_info = {
                         type = "description",
                         name = "The addon has several |cFFFFD100Toggles|r available that help you control the type of recommendations you receive while in combat, which can be toggled via hotkeys.  See the |cFFFFD100Toggles|r section for specifics.\n\n" ..
                             "|cFFFFD100Damage Cooldowns|r:  Your major DPS cooldowns are assigned to the |cFF00CCFFCooldowns|r toggle.  This allows you to enable/disable these abilities in combat by using a keybind, which can prevent the addon from recommending your important cooldowns in some undesireable scenarios such as: \n" ..  
@@ -10339,25 +10316,51 @@ do
                         order = 2.1,
                         fontSize = "medium",
                         width = "full",
+                            },
+                             },
                     },
-
-                    q4 = {
-                        type = "header",
-                        name = "Frequently Asked Questions and Common Problems",
+                    gettingStarted_displays = {
+                        type = "group",
+                        name = "Setting up your displays",
+                        order = 3,
+                        args = {
+                            gettingStarted_displays_info = {
+                            type = "description",
+                            name = "|cFFFFD100Displays|r are where Hekili shows you the recommended spells and items to cast, with the |cFF00CCFFPrimary|r display being your DPS rotation. When this options window is open, all displays are visible.\n" ..
+                                "\n|cFFFFD100Displays|r can be moved by:\n" ..
+                                "• Clicking and Dragging them\n" ..   
+                                "  - You can move this window out of the way by clicking the |cFFFFD100Hekili " .. Hekili.Version .. " |rtitle at the very top and dragging it out of the way.\n" ..
+                                "  - Or, you can type |cFFFFD100/hek move|r to allow displays to be moved, but without opening the options. Type it again to lock the displays.\n" ..
+                                "• Setting precise X/Y positioning in the |cFFFFD100Displays|r section, on each display's |cFFFFD100Icon|r tab.\n\n" ..
+                                "By default, the addon uses |cFFFFD100Automatic|r Mode, which decides whether to do a |cFF00CCFFSingle-Target|r or |cFF00CCFFAoE (Multi-Target)|r rotation based on the number of targets detected. You can enable other types of displays in the |cFFFFD100Toggles|r > |cFFFFD100Display Control|r section." ..
+                                " There are also other types of displays you can use, with options to display them separately from your |cFF00CCFFPrimary|r display.\n" ..
+                                "\nAdditional Displays:\n• |cFF00CCFFCooldowns|r\n" .. "• |cFF00CCFFInterrupts|r\n" .. "• |cFF00CCFFDefensives|r\n\n",
+                            order = 3.1,
+                            fontSize = "medium",
+                            width = "full",
+                                },
+                        },
+                    },
+                    gettingStarted_faqs = {
+                        type = "group",
+                        name = "Common questions and problems",
                         order = 4,
                         width = "full",
+                        args = {
+                            gettingStarted_toggles_info = {
+                                type = "description",
+                                name = "Top 3 questions/problems\n\n" .. 
+                                "1. My keybinds aren't showing up right\n- |cFF00CCFFThis can happen with macros or stealth bars sometimes. You can manually tell the addon what keybind to use in the|r |cFFFFD100Abilities|r |cFF00CCFFsection. Find the spell from the dropdown and use the|r |cFFFFD100Override Keybind|r |cFF00CCFFbox. Same can be done with trinkets under|r |cFFFFD100Gear and Items|r.\n\n" .. 
+                                "2. I don't recognize this spell! What is it?\n- |cFF00CCFFIf you're a Frost Mage it may be your Water Elemental pet spell, Freeze. Otherwise, it's probably a trinket. You can press |cFFFFD100alt-shift-p|r to pause the addon and hover over the icon to see what it is!|r\n\n" .. 
+                                "3. How do I disable a certain ability or trinket?\n- |cFF00CCFFHead over to |cFFFFD100Abilities|r or |cFFFFD100Gear and Items|r, find it in the dropdown list, and disable it.\n\n|r" .. 
+                                "\nI made it to the bottom but I still have an issue!\n- |cFF00CCFFHead on over to|r |cFFFFD100Issue Reporting|r |cFF00CCFFfor more detailed instructions.",
+                                order = 4.1,
+                                fontSize = "medium",
+                                width = "full",
+                            },
+                        },
                     },
-                    a4 = {
-                        type = "description",
-                        name = "Top 3 questions/problems\n\n" .. 
-                        "1. My keybinds aren't showing up right\n- |cFF00CCFFThis can happen with macros or stealth bars sometimes. You can manually tell the addon what keybind to use in the|r |cFFFFD100Abilities|r |cFF00CCFFsection. Find the spell from the dropdown and use the|r |cFFFFD100Override Keybind|r |cFF00CCFFbox. Same can be done with trinkets under|r |cFFFFD100Gear and Items|r.\n\n" .. 
-                        "2. I don't recognize this spell! What is it?\n- |cFF00CCFFIf you're a Frost Mage it may be your Water Elemental pet spell, Freeze. Otherwise, it's probably a trinket. You can press |cFFFFD100alt-shift-p|r to pause the addon and hover over the icon to see what it is!|r\n\n" .. 
-                        "3. How do I disable a certain ability or trinket?\n- |cFF00CCFFHead over to |cFFFFD100Abilities|r or |cFFFFD100Gear and Items|r, find it in the dropdown list, and disable it.\n\n|r" .. 
-                        "\nI made it to the bottom but I still have an issue!\n- |cFF00CCFFHead on over to|r |cFFFFD100Issue Reporting|r |cFF00CCFFfor more detailed instructions.",
-                        order = 4.1,
-                        fontSize = "medium",
-                        width = "full",
-                    },
+
 
                 --[[q5 = {
                         type = "header",
