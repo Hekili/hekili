@@ -543,6 +543,10 @@ do
                         value = true,
                         override = true,
                     },
+                    funnel = {
+                        key = "",
+                        value = false,
+                    },
 
                     custom1 = {
                         key = "",
@@ -8716,6 +8720,30 @@ do
                                     order = 2,
                                 },
 
+                        funnel = {
+                            type = "group",
+                            name = "",
+                            inline = true,
+                            order = 8,
+                            args = {
+                                key = {
+                                    type = "keybinding",
+                                    name = "Funnel Rotation",
+                                    desc = "Set a key to toggle Funnel Rotation on or off, for specs which support it.",
+                                    width = 1,
+                                    order = 1,
+                                        },
+
+                                value = {
+                                    type = "toggle",
+                                    name = "Enable Funnel Rotation",
+                                    desc = "If checked, rotations for funnel specs may change slightly to use single target spenders in AoE.\n\n",
+                                    width = 2,
+                                    order = 2,
+                                        },
+                                    },
+                        },
+
                                 --[[ potLineBreak1 = {
                                     type = "description",
                                     name = "",
@@ -10829,6 +10857,7 @@ do
         minorCDs = 55,
         custom1 = 56,
         custom2 = 57,
+        funnel = 58,
     }
 
     local indexToToggle = {
@@ -10839,6 +10868,7 @@ do
         [55] = { "essences", "Minor CDs" },
         [56] = { "custom1", "Custom #1" },
         [57] = { "custom2", "Custom #2" },
+        [58] = { "funnel", "Funnel" },
     }
 
     local toggleInstructions = {
