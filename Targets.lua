@@ -9,6 +9,7 @@ local state = Hekili.State
 
 local FindUnitBuffByID = ns.FindUnitBuffByID
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
+local FindExclusionAuraByID
 
 local targetCount = 0
 local targets = {}
@@ -381,7 +382,7 @@ do
                         local npcid = guid:match( "(%d+)-%x-$" )
                         npcid = tonumber( npcid )
 
-                        local _, range
+                        local _, range = nil, -1
 
                         if debugging then details = format( "%s\n - Checking nameplate list for %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
@@ -411,12 +412,12 @@ do
 
                             if not excluded and checkPlates then
                                 local _, maxR = RC:GetRange( unit )
-                                excluded = maxR and maxR > checkPlates
+                                excluded = maxR == nil or maxR > checkPlates
 
-                                range = maxR
+                                range = maxR or range
 
                                 if debugging and excluded then
-                                    details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
+                                    details = format( "%s\n    - Excluded by range (%d > %d).", details, range, checkPlates )
                                 end
                             end
 
@@ -454,7 +455,7 @@ do
                             local npcid = guid:match( "(%d+)-%x-$" )
                             npcid = tonumber(npcid)
 
-                            local range
+                            local _, range = nil, -1
 
                             if debugging then details = format( "%s\n - Checking %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
 
@@ -480,9 +481,9 @@ do
 
                                 if not excluded and checkPlates then
                                     local _, maxR = RC:GetRange( unit )
-                                    excluded = maxR and maxR > checkPlates
+                                    excluded = maxR == nil or maxR > checkPlates
 
-                                    range = maxR
+                                    range = maxR or range
 
                                     if debugging and excluded then
                                         details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
@@ -1064,9 +1065,11 @@ end
 Hekili:ProfileCPU( "Audit", ns.Audit )
 
 
+local IsAddOnLoaded, LoadAddOn = C_AddOns.IsAddOnLoaded, C_AddOns.LoadAddOn
+
 function Hekili:DumpDotInfo( aura )
-    if not C_AddOns.IsAddOnLoaded( "Blizzard_DebugTools" ) then
-        C_AddOns.LoadAddOn( "Blizzard_DebugTools" )
+    if not IsAddOnLoaded( "Blizzard_DebugTools" ) then
+        LoadAddOn( "Blizzard_DebugTools" )
     end
 
     aura = aura and class.auras[ aura ] and class.auras[ aura ].id or aura

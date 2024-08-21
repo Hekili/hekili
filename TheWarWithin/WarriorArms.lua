@@ -1,5 +1,7 @@
 -- WarriorArms.lua
--- November 2022
+-- August 2024
+-- 11.0.2
+
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -98,7 +100,7 @@ spec:RegisterTalents( {
     leeching_strikes                = { 90371, 382258, 1 }, -- Leech increased by 3%.
     menace                          = { 90383, 275338, 1 }, -- Intimidating Shout will knock back all nearby enemies except your primary target, and cause them all to cower in fear for 15 sec instead of fleeing.
     overwhelming_rage               = { 90378, 382767, 2 }, -- Maximum Rage increased by 15.
-    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 3.50% of your maximum health. This can only occur once every 10 sec.
+    pain_and_gain                   = { 90353, 382549, 1 }, -- When you take any damage, heal for 2% of your maximum health. This can only occur once every 10 sec.
     piercing_challenge              = { 90379, 382948, 1 }, -- Champion's Spear's damage increased by 50% and its Rage generation is increased by 100%.
     piercing_howl                   = { 90348, 12323 , 1 }, -- Snares all enemies within 12 yards, reducing their movement speed by 70% for 8 sec.
     rallying_cry                    = { 90331, 97462 , 1 }, -- Lets loose a rallying cry, granting all party or raid members within 40 yards 10% temporary and maximum health for 10 sec.
@@ -120,6 +122,7 @@ spec:RegisterTalents( {
     warlords_torment                = { 90363, 390140, 1 }, -- Activating Avatar grants 6 sec of Recklessness. The additional Rage generation of this Recklessness is reduced to 25%.
     wild_strikes                    = { 90360, 382946, 2 }, -- Haste increased by 1% and your auto-attack critical strikes increase your auto-attack speed by 10% for 10 sec.
     wrecking_throw                  = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 58,404 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
+
     -- Arms
     anger_management                = { 90289, 152278, 1 }, -- Every 20 Rage you spend on attacks reduces the remaining cooldown on Colossus Smash, Bladestorm, and Ravager by 1 sec.
     battlelord                      = { 92615, 386630, 1 }, -- Overpower has a 35% chance to reset the cooldown of Mortal Strike and generate 10 Rage.
@@ -168,11 +171,12 @@ spec:RegisterTalents( {
     unhinged                        = { 90440, 386628, 1 }, -- Every other time Bladestorm or Ravager deal damage, you automatically cast a Mortal Strike at your target or random nearby enemy. 
     valor_in_victory                = { 90442, 383338, 1 }, -- Increases Versatility by 2% and reduces the cooldown of Die by the Sword by 30.0 sec.
     warbreaker                      = { 90287, 262161, 1 }, -- Smash the ground and shatter the armor of all enemies within 8 yds, dealing 221,962 Physical damage and increasing damage you deal to them by 30% for 13 sec.
+
     -- Colossus
     arterial_bleed                  = { 94799, 440995, 1 }, -- Colossal Might increases the damage of your Rend and Deep Wounds by 2% per stack. 
     boneshaker                      = { 94789, 429639, 1 }, -- Shockwave's stun duration is increased by 1 sec and reduces the movement speed of affected enemies by 40% for 3 sec after the stun ends.
     colossal_might                  = { 94819, 429634, 1 }, -- Colossal Might increases damage dealt by your next Demolish by 10%, stacking up to 5 times. Mortal Strike and Execute grant a stack of Colossal Might and Cleave grants a stack of Colossal Might when it strikes 3 or more targets.
-    demolish                        = { 94818, 436358, 1 }, -- Unleash a series of precise and powerful strikes against your target, dealing 620,874 damage to it, and 413,916 damage to enemies within 8 yds of it. Deals reduced damage beyond 8 targets. While channeling Demolish, you take 10% less damage and are immune to stuns, knockbacks, and forced movement effects. You can block, parry, dodge, and use certain defensive abilities while channeling Demolish.
+    demolish                        = { 94818, 436358, 1, "colossus" }, -- Unleash a series of precise and powerful strikes against your target, dealing 620,874 damage to it, and 413,916 damage to enemies within 8 yds of it. Deals reduced damage beyond 8 targets. While channeling Demolish, you take 10% less damage and are immune to stuns, knockbacks, and forced movement effects. You can block, parry, dodge, and use certain defensive abilities while channeling Demolish.
     dominance_of_the_colossus       = { 94793, 429636, 1 }, -- Colossal Might now stacks up to 10 times. If you would gain a stack of Colossal Might and are at max stacks, the cooldown of Demolish is reduced by 2 sec. Enemies affected by Demolish take up to 10% more damage from you and deal up to 5% less damage to you for 10 sec based on the number of stacks of Colossal Might consumed by Demolish.
     earthquaker                     = { 94789, 440992, 1 }, -- Shockwave also knocks enemies into the air, and its cooldown is reduced by 5 sec.
     martial_expert                  = { 94812, 429638, 1 }, -- Critical strike damage of your abilities is increased by 10% and the amount of damage blocked by your critical blocks is increased by 20%.
@@ -183,6 +187,7 @@ spec:RegisterTalents( {
     precise_might                   = { 94794, 431548, 1 }, -- Mortal Strike critical strikes grant an additional stack of Colossal Might.
     tide_of_battle                  = { 94811, 429641, 1 }, -- Colossal Might increases the damage of your Overpower by 5% per stack.
     veteran_vitality                = { 94815, 440993, 1 }, -- When your health is brought below 35%, you gain a Second Wind, healing you for 12% of your max health over 2 sec. This effect cannot occur more than once every 60 sec.
+
     -- Slayer
     brutal_finish                   = { 94786, 446085, 1 }, -- Your next Mortal Strike after Bladestorm ends deals 50% additional damage.
     culling_cyclone                 = { 94786, 444778, 1 }, -- Each strike of Bladestorm deals an additional 20% damage evenly split across all targets.
@@ -194,7 +199,7 @@ spec:RegisterTalents( {
     reap_the_storm                  = { 94809, 444775, 1 }, -- Mortal Strike and Cleave have a 20% chance to cause you to unleash a flurry of steel, striking all nearby enemies for 125,562 damage and applying Overwhelmed. Deals reduced damage beyond 8 targets. 
     relentless_pursuit              = { 94795, 444776, 1 }, -- Charge grants you 70% movement speed for 3 sec. Charge removes all movement impairing effects, this effect cannot occur more than once every 30 sec. 
     show_no_mercy                   = { 94784, 444771, 1 }, -- Marked for Execution increases the critical strike chance and critical strike damage of your next Execute on the target by 10%.
-    slayers_dominance               = { 94814, 444767, 1 }, -- Your attacks against your primary target have a high chance to overwhelm your their defenses and trigger a Slayer's Strike, dealing 58,404 damage and applying Marked for Execution, increasing the damage they take from your next Execute by 10%. Stacks 3 times.
+    slayers_dominance               = { 94814, 444767, 1, "slayer" }, -- Your attacks against your primary target have a high chance to overwhelm your their defenses and trigger a Slayer's Strike, dealing 58,404 damage and applying Marked for Execution, increasing the damage they take from your next Execute by 10%. Stacks 3 times.
     slayers_malice                  = { 94801, 444779, 1 }, -- Overpower damage increased by 20%.
     unrelenting_onslaught           = { 94820, 444780, 1 }, -- When you Execute a target that you've Marked for Execution, you both reduce the cooldown of Bladestorm by 5 sec and apply 2 stacks of Overwhelmed to the target per stack of Marked for Execution consumed. You can now use Pummel and Storm Bolt while Bladestorming.
     vicious_agility                 = { 94795, 444777, 1 }, -- Heroic Leap reduces the cooldown of Charge by 5 sec and Charge reduces the cooldown of Heroic Leap by 2 sec.
@@ -259,6 +264,11 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1
     },
+    brutal_finish = {
+        id = 446918,
+        duration = 10,
+        max_stack = 1
+    },
     champions_might = {
         id = 386286,
         duration = 8,
@@ -281,6 +291,11 @@ spec:RegisterAuras( {
         id = 334783,
         duration = 30,
         max_stack = 20
+    },
+    colossal_might = {
+        id = 440989,
+        duration = 24,
+        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 10 ) end
     },
     colossus_smash = {
         id = 208086,
@@ -384,6 +399,11 @@ spec:RegisterAuras( {
         id = 383290,
         duration = 12,
         max_stack = 15
+    },
+    opportunist = {
+        id = 456120,
+        duration = 8,
+        max_stack = 1
     },
     overpower = {
         id = 7384,
@@ -491,7 +511,7 @@ spec:RegisterAuras( {
     test_of_might = {
         id = 385013,
         duration = 12,
-        max_stack = 1, -- TODO: Possibly implement fake stacks to track the Strength % increase gained from the buff
+        max_stack = 1,
     },
     thunder_clap = {
         id = 6343,
@@ -833,7 +853,12 @@ spec:RegisterAbilities( {
             if talent.merciless_bonegrinder.enabled then
                 state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
             end
-            --TODO: Implement Unhinged - Every other time Bladestorm or Ravager deal damage, you automatically cast a Mortal Strike at your target or random nearby enemy.
+            -- the final tick brutal finish gets applied before the final Bladestorm tick goes off.
+            -- If using imminent demise, it will affect the final MS instead of the one that
+            -- comes after the bladestorm, which means we dont need to track it.
+            if talent.brutal_finish.enabled and not talent.imminent_demise.enabled then
+                applyBuff( "brutal_finish" )
+            end
         end,
 
         copy = { 227847, 389774 }
@@ -880,6 +905,11 @@ spec:RegisterAbilities( {
             applyDebuff( "target" , "deep_wounds" )
             active_dot.deep_wounds = max( active_dot.deep_wounds, active_enemies )
             removeBuff( "overpower" )
+
+            if talent.demolish.enabled and active_enemies > 2 then
+                if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+                if talent.colossal_might.enabled then addStack( "colossal_might" ) end
+            end
         end,
     },
 
@@ -1033,6 +1063,8 @@ spec:RegisterAbilities( {
             if talent.executioners_precision.enabled then applyDebuff( "target", "executioners_precision", nil, min( 2, debuff.executioners_precision.stack + 1 ) ) end
             if legendary.exploiter.enabled then applyDebuff( "target", "exploiter", nil, min( 2, debuff.exploiter.stack + 1 ) ) end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
 
         auras = {
@@ -1223,6 +1255,8 @@ spec:RegisterAbilities( {
             if target.health.pct < 35 and talent.bloodletting.enabled then
                 applyDebuff ( "target", "rend" )
             end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
     },
 
@@ -1243,6 +1277,7 @@ spec:RegisterAbilities( {
         texture = 132223,
 
         handler = function ()
+            removeBuff( "opportunist" )
             if talent.martial_prowess.enabled then applyBuff( "overpower" ) end
         end,
     },
@@ -1538,7 +1573,6 @@ spec:RegisterAbilities( {
         hasteCD = true,
         gcd = "spell",
 
-        --TODO: Verify Rage Cost on 11.0
         spend = 20,
         spendType = "rage",
 
@@ -1720,4 +1754,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Arms", 20240723, [[Hekili:nZrxZnUnUFlz2PEJVM6ej3SjTtCMPxN7HUZn9Ei707nltBXeRlYs60hjB64X)2paQViPaPKCs2EV44yccaccaca(XsNLFz5D(SC(YF39c3F8IRCNpZ1X9Ax3L3L)scF5DjSnpYEa(seBh85VKUld)XxcJz(yNZIls3anSnppj7Np)8hcY3wSE2M4DNNfSRiKLhehTjLDFo()BoF5DRlccZ)TOLRPPSZY7yf5BJtxE3Dni4xreaejW3Nx2tE2ML3H98hU4QFWD(pFy1x2YpS6FZsHpaEiiA5DHbz5zcMmi6HqUxol9bEo8d)UyCZJyRd5(l)7lVBtAqopnGbiooFwkpYh(yhlik7WQBwCy1dB8NTJ91dRMCyfBtEWtCpEeFxahA)wODxrlRlU)(zzpZ5ja98YYtdEKNnZp(zGxWEfd)fKor(8uVnHSKL5WG3iN0Hohw50IhDYG4A(XnQArkccIOFerKghhxK5LgZsLPaa6LYGUzlBxc8TmVSeEhq)KmOPSNa1kDqUsgeaI8oi5Af6fhgNLbmw2ow2wni)jziFMLUoLZESdfDUy4taGiBUeXd5SN4cCywDIAsuORCQj1LIKdR2V)WQCwipkFMpW1(rSIh2MpRIchwnvGcqAd6ZasrfWw(k(jEAs8ZWifznxzPWU4uaTvKsxqmxgYShlcdZscdYZ7kYuup4FLVPiVd2u0lAzjnO(0i1yVURUQZvdx43yPwjCVNN(uCQx89ERz55H8Ajm5KSIMxwiBN6GjhDkDpRiShhm5b74LdMlMDz5u9oq(StmzdoSyrB4c9KlvSRGzA7UlqJ5gzfIDXa1Nl0YunuAHdiZ1L8WAODrpUpau18AL6GitItsIf)1QZMs3SZQjnllh0VbAc4qcrf72XdBC2iHOMbnlm0R8F8qp5L(Z9kxh6jgqkOhzn(GglgaBGOh55znEMihlBIJdrh4ZumDueGo40ii4sb)zc51Lxi5dlDdlcw5jof0xZBCXrRYtoxHuV0C3kR0sYqCcmZ7)u4)WUkAE97nnxZEaTIGw38ywJZxskQPFHcWRVOD5ZsN(nEbBulRuQqRhqA65hukRR7BT(WSk3rEjBzz8(rlH2U0S3AEAgp9rq9TNLkOfJfjsOkmo237(I0x6zfJ(r19bPCb6ADWFKyc91atPWelAQ0UkWW8MkCMkTuLjVP9nbDcA7e47XFcXcZ3VCrqQqTucbkTiYO1nlM3UufHRHo9DZlBAIqmd9FlnYP5Df6vVkyZsFdHMs9xncvXQjjPCikAqusTEsmmlMXL8NwZJ43clA9Vnl3zwq2S0I1V498wEyIxg8zy1eNcmpVnacBlfdgjiAdlncIo3lytf2vDB654X)6MWcFYvLgb35oaUZD0CNRm3PRsxXDb3RSOvROaMC9kY4EO1tDSAsn34t0VivKCYHvFNKNYkpnTnwUw80YCwsdskLi)duqadbqRM1G(Sw8CgS2DWtb(O5Z6xaGkr7Hv)gWtb5FmdnPar5Hva7Eyvumyej8IbHQJFnVifOTdGgEiANv)lqqhZONpZEjAJXzmpellVd6DZuOd1I3sYwkm1DEQKQeZdU2NhCp(5bRdiDJ3rOkRR5G6WQQoDB)BDJLUBBCO1XAUsa1v7a7ozSsJqaPpLQlGOA)BDJgeqU9iGCBfq6b4nstIK0GyWA4fzJc6PmbfvxCvJDkhRMBT0MQxZQZvaa7RxBJqUO)nboeXb)9weTnqsWqOBabetfRYF6aC6EUcadMR0TimZvosCLQxdNgDBxQWRhHjHyHxwiSOpKINxsXF(NquaRJ)kTr4owublKk(6rqs3rqsxjs2j83QiTOWutaMen2e(BE8dpGmOaWMejWih9ktdUtc2Tz9DuHePho5cPIXOhbAquz4MvPOteJk)Ry5f7UY(F0WKscuiqVKqwuuvQeJpGPoHc3ulJtTYDiZBQTjDBsoVSl181HauLQKLWQSmgoTjvbitKm2Mu1ueQsXBlNfMVDwYMCr(yZVuybwMNbfaycBTmPAi6cTMkLzsLgLzUVudyLQ99VaPgXY36LVL7HfIBhw0jSkwQ1PAhl9rmTNA4HSu3GjnwVAs1GEDiZhKEzqpZWkcik5tJaahG9Im9OBKNUMRcHGAziziG6etvgsjpttdFcfyl(cqxTXGZ5h24lYRYMVbQkVOpuVrugwcfWAexnF7GvPlox()1zfIu8OwELE53spJsMG6fAyI6kyWeVxzX)UvejALBfBGmLSagtmTiAtik6OUCL4AjANiGAe1nYyYWgQJmP2X50oXAQTim6JsRaltkR9IbdVQnXPcJhw9Cq(w4FXFBlGhqDgsNjdKqqIt(vjaDgcgMY4Aakyc2hPzkcjlc(Eclif)Tsu9lLsrBLDSI4UAApUJs7XThTh3XP942V2dbiJs7XXS2JJnThNJs7XTR2tNalTO9yPMVhJXFFHxpq7FR4Wqq2kYmAnLkCmLkHYoZ5ti1LgMRgekdEDbLJe(gHrhw2pI6zGLLiok8f8to(HWyuYwojnglNrz9oqg8SAiqZ7y4Z0YU1Wchw9VGFkaqCepOS9(X26y0oxbpuzT(AS2TonnCd((slRxtmRQCeQleUigM6cTVLrQUqKzC9Ka2hVTG766zbPFW60a))weKKW9NzkuLbzD2R)SPdAwR3fvNwgokwAAR7qOy6OCNw8EQimINYwhegKhuDyckjvD0BWWMJvW3NTJ9aV2fVO1D80nbqIizqSvr8hsffhujeV2T30Y2iuVtSTUMVPoosQSsK2IC9d7GYwmB)CfOShZKNea9vaicDSZMRReePJKGKyB4BjF9zvix7mm05myOYGM3PV(jP6(VNRDUhmEAgmVTBv5GueTfijyXOK3rDwzK6l1ORnh9MmlAllqJcL1taszE)nWA70ByzFTmj9kZ)zihkcf9WkBanYRhEy)KxYFMYXSGAlHgd2uzDZBvD)ysEtQuoPnsZOAIbf1oJhJJFIWUU0OxfqxfDfBNgfxfnf6ZyIRYzB55TbPHphGRzidvEBVT60TJNSEpTvUd3z28HBIO43Z2PWr5a2qFAQ(uV(qVAW2JVw)pvLBOCUaqcwdeChodYG)bwTJT5rDB2UMrM3a(MdFXNUWKLZa0OupTuMTkMpaRIYcwcdteOQZ4i4vbLDyvaHfle56gSlbgMqMoXqWkFuzBG)iURDqeoI8xZIXGVyf5Xvj)cQrGJ8Szh(8)maJ42X5NpS6xJJaskA)JDpazacZJjBP2jpaXPoFDAlsVIgP6B1VgMnDsaAr)Hptm6B2X7roY15XQGWi347goTnGpAOuLd2iHXDMMMw2axHOUgik5wM3HwMGA4Ky4JREbxHOZnkmL3zgcHNwZdePD26icmtbZ7k6nH4yqckGawcc3cctd)jNAd9F33zABWxCX0EeS9GzBiUzq9JgvRSod3PzLPaZiT)PaAyExrVjeBEg2108ab6h3m8OW8GMHV89Wg2osRtlMh9q(wdywhM3y0)ky8Y995fB8DliVTi)vW1y8lWKpeaQvoxfS3EI8kgbBrrJnEVgG3se)k4xmKwBSBv7VHO1eZ(P3dN42rQDBqAyEJr)RGXnzfscYBlYFfCTnRpJG92tKxXiG2sKaG3se)k4xsBXUT)gIwtmBNS7AW6XfZZ7m6haItsJ3mJf9INFsMnKBcUbY)dLmOq3B8OFOoRS6l81J(XQ2CSjd9oJ(bG4HnFAgUbY)dLmhLAZWdJ9OuBgo6hOAtNeHoX0w0nX0MUTFVPwMCQ9KCmzJo9VDQZSl)EdgcqReeepLOtNE7P2tC200RofD6LIovuSw8)nuUD(3C525VdYTgnYRnQRtFezju4ncOIQ)pz0x8ajKfaRiKOEQ3hhgg)S40cYa5eyz9mpLxFUOqRmXPTOS01hwHxajCdqZRHlkwum2IifO99rG9z5S1Sm(pF4Zhw9dhwHXByOqUSymSPruc3oYh1DRSrCqVjM9kTTS9MAO26wG2shYrD1Kv24g6gkBp1HfvJxTDEs1fjwQFz9r7GATuP2(RaDLErQ9jyikfPMhis1pAgeiMaK3rK3lAhEOddkcLxpzSgHILsPAu7W1S2X3i05yxzRtZdeP9QpqcY7iY7fTdp9MbPS96jJvLntf)64SeFxrEVO9iDF(gJot1A44u3ExrEVO9i9r8gJUbKr7ig0VRiVx0ECQ(dKNpoKlci73eXIHy7k1aCXqTwExwcFZYF)kh8E1hFFqiV(aCKnR5yh89loVoPHZWl0YIkI2E44ptCLdw0kIj2J997vA242IF4ZdNbCnWaKBYFldyFF5p85pCy1FL3d9XibktE7S4KfI7sBLCW5S2RL5caLNbdl)aeNsZrY5f2U3NJDBZhdZ6ESmRPnQDS7a8yy2QIf0r1wMt2V)u1guQdKSgFtJvBybzBp1UDaKTlk8ozlysNtOk4rL9XOg5UKJCxtJCIcNkBQzEKtVriKTRnYD7DK7EuJ86lJJUkQRSkQJKc67unMSvAodXhQv3hIjLbwTjBfPZqIqA0MWuWwDNgZeu91lIAbhIYangu7sJAtvyIg1O5rqoFxjQhC3uUE3NvEbWxGRe1aoau5r4(SG7xGXsDd6QC)(oVrA3EPCFkFxYW(i9oOT4IjwF)ZU9697X7t2eLRz2nUQyw8qLj4gZVRzkSV2RowPiQEUiRFqRMruGu9Ded5MgLxYNMRBb90j4HI9MlVqgpApoyiIm)eGnXonKXRYda2BhwBE)TquQmlDRZ1xmrqIMlUu1Kz3xkSBqyBmlvUH40OqtFqrc2(qEzEywKi3JM3RRH2b1NLl796dFOoAxSNbrpf)i4((RWcqrq)XEvQujoHYqaG3xKvzOycNQJ(Bx4m)sjF52LEQcUfQwsAV)vvUoIfw64V3E87V1fwc0(rj2085jDFkXMOHCNEzQkuEMYJcgSEiWO0KTxmQCWULC3vJgOF63XacXIdv)0U6buGODLdiPU8vnGcGQRyavtLkaKewr5IcI2RsavRkEiKuATDncw4sHPMtPpIfHJXpDbfCvFJQP27dGvcip7cA3OuqCdJqcxhRGPR2h4)PYMSZ16R0wZ0v6tNKYxchHCt)s8DZCDZIfZnGKUAwLnRpTx(Rv6jklrz6E4DZcNQrm115sdX6G0PDzn4wHD)iMsfSSL2z8Y1)v29PgxuKZjD0bmzcw1SbdLYwvuEnnSMuD13K1)L1)0)1o2wdvEniUrVt1UuhrxOS304aBQ9whVgyVoQg1xQmzJAfF52S1A0YHys7yT5oHwoGgmMP14wKqV3ixzKd7Da21pGoGgvY7Wi6lMOdGUVLouYG9IoCu22DWvJ7z95O5M7KIrG(mWKtnPJ340q6YxnLYYvNEg0E7OFqVmUoyDu3no8ogLPRpgzT7edr8zzWgY2HgMqiWFrpNP6SVXiYutw10BfWz1dgtVattoXYgVVFV1UQxRU6ORN32s3hSjO1t6nFbYbk(LQxnbiSvt5ORSgTkJDdQ7llx)g9Y8mMHf(wruNSSAS55A1OIQ6vLfbzYPNOMdZK2sT0SDo3EX(9Nq(7t1YaAcvLNQkqNeoup4cYL7tFVniQIwDT7w4mvUePKfS6w1KMNiE3RpsrSlPi21Oi2TxrSRbrS7ifXoeIyhdI4UB5LnrS7u5jNriI)q5gK8)PViohRkGWkZCPGTAMzSxufdUzQHsTs0TPkBjHK(YKt0lkHbt397n47R51R5wx5DszCIkxAr1Gmxmx4CBAXgLWtv2dJHjQC)wiQquiEMFeYQEFmFSOezZ(EQfjQnxVtRcT4p6u52znfZ971lYEw778zv91vJZzbeBy3NA0BDUeK90ptNthczLEAojjlgE1PgiW(90)(edVnO3E5GyjL6JvXuNA45)SUMTTVSN3m)s01BNF29cXdRWY)3d]] )
+spec:RegisterPack( "Arms", 20240815, [[Hekili:nZrxtTnsYFluPwh8fwdsehytHPQ926EytDvUhi1EVzzzPXyDilPtFaHTC5F7x3J(AMr9msYazVxieMwD3t)10DpFS0A53wENVBoB5xTVW(JxCT18zxm)J)YhVE5D5pNWwExIR3dU3d)sK7o4N)A6Um8p(CySRp(XzXfPEWaBZZtY(85NFFq(2I1Z8I3DEwWUIq38G4iVu3n54)378L3TUiim)3JwUMMYxT8o3I8TXPlV7Uge8BicaIe47Zk)swM3Y7WV8NV46F2A(NpScG(WQIeeNh(YHVuo2v)S9LWyFBl7WQ)TBk8dG)cIwExyqwEgFceeDFiZj3n9Ewo8h(kxMWICxhY8x(3xENxAqolnWfiAC(SuwKp8JDUbrzhwDZIdRU3ZF2o3VFy1KdRC9YdEK5WIy7cyW43cJBZhzDXMnZYEIXsa65KLNg8alBMF8taVGFvm8VGKlYNL64f6MSmhemA5Ko05WkRw8OsgexxECZQwKIGGi6JiIu444ImN0y3urkaGoxeuVTU7sGFlZjlH1b0pjcAQ7JGjNkixjccarEhKCTe9IdJZYaglBNB2wfi)friFYnDDkZ9Hou06IHRaar2LcepK5(iJJd9MtukrUTYP6mxksoSA)(dRYDdzr5Z8bU2pYT4(T5ZQOWHvt5OaK2G9mGu0aSLVIFKLMe)emtrwZwukSlofqBfPufexkcz2dfHHzjHb55DfzsMhSVZ8kY7Gnj7IwwsbQpnsl2R7ARAD1Wf(nEQvc3nS0hJtDI34S2nppKvlHjvYswEzHU7KNm5yaRnUfH9eGjpyhRCYCXS5LQ6DG8zhxzdbSCJ8yC7KRL8RanT5WfOZCJScXoFI6Z4wzYokTWHKPKhwdJZ)InbGPMtRuhezZB5KKy()Amytzy2z1K2nlhSVbAc4qarf72XcBc2iGOMjTByOt5)XbJKxgp3PCnQhDbsbFrwtmOXIbWhi6bwEwtKjY5IxCCigaFMKRJKa0cvJGGlfINXLxZVqigwQNBeSYtCkyVM3eIJ2KNuxHuV0D3iR0sYqubM58Fk8VFxfnV(TMMRDVh9IGr9EiRj4ljfvSVqb41x0U8zzq)MOGnMLvgvO3dinD8dkL11FBT9WSQWrojBDZy9JwcRDbT3AwAgl9bW8TNLkOfJfjcOkmo23ztr6Z9SIr)OAtqkJJU2a8hjMWynGkfuSORs7QadlAkpyQWsv6IM2Nc6e03jW3H9iIfxF)YfbPs1INceAe6H8QWIbfrAD0DJzTRAreLOZ369SxtYIzCYiqXw5b9msI01Rn2SG4qiVW3lN3kFnMKugK3niGPwLjg0TzmHOS18i(BHfTr9MLBnliBwAX6NDEAllmXjd(zyL6ucMN2gajZLIPOee55Mgb5E7e4vHD5GPowoSV7fw4tUw1i4o7bWD2JM7Sf5ovd9kUlyJ0szTIcq56uKXCqFQ6m4egUjsPFrkVCMdR(jH4NvXFAhSCf6PLv5KgKukr(hOGaMcGTUBd6ZAXZzWk6bpg4JovRFgaQeThw97apfK)(m0rdeLhwbS7HvrXGRfp2gKap(R5fPaTTa0WcrVV6)cKkYmA9z2ZrEA1yoiwwEh81nQqlQL0fKTuyQREQKQe6bBZ6b7JxpyCcP68octzvlh0gw20P74)OhSmiCtaToEZvcOUwh4NtMb1ieqQQuvbe14)OhuJaYUhbKDRasnTVr6sKKgedEdpl6uqRY4uuEjxf2PCUQF0sFQEDRoxca8BDAheQq9VXXbp74pyq02ajbdHHb4qmLV2)PdiO75samyUs1JqpxzjWvYrnSASTTPs6EeUe8fEDdHf9Hc)Csk(Z)eYcyD83PDc35gv4gsL19iiP9iiPTajltkUToamXpy564IC1A95jRKhF)9i55zFQ8r8sFv)k1KiQYPJIrBYQLyqEUtTfnEu5oPMn6cHE5OMaBquz2Qvv4tKIl77y3j7McWF0WKcsEiJWKq3OOQkrgFMvDYKUPviNAK7qMx3yt6oKyzDZvckIauvPLH8VmmhoTPsdOqMmxVu5kmQQqClZnmF7SeVCE5CxoN7QwwMcfay9ETmPCU8CRMkREsJgjn33QbSYiDZZqLvU5BDY3YCW(4Td7zf2em52CTZn9bSQPA4HIC9WAoRx2PAsVo01hKEzWxMHnuG3XOgbaob7fzQPbjQUUugco1YqYqa1j6ASKuzQ6M(egWg8QXyYXqu8798Lk5JeyIg3OovVH3fxcdWAexPVXY(cJZf))QScrTGuRdtVoDziubxq1(umrEPoqX7u27WB5PSwfwXeitj7)XeDR22KlJkQlxYUwI2jvPgrDJmMm)I6uyQdCoTtsPkRwJXOu6pZKYw3OXXRApGQW4HvpfKVf(V4FBlGhWCgQ7jdKqqfw(vvkDgcgwB5Aakqb7J0mfH0nc(9e3Gu8VvIQFTuksvIJI1JTI1J9OSES7X6XECwp29B9qaYOSES0B9yzY6X6OSES7A90jdudwpgAz8X483xE4d0)3io0KnUKmJ2sPchtPQ8SJoFcPT0Wc1GqPjQlyCKW84oDyxdjA8b2)I4OWNXFYWFWDgf8LtsJX(Eu2yeKbpRgc09og(zA5N1Wchw9VG)uaG4iwq549JT1XOFUeEOkV9L4TBunnCh((QFRxxmJMCeMleHigM5cDSLrAUqucDTsa)gNTq46ATGWFWOAG9Flcssy(Z0LQYG8o7nE20bP16Dr1PLPJw3tzJBYiDJZRfyuNDaP9j28w(lTrXM3YFPDk20EklTDX0NnaPJpa5zdq60dy8SbiTxUApBa63eRQSFl1fasWuYXoZhKb)NzqLSEpOUT8Y79EUXTtQzRe)KWMrjVV(wIZan7bVKoTnHEvWK0NA2QESUS4Em64IKY5NZJfHGqXDDaOTdQoemL241Lna(BmCNN8D3bZ26Cl4JUJL6favaNbj1hXUpL3(APAlA3wEdB)v9jiOnNGBQlGHQC4l7y)3CiDUC4ohFSxRu1upiQzPZHcrQ6flbbjXXhPRFKQZth)Fc3idAytKu2h)vWtRQ43IOTajHq1sf8w3oas7LA0r5b0PXvMdJj7TzmYIH9JvN0RSW7HCyEKJ8w6dOqE16s6N8McrP3wTFSjZ66pIf9JjXTr9QHft76bet7Rw)cHFDPtVmG2s2kMofv2diUSTuC5N2gKg(uaMSICaxSHLW6kiqvhFYlMZDHWUac(S8ADd2LaCduPtmKSY7L2V43JBVhKHdV(1Sym5l3I84QIFb7nWFkB2HV8pdWmUTS(8Hv)wCeqs(4VV75pdqyEm5i1(AaeNA99PTi9kAKQEsbuWSUdsql6p8fIzFZwJpYzUkpwLeg5oK3WPTj8rdLSCWej0Uf200Ye4se1wdrj3B9o0shudNedFE1l4se9sTctXTWHq4Pm8arAN9yIaZuW8MIEDiogKGCiGfsWTGq30FYPMq)p9t62V8fxmThbBpy2eIBMuFuRzLrnCNHLub6rA)QaAyEtrVoeRxdBRtpqG(XPHhfMhKgE(BHpSzKwxDcl6(8TAWSkmVYO)fW4L77ZZM47wqEDr(lGRX8xaLpunGroxgSxFI8cMbBrrJjEVgGxte)c4xmTAtSB14VIOvhZ(P3IG4MrQzFqAyELr)lGX15fscYRlYFbCTjVpTG96tKxWmG2tKaGxte)c4xsFXUJ)kIwDmBNQ7AW6XLZZBm6haItsJ9M5g9SJFsMjKRdUbY)dLmOq3z8OFObRmgl8LJ(XA2CSfd9gJ(bG4HPp1d3a5)HsMJYSz4PXEuMndh9d0SPtHqNOBl6MOBt32Vx3ito1Cro68rN(3o1A28pOXragLGG4XjD60Bp1CHZ6uVQu0QxkAvrXAX)pq525)WLBN)gi3ASiVwRTo9zPLWGxlGsM()I2yXdKqgaSIq8(PUjomm(j(Pf0fKtGN1tSuw95Ic9Y4N2IYwxFyfEtLW9HkVgUOyEZylIKG23hb23n3DTBg7Zh(YHv)8Hvy(gAAKRBmM20iAHBh5J8Mg1ioO3lPEL2g2LjfuBCNOAPd5SUszLnUPUM22tDyrv4vtNNuvrIH(xwF0oOwlvyS)kqxzuK6ycAYsry4bIu1JMbbIja5ne59I2HN6WGYq5LtgJzOyOvQAToS1BD8dcDwMn26m8arAV2dKG8gI8Er7WlVzqgBVCYy0ytxZVoopX3uK3lApYWNVYOtxVgooZT3uK3lApYyeVYOBav0oIj9BkY7fThNP)a55Jd58eY(DEUyi2Usobxmvl8A3hVjiKvFSnYM1Cyd(WIZRlv4m8ASSOIuThj(Z4x0GfTcwIDwF)EPH1Uz4h(YWzaBnma5w73YaM3n(dF5Dhw9x51uFmsGYs2olozb)Q2wjhSoR9wBUaq5zW0YpaXPGosSAW2D8CSBw(yyw7JLz1T9SJDFFhdZw1IGoM2ICY(9NkpGu3FeT4BgSABkih7X2nbGCCE72jhbl1CcvBoQ8pg1m3MCMBRBMt0Uurxn9ZC6T)GCCLzUDVZC7JAMxFfCunrTfnrTemqFJ6SKPgYPjRqLU9qOugypMm1AonL)OqBcxbtDBAmkO6lve1coen)zmO2Mg166RenQfVD4MHGFvWpR8YIVq3QEO3wqoBxjNsYfnFiaE5jS9SGnlWCSUbdMUFFNNETBVw8BkFUZWVr45vBXftm(SQD7173J3ZSjsx)SBSNlHz(7FgNB0)CPjX(kpMzLZ6ATvw)GwPZKGu(5jd5MgZBYx8RBbl5j4Tt4M5xiIhL3Cmer6FzXMyMgI4v6Df71dRnpRxikL0s3AD9ft4KO5cnvPm7(aKDdcBJJR0nhNgfk2dssW23hm9tZIeXVO5zaBOFG8R9L5V6DVRoly8ldIEm(bia)3HLOIGVh)QsJk(XQgsrCtrwLJIoCkp7VDH1LZfI2Bw6jl4wi7jP8aAvfniMDgAa4LdRibCfcq7f(4wBy1sZN1yDk2t6(uLnrb5w9YDvOSLdLEYXk5yA63lQLoc4cbaRrd8DQN1Ec5Jf13PCXxOar5AuqsDXBicfav3AfQHknjijSK5gfeT39eQrLIziygB6gETWMctnx2ael8qLF6ck4Q(nQHAVwdgjGO2fS3rPa)kHGeUo)cD3fliIuLxAN7HvP3NU7GLkjfV1eC5M6TU6Mlv9pwCPgK01YQCyv1E5FTYorArlDxCQBwyvnJPU)nkiwfKoJlAb3kS7hXuMGLJ0QXlZiqAFQAIvrQt6ydOZfSAynokLJkz8QBAnP6UkjA)lA)P(x74Bnu51G4g1pQo26i(ek)nfoWKzVX5Rg2RJPr9Tas0PwkwUjFTgRCil1oEB2tOLdOdJEAnUfju)AKR0YH9ob7ghqfqTg5Dye1ftubqn2shkPXFrfokF7o4Qj8SQo6s9FKKtGQgyYP6SXBcAiCnTMs55QspnwVDSpOxgxfSoM7ANEhJX01hJS2EIMu)mmzdD3HoMqsXFtTkQ6k2XmYKRiv3RkWz1tgDVvttoXWw0VFVXpvT)E15BFz7iDFANGrpP3kiiNO4Vu9(kaPTQRqCP1OLzSBqBFr56pO3WNXmTWxvI6YNLZnpxPVwuD8QSXjto9e5QAMK32sP6n(52l2V)eY)(uLAIMq1TQQM6jGd5J4Gylcv3feIoVv3VVfwtfBRkztUUvUm6j8hy7JueBtkIT1kIT7veBRreBpsrSfHi2sJiU7MJzseBpvu5mcr87k3uL)p9TZ5ynb4Ez6BFSr3mTFfvdKBunuMv8pBQ02yiyVm5e12uOX1D)EnX(AENBU1wC3xgNOYMwuni3f9nB3KvSwj8uP99yyIk7FeIkef8heiUSQ3N9hdgrM8VNAqIAk070Qul(Jo9YDwt7D)GAJ5ZAFrqR6jVCEolGCd7(OKER1Cq2t)GEoDiKv4r8KKSy6vNQHa73t)3NO5ve925dILK6pwftDQMhk06U42(gGEZLZXqVD(Z4ZckuBH3YVELf)Xyy5)7d]] )

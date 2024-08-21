@@ -1,3 +1,7 @@
+actions.precombat+=/devotion_aura,if=buff.paladin_aura.down
+actions.precombat+=/beacon_of_light,if=active_dot.beacon_of_light=0
+actions.precombat+=/beacon_of_faith,if=group&active_dot.beacon_of_faith=0
+
 actions+=/rebuke
 actions+=/avenging_wrath
 actions+=/avenging_crusader
@@ -12,6 +16,7 @@ actions+=/use_items
 actions+=/call_action_list,name=spenders,strict=1,if=!talent.avenging_crusader|cooldown.avenging_crusader.remains>gcd.max|holy_power.deficit=0
 actions+=/divine_toll
 actions+=/holy_prism
+actions+=/beacon_of_virtue,if=group
 actions+=/consecration,if=!consecration.up&action.crusader_strike.in_range
 actions+=/hammer_of_wrath
 actions+=/judgment
@@ -19,6 +24,6 @@ actions+=/holy_shock
 actions+=/crusader_strike,if=cooldown.holy_shock.remains>gcd.max
 actions+=/arcane_torrent
 
-actions.spenders+=/shield_of_the_righteous,if=!talent.awakening|active_enemies>1
-actions.spenders+=/light_of_dawn,if=talent.awakening&group
-actions.spenders+=/word_of_glory,if=talent.awakening
+actions.spenders+=/word_of_glory,if=solo&(health.pct<70|!equipped.shield)&buff.shining_righteousness_ready.up|buff.empyrean_legacy.up
+actions.spenders+=/light_of_dawn,if=group&buff.shining_righteousness_ready.up
+actions.spenders+=/shield_of_the_righteous

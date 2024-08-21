@@ -138,7 +138,7 @@ spec:RegisterTalents( {
     pulse_capacitor             = {  94866, 445032, 1 }, -- Increases the healing done by Surging Totem by 25%.
     reactivity                  = {  94872, 445035, 1 }, -- Your Healing Stream Totems now also heals a second ally at 50% effectiveness. Cloudburst Totem stores 25% additional healing.
     supportive_imbuements       = {  94866, 445033, 1 }, -- Learn a new weapon imbue, Tidecaller's Guard.  Tidecaller's Guard Imbue your shield with the element of Water for 1 |4hour:hrs;. Your healing done is increased by 2% and the duration of your Healing Stream Totem and Cloudburst Totem is increased by 3 sec.
-    surging_totem               = {  94877, 444995, 1 }, -- Summons a totem at the target location that maintains Healing Rain for 24 sec. Heals for 30% more than a normal Healing Rain. Replaces Healing Rain.
+    surging_totem               = {  94877, 444995, 1, "totemic" }, -- Summons a totem at the target location that maintains Healing Rain for 24 sec. Heals for 30% more than a normal Healing Rain. Replaces Healing Rain.
     swift_recall                = {  94859, 445027, 1 }, -- Successfully removing a harmful effect with Tremor Totem or Poison Cleansing Totem, or controlling an enemy with Capacitor Totem or Earthgrab Totem reduces the cooldown of the totem used by 5 sec. Cannot occur more than once every 20 sec per totem.
     totemic_coordination        = {  94881, 445036, 1 }, -- Chain Heals from your totems are 25% more effective.
     totemic_rebound             = {  94890, 445025, 1 }, -- Chain Heal now jumps to a nearby totem within 20 yards once it reaches its max targets, causing the totem to cast Chain Heal on an injured ally within 30 yards for 25,913. Jumps to 2 nearby targets within 20 yards.
@@ -148,7 +148,7 @@ spec:RegisterTalents( {
     -- Farseer
     ancestral_swiftness         = {  94894, 443454, 1 }, -- Your next healing or damaging spell is instant, costs no mana, and deals 10% increased damage and healing. If you know Nature's Swiftness, it is replaced by Ancestral Swiftness and causes Ancestral Swiftness to call an Ancestor to your side.
     ancient_fellowship          = {  94862, 443423, 1 }, -- Ancestors have a 15% chance to call another Ancestor when they expire.
-    call_of_the_ancestors       = {  94888, 443450, 1 }, -- Triggering Undulation or casting Unleash Life calls an Ancestor to your side for 6 sec. Whenever you cast a healing or damaging spell, the Ancestor will cast a similar spell.
+    call_of_the_ancestors       = {  94888, 443450, 1, "farseer" }, -- Triggering Undulation or casting Unleash Life calls an Ancestor to your side for 6 sec. Whenever you cast a healing or damaging spell, the Ancestor will cast a similar spell.
     earthen_communion           = {  94858, 443441, 1 }, -- Earth Shield has an additional 3 charges and heals you for 25% more.
     elemental_reverb            = {  94869, 443418, 1 }, -- Lava Burst gains an additional charge and deals 5% increased damage. Riptide gains an additional charge and heals for 5% more.
     final_calling               = {  94875, 443446, 1 }, -- When an Ancestor expires, they cast Hydrobubble on a nearby injured ally.  Hydrobubble
@@ -201,7 +201,7 @@ spec:RegisterAuras( {
     },
     earthliving_weapon_hot = {
         id = 382024,
-        duration = 12,
+        duration = 6,
         max_stack = 1
     },
     -- Your Healing Rain is currently active.  $?$w1!=0[Magic damage taken reduced by $w1%.][]
@@ -407,10 +407,11 @@ spec:RegisterAbilities( {
         texture = 136042,
 
         handler = function ()
+            if buff.tidebringer.up and buff.natures_swiftness.down and buff.ancestral_swiftness.down then removeStack( "tidebringer" ) end
             removeStack( "tidal_waves" )
-            removeStack( "tidebringer" )
             removeBuff( "swelling_rain" ) -- T30
             removeStack( "natures_swiftness" )
+            removeStack( "ancestral_swiftness" )
 
             if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,

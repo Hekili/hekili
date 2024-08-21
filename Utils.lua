@@ -16,7 +16,7 @@ local FindAura = AuraUtil.FindAura
 local UnpackAuraData = AuraUtil.UnpackAuraData
 
 local GetSpellBookItemInfo = function(index, bookType)
-    local spellBank = (bookType == BOOKTYPE_SPELL) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet
+    local spellBank = ( bookType == "spell" or bookType == Enum.SpellBookItemType.Spell ) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet
     local info = C_SpellBook.GetSpellBookItemInfo(index, spellBank)
     if info then return info.name, info.icon, info.spellID end
 end
@@ -605,6 +605,18 @@ function ns.IsActiveSpell( id )
 end
 
 
+function ns.GetUnpackedSpellInfo( spellID )
+    if not spellID then
+        return nil;
+    end
+
+    local spellInfo = GetSpellInfo(spellID);
+    if spellInfo then
+        return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID;
+    end
+end
+
+
 function Hekili:GetSpellLinkWithTexture( id, size, color )
     if not id then return "" end
 
@@ -945,6 +957,8 @@ function Hekili:IsValidSpec()
 end
 
 
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+
 function Hekili:GetLoadoutExportString()
     -- Current as of 10.1.0.48480
     local bitWidthHeaderVersion = 8
@@ -952,7 +966,7 @@ function Hekili:GetLoadoutExportString()
     local bitWidthRanksPurchased = 6
 
     -- Cannot force-load as needed without causing taint, so this simply replicates existing Blizzard functionality.
-    if C_AddOns.IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then
+    if IsAddOnLoaded( "Blizzard_ClassTalentUI" ) then
         bitWidthHeaderVersion = ClassTalentImportExportMixin.bitWidthHeaderVersion
         bitWidthSpecID = ClassTalentImportExportMixin.bitWidthSpecID
         bitWidthRanksPurchased = ClassTalentImportExportMixin.bitWidthRanksPurchased

@@ -114,6 +114,7 @@ spec:RegisterTalents( {
     wellhoned_instincts           = { 82246, 377847, 1 }, -- When you fall below 40% health, you cast Frenzied Regeneration, up to once every 120 sec.
     wild_charge                   = { 82198, 102401, 1 }, -- Fly to a nearby ally's position.
     wild_growth                   = { 82241, 48438 , 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 43,798 over 6.0 sec. Healing starts high and declines over the duration.
+
     -- Guardian
     after_the_wildfire            = { 82140, 371905, 1 }, -- Every 200 Rage you spend causes a burst of restorative energy, healing allies within 12 yds for 143,802.
     berserk_persistence           = { 82144, 50334 , 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
@@ -159,9 +160,10 @@ spec:RegisterTalents( {
     untamed_savagery              = { 82152, 372943, 1 }, -- Increases the damage and radius of Thrash by 25%.
     ursocs_endurance              = { 82130, 393611, 1 }, -- Increases the duration of Barkskin and Ironfur by 2.0 sec.
     ursocs_fury                   = { 82151, 377210, 1 }, -- Thrash and Maul grant you an absorb shield for 25% of the damage dealt for 15 sec.
-    ursocs_guidance               = { 82135, 393414, 1 }, --  Incarnation: Guardian of Ursoc: Every 25 Rage you spend reduces the cooldown of Incarnation: Guardian of Ursoc by 1 sec.  Convoke the Spirits: Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
+    ursocs_guidance               = { 82135, 393414, 1 }, -- Incarnation: Guardian of Ursoc: Every 25 Rage you spend reduces the cooldown of Incarnation: Guardian of Ursoc by 1 sec.  Convoke the Spirits: Convoke the Spirits' cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
     vicious_cycle                 = { 82158, 371999, 1 }, -- Mangle increases the damage of your next cast of Maul or Raze, and casting Maul or Raze increases the damage of your next Mangle by 15%. Stacks up to 3.
     vulnerable_flesh              = { 82159, 372618, 2 }, -- Maul and Raze have an additional 30% chance to critically strike.
+
     -- Druid of the Claw
     aggravate_wounds              = { 94616, 441829, 1 }, -- Every Maul, Raze, Mangle, Thrash, or Swipe you cast extends the duration of your Dreadful Wounds by 0.6 sec, up to 8 additional sec.
     bestial_strength              = { 94611, 441841, 1 }, -- Maul and Raze damage increased by 10%.
@@ -171,17 +173,18 @@ spec:RegisterTalents( {
     fount_of_strength             = { 94618, 441675, 1 }, -- Your maximum Energy and Rage are increased by 20. Frenzied Regeneration also increases your maximum health by 10%.
     killing_strikes               = { 94619, 441824, 1 }, -- Ravage increases your Agility by 5% and the armor granted by Ironfur by 20% for 8 sec. Your first Mangle after entering combat makes your next Maul become Ravage.
     packs_endurance               = { 94615, 441844, 1 }, -- Stampeding Roar's duration is increased by 25%.
-    ravage                        = { 94609, 441583, 1 }, -- Your auto-attacks have a chance to make your next Maul become Ravage. Ravage Slash through your target in a wide arc, dealing 86,493 Physical damage to your target and 43,683 to all other enemies in front of you.
+    ravage                        = { 94609, 441583, 1, "druid_of_the_claw" }, -- Your auto-attacks have a chance to make your next Maul become Ravage. Ravage Slash through your target in a wide arc, dealing 86,493 Physical damage to your target and 43,683 to all other enemies in front of you.
     ruthless_aggression           = { 94619, 441814, 1 }, -- Ravage increases your auto-attack speed by 20% for 6 sec.
     strike_for_the_heart          = { 94614, 441845, 1 }, -- Shred, Swipe, and Mangle's critical strike chance and critical strike damage are increased by 6%. Mangle heals you for 1% of maximum health.
     tear_down_the_mighty          = { 94614, 441846, 1 }, -- The cooldown of Pulverize is reduced by 5 sec.
     wildpower_surge               = { 94612, 441691, 1 }, -- Mangle grants Feline Potential. When you have 6 stacks, the next time you transform into Cat Form, gain 5 combo points and your next Ferocious Bite or Rip deals 100% increased damage for its full duration.
     wildshape_mastery             = { 94610, 441678, 1 }, -- Ironfur and Frenzied Regeneration persist in Cat Form. When transforming from Bear to Cat Form, you retain 80% of your Bear Form armor and health for 6 sec. For 6 sec after entering Bear Form, you heal for 10% of damage taken over 8 sec.
+
     -- Elune's Chosen
     arcane_affinity               = { 94586, 429540, 1 }, -- All Arcane damage from your spells and abilities is increased by 3%.
     astral_insight                = { 94585, 429536, 1 }, -- Incarnation: Guardian of Ursoc increase Arcane damage from spells and abilities by 10% while active. Increases the duration and number of spells cast by Convoke the Spirits by 25%.
     atmospheric_exposure          = { 94607, 429532, 1 }, -- Enemies damaged by Lunar Beam or Fury of Elune take 6% increased damage from you for 6 sec.
-    boundless_moonlight           = { 94608, 424058, 1 }, --  Lunar Beam Lunar Beam now causes you to leech life equal to 10% of all damage dealt to enemies within the beam.  Fury of Elune Fury of Elune now ends with a flash of energy, blasting nearby enemies for 73,265 Astral damage.
+    boundless_moonlight           = { 94608, 424058, 1, "elunes_chosen" }, --  Lunar Beam Lunar Beam now causes you to leech life equal to 10% of all damage dealt to enemies within the beam.  Fury of Elune Fury of Elune now ends with a flash of energy, blasting nearby enemies for 73,265 Astral damage.
     elunes_grace                  = { 94597, 443046, 1 }, -- Using Wild Charge while in Bear Form or Moonkin Form incurs a 3 sec shorter cooldown.
     glistening_fur                = { 94594, 429533, 1 }, -- Bear Form and Moonkin Form reduce Arcane damage taken by 6% and all other magic damage taken by 3%.
     lunar_amplification           = { 94596, 429529, 1 }, -- Each non-Arcane damaging ability you use increases the damage of your next Arcane damaging ability by 3%, stacking up to 3 times.
@@ -1025,11 +1028,13 @@ end )
 
 
 spec:RegisterHook( "spend", function( amt, resource )
-    if talent.after_the_wildfire.enabled and resource == "rage" and amt > 0 then
-        buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 - amt
-        if buff.after_the_wildfire.v1 < 0 then
-            -- Heal ticked.
-            buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 + 200
+    if resource == "rage" and amt > 0 then
+        if talent.after_the_wildfire.enabled and buff.after_the_wildfire.up then
+            buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 - amt
+            if buff.after_the_wildfire.v1 < 0 then
+                -- Heal ticked.
+                buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 + 200
+            end
         end
     end
 end )
@@ -1951,8 +1956,8 @@ spec:RegisterAbilities( {
         id = 61336,
         cast = 0,
         charges = function() return talent.improved_survival_instincts.enabled and 2 or nil end,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.survival_of_the_fittest.enabled and ( 2/3 ) or 1 ) * 180 end,
-        recharge = function () return talent.improved_survival_instincts.enabled and ( ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( talent.survival_of_the_fittest.enabled and ( 2/3 ) or 1 ) * 180 ) or nil end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( 1 - 0.12 * talent.survival_of_the_fittest.rank ) * 180 end,
+        recharge = function () return talent.improved_survival_instincts.enabled and ( ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( 1 - 0.12 * talent.survival_of_the_fittest.rank ) * 180 ) or nil end,
         gcd = "off",
         school = "physical",
 

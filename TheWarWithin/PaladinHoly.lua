@@ -10,6 +10,8 @@ local class, state = Hekili.Class, Hekili.State
 local strformat = string.format
 local SPEC_ACTIVE = _G.SPEC_ACTIVE
 
+local PTR = ns.PTR
+
 local spec = Hekili:NewSpecialization( 65 )
 
 spec:RegisterResource( Enum.PowerType.HolyPower )
@@ -45,7 +47,7 @@ spec:RegisterTalents( {
     judgment_of_light               = {  81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 1,843.
     justification                   = {  81509, 377043, 1 }, -- Judgment's damage is increased by 10%.
     lay_on_hands                    = {  81597,    633, 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
-    lightforged_blessing            = {  93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 4 nearby allies for 1% of maximum health.
+    lightforged_blessing            = {  93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 2 nearby allies for 1% of maximum health.
     obduracy                        = {  81630, 385427, 1 }, -- Speed increased by 2% and damage taken from area of effect attacks reduced by 2%.
     of_dusk_and_dawn                = {  93357, 409439, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 30% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 5% For 10 sec.
     punishment                      = {  93165, 403530, 1 }, -- Successfully interrupting an enemy with Rebuke casts an extra Crusader Strike.
@@ -91,10 +93,10 @@ spec:RegisterTalents( {
     glistening_radiance             = {  81576, 461245, 1 }, -- Spending Holy Power has a 25% chance to trigger Saved By The Light's absorb effect at 50% effectiveness without activating its cooldown.
     glorious_dawn                   = {  93521, 461246, 1 }, -- Holy Shock has a 12% chance to refund a charge when cast and its healing is increased by 10%.
     hand_of_divinity                = {  81570, 414273, 1 }, -- Call upon the Light to empower your spells, causing your next 2 Holy Lights to heal 30% more, cost 50% less mana, and be instant cast.
-    holy_infusion                   = {  81564, 414214, 1 }, -- Crusader Strike generates 1 additional Holy Power and deals 25% more damage.
+    holy_infusion                   = not PTR and {  81564, 414214, 1 } or nil, -- Crusader Strike generates 1 additional Holy Power and deals 25% more damage.
     holy_prism                      = {  81577, 114165, 1 }, -- Fires a beam of light that scatters to strike a clump of targets. If the beam is aimed at an enemy target, it deals 25,277 Holy damage and radiates 36,862 healing to 5 allies within 30 yds. If the beam is aimed at a friendly target, it heals for 73,724 and radiates 14,745 Holy damage to 5 enemies within 30 yds.
     holy_shock                      = {  81555,  20473, 1 }, -- Triggers a burst of Light on the target, dealing 12,638 Holy damage to an enemy, or 27,910 healing to an ally. Generates 1 Holy Power.
-    imbued_infusions                = {  81557, 392961, 1 }, -- Consuming Infusion of Light reduces the cooldown of Holy Shock by 1.0 sec.
+    imbued_infusions                = {  81557, 392961, 1 }, -- Consuming Infusion of Light reduces the cooldown of Holy Shock by 1 sec.
     inflorescence_of_the_sunwell    = {  81591, 392907, 1 }, -- Infusion of Light has 1 additional charge, increases Greater Judgment's effect by an additional 50%, reduces the cost of Flash of Light by an additional 30%, and Holy Light's healing is increased by an additional 50%.
     liberation                      = { 102502, 461287, 1 }, -- Word of Glory and Light of Dawn have a chance equal to your haste to reduce the cost of your next Holy Light, Crusader Strike, or Judgment by 228.
     light_of_dawn                   = {  81565,  85222, 1 }, -- Unleashes a wave of Holy energy, healing up to 5 injured allies within a 15 yd frontal cone for 11,585.
@@ -125,7 +127,7 @@ spec:RegisterTalents( {
     -- Herald of the Sun
     aurora                          = {  95069, 439760, 1 }, -- After you cast Holy Prism or Barrier of Faith, gain Divine Purpose.  Divine Purpose Holy Power abilities have a 15% chance to make your next Holy Power ability free and deal 15% increased damage and healing.
     blessing_of_anshe               = {  95071, 445200, 1 }, -- Your damage and healing over time effects have a chance to increase the healing or damage of your next Holy Shock by 200%.
-    dawnlight                       = {  95099, 431377, 1 }, -- Casting Holy Prism or Barrier of Faith causes your next 2 Holy Power spending abilities to apply Dawnlight on your target, dealing 52,908 Radiant damage or 84,652 healing over 8 sec. 10% of Dawnlight's damage and healing radiates to nearby allies or enemies, reduced beyond 5 targets.
+    dawnlight                       = {  95099, 431377, 1, "herald_of_the_sun" }, -- Casting Holy Prism or Barrier of Faith causes your next 2 Holy Power spending abilities to apply Dawnlight on your target, dealing 52,908 Radiant damage or 84,652 healing over 8 sec. 10% of Dawnlight's damage and healing radiates to nearby allies or enemies, reduced beyond 5 targets.
     eternal_flame                   = {  95095, 156322, 1 }, -- Heals an ally for 60,214 and an additional 15,843 over 16 sec. Healing increased by 25% when cast on self.
     gleaming_rays                   = {  95073, 431480, 1 }, -- While a Dawnlight is active, your Holy Power spenders deal 6% additional damage or healing.
     illumine                        = {  95098, 431423, 1 }, -- Dawnlight reduces the movement speed of enemies by 50% and increases the movement speed of allies by 20%.
@@ -147,7 +149,7 @@ spec:RegisterTalents( {
     fear_no_evil                    = {  95232, 432834, 1 }, -- While wielding an Armament the duration of Fear effects is reduced by 50%.
     forewarning                     = {  95231, 432804, 1 }, -- The cooldown of Holy Armaments is reduced by 20%.
     hammer_and_anvil                = {  95238, 433718, 1 }, -- Judgment critical strikes cause a shockwave around the target, dealing 30,124 healing at the target's location.
-    holy_armaments                  = {  95234, 432459, 1 }, -- Will the Light to coalesce and become manifest as a Holy Armament, wielded by your friendly target.  Holy Bulwark: While wielding a Holy Bulwark, gain an absorb shield for 15.0% of your max health and an additional 2.0% every 2 sec. Lasts 20 sec. Becomes Sacred Weapon after use.
+    holy_armaments                  = {  95234, 432459, 1, "lightsmith" }, -- Will the Light to coalesce and become manifest as a Holy Armament, wielded by your friendly target.  Holy Bulwark: While wielding a Holy Bulwark, gain an absorb shield for 15.0% of your max health and an additional 2.0% every 2 sec. Lasts 20 sec. Becomes Sacred Weapon after use.
     laying_down_arms                = {  95236, 432866, 1 }, -- When an Armament fades from you, the cooldown of Lay on Hands is reduced by 15.0 sec and you gain Infusion of Light.
     rite_of_adjuration              = {  95233, 433583, 1 }, -- Imbue your weapon with the power of the Light, increasing your Stamina by 3% and causing your Holy Power abilities to sometimes unleash a burst of healing around a target. Lasts 1 |4hour:hrs;.
     rite_of_sanctification          = {  95233, 433568, 1 }, -- Imbue your weapon with the power of the Light, increasing your armor by 5% and your primary stat by 1%. Lasts 1 |4hour:hrs;.
@@ -178,6 +180,11 @@ spec:RegisterAuras( {
     afterimage = {
         id = 385414,
     },
+    afterimage_stacks = {
+        id = 400745,
+        duration = 3600,
+        max_stack = 39,
+    },
     aura_mastery = {
         id = 31821,
         duration = 8,
@@ -196,7 +203,7 @@ spec:RegisterAuras( {
     awakening = {
         id = 414196,
         duration = 60,
-        max_stack = 12
+        max_stack = 15
     },
     awakening_ready = {
         id = 414193,
@@ -212,16 +219,25 @@ spec:RegisterAuras( {
         id = 156910,
         duration = 3600,
         max_stack = 1,
+        dot = "buff",
+        friendly = true,
+        no_ticks = true,
     },
     beacon_of_light = {
         id = 53563,
         duration = 3600,
         max_stack = 1,
+        dot = "buff",
+        friendly = true,
+        no_ticks = true,
     },
     beacon_of_virtue = {
         id = 200025,
         duration = 8,
         max_stack = 1,
+        dot = "buff",
+        friendly = true,
+        no_ticks = true,
     },
     bestow_faith = {
         id = 223306,
@@ -314,6 +330,11 @@ spec:RegisterAuras( {
             c.applied = 0
             c.caster = "unknown"
         end
+    },
+    consecration_strength_of_conviction = {
+        id = 188370,
+        duration = 12,
+        max_stack = 1,
     },
     contemplation = {
         id = 121183,
@@ -458,7 +479,7 @@ spec:RegisterAuras( {
     rising_sunlight = {
         id = 414204,
         duration = 30,
-        max_stack = 2,
+        max_stack = 4,
     },
     rule_of_law = {
         id = 214202,
@@ -558,6 +579,8 @@ spec:RegisterHook( "reset_precast", function()
         if buff.divine_resonance.remains > 5 then state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 5, "AURA_PERIODIC" ) end
         if buff.divine_resonance.remains > 10 then state:QueueAuraEvent( "divine_toll", class.abilities.holy_shock.handler, buff.divine_resonance.expires - 10, "AURA_PERIODIC" ) end
     end
+
+
 end )
 
 spec:RegisterHook( "spend", function( amt, resource )
@@ -682,9 +705,11 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 1030095,
+        talent = "beacon_of_faith",
 
         handler = function ()
             applyBuff( "beacon_of_faith" )
+            active_dot.beacon_of_faith = 1
         end,
     },
 
@@ -700,9 +725,11 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 236247,
+        talent = "beacon_of_light",
 
         handler = function ()
             applyBuff( "beacon_of_light" )
+            active_dot.beacon_of_light = 1
         end,
     },
 
@@ -718,6 +745,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         texture = 1030094,
+        talent = "beacon_of_virtue",
 
         handler = function ()
             applyBuff( "beacon_of_virtue" )
@@ -748,7 +776,7 @@ spec:RegisterAbilities( {
         id = 388010,
         cast = 0,
         cooldown = 45,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.05,
         spendType = "mana",
@@ -839,7 +867,7 @@ spec:RegisterAbilities( {
     blessing_of_sacrifice = {
         id = 6940,
         cast = 0,
-        cooldown = function() return talent.sacrifice_of_the_just.enabled and 45 or 60 end,
+        cooldown = function() return talent.sacrifice_of_the_just.enabled and 105 or 120 end,
         gcd = "spell",
 
         spend = 0.07,
@@ -860,7 +888,7 @@ spec:RegisterAbilities( {
         id = 388013,
         cast = 0,
         cooldown = 45,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.05,
         spendType = "mana",
@@ -908,7 +936,7 @@ spec:RegisterAbilities( {
         id = 388007,
         cast = 0,
         cooldown = 45,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.05,
         spendType = "mana",
@@ -933,7 +961,7 @@ spec:RegisterAbilities( {
                 duration = 3600,
                 max_stack = 1,
                 generate = function( t )
-                    if IsActiveSpell( 388007 ) then
+                    if IsActiveSpell( 388007 ) or IsActiveSpell( 328620 ) then
                         t.name = t.name or strformat( "%s %s", class.auras.blessing_of_summer.name, SPEC_ACTIVE )
                         t.count = 1
                         t.applied = now
@@ -956,7 +984,7 @@ spec:RegisterAbilities( {
         id = 388011,
         cast = 0,
         cooldown = 45,
-        gcd = "spell",
+        gcd = "off",
 
         spend = 0.05,
         spendType = "mana",
@@ -1110,7 +1138,7 @@ spec:RegisterAbilities( {
         texture = 135891,
 
         handler = function ()
-            gain( talent.holy_infusion.enabled and 2 or 1, "holy_power" )
+            gain( 1, "holy_power" )
             removeBuff( "liberation" )
 
             if talent.crusaders_might.enabled then
@@ -1252,7 +1280,7 @@ spec:RegisterAbilities( {
     hammer_of_wrath = {
         id = 24275,
         cast = 0,
-        cooldown = 7.5,
+        cooldown = 22.5,
         gcd = "spell",
 
         spend = 0.01,
@@ -1359,9 +1387,9 @@ spec:RegisterAbilities( {
     holy_shock = {
         id = 20473,
         cast = 0,
-        cooldown = function() return 8.5 - ( 2 * talent.imbued_infusions.rank ) - ( 1.5 * talent.crusaders_might.rank ) end,
+        cooldown = function() return ( 8.5 - ( 1 * talent.imbued_infusions.rank ) - ( 2 * talent.crusaders_might.rank ) ) * ( talent.sanctified_wrath.enabled and buff.avenging_wrath.up and 0.5 or 1 ) end,
         charges = function() return talent.lights_conviction.enabled and 2 or nil end,
-        recharge = function() return talent.lights_conviction.enabled and ( 8.5 - ( 2 * talent.imbued_infusions.rank ) - ( 1.5 * talent.crusaders_might.rank ) ) or nil end,
+        recharge = function() return talent.lights_conviction.enabled and ( ( 8.5 - ( 2 * talent.imbued_infusions.rank ) - ( 2 * talent.crusaders_might.rank ) ) * ( talent.sanctified_wrath.enabled and buff.avenging_wrath.up and 0.5 or 1 ) ) or nil end,
         gcd = "spell",
 
         spend = 0.028,
@@ -1387,9 +1415,12 @@ spec:RegisterAbilities( {
                 if talent.boundless_salvation.enabled and buff.tyrs_deliverance.up then
                     buff.tyrs_deliverance.expires = buff.tyrs_deliverance.expires + 2
                 end
+
                 if talent.light_of_the_martyr.enabled and health.pct > ( talent.bestow_light.enabled and 70 or 80 ) then
                     applyDebuff( "player", "light_of_the_martyr" )
                 end
+
+                if talent.overflowing_light.enabled then applyBuff( "overflowing_light" ) end
             end
 
             removeStack( "rising_sunlight" )
@@ -1418,7 +1449,7 @@ spec:RegisterAbilities( {
     judgment = {
         id = 275773,
         cast = 0,
-        cooldown = function() return ( 12 - ( 0.5 * talent.seal_of_alacrity.rank ) )  * ( buff.avenging_crusader.up and 0.7 or 1 ) end,
+        cooldown = function() return ( 12 - ( 0.5 * talent.seal_of_alacrity.rank ) - ( 2 * talent.crusaders_might.rank ) )  * ( buff.avenging_crusader.up and 0.7 or 1 ) end,
         gcd = "spell",
 
         spend = 0.024,
@@ -1476,6 +1507,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             spend( 0.18 * mana.max, "mana" )
+            if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
             removeBuff( "divine_purpose" )
             removeBuff( "shining_righteousness_ready" )
             if talent.maraads_dying_breath.enabled then applyBuff( "maraads_dying_breath" ) end
@@ -1571,6 +1603,7 @@ spec:RegisterAbilities( {
         equipped = "shield",
 
         handler = function ()
+            if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
             removeBuff( "divine_purpose" )
             reduceCooldown( "crusader_strike", 1.5 )
 
@@ -1659,6 +1692,8 @@ spec:RegisterAbilities( {
         texture = 133192,
 
         handler = function ()
+            if buff.afterimage_stacks.stack >= 20 then removeStack( "afterimage_stacks", 20 ) end
+            if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
             removeBuff( "divine_purpose" )
             removeBuff( "shining_righteousness_ready" )
             removeBuff( "empyrean_legacy" )
@@ -1700,4 +1735,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Holy Paladin", 20240731, [[Hekili:TE13VTTnq4)wYljByjAs2nnTdW5HT9WQ3qqbub6BsIMI2IZuKAKuXnac8V9DKkYMu)OffOVKyZ7JF3rE39D0zjzFklTePjzpTkE1BIFyDsu89jRxTolv)sdjlTbHpIoaFGJQH)(xc2lMIpIyOsk3A9fMavAzrjALyarw6Uwkt)bE2U5PEfGTHGZE6T3NLwrllj9qjkmWpbXistrJKkKunLOmfijXu8NFm9U9cCRIuAkeCik2A2Aj(U4hUBD8Vzk(ufa7ZiyZFMQRSrhJQ0kxS1q4LeP9Zp5oYeoAhJuM97zPyWnejfLLELPqdENRJqNqhjCk)q0RanfDDqGG10Nj5eoP2fypAksYsTRkaVPQOewzUyFUUIKlPhQ0erRktdxal6ZLD41MIdsrBZfhWSuA5VeDIBPD93nTxi7Kq6I1dmH8fGmTndSh1Y0NVKgGkj7Aps890WrAab6zc)a4M8tsKUAeY1ZIelBviiNmc8B8bdlRuwWqCQARRNG((LqJA1T18rOF7sOpr56jC)WIrcuBYpmc978r7suQ8)TT8qnKggb99(qBe9)pars8Ij2DT73hTJjeLSwLoQTPVY0TCywybBd37r(vw7Pqo2sQZ7bjFOHlhCETACmUCnTxF0eVg0pHfcwP4eFgCssnIY77XoGlJQrFPFpvGauEJ4eGbQxPyQ2uSXued9FAjfBJSlbpgXy59Fj3kg0ljK3lLDwuWUNGI0s6ZuojxlySXN6G6Z(yrsv1JHD)x7Ybl4kcgYrajUS019slW3go)52dZrseLNlrCR875JK3MDUkOQUcz7sC10Z0jMeutVq5zY7MCevvc8XXWE)IhXZP1lBEU8P3zk8u7KxIdunKyKlHiLtcy4RnscwuVdnv6QIGK6CO3LWXEky7C7d25Zq(3cCyefugDcjTkMq9UBGcTUriHAS9cyWYnd1m3ykKK)RfABGszLOgacsoIAyChSaUYMZurMT)duhbdjGPt)HGdoZz(MXQZaBAXmRp0Ta2)PKV8ZN5B1py(w)dJpZ2zU0EDUY35D2shYXsfJdULKC8dYp4IplTRhA9mfUxlaMT1tI9u25Mo1VS5x7NbA2EzLq12zTmec(gNotBjR9ZWwYA)mRfz2nJY36Ozs(M6Nb5VY55b3s3VzYiNUU5h3mEDVrn(KFEII)IJvQV1QrVzOD72ET9nj245QLY0DDF7bkp(Q4tx30bjBI9JiVHa(lFrZpi89uLDX4in(R)g67bEiud330CzVlISbbuOJSX0xrwE4wjOkoqZ1218QTOHScaAH38gKMgul66SeC59ZpMmlLbVY1s0yEU29S4z3BWJANBVqlDRUsaV17VblIJWVJHtDJcY())]] )
+spec:RegisterPack( "Holy Paladin", 20240805, [[Hekili:nE12UnUnq0VL9LCbnrvox3Ty9(qBFOBArWc4fyFts0s0wSHIuLKYEnGb)27murYKYsobbi2MZHZmKZzMJuYSKVNSOGyOjpFt8n3f)X47JIF4U7U9XKfMD10Kf1K8xiRHViivW))ljFNn7BeoPGjqR74ssb6fTSrLdiswSSHXnFvKSCCxFpGTMMN88dW3kzff0wOuDo4FkHtv2SAftQyggvBZikQn7p)2IRxjZB00cBMuazXt2NqhFD8JxFB8VzZ(Eja7heyZ)GzkXSJZ0gTl3QPIcQc)(ZUJmvqwYPfj)EYICimufJGNaU0MDMn7cBwjKhMYO6CJn7Z2ShJTz73BZ(GnJ(FnS6AArKUKr5qYCPBplBwTcxsWeRtvS1LgQSrlOADQIsk2f1u36chqAv9oyzrkNUMKJgtwqYnmjK1BLQIu5Q01CPAxIbU(MmJxRKOBFFH)qe4ODmefKTcmc3IrOZA75cnBkPh8LFkyG)Gc2ksd30FN2TFfDzZl0q4TNHoeKnuXAmr3QiMYbiVDuK5QgnbkHdaFNpyyzTgbdPUUPQ6i03pfAsJPPsma9dtHEltyoY3pozMauzX6bO)OpAx5qN(VnfRROcZaOFYhATS9ZaeZINKG4Ofl5szbVrBc5GHvHjS1DVhWFwXGAm6ux0dk(q)zke8k9WCCAsm0tzGMEHzKO(6gAZSCPKxi3kgbNIwrycywXxSzRZlIQi)SDpLW8Q0A5wadWxz5mOFEUnlgO5gflhZSdjFoHZtB)rko7ODcsA7KV(zi4EciPfSnmbn1i58HN6a(zBUOy6QHWU)0D4EelkjhsoGwTHPmnu3UF4uxTaCnnhQWW(JEDyrR3I6U9sXRIxOrmrQIiWz99xiEB2fQawEjb7XCDeJ0hplGJpb5E2No6csxkZFz40JPz49KIdBEm2G3zk8u7CFafMOYjUYPsDucd)SwrZLvljMtlM4AJQB1jH5lkseMLEKg6gxVSZ2PNYJBzdnTqAIou)Ddn64YhtpCM7hN(gIhJgGveqfD6a4m7UrG7KnqFbAVxPhuXikulcMd40Lzv1sfKVRKG(85VkDCUntHYPkSdxlRaCWKyzf8qdWc5LizuhzF6FG2lB2SBar()qkGG5SF(utna3AKNWE3ufa3fZ(5Lr4ts8vx(HU92U(dBM75haZyrxUIX77m0r9SGFz(VgukVITA(41E7tJT5bLmC7txVNh)woXvwqN4QUNnDLfDvVZax0QA7VsO(WOw6Ur9nESk8uwBvDNYARk7KE2PQ6BDGkQVPwvt)v6vW6lx(IK73pUa5W19eh9DEVgO)Id1wUcvvM3jQCvRA08zy(8HPiU73)2sGF51bE73FS0Nh9bPThKT8x(GkvWD)aHNEkwWz0tUWDqgi(Cwl0jfEcsJqXfFtJvIpm9piHcdeMtNqVO7QlGQhig41Ye1v6aqbpXoge8njo7IdVdXNFmE)(pm4nhU8S3XdT)kL743xy0ej4b7pmf4DeNrD3KVja05wkHNa(VbIQ8fyqNG5ecs()p]] )

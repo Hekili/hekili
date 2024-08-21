@@ -155,7 +155,7 @@ spec:RegisterTalents( {
     -- Shado-Pan
     against_all_odds               = { 101253, 450986, 1 }, -- Flurry Strikes increase your Agility by 1% for 6 sec, stacking up to 20 times.
     efficient_training             = { 101251, 450989, 1 }, -- Energy spenders deal an additional 15% damage. Every 50 Energy spent reduces the cooldown of Storm, Earth, and Fire by 1 sec.
-    flurry_strikes                 = { 101248, 450615, 1 }, -- Every 51,076 damage you deal generates a Flurry Charge. For each 400 energy you spend, unleash all Flurry Charges, dealing 6,009 Physical damage per charge.
+    flurry_strikes                 = { 101248, 450615, 1, "shadopan" }, -- Every 51,076 damage you deal generates a Flurry Charge. For each 400 energy you spend, unleash all Flurry Charges, dealing 6,009 Physical damage per charge.
     high_impact                    = { 101247, 450982, 1 }, -- Enemies who die within 5 sec of being damaged by a Flurry Strike explode, dealing 12,018 physical damage to uncontrolled enemies within 8 yds.
     lead_from_the_front            = { 101254, 450985, 1 }, -- Chi Burst, Chi Wave, and Expel Harm now heal you for 20% of damage dealt.
     martial_precision              = { 101246, 450990, 1 }, -- Your attacks penetrate 10% armor.
@@ -170,7 +170,7 @@ spec:RegisterTalents( {
 
     -- Conduit of the Celestials
     august_dynasty                 = { 101235, 442818, 1 }, -- Casting Jadefire Stomp increases the damage of your next Rising Sun Kick by 30%. This effect can only activate once every 8 sec.
-    celestial_conduit              = { 101243, 443028, 1 }, -- The August Celestials empower you, causing you to radiate 721,085 Nature damage onto enemies and 69,221 healing onto up to 5 injured allies within 15 yds over 3.6 sec, split evenly among them. Healing and damage increased by 6% per enemy struck, up to 30%. You may move while channeling, but casting other healing or damaging spells cancels this effect.
+    celestial_conduit              = { 101243, 443028, 1, "conduit_of_the_celestials" }, -- The August Celestials empower you, causing you to radiate 721,085 Nature damage onto enemies and 69,221 healing onto up to 5 injured allies within 15 yds over 3.6 sec, split evenly among them. Healing and damage increased by 6% per enemy struck, up to 30%. You may move while channeling, but casting other healing or damaging spells cancels this effect.
     chijis_swiftness               = { 101240, 443566, 1 }, -- Your movement speed is increased by 75% during Celestial Conduit and by 15% for 3 sec after being assisted by any Celestial.
     courage_of_the_white_tiger     = { 101242, 443087, 1 }, -- Tiger Palm has a chance to cause Xuen to claw your target for 30,045 Physical damage, healing a nearby ally for 25% of the damage done. Invoke Xuen, the White Tiger guarantees your next cast activates this effect.
     flight_of_the_red_crane        = { 101234, 443255, 1 }, -- Rushing Jade Wind and Spinning Crane Kick have a chance to cause Chi-Ji to increase your energy regeneration by 20% for 6 sec and quickly rush to 5 enemies, dealing 12,018 Physical damage to each target struck.
@@ -232,6 +232,11 @@ spec:RegisterAuras( {
         id = 443028,
         duration = 4.0,
         max_stack = 1,
+    },
+    chi_burst = {
+        id = 460490,
+        duration = 30,
+        max_stack = 2,
     },
     -- Increases the damage done by your next Chi Explosion by $s1%.    Chi Explosion is triggered whenever you use Spinning Crane Kick.
     -- https://wowhead.com/beta/spell=393057
@@ -425,7 +430,7 @@ spec:RegisterAuras( {
     },
     fury_of_xuen_stacks = {
         id = 396167,
-        duration = 20,
+        duration = 30,
         max_stack = 100,
         copy = { "fury_of_xuen", 396168, 396167, 287062 }
     },
@@ -484,7 +489,7 @@ spec:RegisterAuras( {
     martial_mixture = {
         id = 451457,
         duration = 15.0,
-        max_stack = 12,
+        max_stack = 30,
     },
     -- Haste increased by ${$w1}.1%.
     memory_of_the_monastery = {
@@ -915,7 +920,7 @@ spec:RegisterHook( "runHandler", function( key, noStart )
             if talent.hit_combo.enabled then addStack( "hit_combo" ) end
             if azerite.fury_of_xuen.enabled or talent.fury_of_xuen.enabled then addStack( "fury_of_xuen" ) end
             if ( talent.xuens_bond.enabled or conduit.xuens_bond.enabled ) and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.2 ) end
-            if talent.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then reduceCooldown( "touch_of_death", 0.35 ) end
+            if talent.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then reduceCooldown( "touch_of_death", 0.6 ) end
         end
         virtual_combo = key
     end
@@ -1133,17 +1138,19 @@ spec:RegisterAbilities( {
 
     -- Talent: Hurls a torrent of Chi energy up to 40 yds forward, dealing $148135s1 Nature damage to all enemies, and $130654s1 healing to the Monk and all allies in its path. Healing reduced beyond $s1 targets.  $?c1[    Casting Chi Burst does not prevent avoiding attacks.][]$?c3[    Chi Burst generates 1 Chi per enemy target damaged, up to a maximum of $s3.][]
     chi_burst = {
-        id = 123986,
+        id = 461404,
         cast = function () return 1 * haste end,
         cooldown = 30,
         gcd = "spell",
         school = "nature",
 
-        --[[ spend = function() return max( -2, true_active_enemies ) end,
-        spendType = "chi", ]]
-
         talent = "chi_burst",
         startsCombat = false,
+        buff = "chi_burst",
+
+        handler = function()
+            removeBuff( "chi_burst" )
+        end,
     },
 
     -- Talent: Torpedoes you forward a long distance and increases your movement speed by $119085m1% for $119085d, stacking up to 2 times.
@@ -1950,9 +1957,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "physical",
 
-        talent = "touch_of_karma",
         startsCombat = true,
-
         toggle = "defensives",
 
         usable = function ()

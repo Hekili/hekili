@@ -496,8 +496,6 @@ do
                     local spellID = GetConduitSpellID( node.conduitID, node.conduitRank )
 
                     if conduits[ spellID ] then
-                        found = true
-
                         local data = conduits[ spellID ]
                         local key = data[ 1 ]
 
@@ -513,8 +511,6 @@ do
                     end
                 elseif node.spellID > 0 then
                     if soulbinds[ node.spellID ] then
-                        found = true
-
                         local key = soulbinds[ node.spellID ]
 
                         local sb = rawget( state.soulbind, key ) or {}

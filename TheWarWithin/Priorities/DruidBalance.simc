@@ -1,4 +1,4 @@
-# Snapshot raid buffed stats before combat begins and pre-potting is done.
+actions.precombat+=/mark_of_the_wild
 actions.precombat+=/moonkin_form
 actions.precombat+=/wrath
 actions.precombat+=/wrath
@@ -7,6 +7,7 @@ actions.precombat+=/stellar_flare
 
 # Executed every time the actor is available.
 actions+=/solar_beam
+actions+=/soothe
 actions+=/use_items
 actions+=/moonfire,cycle_targets=1,if=refreshable
 actions+=/sunfire,cycle_targets=1,if=refreshable

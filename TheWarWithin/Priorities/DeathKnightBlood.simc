@@ -30,7 +30,7 @@ actions+=/gorefiends_grasp,if=talent.tightening_grasp.enabled
 actions+=/empower_rune_weapon,if=rune<6&runic_power.deficit>5
 actions+=/abomination_limb
 actions+=/dancing_rune_weapon,if=!buff.dancing_rune_weapon.up
-actions+=/run_action_list,name=drw_up,if=buff.dancing_rune_weapon.up
+actions+=/run_action_list,name=drw_up,strict=1,if=buff.dancing_rune_weapon.up
 actions+=/call_action_list,name=standard
 
 actions.drw_up=blood_boil,if=!dot.blood_plague.ticking

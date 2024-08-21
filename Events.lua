@@ -21,12 +21,16 @@ local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo
 local UA_GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local IsUsableItem = C_Item.IsUsableItem
 local GetItemSpell = C_Item.GetItemSpell
+
 local GetSpellCooldown = function(spellID)
     local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID);
     if spellCooldownInfo then
         return spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
     end
 end
+
+local GetSpellInfo = ns.GetUnpackedSpellInfo
+
 local FindStringInInventoryItemTooltip = ns.FindStringInInventoryItemTooltip
 local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
@@ -704,9 +708,6 @@ do
             return
         end
 
-        lastUpdate = GetTime()
-        updateIsQueued = false
-
         wipe( state.set_bonus )
 
         for _, hook in ipairs( GearHooks ) do
@@ -1233,7 +1234,7 @@ do
         empowerment.start = start
 
         for i = 1, 4 do
-            n = GetUnitEmpowerStageDuration( "player", i - 1 )
+            local n = GetUnitEmpowerStageDuration( "player", i - 1 )
             if n == 0 then break end
 
             if i == 1 then insert( stages, start + n * 0.001 )

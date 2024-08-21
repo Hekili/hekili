@@ -137,7 +137,7 @@ spec:RegisterTalents( {
     zen_pulse                     = { 101108, 446326, 1 }, -- Renewing Mist's heal over time has a chance to cause your next Vivify to also trigger a Zen Pulse on its target and all allies with Renewing Mist, healing them for 12,252 increased by 6% per Renewing Mist active, up to 30%.
 
     -- Master of Harmony
-    aspect_of_harmony             = { 101223, 450508, 1 }, -- Store vitality from 10% of your damage dealt and 20% of your healing. Vitality stored from overhealing is reduced. For 10 sec after casting Thunder Focus Tea your spells and abilities draw upon the stored vitality to deal 25% additional healing over 8 sec.
+    aspect_of_harmony             = { 101223, 450508, 1, "master_of_harmony" }, -- Store vitality from 10% of your damage dealt and 20% of your healing. Vitality stored from overhealing is reduced. For 10 sec after casting Thunder Focus Tea your spells and abilities draw upon the stored vitality to deal 25% additional healing over 8 sec.
     balanced_stratagem            = { 101230, 450889, 1 }, -- Casting a Physical spell or ability increases the damage and healing of your next Fire or Nature spell or ability by 5%, and vice versa. Stacks up to 5.
     clarity_of_purpose            = { 101228, 451017, 1 }, -- Casting Vivify stores 7,363 vitality, increased based on your recent Gusts of Mist.
     coalescence                   = { 101227, 450529, 1 }, -- When Aspect of Harmony heals, it has a chance to spread to a nearby ally. When you directly heal an affected target, it has a chance to intensify. Targets damaged or healed by your Aspect of Harmony take 10% increased damage or healing from you.
@@ -155,7 +155,7 @@ spec:RegisterTalents( {
 
     -- Conduit of the Celestials
     august_dynasty                = { 101235, 442818, 1 }, -- Casting Jadefire Stomp increases the damage or healing of your next Rising Sun Kick by 30% or Vivify by 50%. This effect can only activate once every 8 sec.
-    celestial_conduit             = { 101243, 443028, 1 }, -- The August Celestials empower you, causing you to radiate 459,451 healing onto up to 5 injured allies and 95,559 Nature damage onto enemies within 20 yds over 3.6 sec, split evenly among them. Healing and damage increased by 6% per target, up to 30%. You may move while channeling, but casting other healing or damaging spells cancels this effect.
+    celestial_conduit             = { 101243, 443028, 1, "conduit_of_the_celestials" }, -- The August Celestials empower you, causing you to radiate 459,451 healing onto up to 5 injured allies and 95,559 Nature damage onto enemies within 20 yds over 3.6 sec, split evenly among them. Healing and damage increased by 6% per target, up to 30%. You may move while channeling, but casting other healing or damaging spells cancels this effect.
     chijis_swiftness              = { 101240, 443566, 1 }, -- Your movement speed is increased by 75% during Celestial Conduit and by 15% for 3 sec after being assisted by any Celestial.
     courage_of_the_white_tiger    = { 101242, 443087, 1 }, -- Tiger Palm and Vivify have a chance to cause Xuen to claw a nearby enemy for 21,056 Physical damage, healing a nearby ally for 200% of the damage done. Invoke Yu'lon, the Jade Serpent or Invoke Chi-Ji, the Red Crane guarantees your next cast activates this effect.
     flight_of_the_red_crane       = { 101234, 443255, 1 }, -- Refreshing Jade Wind and Spinning Crane Kick have a chance to cause Chi-Ji to grant you a stack of Mana Tea and quickly rush to 5 allies, healing each target for 9,571.
@@ -223,11 +223,6 @@ spec:RegisterAuras( {
     bounce_back = {
         id = 390239,
         duration = 4,
-        max_stack = 1
-    },
-    chi_burst = { -- TODO: Hidden aura that procs Chi per enemy targeted.
-        id = 123986,
-        duration = 1,
         max_stack = 1
     },
     chi_torpedo = { -- Movement buff.
@@ -674,7 +669,7 @@ spec:RegisterAbilities( {
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
                 gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
-                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
+                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.5 ) end
             end
         end,
     },
@@ -974,7 +969,7 @@ spec:RegisterAbilities( {
                 if pet.chiji.up then
                     addStack( "invoke_chiji" )
                     gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
-                    if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
+                    if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.5 ) end
                 end
                 if buff.thunder_focus_tea.up then
                     removeStack( "thunder_focus_tea" )
@@ -1079,7 +1074,7 @@ spec:RegisterAbilities( {
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
                 gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
-                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.3 ) end
+                if talent.jade_bond.enabled then reduceCooldown( talent.invoke_chiji.enabled and "invoke_chiji" or "invoke_yulon", 0.5 ) end
             end
         end,
     },

@@ -1,6 +1,6 @@
 -- WarriorProtection.lua
--- July 2024
--- TODO: Model Ravager better for rage generation
+-- August 2024
+-- 11.0.2
 
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
@@ -52,6 +52,21 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         interval = 1,
 
         value = 4,
+    },
+
+    ravager = {
+        aura = "ravager",
+
+        last = function ()
+            local app = state.buff.ravager.applied
+            local t = state.query_time
+
+            return app + floor( ( t - app ) / state.haste ) * state.haste
+        end,
+
+        interval = function () return state.haste end,
+
+        value = function () return state.talent.storm_of_steel.enabled and 20 or 10 end,
     },
 } )
 
@@ -108,6 +123,7 @@ spec:RegisterTalents( {
     war_machine                     = { 90345, 316733, 1 }, -- Your auto attacks generate 50% more Rage. Killing an enemy instantly generates 5 Rage, and increases your movement speed by 30% for 8 sec.
     wild_strikes                    = { 90360, 382946, 2 }, -- Haste increased by 1% and your auto-attack critical strikes increase your auto-attack speed by 10% for 10 sec.
     wrecking_throw                  = { 90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 63,053 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
+
     -- Protection
     anger_management                = { 90311, 152278, 1 }, -- Every 10 Rage you spend reduces the remaining cooldown on Avatar and Shield Wall by 1 sec.
     battering_ram                   = { 90262, 394312, 1 }, -- Shield Charge critical strike chance and critical strike damage increased by 20%, and Shield Charge increases your auto-attack damage and speed by 10% for 20 sec.
@@ -133,7 +149,7 @@ spec:RegisterTalents( {
     fueled_by_violence              = { 90451, 383103, 1 }, -- You are healed for 110% of the damage dealt by Deep Wounds.
     heavy_repercussions             = { 90319, 203177, 1 }, -- Shield Slam generates 2 more Rage and extends the duration of Shield Block by 1.0 sec.
     ignore_pain                     = { 90295, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken, up to 1.8 million total damage prevented.
-    impenetrable_wall               = { 90310, 384072, 1 }, -- Shield Slam generates an additional 3 Rage and reduces the remaining cooldown of Shield Wall by 5 sec.
+    impenetrable_wall               = { 90310, 384072, 1 }, -- Shield Slam generates an additional 4 Rage and reduces the remaining cooldown of Shield Wall by 6 sec.
     indomitable                     = { 90434, 202095, 1 }, -- Your maximum health is increased by 6%, and every 20 Rage you spend heals you for 1% of your maximum health.
     instigate                       = { 90301, 394311, 1 }, -- Devastate deals 20% increased damage and generates 2 Rage. Devastator deals 10% increased damage and generates 1 Rage.
     into_the_fray                   = { 90319, 202603, 1 }, -- You gain 2% Haste for each enemy or ally within 10 yards, up to 8% Haste.
@@ -156,11 +172,12 @@ spec:RegisterTalents( {
     tough_as_nails                  = { 90450, 385888, 1 }, -- Blocking an attack deals 18,915 Physical damage to the attacker, ignoring armor. Generates high threat.
     unnerving_focus                 = { 90452, 384042, 1 }, -- Last Stand increases your Rage generation by 50%.
     violent_outburst                = { 90265, 386477, 1 }, -- Consuming 30 rage grants a stack of Seeing Red, which transforms at 8 stacks into Violent Outburst, causing your next Shield Slam or Thunder Clap to deal 200% increased damage, generate 100% more Rage and grant Ignore Pain.
+
     -- Colossus
     arterial_bleed                  = { 94799, 440995, 1 }, -- Colossal Might increases the damage of your Rend and Deep Wounds by 2% per stack. 
     boneshaker                      = { 94789, 429639, 1 }, -- Shockwave's stun duration is increased by 1 sec and reduces the movement speed of affected enemies by 40% for 3 sec after the stun ends.
     colossal_might                  = { 94819, 429634, 1 }, -- Colossal Might increases damage dealt by your next Demolish by 10%, stacking up to 5 times. Shield Slam and Execute grant a stack of Colossal Might and Revenge grants a stack of Colossal Might when it strikes 3 or more targets.
-    demolish                        = { 94818, 436358, 1 }, -- Unleash a series of precise and powerful strikes against your target, dealing 515,611 damage to it, and 343,741 damage to enemies within 8 yds of it. Deals reduced damage beyond 8 targets. While channeling Demolish, you take 10% less damage and are immune to stuns, knockbacks, and forced movement effects. You can block, parry, dodge, and use certain defensive abilities while channeling Demolish.
+    demolish                        = { 94818, 436358, 1, "colossus" }, -- Unleash a series of precise and powerful strikes against your target, dealing 515,611 damage to it, and 343,741 damage to enemies within 8 yds of it. Deals reduced damage beyond 8 targets. While channeling Demolish, you take 10% less damage and are immune to stuns, knockbacks, and forced movement effects. You can block, parry, dodge, and use certain defensive abilities while channeling Demolish.
     dominance_of_the_colossus       = { 94793, 429636, 1 }, -- Colossal Might now stacks up to 10 times. If you would gain a stack of Colossal Might and are at max stacks, the cooldown of Demolish is reduced by 2 sec. Enemies affected by Demolish take up to 10% more damage from you and deal up to 5% less damage to you for 10 sec based on the number of stacks of Colossal Might consumed by Demolish.
     earthquaker                     = { 94789, 440992, 1 }, -- Shockwave also knocks enemies into the air, and its cooldown is reduced by 5 sec.
     martial_expert                  = { 94812, 429638, 1 }, -- Critical strike damage of your abilities is increased by 10% and the amount of damage blocked by your critical blocks is increased by 20%.
@@ -171,6 +188,7 @@ spec:RegisterTalents( {
     precise_might                   = { 94794, 431548, 1 }, -- Shield Slam critical strikes grant an additional stack of Colossal Might.
     tide_of_battle                  = { 94811, 429641, 1 }, -- Colossal Might increases the damage of your Revenge by 5% per stack.
     veteran_vitality                = { 94815, 440993, 1 }, -- When your health is brought below 35%, you gain a Second Wind, healing you for 12% of your max health over 2 sec. This effect cannot occur more than once every 60 sec.
+
     -- Mountain Thane
     avatar_of_the_storm             = { 94805, 437134, 1 }, -- Casting Avatar grants you 2 charges of Thunder Blast and resets the cooldown of Thunder Clap. While Avatar is not active, Lightning Strikes have a 10% chance to grant you Avatar for 4 secs. Thunder Blast Your next Thunder Clap becomes a Thunder Blast that deals Stormstrike damage.
     burst_of_power                  = { 94807, 437118, 1 }, -- Lightning Strikes have a 15% chance to make your next 2 Shield Slams have no cooldown.
@@ -179,7 +197,7 @@ spec:RegisterTalents( {
     gathering_clouds                = { 94792, 436201, 1 }, -- Your attacks trigger Lightning Strikes 30% more often.
     ground_current                  = { 94800, 436148, 1 }, -- Lightning Strikes also deal 19,862 to enemies near their target. Damage reduced beyond 5 targets.
     keep_your_feet_on_the_ground    = { 94798, 438590, 1 }, -- Physical damage taken reduced by 2%. Thunder Blast reduces damage you take by 8% for 5 sec.
-    lightning_strikes               = { 94803, 434969, 1 }, -- Damaging enemies with Thunder Clap, Revenge, or Execute has a 25% chance to also strike one with a lightning bolt, dealing 39,723 Nature damage. Lightning Strikes occur 30% more often during Avatar.
+    lightning_strikes               = { 94803, 434969, 1, "mountain_thane" }, -- Damaging enemies with Thunder Clap, Revenge, or Execute has a 25% chance to also strike one with a lightning bolt, dealing 39,723 Nature damage. Lightning Strikes occur 30% more often during Avatar.
     snap_induction                  = { 94797, 456270, 1 }, -- Activating Demoralizing Shout grants a charge of Thunder Blast.
     steadfast_as_the_peaks          = { 94798, 434970, 1 }, -- Stamina increased by 5%. Victory Rush increases your maximum health by 10% for 5 sec. When this health increase expires, you heal for any amount of the original Victory Rush that healed you in excess of your full health.
     storm_bolts                     = { 94817, 436162, 1 }, -- Storm Bolt also hits 2 additional nearby targets, stunning them for 2 sec, but its cooldown is increased by 10 sec.
@@ -275,7 +293,7 @@ spec:RegisterAuras( {
     colossal_might = {
         id = 440989,
         duration = 24,
-        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 0 ) end
+        max_stack = function() return 5 + ( talent.dominance_of_the_colossus.enabled and 5 or 10 ) end
     },
     concussive_blows = {
         id = 383116,
@@ -1070,7 +1088,8 @@ spec:RegisterAbilities( {
             end
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
 
-            if talent.colossal_might then addStack( "colossal_might" ) end
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might.enabled then addStack( "colossal_might" ) end
         end,
     },
 
@@ -1443,7 +1462,7 @@ spec:RegisterAbilities( {
 
             if talent.demolish.enabled and active_enemies > 2 then
                 if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
-                addStack( "colossal_might" )
+                if talent.colossal_might.enabled then addStack( "colossal_might" ) end
              end
         end,
     },
@@ -1582,7 +1601,7 @@ spec:RegisterAbilities( {
             if talent.punish.enabled then applyDebuff( "target", "punish" ) end
 
             if ( legendary.the_wall.enabled or talent.impenetrable_wall.enabled ) and cooldown.shield_wall.remains > 0 then
-                reduceCooldown( "shield_wall", 5 )
+                reduceCooldown( "shield_wall", 6 )
             end
 
             if set_bonus.tier30_2pc > 0 then
@@ -1595,6 +1614,9 @@ spec:RegisterAbilities( {
                 removeDebuff( "target", "thunderous_roar" )
                 if set_bonus.tier31_4pc > 0 then applyBuff( "fervid_opposition" ) end
             end
+
+            if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
+            if talent.colossal_might then addStack( "colossal_might" ) end
         end,
     },
 
@@ -2068,4 +2090,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Protection Warrior", 20240723, [[Hekili:nRvZUnoos4NL5Irm2mowY2XjdIZHDpn9HglGhG9MKPLOTvhjrbkkNndm8Z(wKIsIKMuwU707mansNiwSQVQy9NyPaVG)iyDmIHd(Q)u)5tx6pBIV3SLZFoyn7JcCW6cu0BO9WVKJYGF(VPegoILqYpV5)GO0ecLtZhPeumNxLKkAeq3bgRO83E4H9jSdvBNerYEOmjRkfX3AefTJX)7OhcwVTkjL975bBTcKzlbEwGJc(6YzaxtIJX1KIlJcwZj9xNU8x9N)BN38hhWcmb)aeAsoGlkzxskGgKaXLtkOyajBrS)XQhGFYsXHLmuEe(Egz)(u8kqT(Y5Vijhik6aIUhFFYUvSKm8QPQRvvIdty4Ss1hIoIyaeuEs5HeCAC47O0ubFqP4C2KKSmYr0waaKTFdmOtW58)kE02QD7MuZLjXK3Zvz12ucjoCxf9dTNIPLy6Bj571acncLJdzekfKN6kPj7pWkd)wv8(mJL2LqXcHOXjW(uYOO0Wiqh0KmAFizxiJMe9MMvOGW)nU6QQovfNoP)3JyCZlBYbmkLDysre7Lv(Ag5K95ekoSaLKxB9mO)vG(r3rbp0jX4Djrjah8wmkIqs5wVjsRFzkkBcfJI)40jDINp9cIRp0RjFK88cEwwbhtHBRsFhrFR5aZKF(9ZptYNPqEmoJaM5K)eokdlpqQy6yylHKXx6ijjcpe5lTZ217f)GcU2tnfvYeXqX1hNc6RYZX0J8DSJevv6cQZCa1FCo7pDahZD(e1c8ycHlJqq93wrlzkIf83o(rifxGPGulf5sAmdTb0f4CmeMWJP5b7UW2I(8oDJKB2M8Za7El7d7xxGxWVNga)CIUXNojI8FD1YPYmlLym3qqXXtaZu0BRwoQMIzlg7suzqULsal1My5AqwWO3Aw81vZhvIzHBj5G9LLGPZ8c9lIUNxcGSBx4(O4vEA5yBpO4zTUZsARNNEvFARjhVYUgZ3MmOnTKHPDSZqdMY1alpDErKQMqHiZ9yTkAxMUqPWM1CfgLuLzsH666LkHwfYJXusvziLywffopEhDeRikAv22uUSa2agOgNAGTPPH1gVYjTBe8bSuwUo3SLfeoaTvW08kIROI2yaFMPM2L0KYdAMVQ8W6)kewIDpVlQviIqn0bQu5dJsrfgyLx39sUShIkGkVknSmbyCNzeql4fYfumHNqhsA05S7ApCPFJBPvmoZDzvrf65JJUOHaP3DjJuuic53rOw8KCG7)kWafFeNx3Lyt6OgEuItkZsIc5KqHg1e(no8uLSr9SxkaL8vnc5Lvp2KZ7M02xwTS3ZX(SVxvVNjl7(kVCBt(aef(hycGe4j5q0ANvSJFsxzDv12YdW123rnuTMPTWs3E(3khX)xCufd3L8OI)wlHXyeKLQZ)s7Xx4ADb7gK54UEYP4D6uFvah9lU8MgpeZ2))KSIBNS8)ttV8fjE1Vj(qsVZx3yuD8K7EreGCamdezxljwX0SfdGnqJXl(8WeVXhPdxgQSefrTKhZQVR1StQLbSEKOHGxvEzUVx32vxZ75MCEUf32pxjhJpcAl)gowd1c4TflVQdpVhdwdVsjp5yzW6FpRGqzWPZM5N3uZMZB4v9lNC(lbRf)g)MwGCWW)9vXn4ipqd(NbRJOjqxFjOG1MjYoV5LvN341CBibR1ogcyaC(X5f3WXz1mNSYLr78MrN34SU15nVEEZJcA0RwlE01Qy3Jop)V5aTXGUWjo5PkaPcNhlNQkKE79WIsidIRz1SoKiFohepEfqWDkEeaXPtsT)7W8X5XYoPRe3XrWsHRV1dtfGbe(KncfgtD6EEa21zsvQ7jZ1S0o7XXMreaQmPqB4RnDvhL3AKPFNdO12w6jGWDK7NLOACPVsONrBtAU2wADQtoYAyTrnMpx3062N(oh(PHTX5E1(f9vKqa7FPVWHX9CyS8VHGR547P(WwxOYtnHkgDMiWOVAYIU(yCTdH)wn)6s449K4b9RN3GqKWAC9MgUUmBXnjgo05B5NTUWLXy1GhZ2aTMP3DArhfn0Bhqje0BQtwPbyPH3kA8C3LZ1Idwn8aHBkkOne1ZDU5)QWwteQ3m10FknGQMaKXxzhQkL1F7K8bGjoMvoIQV9S2cunpUDYygPA1GtDJrgu4UKWvMB2fnCPx6rziCxuwOBQA2Qm0sv7u2mOsRJe9PU1xljgtHZwxjnK2ovodIQJSAfT2y6mjvRpdT52zsPB3zZ(zBZdz2JRJ82DaOE(GDUOkIRHeLb)5mLHmhxxrbzY6MbmiZPUOVCQO4p6AUtFJYM86BCEQ5vDoIqx83Fi83(wNzSvxtWtRlvR3m)aXM685CAVw8PbQMGzTbEPUphJ)yO2lD15ZwA(tVrxkvFXEt23bPEMYMkzohEMleU46rlxdHFN2YF(6M3YHOBdbeo4FVDVzW)EqVTwpxQ2PS5yof1LRvoL3ATTXV(7U4L62qAo4Snau5l9kiY2GqRl5lNekVjcEMD31YVZEVQGiEE6GCv4gI(F9GRXHXnmrMfsBwP1RzBEPowzo3e0wzV1Zxyg061qonvZAUUFh0(stQ2ANzMwbB1AnXyURMqW29L0miwtAD)Yb9oz2A3h7tN9IBDQDfr3LAD6OvN0aB(UBG9sV7Mb5kJbMEHieKjyRVEN01d61u2UV6KR9AaQx3M(eJRVX3W6V(o(D(YfKzOv7zSXGI12CZTojA5V9lHRTP)6VaUG1KC1gfv(g5mFTbGlOk2b(ha462pTV)f)t7tSyW)l]] )
+spec:RegisterPack( "Protection Warrior", 20240815, [[Hekili:nRv3UTTos4NLZngXytDK)l29G4CXEU60lkwaxG9ojtlrBRtKefOOC2SWWp77qkkjsAszz30Dx0I0gPHZ8ndN)i14p2)h(RJqmS)3N4nzM3YXZh5nF2Yjt9xZ(ih7Vohf(gAp8FYqPWp)hucdhYIjzN38pruAmHYP5JeckIZRcsjneO7aJLx87p90(y2HYTJcjPpveNwMG4lnKI2X4)E4t(R3wgNW(Zm)T2aYZZNa8mhh6)9faKoehfHRifxe6VMt6x8w(LXZ)9ZBwhN(hN3KZHum7JZBkZ58R483o)Tk6w8LjZa6(XbSa7WpaWfNb4Ns2fNaOgj0SIr5umG4Ti2FB1tWpzj4Gcgkle)iJSFFcEfO(FRlIpqkzCblPbEtEzAkor9jHhq094hJ3TIfNIx5D6uk5iofNXgffxjUxxQUGYcCqmdNwO(q0red0fLNuCigNef8okjrWCucNLXPa3rBbWr2(xWo4iCg)3IgSTC3UrvCzue59mvwTnHqIc2vs)q7PyAbM(wC2EnGqdrz4agHsb5P(MK49hyfb)vz0(uJxTlMIfcrJtGMxWOOKGqqh0KmAFazxaJgh(MMviNW)FC1vvDkZpDs)3hW42C2Odyuc7WO8q2lRM4PYP49zekoihfNvz9mO)vG(bpqHqIrr4DXHXahgpFqiHKWTEJKw)Ieu6ikgf9XPt6epZ7cIR8eQiFGC)cEwAohtbBltEhrFREdZKFt6MFMKpvH8iCkbmZX)ByRSYNvhdBjKu(RosIdX9r(s7SD9E(pPGR8utqfmrWyu12PG(YSmm9iFf7iHLfUG6uhq9NNZt86X2CRprLapgt4Yiau)TL0cMIyb)TJFeqX5yki1crEMAZqtaDooddHj8yAEWUlSnVlVt3i5MTj)kW(4fDH9RlWl43YEWpNOB4PtIi)xxTWtMzPaJ5gckoAeyMcFB1IbvumD(qxIkfYTuayPYelFhKfm8T6x(6QzdkWSGTKmW(YIX0PJdMKh(iVeaz3UG9HrRgRLJTzJIN16blPT(Q3v9PTMC8kRAiFzYG2KcgM2YodnWJRbwE6S8qvnHcrM7XAv0UmDHsHnR5kmQZkZKcnsGUGXjXfhAkCessiffqLNuEnRQTuyVuDnq)mzrykPSiGsmR8c7HVJoIvGhTmDBchFGObJADGaaLKKGkdEXOMfAilT85wEHWPPb8AEsrLurVwGFMw9nAzwq1VfaAo7rEBDRqe8Jf8QQSvJ5SthDsnoimbLBaqEb6lz3Ei8byMsdqJaj0A7aicURCbfr4z(HSlTrfUwdx634sAeJZKCwv0k9CYGlADqghuWi55IKd7iul(Coa(9aIz3kiAAFGIa3bWTtYU2OY7agpFROW0uqXhXzv96wN)SMhf44I04WaojuOZsHtRJWejBu9bLcqjbBTqEz1ZE3J2cLUVMrSt)TUCdUQDzQSpIx59puNGdrH)cMiOIuCgaNwy0YpziNnN)he2aThlRvjDXf2eEF15K3bLu8UMYt9FtFyf0FrzZTo)6LgUw8AS19GtivdxlAcGw3B13jUW)lCyjtZNTP8V7M7ePKCjM6925DV8H19wuYpTBqegbfoA3a0EC)mS9Yp5YeRtC0DO2XeTWs3PQVxo26m3rPjWhOZDLFZPhsFuM)7jzLScs)TLExEW1xNuNEtsVZJ3oOY93DVVcq2dMbISTfyRyA68EWg4GyZ)8WeVrBzKrkc6DlKAPm0fH1xXURjMxvUHG713C11CrUjpKBX38ZvYr4JG2YVNU1q9A(zTQVWoV5(RFhr5fOk8x)NP5ekd2c2m78Mk2CEdVdXIrN)M)Auj7a)Mdx3CNG)b)ob9xliHFrIqbs4F(U4ckLBN()D)1H0y4mgXi)1MjxoV5LvN3mU(s88xRT)4ZaC(ZZlUfLZQPozLlR55ndoVXzthN38kiWjcI0l7kE01k92Hsp7xcsNDVivLiNTxT50jjZVh4DEZZ3l6CVHp3PzKNiRYOSWtviD2yRfLqM9PIvtBrI85Cq88vab3P9zVFoZ3ln7UxzxQfHkjv4OCHi81Q)Oc4bcxAJqHbxNUV2dB)uPA3(KzA7goBI2MHgaQmJx3PGEqAMT0r65n6XZ2AOvML5EDwpVzOQo)YfEGMTFExPgFOtfqxjTAhK6y3(K3TMy475oVSEykxypyXBPRcLDbitNV59HDdvSkg96RLiXs)(Tgaz)mnP6Tzy0dNCNkZEzqLnyR9T3HBL7ewFwIQo)8IUCGD3DKOCH078Q79)wNEWDygw()HGR2W5o5Qw8XY64rJ2VfyCIAnN2M1DTcXoDf)Ad4hVShrm3GqKWAOLy9o1LPZVjXWHoFj)Q1fUmgQMvW8SowByySNAkH6uf6Pdg7U(MguKMu7YPZ6hD6HVQ)U43K)DtW3y31e(Ff2QJ9gRLXw5OvQBqm(B2HktynnJuVIQzkWy)09wbFmdeLSLHRxmUbIT4LT8V67o0uxT(XnZHGHK10MQEz6DPNMp9M9Pu4IEK0Rgi3v4FRUMYo1VRDggmaJwFQTZ0qxnPQpJd2AtTMsJzEWmMtlUSziiSgz2iBTPIWK0jAkJ6ysys5vo6QspOnzOm7l1rgDfhtX4y06IRiUAsuMZcNPCKz)AlxitJx)9CLzBN3v2wu0hTnNPVqh98Po9eQzCDorgU4)K(WF7lDQXsDnWeQ4Z(hcTNytDCiCAVM)PbQ6OzT5lqDDo(AZ91EPRoF2sBI3n6sP6l2zXIwi1XqnOsMZzvWfcNF9OLRHW70w(Rx3gVOp6wFaHd(3zFDg8Vd0BRP0fQ9qBovjIQ2vkNYvE00sy3DNyCjdfQtjqdrTxQNT5oPQMVCWt4nHWZS7Uy(d27IfeXx96LRc3q09bhUghgwZezwiTrtP6D2gpfhVzg3e0uAVXZxyg0A2qo8kM1CDF60UstQ2AOzMwbB16nXymxmHG7Z5j8kSn4lxCvK136HOntTwyKD2wpumMTK21rme6V9PKPYF0(KYCb4AEJqIA9dPv41eBxPFiTWL6HQrgu5DHieKjyR77D)Ah5a0PQzXHhO16zPp3ovFPKGQHYM)Ts4Y0mISX1WykD0wC9nDkoPrZSm3CwJQbE2FnjtT)sLrI22Xpmju4XACQMQ)4)F(d]] )

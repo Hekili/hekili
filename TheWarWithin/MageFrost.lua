@@ -7,6 +7,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
+local GetSpellInfo = C_Spell.GetSpellInfo
 local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 64 )
@@ -119,7 +120,7 @@ spec:RegisterTalents( {
     slippery_slinging        = {  94659, 444752, 1 }, -- You have 40% increased movement speed during Alter Time.
     spellfrost_teachings     = {  94655, 444986, 1 }, -- Direct damage from Frost Splinters has a 2% chance to reset the cooldown of Frozen Orb and increase all damage dealt by Frozen Orb by 10% for 10 sec.
     splintering_orbs         = {  94661, 444256, 1 }, -- Enemies damaged by your Frozen Orb conjures a Frost Splinter, up to 4. Frozen Orb damage is increased by 10%.
-    splintering_sorcery      = {  94664, 443739, 1 }, -- When you consume Winter's Chill, conjure a Frost Splinter that fires at your target. Frost Splinter:
+    splintering_sorcery      = {  94664, 443739, 1, "spellslinger" }, -- When you consume Winter's Chill, conjure a Frost Splinter that fires at your target. Frost Splinter:
     splinterstorm            = {  94654, 443742, 1 }, -- Whenever you have 8 or more active Embedded Frost Splinters, you automatically cast a Splinterstorm at your target. Splinterstorm: Shatter all Embedded Frost Splinters, dealing their remaining periodic damage instantly. Conjure a Frost Splinter for each Splinter shattered, then unleash them all in a devastating barrage, dealing 1,317 Frost damage to your target for each Splinter in the Splinterstorm. Splinterstorm applies Winter's Chill to its target.
     unerring_proficiency     = {  94658, 444974, 1 }, -- Each time you conjure a Frost Splinter, increase the damage of your next Ice Nova by 3%. Stacks up to 60 times.
     volatile_magic           = {  94658, 444968, 1 }, -- Whenever an Embedded Frost Splinter is removed, it explodes, dealing 525 Frost damage to nearby enemies. Deals reduced damage beyond 5 targets.
@@ -133,7 +134,7 @@ spec:RegisterTalents( {
     frostfire_bolt           = {  94641, 431044, 1 }, -- Launches a bolt of frostfire at the enemy, causing 14,620 Frostfire damage, slowing movement speed by 60%, and causing an additional 4,202 Frostfire damage over 8 sec. Frostfire Bolt generates stacks for both Fire Mastery and Frost Mastery.
     frostfire_empowerment    = {  94632, 431176, 1 }, -- Your Frost and Fire spells have a chance to activate Frostfire Empowerment, causing your next Frostfire Bolt to be instant cast, deal 50% increased damage, explode for 80% of its damage to nearby enemies, and grant you maximum benefit of Frostfire Mastery and refresh its duration.
     frostfire_infusion       = {  94634, 431166, 1 }, -- Your Frost and Fire spells have a chance to trigger an additional bolt of Frostfire, dealing 3,151 damage. This effect generates Frostfire Mastery when activated.
-    frostfire_mastery        = {  94636, 431038, 1 }, -- Your damaging Fire spells generate 1 stack of Fire Mastery and Frost spells generate 1 stack of Frost Mastery. Fire Mastery increases your haste by 1%, and Frost Mastery increases your Mastery by 1% for 14 sec, stacking up to 6 times each. Adding stacks does not refresh duration.
+    frostfire_mastery        = {  94636, 431038, 1, "frostfire" }, -- Your damaging Fire spells generate 1 stack of Fire Mastery and Frost spells generate 1 stack of Frost Mastery. Fire Mastery increases your haste by 1%, and Frost Mastery increases your Mastery by 1% for 14 sec, stacking up to 6 times each. Adding stacks does not refresh duration.
     imbued_warding           = {  94642, 431066, 1 }, -- Ice Barrier also casts a Blazing Barrier at 25% effectiveness.
     isothermic_core          = {  94638, 431095, 1 }, -- Comet Storm now also calls down a Meteor at 100% effectiveness onto your target's location. Meteor now also calls down a Comet Storm at 150% effectiveness onto your target location.
     meltdown                 = {  94642, 431131, 1 }, -- You melt slightly out of your Ice Block and Ice Cold, allowing you to move slowly during Ice Block and increasing your movement speed over time. Ice Block and Ice Cold trigger a Blazing Barrier when they end.
@@ -275,7 +276,7 @@ spec:RegisterAuras( {
     deaths_chill = {
         id = 454371,
         duration = function() return buff.icy_veins.up and buff.icy_veins.remains or spec.auras.icy_veins.duration end,
-        max_stack = 10
+        max_stack = 15
     },
     -- Talent: Disoriented.
     -- https://wowhead.com/beta/spell=31661
@@ -1215,9 +1216,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
         velocity = 40,
 
-        usable = function() 
+        usable = function()
             if moving and settings.prevent_hardcasts and action.glacial_spike.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
-            return buff.icicles.stack == 5 or buff.glacial_spike_usable.up, "requires 5 icicles or glacial_spike!" 
+            return buff.icicles.stack == 5 or buff.glacial_spike_usable.up, "requires 5 icicles or glacial_spike!"
         end,
 
         handler = function ()
@@ -1380,8 +1381,8 @@ spec:RegisterAbilities( {
 
             if pvptalent.ice_form.enabled then applyBuff( "ice_form" )
             else
+                if buff.icy_veins.down then stat.haste = stat.haste + 0.30 end
                 applyBuff( "icy_veins" )
-                stat.haste = stat.haste + 0.30
 
                 if talent.snap_freeze.enabled then
                     if talent.flurry.enabled then gainCharges( "flurry", 1 ) end
@@ -1455,7 +1456,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        
+
         usable = function ()
             if moving and settings.prevent_hardcasts and action.shifting_power.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
             return true
@@ -1595,18 +1596,21 @@ spec:RegisterOptions( {
     package = "Frost Mage",
 } )
 
+
+local ice_floes = GetSpellInfo( 108839 )
+
 spec:RegisterSetting( "prevent_hardcasts", false, {
-    name = strformat( "%s, %s, %s: Instant-Only When Moving", 
+    name = strformat( "%s, %s, %s: Instant-Only When Moving",
         Hekili:GetSpellLinkWithTexture( spec.abilities.blizzard.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.glacial_spike.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.frostbolt.id )
     ),
     desc = strformat( "If checked, non-instant %s, %s, %s casts will not be recommended while you are moving.\n\nAn exception is made if %s is talented and active and your cast "
-        .. "would be complete before |W%s|w expires.", 
-        Hekili:GetSpellLinkWithTexture( spec.abilities.blizzard.id ), 
+        .. "would be complete before |W%s|w expires.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.blizzard.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.glacial_spike.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.frostbolt.id ),
-        Hekili:GetSpellLinkWithTexture( 108839 ), ( GetSpellInfo( 108839 ) ) 
+        Hekili:GetSpellLinkWithTexture( 108839 ), ( ice_floes and ice_floes.name or "Ice Floes" )
     ),
     type = "toggle",
     width = "full"
@@ -1652,4 +1656,4 @@ end ) ]]
 } ) ]]
 
 
-spec:RegisterPack( "Frost Mage", 20240729, [[Hekili:TV1wVTnYv4FlclaJeAwfjk7y7uB9qxGcKG28IsrFOyfff5iRPMIulNHorbc83EpZWBZDr5l7UOiVKytoZ5CMZ1VZWJxoD5xwUioKIw(z)j(xm5k)Bg7pzYnt8xUGEypA5I9HrpeEp8dPH7G)9VNNrOLR(N8hTp8qswymJgKSI8i4rBP09Kp8U3DpMUTy94OSDVJG3vKesXzPr5HBOSFp6DlxSUaNq)y6Y1MeGRND9YfHf0Tz5lxSaV7xakJJJrvlhrIwUGT8FEYv)S)nFOC1x2Ikx9VdZH)bymoD5IemHsys2UShr7qPu4N)m)4IsdxNGIx(3wUikhtr54WUvnog2xyAeqU5LRMobKIiMOdYBco9HLuqoTsK1fB2mghHc2KKHiJJZ(AA3(BFoJgZy0q8nPzpgksvynxyxydtdhVpIYLXztkx5vUIrShrbOu0omIaV5UYv(D8impkmfE932NKrypbyWLIcXgCokyDsiHQigVxvutyQh5frzgLnHfjDA5MDeLvKcInzpkjrHYQkY2TeMKeu9lbmZyLXmOYbmkUtbAu5ysrCfxfnOCfbrdwNLwqgtXO8ztc83hvU64rZ6Vl4BJgMWCmyhDMKHYh3W3feAooIYoXTcFErQvzpmd52WA0iA08El8MzNTaeLGcFe1A7nO7DTBcTYuVphbX1Rd1n21EzyWIdkQivxj7ro2p4w1(nM06fSjhOrrokoydlfv3QSzCNjfA)9VhMhFEow3khHXz76SKALeZw7mJtTChLLa5ZObK0W9shTHLRaf9Jb3hfpEklrk46sOz57QoscVd483rPbz5Rv0jcBQJ0JeJnbJv2MaMm42(mqIH3NegHdtci7XpGQehybBYrOVZ2RKoPwYCRAFIKx0UzpOQoR8HGhr4uY4I9nQx(lIrH0TKGOT4KKXqQ)OhalB5QBQ4R1LChFjvA7kXzCRdWyCkKPhF)wib9i(IueHC0Uq4)5PVVw0lxItTzzm5HPfa3tLz1jx0fXK7h7OhLbVcQGnw0lbe9W4dCY0((oJS0bZ)s30ryLtu8kB9ABR)y8G26rWLNyexlxjn8AV6NwjLH8X1UkBKOfa4ip)5v9uQAmgzB2WPEffmeGBNPTWda2E9RmBR2ALXbNEFWxX8I3vEKkQImwHHA56gRYLG5VlzKO1xeJfzlEdLX39zFfLZim82tr5aWNKHfQs2RDdKe8o(1flIHAHeHOzPA9w8t8SMNlPip)axETNW3cJVuoAQjNMKoIzR2f(TogkjGC(Ap39qbrUnBQ7d6ijz6mvWnzwxNhYseY984zDRzDvykyLzBhYhuvVMTGrg1O2lByNsmwjNqquDsZbuqjbu8UAfIfhEt4Ezs05bG7IZkp0ajRLL0atTN93KeCvhvIZdVplLeSoNvQHtl7jy7BFgxPHauQpJPxj1OrBvmzWHtvZT1wpWv7aTD3XbDXAoWaOR20l7ZWjCpLuucDByEbrZDYWAc2bDfHYp06zzDHBzlSbHrvqqswwCsb4wwvrY52Fe88uXN0rG6iKAS4gokorWjvoOfksTaLrQcD3WaTe0gQa4GEVq259z0AlQAizN3fkC3ACAmkpaK7Dm5JUffCpZBli6qelPPuMj0VvG3Vhfpo9WUcejOiLhBYcfHGJ0466zcvSCSWrvhhLtXCom9k1wFeqdGjBbCIsYYZH)HW3fPiTQNejC98SkZBsSlJgRoTwT0yLCoX3vXaW2mz8uJHKQnM0MkvPv(AFaL4qPGvU3xWMcMmlTQRLwf43IYFaSfkR6gXvXretc(VfX3ZJyvc)NiLKaNJ48wDvYTBcjKHoGHePm9M8sP8(vD2bMMDrdjOuds2aOApMZqbuRqRaB2erCSY1xfHZouT5VQ0Pwb3WB21utJQ7tRG9OtbnM92tczYjGRZhpGD4aNusCRADkN2eslqeSJqWLdG4T4eEOLnUth4ew5WUUt5kWXQUKoq)iP)1aCAh1GzvvxR1(64HepTw6cvAjT52LBir4UgS3F2PU3LE0WI86S0)B9YoDaVjevZeZ2iFjn2Bb0eH6ZLO1EdAqGptqzPbuVkQoBfzFc)GWwjVvEXv2htAnQCrM1aSYOQqYklELp2B6CO2vU0H(AGZBBrT3NtyDhEYRBt5kqS7sn6fmSOJKsl2WnqXIhFQnGBlZJJSgNQ9yJLb0qrzOk0z2b35Dt0xyPlSz9QVgBGjpN(AQU3()iqZOua2n6MNo6KEb1yOtsyHb32Eflqxs3dDoW)sbWzkSkjSpN5qkgo6)akBructt7OrhHVd2F04pmj22C5Kqv0FqjMyXpaK8dajNcqspLO))ViQDKkpLAOQvKDMu6vQSQPucokUFovv97vvvBzM7Fvv4vSlCJTR2zpz5IVgMZoVKLl4ZucE3(SCiT0MS8YvVPEihEdtX8Bf4CMNejJDDmHf0SDHu2dG6mG2MmU8t)dCk8QzFOC1VKLc8I)63ObghihnZ0lACxHfmC63gbuS8tgKQ2Vh)5jx(VGYLtkQ8P5viRLpC)joZHzOZ70o1SSjM1vrWmLqw9eBLQTPO0iQw6nvAEHzAk2TIcrn1iJkvV8v58)EZuvktIczncpstVo51IWw8rF(e2Iz7zqyJo(KxMO8NHy5mR2ZMUw8OelrRqwtf4vP6vVkE)x)INb1cfLUTeT8NgU2MEsx17YrH02UQNEs9NPn7MxL8GwO6ZkJTfA(Kp)gd8RUdGZl4)hbPwDoFwg8xAhEMbhtyGXZ2GzFjt2VSdtiqKhyMl2l4iCpaIohhbKhIlFaqFpUCv5QpsR2ehkiaXnMjx0THWJrGyEGrBCgGhh(jCAusrmdgoct3IY)aiaR(5Yv)N)fbXOeAh5xFB5QVUfhTvC1HPh64A5Q0mgX)gKJictt6OBm7Nymh1X0)A5kq2RzZxQibuZ8xzenw8r(cC(R82sBpr1KK2SuU2G)O0IDRrvrejzuqF(rEKd7bx1CFdLR4teo8s2hphfT8ZV)c2LMXv4nTpqg3IL(VC37uNM1YpzAvn3i9BXBUtUnN5357PL53BqBEBjCVhpQU5zM5xBhr6m8278z(s17cwR4Wxl9CLMKElR9O7IIjIlszuGRwdG7(TvdD8DtnDIVYBGPzSw)0DHUQ5KmVkfOt(77PQsMDsYsOcATXWjKR56UKdgFmKWXBO55Z94rJZMBRHxyPJuzB3YzmDGTMZpECq3qcPqcr)XNebKCWu(mkfWPM)i9zI92BoE0YRU7gVbv8W0qYoYtHj13RY8R9muxx3q1QnDEI9goWGn84rhJ5QNJ7VAU)L23B9kMyW8Y(26m5Sv77Pp3QDIQInZ2ztJpn3NImNgyyKqLCIDtuUP7ztwVbwUtjn(jFnAmE66kaNpDIMaZVHzXnwDjZEdCndJE6xjxxYkLJI1yiP1jehjs0l9So0NZRh4t7NOHTSgcLnjCJ8oRd9qttacqABxFOrxo(Lp2EAnSRJhnouMZfgiZJhTDb1o8X1lUyleQZKPDcKhnsJf3u3I60oY2uZqtoF2eVtsG20HAP1mwHU5(lfRxbvTH1xqaGkaYT6kA6thyRzX9aowNd31WnwfGipyJo2w9qn24HjmoJJupevdyitsnpTIaxYiepP57723pXTUOhJ8hpG60tIOxFMcXrhpkjFZ9DlE2MbqoOdiEy(LEd0)0UkKSlVaBl3oz8unyqAIr3mG(PF6NAqj3(Y0hZEG5ydUfPq0dZ2vjV8KXaM4nfno8C7Q8JR(OMNfDHisE7omZdPaa8N3sB9xvtFzA3nRIAVPD(evFJYmjQPxBgdr1xip5HsHJCmQ6at0SHsLZfbqyGw12xPp6sf(xLK8dhA6JVBOKg0EXi7akoECOXTyGq3cLX0(W635pAKHJrxncdNeJvyT(fZnxL26h7sxweBi3K4yPk0DtnqR(vTFy1(m)HVTw2ZKEuUlbhFE7B97kekEGfGUA6BFAIN9PHOtGpZjEA412u561rNzqaDax0m7gAOHmjm9ModJEsku2gfwIwRo36p5P6wDUHz2cr8C0R4jrKjXARGYm7jRI)PZJR3qGAEgpX8Ha(FP(COyQ)r9l1KGWUA)BZxqll(xXV1nXoRMLJZezOVrQ09hLVvjGBOfvge6ltXhoDS2cL9yv7PSpNItQxII4Av6sXzDmJvvmw7OpT6qK06)(v1IZxPkw9RcfFF9knYZV6eH(7BLPA)8)CwvI8uUz42lgw4d61PLu)yCEMvF1TxlpD1gUCzvnPE5ZgiGIJqD3LniENCJoLo8pRLA7F8HRCaVkLuj0(xoLqnxkTkeXzzu(CqT8)9d]] )
+spec:RegisterPack( "Frost Mage", 20240805, [[Hekili:TVvwpooUr4FlglGgBKz84J(Cs3(HSabygKmV4jipeSwIwI2wP1HJiv3JhyOF7Pi1fjfjTCFS7cSl2fd6wQyvflwhFSu1RMU6BRwgGO4vFD2Kzxm5MjxoEYvxE1fxTAj9WE8QL7r(pG2c)qckg(3)EwkHw49p5pAp6qukkGXdsAEMp8ODu6EYN(4h3gs3LVESFA8hjHX5riAyAIFgAdL97(FC1Y15Hr0pNSATEf4Yvlr50DPzRwUmm(NbohgeGljht8xTKr(hMC9hMD7Nk8(2oCH3)gLb)di4WKvlJcjucF3H3GYJOWp(v(Uf5ZuLvl9tZtO4mYECu0QL4e06iCWQ)2kkOjm6AFs7sqrrUL)IlJ)LsXT0Y4hqyRDUYA9ZcbPeIk5YJyxCcooetk8wCFH31fEofEdk8iyQ760KCYyAioB(e3z79l8oESWt3YUGVmkkcNqhh6JDzAgoBCTCxsOzH(u2oUr5ZYtmQ7Oumt3V4S09zCLq9n3bVz(zRa(ry0JCD4sd2EBRg(v2)Tmo9rCmysAoR1UxQPACaWbuIp45SOWB6KwzTokm5bDocTmzD(MnCl)MOumzCq6tjTRV55noeIVjj9rKIdNzdFmkbnEVpLRJZNO1KZpmALbkZhLaV(77JsjSNuBvRjytyg2DDeIzfLuJRuv1iM5rMiAZHLvJ8(m8JUB9dgpD8MO8SSdLoZcp2pfuY0nU(PrbIrLXqKaHMMfBlsSKNIc0pf4dCk4MHrmZfyNgY)FrnHL8ADAu5RRocdHTdzm4j4)qPPCEH3OoA72iKFikYLSp8bC5BhALfgeWDfExYFP)ou2wmXDtw5Ecfv4vgubcFeSFoalZLYicYJbwAn5w0Cu1AqQYoiP41ji4AqaMRGpfYtd66VlmkI7iBu5BY8WF5MWKTSfcNHCd74896vBvV7MqA0HMflQ5z4yuycWDxjDJl)P6fHAwJobQQ7JlR9qkvMkN0XQErSZzJQZO2TIKvUjuYSc1X216EmRwZg0KHx0q1EeY0TA9vMKsnMiPHWB(boXnnBnt9U2O6vjswujgsWssq7L8AAKOqKARa5jsLPRvW6iZ2zT5SDZftyiKgb2z3yCN1tnsYYlUj1B4Tzgg9kEu2YsjId9p4(igOOLsMpKqXmYUWnuMbEF6t4mMj62ZoyXIJou38mskzkXrnmi7zCn4SOpLWuZfN0cPstrAgxMjv5SUaIsHZPMYmBfXydCfEvvggmRLupvK5qLYRn(LDkM1gauB3T5UpYCWMz8rN8Seiytgg)d2AnLLYmw6Nj7bGD)4hOSa7yUQIcQdSQ8oRl3hGr0D1LlBtBFBPCnsY9CskT211CQ9MghMa4fd3UJwNZqrfeZcCJi2FjjvVz04UATePvJz3mI6C)usj26LaQok4qVQim7s78rGYjkELsygnx6TXJqe)tP20c8rA3Aa9KDWHsvDbjITxXvwRQpms3SHZ9soOja3SqfZFzUC4RJylxAFGiXDgB0lZ1G6rLvBf36upY6vegyagCJ8ofs4tIY2qEUY7VyVmLvORnMP6CAs2i2zvm672QBBo39qbvUjBQ9n6ijD6mnW1zwxNHyjc5EE8SUvI2mOHrATOMlByMtmrjNqq0CsZGl8g5sdJpfsKUOFyA051yLloR8qdKoTmKgyQ5S)60GRB5sqgABAcXDDgRudNxMtW23UviWFDDRy619c0LAUTNbOlwt70a6Qj9Y(0WiUNscoIc3ypN0XDsdnUXicqYHgplJeUJryncJYGGO00GOCWTSSIK1L)i45PIpPLbvriv9itZwXkcoPYbnqrQuOuszO7ggOfxXRECLq259P0Qtut4JdaVQ41Hjb4mxqVJz6hDh2DlZBZLdRxjZe()LhUFpoyCYH4CmXnpHhBYcfHGJKGQ6zcvSSqy1TPu2fl4TtR0S1hf0slowJJsZYG)HWxfjpPStTs465zvwuNyxgnwDJUk1gJSZk(UsbaNntgpvBi5DYnqSnvQsdbR8buIdLcw5EFUBYz6Sev3irf43IZEaoluO6wrQ4iIjU)38GT8iwLW)jsjjcZWCzRsLup)zjKjqY8iEdZLjLY7J8Vfn10kcLt3Ge79X753e0UxAuDDDky3R(MEsitwbCD(4bmdh4KAYBsls1crWmcHt0n0AUj1mvRPd(ZoI2GR4p4DevhJMjETMUFArX3Yd8zkklnGAROApRi7J4BegL8RYlszFosRqLlkSAGvAnfsNYIT8X8Loh2PLlTOVgyTBlQ395p8Dx2YfWFoTx(exp(1VxYAtpB52Y6Cbn1m5596EnMatEg3Rb27GRZAu3XEO6(wS9mex7RkCP2DhhMLLM5ggZN2dj6oVXCOpjvgiKxb4rEgoqNJ8js(1Vo8QYevaWc9nLBoz3ZI9MYzu56z3UA5tOmM3dagMp7jHX7tZGYJBsZk8Ex1mN8oMBgCFLmMYtszOWr500yeL9a)DiW3LmU4l)JWe4vZ)uH3pNMaYI)631XCbSJMQ7f1wiGGHt)(iGJfFrJw14u8BNEzLJkN7kS1GxXj2ZOu85TBNQx3eR(ROy6agOUJnY1M07DyANsdQ88c98uSiLct1v)sLRx(MS)VspxLYlRWwTOY7yxN8wX4zVvm2WX2lGXAD8jNzu(B1(1qS(lMVg8OeH3OWwDGJu561VjE)38QNb1ahLaj3j)Pg069KVQq4vyTje(9K7VWZSBFtYdAGRVOm2g45ZE)RnWVC68oVG))mi1OZ5l6a)12HNDGhsyxTjDtiRb2SFjoKqGip4yoFVGJWwaDBwOpWEiU8bmfoT9k8(mTCrCOGW9fcy6fDhcEmguZdmEhMcaLHFkmXpkpGHpghs3HZ(eOaEFOW7)8ViygNWXKF59fEpTl0FNi1OKdTsTWljLX8Vd5i8dPrT8nG9tmHJBf6FTWd09kX8Tswa1m)fgtdeF0mbj)eV9in7OkwsRjLBn4pkjpEnUmIikLc2ZpZJCyp466(Ev4XNCC4LSVzc2F1xV6c29P4g86Riqg3GL(VC)hvVsvXx0rL4LP0tr9DxEF4M7LVHYI7N50P2GZGMm7siJpEuDXZ1lVMR50vG3D)mM3w1QaAfNwEPNRCN03ZUn69(berIuMD7sAaK5VVCkXVFQUD81od0nu8D3Dx010CsHxMK0Q8N5OAsMFs2sOcwTXWoKB5ABhhtoAsj5mu)GBD8O2H2Q5GxG0rQITLCMqhyQzihpoO9RhRWcr)XNfdKCW6mvvodnmSu3D7XJgE1936mOug6MEQro6NBQf34OPYF3dQgRP1DSZWbAodpE0Y8p5yP7GlMDP51wrXenhVSp6ctpBS(oDhOPwvv5mZ0ERJCQBFLSKgOzwHKCITZu(r3lMTodm0dVoYtUjLmzARbRlMoPJcZ)wiIlS8ZH4mW2WT40TFNTjRu2kgJHKOtiosKPx6yCAGwunjqM3rdBenekRt5g5CwB6H6(0GaRn1UwTUC8gV2SB1SQJh1oToleMuNJhn9PuS4J3T4IPqO2JSo7a5zMrBXn1LOogmSfvpnnlMpX5KmOjDyN0AARqx3UyX6vqvBG(CcaLbW2vvrR7yJ0CSyFYxQYHBBQxC0mXlwww10Uu7HjmNlJu3eLtEctt1pglGusjehPb)4URMy3w0JzbHhqD6ruXPpJNYOJhL0VfZSREMgoeoOdiEyXLod6obdkSSnVaBj3nz80oWG6OgTdh0x(PFQghDZltEm9bMJn4wKarpSZUs9LNmgqnVjV2HNFUk)4YVd3zXxiIKFHi2XdjhUsqwdV7(Qk(lZ72HyPZBAgCf13OmSkDSR1ZNI6lKhjfPWrog1Uat6CgkvoxeaHgEvD(k9hmrj(xLK8dhQB2p0usdUEXiZakoECO2LOHr3bLX68hf39ZgnsZ2OTgHMDI2kSghLd9vPn(Xf7QlIxzxN6yOk09t1WR(vTFy560pIggl7PZokFlb9B6YdNzTfcf3Wcqx19LL1jZ(CHOtGpZkEA41Mm5DRJoxJcAbUOEXnuZfYKW0RBpm6zzqzluGKox15UztEUUvNByMPqehl3v8KiYKeTrqz69KvX)06X1Biq1pJNy(Gl)peCoum1)MXLUKGWQA(t)wWkl(hjUXfX2R61JZez4mTCP9V5BJAa)Gw0yqOVofF48X4vOmhRAoL95uCsTjkI0QClfR1X0wvrBTJ(CvhIKv)xVQwC5kvXQFvO4RRxPrE5vNi0FDRmv5N)7ZQsKNtNHBAmSWN8R1kP(56C0B(QUET8y3PP5YQwYULpRHakoBDTnBqSNCJoLn83RLA7F8HTCaVjLuj0(xoLq1xkTmeXAzu(KsT6)p]] )

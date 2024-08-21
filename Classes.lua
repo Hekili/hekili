@@ -221,6 +221,14 @@ local HekiliSpecMixin = {
         for talent, id in pairs( talents ) do
             self.talents[ talent ] = id
             CommitKey( talent )
+
+            local hero = id[ 4 ]
+
+            if hero then
+                self.talents[ hero ] = id
+                CommitKey( hero )
+                id[ 4 ] = nil
+            end
         end
     end,
 
@@ -907,7 +915,7 @@ local HekiliSpecMixin = {
                 if a.rangeSpell and type( a.rangeSpell ) == "number" then
                     Hekili:ContinueOnSpellLoad( a.rangeSpell, function( success )
                         if success then
-                            info = GetSpellInfo( a.rangeSpell )
+                            local info = GetSpellInfo( a.rangeSpell )
                             if info then
                                 a.rangeSpell = info.name
                             else
@@ -6218,11 +6226,12 @@ function Hekili:SpecializationChanged()
     local currentID = GetSpecializationInfo( currentSpec )
 
     if currentID == nil then
-        Hekili.PendingSpecializationChange = true
+        self.PendingSpecializationChange = true
         return
     end
 
-    Hekili.PendingSpecializationChange = false
+    self.PendingSpecializationChange = false
+    self:ForceUpdate( "ACTIVE_PLAYER_SPECIALIZATION_CHANGED" )
 
     insert( self.SpecChangeHistory, {
         spec = currentID,

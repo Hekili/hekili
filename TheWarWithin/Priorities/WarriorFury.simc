@@ -9,11 +9,12 @@ actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1
 actions.precombat+=/variable,name=trinket_1_manual,value=trinket.1.is.algethar_puzzle_box
 actions.precombat+=/variable,name=trinket_2_manual,value=trinket.2.is.algethar_puzzle_box
 actions.precombat+=/use_item,name=algethar_puzzle_box
+actions.precombat+=/battle_shout
 actions.precombat+=/berserker_stance,toggle=on
 actions.precombat+=/recklessness,if=!equipped.fyralath_the_dreamrender
 actions.precombat+=/avatar,if=!talent.titans_torment
 
-actions+=/charge,if=time<=0.5|movement.distance>5
+actions+=/charge,if=time<=0.5|movement.distance>8
 actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
 actions+=/potion
 actions+=/pummel,if=target.debuff.casting.react
@@ -25,8 +26,8 @@ actions+=/blood_fury
 actions+=/fireblood
 actions+=/ancestral_call
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.avatar.remains>15&fight_remains>=135|variable.execute_phase&buff.avatar.up|fight_remains<=25
-actions+=/run_action_list,name=multi_target,if=active_enemies>=2
-actions+=/run_action_list,name=single_target,if=active_enemies=1
+actions+=/run_action_list,name=multi_target,strict=1,if=active_enemies>=2
+actions+=/run_action_list,name=single_target,strict=1,if=active_enemies=1
 
 actions.multi_target+=/recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
 actions.multi_target+=/avatar,if=talent.titans_torment&(buff.enrage.up|talent.titanic_rage)|!talent.titans_torment

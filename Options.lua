@@ -58,16 +58,7 @@ local GetSpellTabInfo = function(index)
     end
 end
 
-local GetSpellInfo = function( spellID )
-    if not spellID then
-        return nil;
-    end
-
-    local spellInfo = C_Spell.GetSpellInfo(spellID);
-    if spellInfo then
-        return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID;
-    end
-end
+local GetSpellInfo = ns.GetUnpackedSpellInfo
 
 local GetSpellDescription = C_Spell.GetSpellDescription
 
@@ -158,7 +149,15 @@ local oneTimeFixes = {
             end
         end
     end,
-}
+
+    fixHavocPriorityVersion_20240805 = function( p )
+        local havoc = p.packs[ "Havoc" ]
+        if havoc and ( havoc.date == 20270727 or havoc.version == 20270727 ) then
+            havoc.date = 20240727
+            havoc.version = 20240727
+        end
+    end,
+  }
 
 
 function Hekili:RunOneTimeFixes()
@@ -1759,7 +1758,7 @@ do
     end
 
     local function WrapDesc( db, data )
-        local option, _, _, descfunc = GetOptionData( db, data )
+        local option, getfunc, _, descfunc = GetOptionData( db, data )
         if descfunc and modified[ descfunc ] then
             return descfunc
         end
@@ -8829,8 +8828,8 @@ do
                             type = "toggle",
                             name = format( "%s Filter M+ Interrupts (DF Season 4)", NewFeature ),
                             desc = format( "If checked, low-priority enemy casts will be ignored when your target may use an ability that should be interrupted.\n\n"
-                                .. "Example:  In Everbloom, Earthshaper Telu's |W%s|w will be ignored and |W%s|w will be interrupted.", ( GetSpellInfo( 168040 ).name or "Nature's Wrath" ),
-                                ( GetSpellInfo( 427459 ).name or "Toxic Bloom" ) ),
+                                .. "Example:  In Everbloom, Earthshaper Telu's |W%s|w will be ignored and |W%s|w will be interrupted.", ( GetSpellInfo( 168040 ) or "Nature's Wrath" ),
+                                ( GetSpellInfo( 427459 ) or "Toxic Bloom" ) ),
                             width = 2,
                             order = 4
                         },
@@ -11900,7 +11899,7 @@ do
                     if ability and ( ability == "use_item" or class.abilities[ ability ] ) then
                         if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast" end
                         -- Stub abilities that are replaced sometimes.
-                        if ability == "any_dnd" or ability == "wound_spender" or ability == "summon_pet" or ability == "apply_poison" then
+                        if ability == "any_dnd" or ability == "wound_spender" or ability == "summon_pet" or ability == "apply_poison" or ability == "trinket1" or ablity == "trinket2" or ability == "raptor_bite" or ability == "mongoose_strike" then
                             result.action = ability
                         else
                             result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability
@@ -12097,14 +12096,20 @@ do
     }
 
     local toggles = setmetatable( {
-        custom1 = "Custom #1",
-        custom2 = "Custom #2",
     }, {
         __index = function( t, k )
-            if k == "essences" then k = "covenants" end
-
             local name = k:gsub( "^(.)", strupper )
-            t[k] = name
+            local toggle = Hekili.DB.profile.toggles[ k ]
+            if k == "custom1" or k == "custom2" then
+                name = toggle and toggle.name or name
+            elseif k == "essences" or k == "covenants" then
+                name = "Minor Cooldowns"
+                t[ k ] = name
+            elseif k == "cooldowns" then
+                name = "Major Cooldowns"
+                t[ k ] = name
+            end
+
             return name
         end,
     } )

@@ -2,15 +2,15 @@ actions.precombat+=/summon_pet
 # Determine the stronger trinket to sync with cooldowns. In descending priority: buff effects > damage effects, longer > shorter cooldowns, longer > shorter cast times. Special case to consider Mirror of Fractured Tomorrows weaker than other buff effects since its power is split between the dmg effect and the buff effect.
 actions.precombat+=/variable,name=trinket_1_stronger,value=!trinket.2.has_cooldown|trinket.1.has_use_buff&(!trinket.2.has_use_buff|!trinket.1.is.mirror_of_fractured_tomorrows&(trinket.2.is.mirror_of_fractured_tomorrows|trinket.2.cooldown.duration<trinket.1.cooldown.duration|trinket.2.cast_time<trinket.1.cast_time|trinket.2.cast_time=trinket.1.cast_time&trinket.2.cooldown.duration=trinket.1.cooldown.duration))|!trinket.1.has_use_buff&(!trinket.2.has_use_buff&(trinket.2.cooldown.duration<trinket.1.cooldown.duration|trinket.2.cast_time<trinket.1.cast_time|trinket.2.cast_time=trinket.1.cast_time&trinket.2.cooldown.duration=trinket.1.cooldown.duration))
 actions.precombat+=/variable,name=trinket_2_stronger,value=!variable.trinket_1_stronger
-actions.precombat+=/hunters_mark,if=active_dot.hunters_mark=0
+actions.precombat+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.time_to_pct_80>20
 
 actions+=/counter_shot
 actions+=/tranquilizing_shot
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=trinkets
 actions+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.time_to_pct_80>20
-actions+=/call_action_list,name=st,if=active_enemies<2|!talent.beast_cleave&active_enemies<3
-actions+=/call_action_list,name=cleave,if=active_enemies>2|talent.beast_cleave&active_enemies>1
+actions+=/call_action_list,name=st,strict=1,if=active_enemies<2|!talent.beast_cleave&active_enemies<3
+actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>2|talent.beast_cleave&active_enemies>1
 
 ## actions.cds+=/invoke_external_buff,name=power_infusion,if=buff.call_of_the_wild.up|!talent.call_of_the_wild&(buff.bestial_wrath.up|cooldown.bestial_wrath.remains<30)|boss&fight_remains<16
 actions.cds+=/berserking,if=buff.call_of_the_wild.up|!talent.call_of_the_wild&buff.bestial_wrath.up|boss&fight_remains<13
@@ -40,7 +40,7 @@ actions.cleave+=/arcane_torrent,if=(focus+focus.regen+30)<focus.max
 actions.st+=/barbed_shot,cycle_targets=1,if=buff.frenzy.up&buff.frenzy.remains<=gcd+0.25|buff.frenzy.stack<3&(talent.scent_of_blood&(cooldown.bestial_wrath.ready|talent.call_of_the_wild&cooldown.call_of_the_wild.ready)|!cooldown.bestial_wrath.ready)
 actions.st+=/bestial_wrath
 actions.st+=/kill_command,if=(full_recharge_time<gcd&talent.alpha_predator)|talent.call_of_the_wild
-actions.st+=/dire_beast,if=talent.huntmasters_call&(!buff.bestial_wrath.up&talent.killer_cobra|talent.call_of_the_wild&cooldown.call_of_the_wild.ready)
+actions.st+=/dire_beast,if=talent.huntmasters_call&(!buff.bestial_wrath.up&talent.killer_cobra|cooldown.call_of_the_wild.ready)
 actions.st+=/kill_shot,cycle_targets=1,if=talent.venoms_bite&dot.serpent_sting.refreshable
 actions.st+=/call_of_the_wild
 actions.st+=/bloodshed

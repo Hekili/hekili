@@ -29,14 +29,15 @@ actions+=/primordial_wave,if=set_bonus.tier31_2pc&(raid_event.adds.in>(action.pr
 actions+=/feral_spirit
 actions+=/ascendance,if=dot.flame_shock.ticking&((ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)|(ti_chain_lightning&active_enemies>1))
 actions+=/doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown|active_enemies>1
-actions+=/call_action_list,name=single,if=active_enemies=1
-actions+=/call_action_list,name=aoe,if=active_enemies>1&(rotation.standard|rotation.simple)
-actions+=/call_action_list,name=funnel,if=active_enemies>1&rotation.funnel
+actions+=/call_action_list,name=single,strict=1,if=active_enemies=1
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1&(rotation.standard|rotation.simple)
+actions+=/call_action_list,name=funnel,strict=1,if=active_enemies>1&rotation.funnel
 
 actions.single+=/primordial_wave,if=!dot.flame_shock.ticking&talent.lashing_flames.enabled&(raid_event.adds.in>(action.primordial_wave.cooldown%(1+set_bonus.tier31_4pc))|raid_event.adds.in<6)
 actions.single+=/flame_shock,if=!ticking&talent.lashing_flames.enabled
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5&talent.elemental_spirits.enabled&feral_spirit.active>=4
 actions.single+=/sundering,if=set_bonus.tier30_2pc&raid_event.adds.in>=action.sundering.cooldown
+actions.single+=/tempest
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack>=5&buff.crackling_thunder.down&buff.ascendance.up&ti_chain_lightning&(buff.ascendance.remains>(cooldown.strike.remains+gcd))
 actions.single+=/stormstrike,if=buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormbringer.up)
 actions.single+=/lava_lash,if=buff.hot_hand.up
@@ -74,6 +75,7 @@ actions.aoe+=/lightning_bolt,if=(active_dot.flame_shock=active_enemies|active_do
 actions.aoe+=/lava_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/elemental_blast,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
+actions.aoe+=/tempest
 actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
 actions.aoe+=/crash_lightning,if=buff.doom_winds.up|!buff.crash_lightning.up|(talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0)
 actions.aoe+=/sundering,if=buff.doom_winds.up|set_bonus.tier30_2pc

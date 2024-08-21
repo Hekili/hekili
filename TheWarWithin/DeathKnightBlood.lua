@@ -238,6 +238,7 @@ spec:RegisterTalents( {
     veteran_of_the_third_war       = { 76068, 48263 , 1 }, -- Stamina increased by 20%.
     will_of_the_necropolis         = { 76054, 206967, 2 }, -- Damage taken below 30% Health is reduced by 20%.
     wraith_walk                    = { 76077, 212552, 1 }, -- Embrace the power of the Shadowlands, removing all root effects and increasing your movement speed by 70% for 4 sec. Taking any action cancels the effect. While active, your movement speed cannot be reduced below 170%.
+
     -- Blood
     blood_boil                     = { 76170, 50842 , 1 }, -- Deals 8,770 Shadow damage and infects all enemies within 10 yds with Blood Plague.  Blood Plague A shadowy disease that drains 15,417 health from the target over 24 sec.
     blood_feast                    = { 102243, 391386, 1 }, -- Anti-Magic Shell heals you for 100% of the damage it absorbs.
@@ -283,6 +284,7 @@ spec:RegisterTalents( {
     umbilicus_eternus              = { 76040, 391517, 1 }, -- After Vampiric Blood expires, you absorb damage equal to 5 times the damage your Blood Plague dealt during Vampiric Blood.
     vampiric_blood                 = { 76173, 55233 , 1 }, -- Embrace your undeath, increasing your maximum health by 30% and increasing all healing and absorbs received by 40% for 14 sec.
     voracious                      = { 76043, 273953, 1 }, -- Death Strike's healing is increased by 15% and grants you 12% Leech for 8 sec.
+
     -- Deathbringer
     bind_in_darkness               = { 95043, 440031, 1 }, -- Shadowfrost damage applies 2 stacks to Reaper's Mark and 4 stacks when it is a critical strike. Additionally, Blood Boil deals Shadowfrost damage.
     blood_fever                    = { 95058, 440002, 1 }, -- Your Blood Plague has a chance to deal 30% increased damage as Shadowfrost.
@@ -293,12 +295,13 @@ spec:RegisterTalents( {
     grim_reaper                    = { 95034, 434905, 1 }, -- Reaper's Mark explosion deals up to 30% increased damage based on your target's missing health, and applies Soul Reaper to targets below 35% health.
     pact_of_the_deathbringer       = { 95035, 440476, 1 }, -- When you suffer a damaging effect equal to 25% of your maximum health, you instantly cast Death Pact at 50% effectiveness. May only occur every 2 min. When a Reaper's Mark explodes, the cooldowns of this effect and Death Pact are reduced by 5 sec.
     painful_death                  = { 95032, 443564, 1 }, -- Reaper's Mark deals 10% increased damage and Exterminate empowers an additional Marrowrend, but now reduces its cost by 1 Rune. Additionally, Exterminate now has a 30% chance to apply Reaper's Mark.
-    reapers_mark                   = { 95062, 439843, 1 }, -- Viciously slice into the soul of your enemy, dealing 12,461 Shadowfrost damage and applying Reaper's Mark. Each time you deal Shadow or Frost damage, add a stack of Reaper's Mark. After 12 sec or reaching 40 stacks, the mark explodes, dealing 1,736 damage per stack. Reaper's Mark travels to an unmarked enemy nearby if the target dies, or explodes below 35% health when there are no enemies to travel to. This explosion cannot occur again on a target for 3 min.
+    reapers_mark                   = { 95062, 439843, 1, "deathbringer" }, -- Viciously slice into the soul of your enemy, dealing 12,461 Shadowfrost damage and applying Reaper's Mark. Each time you deal Shadow or Frost damage, add a stack of Reaper's Mark. After 12 sec or reaching 40 stacks, the mark explodes, dealing 1,736 damage per stack. Reaper's Mark travels to an unmarked enemy nearby if the target dies, or explodes below 35% health when there are no enemies to travel to. This explosion cannot occur again on a target for 3 min.
     rune_carved_plates             = { 95035, 440282, 1 }, -- Each Rune spent reduces the magic damage you take by 2% and each Rune generated reduces the physical damage you take by 2% for 5 sec, up to 5 times.
     soul_rupture                   = { 95061, 437161, 1 }, -- When Reaper's Mark explodes, it deals 20% of the damage dealt damage to nearby enemies. Enemies hit by this effect deal 5% reduced physical damage to you for 10 sec.
     swift_end                      = { 95032, 443560, 1 }, -- Reaper's Mark's cost is reduced by 1 Rune and its cooldown is reduced by 30 sec.
     wave_of_souls                  = { 95036, 439851, 1 }, -- Reaper's Mark sends forth bursts of Shadowfrost energy and back, dealing 13,434 Shadowfrost damage both ways to all enemies caught in its path. Wave of Souls critical strikes cause enemies to take 5% increased Shadowfrost damage for 15 sec, stacking up to 2 times, and it is always a critical strike on its way back.
     wither_away                    = { 95057, 441894, 1 }, -- Blood Plague deals its damage in half the duration and the second scythe of Exterminate applies Blood Plague.
+
     -- San'layn
     bloodsoaked_ground             = { 95048, 434033, 1 }, -- While you are within your Death and Decay, your physical damage taken is reduced by 5% and your chance to gain Vampiric Strike is increased by 5%.
     bloody_fortitude               = { 95056, 434136, 1 }, -- Icebound Fortitude reduces all damage you take by up to an additional 20% based on your missing health. Killing an enemy that yields experience or honor reduces the cooldown of Icebound Fortitude by 3 sec.
@@ -312,7 +315,7 @@ spec:RegisterTalents( {
     the_blood_is_life              = { 95046, 434260, 1 }, -- Vampiric Strike has a chance to summon a Blood Beast to attack your enemy for 10 sec. Each time the Blood Beast attacks, it stores a portion of the damage dealt. When the Blood Beast dies, it explodes, dealing 50% of the damage accumulated to nearby enemies and healing the Death Knight for the same amount.
     vampiric_aura                  = { 95056, 434100, 1 }, -- Your Leech is increased by 2%. While Lichborne is active, the Leech bonus of this effect is increased by 100%, and it affects 4 allies within 12 yds.
     vampiric_speed                 = { 95064, 434028, 1 }, -- Death's Advance and Wraith Walk movement speed bonuses are increased by 10%. Activating Death's Advance or Wraith Walk increases 4 nearby allies movement speed by 20% for 5 sec.
-    vampiric_strike                = { 95051, 433901, 1 }, -- Your Death Coil and Death Strike have a 10% chance to make your next Heart Strike become Vampiric Strike. Vampiric Strike heals you for 1% of your maximum health and grants you Essence of the Blood Queen, increasing your Haste by 1.0%, up to 5.0% for 20 sec.
+    vampiric_strike                = { 95051, 433901, 1, "sanlayn" }, -- Your Death Coil and Death Strike have a 10% chance to make your next Heart Strike become Vampiric Strike. Vampiric Strike heals you for 1% of your maximum health and grants you Essence of the Blood Queen, increasing your Haste by 1.0%, up to 5.0% for 20 sec.
     visceral_strength              = { 95045, 434157, 1 }, -- When Crimson Scourge is consumed, you gain 5% Strength for 8 sec.
 } )
 
@@ -411,7 +414,7 @@ spec:RegisterAuras( {
     blood_plague = {
         id = 55078,
         duration = function() return 24 * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
-        tick_time = function() return 3 * ( talent.rapid_decomposition.enabled and 0.82 or 1 ) * ( buff.consumption.up and 0.5 or 1 ) * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.rapid_decomposition.enabled and 0.85 or 1 ) * ( buff.consumption.up and 0.7 or 1 ) * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
         type = "Disease",
         max_stack = 1
     },
@@ -476,6 +479,11 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    coagulating_blood = PTR and {
+        id = 463730,
+        duration = 3600,
+        max_stack = 100
+    } or {},
     -- Talent: Blood Plague damage is increased by $s1%.
     -- https://wowhead.com/beta/spell=391481
     coagulopathy = {
@@ -493,7 +501,7 @@ spec:RegisterAuras( {
     -- Your Blood Plague deals damage $w5% more often.
     consumption = {
         id = 274156,
-        duration = 8.0,
+        duration = 6,
         max_stack = 1,
     },
     -- Talent: Controlled.
@@ -516,7 +524,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=81256
     dancing_rune_weapon = {
         id = 81256,
-        duration = function () return ( pvptalent.last_dance.enabled and 6 or 8 ) + ( talent.everlasting_bond.enabled and 8 or 0 ) end,
+        duration = function () return ( pvptalent.last_dance.enabled and 6 or 8 ) + ( talent.everlasting_bond.enabled and 6 or 0 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -1340,8 +1348,10 @@ spec:RegisterAbilities( {
         buff = "bone_shield",
 
         handler = function ()
-            applyBuff( "bonestorm", buff.bone_shield.stack )
-            removeBuff( "bone_shield" )
+            local consume = min( 5, buff.bone_shield.stack )
+            gain( consume * 0.02 * health.max, "health" )
+            applyBuff( "bonestorm", 2 * consume )
+            removeStack( "bone_shield", nil, consume )
         end,
 
         -- TODO Bone Shield regeneration (1 per sec.)
@@ -1613,7 +1623,10 @@ spec:RegisterAbilities( {
             removeBuff( "blood_draw" )
             removeBuff( "heartrend" )
             applyBuff( "blood_shield" ) -- gain absorb shield
-            gain( 0.075 * health.max * ( 1.2 * buff.haemostasis.stack ) * ( 1.08 * buff.hemostasis.stack ), "health" )
+            if buff.coagulating_blood.up then
+                gain( 0.01 * buff.coagulating_blood.stack * health.max * ( 1.2 * buff.haemostasis.stack ) * ( 1.08 * buff.hemostasis.stack ), "health" )
+                removeBuff( "coagulating_blood" )
+            end
             removeBuff( "haemostasis" )
             removeBuff( "hemostasis" )
 
@@ -1731,7 +1744,7 @@ spec:RegisterAbilities( {
             if buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
 
             if talent.heartbreaker.enabled then
-                gain( min( action.heart_strike.max_targets, true_active_enemies ), "runic_power" )
+                gain( 2 * min( action.heart_strike.max_targets, true_active_enemies - 1 ) + ( 3 * buff.dancing_rune_weapon.stack ), "runic_power" )
             end
 
             if buff.ashen_decay_proc.up then
@@ -2247,4 +2260,4 @@ spec:RegisterSetting( "vb_damage", 50, {
     width = "full",
 } )
 
-spec:RegisterPack( "Blood", 20240724.1, [[Hekili:L316pUTns8)wwuah7KnowAxVjnW2FOT4asWHIIBZD9BwM2I2wxKLu1JDZwSq)TFdFijkQHsYpsAkUV0RRj1W5fN53qYP3sRLFA59UKu6YF1EI9TtER9TJTSTSU5UL3N(ueD59rKnFMSd(xcihG)5p5hg6Y(1N8djUSVojmlEdmY9EhY8jPEHb)CmzB6Y7xN55N(HGLRXxHBHpnIUb(5PtwE)EpxxQyU0KnlVNn3xp5TV2(23NV6t7P5R(Dsm8p8s37fS8EFVK0eoVh)Otwe8V9RCrHgqw7tDx(tlVFtSxkn2JS8(RYx5gMoEnJ1DI8j7YOJt928zVGDlVNSHXYa3YhDDON)YuGNmsS1zB3oEDya1jzVh13DCskOHYxTiF108vdYxfNfaC7I55RSl(BVnorHpsJh7s36TXlvm8nt4JdCxkXNgKoozpjLTkb7CylWy56NV65NZxnS7PbeZLss37qcCDCPBipviM5RgvjPPHhwNKcFjtqVPDbDtiOT8dJaQ(04y6bIxqs(Qza3VBJ74dKViyo(C928KdWIHbjOZSIbemzsAS3N58WTg5HHssRQVRr7BvwFeJYS8vpqakbuwDyNy62yAYENhi(zGXAulgkWmoPI1pqIJdFmMg4Yy8PgzC28FG6qdOh8OaVcSQfFrsjX7OPGD5a1jn0jAtQZnt5m6uSXD9OCEyOWfg2R5dmpjcyXs9WR4FRIbwzwmU8onUeBAkSExCOUOv5PFo8U4BD82cUh4tMjkVT194M89huB3djyxMh4kSlomlWT(Mm5CYc2h6)uJzms3fUCTy827mYBqyoFFhHeMmUkqJW7IZFB2ZgnXzBSyfi(cfR1yltHO(rT1lmcwjAA10l88z)BGBoF3K9uUoVohTNsItL7hZx9Ys1a)3xdwHpdwHsTWl588io9DejfujGtCKdeuMXHwtmQsq3RX2qxUDfHMcBKYNk0rLFIACfh3SdroKdGfm1CKhlEsJIr3aHUGVs8hvSnBEMZh0ILJBz5HM2tpecHKs8suImn1KL1YCqzwYLYny2CYulqSXKnTPxR4d1bbojLPX2sY8tXsW2TdhmAkSdmPULjkm0V0Yu5ez06HKowU0SOfylEbjngYVE8oUZUIXhnMa3e5czDv2mifuhQFcqYPLY9TTNzvgN0LksXssykjimhikkzA8GGlalt)ZoYrYjIljyddqaZ)W5riUjifaSOsQffY)FrYzv68tGicI)WHHUsGXsQit5YDAsz6KIVkM4LawlkafS(oM3wBw8a5joq2ZpRnp9OMfFI3g6Aw0xNTHXPEPzUubYWyp5(Z)DceR6dYzLV6FumT8vEBZx9uy2lIPmJNifqcOKGndGHeYtqoaaAHezSVdMil9uWlGb2tEa(5FrOkZx9V4a5(DUYmFvieT5)qoe5f7TjFfhgC(QSOX1nSbLzC8c2eEGzselNZuzQsV1BDk4ab6Vcqo42qfaopixEhUViFSryzckv7mcLsIW0CcH7tKOVo6RRBOSUwOcrTyNGAectD50Ikqy196Q0YnYMHMubrv)lSXZxDVm)QuDhx6eDppafmaiA7c5cEAy(k6xa2KwtXugpnb08c(xgERkvJ6VYzE0bqbOxMq0ecRgWSvdXWvdjoBiqy2KosA2B0AgqIPexUv8C1X5OTKC4x3Oy9b(7qce(lzdyE2vy6BdZxlzQV0LpDQGFAbxqB4Tk0Xnr0dqoSM0cKkZzQUQ1TOAOHKPA5K8KYzb4X8i(cpr9sG6lpv4ngbkHD7HAsumnCyWTOKkTBQvMrGvMP9j(orS09mMZCrndlonHzQNMqfaWB5UWLluR1r8oEzUsFHksCJkj0bKYYDW4qZL2i3eM6TBFknGPa3ftsIQaivqWDHaamiFIBIygC6QN4QooxUw8Uwlnxbcn9aFyvdih54evGiK1SKjePdZH1AGrS7o6xx(UiJZPChhOuxKf(DJo6YJaJTk6HJ61gfOIKaxsSRaWFumfY4UMCIq(LifhNAnEpjXjdqhYeWQZWQTX)wp4OgJdfODWloom2jCRytuwmf2ieEiKDWpjQvxi)mhlo1sAPoL(OVS7qFHn(36b11x2NK(YUsFP7VEe6lUTkoB9topUN6hbisGu9y2Zh37bWa4hxkaMKedB)PoEBKuVHTK(Ln(SQnqQ56i4o7EWD2hn3zRYD6jf7znXsC0fKmk2lecf9KwSUsybAgnX58Pib(piZWOQ05)itwBqMI9k1kC2Qu)zlIbvgrQ1J1VbA0)MCs8Ie1HH(UHpgGg5VeKbN3vsYv7O7p(Gndzq3(gCaGTF8h))kY4Z)AoWM3XDthVIFpeJ66kpSMOuwT0zayga4eBbGkpjU1927N78S2KZrA7brpqUAZa7i5Acs2ac3gLRA(YC6R55mTnDDlu)fysuooYAx8vTZa08XMBUYg23(9Y9Jz6ii)B49JzUGkJjlNx)IiGzajyIpGEIx95wpExrnZ8ve5IpMZhfKQxRNgs9MXgHDaonV6Sr6LSwEhkMXnOxc9mKOdAxeYjEbqgzoZjhll5FrXoIHnJNPFRpTGe6TIO9gLSuLd3hbTvTtZ8tftu(wq2(umXNLJlDpKyf8gpWIpuF3cZzLDS)86dKZV5JVWiLqG5uIfsWnGsoXpmv9VzfSeUDRdOJysuhiBTuq2ouf2aoq5IyvAq5lJ2wU1LnHRAumvX842KAA3FtSaE)jT6i3HKu(CqJSBGiJDyYfgl4NEGH0P6VtbWOGFHh7m5nwGLMYZwt5zFSkp7tq5z3OkTUvEwnuEiaQQYv5f4ShGExiDk)qRIh9pY8IIOUJn5p2qoB4e1PKnYinSrPbMR1im8kNZ(IU2uWdW02nRubkdBw1kFQF4sKiEAtBjRfUh6RU2kIwQAP5yujINl0gPU2f9DO22YG2(u2722bdi02PvNEFRNaqhchX9Pcb6kfnrTYgKZQUwfVWIgyn2Mf)uzgQYHOXj0yr6TAGHnNZ3aIrz1PYclBT4G7uk7KeVHaAHOm2zR0AzNC)m5nSbacOb7GCZQN6Sp7y9tC(VzU7oqfVeJPQYkO1b0IqOsh2bmRjV1QryRxmDT4PJ2ScHsvhzhdMa4sS5ZjAt08vqyUGPg6eayBSqo4(yqc0e2WLpm1L3)ijMDlgWQZFZPEhIcJbYTLD11VqCq7VamdSefXmFIKWdSBgpln8ajL9daAWaan448p(p9yMo73NV6NddGLIp8lWp5iGMSR81WOfUGWSgA9LrL0(TgOD9BevN243xApPDT7JvJYO3vBfDZ)iMkv88IooDQLbL6zWCTt4ZuJIk5L3ZYrk76COmkB9R2OKdRhdwz46YDReLhMOi(GbkRpNlm5pdg)ajb2k9uB8D1uUSe)m4AwOjsQNpGzUnoV(0U8lYzib7zQM249IjCjj8zWVSekTXUYXVGK94z2UUTnKfQhFsTfVreqjPSBp(sJHpcI2Eaa85CHj)zW4McbGoLllXpdUUTT(gN2LFrodjapmaYeUKe(m4x0abnh)cs2JNz7rWc9fQhFsTf)M2cUPFH54XZqMv)xcJ33o(A120RTO32MsTt5Y0S6)s0F5QZPxBrNAEr9Favqe)CViIforS0ich982qF)Wh5hgkjlMaLjdf8r5NkQl7zcdeHnnrfF5RyVVj2jPKwmVGqo0B(tpUA2UUSj7ssjRjj03dy1zxlbBtLby7sMK5xFeO2nVLt)4tq0OitPN7NpfI3dYYcUu8DgI9OmCp3B2jVIoLVIeVhKTvfrJH71M5tJx)Qs8oj7P5O1tE(0iU5qpgp30sY25jR23WBNgR)vL49GSNXU77(gOSBSgNLV9xvI3dYEsrqqtmv8M5oUetnQ18cE8Kn2rJ)Ov0iU(W9Et3fI65F8dC9kJO3vhpbtTXEG0HB9ypQoXqjJlpjVxn)nf3RX1SBiFU0swC5gxZFOpZRB9lqP)8ZdRpqT6wF(zKbLvhIo2dv1EHooVkh0ryGFgPosxq8Z)y)1e2OAcBtAcKk4R4SM1jJogQMqVEp0r00eDxSZXOjkVrTgEfiLcOzomIE)yyaBdmaATiAAHZIbm82aUomAo)9ll5h7RREJWZTUgiURhJ0ZVY09NoqHhHciwOQtH)(5NnERJFSKVBYTgE9OsUSZwC2mLn(uaLK(2knsLWB(XrcMiZ3EPQUCQklP0MXx7TDElTMC(h)HFiFfVJgNrYxThy55VyFAAuY7FZBE8Xhh)yi4WqCbE7WB4VBR5wtMC3K3WVAUx7fSnJDBBVyXVjEJUFq(dZEdzbuK2EiMA)P8T)4e739gjSHxZGn8AjWIfO9JQyryDyzwKStuzr1lYTk6kZV(loViuHzcYVWvOvMcVGhcbFh6xGqzbeFURPWtr0ztfAqMDIBEWFIap)8vMrvPA6f9eEhut9d07IOAXtsuNzvBHx7xPvTboi8sNPVd6HBvMSzlal2xWBj5bnBh5fZR6O7bxnSvdJiFKE)hpQsx89wxzxZ6XeMusuxQJYoZ(00gYFhTtSv0uNxtvRkxQbUzYM5MSEaNZ0AWAKFuI)F28IhPP(Qv8SZzl3vIVVwtv3K9k7Je(NyO3sgme7YUlZlODp1p)CRDh9IBKwInn6k6rTP(eFds3DWvhLwx9o6qoQYJ5yX8o7GJAZV4XFmBUPo3GPj0Fb2ZSMOknQ5oRSoNAOr5JysDI6DaCxlYGHn694z2OccO)g1quk2WoKr1zZThu)XpVa(ObnFaZlMBn(DJ4AxL3DmBYQlGEl9kcmWD1m1pWQFosd7YOaNrVBaIHDrnGl6TYBnFYMQYU0ZAr6AAlfp(NZoBzrz6kqohli98Q3iUytUH)twN(3blvzBHvYEnEm4lMYn9leUanuTZVzYGRWlVNvowR19pWq4OriC6LmAbc5R6sfUtFdvr5NFRK0n0tZ6UtDgHQbTNGWpkTPbJHyJx9q)MBnaTxsMnv)3HT3lgAOTpE1um9S6cx26iZHnmV3azua)3GBQZ2mxOZM)oLSAnYFHLTdBXQVXYulLSW2qKqleswVsoK)BQLSgUH2tFL5ET8LsjaRplFPDF2)Cu5)y81XMIfHhuQ9StLTbnQa0KEZbnBkc9uLHI8dv)xaTz6OgQIO1Mwqn6Rmj98Q30lNXlomxJpT4bdVQCsnFsXvvHHvo(OglptZv(YHXgv9z92mwcSPuKUEMfA0P7MGrtT33Bza5MVjyuoQ2R)fBgLV6xuXv91(2IelF0Ug825XDR(6I0RZ)onL4Go8R4HmboAAtrQROofrCSMCjI4OSQxYC2hB4Nlmc)gILALyTdxO5O9fVWRSgHdzWcCWgA4Ij6LJYmtC8OspxKdkCqBrMg0cMFvT3FPiT(QP2qfv08DkJ)TgKNHL(7iyEkCyzdf3sC454r76dsI3nyiouI5dN(Ati9gPF0hQGaXfJwrHC7mt7s6Jiy1RfKxa)cRbdRV)Cwve3M613oAel34pKV6t6NrBXnGKmNDRBEP0dICkMA8rgl0wR8YxLlEhS2KDbntjdR0GDZTUM1(DfNfTfVEct32ZGHD1MQZTuVVl971NbTlw9YclMWOtLFTX5x7EZV2Qxqyl8R1zYVm6XBKwod3z7YQW5A2G243riFMT(N10SC8sJQ3IzNLwoUNwVQLNFUp5IGSz4YR8YzpjhrKB6uQapzLKnQsY(VuLKvtL0r49B(6Gzn6zw6(Wy()NAXpZBwWL)V)]] )
+spec:RegisterPack( "Blood", 20240805, [[Hekili:LZvBpUTns4FllkGx7MnowAT3DBGT)qBXbKGdff3M763SmTfTTUilPtsE3ShwOF73WxKefFtYVK0uCFPnXKA4WzgoZZWHtw4S4tlE0hLJx8BUJChp6Hrtgo6(XJh)WIhZFjbV4Xe06pJ2c)Hi0E4)(ZHXX(KF9LWyKp5RZIpKUgg5XG9hcr5bXr)skAt(IhxDiim)drlwPFfUh(0e8A4NNmAXJ7c89XS5IZwV4rYCF7O7FR743xS8t7Wfl)duk8FcY3feT4XWGS8mkVN(S3He4p9B0TcocTke7V4Nx8460GCCAaAXJxvS0poF4kcR7LeI2Eapmpy9NdI2U4r0AcldClD0vXbHlYbEYiXwDyZMHRIJWEz7cWH(dZYbjuXY5flNuSSxXY0dra3oFwXs3Y)EWAVK4NXPd9XBcwhKZg(2r0XbUlhfIJYhMTdLtwLOTEKfyiF9lw(6Rfl73(0aI5Jr578qr(E(41Oxk3MflhuVtZJ3Vklh(sYg9w7B01XG0kmobO6ldtX7rbrzflNcC)21(d3J(cJ5OZny9lEalghLPDM1maJjZYtd(mLhgBKh6ZjTO8UbThlS(Auktlw(ecOeqzXH9sXBsXz78EcfEauwdSOOa14OAwFpknn(5uCKpHXNyKXjZ)jShocVpad8kWQo0fjhLUfNd6L9yV8yVK15E3oHYOt0nUFaMYd9zMWWzTqG5rjalwjhEd9BfuWcZIWL3jXL6MMaR3ghkV1QT0phEN9TEbBaZd9tMSvU36zCt2(9AC6bfT9qaykSnn(qKFZdz85CiAxC4lkZyGSjC1Ar4ThmYBGBUWqp2omByTJgM1fL)wVJmAM3Mu2kGczcwNHoMCr9tsRxCcSs486PxA5t(tGzo90K7eQmVjhTdJsZ5Nhlw(JvIb6VVc0cFg0cvsHFKYZdO03JfuqKaEPjEGtzch6mYOir7znYb6QJRAOjthj8Pmzu1Ni6xXZ)W(ep0EqdMB2ZJdnOr5ORbxxWxX(l1SnzEMJhyrZr1Suxt7W7JbxszbzcEMMysZ6y2Pmj4s1bmxkzA4i2yWgBY1A(qCqGtYjsSnOdH56cW2UbhmAoCcmRPMjjooSsZuBezu7PjCmFPjEl0T4LK0Ol)M(7Og7ckFT(eOQiFiQRWHb(g1dhMbKCs1(ES9iRC)K(ywiwugribU5GTIqKMaW5cWY4)BlXiPeXhfTMaiGyF49m43e2faSOkQLet))AIzvz8JapcS)IhbDfdJfxqMt335zvHtk)QuuqgOTWauWMNyUVXSOoYZ8GONFwAEYEnl)KG14veVVEBItZdYp4Jzidtd4Np)NzGVQpWNvXY)w50kwgSPy5lXhUoftuESqazGqcomaksiobApaOfcKr(oyIKWtrxddSd9e8Z)ktuwS8FqbY9huHzXYyWBZ)cTpjinyDXskm4ILhsg2uXgvfXjiAD8EIkHTCEt4HkdwTXRKdyO)kb5OxhkaW5j(Y7rTfPJnqxKGkXoHq5OeDso2M7tOKVoYRBuew3WeHA1yNGyeCtD5KIcqyLT6QLYkrZ0gurJO(xjJxS8rE8vU4oTYi6rQdkyayRTnMUXZJlwI)cWM4gcMk)PzGKNX)C3B1HAe)vkZRDaTa0RciAcHLcmBrxmuXqM3Ae4MnRLGMDgTMbKyc(LTINRjohPLKc)6wbTpWF7Za3FzRb1Z2svVnmFwIuFPtF6ub)ybxGn8wLYyve9aKdNrwGuzos1vwpIkHgIhQLsYtkMfGhlafYSeLtbQR8uP1ycie2UdYjrq1qHbBrivP3eZmdbRmr6Jc9siH7jmN5KA6xEBctfVnHAaGJPMWvlK18iEGMMl3wOMe3ksczaPKyheo0CQn8dH5bB3LJJicWTPOSKAasLeCBmaadIN4NXMbLUYbUAIZLkfVZAQ5cqOX7PdlQaPihhjcebTIembXny2VscmIB7E)AZ2vZ4uk3YfkzISKZvRjIQgr1nAZZVnmYck7zQtNzGKtI8rP(mS)jPyi47k0jI(NdACyUZWDOmVdaqrYET(6SSn(36bhOmoKR2(G004uV4nSZthsXWzI49XK7aktmrd(N55qPwMLuw6I8YTf5LUX)wpOS8Y9KKxU1Ylz71JqEr1vPhw9I3Z7WHja4eiQVo95Z7caeb0BofWvIsbpbyVG1CQROlXFzDijXdnPFDeCNBh4o3JM7Cf5o54JDm9yoK6ssMKgedELErYTxfcbjLg7k)e2bHpXd2ik0P)izVQqMYZknYH2Ps(5Y8bv5rY6n8Ram9VixkplMDCCOF8ZrAdcuH3GY7cX7ACl(hVZM(euCFdUlq73eY)Vcs(8R4HU5DCf94n0ssmOTQF4msidBUXaWmagkYcajHI8BAT3nZ5P22NdKodQ9U5AmdD3oNkEzdGDvYC1CDD6Q65m1nTvqQ)eujc3mzJAG146anFd6MtYH8TFVuQmt3g5FblvM5CRmgSCwZAsaZacWKUx7LF1LcG8qz6Z0vutnqMrhf2vVvomKyrYgO7UCuRI2a5SxRkNIzCdYztpvJ3bPAICI1cYiZzo4yv2)Zlpr0x1FMCbGSGe6EM3EJ7SCH75xdARgxS5NkNi)zHS5Luuijgx(oiWkynUN4FO5PfIXkPca08d4Zx9DyyKsAG5uHfIXnGqolmox8VtsyjEZgpqgrtI2oYwhbKT9fHnOhOCPVkjO8vEBRo6sMWvkjtvopQoPH093zlqW)fxF77qqQqkOrsXioqUx5sLf8tprq6u)3ZbWOGDra565nMGLKWZvs45EScp3tq45QKLw7cphfHNgav1XQcI82bqVl3Dc)G1Th()Ciijb7p0K9OY(uXiQ1D2aJ0Wvln0zAnqhELZ5CrBhkOoySvKLAqz6MvJ0N6gUeoIhBslEUWDqE12rrTPQwPoguH45cDqQTtrFhkTDmiTpLZU2UyaM0oV(I8TEdaTS5q(VuUHUsqs0iTb(SAkv1NyHcwJnhsFPkcv1q40mCkl8wdWWMJ5BaXip7uEILwto4oH0orPRrGui5a5UvSM2j1oJxSnaqaoAleBw8ETdj3WFM3)(G)29y2JYyI4EfK6aArWvPh5cML2VnYrytqkEf7vKQMHqLOdTLatamjw)5mPjAUAeMtysrMaaBtz7dQngeanJmm7nQEV7ycITNrPKsAaRp9bOgSpjofi4gsDSVMDv7xdkcsOIuIvrw8EszYpKhVhLt(bapyeGhCyXh)7beLN77lw(lXrWIrh(A93Deqts9FnmAPrimR(oFzqfTV3aTBwEuzARV4PDK2nkoReL1w42A6w8rDIu2Bn64KPogeQNbZzNWNPev7oVQslh5ExMd5(zBwCJkoSPxyHHBUVTsuQJIspegOS8CUWK)my89Om4O0l2476PCzj(zW1eNtO8Gqa1SnoV50U8lYzSd2ren249YjCjj8zWVKqk2yx(4xqYE8mBB1BtZc1HpPXIR4bKtkx7(xug(iiQDha6NZfM8NbJBYfG2PCzj(zW12o6BCAx(f5m2b6DdOzcxscFg8RwhbQJFbj7XZSDWzH8c1HpPXIFRnNBYLmxV)mnZQ7lHXkURFTSn9gl6yBc1w3xMMv3xIUVVAD6nw0jMx0WN0Ury)CNiIJEI4irek65nXHHXptVou0HueKOmKYhMEVO(K3mmqeY0y58vSK8cNi3LsE58IIPqVPVd56z77tMSpkhTcLHFpGvNuycYHkdW25mjXU(iqTB(iN8fOOrIQzkD888Pq8oqwIZLYVZGVhHH74zZw5vTt5RiX7azTkiugUthMpnE9RkXBLSNMHwh55tJ4MD9y8MtRiBR3TAxDVDAS(xvI3bYEgNUV7BGWwznolB7VQeVdK9K8GOnWu5RM74cmPKR5f86jvorR)zRirC5H78HUle1l(4hOYvcrVRjEcIyBXJG0CxCk9F8d(fYdMoEta5r2XMy2WQ717nZExzDoUHuX8zC9AzXoUH(WFM10wOeZ(RV2V5anYI91x1mipxrTJ9uDMyAhNMZJ2riqHgiosBa(l(y3LeUALeUMKeAYNVMZuZAw7yALeYz)PDejjr7P(CmsIQkSPyvOjXaj1HrS8hdd4AGb0MzIKu4SyadVvGBItMrFpZC(X9M63m8mNBaI7hqi9SRmvp1Ec8iKoXCrzk83F9vJvH8Jv8Tk3A41KY5Yw7(zZu24tdKt6X1sK6nV5hljOImxntrz5erwsOdKVjyZmlDTCXh)HFOyjTzhNIkwUdy5zxVlppj79V7Dp)8ZdFogmyq(aVT)D03X1mNrJUB07OLQ7TbrBoqQ(21Z)D2B29d8Fy67qZHu22b(u7oLh)tJCF4DCqeVLaI4TCygZ12QQSfH08Lhs4nPkXhFzKwwdB(1FXPPKYutq0gQaTwvee9umy7G)c4klcfsnnzwkSMEQucs0tu1J(NmWRVELzmwIQEw7I3c1e)a5UkQH)KmXzw3X4n(vCDhIdBEUX03bT3TitQ2DWSZf0UvUNANkpFwDZE37Q(wvmS4rYTM8GAzX3BnSDdThzZKJsAtCu102NM0G)7ABsBbj151V1I7lrh3K9M5(VUhLZK69An)ipBGPZkF0MYRw5ZqNSCxX((g9BTk7v1xj0pXqVM0RVUsFxfxqQQ1V(Q1gNE(TCnXALgMEGnXh7B00ThuXrL2vUdp4Jk84oMpR1o6OX8lFmitNzQtoisc5xK9uNrI7gXyN1ANt11i)rnjor5MdUTfPxFL2sEQR2nci)gOSvkpW2Nq1PZC718Xqph(OEQpO55ZCg(WaQ0v4DitMS4ci3TVmhdutntTkS4NRPxEjuGYO31tJIDEdGlYD5BdBsvrzBYzjpDQ6s2tb6gwV6c4rp3WMLzVlG9CiBnMv)4XzN2n8pRDYFhSuv9lwf7P8kXNpHAdmNzlOiJND7OExPpRFsEzwVoGEg8lnqdNEjDBOH81TVc16xruu95J5KwronT9w4zGwjO7in8Jq)BqyiY41VaWzo902KjtNi)7W5859n0piVzIo5S4cx1tjZGtoV3azeYcqHBAY2etOZM)oLWBkbY0f2t3I18GLPEnzURbxIoAizZu608V7w8K567o5nMBcZFKVd01aM)OBxo)Cubcj81XgRvdpiKeARcBdsug6j5UgA6en0tCpugOO(FL0MkdFO2JMnPGO3xE06z1p2xkJxEhVgFZX96Fv1KuFRX1PJPlV8bklprYv9KI1nQ479v1xcCOKf3EQJwVt3nshnLE4VvoKvFSWA5OgplyDZO65aRD7k(mGTSJ5VMxdw7u)U1FDz41zFNgsSxl2vuxMahnrDl1MxNspooJUeECew1lzm7J19ZfgQVY2smLm7WfuhTR4fEJZa9qgCadS(gQxrNmuMAIJhuz5Q5gd7zZZuplG)fLE)PI06RMyt7wvB8oHX)wdYZWs)DempboSQtJT4hEMEVDDbjXd96RhkXS(tERjKEdKVderqG63gwrHmEQPtjDzl40PfKMj)CNE9BE(CAThxv569dgqIn(dfl)K8L1wwkKSzKYVfKJ3ZIPyQJijSGTE8LUkx8wBvLDbjtfdl05DqI5K(YR8sPPPPRwViEzF61VT(xDMJyHVKl3pbAxQyvdlNWGtLFD1ZVUDMFDfRuOf(15m5xc9ODylLHBTpAf4CjDGn(DGMpZv(Zuvlh)Ur0AXSXILR7XAnxE91UelcIMPF)YRs7jziQPKNCb4jlKC1kKC)tvi5OkKocRFZ1fM1BQl(Fp]] )

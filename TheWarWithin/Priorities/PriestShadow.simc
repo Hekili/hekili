@@ -1,3 +1,4 @@
+actions.precombat+=/power_word_fortitude
 actions.precombat+=/shadowform,if=!buff.shadowform.up
 actions.precombat+=/variable,name=dr_force_prio,default=0,op=reset
 actions.precombat+=/variable,name=me_force_prio,default=1,op=reset
@@ -5,7 +6,7 @@ actions.precombat+=/variable,name=max_vts,default=0,op=reset
 actions.precombat+=/variable,name=is_vt_possible,default=0,op=reset
 actions.precombat+=/variable,name=pooling_mindblasts,default=0,op=reset
 actions.precombat+=/arcane_torrent
-actions.precombat+=/use_item,name=aberrant_spellforge
+## actions.precombat+=/use_item,name=aberrant_spellforge
 actions.precombat+=/shadow_crash,if=raid_event.adds.in>=25&spell_targets.shadow_crash<=8&boss&(!set_bonus.tier31_4pc|spell_targets.shadow_crash>1)
 actions.precombat+=/vampiric_touch,if=!talent.shadow_crash.enabled|raid_event.adds.in<25|spell_targets.shadow_crash>8|!boss|set_bonus.tier31_4pc&spell_targets.shadow_crash=1
 
@@ -49,7 +50,7 @@ actions.main+=/shadow_word_death,cycle_targets=1,if=pet.fiend.remains<=(gcd.max+
 # Use Voidbolt on the enemy with the largest time to die. Force a cooldown check here to make sure SimC doesn't wait too long (i.e. weird MF:I desync with GCD)
 actions.main+=/void_bolt,cycle_targets=1,if=cooldown.void_bolt.remains<=0.1
 # Do not overcap MSI or MFI during Empowered Surges (Archon).
-actions.main+=/call_action_list,name=empowered_filler,if=(buff.mind_spike_insanity.stack=1&talent.mind_spike|buff.mind_flay_insanity.stack=1&!talent.mind_spike|buff.power_surge.up)&talent.empowered_surges&!cooldown.void_eruption.up
+actions.main+=/call_action_list,name=empowered_filler,strict=1,if=(buff.mind_spike_insanity.stack>2&talent.mind_spike|buff.mind_flay_insanity.stack>2&!talent.mind_spike)&talent.empowered_surges&!cooldown.void_eruption.up
 ### Hyper cringe optimisations that fish for TOF using heals. Set priest.twist_of_fate_heal_rppm=<rppm> to make this be used.
 ## actions.main+=/call_action_list,name=heal_for_tof,if=!buff.twist_of_fate.up&buff.twist_of_fate_can_trigger_on_ally_heal.up&(talent.rhapsody|talent.divine_star|talent.halo)
 # Spend your Insanity on Devouring Plague at will if the fight will end in less than 10s
@@ -59,7 +60,7 @@ actions.main+=/devouring_plague,cycle_targets=1,if=insanity.deficit<=35&talent.d
 # Use Void Torrent if it will get near full Mastery Value and you have Cthun and Void Eruption. Prune this action for Entropic Rift Builds.
 actions.main+=/void_torrent,cycle_targets=1,if=!variable.holding_crash&!talent.entropic_rift&dot.devouring_plague.remains>=2.5
 # Use Shadow Crash as long as you are not holding for adds and Vampiric Touch is within pandemic range
-actions.main+=/shadow_crash,if=!variable.holding_crash&dot.vampiric_touch.refreshable
+actions.main+=/shadow_crash,cycle_targets=1,if=dot.vampiric_touch.refreshable&!variable.holding_crash
 # Put out Vampiric Touch on enemies that will live at least 12s and Shadow Crash is not available soon
 actions.main+=/vampiric_touch,cycle_targets=1,if=refreshable&target.time_to_die>12&(dot.vampiric_touch.ticking|!variable.dots_up)&(variable.max_vts>0|active_enemies=1)&(cooldown.shadow_crash.remains>=dot.vampiric_touch.remains|variable.holding_crash|!talent.whispering_shadows)&(!action.shadow_crash.in_flight|!talent.whispering_shadows)
 # Spend Deathspeaker Procs
@@ -73,7 +74,7 @@ actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=0,default=1
 actions.aoe_variables+=/variable,name=is_vt_possible,op=set,value=1,if=target.time_to_die>=18&dot.vampiric_touch.refreshable
 # TODO: Revamp to fix undesired behaviour with unstacked fights
 actions.aoe_variables+=/variable,name=dots_up,op=set,value=(active_dot.vampiric_touch+8*(action.shadow_crash.in_flight&talent.whispering_shadows))>=variable.max_vts|!variable.is_vt_possible
-actions.aoe_variables+=/variable,name=holding_crash,op=set,value=(variable.max_vts-active_dot.vampiric_touch)<4|raid_event.adds.in<10&raid_event.adds.count>(variable.max_vts-active_dot.vampiric_touch),if=variable.holding_crash&talent.whispering_shadows
+actions.aoe_variables+=/variable,name=holding_crash,op=set,value=(variable.max_vts-active_dot.vampiric_touch)<4&raid_event.adds.in>15|raid_event.adds.in<10&raid_event.adds.count>(variable.max_vts-active_dot.vampiric_touch),if=variable.holding_crash&talent.whispering_shadows&raid_event.adds.exists
 actions.aoe_variables+=/variable,name=manual_vts_applied,op=set,value=(active_dot.vampiric_touch+8*!variable.holding_crash)>=variable.max_vts|!variable.is_vt_possible
 
 # TODO: Check VE/DA enter conditions based on dots
@@ -103,7 +104,7 @@ actions.filler+=/vampiric_touch,cycle_targets=1,if=buff.unfurling_darkness.up
 ## actions.filler+=/call_action_list,name=heal_for_tof,if=!buff.twist_of_fate.up&buff.twist_of_fate_can_trigger_on_ally_heal.up&(talent.rhapsody|talent.divine_star|talent.halo)
 ## Use PWS with CR talented to trigger TOF if there are no better alternatives available to do this as we still get insanity for a PWS cast.
 ## actions.filler+=/power_word_shield,if=!buff.twist_of_fate.up&buff.twist_of_fate_can_trigger_on_ally_heal.up&talent.crystalline_reflection
-actions.filler+=/call_action_list,name=empowered_filler,if=dot.devouring_plague.remains>action.mind_spike.cast_time|!talent.mind_spike
+actions.filler+=/call_action_list,name=empowered_filler,strict=1,if=dot.devouring_plague.remains>action.mind_spike.cast_time|!talent.mind_spike
 actions.filler+=/shadow_word_death,cycle_targets=1,if=target.health.pct<20|(buff.deathspeaker.up|set_bonus.tier31_2pc)&dot.devouring_plague.ticking
 actions.filler+=/shadow_word_death,cycle_targets=1,if=talent.inescapable_torment&pet.fiend.active
 actions.filler+=/devouring_plague,if=buff.voidform.up|cooldown.dark_ascension.up|buff.mind_devourer.up
@@ -112,7 +113,7 @@ actions.filler+=/halo,if=spell_targets>1
 ## Using a heal with no damage kickbacks for TOF is damage neutral, so we will do it.
 ## actions.filler+=/power_word_life,if=!buff.twist_of_fate.up&buff.twist_of_fate_can_trigger_on_ally_heal.up
 actions.filler+=/call_action_list,name=empowered_filler
-actions.filler+=/call_action_list,name=heal_for_tof,if=equipped.rashoks_molten_heart&(active_allies-(10-buff.molten_radiance.value))>=10&buff.molten_radiance.up,line_cd=5
+## actions.filler+=/call_action_list,name=heal_for_tof,if=equipped.rashoks_molten_heart&(active_allies-(10-buff.molten_radiance.value))>=10&buff.molten_radiance.up,line_cd=5
 actions.filler+=/mind_spike,cycle_targets=1
 actions.filler+=/mind_flay,cycle_targets=1,chain=1,interrupt_immediate=1,interrupt_if=ticks>=2
 actions.filler+=/divine_star

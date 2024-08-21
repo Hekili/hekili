@@ -19,10 +19,10 @@ actions.precombat+=/unstable_affliction,if=!talent.soul_swap
 actions.precombat+=/shadow_bolt
 
 actions+=/spell_lock
-actions+=/variable,name=ps_up,op=set,value=dot.phantom_singularity.ticking|!talent.phantom_singularity
-actions+=/variable,name=vt_up,op=set,value=dot.vile_taint_dot.ticking|!talent.vile_taint
-actions+=/variable,name=vt_ps_up,op=set,value=dot.vile_taint_dot.ticking|dot.phantom_singularity.ticking|(!talent.vile_taint&!talent.phantom_singularity)
-actions+=/variable,name=sr_up,op=set,value=dot.soul_rot.ticking|!talent.soul_rot
+actions+=/variable,name=ps_up,op=set,value=active_dot.phantom_singularity>0|cooldown.phantom_singularity.true_remains>35|!talent.phantom_singularity
+actions+=/variable,name=vt_up,op=set,value=active_dot.vile_taint_dot>0|cooldown.vile_taint.true_remains>20|!talent.vile_taint
+actions+=/variable,name=vt_ps_up,op=set,value=active_dot.vile_taint_dot>0|cooldown.vile_taint.true_remains>20|active_dot.phantom_singularity>0|cooldown.phantom_singularity.true_remains>35|(!talent.vile_taint&!talent.phantom_singularity)
+actions+=/variable,name=sr_up,op=set,value=dot.soul_rot.ticking|cooldown.soul_rot.true_remains>48|!talent.soul_rot
 actions+=/variable,name=cd_dots_up,op=set,value=variable.ps_up&variable.vt_up&variable.sr_up
 actions+=/variable,name=has_cds,op=set,value=talent.phantom_singularity|talent.vile_taint|talent.soul_rot|talent.summon_darkglare
 actions+=/variable,name=cds_active,op=set,value=!variable.has_cds|(variable.cd_dots_up&(cooldown.summon_darkglare.remains>20|!talent.summon_darkglare))
@@ -41,13 +41,14 @@ actions+=/vile_taint,if=!talent.soul_rot|(variable.min_agony<1.5|cooldown.soul_r
 actions+=/phantom_singularity,if=(cooldown.soul_rot.remains<=execute_time|talent.souleaters_gluttony.rank<1&(!talent.soul_rot|cooldown.soul_rot.remains<=execute_time|cooldown.soul_rot.remains>=25))&dot.agony.ticking
 actions+=/soul_rot,if=(variable.vt_up&(variable.ps_up|talent.souleaters_gluttony.rank!=1))&dot.agony.ticking
 actions+=/agony,if=(remains<cooldown.vile_taint.remains+action.vile_taint.cast_time|!talent.vile_taint)&remains<5&fight_remains>5
-actions+=/unstable_affliction,if=remains<5&fight_remains>3
+actions+=/unstable_affliction,if=(active_dot.unstable_affliction=0|ticking&remains<5)&fight_remains>3
 actions+=/haunt,if=debuff.haunt.remains<5
 actions+=/corruption,if=refreshable&fight_remains>5
 actions+=/siphon_life,if=refreshable&fight_remains>5
-actions+=/summon_darkglare,if=(!talent.shadow_embrace|debuff.shadow_embrace.stack=debuff.shadow_embrace.max_stack)&variable.ps_up&variable.vt_up&variable.sr_up|cooldown.invoke_power_infusion_0.duration>0&cooldown.invoke_power_infusion_0.up&!talent.soul_rot
-actions+=/drain_soul,interrupt=1,if=talent.shadow_embrace&(debuff.shadow_embrace.stack<3|debuff.shadow_embrace.remains<3)
-actions+=/shadow_bolt,if=talent.shadow_embrace&(debuff.shadow_embrace.stack<2|debuff.shadow_embrace.remains<3)
+actions+=/summon_darkglare,if=(!talent.shadow_embrace|debuff.shadow_embrace.stack_pct=100)&variable.ps_up&variable.vt_up&variable.sr_up|cooldown.invoke_power_infusion_0.duration>0&cooldown.invoke_power_infusion_0.up&!talent.soul_rot
+actions+=/drain_soul,interrupt=1,if=talent.shadow_embrace&(debuff.shadow_embrace.stack_pct<100|debuff.shadow_embrace.remains<3)
+actions+=/shadow_bolt,if=talent.shadow_embrace&(debuff.shadow_embrace.stack_pct<100|debuff.shadow_embrace.remains<3)
+actions+=/oblivion,if=soul_shard=2&(variable.sr_up|cooldown.soul_rot.remains>action_cooldown)&(variable.ps_up|cooldown.phantom_singularity.remains>action_cooldown)
 actions+=/malefic_rapture,if=soul_shard>4|(talent.tormented_crescendo&buff.tormented_crescendo.stack=1&soul_shard>3)
 actions+=/malefic_rapture,if=talent.tormented_crescendo&buff.tormented_crescendo.up
 actions+=/malefic_rapture,if=talent.tormented_crescendo&buff.tormented_crescendo.stack=2
@@ -62,37 +63,37 @@ actions+=/shadow_bolt
 actions.aoe+=/haunt,if=debuff.haunt.remains<3
 actions.aoe+=/vile_taint,if=(talent.souleaters_gluttony.rank=2&(variable.min_agony<1.5|cooldown.soul_rot.remains<=execute_time))|((talent.souleaters_gluttony.rank=1&cooldown.soul_rot.remains<=execute_time))|(talent.souleaters_gluttony.rank=0&(cooldown.soul_rot.remains<=execute_time|cooldown.vile_taint.remains>25))
 actions.aoe+=/phantom_singularity,if=(cooldown.soul_rot.remains<=execute_time|talent.souleaters_gluttony.rank<1&(!talent.soul_rot|cooldown.soul_rot.remains<=execute_time|cooldown.soul_rot.remains>=25))&dot.agony.ticking
-actions.aoe+=/unstable_affliction,if=remains<5
+actions.aoe+=/unstable_affliction,if=active_dot.unstable_affliction=0|ticking&remains<5
 actions.aoe+=/agony,cycle_targets=1,if=active_dot.agony<8&(remains<cooldown.vile_taint.remains+action.vile_taint.cast_time|!talent.vile_taint)&(gcd.max+action.soul_rot.cast_time+gcd.max)<((variable.min_vt*talent.vile_taint)<?(variable.min_ps*talent.phantom_singularity))&remains<5
 actions.aoe+=/siphon_life,cycle_targets=1,if=active_dot.siphon_life<6&cooldown.summon_darkglare.up&time<20&(gcd.max+action.soul_rot.cast_time+gcd.max)<((variable.min_vt*talent.vile_taint)<?(variable.min_ps*talent.phantom_singularity))&dot.agony.ticking
 actions.aoe+=/soul_rot,if=variable.vt_up&(variable.ps_up|talent.souleaters_gluttony.rank!=1)&dot.agony.ticking
 actions.aoe+=/seed_of_corruption,if=dot.corruption.remains<5&!(action.seed_of_corruption.in_flight|dot.seed_of_corruption.remains>0)
 actions.aoe+=/corruption,cycle_targets=1,if=remains<5&!talent.seed_of_corruption
-actions.aoe+=/summon_darkglare,if=variable.ps_up&variable.vt_up&variable.sr_up|cooldown.invoke_power_infusion_0.duration>0&cooldown.invoke_power_infusion_0.up&!talent.soul_rot
+actions.aoe+=/summon_darkglare,if=variable.ps_up&variable.vt_up&variable.sr_up
 actions.aoe+=/drain_life,cycle_targets=1,if=buff.inevitable_demise.stack>30&buff.soul_rot.up&buff.soul_rot.remains<=gcd.max&active_enemies>3
 actions.aoe+=/malefic_rapture,if=buff.umbrafire_kindling.up&(((active_enemies<6|time<30)&pet.darkglare.active)|!talent.doom_blossom)
 actions.aoe+=/seed_of_corruption,if=talent.sow_the_seeds
 actions.aoe+=/malefic_rapture,if=((cooldown.summon_darkglare.remains>15|soul_shard>3)&!talent.sow_the_seeds)|buff.tormented_crescendo.up
 actions.aoe+=/drain_life,cycle_targets=1,if=(buff.soul_rot.up|!talent.soul_rot)&buff.inevitable_demise.stack>30
-actions.aoe+=/drain_soul,cycle_targets=1,if=buff.nightfall.up&talent.shadow_embrace&(debuff.shadow_embrace.stack<3|debuff.shadow_embrace.remains<3)
+actions.aoe+=/drain_soul,cycle_targets=1,if=buff.nightfall.up&talent.shadow_embrace&(debuff.shadow_embrace.stack_pct<100|debuff.shadow_embrace.remains<3)
 actions.aoe+=/siphon_life,cycle_targets=1,if=remains<5&active_dot.siphon_life<5&(active_enemies<8|!talent.doom_blossom)
-actions.aoe+=/drain_soul,cycle_targets=1,interrupt_global=1,if=(talent.shadow_embrace&(debuff.shadow_embrace.stack<3|debuff.shadow_embrace.remains<3))|!talent.shadow_embrace
+actions.aoe+=/drain_soul,cycle_targets=1,interrupt_global=1,if=(talent.shadow_embrace&(debuff.shadow_embrace.stack_pct<100|debuff.shadow_embrace.remains<3))|!talent.shadow_embrace
 actions.aoe+=/shadow_bolt
 
 actions.cleave+=/vile_taint,if=!talent.soul_rot|(variable.min_agony<1.5|cooldown.soul_rot.remains<=execute_time+gcd.max)|talent.souleaters_gluttony.rank<1&cooldown.soul_rot.remains>=12
 actions.cleave+=/phantom_singularity,if=(cooldown.soul_rot.remains<=execute_time|talent.souleaters_gluttony.rank<1&(!talent.soul_rot|cooldown.soul_rot.remains<=execute_time|cooldown.soul_rot.remains>=25))&active_dot.agony=2
 actions.cleave+=/soul_rot,if=(variable.vt_up&(variable.ps_up|talent.souleaters_gluttony.rank!=1))&active_dot.agony=2
 actions.cleave+=/agony,cycle_targets=1,if=(remains<cooldown.vile_taint.remains+action.vile_taint.cast_time|!talent.vile_taint)&remains<5&fight_remains>5
-actions.cleave+=/unstable_affliction,if=remains<5&fight_remains>3
+actions.cleave+=/unstable_affliction,if=(active_dot.unstable_affliction=0|ticking&remains<5)&fight_remains>3
 actions.cleave+=/seed_of_corruption,if=!talent.absolute_corruption&dot.corruption.remains<5&talent.sow_the_seeds&can_seed
 actions.cleave+=/haunt,if=debuff.haunt.remains<3
 actions.cleave+=/corruption,cycle_targets=1,if=remains<5&!(action.seed_of_corruption.in_flight|dot.seed_of_corruption.remains>0)&fight_remains>5
 actions.cleave+=/siphon_life,cycle_targets=1,if=refreshable&fight_remains>5
-actions.cleave+=/summon_darkglare,if=(!talent.shadow_embrace|debuff.shadow_embrace.stack=3)&variable.ps_up&variable.vt_up&variable.sr_up|cooldown.invoke_power_infusion_0.duration>0&cooldown.invoke_power_infusion_0.up&!talent.soul_rot
+actions.cleave+=/summon_darkglare,if=(!talent.shadow_embrace|debuff.shadow_embrace.stack_pct=100)&variable.ps_up&variable.vt_up&variable.sr_up
 actions.cleave+=/malefic_rapture,if=talent.tormented_crescendo&buff.tormented_crescendo.stack=1&soul_shard>3
-actions.cleave+=/drain_soul,interrupt=1,if=talent.shadow_embrace&(debuff.shadow_embrace.stack<3|debuff.shadow_embrace.remains<3)
-actions.cleave+=/drain_soul,cycle_targets=1,if=buff.nightfall.up&(talent.shadow_embrace&(debuff.shadow_embrace.stack<3|debuff.shadow_embrace.remains<3)|!talent.shadow_embrace)
-actions.cleave+=/shadow_bolt,cycle_targets=1,if=buff.nightfall.up&(talent.shadow_embrace&(debuff.shadow_embrace.stack<3|debuff.shadow_embrace.remains<3)|!talent.shadow_embrace)
+actions.cleave+=/drain_soul,interrupt=1,if=talent.shadow_embrace&(debuff.shadow_embrace.stack_pct<100|debuff.shadow_embrace.remains<3)
+actions.cleave+=/drain_soul,cycle_targets=1,if=buff.nightfall.up&(talent.shadow_embrace&(debuff.shadow_embrace.stack_pct<100|debuff.shadow_embrace.remains<3)|!talent.shadow_embrace)
+actions.cleave+=/shadow_bolt,cycle_targets=1,if=buff.nightfall.up&(talent.shadow_embrace&(debuff.shadow_embrace.stack_pct<100|debuff.shadow_embrace.remains<3)|!talent.shadow_embrace)
 actions.cleave+=/malefic_rapture,if=buff.tormented_crescendo.up
 actions.cleave+=/malefic_rapture,if=variable.cd_dots_up|variable.vt_ps_up
 actions.cleave+=/malefic_rapture,if=soul_shard>3
@@ -106,9 +107,9 @@ actions.cleave+=/shadow_bolt
 
 actions.items+=/use_item,use_off_gcd=1,name=belorrelos_the_suncaller,if=((time>20&cooldown.summon_darkglare.remains>20)|(trinket.1.is.belorrelos_the_suncaller&(trinket.2.cooldown.remains|!variable.trinket_2_buffs|trinket.1.is.time_thiefs_gambit))|(trinket.2.is.belorrelos_the_suncaller&(trinket.1.cooldown.remains|!variable.trinket_1_buffs|trinket.2.is.time_thiefs_gambit)))&(!raid_event.adds.exists|raid_event.adds.up|spell_targets.belorrelos_the_suncaller>=5)|boss&fight_remains<20
 # We want to use trinkets with Darkglare. The trinket with highest estimated value, will be used first.
-actions.items+=/use_item,slot=trinket1,if=(variable.cds_active)&(variable.trinket_priority=1|variable.trinket_2_exclude|!trinket.2.has_cooldown|(trinket.2.cooldown.remains|variable.trinket_priority=2&cooldown.summon_darkglare.remains>20&!pet.darkglare.active&trinket.2.cooldown.remains<cooldown.summon_darkglare.remains))&variable.trinket_1_buffs&!variable.trinket_1_manual|(variable.trinket_1_buff_duration+1>=fight_remains)
-actions.items+=/use_item,slot=trinket2,if=(variable.cds_active)&(variable.trinket_priority=2|variable.trinket_1_exclude|!trinket.1.has_cooldown|(trinket.1.cooldown.remains|variable.trinket_priority=1&cooldown.summon_darkglare.remains>20&!pet.darkglare.active&trinket.1.cooldown.remains<cooldown.summon_darkglare.remains))&variable.trinket_2_buffs&!variable.trinket_2_manual|(variable.trinket_2_buff_duration+1>=fight_remains)
-actions.items+=/use_item,name=time_thiefs_gambit,if=variable.cds_active|boss&fight_remains<15|((trinket.1.cooldown.duration<cooldown.summon_darkglare.remains_expected+5)&active_enemies=1)|(active_enemies>1&havoc_active)
+actions.items+=/use_item,slot=trinket1,if=(variable.cds_active)&(variable.trinket_priority=1|variable.trinket_2_exclude|!trinket.2.has_cooldown|(trinket.2.cooldown.remains|variable.trinket_priority=2&cooldown.summon_darkglare.remains>20&!pet.darkglare.active&trinket.2.cooldown.remains<cooldown.summon_darkglare.remains))&variable.trinket_1_buffs&!variable.trinket_1_manual|boss&(variable.trinket_1_buff_duration+1>=fight_remains)
+actions.items+=/use_item,slot=trinket2,if=(variable.cds_active)&(variable.trinket_priority=2|variable.trinket_1_exclude|!trinket.1.has_cooldown|(trinket.1.cooldown.remains|variable.trinket_priority=1&cooldown.summon_darkglare.remains>20&!pet.darkglare.active&trinket.1.cooldown.remains<cooldown.summon_darkglare.remains))&variable.trinket_2_buffs&!variable.trinket_2_manual|boss&(variable.trinket_2_buff_duration+1>=fight_remains)
+actions.items+=/use_item,name=time_thiefs_gambit,if=variable.cds_active|boss&fight_remains<15|(boss&(action_cooldown<cooldown.summon_darkglare.remains_expected+5)&active_enemies=1)|(active_enemies>1&havoc_active)
 # If only one on use trinket provied a buff, use the other on cooldown, Or if neither trinket provied a buff, use both on cooldown.
 actions.items+=/use_item,use_off_gcd=1,slot=trinket1,if=!variable.trinket_1_buffs&!variable.trinket_1_manual&(!variable.trinket_1_buffs&(trinket.2.cooldown.remains|!variable.trinket_2_buffs)|talent.summon_darkglare&cooldown.summon_darkglare.remains_expected>20|!talent.summon_darkglare)
 actions.items+=/use_item,use_off_gcd=1,slot=trinket2,if=!variable.trinket_2_buffs&!variable.trinket_2_manual&(!variable.trinket_2_buffs&(trinket.1.cooldown.remains|!variable.trinket_1_buffs)|talent.summon_darkglare&cooldown.summon_darkglare.remains_expected>20|!talent.summon_darkglare)

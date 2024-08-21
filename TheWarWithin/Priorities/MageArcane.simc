@@ -41,16 +41,16 @@ actions+=/variable,name=opener,op=set,if=debuff.touch_of_the_magi.up&variable.op
 actions+=/arcane_barrage,if=fight_remains<2
 # Enter cooldown phase when cds are available or coming off cooldown otherwise default to rotation priority
 actions+=/call_action_list,name=cd_opener
-actions+=/call_action_list,name=rotation_aoe,if=active_enemies>=(variable.aoe_target_count+talent.impetus.rank+talent.splintering_sorcery.rank)
+actions+=/call_action_list,name=rotation_aoe,strict=1,if=active_enemies>=(variable.aoe_target_count+talent.impetus.rank+talent.splintering_sorcery.rank)
 actions+=/call_action_list,name=rotation_default
 actions+=/arcane_barrage
 
 actions.cd_opener+=/touch_of_the_magi,use_off_gcd=1,if=prev_gcd.1.arcane_barrage&(action.arcane_barrage.in_flight_remains<=0.5|gcd.remains<=0.5)
 # Use PoM or Supernova if you have Unerring Proficiency to end Touch of the Magi windows - if PoM then cancel it after to trigger the cooldown to align with future Touch windows
 actions.cd_opener+=/supernova,if=debuff.touch_of_the_magi.remains<=gcd.max&buff.unerring_proficiency.stack=30
-actions.cd_opener+=/cancel_buff,name=presence_of_mind,use_off_gcd=1,if=prev_gcd.1.arcane_blast&buff.presence_of_mind.stack=1
+actions.cd_opener+=/cancel_buff,name=presence_of_mind,use_off_gcd=1,if=settings.cancel_pom&prev_gcd.1.arcane_blast&buff.presence_of_mind.stack=1
 actions.cd_opener+=/presence_of_mind,if=debuff.touch_of_the_magi.remains<=gcd.max&buff.nether_precision.up&active_enemies<variable.aoe_target_count&!talent.unerring_proficiency
-actions.cd_opener+=/wait,sec=0.05,if=buff.presence_of_mind.up,line_cd=15
+## actions.cd_opener+=/wait,sec=0.05,if=buff.presence_of_mind.up,line_cd=15
 actions.cd_opener+=/arcane_blast,if=buff.presence_of_mind.up
 actions.cd_opener+=/arcane_orb,if=variable.opener,line_cd=10
 actions.cd_opener+=/evocation,if=cooldown.arcane_surge.remains<gcd.max*2

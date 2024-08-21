@@ -1,4 +1,5 @@
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
+actions.precombat+=/mark_of_the_wild
 actions.precombat+=/heart_of_the_wild
 actions.precombat+=/cat_form,if=talent.rake.enabled
 actions.precombat+=/prowl,if=talent.rake.enabled
@@ -10,7 +11,7 @@ actions+=/natures_vigil,if=!buff.prowl.up&!buff.shadowmeld.up
 actions+=/heart_of_the_wild,if=!buff.prowl.up&!buff.shadowmeld.up
 actions+=/use_items,if=!buff.prowl.up&!buff.shadowmeld.up
 actions+=/potion,if=!buff.prowl.up&!buff.shadowmeld.up
-actions+=/run_action_list,name=cat,if=talent.rake.enabled
+actions+=/run_action_list,name=cat,strict=1,if=talent.rake.enabled
 actions+=/cat_form,if=talent.rake.enabled
 actions+=/convoke_the_spirits,if=(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled)
 actions+=/sunfire,cycle_targets=1,if=refreshable&target.time_to_die>5&talent.improved_sunfire.enabled

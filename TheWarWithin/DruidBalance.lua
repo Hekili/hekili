@@ -175,7 +175,7 @@ spec:RegisterTalents( {
     arcane_affinity             = { 94586, 429540, 1 }, -- All Arcane damage from your spells and abilities is increased by 3%.
     astral_insight              = { 94585, 429536, 1 }, -- Incarnation: Chosen of Elune increase Arcane damage from spells and abilities by 10% while active. Increases the duration and number of spells cast by Convoke the Spirits by 25%.
     atmospheric_exposure        = { 94607, 429532, 1 }, -- Enemies damaged by Full Moon or Fury of Elune take 6% increased damage from you for 6 sec.
-    boundless_moonlight         = { 94608, 424058, 1 }, --  Fury of Elune Fury of Elune now ends with a flash of energy, blasting nearby enemies for 38,531 Astral damage.  Full Moon Full Moon calls down 2 Minor Moons that deal 35,603 Astral damage and generate 3 Astral Power.
+    boundless_moonlight         = { 94608, 424058, 1, "elunes_chosen" }, --  Fury of Elune Fury of Elune now ends with a flash of energy, blasting nearby enemies for 38,531 Astral damage.  Full Moon Full Moon calls down 2 Minor Moons that deal 35,603 Astral damage and generate 3 Astral Power.
     elunes_grace                = { 94597, 443046, 1 }, -- Using Wild Charge while in Bear Form or Moonkin Form incurs a 3 sec shorter cooldown.
     glistening_fur              = { 94594, 429533, 1 }, -- Bear Form and Moonkin Form reduce Arcane damage taken by 6% and all other magic damage taken by 3%.
     lunar_amplification         = { 94596, 429529, 1 }, -- Each non-Arcane damaging ability you use increases the damage of your next Arcane damaging ability by 3%, stacking up to 3 times.
@@ -193,7 +193,7 @@ spec:RegisterTalents( {
     bounteous_bloom             = { 94591, 429215, 1 }, -- Your Force of Nature treants generate 7 Astral Power every 2 sec.
     cenarius_might              = { 94604, 455797, 1 }, -- Entering Eclipse increases your Haste by 10% for 6 sec.
     control_of_the_dream        = { 94592, 434249, 1 }, -- Time elapsed while your major abilities are available to be used is subtracted from that ability's cooldown after the next time you use it, up to 15 seconds. Affects Force of Nature, Celestial Alignment, and Convoke the Spirits.
-    dream_surge                 = { 94600, 433831, 1 }, -- Force of Nature grants 3 charges of Dream Burst, causing your next Wrath or Starfire to explode on the target, dealing 41,713 Nature damage to nearby enemies. Damage reduced above 5 targets.
+    dream_surge                 = { 94600, 433831, 1, "keeper_of_the_grove" }, -- Force of Nature grants 3 charges of Dream Burst, causing your next Wrath or Starfire to explode on the target, dealing 41,713 Nature damage to nearby enemies. Damage reduced above 5 targets.
     durability_of_nature        = { 94605, 429227, 1 }, -- Your Force of Nature treants have 50% increased health.
     early_spring                = { 94591, 428937, 1 }, -- Force of Nature cooldown reduced by 15 sec.
     expansiveness               = { 94602, 429399, 1 }, -- Your maximum mana is increased by 5% and your maximum Astral Power is increased by 20.
@@ -1549,6 +1549,8 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         if set_bonus.tier29_2pc > 0 then applyBuff( "celestial_infusion" ) end
         applyBuff( "eclipse_solar", ( duration or class.auras.eclipse_solar.duration ) + buff.eclipse_solar.remains )
 
+        if talent.astral_communion.enabled then gain( 25, "astral_power" ) end
+
         if buff.parting_skies.up then
             removeBuff( "parting_skies" )
             applyDebuff( "target", "fury_of_elune", 8 )
@@ -1573,6 +1575,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
                 if set_bonus.tier29_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
                 state:RemoveAuraExpiration( "eclipse_solar" )
                 state:QueueAuraExpiration( "eclipse_solar", ExpireEclipseSolar, buff.eclipse_solar.expires )
+                if talent.astral_communion.enabled then gain( 25, "astral_power" ) end
                 if talent.solstice.enabled then applyBuff( "solstice" ) end
                 if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
                 eclipse.state = "IN_SOLAR"
@@ -1594,6 +1597,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
                 if set_bonus.tier29_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
                 state:RemoveAuraExpiration( "eclipse_lunar" )
                 state:QueueAuraExpiration( "eclipse_lunar", ExpireEclipseLunar, buff.eclipse_lunar.expires )
+                if talent.astral_communion.enabled then gain( 25, "astral_power" ) end
                 if talent.solstice.enabled then applyBuff( "solstice" ) end
                 if legendary.balance_of_all_things.enabled then applyBuff( "balance_of_all_things_nature", nil, 5, 8 ) end
                 eclipse.state = "IN_LUNAR"
@@ -3342,4 +3346,4 @@ end, state )
 } ) ]]
 
 
-spec:RegisterPack( "Balance", 20240723, [[Hekili:9Ev0UTTnu0VLIb0eJ1OyPKm3weNb0I9qdgYlQa7njrltzreksnsQKyad9TVlPSSjLPSRbA3lgYKhE45E1LxEusyY3tIxIu4KNIMgD70zr3eenD6S7IsIvRRXjX1O8NrRGhyOk43VGOiwUz81uoAPE9sEJqpuPsvl)81xVOdZvssvEWkIQSzraHF92LEvmP6RxxTmOuvr)ZccfpF7ccuVPsIx0qOQVXsw4xyjXOgvjxKeR5b2uYYL4o0yzEsSg9vtNDv0nFUn77L42S)bjGFazqyjXuIujnbnUa1qvWJpzscygAbfVm5lDeji1kchwWF9goVrHx2MHFblw3MPivaPknZOCfh4MiHhFbrOAgcabM3TujNIePlWOQefeg6DPFQgjoLOWvs7ngaDZaP0JVIZzfebKKbLPWcckjwGleyzPglm86CkovHeRWq8bHeq2TJqMS5856UX4sHP6OSa(58y8pSZhfCOckLxKYqQgnrozLzoqBeR1iX0g2qGF0giHLJeaFM)4a7t2WYXuSurq0ueLSIvHzQbWdNoi43hLVdQequyjbGAG0qoIsjSvbBb3M9(2Sfnffb4CkPgEPBQjce4keHbLn33MnRnBZMJtZEX(ksiiCX(4xlVH1V7L3LTz)ikuwdVe7F9eiHh01hTzZBZcBZMyWCP3aPP(hje7u)oIdYrsvA35iDOVDHbewkJZGbNyxF1TgtGgDSa94rPEFglmF4iHPHU(W0)KEI0xfivPDyo50rQznMWCytG9HPz31c)vmc6gjtH6HAqDdYxqWBiAydG9e5jvalYecrUKjBamg2g2c40SPtSJinNt)5C2l8NHgeLq1tnb4DyFXqNwam8RP6oIdb5C8Verl8I6tUDtaL7bv0uBuhCSBa4qhWe6Y0QgzPGZRgIC8s4tx)oEH5XQS9Fwk6ghjBQ9CKk0eSwGZ5vlqN(ssWCqTSKRAZeiYYoLQvnSJk4GXcm0FhKthB6)VYCGbXamWUCvnxPGWT7Q0LWjJa3R(EgoWauC49OEe(tNkYo4ErFTZDUx7W(W2PY7S3Vb3h6MrHCQ(uRgyNRM7M(rtXfdcEOK3yxHuvZfqsQqBT4IT2uUaYS4)Tb2rDwLRBPa2G4viJZK8seBfwg0(4Ft0DvcNcEF(kCOclmZFHVAlGsfFK56dyaZLHVn5)bId)vrC0ViIJ(5tC7JEka2Di88kbU1V6CkphOoVL82Q7BgHPPlQ)MU2mJHAyAD7cU2nFs8V1M9ZVHq7JD7Omyxg53NFTDZb)imnao7P6pF)bsX835l)m2YCG0(iKko7pGyh1Ac39je2JU7RhShS)te(GJz75H6qWYmUd7nN9kSdWZyDd837mLTFE7jS8VBpSh)62tp8QA73GoN)E)4MwVF2Mn(wIBMyFfYL(3a)3kppCY7V0Rv6JPOUn2Jf6nBgyQCIt2qxIBKOpfUzJFj(WbsS3TH3HhOXbMFNCCf27kulYXS3oeVXtQEb(nEEF0yBGF8pe6uFDOzu7P79EAp2oRMU11BDwESQtN5S9nowPM)xJ(Fxn2l3dkqmo4Z1FOBKXLsY)9]] )
+spec:RegisterPack( "Balance", 20240811, [[Hekili:9EvxVTTnu0FlfdOjgRrXsoToRiodOf7HASLxCb2BsIwMYIiuIAKu5dad(BFxsBztst5udSUxcuip8YZ9YdV84040VNUyfsItFizCYnJVnooA8Tj3mjjDH81wC6IwuXJO1WhnOA4VFbrrnfMXFLYqR0RxW646HQKYwXNV(6LBXCLGuxeTMiR6wgryxVBPxTGu)1RRxfvjRP)EjHINTBbrYxKPlw2rOYV1KUmmXItxG6KvmE6cDGGDLSAfElCSOiDHg(vJV9Q44pRY)le)rvoRuLlRWQ8)MqxPMRMVfZ0RsMay(UzgexpTSI0KUGsesHPYGlrDuj85dMkfUbTKIxL(LTBgN0kjmyb)Xl4IojELkh)eM)kSBKA8U9evizqSjc4ZNqeQocrqsuSDPcgfXZwIr1Psix17YHPyqeS3vaXeBeDcCgrIRfEGUXJS94RzSMschIjWDjMtqPl44sowuPXcd)AbfNjr81yOcajneSpoqWeDNFS(0qXsIP66qj8NZlItTRhLmqiMXkZAqYoUFP7whOD8x1iX0UgFG)MnqstbIdXZ8poWIhBJRatXcjbrZquY6MACJ0hVVg6qA(oqSGOWsIa6a1HceLsAwhTdSk)9Q8LDLLr4ckPfo1nYMioUgrAaL1DQ8PQ8nBoDyoq2NrCoHXpua00lzq6DPk)hHHIw4uS)8jsaFOfiQ8zQ8yv(idMldMiDT)iP4w2VpWrfiHmB7vnDQVBHrKMSgwdm4iBb221ys0jNkrpDwQ3NHsZ7prAAcxFAgEYaz6ZCKSYonh92zQznM00VlWH00S7AI)mgbnSezGEOfyNx9csEtG87aCiqbkfWImPqIBWeDagt087b82rtxyhGAox)lynpXEe6qubQNwcex)gJXo9aAWpNPBj6dY5(FfIwgcvYy32jaZdHk2g1rx78a70()z4XQS6orfNXQ9roSe(T1VdlmpLYo8DPKBCOSr75qvOjylhxWQxIo8o6(3JGNN1fd9bMoD9ZshSqX9rqWd949RgtEdo8WBrYJEJluNzN3OoULQDv5topJ7(2MBXbkp6lGAGBn6mfoA16Kg4yduVgZjK6wgxQYl1gjUyNPKlu5C8)0b7iCSky6UdGXiwnY4dPOc1SglIuZ)tIUbHXn0xH7hyUz(lcjtGqkzdmxFcdyUm(Lr)pe4KFwbEYpPaN8FFGvZdia2FF68KaFmm7CKNESlOK3MDFZqmD4s6F0sLBSpdtBAOxO9jLOBcW0E97VwiI2Nf)6SR97dOMheLvhGWimxTp7P6V5(bs5S3fkZhAzoquZ)fv(z)db2hADa3)tbChv)RaShzVRF7b7T2)bhtYZI1jLLjANi3D2RWoLpJ155l3zkBF42ty572E4a2STN2)fw7ZuN7AVFyVM3nDZMqlXTsCqZCz4ni8JPZIh9(ld6a(umA7ghW57MnEEbh5un0IEdfdXWnBctX7pII9MecoShh98So60mS3mNMKd5k1hVXkPEbH9lExYqBqy83h7OVo2dP909wgThBVdrxD9odHNsD6mNTDVHKAHpgdFwn0H7rceJnK0)n]] )

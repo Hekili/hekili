@@ -8,10 +8,11 @@ actions.precombat+=/variable,name=trinket_2_buffs,value=trinket.2.has_use_buff|(
 actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&variable.trinket_2_buffs|variable.trinket_2_buffs&((trinket.2.cooldown.duration%trinket.2.proc.any_dps.duration)*(1.5+trinket.2.has_buff.strength)*(variable.trinket_2_sync))>((trinket.1.cooldown.duration%trinket.1.proc.any_dps.duration)*(1.5+trinket.1.has_buff.strength)*(variable.trinket_1_sync))
 actions.precombat+=/variable,name=trinket_1_manual,value=trinket.1.is.algethar_puzzle_box
 actions.precombat+=/variable,name=trinket_2_manual,value=trinket.2.is.algethar_puzzle_box
-actions.precombat+=/use_item,name=algethar_puzzle_box
+actions.precombat+=/battle_shout
 actions.precombat+=/battle_stance,toggle=on
+actions.precombat+=/use_item,name=algethar_puzzle_box
 
-actions+=/charge,if=time<=0.5|movement.distance>5
+actions+=/charge,if=time<=0.5|movement.distance>8
 actions+=/potion,if=gcd.remains=0&debuff.colossus_smash.remains>8|boss&fight_remains<25
 actions+=/pummel,if=target.debuff.casting.react
 actions+=/call_action_list,name=variables
@@ -24,8 +25,8 @@ actions+=/blood_fury,if=debuff.colossus_smash.up
 actions+=/fireblood,if=debuff.colossus_smash.up
 actions+=/ancestral_call,if=debuff.colossus_smash.up
 ## actions+=/invoke_external_buff,name=power_infusion,if=debuff.colossus_smash.up&fight_remains>=135|variable.execute_phase&buff.avatar.up|fight_remains<=25
-actions+=/run_action_list,name=aoe,if=active_enemies>2|talent.fervor_of_battle.enabled&variable.execute_phase&!raid_event.adds.up&active_enemies>1
-actions+=/run_action_list,name=execute,cycle_targets=1,if=variable.execute_phase
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2|talent.fervor_of_battle.enabled&variable.execute_phase&!raid_event.adds.up&active_enemies>1
+actions+=/run_action_list,name=execute,strict=1,cycle_targets=1,if=variable.execute_phase
 actions+=/run_action_list,name=single_target
 
 actions.execute+=/sweeping_strikes,if=active_enemies>1

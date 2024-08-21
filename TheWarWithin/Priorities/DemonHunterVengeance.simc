@@ -13,8 +13,8 @@ actions+=/variable,name=num_spawnable_souls,op=add,value=1,if=talent.soul_carver
 actions+=/disrupt,if=target.debuff.casting.up
 actions+=/infernal_strike,use_off_gcd=1
 actions+=/demon_spikes,use_off_gcd=1,if=!buff.demon_spikes.up&tanking
-actions+=/run_action_list,name=ar,if=hero_tree.aldrachi_reaver|level<71
-actions+=/run_action_list,name=fs,if=hero_tree.felscarred
+actions+=/run_action_list,name=ar,strict=1,if=hero_tree.aldrachi_reaver|level<71
+actions+=/run_action_list,name=fs,strict=1,if=hero_tree.felscarred
 
 actions.ar+=/variable,name=spb_threshold,op=setif,condition=talent.fiery_demise&dot.fiery_brand.ticking,value=(variable.single_target*5)+(variable.small_aoe*5)+(variable.big_aoe*4),value_else=(variable.single_target*5)+(variable.small_aoe*5)+(variable.big_aoe*4)
 actions.ar+=/variable,name=can_spb,value=soul_fragments>=variable.spb_threshold
@@ -26,7 +26,7 @@ actions.ar+=/variable,name=cooldown_sync,value=(debuff.reavers_mark.up&buff.thri
 actions.ar+=/potion,use_off_gcd=1,if=variable.cooldown_sync
 actions.ar+=/use_items,use_off_gcd=1,if=variable.cooldown_sync
 ## actions.ar+=/call_action_list,name=externals,if=variable.cooldown_sync
-actions.ar+=/run_action_list,name=rg_active,if=buff.glaive_flurry.up|buff.rending_strike.up
+actions.ar+=/run_action_list,name=rg_active,strict=1,if=buff.glaive_flurry.up|buff.rending_strike.up
 actions.ar+=/call_action_list,name=ar_execute,if=fight_remains<20
 actions.ar+=/metamorphosis,use_off_gcd=1,if=!buff.metamorphosis.up&!(cooldown.the_hunt.up|buff.reavers_glaive.up)
 actions.ar+=/vengeful_retreat,use_off_gcd=1,if=talent.unhindered_assault&!cooldown.felblade.up&(((talent.spirit_bomb&(fury<40&(variable.can_spb|variable.can_spb_soon)))|(talent.spirit_bomb&(cooldown.sigil_of_spite.up|cooldown.soul_carver.up)&cooldown.fel_devastation.up&fury<50))|fury<30)
@@ -100,7 +100,7 @@ actions.fs+=/fiery_brand,if=!talent.fiery_demise|talent.fiery_demise&((talent.do
 actions.fs+=/use_items,use_off_gcd=1,if=!buff.metamorphosis.up
 actions.fs+=/call_action_list,name=fs_execute,if=fight_remains<20
 actions.fs+=/run_action_list,name=fel_dev,if=buff.metamorphosis.up&!buff.demonsurge_hardcast.up&(buff.demonsurge_soul_sunder.up|buff.demonsurge_spirit_burst.up)
-actions.fs+=/call_action_list,name=metamorphosis,if=buff.metamorphosis.up&buff.demonsurge_hardcast.up
+actions.fs+=/call_action_list,name=metamorphosis,strict=1,if=buff.metamorphosis.up&buff.demonsurge_hardcast.up
 actions.fs+=/call_action_list,name=fel_dev_prep,if=!buff.demonsurge_hardcast.up&(cooldown.fel_devastation.up|(cooldown.fel_devastation.remains<=(gcd.max*2)))
 actions.fs+=/call_action_list,name=meta_prep,if=(cooldown.metamorphosis.up|cooldown.metamorphosis.remains<=(gcd.max*3))&!cooldown.fel_devastation.up&!buff.demonsurge_soul_sunder.up&!buff.demonsurge_spirit_burst.up
 actions.fs+=/the_hunt

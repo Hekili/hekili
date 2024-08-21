@@ -12,6 +12,8 @@ local spec = Hekili:NewSpecialization( 66 )
 
 local strformat = string.format
 
+local GetSpellInfo = ns.GetUnpackedSpellInfo
+
 spec:RegisterResource( Enum.PowerType.HolyPower )
 spec:RegisterResource( Enum.PowerType.Mana )
 
@@ -45,7 +47,7 @@ spec:RegisterTalents( {
     judgment_of_light               = { 81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 3,499.
     justification                   = { 81509, 377043, 1 }, -- Judgment's damage is increased by 10%.
     lay_on_hands                    = { 81597, 633   , 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
-    lightforged_blessing            = { 93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 4 nearby allies for 1% of maximum health.
+    lightforged_blessing            = { 93168, 406468, 1 }, -- Shield of the Righteous heals you and up to 2 nearby allies for 1% of maximum health.
     obduracy                        = { 81630, 385427, 1 }, -- Speed increased by 2% and damage taken from area of effect attacks reduced by 2%.
     of_dusk_and_dawn                = { 93356, 409441, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 30% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 5%, armor increased by 10%, and Holy Power generating abilities cool down 10% faster For 10 sec.
     punishment                      = { 93165, 403530, 1 }, -- Successfully interrupting an enemy with Rebuke or Avenger's Shield casts an extra Blessed Hammer.
@@ -67,6 +69,7 @@ spec:RegisterTalents( {
     unbound_freedom                 = { 93187, 305394, 1 }, -- Blessing of Freedom increases movement speed by 30%, and you gain Blessing of Freedom when cast on a friendly target.
     unbreakable_spirit              = { 81615, 114154, 1 }, -- Reduces the cooldown of your Divine Shield, Ardent Defender, and Lay on Hands by 30%.
     zealots_paragon                 = { 81625, 391142, 1 }, -- Hammer of Wrath and Judgment deal 10% additional damage and extend the duration of Sentinel by 0.5 sec.
+
     -- Protection
     ardent_defender                 = { 81481, 31850 , 1 }, -- Reduces all damage you take by 20% for 8 sec. While Ardent Defender is active, the next attack that would otherwise kill you will instead bring you to 20% of your maximum health.
     avengers_shield                 = { 81502, 31935 , 1 }, -- Hurls your shield at an enemy target, dealing 14,918 Holy damage, interrupting and silencing the non-Player target for 3 sec, and then jumping to 2 additional nearby enemies. Shields you for 8 sec, absorbing 50% as much damage as it dealt. Deals 1,592 additional damage to all enemies within 5 yds of each target hit.
@@ -114,6 +117,7 @@ spec:RegisterTalents( {
     tirions_devotion                = { 81503, 392928, 1 }, -- Lay on Hands' cooldown is reduced by 1.0 sec per Holy Power spent.
     tyrs_enforcer                   = { 81474, 378285, 2 }, -- Your Avenger's Shield is imbued with holy fire, causing it to deal 1,592 Holy damage to all enemies within 5 yards of each target hit.
     uthers_counsel                  = { 81500, 378425, 2 }, -- Your Lay on Hands, Divine Shield, Blessing of Protection, and Blessing of Spellwarding have 20% reduced cooldown.
+
     -- Lightsmith
     blessed_assurance               = { 95235, 433015, 1 }, -- Casting a Holy Power Spender increases the damage and healing of your next Blessed Hammer by 100%.
     blessing_of_the_forge           = { 95230, 433011, 1 }, -- Avenging Wrath summons an additional  Sacred Weapon, and during Avenging Wrath your Sacred Weapon casts spells on your target and echoes the effects of your Holy Power abilities.
@@ -123,13 +127,14 @@ spec:RegisterTalents( {
     fear_no_evil                    = { 95232, 432834, 1 }, -- While wielding an Armament the duration of Fear effects is reduced by 50%.
     forewarning                     = { 95231, 432804, 1 }, -- The cooldown of Holy Armaments is reduced by 20%.
     hammer_and_anvil                = { 95238, 433718, 1 }, -- Judgment critical strikes cause a shockwave around the target, dealing 29,697 damage at the target's location.
-    holy_armaments                  = { 95234, 432459, 1 }, -- Will the Light to coalesce and become manifest as a Holy Armament, wielded by your friendly target.  Holy Bulwark: While wielding a Holy Bulwark, gain an absorb shield for 15.0% of your max health and an additional 2.0% every 2 sec. Lasts 20 sec. Becomes Sacred Weapon after use.
+    holy_armaments                  = { 95234, 432459, 1, "lightsmith" }, -- Will the Light to coalesce and become manifest as a Holy Armament, wielded by your friendly target.  Holy Bulwark: While wielding a Holy Bulwark, gain an absorb shield for 15.0% of your max health and an additional 2.0% every 2 sec. Lasts 20 sec. Becomes Sacred Weapon after use.
     laying_down_arms                = { 95236, 432866, 1 }, -- When an Armament fades from you, the cooldown of Lay on Hands is reduced by 15.0 sec and you gain Shining Light.
     rite_of_adjuration              = { 95233, 433583, 1 }, -- Imbue your weapon with the power of the Light, increasing your Stamina by 3% and causing your Holy Power abilities to sometimes unleash a burst of healing around a target. Lasts 1 |4hour:hrs;.
     rite_of_sanctification          = { 95233, 433568, 1 }, -- Imbue your weapon with the power of the Light, increasing your armor by 5% and your primary stat by 1%. Lasts 1 |4hour:hrs;.
     shared_resolve                  = { 95237, 432821, 1 }, -- The effect of your active Aura is increased by 33% on targets with your Armaments.
     solidarity                      = { 95228, 432802, 1 }, -- If you bestow an Armament upon an ally, you also gain its benefits. If you bestow an Armament upon yourself, a nearby ally also gains its benefits.
     valiance                        = { 95229, 432919, 1 }, -- Consuming Shining Light reduces the cooldown of Holy Armaments by 3.0 sec.
+
     -- Templar
     bonds_of_fellowship             = { 95181, 432992, 1 }, -- You receive 20% less damage from Blessing of Sacrifice and each time its target takes damage, you gain 4% movement speed up to a maximum of 40%.
     endless_wrath                   = { 95185, 432615, 1 }, -- Calling down an Empyrean Hammer has a 10% chance to reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.
@@ -137,7 +142,7 @@ spec:RegisterTalents( {
     hammerfall                      = { 95184, 432463, 1 }, -- Shield of the Righteous and Word of Glory calls down an Empyrean Hammer on a nearby enemy. While Shake the Heavens is active, this effect calls down an additional Empyrean Hammer.
     higher_calling                  = { 95178, 431687, 1 }, -- Crusader Strike, Hammer of Wrath and Judgment extend the duration of Shake the Heavens by 1 sec.
     lights_deliverance              = { 95182, 425518, 1 }, -- You gain a stack of Light's Deliverance when you call down an Empyrean Hammer. While Eye of Tyr and Hammer of Light are unavailable, you consume 60 stacks of Light's Deliverance, empowering yourself to cast Hammer of Light an additional time for free.
-    lights_guidance                 = { 95180, 427445, 1 }, -- Eye of Tyr is replaced with Hammer of Light for 12 sec after it is cast.  Hammer of Light: Hammer down your enemy with the power of the Light, dealing 114,956 Holy damage and 57,478 Holy damage up to 4 nearby enemies. Additionally, calls down Empyrean Hammers from the sky to strike 3 nearby enemies for 9,701 Holy damage each. Costs 5 Holy Power.
+    lights_guidance                 = { 95180, 427445, 1, "templar" }, -- Eye of Tyr is replaced with Hammer of Light for 12 sec after it is cast.  Hammer of Light: Hammer down your enemy with the power of the Light, dealing 114,956 Holy damage and 57,478 Holy damage up to 4 nearby enemies. Additionally, calls down Empyrean Hammers from the sky to strike 3 nearby enemies for 9,701 Holy damage each. Costs 5 Holy Power.
     sacrosanct_crusade              = { 95179, 431730, 1 }, -- Eye of Tyr surrounds you with a Holy barrier for 15% of your maximum health. Hammer of Light heals you for 15% of your maximum health, increased by 2% for each additional target hit. Any overhealing done with this effect gets converted into a Holy barrier instead.
     sanctification                  = { 95185, 432977, 1 }, -- Casting Judgment increases the damage of Empyrean Hammer by 10% for 10 sec. Multiple applications may overlap.
     shake_the_heavens               = { 95187, 431533, 1 }, -- After casting Hammer of Light, you call down an Empyrean Hammer on a nearby target every 2 sec, for 8 sec.
@@ -201,7 +206,7 @@ spec:RegisterAuras( {
         alias = { "avenging_wrath", "sentinel" },
         aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
         aliasType = "buff",
-        duration = 20,
+        duration = 16,
     },
     -- Talent: Block chance increased by $s1%.
     -- https://wowhead.com/beta/spell=385724
@@ -854,6 +859,30 @@ spec:RegisterStateExpr( "last_shield", function () return action.shield_of_the_r
 
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
 
+local holy_power_generators_used = 0
+
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, overEnergize, powerType )
+    if sourceGUID ~= state.GUID then return end
+
+    if subtype == "SPELL_ENERGIZE" and powerType == Enum.PowerType.HolyPower and ( amount + overEnergize ) > 0 then
+        local ability = class.abilities[ spellName ]
+
+        if ability and ability.key ~= "arcane_torrent" and ability.key ~= "divine_toll" then
+            holy_power_generators_used = ( holy_power_generators_used + 1 ) % 3
+            return
+        end
+    elseif spellID == class.auras.blessing_of_dawn.id and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
+        holy_power_generators_used = max( 0, holy_power_generators_used - 3 )
+        return
+    end
+end )
+
+spec:RegisterStateExpr( "hpg_used", function() return holy_power_generators_used end )
+
+spec:RegisterStateExpr( "hpg_to_2dawn", function()
+    return max( -1, 6 - hpg_used - ( buff.blessing_of_dawn.stack * 3 ) )
+end )
+
 spec:RegisterHook( "reset_precast", function ()
     last_consecration = nil
     last_blessed_hammer = nil
@@ -867,9 +896,9 @@ spec:RegisterHook( "reset_precast", function ()
 
     if talent.righteous_protector.enabled then
         local lastAbility = prev.last and class.abilities[ prev.last ]
-        if lastAbility and lastAbility.spendType == "holy_power" and now - ability.lastCast < 1 then
+        if lastAbility and lastAbility.spendType == "holy_power" and now - lastAbility.lastCast < 1 then
             applyBuff( "righteous_protector_icd" )
-            buff.righteous_protector_icd.expires = ability.lastCast + 1
+            buff.righteous_protector_icd.expires = lastAbility.lastCast + 1
         end
     end
 
@@ -877,6 +906,9 @@ spec:RegisterHook( "reset_precast", function ()
         if IsActiveSpell( 432478 ) then applyBuff( "sacred_weapon_ready" )
         else applyBuff( "holy_bulwark_ready" ) end
     end
+
+    hpg_used = nil
+    hpg_to_2dawn = nil
 end )
 
 
@@ -885,15 +917,19 @@ spec:RegisterStateExpr( "next_armament", function()
     return "holy_bulwark"
 end )
 
-spec:RegisterStateExpr( "sacred_weapon", function() return "sacred_weapon" end )
-spec:RegisterStateExpr( "holy_bulwark" , function() return "holy_bulwark"  end )
+spec:RegisterStateExpr( "sacred_weapon", function() return buff.sacred_weapon_ready.up end )
+spec:RegisterStateExpr( "holy_bulwark" , function() return buff.sacred_weapon_ready.down end )
+
+spec:RegisterStateExpr( "judgment_holy_power", function()
+    return 1 + ( buff.bastion_of_light.up and 2 or 0 ) + ( ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.sanctified_wrath.enabled and 1 or 0 )
+end )
 
 
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "holy_power" then
         if talent.righteous_protector.enabled then
-            reduceCooldown( "avenging_wrath", 2 )
-            reduceCooldown( "guardian_of_ancient_kings", 2 )
+            reduceCooldown( "avenging_wrath", 1.5 )
+            reduceCooldown( "guardian_of_ancient_kings", 1.5 )
             applyBuff( "righteous_protector_icd" )
         end
         if talent.fist_of_justice.enabled then
@@ -922,10 +958,22 @@ spec:RegisterHook( "spend", function( amt, resource )
     end
 end )
 
+
 -- TODO: Need to count HoPo generators and stack Blessing of Dawn on third cast.
 spec:RegisterHook( "gain", function( amt, resource, overcap )
-    if amt > 0 and resource == "holy_power" and buff.blessing_of_dusk.up then
-        applyBuff( "fading_light" )
+    if amt > 0 and resource == "holy_power" then
+        if buff.blessing_of_dusk.up then
+            applyBuff( "fading_light" )
+        end
+
+        if this_action ~= "arcane_torrent" and this_action ~= "divine_toll" then
+            if hpg_used == 2 then
+                hpg_used = 0
+                addStack( "blessing_of_dawn" )
+            else
+                hpg_used = hpg_used + 1
+            end
+        end
     end
 end )
 
@@ -1550,10 +1598,12 @@ spec:RegisterAbilities( {
         handler = function ()
             if talent.greater_judgment.enabled then applyDebuff( "target", "judgment" ) end
             removeBuff( "recompense" )
-            gain( 1 + ( buff.bastion_of_light.up and 2 or 0 ) + ( ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.sanctified_wrath.enabled and 1 or 0 ), "holy_power" )
+            gain( judgment_holy_power, "holy_power" )
             removeStack( "bastion_of_light" )
             if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", nil, 5 ) end
         end,
+
+        copy = 220637
     },
 
     -- Talent: Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
@@ -1823,4 +1873,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Protection Paladin", 20270723, [[Hekili:vR1xZjoos8plP2QiH6YYGnHK52kWd7SVmPUAQToMRU3WiSfG2yS4KStcvLYF2Vws(psYY2aB2PU7LmaQvl1)7x3T6zP3YVVCrekfV8B(J9VB8d(tg5pE6DtNSCr6Xd4LloGcFgTf(qcAp83FNrtXHPeAs(QFhfJIijcAogtrrcEXPzSqGUDPPh4)YN(0ws6US1JcP7)eNSplgj2AidTjv89WpTCX6msC6xtwU29fXF5cuw6okB5IfK9Fb4mjkcRihZdxUqq(pp(HF2FYVKV677W5R(3ig8h4Gf3TycpLlLs8guwCk8XVjLAKukwUGHxN9mCJXjO1X4OL)6Yu4oiOO(xQioefhhO(sGGZk(hO0nHuACe91eUGdtUeoKYijpJtLm4UlHb8uuseIfbmaw4addk(1OMcDe(fQKdOmgYLSxsymz7UuEWFKfTDpoj1I0j6KIyHOeCqkLXAs5D6ugst4yWjq9nd6MAj10dGqHtR37ligrSQ4tXzW)4b8JrsXWpxPahL6nAhIhuArYxniFL1AGQkDek5yq0bUC9BYxDLgv(oO693nytj7hfLPeM8vZNzWchumuXMMhvjTsz00HiGFmjmGhtfM1VD)zRJ8DQJ87qh5s6BQJCPjn0ro1aZ7tj6qf5DwQOuTiHsxFnfwTUaoI1zB2mIVd9m46UdhSdJEbNWhLDqDjUPtkg06Qm8Eejb0hpMVYF0Dvcvj)2H2VhZcOBcKHybByySblDsGoxN0lpzyu0XozQIcBUw7jzrFxqJ8DeCCKGuHAGjihtZ4kyAg5GIQ)fhaOxijnFfDdyHfi2)ZsQZxHcdPmiRYwyjQXkfPEOSRHV81V8B3kKP08vzcwsGpG4iqujBeFtqdkFLqPLV6aJgcAPFnB7wmCSKeW6RU23kUaeGwY2ekdRy8Wr6Ui3i1Vfo(OyaABuLWfCO8onQqJOmiv(0oOmGegvRXb4IXs7iyH2rJpgCG(kMjJr8RSVst3AexIyxAlQ8qLRgrEHaGVhYyhOCLJKIPx1JVHRCv1cFc(T0aeBpsa(lVTCuidhf8kgDGMOHjOcd0xSziKXQ6oD3BCvfbqBbpGGxbaHDLYIUxPqrvER6mzzDERAzIFadzqtrSTqM2rT42kTatQdCwNf)kI9SGUAB6Mm2Xraqt4ZkG)jnmJIak4SpggJlprbCKJeDA4ZkNSImVBZirOKqCPdwTSHpILx7JSQKcndBLQqRCSpCgkRWDIBnxjF(k75Mmq)bLwixkiLShcXEewEl4yVh9MB59ZTkVG7HPjrA)XmiXsboX8QJwAl2tf3sH0TnMYo6Wz3fyTwHkM8xC7(7DD7aUYqKOa8lc7ckkIpc)MOSs1DYEnIkfN3ydF2Ia0uACS4a9g3VrWHw0ZOkoBbX0m7zJuBK2tVgmdTJrXzc20o6qHNkjzpfQavHkvHdoOfnd4OC3uLM7uJeNjJIC7371wOVfiHzAOVd(hImerVGssH2Bu5Iqc3hiXZR7iH7a)5medwglO83KMpi9qc)aPSofrcQTKxWYDQq3GnxGmsktUfMjligiQchvKXParPB0wPquqPuLwfpQchhOLRXc2ScFvQ(gl1vTd6CIa9NeoERG4DHG7zaGbxqohodfqMTJ9dUX6SQ7WCpF2Obewghfb7Idvp2O5pV2rdQRb4SD6VF8hNtVVn6r9nSa)JKi09gLwwZSxHkSQGpL8R9kKTYMnT1(9eSX)06YlvRtxhLNxYGcA8SGJl7UzuJk)L(TEg(QoCdLPWkQbQ01vaknwVE6EoeF3Dmwx3NO6QQUy6QQMkI66eHihXh4A6KoQeVGg)ZtV5)JqV55UlYFy6nFL3x9l10z3HMHQwpfIrjrxwjcpm19Y6XQ2paJ9d0yQEw649zAhMOHQTMThOL5)TZVA4t5In6je8Mw5zOQtSOWOIFR)CxkwmSSaVg7PU6N6nPNuSuV5EvR6KRjYSFdRco7U89ldF3Q8q7N4PpdNvBNTAruLcuNM1QNsxDh09rRBP(CnJ3qy41XuQ6HiHiUxadLyf1R7oDmqlutJijfeCkF1wY(dugevTHczAUU6PlVgcpW)NmIS2kov4dHYsP7rPIFakhc8b4JYF6FilpB6VKV6l0e40KlFDjgJ5ZhDTQ0TRB51LGLVX7THNit1F9RwySfjNeZB(aCnyUtsojM74v3CC1DrZFPSVxg745eDOvU479LY(tGXD6(1yzJB79)4z6Fs3U2y(hsat738lZ49xm77LXxAWYjEVVu2Fcm(IGuZFYbAFXU4NhyVx)Mkz9KDzNkjWqx(XX4kw63V5XnlDqGXD9JJXsJZxL2fbNMkElEHRq(k5muHLLf3ecvNCVy2I0neXiMueXhvLX(Vn7tgJxm)jxKyxnTtImBX0nn6Tz6MIYoeUvmWOzfkG62eUvoKSzE3s2mZTZ9G2bWgCZvTdD((7DefoFwhqldF)9RCJZ)Nre91frF3IytPqteBk)1IOdPyEhIVUeAnS2NQKrqYuJNx)xShaUsMl3nVFslrB6NYYHiQDLQKeEtNyH6TZEgNpZheB3Dk((7n7sC(dtB(Zq1(oVmMvM7MgvBDI7zl9r4Cxw9)i2(nD0mWJEWT(gr)EZ9gdFQY27M85EthoCGfvn7RBqfb290vVsl9ZnCOB5sRPRMMUw6CB(SjUzMDVuTRKF)9E0ipoBY48N(PFQeb28GijVqFghGFdAllbfhioeL7Q8z6cijBY4xGvUQNT22yP96Z6HdLHiadSgXOGnx164ya)IwxBqlRuQE8hD3WY93YC0h0(ILCzsR8OC2OUzIXmZbUawQ8v))XCTDA2AXrxgLFdG937mV18N7zE3ZgpCq9dkp3hSaQPR2C22fR0yU2dhCvN2m3EMgJBqizgZ7yMXenG8DogZHMhRRXF849f3RgbB6GpAxPQCggJ5tvfYPbenr5E2ZKPb8knv(JtCEzQNUGScHohaDpH(wjForjUySwY8JnhV8JZkgTSt(ALVq6325aLN7x4C1CqYLExo)F7JRd3kfYnNtYDVXNNRXPi9oPrVezjQS1WFpDFcxt9AGdrB2DqjaNMBSiFkaG()otK9Iqq0hu7GcV5z(d6R0hzI(l44SaS6exQfyjNNR5Cx7ju38fTD64zoN1tWp7QZ1r7(XNJJMJZ3yyOvL(4CcQUdan6rvWan42P9gpQxlvzJjajqY)askEp)w5aSk7zrcwEt7J8AM3aNvMlYEzm7UhND3yr9pDWkFJEBnFSaOlM2Y2bl1othEocRFFcR)hNW6z0L7hKWkh9XY)l]] )
+spec:RegisterPack( "Protection Paladin", 20270811, [[Hekili:TRX2UTno2VLGc4yJj11soojTi2aZoyb6euumytxSyFXY0w02AISOhsPK6fb(BFphQBKuuxSBNI5H5HPtS4HhEUFJCUZ8Vm)rFsmD(NDh5E9O7CCgo62X3o)X4d7PZFCpz1tKnWFer2b)7VXzX0vXbSOJl(nsiXpicH5qiJ4JysWs4Ra42ghVx8H39UnbXBtwoCfB37eb7scj4wxXjRJXFV6DZFCzsqy8VgnFPnY4MRF)8hjjXBz85p(yWUFbWCGVpnfCQy18hrWF7O7ERJZhoU4FVhXXXfR5SDhxGB44dhFifKBFR7yaKVSfw))q4W)a0gs(HbIyHumqxtscJH)8ZsXcrYOZFKtxM8eWu0iYYqQ)8)X8yGmrik)sbWRiHHEP)WdXCk(9sfFRySqF2lrcedJphmeZdIEIglrW1NdceXKiFc3hqaSWEof0nljvzAF6ZmjgijCInEphWWGnBJfE)EI)MD0OydqhRckHVIer9IzCEviVwfYvSibfSts)LgCtm4A2EGPOXL79zcpaxf)RWe4)5a4JhetHpxiahg7mClr4LRroUO3XfgRbIQ4HKOdE(7fY17FCXfkq5AbQxFvdn5OFOFskZCCXSPAOWcedsrt1JkhwjpQBq4joeTYteYq16NV5KLrUwLrUniJSX9vLr2KKAYiRsGzTjeTiICojruSINqUPVIatrwqcbB1Hzw5Bsc8jrROdZGnNLlir6bQhBTx8b(qoDhjic437pUWnLExMSEnqM72r5iusK6XPe)ddt2l5Qu0jHJt9zjlJhc05QNsTBClz7uYAjriDsZrwjDLIRmWGL9tep5bmSNpbjZmwTBXmmOyBH)kfy2ODG0hRXBW2eIGOnioLeKct6yYK1r9atwYawOrZaSL0yFjL0x9q44UOSeH3(0CCmE55G0tHk2cKEbR8l13apmkxbSLfEWBp7fkxAv7wy6MkgmvFOvqXQ(bphaHl3NW3ZeuflKlYj)wSNQ1KBnNwGpfzOyBan0xA)UL6vWN2Y1uklJOFn2JW3rWO)sMxqwb6FVxOK9SiLGcssrBXcQSV1vv9GUjNZLWrEMgTbTFEbIiSvIMEkQiJLlXdAioYKTL6OCoqylhtoKLj5k5FXEk46et4BG0YdRrekv(PUaPk(KWxi8Nq4knNwNWpO6imUIfeihgdN9HvH08teJDzjIFrkxusq5qiyjHLw1epyF6QYIHwZcdzVasRJlcb7n4eja9UKsbDh1hytFeg40paf3DCHmrGGefeF4QJlcavEaao4hSnkaJIC44cYXfYa9BaPoSed2ue(9ebG9F(X0pXPGvOylCseoh2PpSgBnCueOUmahrWXkIHcf2G)ereX)zGtiC8eKh5U9HyHC4AHO0a(od(NpcclasfQd(fSPvjCb1)QmChXwY8HVk2YscHFdsSKuY3hOoO0qXvOYcXWAjVFCX)6F(ZF6t)3JlEHejLkXmaKKiOcQuBFCt5cr5zuSclrUm8D0DbwnvTCPapFuXKUTHsYaunIH5zN(PPVZqhEvW6Px0IvuY(E5ziQfMmRLEDYaE20X9UOF)MZg2vu5mAWRVMXc5kFemPQhO9bQ(xx0QltM3FxzyjWDIsZCdr)RBvRoTmCQm(IrbQ3DcbpwTfPaHw291jaLb1LlxYloyhnnW1gihZoYxT7))(ti(SmIsMyknUzovGertXfDg1ukvqtXjb(EGZhOhi((IH0VInxLYxMRfKwONZiTGXzj9IHGsYt0SYmlstlIdN6ApR54H)kgAdIegsrZjeHGd(xYJZKhPyppGb8DW)dGctSed)Nm8jyy8enZp)Ju8OWaPyKhmppcH0StgJqiJGGYGpcMByW9FbI(aan0W4VzxojZwFHoxGXGkBLcCvQPhlen1NJVFbzeeTJb1fAuSzVA0UG901ts1(NIdNsDo6CVpnmaILRjak4NYsVLCJzo8U6r0O9)nQHbKfXcvRKgoWikGtnrm0RSYyp3P1dmprabg5q3t8GkZFWPEp(0kP2knknl4RxRgufN)lmUudTjKXpiR5FKwZ8MEsAKNB9Du9TOvDBPVdRCDtSu9Uog1DnP2XyGOPJdViwzaow66mhbzW4y4cM30(Wkn0knID06WYsfYYKlzTiOuq81JkAkP9dX1(GqkBocB(OObU6OKbQDW30jcjgW)qOitAy2BzW4EAYn3FeYnh7dh5hMCZn16ZSl5gh9rZDQlBY9eJSpPX(1R33E7(nG7MNlsasX5K6cq0G)SjoU(BSX3ki0rTZ(geB1r7t6EnMA5HQz0R325Cv3D6PQE)jKPslTHA9DMXglhpEJ2L6gCgZF2CqzNrfP3oX(YQzsmN6DSXuX1DEnKi1BKA3XVeT7z5vR1yXA2qJ6WuCMue3kT)I86W1kfFhdznT8L1xu1jefySDRH4QtXOnbJXK5AESpkodgJDRWBPZhDbQbb3DLiEDaNUmKXsVDfWIghybUcERw3o6wOCJhHAmXsueztFjy3EgpoBclxwCFmxIdi5psa8HJbHH6issmBhr22a0Wgu7Ly4Xh(KCydt(a0(alcon5YxMNHrFM4xMo4LlRzK5WY9D(6GoIu1r6xdInaPtiV6Tkub5wbPti3YvjyH0TbZFQOVveB5osSivoB6(CrFhqCJMFvwwJAV5hps)gn7Qd5FxCyQNYppL3FYOVveFUolDKUpx03beFwHup(GLO9z7sCAb7DAxvj7MOj9uoaAYYVFiUaLUTRESJslaOrRF)qSu58Rs9cIPBYhbF6q6qXUS4Mvq1j3Gpyc26a8EZFZBkNvFrw7FA67WYgWcleKiy11bRsVX6hAdEI)VNF72pydoT3JHDqmRe2kq6dVWomQdWWoe59EEfEbXtZeULnGEL8vfm1bVQc7oo9Qp4yV(xuFy5xFTbp8ztBiSfELd2ZH8TWIUQSORDwSkxOWIv5)sw0cxmRb2xLdnEDlpuWJOjN89mP(fZB)pLNZ3TODqZJK1oK53RLcjvWjIQgXO4TX(9Mn1fyB7D596Rv7WB2TtQ(zOtcReJEv)2HjTLmKoRPhfR7YO3kC79BOrJ7DaQUp2R2mNrdgyhNkntvvSv)96zhzM9ivpd(6RfwI1q8thpspaO6bfe9m7jQh9Rq7wrKqp8qsnvKdF1liADI4mKWf9Iv3gZOUz3PAkQCTR2TFnMBL09V5lfTFH4P6Jd6EW4TXhXXGE9R(GAsT5B5janOxBpFgBmTf2R65pDCgvzFkxZM6usE1D6dSE81yLkDp63)I2FRokgJT8oDMoAqVYz8pZDqMMWYBYjBLkVhNb4vI3O6RgTB2ftmWUqq)ENqEx7gRMQ9izGujwE5m4j33Y3Zn7UP3f29L61bF5Ai7Iq2AxiBAraDlw04ETCt)zMxJvuC3dXVEt2Z69VFjl)9lzPDRSFOVKfREk)frm0scaJAE6ONE2BjrMIQ6lz5(PzVILZkWN6103l7GM6Afvg1c1)uQqeuQNeBlda9xINosNT2A5vnBTCiLMcL4W4HLyDtLv8i1cn8is6zrrm9AOQ3UAndjJB9zf8nB1zfb63TwlEv63hIvbT(TPzfgThYqrrAwF9d9odDTHjthuTNPS)e4d7eQ20mqeOuzWKwTJvR83OgTgQfUMQEh1zB1jnDQ6Yv1lzU591qPZAi56Z8WDYRpUgUVBssJKkvbT60RQctDoCnDW143vDl16(vfuLKmQws5ddbGaQt0dQ7CN4k5ZXiFojYmL9R)bCm1PN1PbGL1R9suUF61yfinHkxT5PPp8Z8AxQCmdWYAQhPdofM1TnM197hZ6OnzTVtmR8QCN)))]] )

@@ -19,11 +19,11 @@ local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local GetItemSpell = C_Item.GetItemSpell
 local GetItemCooldown = C_Item.GetItemCooldown
 local IsUsableItem = C_Item.IsUsableItem
-local GetSpellLossOfControlCooldown = C_Spell.GetSpellLossOfControlCooldown
+local GetSpellInfo, GetSpellCharges, GetSpellLossOfControlCooldown = ns.GetUnpackedSpellInfo, C_Spell.GetSpellCharges, C_Spell.GetSpellLossOfControlCooldown
 local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 
 local GetSpellCharges = function(spellID)
-    local spellChargeInfo = C_Spell.GetSpellCharges(spellID);
+    local spellChargeInfo = GetSpellCharges(spellID);
     if spellChargeInfo then
         return spellChargeInfo.currentCharges, spellChargeInfo.maxCharges, spellChargeInfo.cooldownStartTime, spellChargeInfo.cooldownDuration, spellChargeInfo.chargeModRate;
     end
@@ -124,7 +124,7 @@ state.off_hand = {
 
 state.gcd = {}
 
-state.hero_tree = setmetatable( {}, { __index = function( t, k ) return false end } ) -- TODO: Update hero tree detection for 11.0 launch.
+state.hero_tree = setmetatable( {}, { __index = function( t, k ) return state.talent[ k ].enabled end } ) -- TODO: Update hero tree detection for 11.0 launch.
 
 state.history = {
     casts = {},
@@ -616,7 +616,7 @@ state.GetPlayerAuraBySpellID = GetPlayerAuraBySpellID
 state.GetShapeshiftForm = GetShapeshiftForm
 state.GetShapeshiftFormInfo = GetShapeshiftFormInfo
 state.GetSpellCount = C_Spell.GetSpellCastCount
-state.GetSpellInfo = GetSpellInfo
+state.GetSpellInfo = ns.GetUnpackedSpellInfo
 state.GetSpellLink = GetSpellLink
 state.GetSpellTexture = C_Spell.GetSpellTexture
 state.GetStablePetInfo = GetStablePetInfo
@@ -2566,7 +2566,7 @@ do
 
                 if totemIcon then
                     -- This is actually a totem; check them.
-                    local present, name, start, duration
+                    local present, name, start, duration, icon
 
                     for i = 1, 5 do
                         present, name, start, duration, icon = GetTotemInfo( i )
@@ -5499,7 +5499,7 @@ local all = class.specs[ 0 ]
 -- 04072017: Let's go ahead and cache aura information to reduce overhead.
 local autoAuraKey = setmetatable( {}, {
     __index = function( t, k )
-        local aura_name = C_Spell.GetSpellInfo( k ).name
+        local aura_name = GetSpellInfo( k )
 
         if not aura_name then return end
 
@@ -5931,7 +5931,7 @@ do
                 elseif type == "CHANNEL_START" then
                     time = start
 
-                elseif type == "CHANNEL_FINISH" or type == "CAST_FINISH" then
+                elseif not time and ( type == "CHANNEL_FINISH" or type == "CAST_FINISH" ) then
                     time = start + ability.cast
 
                 end
@@ -6786,10 +6786,6 @@ end
 
 
 function state.advance( time )
-    if time <= 0 then
-        return
-    end
-
     if not state.resetting and not state.modified then
         state.modified = true
     end
@@ -6833,6 +6829,10 @@ function state.advance( time )
 
         eCount = eCount + 1
         if eCount == 10 then break end
+    end
+
+    if time <= 0 then
+        return
     end
 
     for k in pairs( class.resources ) do
@@ -7509,7 +7509,7 @@ function state:TimeToReady( action, pool )
     end
 
     local line_cd = state.args.line_cd
-    if ( line_cd and type( line_cd ) == "number" ) then
+    if line_cd and type( line_cd ) == "number" and self.time > 0 and self.query_time - lastCast > max( self.combat, self.false_start ) then
         if lastCast > self.combat then
             if Hekili.ActiveDebug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. lastCast .. ", remaining CD: " .. max( 0, lastCast + line_cd - now ) ) end
             wait = max( wait, lastCast + line_cd - now )

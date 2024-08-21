@@ -134,7 +134,7 @@ spec:RegisterTalents( {
     -- Shado-Pan
     against_all_odds                    = { 101253, 450986, 1 }, -- Flurry Strikes increase your Agility by 1% for 6 sec, stacking up to 20 times.
     efficient_training                  = { 101251, 450989, 1 }, -- Energy spenders deal an additional 15% damage. Every 50 Energy spent reduces the cooldown of Weapons of Order by 1 sec.
-    flurry_strikes                      = { 101248, 450615, 1 }, -- Every 61,321 damage you deal generates a Flurry Charge. For each 400 energy you spend, unleash all Flurry Charges, dealing 7,652 Physical damage per charge.
+    flurry_strikes                      = { 101248, 450615, 1, "shadopan" }, -- Every 61,321 damage you deal generates a Flurry Charge. For each 400 energy you spend, unleash all Flurry Charges, dealing 7,652 Physical damage per charge.
     high_impact                         = { 101247, 450982, 1 }, -- Enemies who die within 5 sec of being damaged by a Flurry Strike explode, dealing 15,305 physical damage to uncontrolled enemies within 8 yds.
     lead_from_the_front                 = { 101254, 450985, 1 }, -- Chi Burst, Chi Wave, and Expel Harm now heal you for 20% of damage dealt.
     martial_precision                   = { 101246, 450990, 1 }, -- Your attacks penetrate 10% armor.
@@ -148,7 +148,7 @@ spec:RegisterTalents( {
     wisdom_of_the_wall                  = { 101252, 450994, 1 }, -- Every 10 Flurry Strikes, become infused with the Wisdom of the Wall, gaining one of the following effects for 20 sec. Critical strike damage increased by 30%. Dodge and Critical Strike chance increased by 25% of your Versatility bonus. Flurry Strikes deal 15,306 Shadow damage to all uncontrolled enemies within 6 yds. Effect of your Mastery increased by 25%.
 
     -- Master of Harmony
-    aspect_of_harmony                   = { 101223, 450508, 1 }, -- Store vitality from 20% of your damage dealt and 10% of your effective healing. For 10 sec after casting Celestial Brew your spells and abilities draw upon the stored vitality to deal 25% additional damage over 8 sec.
+    aspect_of_harmony                   = { 101223, 450508, 1, "master_of_harmony" }, -- Store vitality from 20% of your damage dealt and 10% of your effective healing. For 10 sec after casting Celestial Brew your spells and abilities draw upon the stored vitality to deal 25% additional damage over 8 sec.
     balanced_stratagem                  = { 101230, 450889, 1 }, -- Casting a Physical spell or ability increases the damage and healing of your next Fire or Nature spell or ability by 5%, and vice versa. Stacks up to 5.
     clarity_of_purpose                  = { 101228, 451017, 1 }, -- Casting Purifying Brew stores 14,428 vitality, increased based on Stagger level.
     coalescence                         = { 101227, 450529, 1 }, -- When Aspect of Harmony deals damage, it has a chance to spread to a nearby enemy. When you directly attack an affected target, it has a chance to intensify. Targets damaged or healed by your Aspect of Harmony take 10% increased damage or healing from you.
@@ -1101,7 +1101,7 @@ spec:RegisterAbilities( {
     clash = {
         id = 324312,
         cast = 0,
-        cooldown = 30,
+        cooldown = 60,
         gcd = "totem",
         school = "physical",
 
@@ -1163,7 +1163,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
 
-        spend = 20,
+        spend = 10,
         spendType = "energy",
 
         talent = "detox",
