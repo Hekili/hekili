@@ -1,7 +1,7 @@
-Smufrik beta demo
+Smufrik demo
 # Start the fight with Felguard for the Demon Soul buff and Felstorm
 actions.precombat+=/summon_felguard,if=settings.pet_twisting&!pet.alive
-actions.precombat+=/summon_felhunter,if=!setting.pet_twisting&!pet.alive
+actions.precombat+=/summon_felhunter,if=!settings.pet_twisting&!pet.alive
 actions.precombat+=/fel_armor,if=buff.fel_armor.down
 actions.precombat+=/soul_link,if=!buff.soul_link.up
 actions.precombat+=/volcanic_potion
@@ -9,8 +9,8 @@ actions.precombat+=/metamorphosis
 actions.precombat+=/demon_soul,if=pet.alive&settings.pet_twisting
 actions.precombat+=/soul_harvest,if=soul_shards<3
 
-actions+=/immolate,if=!ticking
-actions+=/corruption,if=!ticking
+actions+=/immolate,if=!ticking&debuff.immolate.remains<tick_time
+actions+=/corruption,if=!ticking&debuff.corruption<tick_time
 actions+=/volcanic_potion,if=buff.metamorphosis.up 
 actions+=/life_tap,if=mana.pct<55 & cooldown.metamorphosis.remains<10
 actions+=/synapse_springs,if=cooldown.metamorphosis.remains>61
@@ -28,12 +28,12 @@ actions.sdr+=/immolation_aura,if=buff.metamorphosis.up
 actions.sdr+=/felstorm,if=buff.demon_soul_felguard.up
 actions.sdr+=/bane_of_doom,if=!ticking&target.time_to_die>15
 actions.sdr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.bane_of_doom.up
-actions.sdr+=/summon_doomguard,if=buff.demonic_pact.stack>=4&buff.molten_core.stack>=1&cooldown.hand_of_gul_dan.remains<10
-actions.sdr+=/summon_infernal,if=settings.inferno_enabled
+actions.sdr+=/summon_infernal,if=settings.inferno_enabled&target.time_to_die>45&soul_shards=3
 actions.sdr+=/hand_of_guldan,use_off_gcd=1
-actions.sdr+=/shadowflame,if=!debuff.shadowflame.up
+actions.sdr+=/shadowflame,if=!debuff.shadowflame.up&buff.fel_spark.up
 actions.sdr+=/soulburn,if=soul_shard>1&settings.pet_twisting&!buff.fel_intelligence.up & buff.demon_soul_felguard.down
-actions.sdr+=/summon_felhunter,if=soul_shard>1&buff.soulburn_up&!buff.fel_intelligence.up&settings.pet_twisting&buff.demon_soul_felguard.down
+actions.sdr+=/summon_felhunter,if=soul_shard>1&buff.soulburn.up&!buff.fel_intelligence.up&settings.pet_twisting&buff.demon_soul_felguard.down
+actions.sdr+=/summon_doomguard,if=buff.demonic_pact.up&buff.molten_core.stack>=1&cooldown.hand_of_gul_dan.remains<10
 actions.sdr+=call_action_list,name=nr
 
 
@@ -43,18 +43,18 @@ actions.nr+=/shadow_bolt,if=!ticking&dot.shadow_and_flame.remains<cast_time
 # Use Hand of Gul'dan when available
 actions.nr+=/hand_of_guldan,use_off_gcd=1
 actions.nr+=/bane_of_doom,if=!ticking&target.time_to_die>30
-actions.nr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.barn_of_doom.up
+actions.nr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.bane_of_doom.up
 actions.nr+=/corruption,if=!ticking
-actions.nr+=/shadowflame,if=!debuff.shadowflame.up
+actions.nr+=/shadowflame,if=!debuff.shadowflame.up&buff.fel_spark.up
 actions.nr+=/incinerate,if=buff.molten_core.up
 actions.nr+=/soul_fire,if=target.health.pct<25&buff.decimation.up
 actions.nr+=/shadow_bolt
 
 actions.aoe+=/metamorphosis
 actions.aoe+=/immolation_aura,if=buff.metamorphosis.up
-actions.aoe+=/shadowflame,if=target.in_melee_range
+actions.aoe+=/shadowflame,if=target.distance<7
 actions.aoe+=/hellfire,if=spell_targets.hellfire>6
 actions.aoe+=/corruption,cycle_targets=1,if=spell_targets.corruption<6
 actions.aoe+=/immolate,cycle_targets=1,if=spell_targets.immolate<6
-actions.aoe+=/doom,cycle_targets=1,if=spell_targets.doom<6
+actions.aoe+=/bane_of_doom,cycle_targets=1,if=spell_targets.doom<6
 actions.aoe+=/felstorm,if=pet.alive

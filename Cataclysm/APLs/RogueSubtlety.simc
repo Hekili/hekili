@@ -1,38 +1,38 @@
-Smufrik Rogue Subtlety
+# Opener
+actions.precombat+=/slice_and_dice,if=combo_points>=5 
 
-actions+=/call_action_list,name=init
-actions+=/call_action_list,name=opener,if=target.time_to_die>0&!dot.rupture.ticking
-actions+=/run_action_list,name=st
+actions+=/premeditation
+actions+=/ambush,if=stealthed.all
+actions+=/rupture,if=combo_points>1&debuff.rupture.down
+actions+=/hemorrhage,if=debuff.hemorrhage.down
+actions+=/shadow_dance,if=buff.shadow_dance.down
+actions+=/shadowstep
+actions+=/ambush,if=buff.shadowstep.react
+actions+=/recuperate,if=combo_points>1&buff.recupate.down
+actions+=/ambush,if=combo_points<5&stealthed.all
+actions+=/eviscerate,if=combo_points>=5
+actions+=/run_action_list,name=mr,if=buff.find_weakness.up
+actions+=/run_action_list,name=sr,if=buff.find_weakness.down
 
-actions.init+=/variable,name=rupture_maintain,value=combo_points.current=5&buff.master_of_subtlety.up
-actions.init+=/variable,name=eviscerate_use,value=combo_points.current=5&!variable.rupture_maintain
-actions.init+=/variable,name=recuperate_maintain,value=buff.energetic_recovery.down
-actions.init+=/variable,name=find_weakness_apply,value=buff.vanish.up|buff.shadow_dance.up
+# Main Rotation (Find Weakness Uptime)
+actions.mr+=/eviscerate,if=combo_points>=6&target.debuff.rupture.remains<3
+actions.mr+=/eviscerate,if=buff.shadow_dance.up&combo_points>=5
+actions.mr+=/rupture,if=combo_points>=5&target.debuff.rupture.remains<3
+actions.mr+=/vanish,if=buff.find_weakness.remains<=3 
+actions.mr+=/premeditation,if=buff.vanish.up
+actions.mr+=/ambush,if=buff.vanish.up
 
-actions.opener+=/tricks_of_the_trade
-actions.opener+=/slice_and_dice,if=combo_points.current=5
-actions.opener+=/potion,name=potion_of_the_tol_vir
-actions.opener+=/stealth
-actions.opener+=/premeditation
-actions.opener+=/shadowstep
-actions.opener+=/ambush
-actions.opener+=/rupture,if=combo_points.current=5
-actions.opener+=/hemorrhage
-actions.opener+=/backstab,if=combo_points.current<4
-actions.opener+=/slice_and_dice,if=combo_points.current=5&buff.slice_and_dice.down
-actions.opener+=/recuperate,if=combo_points.current=5&buff.slice_and_dice.up
+# Standard Rotation (Find Weakness Downtime)
+actions.sr+=/eviscerate,if=combo_points>=6&target.debuff.rupture.remains<3
+actions.sr+=/rupture,if=combo_points>=5&target.debuff.rupture.remains<3
+actions.sr+=/hemorrhage,if=target.debuff.hemorrhage.remains<3
+actions.sr+=/recuperate,if=buff.recuperate.down&energy.time_to_max>2.5
+actions.sr+=/preparation,if=(buff.vanish.down&cooldown.vanish.remains<5)|(buff.shadow_dance.down&cooldown.shadow_dance.remains<5)
+# Filler
+actions.sr+=/backstab,if=combo_points<5
 
-actions.st+=/rupture,if=variable.rupture_maintain
-actions.st+=/slice_and_dice,if=buff.slice_and_dice.down
-actions.st+=/recuperate,if=variable.recuperate_maintain
-actions.st+=/preparation
-actions.st+=/tricks_of_the_trade
-actions.st+=/shadow_dance,if=energy.current>80
-actions.st+=/shadowstep,if=buff.shadow_dance.up&combo_points.current<5
-actions.st+=/premeditation,if=buff.vanish.up|buff.shadow_dance.up
-actions.st+=/ambush,if=variable.find_weakness_apply
-actions.st+=/hemorrhage,if=debuff.hemorrhage.down
-actions.st+=/eviscerate,if=variable.eviscerate_use
-actions.st+=/backstab
-actions.st+=/hemorrhage,if=!action.backstab.usable
-actions.st+=/expose_armor,if=settings.maintain_expose&combo_points.current>=4 
+# Cooldowns (Shadow Dance and Vanish)
+actions.cooldowns+=/shadow_dance,if=cooldown.shadow_dance.ready
+actions.cooldowns+=/vanish,if=cooldown.vanish.ready&energy.time_to_max>2.5
+actions.cooldowns+=/shadowstep,if=buff.shadow_dance.up
+actions.cooldowns+=/ambush,if=buff.shadow_dance.up|buff.stealth.up
