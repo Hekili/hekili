@@ -142,7 +142,7 @@ spec:RegisterAuras( {
     -- Causes $s1 damage every $t1 seconds, healing the caster.
     devouring_plague = {
         id = 2944,
-        duration = function() return 24 * spell_haste end,
+        duration = function() return 30 * spell_haste end,
         tick_time = function() return 3 * ( buff.shadowform.up and spell_haste or 1 ) end,
         max_stack = 1,
 
@@ -157,9 +157,9 @@ spec:RegisterAuras( {
                 return
             end
 
-            if applied and now - applied < 24 * spell_haste then
+            if applied and now - applied < 30 * spell_haste then
                 t.count = 1
-                t.expires = applied + 24 * spell_haste
+                t.expires = applied + 30 * spell_haste
                 t.applied = applied
                 t.caster = "player"
                 return
@@ -175,7 +175,7 @@ spec:RegisterAuras( {
     },
     dark_archangel = {
         id = 87153,
-        duration = 90,
+        duration = 18,
         max_stack = 1,
    },
     -- Reduces all damage by $s1%, and you regenerate $49766s1% mana every $60069t1 sec for $d.  Cannot attack or cast spells. Immune to snare and movement impairing effects.
@@ -202,7 +202,13 @@ spec:RegisterAuras( {
         duration = 18,
         max_stack = 5,
     },
-
+    -- %d% increased periodic shadow damage.
+    empowered_shadow = {
+        id = 95799,
+        duration = 15,
+        max_stack = 1,
+    },
+    -- Increases the damage done by your Smite, Holy Fire and Penance spells by 4% and reduces the mana cost of those spells by 6%.
     evangelism = {
         id = 81661,
         duration = 18,
@@ -355,6 +361,12 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { 15407, 17311, 17312, 17313, 17314, 18807, 25387, 48155, 48156, 58381 },
     },
+    -- Spell haste increased by 5%.
+    mind_quickening = {
+        id = 49868,
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Causing shadow damage to all targets within $49821a1 yards.
     mind_sear = {
         id = 48045,
@@ -368,6 +380,13 @@ spec:RegisterAuras( {
         id = 453,
         duration = 15,
         max_stack = 1,
+    },
+    -- Chance for the next Mind Blast from the Priest to critically hit increased by 30%.
+    mind_spike = { 
+        id = 73510,
+        duration = 3600,
+        max_stack = 3,
+        copy = { 87178, 87179 },
     },
     -- Sight granted through target's eyes.
     mind_vision = {
@@ -464,6 +483,12 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
         copy = { 9484, 9485, 10955 },
+    },
+    -- Consumed to increase damage done by Mind Blast or Mind Spike.
+    shadow_orb = {
+        id = 77487,
+        duration = 60,
+        max_stack = 3,
     },
     -- Shadow resistance increased by $s1.
     shadow_protection = {
@@ -591,29 +616,29 @@ spec:RegisterGlyphs( {
 
 -- Abilities
 spec:RegisterAbilities( {
+    -- Consumes your Evangelism effects, causing an effect depending on what type of Evangelism effect is consumed:
+    -- Archangel (Evangelism):Instantly restores 1% of your total mana and increases your healing done by 3% for each stack. Lasts for 18 sec. 30 sec cooldown.
+    -- Dark Archangel (Dark Evangelism):Instantly restores 5% of your total mana and increases the damage done by your Mind Flay, Mind Spike, Mind Blast and Shadow Word: Death by 4% for each stack. Lasts for 18 sec. 90 sec cooldown.
     archangel = {
-        id = 81700,
+        id = 87151,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return buff.dark_evangelism.up and 90 or 30 end,
         gcd = "spell",
 
         startsCombat = false,
-        texture = 463560,
+        texture = 458225,
+        talent = "archangel",
 
         handler = function ()
-            -- Check if there are Evangelism stacks
-            if evangelismStacks > 0 then
-                if evangelismType == "Dark Evangelism" then
-
-                    -- Apply Dark Archangel effect for 18 seconds
+            if buff.dark_evangelism.stacks > 0 then
                     applyBuff("dark_archangel", 18)
-                else
-
-                    -- Apply Archangel effect for 18 seconds
+            elseif buff.evangelism.stacks > 0 then
                     applyBuff("archangel", 18)
-                end
             end
+            removeBuff("dark_evangelism")
+            removeBuff("evangelism")
         end,
+        copy = { 81700, 87151, 87152, 87153 },
     },
     -- Heals a friendly target and the caster for 1055 to 1352.  Low threat.
     binding_heal = {
@@ -1269,7 +1294,7 @@ spec:RegisterAbilities( {
             applyBuff( "pain_suppression" )
         end,
     },
-
+    -- Blasts the target for 1213 Shadowfrost damage, but extinguishes your shadow damage-over-time effects from the target in the process. Mind Spike also increases the critical strike chance of your next Mind Blast on the target by 30%. Stacks up to 3 times.
     mind_spike = {
         id = 73510,
         cast = 0,
@@ -1283,6 +1308,7 @@ spec:RegisterAbilities( {
         texture = 457655    ,
 
         handler = function ()
+            applyDebuff("target", "mind_spike")
         end,
     },
     -- Launches a volley of holy light at the target, causing 240 Holy damage to an enemy, or 670 to 756 healing to an ally instantly and every 1 sec for 2 sec.
@@ -1370,28 +1396,6 @@ spec:RegisterAbilities( {
 
         copy = { 592, 600, 3747, 6065, 6066, 10898, 10899, 10900, 10901, 25217, 25218, 48065, 48066 },
     },
-
-
-    -- Power infuses all party and raid members, increasing their Stamina by 43 for 1 |4hour:hrs;.
-    prayer_of_fortitude = {
-        id = 21562,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = function() return glyph.fortitude.enabled and 0.345 or 0.69 end,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135941,
-
-        handler = function ()
-            applyBuff( "prayer_of_fortitude" )
-        end,
-
-        copy = { 21564, 25392, 48162 },
-    },
-
 
     -- A powerful prayer heals the friendly target's party members within 30 yards for 312 to 333.
     prayer_of_healing = {
@@ -1795,7 +1799,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 3,
 
-    potion = "wild_magic",
+    potion = "volcanic",
 
     package = "Shadow",
     package1 = "Shadow",
@@ -1805,7 +1809,7 @@ spec:RegisterOptions( {
 
 
 -- Packs
-spec:RegisterPack( "Shadow", 20240621, [[Hekili:DJ1AVTTnx4FlbdiTfR1Z2PoTRZoaPdB7nbyzdvPyFyOYIwIkIlsIAKujZab63(ohkzDHIsrPTF5DiOn2sh(CU)WZjUlCV21jGOOUxTC(Yxp)nZF7SLlNVy1sxh1(mQRtgX)wYnWhsjjW)7erc43)EQIGVAFmNeGqi55cF41Uo7YzXQlsD3zf3tCDi5QiUaqkjpuWU11jIfeqlpav676CDetw4H)Ju4vP(cpEi8DFfJNw4fZKk41HCrH3)JEllMnZ1r)q0wiCk8RR0UgnLSlMg4((sWfSmebxNZ5)uH3h4ks5xlb21jHLgSvsjcxfy4gaaNwrfmWXveXnu1Sa6U8WWzsDiz79CrW2mclDMGMa)cmW1fEN0aUPCOoozI64ossgtW83Q45(rdPHUsH4)6jIFa9oidYsVzBwm5MC6qAWuouhRguhTdpCXoauahJO9UyIu5I)aGhsYJv2sEnyEeuta2njMDh1m2gYOPbJN6GJRy(3cEqH3XWNNEMep2wflPNwNAg1mAivqTDH3zBk8wOngTa07iP3qHI5KdcaVFLrqlmMSF807tj0psgC0W1Ofnwcx2kEo9Zt1J0pyrX97lEZGQfpZD0T0uAcJkltplBGsKNUT8ZBrcNsANTLCJiXdG9BnWEkh9qlG0A1VLSwx6SFf8(28znUJpNhd1aPZAoBt0cCT5pEWnpB8wk9zQllpu1I8gpPwSZG2GbkZNkl5xJcYPYy(LwboCpxLEIOKyv0SmFLg0LRk8E4HcVeskP(HlwzNmkGsurJ3E9KiimBxSr72TI8hRQ7GlTtdk8(OcUKwT3ALzlq6wAARzYWbSZwQR7E(u5mGcVtFsSBdCGrlTHd8IM4gr4hPnC0f)(bDXbZ1bmzgviXpdaSy(GiyueTQSD)OQ7AAGbBYRrhn(TY8SmbvwRJr5KKzSBPgvaxtIPPQx5Kr9zHm)cVZ1Nachp)8G)kxcw0oIKcfh4iD7HyngqXZu45hXz(u5l62wGVBwJ(Mvznn3DwhwR4SwysA1NDPRn)ZS4yiGmHYmmywszdrjFEYoIvM7oO)BzWTkcRHUdeSdozrlqTqiwN543tfLNcgowXu5bMPLF)G5w49EW167R2Wyg2OwZoEqBSuWD2gYe0UMNoSCxv9z58)NUe42VNisH(jqL)X5F4QlU6xExHxH31rW09SKmqxvJ0)m4I0Nv4jO)DoGnKFL8eqgyXbEcSsrawFG5d5SIl1NoKhhZVxpPajxqGsmWfGNNRlVWRgvOyL2D56dyfJ6GCPCTQZt7iDqakmSedbRtFxXLfEVcSLAkt4bx(ioIu9Fd)OAY8)pXzkxGmtWdzX0YnjtyatgAkiTwJJDd2qICtkGO)wQcmEiaCHQ8q6oLe4Aj0GvryldfkR3JyZ4qxZE0Y8JHgeqAkdSqXbl6p)OKIirtKF6LGlfX8JAlnjDFJwRCw6)KfZ8zQ4gCB77hu6pamMIdQ56siGRh(u1vTnpAzlnFpWS1YJQGuDquD0q)O08KD0YeCmxbjZl0vc4dETXg4WlbMkGFhNMXPkE768nfELmDfxwkUCwnh53U57Ay9S)EtQVAPQFNEuHxYc3Cu9MG9fQbaTKvRsC80UYED9iCTbU(wderRBZD2MfhB9cJnR6bKE4kBiPNeRT4MtImIdn0ql2DOUtencS2hDYoOgR58sCbNnaJocp(8MLRoBZYh9GaPWL4pqrv3LCAkEKQEH0r26zZ8X9T8mBi3jRBSRZ6tMyv1zlmG2wI9ZoFwcz)u6NzMSeUElv0cXMzlxVC1dpCyy11lwnAUzGYDDk2(wdwTPAsGX2JyZCJZwpHyTL0Vt94NpLq2zNoXwVEcoy5XPVWS(OE(C0ChoaBoWokDRSZQ5hFu)59Rc5D(lH2Gl0WwZvtjcZxyJJDAE56tmX6ZSKThoFbDt9WA6LSFnwZXw)I(gYsxyG9EoU3op4qbAJQApMhLjZS4F9QA2wZ9eSFzTTLfQrFWnjSJvR1jWniC)3p]] )
+spec:RegisterPack( "Shadow", 20240719, [[Hekili:nRvBVXTns4FlbfNrCIJoVBZ2EPNxd4u3G6a00GkFx(qrLexjU7sy92jrzxdyOF73md17l5k59SBoyKyVIKZmCE75rCPZmNRDSdysUZNMF683E63p7DwZ)2fZp9Do2Y7t5o2Pm)ByBG)iMfb)V9wwqYD4JVpmHfGlppPiZhg6ljFXweLx6DuPh83)mhg2EvHiuEvSZk9QzoS8uUVZNw4yVveeWvZKN77yF9wbim8FSsVkZO0lzn8zFPijU0luKlHHxNKv69Z8BeHclWYYswlcb75B(MspL5w695mbpxw(r8zVNLZdabftM5qtU8JQz95m(pMeTIjFZfK2YHhx69tXsEwTyb9gbgiyqXjsWQcZG1Fp8eqYcqzkZm3knJ7tI61l)75nR8eX6LRkwV2Q9rwWVJj98JmWA9(CYDO2(sswWpu69HKmPqweW7Qtqf3Y1RQuC1U3bl2DD9sBuQUbhQ(RIJr1)br2uvPaxH7AybOIErrAhP9VzrPImHp4eJwLX8NQmVTADUC1Y6kzBjldwEZ0l9Uti3w69lIyicBNkUXGqJGj4MRgNI4hwOD6buBWW8bltMu6DrYpv6LLizQSyulZH8rq5rjORMhZJG0vqT4NaZoNh3tNzfXUQp5ILaNGLMlzjKRr5kDRKX5lNtQ)s(AwrOuP)Cr8Mq(BaF3gUSJLmMgWcivXHnjHsVRReXV1ic14)AkNsDY5)NcEmgQPA08QLvP52CJUXRkVECvTUCl8hrm0XhWr3Rj)IvE)alLNOwIv7tTkspQ(PQ4KQiif0q3Xc43cT1a71nnKTPO36AYiLjf(BTQZflIIWWzvcKGJBjCVa5luxSQmjmr3JrdwnaNLfwLBr721InBhUVYBLkTXs5slswhjfr8ZwOsHJ4GJn2)(Ap6hcz3RI5OhusEX6wIvDv(m(qn(W1WsrnThFLPHY4O2YpBJFWRdHM(ObHM3fPP4(uNbu5OQ9sOlvZ2VvhDdUAmTDsTADe5QwgBWeuiNnEtRb9RzRYRcnxYYUb8N3YI3WHcGiAD(3KB2tHDpYksLU97c4MKTYIw75lNDKk1cKTlVr01JUG2tV8Ww7XQ0GLVC(RqV(CRfVszOwnMOvqrgvKECDv6VqE(2A3b(S3hsFaJmd8qy5h7wMiKTkKRZLScx6jA8evHMFJZu5cTGcxJ1sDYdQT2kgaRskQ6EX)ZueqQVw7xs2jVDqTADQP(rLc)BCrhzFJ8Y6EbqYk1m4GnZHDv6yO70WzGPUZ49nwnboMI5eqgke6fBkkrR(FLd7PlY83sjwak6wE8EkcuzarS)e5rr1lQg0xMCnm4wg2HlhmAHVa7q36K6BeSAf2KPOn9E5IJE5EJMNV4OrCINV44hDp6j2)T1)nOV2LCMSkHM6Qxd3IQzfpeN58f)nWDXzH4ej8FwmtndCCZTadqzJ2HsOwkzyL6lpB(IhEafJ6dN2AExkaM2z5nuoA11T8S71PXGMvGQQrOZo1q71jcCVBrIkhQFxNCfdD)KKqfjkZquVy)Phio0dpmwzgnPATz1wF0DcnDojgCgBCAda6nbEA7rLle3ojKXx6TOLKxZ(c4V1WFbeGgUClgffLq6bEEI0wAw59ZW3tlkLfSduR)9(HC3kHTC2jqDVB)Nrqx5CjcNMdCEL5UcG)ycFukcMgVFZTlmawCqBxvYwVsY7GwK4BtI9TctW(884KInBh6AgGY8e4yom4PJQk7X)ggZnqWp3aGxBR3NCenLprhK2(2Xp94CtNGsNsSXyOqTmFCKOFCLzgOoI7w8T2EIPE)8aq1uk10KlKNNx3K7TgBYnzOSJ63b8S32bBB2cdnEnW7zq)vh7BvyBnhj135yFhllgtCRp8PQZssTJJe55ujtErAAc(se0l1sVjb2usczT3av9wLELExv5iPZCicynWjpfEefCfEBAMijtiPx8ZpSiaFHFUaDM)aaZ49MsVFNIAxj5r5)XjiPmbXqUz2S47B1Af3fizleODjdBLlsXP(vlRv6)KcNvQ5ALik9M9hvH02hnVJMvTjB2r1Pn1tL8g0JIlIwb5eWmYdtKwLF8Qi0HHpaskubKQtVdg0XMvi3Mare7cGVrCro4)PbXtxecBWV(eDqL8ySEoW59WJjH4y3jEINAyMiv98dfp2XgKbupkykD0M8v6DomrhjKVyWwgwncYQlAaUjS3bJWXErxDQR1jD8KJuXx6DM5500cDGt6PMkb6C(wdoN(4sphUg9yPDDmgFDpuk7IPcr8LMwBnkPEp6F5mvqp)Bn45hIOoWKFkif8yctMia0nqzMeaUrxSVEbeW(EAgmrsdD3r7sraTIVBGv0o)9CUutTsgWVl9EneJvy4o2Djj4yxZsyWEhPtmyR)KZJb36F)eAas466mMVASq6gI2HSb51NVGcqd77FgjLhEqP4MzpJad(hd8fJGc1JCIoymj8JnKbpkMhEA27tDhYHP31f9IMm1ENEo5HEH5S4DMHMtsFWm2580hhKLoiMb7(hZH7mHdGFGVO9aFiWcc14SkcbMW8mvuEONt)ZCtM9GHSl1MjtKy4j7RphtZ(qxR(El9LqhIbTMPdmuHBpJ8dQuqDhROAwqf)XDJOljXoV07vT(N5wlOpRCgAorDqgd7qR1Wg9y8hp1554l1qhA2xhmvtaldjpQNaZb)LjOPU6WjtQdu4RevSNmgxVBQGC6(Qh0MmbcD2Pg8snFVa6Op88)TuStAQH2hQUhhrnmgjR586PoAernZJj)Jj8)NeiqtWBKMNYB4(xgbVPXBBh6zZpL2kMWMB)Yn0ThMWxwsxZQpVqLInbLo9o7tK72b99PSlu64n(i8q0ppAwC3jVNVtL2jESI3BG6AQSpYVvj)jzrdjvn97VJbGOMBSJo(N9RZ(F9280UFgCtB275pbDCMRoAmx1TXdpCmn8p7zRt5Q)ShZPJ2O22s8g2vDrQ()X4uT(1Db30wXn1lz3ogJXRq3(ELG2BiNwJzFx5UbLSkgtM6Ym8wZPvBJFL80QZHKY7xAm(vYt7BYkB(X5)o]] )
 
 
 spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
@@ -1840,26 +1844,9 @@ spec:RegisterPackSelector( "shadow", "Shadow", "|T136207:0|t Shadow",
     end )
 
 -- Settings
-spec:RegisterSetting( "dots_in_aoe", false, {
+spec:RegisterSetting( "dots_in_aoe", true, {
     type = "toggle",
     name = "|T252997:0|t|T136207:0|t|T135978:0|t Apply DoTs in AOE",
     desc = "When enabled, the Shadow priority will recommend applying DoTs to your current target in multi-target scenarios before channeling |T237565:0|t Mind Sear.",
     width = "full",
-} )
-
-spec:RegisterSetting( "optimize_mind_blast", false, {
-    type = "toggle",
-    name = "|T136224:0|t Mind Blast: Optimize Use",
-    desc = "When enabled, the Shadow priority will only recommend |T136224:0|t Mind Blast below an internally-calculated haste threshold (vs. using |T136208:0|t Mind Flay).",
-    width = "full",
-} )
-
-spec:RegisterSetting( "min_shadowfiend_mana", 25, {
-    type = "range",
-    name = "|T136199:0|t Shadowfiend Mana Threshold",
-    desc = "If set above zero, |T136199:0|t Shadowfiend cannot be recommended until your mana falls below this percentage.",
-    width = "full",
-    min = 0,
-    max = 100,
-    step = 1,
 } )

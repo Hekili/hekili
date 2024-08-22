@@ -429,7 +429,7 @@ end)
 spec:RegisterStateExpr("bite_now", function()
     local bite_now =  (bite_before_rip or bite_at_end) and not buff.clearcasting.up
     -- Ignore minimum CP enforcement during Execute phase if Rip is about to fall off
-    local emergency_bite_now = is_execute_phase and debuff.rip.up and (debuff.rip.remains < debuff.rip.tick_time) and (combo_points.current >= 1)
+    local emergency_bite_now = is_execute_phase and debuff.rip.up and (debuff.rip.remains < debuff.rip.tick_time) and (combo_points.current >= 1) and talent.blood_in_the_water.rank == 2
 
     return bite_now or emergency_bite_now
 end)
