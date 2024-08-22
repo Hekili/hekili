@@ -543,6 +543,10 @@ do
                         value = true,
                         override = true,
                     },
+                    funnel = {
+                        key = "",
+                        value = false,
+                    },
 
                     custom1 = {
                         key = "",
@@ -6614,7 +6618,9 @@ do
                                     args = {
                                         guide = {
                                             type = "description",
-                                            name = "Paste a Priority import string here to begin.",
+                                            name = "|cFFFF0000No support is offered for custom or imported priorities from elsewhere.|r\n\n" .. 
+                                                    "|cFF00CCFFThe default priorities included within the addon are kept up to date, are compatible with your character, and do not require additional changes.|r\n\n" .. 
+                                                    "Paste a Priority import string in the box below to begin.",
                                             order = 1,
                                             width = "full",
                                             fontSize = "medium",
@@ -7216,6 +7222,14 @@ do
                                     width = "full",
                                 },
 
+                                profilewarning = {
+                                    type = "description",
+                                    name = "|cFFFF0000You do not need to import a SimulationCraft profile to use this addon. No support is offered for custom or imported priorities from elsewhere.|r\n\n" .. 
+                                        "|cFF00CCFFThe default priorities included within the addon are kept up to date, are compatible with your character, and do not require additional changes.|r\n\n", 
+                                    order = 2.1,
+                                    fontSize = "medium",
+                                    width = "full",
+                                },
                                 warnings = {
                                     type = "input",
                                     name = "Import Log",
@@ -7228,12 +7242,22 @@ do
                                         return not p.warnings or p.warnings == ""
                                     end,
                                 },
-
+                                profileconsiderations = {
+                                    type = "description",
+                                    name = "|cFF00CCFFBefore trying to import a profile, please consider the following:|r\n\n" ..
+                                    " - SimulationCraft action lists tend not to change significantly for individual characters.  The profiles are written to include conditions that work for all gear, talent, and other factors combined.\n\n" ..
+                                    " - Most SimulationCraft action lists require some additional customization to work with the addon.  For example, |cFFFFD100target_if|r conditions don't translate directly to the addon and have to be rewritten.\n\n" ..
+                                    " - Some SimulationCraft action profiles are revised for the addon to be more efficient and use less processing time.\n\n" ..
+                                    " - This feature has been left in for tinkerers and advanced users.\n\n",
+                                    order = 5.2,
+                                    fontSize = "medium",
+                                    width = "full",
+                                },
                                 reimport = {
                                     type = "execute",
                                     name = "Import",
                                     desc = "Rebuild the action list(s) from the profile above.",
-                                    order = 5,
+                                    order = 5.1,
                                     func = function ()
                                         local p = rawget( Hekili.DB.profile.packs, pack )
                                         local profile = p.profile:gsub( '"', '' )
@@ -8695,6 +8719,30 @@ do
                                     width = 2,
                                     order = 2,
                                 },
+
+                        funnel = {
+                            type = "group",
+                            name = "",
+                            inline = true,
+                            order = 8,
+                            args = {
+                                key = {
+                                    type = "keybinding",
+                                    name = "Funnel Rotation",
+                                    desc = "Set a key to toggle Funnel Rotation on or off, for specs which support it.",
+                                    width = 1,
+                                    order = 1,
+                                        },
+
+                                value = {
+                                    type = "toggle",
+                                    name = "Enable Funnel Rotation",
+                                    desc = "If checked, rotations for funnel specs may change slightly to use single target spenders in AoE.\n\n",
+                                    width = 2,
+                                    order = 2,
+                                        },
+                                    },
+                        },
 
                                 --[[ potLineBreak1 = {
                                     type = "description",
@@ -10201,7 +10249,7 @@ do
                         type = "description",
                         name = function ()
                             return "|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n" .. ns.Patrons .. "\n\n" ..
-                                "Please see the |cFFFFD100Issue Reports|r link for information about reporting bugs.\n\n"
+                                "Please see the |cFFFFD100Issue Reporting (Snapshots)|r link for information about reporting bugs.\n\n"
                         end,
                         fontSize = "medium",
                         order = 6,
@@ -10258,80 +10306,107 @@ do
                 }
             },
 
-
-            --[[ gettingStarted = {
+            gettingStarted = {
                 type = "group",
                 name = "Getting Started",
+                desc = "This sections serves as a quick tutorial and explanation of the addon.",
                 order = 11,
-                childGroups = "tree",
+                childGroups = "tab",
                 args = {
-                    q1 = {
+                    gettingStarted_welcome_header = {
                         type = "header",
-                        name = "Moving the Displays",
+                        name = "Welcome to Hekili\n",
                         order = 1,
                         width = "full"
                     },
-                    a1 = {
+                    gettingStarted_welcome_info = {
                         type = "description",
-                        name = "When these options are open, all displays are visible and can be moved by clicking and dragging.  You can move this options screen out of the way by clicking the |cFFFFD100Hekili|r title and dragging it out of the way.\n\n" ..
-                            "You can also set precise X/Y positioning in the |cFFFFD100Displays|r section, on each display's |cFFFFD100Main|r tab.\n\n" ..
-                            "You can also move the displays by typing |cFFFFD100/hek move|r in chat.  Type |cFFFFD100/hek move|r again to lock the displays.\n",
+                        name = "This section is a quick overview of the addon basics. At the end, you will also find answers to a few of the most common questions we get on Github or Discord. \n\n" ..
+                        "|cFF00CCFFTaking a couple minutes to read it is highly encouraged to improve your experience!|r\n\n",
                         order = 1.1,
+                        fontSize = "medium",
                         width = "full",
                     },
-
-                    q2 = {
-                        type = "header",
-                        name = "Using Toggles",
+                    gettingStarted_toggles = {
+                        type = "group",
+                        name = "How To Use Toggles",
                         order = 2,
                         width = "full",
-                    },
-                    a2 = {
+                        args = {
+                            gettingStarted_toggles_info = {
                         type = "description",
-                        name = "The addon has several |cFFFFD100Toggles|r available that help you control the type of recommendations you receive while in combat.  See the |cFFFFD100Toggles|r section for specifics.\n\n" ..
-                            "|cFFFFD100Mode|r:  By default, |cFFFFD100Automatic Mode|r automatically detects how many targets you are engaged with, and gives recommendations based on the number of targets detected.  In some circumstances, you may want the addon to pretend there is only 1 target, or that there are multiple targets, " ..
-                            "or show recommendations for both scenarios.  You can use the |cFFFFD100Mode|r toggle to swap between Automatic, Single-Target, AOE, and Reactive modes.\n\n" ..
-                            "|cFFFFD100Abilities|r:  Some of your abilities can be controlled by specific toggles.  For example, your major DPS cooldowns are assigned to the |cFFFFD100Cooldowns|r toggle.  This feature allows you to enable/disable these abilities in combat by using the assigned keybinding.  You can add abilities to (or remove abilities from) " ..
-                            "these toggles in the |cFFFFD100Abilities|r or |cFFFFD100Gear and Trinkets|r sections.  When removed from a toggle, an ability can be recommended at any time, regardless of whether that toggle is on or off.\n\n" ..
-                            "|cFFFFD100Displays|r:  Your Interrupts, Defensives, and Cooldowns toggles have a special relationship with the displays of the same names.  If |cFFFFD100Show Separately|r is checked for that toggle, those abilities will show in that toggle's display instead of the |cFFFFD100Primary|r or |cFFFFD100AOE|r display.\n",
+                        name = "The addon has several |cFFFFD100Toggles|r available that help you control the type of recommendations you receive while in combat, which can be toggled via hotkeys.  See the |cFFFFD100Toggles|r section for specifics.\n\n" ..
+                            "|cFFFFD100Damage Cooldowns|r:  Your major DPS cooldowns are assigned to the |cFF00CCFFCooldowns|r toggle.  This allows you to enable/disable these abilities in combat by using a keybind, which can prevent the addon from recommending your important cooldowns in some undesireable scenarios such as: \n" ..  
+                            "• At the end of a dungeon pack\n" ..
+                            "• During a raid boss invulnerability phase, or right before a bonus damage phase\n\n" ..
+                            "You can add/remove abilities from " ..
+                            "these toggles in the |cFFFFD100Abilities|r or |cFFFFD100Gear and Items|r sections. \n\n|cFF00CCFFLearning to use the Cooldowns toggle while playing can greatly increase your dps!|r\n\n",
                         order = 2.1,
+                        fontSize = "medium",
                         width = "full",
+                            },
+                             },
                     },
-
-                    q3 = {
-                        type = "header",
-                        name = "Importing a Profile",
+                    gettingStarted_displays = {
+                        type = "group",
+                        name = "Setting up your displays",
                         order = 3,
-                        width = "full",
+                        args = {
+                            gettingStarted_displays_info = {
+                            type = "description",
+                            name = "|cFFFFD100Displays|r are where Hekili shows you the recommended spells and items to cast, with the |cFF00CCFFPrimary|r display being your DPS rotation. When this options window is open, all displays are visible.\n" ..
+                                "\n|cFFFFD100Displays|r can be moved by:\n" ..
+                                "• Clicking and Dragging them\n" ..   
+                                "  - You can move this window out of the way by clicking the |cFFFFD100Hekili " .. Hekili.Version .. " |rtitle at the very top and dragging it out of the way.\n" ..
+                                "  - Or, you can type |cFFFFD100/hek move|r to allow displays to be moved, but without opening the options. Type it again to lock the displays.\n" ..
+                                "• Setting precise X/Y positioning in the |cFFFFD100Displays|r section, on each display's |cFFFFD100Icon|r tab.\n\n" ..
+                                "By default, the addon uses |cFFFFD100Automatic|r Mode, which decides whether to do a |cFF00CCFFSingle-Target|r or |cFF00CCFFAoE (Multi-Target)|r rotation based on the number of targets detected. You can enable other types of displays in the |cFFFFD100Toggles|r > |cFFFFD100Display Control|r section." ..
+                                " There are also other types of displays you can use, with options to display them separately from your |cFF00CCFFPrimary|r display.\n" ..
+                                "\nAdditional Displays:\n• |cFF00CCFFCooldowns|r\n" .. "• |cFF00CCFFInterrupts|r\n" .. "• |cFF00CCFFDefensives|r\n\n",
+                            order = 3.1,
+                            fontSize = "medium",
+                            width = "full",
+                                },
+                        },
                     },
-                    a3 = {
-                        type = "description",
-                        name = "|cFFFF0000You do not need to import a SimulationCraft profile to use this addon.|r\n\n" ..
-                            "Before trying to import a profile, please consider the following:\n\n" ..
-                            " - SimulationCraft action lists tend not to change significantly for individual characters.  The profiles are written to include conditions that work for all gear, talent, and other factors combined.\n\n" ..
-                            " - Most SimulationCraft action lists require some additional customization to work with the addon.  For example, |cFFFFD100target_if|r conditions don't translate directly to the addon and have to be rewritten.\n\n" ..
-                            " - Some SimulationCraft action profiles are revised for the addon to be more efficient and use less processing time.\n\n" ..
-                            "The default priorities included within the addon are kept up to date, are compatible with your character, and do not require additional changes.  |cFFFF0000No support is offered for custom or imported priorities from elsewhere.|r\n",
-                        order = 3.1,
-                        width = "full",
-                    },
-
-                    q4 = {
-                        type = "header",
-                        name = "Something's Wrong",
+                    gettingStarted_faqs = {
+                        type = "group",
+                        name = "Common questions and problems",
                         order = 4,
                         width = "full",
+                        args = {
+                            gettingStarted_toggles_info = {
+                                type = "description",
+                                name = "Top 3 questions/problems\n\n" .. 
+                                "1. My keybinds aren't showing up right\n- |cFF00CCFFThis can happen with macros or stealth bars sometimes. You can manually tell the addon what keybind to use in the|r |cFFFFD100Abilities|r |cFF00CCFFsection. Find the spell from the dropdown and use the|r |cFFFFD100Override Keybind|r |cFF00CCFFbox. Same can be done with trinkets under|r |cFFFFD100Gear and Items|r.\n\n" .. 
+                                "2. I don't recognize this spell! What is it?\n- |cFF00CCFFIf you're a Frost Mage it may be your Water Elemental pet spell, Freeze. Otherwise, it's probably a trinket. You can press |cFFFFD100alt-shift-p|r to pause the addon and hover over the icon to see what it is!|r\n\n" .. 
+                                "3. How do I disable a certain ability or trinket?\n- |cFF00CCFFHead over to |cFFFFD100Abilities|r or |cFFFFD100Gear and Items|r, find it in the dropdown list, and disable it.\n\n|r" .. 
+                                "\nI made it to the bottom but I still have an issue!\n- |cFF00CCFFHead on over to|r |cFFFFD100Issue Reporting|r |cFF00CCFFfor more detailed instructions.",
+                                order = 4.1,
+                                fontSize = "medium",
+                                width = "full",
+                            },
+                        },
                     },
-                    a4 = {
+
+
+                --[[q5 = {
+                        type = "header",
+                        name = "Something's Wrong",
+                        order = 5,
+                        width = "full",
+                    },
+                    a5 = {
                         type = "description",
                         name = "You can submit questions, concerns, and ideas via the link found in the |cFFFFD100Issue Reporting|r section.\n\n" ..
                             "If you disagree with the addon's recommendations, the |cFFFFD100Snapshot|r feature allows you to capture a log of the addon's decision-making taken at the exact moment specific recommendations are shown.  " ..
                             "When you submit your question, be sure to take a snapshot (not a screenshot!), place the text on Pastebin, and include the link when you submit your issue ticket.",
-                        order = 4.1,
+                        order = 5.1,
+                        fontSize = "medium",
                         width = "full",
-                    }
+                    }--]]
                 }
-            }, ]]
+            },
 
             abilities = {
                 type = "group",
@@ -10782,6 +10857,7 @@ do
         minorCDs = 55,
         custom1 = 56,
         custom2 = 57,
+        funnel = 58,
     }
 
     local indexToToggle = {
@@ -10792,6 +10868,7 @@ do
         [55] = { "essences", "Minor CDs" },
         [56] = { "custom1", "Custom #1" },
         [57] = { "custom2", "Custom #2" },
+        [58] = { "funnel", "Funnel" },
     }
 
     local toggleInstructions = {
