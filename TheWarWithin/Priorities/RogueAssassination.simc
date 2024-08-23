@@ -14,8 +14,8 @@ actions+=/stealth
 actions+=/kick
 # Conditional to check if there is only one enemy
 actions+=/variable,name=single_target,value=spell_targets.fan_of_knives<2
-# Combined Energy Regen needed to saturate
-actions+=/variable,name=regen_saturated,value=energy.regen_combined>35
+# Combined Energy Regen needed to saturate (TODO: estimate poisoned_bleeds better)
+actions+=/variable,name=regen_saturated,value=energy.regen_combined>15
 # Check if we should be using our energy
 actions+=/variable,name=not_pooling,value=(dot.deathmark.ticking|dot.kingsbane.ticking|debuff.shiv.up)|(buff.envenom.up&buff.envenom.remains<=1)|energy.pct>=(40+30*talent.hand_of_fate-15*talent.vicious_venoms)|boss&fight_remains<=20
 # AoE Damage over time abilities Check what the maximum Scent of Blood stacks is currently
