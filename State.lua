@@ -6210,6 +6210,7 @@ do
             -- Perform the action.
             self:RunHandler( action )
             self.hardcast = nil
+            self.removeBuff( "casting" ) -- TODO: Revisit for Casting while Casting scenarios; check Fire Mage.
 
             if wasCycling then
                 self.SetCycleInfo( expires, minTTD, maxTTD, aura )
