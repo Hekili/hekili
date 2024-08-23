@@ -6,6 +6,8 @@ actions.precombat+=/slice_and_dice,precombat_seconds=1
 actions.precombat+=/variable,name=priority_rotation,value=priority_rotation
 actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)
+# This is here until transmitter is added onto the has_stat_any_dps list
+actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.is.treacherous_transmitter
 
 actions+=/stealth
 actions+=/kick
@@ -15,7 +17,7 @@ actions+=/call_action_list,name=items,if=variable.trinket_sync_slot=1
 actions+=/slice_and_dice,if=combo_points>=1&!variable.snd_condition
 actions+=/run_action_list,name=stealthed,strict=1,if=stealthed.all
 actions+=/call_action_list,name=stealth_cds
-actions+=/call_action_list,name=finish,strict=1,if=buff.darkest_night.up&combo_points==cp_max_spend|effective_combo_points>=cp_max_spend&!buff.darkest_night.up|(combo_points.deficit<=1+talent.deathstalkers_mark|fight_remains<=1&effective_combo_points>=3)&!buff.darkest_night.up
+actions+=/call_action_list,name=finish,strict=1,if=buff.darkest_night.up&combo_points=cp_max_spend|effective_combo_points>=cp_max_spend&!buff.darkest_night.up|(combo_points.deficit<=1+talent.deathstalkers_mark|fight_remains<=1&effective_combo_points>=3)&!buff.darkest_night.up
 actions+=/call_action_list,name=build,if=energy.deficit<=20+talent.vigor.rank*25+talent.thistle_tea*20+talent.shadowcraft*20
 actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen
 actions+=/arcane_pulse
@@ -41,7 +43,9 @@ actions.cds+=/shadow_blades,if=variable.snd_condition&combo_points<=1&(buff.flag
 actions.cds+=/echoing_reprimand,if=variable.snd_condition&combo_points.deficit>=3&(!talent.the_rotten|!talent.reverberation|buff.shadow_dance.up)
 actions.cds+=/shuriken_tornado,if=variable.snd_condition&buff.symbols_of_death.up&combo_points<=2&!buff.premeditation.up&(!talent.flagellation|cooldown.flagellation.remains>20)&spell_targets.shuriken_storm>=3
 actions.cds+=/shuriken_tornado,if=variable.snd_condition&!buff.shadow_dance.up&!buff.flagellation_buff.up&!buff.flagellation_persist.up&!buff.shadow_blades.up&spell_targets.shuriken_storm<=2&!raid_event.adds.up
-actions.cds+=/vanish,if=buff.shadow_dance.up&talent.invigorating_shadowdust&talent.unseen_blade&(combo_points.deficit>1)&(cooldown.flagellation.remains>=60|!talent.flagellation|fight_remains<=(30*cooldown.vanish.charges))&(cooldown.secret_technique.remains>=10&!raid_event.adds.up)
+# Vanish during dance & Dances during subterfuge that varies depending on hero talents, yes its cursed that they have to be here
+actions.cds+=/vanish,if=buff.shadow_dance.up&talent.invigorating_shadowdust&talent.unseen_blade&(combo_points.deficit>1)&(cooldown.flagellation.remains>=60|!talent.flagellation|fight_remains<=(30*cooldown.vanish.charges))&cooldown.secret_technique.remains>=10
+
 actions.cds+=/shadow_dance,if=!buff.shadow_dance.up&boss&fight_remains<=8+talent.subterfuge.enabled
 actions.cds+=/shadow_dance,if=!buff.shadow_dance.up&talent.invigorating_shadowdust&talent.deathstalkers_mark&buff.shadow_blades.up&(buff.subterfuge.up&spell_targets>=4|buff.subterfuge.remains>=3)
 actions.cds+=/shadow_dance,if=!buff.shadow_dance.up&talent.unseen_blade&talent.invigorating_shadowdust&dot.rupture.ticking&variable.snd_condition&(buff.symbols_of_death.remains>=6&!buff.flagellation_buff.up|buff.symbols_of_death.up&buff.shadow_blades.up|buff.shadow_blades.up&!talent.invigorating_shadowdust)&(cooldown.secret_technique.remains<10+12*!talent.invigorating_shadowdust|buff.shadow_blades.up)&(!talent.the_first_dance|(combo_points.deficit>=7&!buff.shadow_blades.up|buff.shadow_blades.up))
@@ -84,7 +88,7 @@ actions.finish+=/eviscerate
 # No dust vanish
 actions.stealth_cds+=/vanish,if=!talent.invigorating_shadowdust&!talent.subterfuge&combo_points.deficit>=3&(!dot.rupture.ticking|(buff.shadow_blades.up&buff.symbols_of_death.up)|talent.premeditation|boss&fight_remains<10)
 # Dust Vanish
-actions.stealth_cds+=/vanish,if=!buff.shadow_dance.up&talent.invigorating_shadowdust&talent.deathstalkers_mark&(combo_points.deficit>1|buff.shadow_blades.up)&(cooldown.flagellation.remains>=60|!talent.flagellation|boss&fight_remains<=(30*cooldown.vanish.charges))&(cooldown.secret_technique.remains>=10&!raid_event.adds.up)
+actions.stealth_cds+=/vanish,if=!buff.shadow_dance.up&talent.invigorating_shadowdust&talent.deathstalkers_mark&(combo_points.deficit>1|buff.shadow_blades.up)&(cooldown.flagellation.remains>=60|!talent.flagellation|fight_remains<=(30*cooldown.vanish.charges))&cooldown.secret_technique.remains>=10
 actions.stealth_cds+=/shadow_dance,if=dot.rupture.ticking&variable.snd_condition&(buff.symbols_of_death.remains>=6&!buff.flagellation_buff.up|buff.symbols_of_death.up&buff.shadow_blades.up|buff.shadow_blades.up&!talent.invigorating_shadowdust)&cooldown.secret_technique.remains<10+12*!talent.invigorating_shadowdust&(!talent.the_first_dance|(combo_points.deficit>=7&!buff.shadow_blades.up|buff.shadow_blades.up))
 # No Dust subterfuge vanish
 actions.stealth_cds+=/vanish,if=!talent.invigorating_shadowdust&talent.subterfuge&combo_points.deficit>=3&(buff.symbols_of_death.up|cooldown.symbols_of_death.remains>=3)

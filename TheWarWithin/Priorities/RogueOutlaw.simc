@@ -1,6 +1,7 @@
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
 actions.precombat+=/stealth,precombat_seconds=2
-actions.precombat+=/adrenaline_rush,precombat_seconds=2,if=settings.use_ld_opener&talent.improved_adrenaline_rush&buff.adrenaline_rush.down
+# Builds with Keep it Rolling prepull Adrenaline Rush before Roll the Bones to consume Loaded Dice immediately instead of on the next pandemic roll
+actions.precombat+=/adrenaline_rush,precombat_seconds=2,if=settings.ld_opener&talent.improved_adrenaline_rush&buff.adrenaline_rush.down&talent.keep_it_rolling&talent.loaded_dice
 actions.precombat+=/roll_the_bones,precombat_seconds=2,if=buff.roll_the_bones.down
 actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=!settings.use_ld_opener&talent.improved_adrenaline_rush&buff.adrenaline_rush.down
 actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable
