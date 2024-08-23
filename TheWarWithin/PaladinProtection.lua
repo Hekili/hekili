@@ -18,7 +18,6 @@ spec:RegisterResource( Enum.PowerType.HolyPower )
 spec:RegisterResource( Enum.PowerType.Mana )
 
 -- Talents
--- Talents
 spec:RegisterTalents( {
     -- Paladin
     afterimage                      = { 93188, 385414, 1 }, -- After you spend 20 Holy Power, your next Word of Glory echoes onto a nearby ally at 30% effectiveness.
