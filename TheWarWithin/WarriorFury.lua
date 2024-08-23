@@ -656,7 +656,7 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
                 whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
             elseif state.talent.titanic_rage.enabled and ( ability.key == "odyns_fury" or ( ability.key == "avatar" and state.talent.titans_torment.enabled ) ) then
                 whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
-            elseif state.talent.crashing_thunder.enabled and ( ability.key == "thunder_clap" or ( ability.key == "thunder_blast" ) ) then
+            elseif state.talent.improved_whirlwind.enabled and state.talent.crashing_thunder.enabled and ( ability.key == "thunder_clap" or ability.key == "thunder_blast" ) then
                 whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
             elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
                 whirlwind_stacks = whirlwind_stacks - 1
@@ -1785,6 +1785,11 @@ spec:RegisterAbilities( {
         texture = 460957,
 
         handler = function ()
+            if ( talent.crashing_thunder.enabled ) then
+                if ( talent.improved_whirlwind.enabled ) then
+                    applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
+                end
+            end
             applyDebuff( "target", "thunder_clap" )
             active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
             removeStack( "thunder_blast" )
@@ -1807,6 +1812,11 @@ spec:RegisterAbilities( {
         texture = 136105,
 
         handler = function ()
+            if ( talent.crashing_thunder.enabled ) then
+                if ( talent.improved_whirlwind.enabled ) then
+                    applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
+                end
+            end
             applyDebuff( "target", "thunder_clap" )
             active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
         end,
