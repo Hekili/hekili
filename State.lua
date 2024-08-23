@@ -2141,6 +2141,7 @@ do
             -- Stats (that refer to state.stat, generally)
             elseif k == "crit" or k == "spell_crit" or k == "attack_crit" then return ( t.stat.crit / 100 )
             elseif k == "haste" or k == "spell_haste" then return ( 1 / ( 1 + t.stat.spell_haste ) )
+            elseif k == "raw_haste_pct" then return t.stat.haste
             elseif k == "melee_haste" or k == "attack_haste" then return ( 1 / ( 1 + t.stat.melee_haste ) )
             elseif k == "mastery_value" then return t.stat.mastery_value
 
