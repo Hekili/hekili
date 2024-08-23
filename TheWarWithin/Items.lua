@@ -63,5 +63,37 @@ all:RegisterAbilities( {
                 max_stack = 1
             }
         }
+    },
+
+    aberrant_spellforge = {
+        cast = 0,
+        cooldown = 60,
+        gcd = "spell",
+
+        item = 212451,
+        toggle = "cooldowns",
+
+        proc = "haste",
+        self_buff = "aberrant_alacrity",
+
+        handler = function()
+            addStack( "aberrant_spellforge" )
+            if buff.aberrant_spellforge.stack_pct == 100 then
+                applyBuff( "aberrant_alacrity" )
+            end
+        end,
+
+        auras = {
+            aberrant_alacrity = {
+                id = 451845,
+                duration = 6,
+                max_stack = 1
+            },
+            aberrant_spellforge = {
+                id = 445619,
+                duration = 3600,
+                max_stack = 5
+            }
+        }
     }
 } )
