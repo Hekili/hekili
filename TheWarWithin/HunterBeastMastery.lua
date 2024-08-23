@@ -788,16 +788,6 @@ spec:RegisterAuras( {
         duration = 8.0,
         max_stack = 1,
     },
-    -- Can always be seen and tracked by the Hunter.; Damage taken increased by $428402s4% while above $s3% health.
-    -- https://wowhead.com/beta/spell=257284
-    hunters_mark = {
-        id = 257284,
-        duration = 3600,
-        tick_time = 0.5,
-        type = "Magic",
-        max_stack = 1,
-        shared = "target"
-    },
     -- Talent: Your next Kill Shot is usable on any target, regardless of your target's current health.
     -- https://wowhead.com/beta/spell=378215
     hunters_prey = {
