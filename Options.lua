@@ -7233,7 +7233,7 @@ do
                                 warnings = {
                                     type = "input",
                                     name = "Import Log",
-                                    order = 5,
+                                    order = 5.3,
                                     -- fontSize = "medium",
                                     width = "full",
                                     multiline = 20,
