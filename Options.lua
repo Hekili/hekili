@@ -7218,7 +7218,7 @@ do
                                     name = "Profile",
                                     desc = "If this pack's action lists were imported from a SimulationCraft profile, the profile is included here.",
                                     order = 4,
-                                    multiline = 20,
+                                    multiline = 10,
                                     width = "full",
                                 },
 
@@ -11648,6 +11648,7 @@ do
         { "rune_word%.([%w_]+)%.enabled"                    , "buff.rune_word_%1.up"                    },
         { "conduit%.([%w_]+)"                               , "conduit.%1.enabled"                      },
         { "soulbind%.([%w_]+)"                              , "soulbind.%1.enabled"                     },
+        { "soul_shard%.deficit"                             , "soul_shard_deficit"                      },
         { "pet.[%w_]+%.([%w_]+)%.([%w%._]+)"                , "%1.%2"                                   },
         { "essence%.([%w_]+).rank(%d)"                      , "essence.%1.rank>=%2"                     },
         { "target%.1%.time_to_die"                          , "time_to_die"                             },
