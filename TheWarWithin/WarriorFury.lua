@@ -943,7 +943,7 @@ spec:RegisterAbilities( {
     },
 
     bladestorm = {
-        id = 227847,
+        id = function() return talent.unrelenting_onslaught.enabled and 446035 or 227847 end,
         cast = 0,
         cooldown = 90,
         gcd = "spell",
