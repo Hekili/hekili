@@ -645,6 +645,10 @@ local ExpireBladestorm = setfenv( function()
     applyBuff( "merciless_bonegrinder" )
 end, state )
 
+local TriggerSuddenDeath = setfenv( function()
+    applyBuff( "sudden_death" )
+end, state )
+
 spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, critical )
 
     if sourceGUID == state.GUID then
@@ -669,7 +673,7 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
             if spellID == 445579 then -- Slayer's Strike occured
                 slayers_strike_stacks = slayers_strike_stacks + 1
                 if slayers_strike_stacks == 3 then
-                    applyBuff("sudden_death")
+                    TriggerSuddenDeath()
                     slayers_strike_stacks = 0
                 end
             end
