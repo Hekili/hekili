@@ -977,9 +977,10 @@ spec:RegisterAbilities( {
 
         spend = function() return mod_cataclysm( 0.07 ) end,
         spendType = "mana",
-
-        spend = 1,
-        spendType = "soul_shards",
+		
+		-- fix for issue #3478
+        --spend = 1,
+        --spendType = "soul_shards",
 
         talent = "chaos_bolt",
         startsCombat = true,
@@ -1896,9 +1897,10 @@ spec:RegisterAbilities( {
 
         spend = function() return mod_cataclysm( 0.2 ) end,
         spendType = "mana",
-
-        spend = 1,
-        spendType = "soul_shards",
+		
+		-- fix for issue #3478
+        --spend = 1,
+        --spendType = "soul_shards",
 
         talent = "shadowburn",
         startsCombat = true,
