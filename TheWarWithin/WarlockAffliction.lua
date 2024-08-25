@@ -1145,13 +1145,15 @@ spec:RegisterAbilities( {
 
         spend = 0.01,
         spendType = "mana",
-        notalent = "wither",
+        notalent = function() return state.spec.affliction and talent.wither.enabled and "wither" or nil end,
 
         startsCombat = true,
 
         handler = function ()
             applyDebuff( "target", "corruption" )
         end,
+
+        bind  = "wither"
     },
 
     -- [386646] When you use a Healthstone, gain $s2% Leech for $386647d.
@@ -2331,6 +2333,8 @@ spec:RegisterAbilities( {
         handler = function()
             applyDebuff( "target", "wither" )
         end,
+
+        bind = function() return state.spec.affliction and "corruption" or "immolate" end,
     }
 } )
 

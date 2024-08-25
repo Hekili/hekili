@@ -1907,6 +1907,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.reavers_glaive.up then
                 -- ?
+                removeBuff( "reavers_glaive" )
             end
             if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
             if talent.champion_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end

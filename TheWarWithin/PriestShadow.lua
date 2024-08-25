@@ -1635,6 +1635,9 @@ spec:RegisterAbilities( {
     -- Talent: Summons a Mindbender to attack the target for $d.     |cFFFFFFFFGenerates ${$123051m1/100}.1% mana each time the Mindbender attacks.|r
     mindbender = {
         id = function()
+            if talent.voidwrath.enabled then
+                return 451235
+            end
             if talent.mindbender.enabled then
                 return state.spec.discipline and 123040 or 200174
             end
@@ -1661,7 +1664,7 @@ spec:RegisterAbilities( {
             if talent.shadow_covenant.enabled then applyBuff( "shadow_covenant" ) end
         end,
 
-        copy = { "shadowfiend", 34433, 123040, 200174 }
+        copy = { "shadowfiend", 34433, 123040, 200174, "voidwraith", 451235 }
     },
 
     -- Covenant (Venthyr): Assault an enemy's mind, dealing ${$s1*$m3/100} Shadow damage and briefly reversing their perception of reality.    $?c3[For $d, the next $<damage> damage they deal will heal their target, and the next $<healing> healing they deal will damage their target.    |cFFFFFFFFReversed damage and healing generate up to ${$323706s2*2} Insanity.|r]  ][For $d, the next $<damage> damage they deal will heal their target, and the next $<healing> healing they deal will damage their target.    |cFFFFFFFFReversed damage and healing restore up to ${$323706s3*2}% mana.|r]

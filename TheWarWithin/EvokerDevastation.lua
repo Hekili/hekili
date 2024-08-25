@@ -927,7 +927,11 @@ spec:RegisterAbilities( {
 
     -- Take in a deep breath and fly to the targeted location, spewing molten cinders dealing 6,375 Volcanic damage to enemies in your path. Removes all root effects. You are immune to movement impairing and loss of control effects while flying.
     deep_breath = {
-        id = function () return buff.recall.up and 371807 or 357210 end,
+        id = function ()
+            if buff.recall.up then return 371807 end
+            if talent.maneuverability.enabled then return 433874 end
+            return 357210
+        end,
         cast = 0,
         cooldown = function ()
             return talent.onyx_legacy.enabled and 60 or 120
@@ -960,7 +964,7 @@ spec:RegisterAbilities( {
             if talent.terror_of_the_skies.enabled then applyDebuff( "target", "terror_of_the_skies" ) end
         end,
 
-        copy = { "recall", 371807, 357210 },
+        copy = { "recall", 371807, 357210, 433874 },
     },
 
     -- Tear into an enemy with a blast of blue magic, inflicting 4,930 Spellfrost damage over 2.1 sec, and slowing their movement speed by 50% for 3 sec.
@@ -1309,7 +1313,7 @@ spec:RegisterAbilities( {
 
     -- Send a flickering flame towards your target, dealing 2,625 Fire damage to an enemy or healing an ally for 3,089.
     living_flame = {
-        id = 361469,
+        id = function() return talent.chrono_flame.enabled and 431443 or 361469 end,
         cast = function() return ( talent.engulfing_blaze.enabled and 2.3 or 2 ) * ( buff.ancient_flame.up and 0.6 or 1 ) * haste end,
         cooldown = 0,
         gcd = "spell",
@@ -1345,6 +1349,8 @@ spec:RegisterAbilities( {
             removeBuff( "leaping_flames" )
             removeBuff( "scarlet_adaptation" )
         end,
+
+        copy = { 361469, "chrono_flame", 431443 }
     },
 
     -- Talent: Reinforce your scales, reducing damage taken by 30%. Lasts 12 sec.

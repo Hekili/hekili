@@ -1685,7 +1685,7 @@ spec:RegisterAbilities( {
 
     -- Throw a demonic glaive at the target, dealing $337819s1 Physical damage. The glaive can ricochet to $?$s320386[${$337819x1-1} additional enemies][an additional enemy] within 10 yards.
     throw_glaive = {
-        id = 204157,
+        id = function() return buff.reavers_glaive.up and 442294 or 204157 end,
         cast = 0,
         charges = function()
             local c = talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank
@@ -1708,6 +1708,8 @@ spec:RegisterAbilities( {
             if talent.serrated_glaive.enabled or conduit.serrated_glaive.enabled then applyDebuff( "target", "exposed_wound" ) end
             if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
         end,
+
+        copy = { 204157, "reavers_glaive", 442294 }
     },
 
     -- Taunts the target to attack you.

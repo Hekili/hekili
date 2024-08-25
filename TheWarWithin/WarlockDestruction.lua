@@ -1612,7 +1612,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         cycle = function () return not debuff.immolate.refreshable and "immolate" or nil end,
-        notalent = "wither",
+        notalent = function() return state.spec.destruction and talent.wither.enabled and "wither" or nil end,
 
         handler = function ()
             applyDebuff( "target", "immolate" )
@@ -1620,6 +1620,8 @@ spec:RegisterAbilities( {
             removeDebuff( "target", "combusting_engine" )
             if talent.flashpoint.enabled and target.health_pct > 80 then addStack( "flashpoint" ) end
         end,
+
+        bind = function() return state.spec.destruction and talent.wither.enabled and "wither" or nil end,
     },
 
     -- Draws fire toward the enemy, dealing 3,794 Fire damage. Generates 2 Soul Shard Fragments and an additional 1 on critical strikes.
