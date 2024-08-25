@@ -2,17 +2,18 @@
 actions.precombat+=/flametongue_weapon,if=talent.improved_flametongue_weapon.enabled
 actions.precombat+=/thunderstrike_ward
 actions.precombat+=/skyfury
+actions.precombat+=/lightning_shield
+actions.precombat+=/earth_shield,if=!buff.earth_shield.up&talent.elemental_orbit
 actions.precombat+=/potion
 actions.precombat+=/stormkeeper
-actions.precombat+=/lightning_shield
 actions.precombat+=/variable,name=mael_cap,value=100+50*talent.swelling_maelstrom.rank+25*talent.primordial_capacity.rank,op=set
 actions.precombat+=/variable,name=spymaster_in_1st,value=trinket.1.is.spymasters_web
 actions.precombat+=/variable,name=spymaster_in_2nd,value=trinket.2.is.spymasters_web
 
-# Enable more movement.
-actions+=/spiritwalkers_grace,moving=1,if=movement.distance>6
 # Interrupt of casts.
 actions+=/wind_shear
+# Enable more movement.
+actions+=/spiritwalkers_grace,moving=1
 actions+=/blood_fury,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
 actions+=/berserking,if=!talent.ascendance.enabled|buff.ascendance.up
 actions+=/fireblood,if=!talent.ascendance.enabled|buff.ascendance.up|cooldown.ascendance.remains>50
