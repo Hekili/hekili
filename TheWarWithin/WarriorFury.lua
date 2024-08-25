@@ -958,7 +958,7 @@ spec:RegisterAbilities( {
             if talent.brutal_finish.enabled then applyBuff( "brutal_finish" ) end
         end,
 
-        copy = { 227847, 389774 }
+        copy = { 227847, 389774, 446035 }
     },
 
 
