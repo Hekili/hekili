@@ -44,7 +44,7 @@ do
                 local entry   = entryID and C_Traits.GetEntryInfo( configID, entryID )
                 local defn    = entry and C_Traits.GetDefinitionInfo( entry.definitionID )
 
-                talent.rank = defn and defn.spellID == data[2] and node.activeEntry.rank or 0
+                talent.rank = defn and defn.spellID == data[2] and ( not node.subTreeID or node.subTreeActive ) and node.activeEntry.rank or 0
                 talent.max = node.maxRanks
             end
 
