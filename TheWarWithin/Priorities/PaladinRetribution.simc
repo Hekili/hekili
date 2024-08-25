@@ -28,6 +28,7 @@ actions.cooldowns+=/final_reckoning,if=(holy_power>=4&time<8|holy_power>=3&time>
 
 actions.finishers+=/variable,name=ds_castable,value=(spell_targets.divine_storm>=3|spell_targets.divine_storm>=2&!talent.divine_arbiter|buff.empyrean_power.up)&!buff.empyrean_legacy.up&!(buff.divine_arbiter.up&buff.divine_arbiter.stack>24)
 actions.finishers+=/divine_hammer
+actions.finishers+=/hammer_of_light
 actions.finishers+=/divine_storm,if=variable.ds_castable&(!talent.crusade|cooldown.crusade.remains>gcd*3|buff.crusade.up&buff.crusade.stack<10|talent.radiant_glory)
 actions.finishers+=/justicars_vengeance,if=!talent.crusade|cooldown.crusade.remains>gcd*3|buff.crusade.up&buff.crusade.stack<10|talent.radiant_glory
 actions.finishers+=/templars_verdict,if=!talent.crusade|cooldown.crusade.remains>gcd*3|buff.crusade.up&buff.crusade.stack<10|talent.radiant_glory
