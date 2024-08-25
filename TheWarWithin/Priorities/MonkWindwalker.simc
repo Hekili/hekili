@@ -6,13 +6,13 @@ actions+=/variable,name=has_external_pi,value=false
 # Use Trinkets
 actions+=/call_action_list,name=trinkets
 # Openers
-actions+=/call_action_list,name=aoe_opener,strict=1,if=time<3&active_enemies>2
-actions+=/call_action_list,name=normal_opener,strict=1,if=time<4&active_enemies<3
+actions+=/call_action_list,name=aoe_opener,strict=1,if=boss&time<3&active_enemies>2&chi.deficit>0
+actions+=/call_action_list,name=normal_opener,strict=1,if=boss&time<4&active_enemies<3&chi.deficit>0
 # Use Cooldowns
 actions+=/call_action_list,name=cooldowns,strict=1,if=talent.storm_earth_and_fire
 # Default Priority
 actions+=/call_action_list,name=default_aoe,strict=1,if=active_enemies>=5
-actions+=/call_action_list,name=default_cleave,if=active_enemies>1&(time>7|!talent.celestial_conduit)&active_enemies<5
+actions+=/call_action_list,name=default_cleave,if=active_enemies>1&(!boss|chi.deficit=0|time>7|!talent.celestial_conduit)&active_enemies<5
 actions+=/call_action_list,name=default_st,strict=1,if=active_enemies<2
 
 # Use <a href='https://www.wowhead.com/spell=10060/power-infusion'>Power Infusion</a> while <a href='https://www.wowhead.com/spell=123904/invoke-xuen-the-white-tiger'>Invoke Xuen, the White Tiger</a> is active.
