@@ -861,7 +861,7 @@ spec:RegisterAbilities( {
             end
         end,
 
-        copy = { 227847, 389774 }
+        copy = { 227847, 389774, 446035 }
     },
 
 
