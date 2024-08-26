@@ -974,7 +974,8 @@ spec:RegisterHook( "IsUsable", function( spell )
     if spell == "touch_of_death" then return end -- rely on priority only.
 
     -- Allow repeats to happen if your chi has decayed to 0.
-    if talent.hit_combo.enabled and buff.hit_combo.up and ( spell ~= "tiger_palm" or chi.current > 0 ) and last_combo == spell then
+    -- TWW priority appears to allow hit_combo breakage for Tiger Palm.
+    if talent.hit_combo.enabled and buff.hit_combo.up and spell ~= "tiger_palm" and last_combo == spell then
         return false, "would break hit_combo"
     end
 end )
