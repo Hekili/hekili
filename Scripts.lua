@@ -511,6 +511,8 @@ do
         { "^!?stealthed%.(ambush)$"                 , "stealthed.%1_remains"                                          },
         { "^!?stealthed%.(all)$"                    , "stealthed.%1_remains"                                          },
 
+        { "^!?death_and_decay.ticking$"             , "death_and_decay.remains"                                       }, -- DKs
+
         { "^!?time_to_hpg$"           , "time_to_hpg"          }, -- Retribution Paladin
         { "^!?time_to_hpg[<=]=?(.-)$" , "time_to_hpg-%1"       }, -- Retribution Paladin
         { "^!?consecration.up"        , "consecration.remains" }, -- Prot        Paladin
