@@ -711,6 +711,7 @@ end )
 local steady_focus_applied = 0
 local steady_focus_casts = 0
 local bombardment_arcane_shots = 0
+local lunar_storm_expires = 0
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
 
@@ -721,6 +722,8 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 steady_focus_casts = 0
             elseif spellID == 378880 then
                 bombardment_arcane_shots = 0
+            elseif spellID == 450978 then
+                lunar_storm_expires = GetTime() + 13.7
             end
         elseif subtype == "SPELL_CAST_SUCCESS" then
             if spellID == 185358 and state.talent.bombardment.enabled then
@@ -812,6 +815,8 @@ spec:RegisterHook( "reset_precast", function ()
 
     last_steady_focus = nil
     steady_focus_count = nil
+
+    if lunar_storm_expires > query_time then setCooldown( "lunar_storm", lunar_storm_expires - query_time ) end
 
     -- If the last GCD ability wasn't Stready Shot, reset the counter.
     if talent.steady_focus.enabled and steady_focus_count > 0 and prev_gcd.last ~= "steady_shot" then
@@ -1195,6 +1200,13 @@ spec:RegisterAbilities( {
         end,
     },
 
+    lunar_storm = {
+        cast = 0,
+        cooldown = 13.7,
+        gcd = "off",
+        hidden = true,
+    },
+
     -- Talent: Fires several missiles, hitting your current target and all enemies within $A1 yards for $s1 Physical damage. Deals reduced damage beyond $2643s1 targets.$?s260393[    Multi-Shot has a $260393h% chance to reduce the cooldown of Rapid Fire by ${$260393m1/10}.1 sec.][]
     multishot = {
         id = 257620,
@@ -1247,6 +1259,10 @@ spec:RegisterAbilities( {
             if set_bonus.tier31_2pc > 0 then applyBuff( "volley", 2 * haste ) end
             if talent.bulletstorm.enabled and buff.trick_shots.up then
                 addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
+            end
+            if talent.lunar_storm.enabled and cooldown.lunar_storm.ready then
+                setCooldown( "lunar_storm", 13.7 )
+                applyDebuff( "target", "lunar_storm" )
             end
             if talent.streamline.enabled then applyBuff( "streamline" ) end
         end,

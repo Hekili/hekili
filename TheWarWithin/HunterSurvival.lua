@@ -713,6 +713,20 @@ spec:RegisterAuras( {
 
 
 
+local lunar_storm_expires = 0
+
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+
+    if sourceGUID == state.GUID then
+        if ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
+            if spellID == 450978 then
+                lunar_storm_expires = GetTime() + 13.7
+            end
+        end
+    end
+end )
+
+
 spec:RegisterHook( "reset_precast", function()
     if talent.bombardier.enabled and buff.coordinated_assault.up then
         state:QueueAuraExpiration( "coordinated_assault", TriggerBombardier, buff.coordinated_assault.expires )
@@ -731,6 +745,8 @@ spec:RegisterHook( "reset_precast", function()
     end
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
+
+    if lunar_storm_expires > query_time then setCooldown( "lunar_storm", lunar_storm_expires - query_time ) end
 
     if buff.coordinated_assault.up and talent.relentless_primal_ferocity.enabled then
         applyBuff( "relentless_primal_ferocity", buff.coordinated_assault.remains )
@@ -1280,6 +1296,10 @@ spec:RegisterAbilities( {
             if buff.contained_explosion.up then
                 removeBuff( "contained_explosion" )
                 gainCharges( 1, "wildfire_bomb" )
+            end
+            if talent.lunar_storm.enabled and cooldown.lunar_storm.ready then
+                setCooldown( "lunar_storm", 13.7 )
+                applyDebuff( "target", "lunar_storm" )
             end
         end,
 
