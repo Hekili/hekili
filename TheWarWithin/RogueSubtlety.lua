@@ -1485,7 +1485,22 @@ spec:RegisterOptions( {
     package = "Subtlety",
 } )
 
+spec:RegisterSetting( "priority_rotation", false, {
+    name = "Subtlety Rogue is able to do funnel damage. Head over to |cFFFFD100Toggles|r to learn how to turn the feature on and off. " ..
+    "If funnel is enabled, the default priority will recommend building combo points with |T1375677:0|t Shuriken Storm and spending on single-target finishers in order to do priority damage.\n\n",
+    desc = "",
+    type = "description",
+    fontSize = "medium",
+    width = "full"
+})
 
+--[[
+spec:RegisterStateExpr( "priority_rotation", function ()
+    local prio = settings.priority_rotation
+    if prio == nil then return true end
+    return prio
+end )
+--]]
 
 spec:RegisterSetting( "mfd_points", 3, {
     name = "|T236340:0|t Marked for Death Combo Points",
@@ -1498,18 +1513,6 @@ spec:RegisterSetting( "mfd_points", 3, {
 } )
 
 
-spec:RegisterSetting( "priority_rotation", false, {
-    name = "Use Priority Rotation (Funnel Damage)",
-    desc = "If checked, the default priority will recommend building combo points with |T1375677:0|t Shuriken Storm and spending on single-target finishers.",
-    type = "toggle",
-    width = "full"
-})
-
-spec:RegisterStateExpr( "priority_rotation", function ()
-    local prio = settings.priority_rotation
-    if prio == nil then return true end
-    return prio
-end )
 
 spec:RegisterSetting( "rupture_duration", 12, {
     name = strformat( "%s Duration", Hekili:GetSpellLinkWithTexture( 1943 ) ),
