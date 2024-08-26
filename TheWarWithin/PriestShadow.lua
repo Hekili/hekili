@@ -1654,7 +1654,7 @@ spec:RegisterAbilities( {
             if not talent.mindbender.enabled then return "cooldowns" end
         end,
         startsCombat = true,
-        texture = function() return talent.mindbender.enabled and 136214 or 136199 end,
+        -- texture = function() return talent.mindbender.enabled and 136214 or 136199 end,
 
         handler = function ()
             local fiend = talent.mindbender.enabled and "mindbender" or "shadowfiend"
