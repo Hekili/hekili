@@ -1740,6 +1740,7 @@ spec:RegisterAbilities( {
     -- Hammer down your enemy with the power of the Light, dealing $429826s1 Holy damage and ${$429826s1/2} Holy damage up to 4 nearby enemies. ; Additionally, calls down Empyrean Hammers from the sky to strike $427445s2 nearby enemies for $431398s1 Holy damage each.;
     hammer_of_light = {
         id = 427453,
+        flash = 255937,
         cast = 0.0,
         cooldown = 0.0,
         gcd = "spell",
@@ -1751,6 +1752,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
         end,
+
+        bind = "wake_of_ashes"
     },
 
     hammer_of_reckoning = {
@@ -2217,6 +2220,7 @@ spec:RegisterAbilities( {
         spendType = "holy_power",
 
         talent = "wake_of_ashes",
+        nobuff = "hammer_of_light",
         startsCombat = true,
 
         usable = function ()
@@ -2233,6 +2237,8 @@ spec:RegisterAbilities( {
             if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if conduit.truths_wake.enabled then applyDebuff( "target", "truths_wake" ) end
         end,
+
+        bind = "hammer_of_light"
     },
 
     -- Calls down the Light to heal a friendly target for $130551s1$?a378405[ and an additional $378412s1 over $378412d][].$?a379043[ Your block chance is increased by$379043s1% for $379041d.][]$?a315921&!a315924[    |cFFFFFFFFProtection:|r If cast on yourself, healing increased by up to $315921s1% based on your missing health.][]$?a315924[    |cFFFFFFFFProtection:|r Healing increased by up to $315921s1% based on the target's missing health.][]
