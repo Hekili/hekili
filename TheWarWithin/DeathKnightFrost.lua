@@ -1056,7 +1056,6 @@ spec:RegisterAbilities( {
         cooldown = function() return 60 - ( talent.antimagic_barrier.enabled and 15 or 0 ) - ( talent.unyielding_will.enabled and -20 or 0 ) - ( pvptalent.spellwarden.enabled and 10 or 0 ) end,
         gcd = "off",
 
-        talent = "antimagic_shell",
         startsCombat = false,
 
         toggle = function()

@@ -1744,7 +1744,7 @@ spec:RegisterAbilities( {
         cooldown = 0.0,
         gcd = "spell",
 
-        spend = function() return buff.divine_purpose.up and 0 or 3 end,
+        spend = function() return buff.divine_purpose.up and 0 or 5 end,
         spendType = 'holy_power',
 
         startsCombat = true,
