@@ -1995,23 +1995,24 @@ spec:RegisterSetting( "default_pet", "summon_sayaad", {
             summon_voidwalker = class.abilityList.summon_voidwalker,
         }
     end,
-    width = "full"
+    width = "normal"
 } )
 
 spec:RegisterSetting( "cleave_apl", false, {
-    name = function() return "|T" .. ( GetSpellTexture( 116858 ) ) .. ":0|t Funnel Damage in AOE" end,
-    desc = function()
-        return "If checked, the addon will use its cleave priority to funnel damage into your primary target (via |T" .. ( GetSpellTexture( 116858 ) ) .. ":0|t Chaos Bolt) instead of spending Soul Shards on |T" .. ( GetSpellTexture( 5740 ) ) .. ":0|t Rain of Fire.\n\n" ..
-        "You may wish to change this option for different fights and scenarios, which can be done here, via the minimap button, or with |cFFFFD100/hekili toggle cleave_apl|r."
-    end,
-    type = "toggle",
+    name = "\n\nDestruction Warlock is able to do funnel damage. Head over to |cFFFFD100Toggles|r to learn how to turn the feature on and off. " ..
+        "If funnel is enabled, the default priority will recommend spending with Chaos Bolt in AoE in order to do priority damage.\n\n",
+    desc = "",
+    type = "description",
+    fontSize = "medium",
     width = "full",
 } )
 
+--[[
 spec:RegisterVariable( "cleave_apl", function()
     if settings.cleave_apl ~= nil then return settings.cleave_apl end
     return false
 end )
+--]]
 
 --[[ Retired 2023-02-20.
 spec:RegisterSetting( "fixed_aoe_3_plus", false, {
