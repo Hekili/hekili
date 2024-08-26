@@ -1780,7 +1780,7 @@ spec:RegisterAbilities( {
 
     -- Finishing move that causes Physical damage per combo point and consumes up to $?a102543[${$s2*(1+$102543s2/100)}][$s2] additional Energy to increase damage by up to 100%.       1 point  : ${$m1*1/5} damage     2 points: ${$m1*2/5} damage     3 points: ${$m1*3/5} damage     4 points: ${$m1*4/5} damage     5 points: ${$m1*5/5} damage
     ferocious_bite = {
-        id = function() return buff.ravage.up and 441591 or 22568 end,
+        id = 22568,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1843,7 +1843,8 @@ spec:RegisterAbilities( {
             opener_done = true
         end,
 
-        copy = { 22568, "ferocious_bite_max", 441591, "ravage" }
+        bind = "ravage",
+        copy = { 22568, "ferocious_bite_max" }
     },
 
     -- Talent: Heals you for $o1% health over $d$?s301768[, and increases healing received by $301768s1%][].
@@ -2330,6 +2331,7 @@ spec:RegisterAbilities( {
     -- Finishing move that slashes through your target in a wide arc, dealing Physical damage per combo point to your target and consuming up to $?a102543[${$s2*(1+$102543s3/100)}][$s2] additional Energy to increase that damage by up to 100%. Hits all other enemies in front of you for reduced damage per combo point spent. ;   1 point: ${$m1*1/5} damage, ${$m3*1/5} in an arc;   2 points: ${$m1*2/5} damage, ${$m3*2/5} in an arc;   3 points: ${$m1*3/5} damage, ${$m3*3/5} in an arc;   4 points: ${$m1*4/5} damage, ${$m3*4/5} in an arc;   5 points: ${$m1*5/5} damage, ${$m3*5/5} in an arc
     ravage = {
         id = 441591,
+        flash = 22568,
         cast = 0.0,
         cooldown = 0.0,
         gcd = "spell",
@@ -2389,6 +2391,8 @@ spec:RegisterAbilities( {
 
             opener_done = true
         end,
+
+        bind = "ferocious_bite",
     },
 
     -- Heals a friendly target for $s1 and another ${$o2*$<mult>} over $d.$?s231032[ Initial heal has a $231032s1% increased chance for a critical effect if the target is already affected by Regrowth.][]$?s24858|s197625[ Usable while in Moonkin Form.][]$?s33891[    |C0033AA11Tree of Life: Instant cast.|R][]
