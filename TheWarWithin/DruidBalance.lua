@@ -2839,7 +2839,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function ()
-            if not state.spec.balance then return ( talent.starlight.conduit.enabled and 0.003 or 0.006 ) end
+            if not state.spec.balance then return ( talent.starlight_conduit.enabled and 0.003 or 0.006 ) end
             if buff.oneths_clear_vision.up or buff.starweavers_weft.up then return 0 end
             return ( 40 - ( buff.incarnation.up and talent.elunes_guidance.enabled and 8 or 0 ) - ( buff.touch_the_cosmos.up and 5 or 0 ) ) * ( 1 - 0.05 * buff.rattled_stars.stack ) * ( 1 - 0.1 * buff.timeworn_dreambinder.stack )
         end,
