@@ -1875,7 +1875,7 @@ me:RegisterAbilities( {
 
     -- Talent: Strikes for $s1 Physical damage and infects the target with $m2-$M2 Festering...
     festering_strike = {
-        id = function() return buff.festering_scythe.up and 458123 or 85948 end,
+        id = function() return buff.festering_scythe.up and 458128 or 85948 end,
         known = 85948,
         cast = 0,
         cooldown = 0,
@@ -1897,7 +1897,7 @@ me:RegisterAbilities( {
             applyDebuff( "target", "festering_wound", nil, debuff.festering_wound.stack + 2 )
         end,
 
-        copy = { 85948, 458123 }
+        copy = { 85948, 458128 }
     },
 
     -- Talent: Your blood freezes, granting immunity to Stun effects and reducing all damage...
