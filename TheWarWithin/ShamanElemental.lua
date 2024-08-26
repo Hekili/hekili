@@ -199,6 +199,9 @@ spec:RegisterAuras( {
         id = 443454,
         duration = 3600,
         max_stack = 1,
+        onRemove = function( t )
+            setCooldown( "ancestral_swiftness", action.ancestral_swiftness.cooldown )
+        end
     },
     -- Your next $s3 Chain Lightning spells are instant cast and will deal $s2% increased damage.
     arc_discharge = {
@@ -1348,6 +1351,7 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
         talent = "ancestral_swiftness",
+        nobuff = "ancestral_swiftness",
         toggle = "cooldowns",
 
         handler = function ()
