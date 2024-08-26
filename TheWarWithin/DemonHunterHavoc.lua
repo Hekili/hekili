@@ -1885,7 +1885,7 @@ spec:RegisterAbilities( {
 
     -- Throw a demonic glaive at the target, dealing $337819s1 Physical damage. The glaive can ricochet to $?$s320386[${$337819x1-1} additional enemies][an additional enemy] within 10 yards.
     throw_glaive = {
-        id = function() return buff.reavers_glaive.up and 442294 or 185123 end,
+        id = 185123,
         known = 185123,
         cast = 0,
         charges = function () return talent.champion_of_the_glaive.enabled and 2 or nil end,
@@ -1915,8 +1915,6 @@ spec:RegisterAbilities( {
             if talent.soulscar.enabled then applyDebuff( "target", "soulscar" ) end
             if set_bonus.tier31_4pc > 0 then reduceCooldown( "the_hunt", 2 ) end
         end,
-
-        copy = { 185123, "reavers_glaive", 442294 }
     },
 
     -- Taunts the target to attack you.
