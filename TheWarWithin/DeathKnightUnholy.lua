@@ -1195,7 +1195,12 @@ me:RegisterHook( "reset_precast", function ()
         any_dnd_set = true
     end
 
-    if state:IsKnown( "clawing_shadows" ) then
+    if talent.vampiric_strike.enabled and IsActiveSpell( 433899 ) then applyBuff( "vampiric_strike" ) end
+
+    if buff.vampiric_strike.up or buff.gift_of_the_sanlayn.up then
+        class.abilities.wound_spender = class.abilities.vampiric_strike
+        cooldown.wound_spender = cooldown.vampiric_strike
+    elseif state:IsKnown( "clawing_shadows" ) then
         class.abilities.wound_spender = class.abilities.clawing_shadows
         cooldown.wound_spender = cooldown.clawing_shadows
     else
@@ -1227,8 +1232,6 @@ me:RegisterHook( "reset_precast", function ()
             expires = expires - 5
         end
     end
-
-    if talent.vampiric_strike.enabled and IsActiveSpell( 433899 ) then applyBuff( "vampiric_strike" ) end
 
     if Hekili.ActiveDebug then Hekili:Debug( "Pet is %s.", pet.alive and "alive" or "dead" ) end
 end )
@@ -2223,6 +2226,7 @@ me:RegisterAbilities( {
     -- A vampiric strike that deals $?a137007[$s1][$s5] Shadow damage and heals you for $?a137007[$434422s2][$434422s3]% of your maximum health.; Additionally grants you Essence of the Blood Queen for $433925d.
     vampiric_strike = {
         id = 433895,
+        flash = 55090,
         cast = 0.0,
         cooldown = 0.0,
         gcd = "spell",
@@ -2240,6 +2244,16 @@ me:RegisterAbilities( {
             removeBuff( "vampiric_strike" )
             gain( 0.01 * health.max, "health" )
             applyBuff( "essence_of_the_blood_queen" ) -- TODO: mod haste
+
+            if buff.vampiric_strike.down and buff.gift_of_the_sanlayn.down then
+                if state:IsKnown( "clawing_shadows" ) then
+                    class.abilities.wound_spender = class.abilities.clawing_shadows
+                    cooldown.wound_spender = cooldown.clawing_shadows
+                else
+                    class.abilities.wound_spender = class.abilities.scourge_strike
+                    cooldown.wound_spender = cooldown.scourge_strike
+                end
+            end
 
             if talent.infliction_of_sorrow.enabled and dot.virulent_plague.ticking then
                 dot.virulent_plague.expires = dot.virulent_plague.expires + 3
