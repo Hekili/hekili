@@ -1993,7 +1993,7 @@ spec:RegisterAbilities( {
 
     -- Hurls a bolt of lightning at the target, dealing $s1 Nature damage.$?a343725[    |cFFFFFFFFGenerates $343725s1 Maelstrom.|r][]
     tempest = {
-        id = 454009,
+        id = 452201,
         cast = function ()
             if buff.natures_swiftness.up then return 0 end
             return maelstrom_mod( 2 ) * haste
@@ -2027,7 +2027,8 @@ spec:RegisterAbilities( {
             tiSpell = "tempest"
         end,
 
-        bind = "lightning_bolt"
+        bind = "lightning_bolt",
+        copy = 454009
     },
 
     -- Talent: Grips the target in lightning, stunning and dealing $305485o1 Nature damage over $305485d while the target is lassoed. Can move while channeling.
@@ -2374,37 +2375,6 @@ spec:RegisterAbilities( {
             summonTotem( "surging_totem" )
         end,
     },
-
-    -- TODO: Check TWW APL to see if used differently than Lightning Bolt.
-    --[[ Deal $s1 Nature damage to your target, and ${$m1*$m2/100} Nature damage to other enemy targets within $A1 yds of your target.
-    tempest = {
-        id = 452201,
-        cast = 2.0,
-        cooldown = 0.0,
-        gcd = "spell",
-
-        spend = 0.002,
-        spendType = 'mana',
-
-        startsCombat = true,
-
-        -- Effects:
-        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 2.7, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
-        -- #1: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
-
-        -- Affected by:
-        -- mastery_enhanced_elements[77223] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- mastery_enhanced_elements[77223] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- astral_bulwark[377933] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_5_VALUE, }
-        -- natures_swiftness[378081] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
-        -- natures_swiftness[378081] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
-        -- planes_traveler[381647] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -15000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
-        -- stormcaller[454021] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
-        -- stormcaller[454021] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
-        -- thorims_invocation[384444] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- crackling_surge[224127] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.5, 'points': 20.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': DAMAGE_HEALING, }
-        -- crackling_surge[224127] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.5, 'points': 20.0, 'target': TARGET_UNIT_TARGET_ALLY, 'modifies': PERIODIC_DAMAGE_HEALING, }
-    }, ]]
 
     -- Talent: Calls down a bolt of lightning, dealing $s1 Nature damage to all enemies within $A1 yards, reducing their movement speed by $s3% for $d, and knocking them $?s378779[upward][away from the Shaman]. Usable while stunned.
     -- TODO: Track Thunderstorm for CDR.
