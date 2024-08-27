@@ -1674,7 +1674,6 @@ spec:RegisterAbilities( {
         spendType = function() return talent.furious_throws.enabled and "fury" or nil end,
 
         startsCombat = true,
-        talent = "reavers_glaive",
         buff = "reavers_glaive",
 
         handler = function ()
