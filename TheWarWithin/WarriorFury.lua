@@ -1783,6 +1783,7 @@ spec:RegisterAbilities( {
 
     thunder_blast = {
         id = 435615,
+        flash = 6343,
         cast = 0,
         cooldown = 6,
         gcd = "spell",

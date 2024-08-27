@@ -1806,6 +1806,7 @@ spec:RegisterAbilities( {
 
     thunder_blast = {
         id = 435222,
+        flash = 6343,
         cast = 0,
         cooldown = function () return haste * ( ( buff.avatar.up and talent.unstoppable_force.enabled ) and 3 or 6 ) end,
         gcd = "spell",
