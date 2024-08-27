@@ -338,6 +338,11 @@ spec:RegisterPvpTalents( {
 
 -- Auras
 spec:RegisterAuras( {
+    a_feast_of_souls = {
+        id = 440861,
+        duration = 3600,
+        max_stack = 1
+    },
     -- Pulling enemies to your location and dealing $323798s1 Shadow damage to nearby enemies every $t1 sec.
     -- https://wowhead.com/beta/spell=315443
     abomination_limb_covenant = {
@@ -470,6 +475,11 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1
     },
+    brittle = {
+        id = 374557,
+        duration = 5,
+        max_stack = 1
+    },
     -- Talent: Movement slowed $w1% $?$w5!=0[and Haste reduced $w5% ][]by frozen chains.
     -- https://wowhead.com/beta/spell=45524
     chains_of_ice = {
@@ -587,6 +597,12 @@ spec:RegisterAuras( {
         duration = 6.0,
         max_stack = 1,
     },
+    exterminate = {
+        id = 441416,
+        duration = 3600,
+        max_stack = function () return talent.painful_death.enabled and 2 or 1 end,
+        copy = { 447954, "exterminate_painful_death" }
+    },
     -- Reduces damage dealt to $@auracaster by $m1%.
     -- https://wowhead.com/beta/spell=327092
     famine = {
@@ -695,7 +711,8 @@ spec:RegisterAuras( {
     icy_talons = {
         id = 194879,
         duration = 10.0,
-        max_stack = 1,
+        max_stack = function() return talent.dark_talons.enabled and 3 or 1 end,
+        copy = { 443586, 436687, 443586, "dark_talons_icy_talons", "dark_talons_shadowfrost" }
     },
     -- Taking $w1% increased Shadow damage from $@auracaster.
     incite_terror = {
@@ -872,6 +889,12 @@ spec:RegisterAuras( {
         id = 343294,
         duration = 5,
         tick_time = 5,
+        max_stack = 1,
+    },
+    grim_reaper_soul_reaper = {
+        id = 448229,
+        duration = 5,
+        tick_time = 5,
         max_stack = 1
     },
     -- Silenced.
@@ -998,6 +1021,11 @@ spec:RegisterAuras( {
         duration = 6,
         type = "Magic",
         max_stack = 3
+    },
+    wave_of_souls = {
+        id = 443404,
+        duration = 15,
+        max_stack = 2,
     },
     -- Talent: Movement speed increased by $w1%.  Cannot be slowed below $s2% of normal movement speed.  Cannot attack.
     -- https://wowhead.com/beta/spell=212552
@@ -1965,6 +1993,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "reapers_mark" )
+            if talent.grim_reaper.enabled and target.health_pct < 35 then
+                applyDebuff( "target", "soul_reaper" )
+            end
         end,
 
         -- Effects:
@@ -2143,6 +2174,7 @@ spec:RegisterAbilities( {
 
     vampiric_strike = {
         id = 433895,
+        flash = 206930,
         cast = 0.0,
         cooldown = 0.0,
         gcd = "spell",
