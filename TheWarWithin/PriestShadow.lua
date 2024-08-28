@@ -1635,7 +1635,7 @@ spec:RegisterAbilities( {
     -- Talent: Summons a Mindbender to attack the target for $d.     |cFFFFFFFFGenerates ${$123051m1/100}.1% mana each time the Mindbender attacks.|r
     mindbender = {
         id = function()
-            if talent.voidwrath.enabled then
+            if talent.voidwraith.enabled then
                 return 451235
             end
             if talent.mindbender.enabled then
