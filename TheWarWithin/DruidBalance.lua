@@ -2451,7 +2451,6 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        talent = "moonkin_form",
         startsCombat = false,
 
         noform = "moonkin_form",
