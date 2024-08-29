@@ -901,8 +901,8 @@ spec:RegisterHook( "reset_precast", function ()
         end
     end
 
-    if talent.holy_bulwark.enabled then
-        if IsActiveSpell( 432478 ) then applyBuff( "sacred_weapon_ready" )
+    if talent.holy_armaments.enabled then
+        if IsActiveSpell( 432472 ) then applyBuff( "sacred_weapon_ready" )
         else applyBuff( "holy_bulwark_ready" ) end
     end
 
@@ -1546,13 +1546,13 @@ spec:RegisterAbilities( {
     -- [432496] While wielding a Holy Bulwark, gain an absorb shield for ${$s2/10}.1% of your max health and an additional ${$s4/10}.1% every $t2 sec. Lasts $d.
     holy_armaments = {
         id = function() return buff.holy_bulwark_ready.up and 432459 or 432472 end,
+        known = function() return talent.holy_armaments.enabled end,
         cast = 0.0,
         cooldown = 60,
         charges = 2,
         recharge = 60,
         gcd = "spell",
 
-        talent = "holy_armaments",
         startsCombat = false,
         buff = function()
             if buff.holy_bulwark_ready.up then return "holy_bulwark_ready" end
