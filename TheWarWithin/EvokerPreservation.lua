@@ -706,7 +706,7 @@ spec:RegisterAbilities( {
         copy = { 382266, 357208 }
     },
     living_flame = {
-        id = 361469,
+        id = function() return talent.chrono_flame.enabled and 431443 or 361469 end,
         cast = function() return buff.lifespark.up and 0 or 2 end,
         cooldown = 0,
         gcd = "spell",
@@ -729,6 +729,8 @@ spec:RegisterAbilities( {
             if buff.stasis.stack == 1 then applyBuff( "stasis_ready" ) end
             removeStack( "stasis" )
         end,
+
+        copy = { 361469, "chrono_flame", 431443 }
     },
     naturalize = {
         id = 360823,
