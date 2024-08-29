@@ -1782,7 +1782,7 @@ spec:RegisterAbilities( {
     },
 
     thunder_blast = {
-        id = 435615,
+        id = 435222,
         flash = 6343,
         cast = 0,
         cooldown = 6,
