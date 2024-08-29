@@ -788,6 +788,8 @@ spec:RegisterHook( "reset_precast", function ()
         addStack( "soul_fragments", nil, fragments.real )
     end
 
+    if IsActiveSpell( 442294 ) then applyBuff( "reavers_glaive" ) end
+
     fiery_brand_dot_primary_expires = nil
     fury_spent = nil
 end )

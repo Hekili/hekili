@@ -1089,6 +1089,8 @@ spec:RegisterHook( "reset_precast", function ()
 
     meta_cd_multiplier = 1 / ( 1 + rps )
 
+    if IsActiveSpell( 442294 ) then applyBuff( "reavers_glaive" ) end
+
     fury_spent = nil
 end )
 
