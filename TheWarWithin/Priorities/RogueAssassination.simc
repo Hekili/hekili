@@ -81,6 +81,8 @@ actions.direct+=/ambush,if=variable.use_filler&(buff.blindside.up|stealthed.rogu
 actions.direct+=/mutilate,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&!debuff.amplifying_poison.up&variable.use_filler&spell_targets.fan_of_knives=2
 # Fallback Mutilate
 actions.direct+=/mutilate,if=variable.use_filler
+# Fallback Envenom
+actions.direct+=/envenom,if=!variable.use_filler&effective_combo_points>=cp_max_spend
 
 # Core damage over time abilities used everywhere  Maintain Garrote
 actions.core_dot+=/garrote,if=combo_points.deficit>=1&(pmultiplier<=1)&refreshable&target.time_to_die-remains>12
