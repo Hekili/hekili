@@ -4832,7 +4832,9 @@ do
         { "eternal_gladiators_medallion", 192298 },
         { "obsidian_combatants_medallion", 204164 },
         { "obsidian_aspirants_medallion", 205779 },
-        { "obsidian_gladiators_medallion", 205711 }
+        { "obsidian_gladiators_medallion", 205711 },
+        { "forged_aspirants_medallion", 218422 },
+        { "forged_gladiators_medallion", 218716 }
     }
 
     local pvp_medallions_copy = {}
@@ -4865,7 +4867,7 @@ do
             end
             return m
         end,
-        items = { 161674, 162897, 165055, 165220, 167377, 167525, 181333, 184052, 184055, 172666, 184058, 185309, 185304, 186966, 186869, 192412, 192298, 204164, 205779, 205711, 205779, 205711 },
+        items = { 161674, 162897, 165055, 165220, 167377, 167525, 181333, 184052, 184055, 172666, 184058, 185309, 185304, 186966, 186869, 192412, 192298, 204164, 205779, 205711, 205779, 205711, 218422, 218716 },
         toggle = "defensives",
 
         usable = function () return debuff.loss_of_control.up, "requires loss of control effect" end,
@@ -4908,7 +4910,9 @@ do
         { "obsidian_aspirants_badge_of_ferocity", 205778 },
         { "obsidian_gladiator_badge_of_ferocity", 205708 },
         { "verdant_aspirants_badge_of_ferocity", 209763 },
-        { "verdant_gladiators_badge_of_ferocity", 209343 }
+        { "verdant_gladiators_badge_of_ferocity", 209343 },
+        { "forged_aspirants_badge_of_ferocity", 218421 },
+        { "forged_gladiators_badge_of_ferocity", 218713 }
     }
 
     local pvp_badges_copy = {}
@@ -4933,7 +4937,7 @@ do
         cooldown = 120,
         gcd = "off",
 
-        items = { 162966, 161902, 165223, 165058, 167528, 167380, 172849, 172669, 175884, 175921, 185161, 185197, 186906, 186866, 192352, 192295, 201449, 201807, 205778, 205708, 209763, 209343 },
+        items = { 162966, 161902, 165223, 165058, 167528, 167380, 172849, 172669, 175884, 175921, 185161, 185197, 186906, 186866, 192352, 192295, 201449, 201807, 205778, 205708, 209763, 209343, 218421, 218713 },
         texture = 135884,
 
         toggle = "cooldowns",
