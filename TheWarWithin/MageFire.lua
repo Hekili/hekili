@@ -296,6 +296,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 3
     },
+    excess_fire = {
+        id = 438624,
+        duration = 30,
+        max_stack = 1
+    },
     excess_frost = {
         id = 438611,
         duration = 30,
@@ -325,6 +330,11 @@ spec:RegisterAuras( {
         duration = 3600,
         type = "Magic",
         max_stack = 1
+    },
+    fire_mastery = {
+        id = 431040,
+        duration = 14,
+        max_stack = 6
     },
     firefall = {
         id = 384035,
@@ -392,12 +402,22 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1
     },
+    frost_mastery = {
+        id = 431039,
+        duration = 14,
+        max_stack = 6
+    },
     -- Frozen in place.
     -- https://wowhead.com/beta/spell=122
     frost_nova = {
         id = 122,
         duration = function() return talent.improved_frost_nova.enabled and 8 or 6 end,
         type = "Magic",
+        max_stack = 1
+    },
+    frostfire_bolt = {
+        id = 431044,
+        duration = 8,
         max_stack = 1
     },
     frostfire_empowerment = {
@@ -854,9 +874,24 @@ spec:RegisterHook( "reset_precast", function ()
 end )
 
 spec:RegisterHook( "runHandler", function( action )
+    local ability = class.abilities[ action ]
+
     if buff.ice_floes.up then
-        local ability = class.abilities[ action ]
         if ability and ability.cast > 0 and ability.cast < 10 then removeStack( "ice_floes" ) end
+    end
+
+    if talent.frostfire_mastery.enabled and ability then
+        if ability.school == "fire" or ability.school == "frostfire" then
+            if buff.fire_mastery.up then buff.fire_mastery.stack = buff.fire_mastery.stack + 1
+            else applyBuff( "fire_mastery" ) end
+            if talent.excess_fire.enabled and buff.fire_mastery.stack_pct == 100 then applyBufF( "excess_fire" ) end
+        end
+        if ability.school == "frost" or ability.school == "frostfire" then
+            if buff.frost_mastery.up then buff.frost_mastery.stack = buff.frost_mastery.stack + 1
+            else applyBuff( "frost_mastery" ) end
+            if talent.excess_frost.enabled and buff.frost_mastery.stack_pct == 100 then applyBufF( "excess_frost" ) end
+        end
+
     end
 end )
 
@@ -1268,6 +1303,11 @@ spec:RegisterAbilities( {
             hot_streak( true )
             applyDebuff( "target", "ignite" )
 
+            if buff.excess_fire.up then
+                applyDebuff( "target", "living_bomb" )
+                removeBuff( "excess_fire" )
+            end
+
             if buff.lit_fuse.up then
                 removeBuff( "lit_fuse" )
                 active_dot.living_bomb = min( active_dot.living_bomb + ( talent.blast_zone.enabled and 3 or 1 ), true_active_enemies )
@@ -1298,8 +1338,9 @@ spec:RegisterAbilities( {
 
     -- Throws a fiery ball that causes 749 Fire damage. Each time your Fireball fails to critically strike a target, it gains a stacking 10% increased critical strike chance. Effect ends when Fireball critically strikes.
     fireball = {
-        id = 133,
+        id = function() return talent.frostfire_bolt.enabled and 431044 or 133 end,
         cast = function() 
+            if buff.frostfire_empowerment.up then return 0 end
             return 2.25 * ( buff.flame_accelerant.up and 0.6 or 1 ) * haste
         end,
         cooldown = 0,
@@ -1310,6 +1351,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
+        notalent = "frostfire_bolt",
         velocity = 45,
 
         usable = function ()
@@ -1319,6 +1361,14 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "molten_skyfall_ready" )
+
+            if buff.frostfire_empowerment.up then
+                applyBuff( "frost_mastery", nil, 6 )
+                if talent.excess_frost.enabled then applyBuff( "excess_frost" ) end
+                applyBuff( "fire_mastery", nil, 6 )
+                if talent.excess_fire.enabled then applyBuff( "excess_fire" ) end
+                removeBuff( "frostfire_empowerment" )
+            end
 
             if buff.flame_accelerant.up and ( hardcast or cast_time > 0 ) then
                 removeBuff( "flame_accelerant" )
@@ -1374,6 +1424,8 @@ spec:RegisterAbilities( {
 
             applyDebuff( "target", "ignite" )
         end,
+
+        copy = { 133, "frostfire_bolt", 431044 }
     },
 
     -- Talent: Calls down a pillar of fire, burning all enemies within the area for 526 Fire damage and reducing their movement speed by 20% for 8 sec.

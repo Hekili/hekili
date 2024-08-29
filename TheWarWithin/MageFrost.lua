@@ -1095,11 +1095,14 @@ spec:RegisterAbilities( {
 
     -- Launches a bolt of frost at the enemy, causing 890 Frost damage and slowing movement speed by 60% for 8 sec.
     frostbolt = {
-        id = 116,
-        cast = function () return 2 * ( 1 - 0.04 * buff.slick_ice.stack ) * haste end,
+        id = function() return talent.frostfire_bolt.enabled and 431044 or 116 end,
+        cast = function ()
+            if buff.frostfire_empowerment.up then return 0 end
+            return 2 * ( 1 - 0.04 * buff.slick_ice.stack ) * haste
+        end,
         cooldown = 0,
         gcd = "spell",
-        school = "frost",
+        school = function() return talent.frostfire_bolt.enabled and "frostfire" or "frost" end,
 
         spend = 0.02,
         spendType = "mana",
@@ -1114,6 +1117,15 @@ spec:RegisterAbilities( {
 
         handler = function ()
             addStack( "icicles" )
+
+            if buff.frostfire_empowerment.up then
+                applyBuff( "frost_mastery", nil, 6 )
+                if talent.excess_frost.enabled then applyBuff( "excess_frost" ) end
+                applyBuff( "fire_mastery", nil, 6 )
+                if talent.excess_fire.enabled then applyBuff( "excess_fire" ) end
+                removeBuff( "frostfire_empowerment" )
+            end
+
             if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
                 applyBuff( "glacial_spike_usable" )
             end
@@ -1157,7 +1169,7 @@ spec:RegisterAbilities( {
             end ]]
         end,
 
-        copy = 228597
+        copy = { 116, 228597, "frostfire_bolt", 431044 }
     },
 
     -- Launches an orb of swirling ice up to 40 yards forward which deals up to 5,687 Frost damage to all enemies it passes through. Deals reduced damage beyond 8 targets. Grants 1 charge of Fingers of Frost when it first damages an enemy. While Frozen Orb is active, you gain Fingers of Frost every 2 sec. Enemies damaged by the Frozen Orb are slowed by 40% for 3 sec.
@@ -1286,6 +1298,11 @@ spec:RegisterAbilities( {
 
         start = function ()
             applyDebuff( "target", "chilled" )
+
+            if buff.excess_frost.up then
+                applyDebuff( "target", "living_bomb" )
+                removeBuff( "excess_frost" )
+            end
 
             if buff.fingers_of_frost.up or debuff.frozen.up then
                 if talent.chain_reaction.enabled then addStack( "chain_reaction" ) end
