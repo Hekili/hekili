@@ -1,5 +1,6 @@
 actions.precombat+=/power_word_fortitude
 
+actions+=/call_action_list,name=cooldowns
 # Always use HF if we have empyreal blaze (dot extension) or harmonious apparatus (cd reduction) or if it's not currently ticking. Otherwise, only use when refreshable to be sure we get the longest duration possible. It's worth it to cast even when the target will die soon based on just the initial hit damage. We also don't want to cast immediately once empyreal blaze is up when we are prepping divine word
 actions+=/holy_fire,cycle_targets=1,if=(talent.empyreal_blaze|talent.harmonious_apparatus|!ticking|refreshable)&!(buff.empyreal_blaze.up&(cooldown.divine_word.up|buff.divine_word.up)&cooldown.holy_word_chastise.up)
 # Don't cast SW:P during apotheosis or divine favor: chastise. We also don't cycle targets because it isn't worth the GCDs, since Smite deals slightly more damage than a full SW:P.
