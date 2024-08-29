@@ -1016,7 +1016,7 @@ spec:RegisterAbilities( {
     },
 
     smite = {
-        id = 585,
+        id = function() return state.spec.discipline and talent.void_blast.enabled and buff.entropic_void.up and 450983 or 585 end,
         cast = 1.5,
         cooldown = 0,
         gcd = "spell",
@@ -1027,7 +1027,6 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-        texture = 135924,
 
         handler = function ()
             if talent.train_of_thought.enabled then
@@ -1043,6 +1042,8 @@ spec:RegisterAbilities( {
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
             end
         end,
+
+        copy = { 585, "void_blast", 450405, 450983 }
     },
 
     -- Ascend into the air and unleash a massive barrage of Penance bolts, causing $<penancedamage> Holy damage to enemies or $<penancehealing> healing to allies over $421434d.; While ascended, gain a shield for $s1% of your health. In addition, you are unaffected by knockbacks or crowd control effects.
