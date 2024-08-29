@@ -991,6 +991,8 @@ spec:RegisterHook( "reset_precast", function ()
         SUMMON_DEMON_TEXT = summon_demon and summon_demon.name or "Summon Demon"
         class.abilityList.summon_pet = "|T136082:0|t |cff00ccff[" .. SUMMON_DEMON_TEXT .. "]|r"
     end
+
+    class.abilities.summon_pet = class.abilities[ settings.default_pet or "summon_sayaad" ]
 end )
 
 
