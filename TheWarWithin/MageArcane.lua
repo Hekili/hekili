@@ -393,6 +393,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
+    gravity_lapse = {
+        id = 449700,
+        duration = 3,
+        max_stack = 1
+    },
     high_voltage = {
         id = 461525,
         duration = 3600,
@@ -2015,9 +2020,9 @@ spec:RegisterAbilities( {
 
     -- Talent: Pulses arcane energy around the target enemy or ally, dealing 748 Arcane damage to all enemies within 8 yards, and knocking them upward. A primary enemy target will take 100% increased damage.
     supernova = {
-        id = 157980,
+        id = function() return talent.gravity_lapse.enabled and 449700 or 157980 end,
         cast = 0,
-        cooldown = 45,
+        cooldown = function() return talent.gravity_lapse.enabled and 30 or 45 end,
         gcd = "spell",
         school = "arcane",
 
@@ -2025,8 +2030,15 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
+            if talent.gravity_lapse.enabled then
+                applyDebuff( "target", "gravity_lapse" )
+                return
+            end
+
             applyDebuff( "target", "supernova" )
         end,
+
+        copy = { 157980, "gravity_lapse", 449700 }
     },
 
 
