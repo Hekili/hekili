@@ -242,6 +242,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 2
     },
+    tidecallers_guard = {
+        id = 457493,
+        duration = 3600,
+        max_stack = 1,
+        copy = 457496
+    },
     unleash_life = {
         id = 73685,
         duration = 10,
@@ -322,10 +328,13 @@ spec:RegisterStateExpr( "recall_totem_2", function()
 end )
 
 spec:RegisterHook( "reset_precast", function ()
-    local mh, _, _, mh_enchant = GetWeaponEnchantInfo()
+    local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
 
     if mh and mh_enchant == 6498 then applyBuff( "earthliving_weapon" ) end
     if buff.earthliving_weapon.down and ( now - action.earthliving_weapon.lastCast < 1 ) then applyBuff( "earthliving_weapon" ) end
+
+    if oh and oh_enchant == 7528 then applyBuff( "tidecallers_guard" ) end
+    if buff.tidecallers_guard.down and action.tidecallers_guard.time_since < 1 then applyBuff( "tidecallers_guard" ) end
 
     recall_totem_1 = nil
     recall_totem_2 = nil
@@ -897,6 +906,22 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "spirit_link_totem" )
+        end,
+    },
+
+    tidecallers_guard = {
+        id = 457481,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+
+        startsCombat = false,
+        talent = "supportive_imbuements",
+        nobuff = "tidecallers_guard",
+        equipped = "shield",
+
+        handler = function ()
+            applyBuff( "tidecallers_guard" )
         end,
     },
 	
