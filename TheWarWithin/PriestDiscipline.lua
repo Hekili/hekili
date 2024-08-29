@@ -830,6 +830,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "holy",
 
+        toggle = "cooldowns",
         talent = "power_infusion",
         startsCombat = false,
         indicator = function () return group and ( talent.twins_of_the_sun_priestess.enabled or legendary.twins_of_the_sun_priestess.enabled ) and "cycle" or nil end,
