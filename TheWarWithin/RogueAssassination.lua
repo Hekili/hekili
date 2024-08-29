@@ -831,8 +831,8 @@ spec:RegisterHook( "runHandler", function( ability )
         end
     end
 
-    if buff.cold_blood.up and ( not a or a.startsCombat ) then
-        removeBuff( "cold_blood" )
+    if buff.cold_blood.up and ( ability == "envenom" or not talent.inevitability.enabled ) and ( not a or a.startsCombat ) then
+        removeStack( "cold_blood" )
     end
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
@@ -968,7 +968,7 @@ spec:RegisterAuras( {
     cold_blood = {
         id = 382245,
         duration = 3600,
-        max_stack = 1,
+        max_stack = function() return talent.inevitability.enabled and 2 or 1 end,
         onRemove = function()
             setCooldown( "cold_blood", action.cold_blood.cooldown )
         end,
@@ -1744,7 +1744,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return 6 end
-            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
+            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 )
         end,
 
         handler = function ()
@@ -1858,7 +1858,7 @@ spec:RegisterAbilities( {
 
         nodebuff = "cheap_shot",
 
-        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 ) end,
 
         handler = function ()
             applyDebuff( "target", "cheap_shot", 4 )
@@ -1910,7 +1910,7 @@ spec:RegisterAbilities( {
         readyTime = function() return gcd.remains end,
 
         handler = function ()
-            applyBuff( "cold_blood" )
+            applyBuff( "cold_blood", nil, talent.inevitability.enabled and 2 or nil )
         end,
     },
 
@@ -2052,7 +2052,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         toggle = "cooldowns",
 
-        cp_gain = function () return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) end,
+        cp_gain = function () return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 ) end,
 
         handler = function ()
             -- Can't predict the Animacharge, unless you have the talent/legendary.
@@ -2280,7 +2280,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return combo_points.max end
-            return 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 )
+            return 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 )
         end,
 
         handler = function ()
@@ -2619,7 +2619,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function()
             if buff.shadow_blades.up then return 7 end
-            return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
+            return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
         end,
 
         handler = function ()
