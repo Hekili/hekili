@@ -75,7 +75,7 @@ actions.default_aoe+=/chi_burst,if=!buff.ordered_elements.up
 actions.default_aoe+=/chi_burst
 actions.default_aoe+=/spinning_crane_kick,if=combo_strike&buff.ordered_elements.up&talent.hit_combo&spinning_crane_kick.max
 actions.default_aoe+=/blackout_kick,cycle_targets=1,if=buff.ordered_elements.up&!talent.hit_combo&cooldown.fists_of_fury.remains
-actions.default_aoe+=/tiger_palm,if=prev.tiger_palm&chi<3&!cooldown.fists_of_fury.remains
+actions.default_aoe+=/tiger_palm,if=!combo_strike&chi<3&!cooldown.fists_of_fury.remains
 
 # 2-4 targets
 actions.default_cleave+=/rising_sun_kick,cycle_targets=1,if=buff.pressure_point.up&active_enemies<4&cooldown.fists_of_fury.remains>4
@@ -116,7 +116,7 @@ actions.default_cleave+=/tiger_palm,cycle_targets=1,if=combo_strike&buff.ordered
 actions.default_cleave+=/chi_burst
 actions.default_cleave+=/spinning_crane_kick,if=combo_strike&buff.ordered_elements.up&talent.hit_combo
 actions.default_cleave+=/blackout_kick,cycle_targets=1,if=buff.ordered_elements.up&!talent.hit_combo&cooldown.fists_of_fury.remains
-actions.default_cleave+=/tiger_palm,if=prev.tiger_palm&chi<3&!cooldown.fists_of_fury.remains
+actions.default_cleave+=/tiger_palm,if=!combo_strike&chi<3&!cooldown.fists_of_fury.remains
 
 # 1 target
 actions.default_st+=/rising_sun_kick,if=buff.pressure_point.up|buff.ordered_elements.remains<=gcd.max*3&buff.storm_earth_and_fire.up
