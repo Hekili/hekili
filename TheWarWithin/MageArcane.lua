@@ -668,7 +668,18 @@ spec:RegisterAuras( {
         id = 348007,
         duration = 8,
         max_stack = 1
+    },
+
+    -- Sunfury
+	-- Spellfire Spheres actual buff
+	-- Spellfire Spheres has two diffrent counter. 449400 for create a Sphere, 448604 is Sphere number
+	-- https://www.wowhead.com/spell=449400/spellfire-spheres
+    spellfire_spheres = {
+        id = 449400,
+        duration = 30,
+        max_stack = 6,
     }
+	
 } )
 
 
