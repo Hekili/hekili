@@ -882,6 +882,9 @@ spec:RegisterStateExpr( "hpg_to_2dawn", function()
     return max( -1, 6 - hpg_used - ( buff.blessing_of_dawn.stack * 3 ) )
 end )
 
+rawset( state, "holy_bulwark", "holy_bulwark" )
+rawset( state, "sacred_weapon", "sacred_weapon" )
+
 spec:RegisterHook( "reset_precast", function ()
     last_consecration = nil
     last_blessed_hammer = nil
