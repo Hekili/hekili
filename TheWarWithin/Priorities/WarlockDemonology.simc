@@ -1,24 +1,41 @@
 actions.precombat+=/fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet,if=!pet.alive&!buff.grimoire_of_sacrifice.up
+# Sets the expected Tyrant Setup on pull to take a total 12 seconds long
 actions.precombat+=/variable,name=first_tyrant_time,op=set,value=12
+# Accounts for the execution time of Grimoire Felguard in the setup of Tyrant on Pull
 actions.precombat+=/variable,name=first_tyrant_time,op=add,value=action.grimoire_felguard.execute_time,if=talent.grimoire_felguard.enabled
+# Accounts for the execution time of Vilefiend in the the setup of Tyrant on Pull
 actions.precombat+=/variable,name=first_tyrant_time,op=add,value=action.summon_vilefiend.execute_time,if=talent.summon_vilefiend.enabled
+# Accounts for the execution time of both Grimoire Felguard and Vilefiend in the tyrant Setup on Pull
 actions.precombat+=/variable,name=first_tyrant_time,op=add,value=gcd.max,if=talent.grimoire_felguard.enabled|talent.summon_vilefiend.enabled
+# Accounts for Tyrant own Cast Time and an additional Shadowbolt cast time
 actions.precombat+=/variable,name=first_tyrant_time,op=sub,value=action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time
+# Sets an absolute minimun of 10s for the First Tyrant Setup
 actions.precombat+=/variable,name=first_tyrant_time,op=min,value=10
-actions.precombat+=/variable,name=in_opener,op=set,value=time<variable.first_tyrant_time&!pet.demonic_tyrant.active
+actions.precombat+=/variable,name=in_opener,op=set,value=1
+# Defines if the the Trinket 1 is a buff Trinket in the trinket logic
 actions.precombat+=/variable,name=trinket_1_buffs,value=trinket.1.has_use_buff
+# Defines if the the Trinket 2 is a buff Trinket in the trinket logic
 actions.precombat+=/variable,name=trinket_2_buffs,value=trinket.2.has_use_buff
+# For On Use Trinkets on slot 1 with on use effects you dont want to use in combat
 actions.precombat+=/variable,name=trinket_1_exclude,value=trinket.1.is.ruby_whelp_shell
+# For On Use Trinkets on slot 2 with on use effects you dont want to use in combat
 actions.precombat+=/variable,name=trinket_2_exclude,value=trinket.2.is.ruby_whelp_shell
+# Sets a specific Trinkets in Slot 1 to follow an APL line and not the automatic logic
 actions.precombat+=/variable,name=trinket_1_manual,value=trinket.1.is.spymasters_web|trinket.1.is.imperfect_ascendancy_serum
+# Sets a specific Trinkets in Slot 2 to follow an APL line and not the automatic logic
 actions.precombat+=/variable,name=trinket_2_manual,value=trinket.2.is.spymasters_web|trinket.2.is.imperfect_ascendancy_serum
+# Defines the Duration of the buff or an expected time for value of the trinket
 actions.precombat+=/variable,name=trinket_1_buff_duration,value=trinket.1.proc.any_dps.duration+(trinket.1.is.mirror_of_fractured_tomorrows*20)
+# Defines the Duration of the buff or an expected time for value of the trinket
 actions.precombat+=/variable,name=trinket_2_buff_duration,value=trinket.2.proc.any_dps.duration+(trinket.2.is.mirror_of_fractured_tomorrows*20)
+# Trinket Automatic Logic for Trinket 1
 actions.precombat+=/variable,name=trinket_1_sync,op=setif,value=1,value_else=0.5,condition=variable.trinket_1_buffs&(trinket.1.cooldown.duration%%cooldown.summon_demonic_tyrant.duration=0|cooldown.summon_demonic_tyrant.duration%%trinket.1.cooldown.duration=0)
+# Trinket Automatic Logic for Trinket 2
 actions.precombat+=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5,condition=variable.trinket_2_buffs&(trinket.2.cooldown.duration%%cooldown.summon_demonic_tyrant.duration=0|cooldown.summon_demonic_tyrant.duration%%trinket.2.cooldown.duration=0)
+# Automatic Logic in case of 2 Buff Trinkets
 actions.precombat+=/variable,name=damage_trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&!variable.trinket_2_buffs&trinket.2.ilvl>trinket.1.ilvl
-actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&variable.trinket_2_buffs|variable.trinket_2_buffs&((trinket.2.cooldown.duration%variable.trinket_2_buff_duration)*(1.5+trinket.2.has_buff.intellect)*(variable.trinket_2_sync)*(1-0.5*trinket.2.is.mirror_of_fractured_tomorrows))>(((trinket.1.cooldown.duration%variable.trinket_1_buff_duration)*(1.5+trinket.1.has_buff.intellect)*(variable.trinket_1_sync)*(1-0.5*trinket.1.is.mirror_of_fractured_tomorrows))*(1+((trinket.1.ilvl-trinket.2.ilvl)%100)))
+actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&variable.trinket_2_buffs|variable.trinket_2_buffs&((trinket.2.cooldown.duration%variable.trinket_2_buff_duration)*(1.5+trinket.2.has_buff.intellect)*(variable.trinket_2_sync))>(((trinket.1.cooldown.duration%variable.trinket_1_buff_duration)*(1.5+trinket.1.has_buff.intellect)*(variable.trinket_1_sync))*(1+((trinket.1.ilvl-trinket.2.ilvl)%100)))
 actions.precombat+=/power_siphon
 actions.precombat+=/demonbolt,if=!buff.power_siphon.up
 actions.precombat+=/shadow_bolt
@@ -120,22 +137,21 @@ actions.tyrant+=/infernal_bolt
 
 actions.variables+=/variable,name=next_tyrant_cd,op=set,value=cooldown.summon_demonic_tyrant.remains_expected
 actions.variables+=/variable,name=in_opener,op=set,value=0,if=pet.demonic_tyrant.active
+# Sets an expected duration of valid Wild Imps on a tyrant Setup for the sake of casting Tyrant before expiration of Imps
 actions.variables+=/variable,name=imp_despawn,op=set,value=2*spell_haste*6+0.58+time,if=prev_gcd.1.hand_of_guldan&buff.dreadstalkers.up&cooldown.summon_demonic_tyrant.remains<13&variable.imp_despawn=0
+# Checks the Wild Imps in a Tyrant Setup alongside Dreadstalkers for the sake of casting Tyrant before Expiration Dreadstalkers or Imps
 actions.variables+=/variable,name=imp_despawn,op=set,value=(variable.imp_despawn>?buff.dreadstalkers.remains+time),if=variable.imp_despawn
+# Checks The Wild Imps in a Tyrant Setup alongside Grimoire Felguard for the sake of casting Tyrant before Expiration of Grimoire Felguard or Imps
 actions.variables+=/variable,name=imp_despawn,op=set,value=variable.imp_despawn>?buff.grimoire_felguard.remains+time,if=variable.imp_despawn&buff.grimoire_felguard.up
 actions.variables+=/variable,name=imp_despawn,op=set,value=0,if=buff.tyrant.up
-actions.variables+=/variable,name=buff_sync_cd,op=set,value=variable.next_tyrant_cd,if=!variable.in_opener
-actions.variables+=/variable,name=buff_sync_cd,op=set,value=12,if=!pet.dreadstalker.active
-actions.variables+=/variable,name=buff_sync_cd,op=set,value=0,if=variable.in_opener&pet.dreadstalker.active&buff.wild_imps.stack>0&!talent.summon_vilefiend.enabled
-actions.variables+=/variable,name=buff_sync_cd,op=set,value=0,if=variable.in_opener&pet.dreadstalker.active&prev_gcd.1.hand_of_guldan&talent.summon_vilefiend.enabled
+# Defines the viability of Implosion when Tyrant is down
 actions.variables+=/variable,name=impl,op=set,value=buff.tyrant.down,if=active_enemies>1+(talent.sacrificed_souls.enabled)
+# Defines the Viability of Implosion while Tyrant is Up
 actions.variables+=/variable,name=impl,op=set,value=buff.tyrant.remains<6,if=active_enemies>2+(talent.sacrificed_souls.enabled)&active_enemies<5+(talent.sacrificed_souls.enabled)
+# Defines the Viability of Implosion while Tyrant is Up
 actions.variables+=/variable,name=impl,op=set,value=buff.tyrant.remains<8,if=active_enemies>4+(talent.sacrificed_souls.enabled)
+# Restricts Demonic Core usage for the sake of having 2 or more Demonic Cores on Tyrant Setup
 actions.variables+=/variable,name=pool_cores_for_tyrant,op=set,value=cooldown.summon_demonic_tyrant.remains<20&variable.next_tyrant_cd<20&(buff.demonic_core.stack<=2|!buff.demonic_core.up)&cooldown.summon_vilefiend.remains<gcd.max*8&cooldown.call_dreadstalkers.remains<gcd.max*8
-actions.variables+=/variable,name=hogshard,value=3,if=soul_shard>=3
-actions.variables+=/variable,name=hogshard,value=soul_shard,if=soul_shard<3
-actions.variables+=/variable,name=all_pets,op=set,value=buff.wild_imps.stack>10&prev_gcd.1.hand_of_guldan&buff.vilefiend.up&buff.dreadstalkers.up
 actions.variables+=/variable,name=diabolic_ritual_remains,value=buff.diabolic_ritual_mother_of_chaos.remains,if=buff.diabolic_ritual_mother_of_chaos.up
 actions.variables+=/variable,name=diabolic_ritual_remains,value=buff.diabolic_ritual_overlord.remains,if=buff.diabolic_ritual_overlord.up
 actions.variables+=/variable,name=diabolic_ritual_remains,value=buff.diabolic_ritual_pit_lord.remains,if=buff.diabolic_ritual_pit_lord.up
-actions.variables+=/variable,name=demonic_art_up,value=buff.demonic_art_pit_lord.up|buff.demonic_art_overlord.up|buff.demonic_art_mother_of_chaos.up,if=talent.diabolic_ritual,default=0,op=set
