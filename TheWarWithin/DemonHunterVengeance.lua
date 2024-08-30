@@ -1086,7 +1086,10 @@ spec:RegisterAbilities( {
 
     -- Talent: Unleash the fel within you, damaging enemies directly in front of you for ${$212105s1*(2/$t1)} Fire damage over $d.$?s320639[ Causing damage also heals you for up to ${$212106s1*(2/$t1)} health.][]
     fel_devastation = {
-        id = 212084,
+		id = function ()
+			if talent.demonic_intensity.enabled and buff.metamorphosis.up then return 452486 end
+			return 212084
+		end,
         cast = 0,
         channeled = true,
         cooldown = 40,
@@ -1118,7 +1121,7 @@ spec:RegisterAbilities( {
             end
         end,
 
-        copy = "fel_desolation"
+        copy = { "fel_desolation", 452486, 212084 }
     },
 
     -- Talent: Charge to your target and deal $213243sw2 $@spelldesc395020 damage.    $?s203513[Shear has a chance to reset the cooldown of Felblade.    |cFFFFFFFFGenerates $213243s3 Fury.|r]?a203555[Demon Blades has a chance to reset the cooldown of Felblade.    |cFFFFFFFFGenerates $213243s3 Fury.|r][Demon's Bite has a chance to reset the cooldown of Felblade.    |cFFFFFFFFGenerates $213243s3 Fury.|r]
@@ -1537,7 +1540,10 @@ spec:RegisterAbilities( {
 
     -- Viciously strike up to $228478s2 enemies in front of you for $228478s1 Physical damage and heal yourself for $s4.    Consumes up to $s3 available Soul Fragments$?s321021[ and heals you for an additional $s5 for each Soul Fragment consumed][].
     soul_cleave = {
-        id = 228477,
+		id = function ()
+			if talent.demonsurge.enabled and buff.metamorphosis.up then return 452436 end
+			return 228477
+		end,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1572,7 +1578,7 @@ spec:RegisterAbilities( {
             if legendary.fiery_soul.enabled then reduceCooldown( "fiery_brand", 2 * min( 2, buff.soul_fragments.stack ) ) end
         end,
 
-        copy = "soul_sunder"
+        copy = { "soul_sunder", 452436, 228477 }
     },
 
     -- Allows you to see enemies and treasures through physical barriers, as well as enemies that are stealthed and invisible. Lasts $d.    Attacking or taking damage disrupts the sight.
@@ -1592,7 +1598,10 @@ spec:RegisterAbilities( {
 
     -- Talent: Consume up to $s2 available Soul Fragments then explode, damaging nearby enemies for $247455s1 Fire damage per fragment consumed, and afflicting them with Frailty for $247456d, causing you to heal for $247456s1% of damage you deal to them. Deals reduced damage beyond $s3 targets.
     spirit_bomb = {
-        id = 247454,
+		id = function ()
+			if talent.demonsurge.enabled and buff.metamorphosis.up then return 452437 end
+			return 247454
+		end,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1624,7 +1633,7 @@ spec:RegisterAbilities( {
             buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 5 )
         end,
 
-        copy = "spirit_burst"
+        copy = { "spirit_burst", 452437, 247454 }
     },
 
 
