@@ -351,6 +351,11 @@ spec:RegisterAuras( {
         duration = 180,
         max_stack = 999
     },
+    fierce_followthrough = {
+        id = 458689,
+        duration = 12,
+        max_stack = 1
+    },
     hamstring = {
         id = 1715,
         duration = 15,
@@ -364,6 +369,11 @@ spec:RegisterAuras( {
     },
     improved_overpower = {
         id = 385571,
+    },
+    imminent_demise = {
+        id = 445606,
+        duration = 60,
+        max_stack = 3
     },
     ignore_pain = {
         id = 190456,
@@ -384,6 +394,11 @@ spec:RegisterAuras( {
         id = function () return talent.menace.enabled and 316593 or 5246 end,
         duration = function () return talent.menace.enabled and 15 or 8 end,
         max_stack = 1
+    },
+    marked_for_execution = {
+        id = 445584,
+        duration = 30,
+        max_stack = 3,
     },
     merciless_bonegrinder = {
         id = 383316,
@@ -410,6 +425,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = function() return talent.martial_prowess.enabled and 2 or 1 end,
         copy = "martial_prowess"
+    },
+    overwhelmed = {
+        id = 445836,
+        duration = 20,
+        max_stack = 12
     },
     piercing_howl = {
         id = 12323,
@@ -583,25 +603,74 @@ end )
 
 local last_cs_target = nil
 local collateralDmgStacks = 0
+local slayer_strike_for_sudden_death_count = 0
+local marked_for_execution_stacks = {}
+local marked_for_execution_virtual = {}
+local overwhelmed_stacks = {}
+local overwhelmed_virtual = {}
+
+--Procs to track and handle
+local sudden_death_via_slayer_strike_proc = 0
+local tactician_proc = 0
+local fierce_followthrough_proc = 0
+
+local RAGE = Enum.PowerType.Rage
+local lastRage = -1
+local cs_actual
 
 local TriggerCollateralDamage = setfenv( function()
     addStack( "collateral_damage", nil, collateralDmgStacks )
     collateralDmgStacks = 0
 end, state )
 
-spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical_swing, _, _, critical_spell )
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, amount, _, critical_swing, _, _, critical_spell )
     if sourceGUID == state.GUID then
-        if subtype == "SPELL_CAST_SUCCESS" then
-            if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
+        local ability = class.abilities[ spellID ]
+        if ability then
+            if subtype == "SPELL_CAST_SUCCESS" and ( ability.key == "warbreaker" or ability.key == "colossus_smash" ) then
                 last_cs_target = destGUID
+            elseif subtype == "SPELL_DAMAGE" and ability.key == "bladestorm" and state.talent.overwhelming_blades.enabled then --bladestorm hit something
+                overwhelmed_stacks[ destGUID ] = min( ( overwhelmed_stacks[ destGUID ] or 0 ) + 1, 12 ) -- max 12 stacks of overwhelmed
+                return
+            elseif subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID and ability.key == "mortal_strike" and critical_spell and state.talent.fierce_followthrough.enabled then --mortal strike critical hit gives buff
+                fierce_followthrough_proc = 1
+                return
+            end
+        else
+            if subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID and spellID == 445579 then -- Slayer's Strike occured against primary target
+                slayer_strike_for_sudden_death_count = slayer_strike_for_sudden_death_count + 1
+                if ( slayer_strike_for_sudden_death_count == 3 ) then
+                    slayer_strike_for_sudden_death_count = 0
+                    sudden_death_via_slayer_strike_proc = 1
+                end
+                marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1 , 3 ) -- Max 3 stacks
+                return
+            elseif subtype == "SPELL_AURA_APPLIED" and spellID == 445836 then -- Reap the Storm triggered first time
+                overwhelmed_stacks[ destGUID ] = 1
+                return
+            elseif subtype == "SPELL_AURA_APPLIED_DOSE" and spellID == 445836 then -- Reap the Storm triggered 2nd or more stack
+                overwhelmed_stacks[ destGUID ] = min( amount, 12 ) -- max 12 stacks of overwhelmed
+                return
+            
+            elseif subtype == "SPELL_AURA_APPLIED" and spellID == 199854 then -- Tactician
+                tactician_proc = 1
+                return
             end
         end
     end
 end )
 
+local wipe = table.wipe
 
-local RAGE = Enum.PowerType.Rage
-local lastRage = -1
+spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
+    wipe( marked_for_execution_stacks )
+    wipe( overwhelmed_stacks )
+end )
+
+spec:RegisterHook( "UNIT_ELIMINATED", function( id )
+    marked_for_execution_stacks[ id ] = nil
+    overwhelmed_stacks[ id ] = nil
+end )
 
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "RAGE" then
@@ -630,7 +699,6 @@ spec:RegisterHook( "TimeToReady", function( wait, action )
     return wait
 end )
 
-local cs_actual
 
 local ExpireBladestorm = setfenv( function()
     applyBuff( "merciless_bonegrinder" )
@@ -669,6 +737,42 @@ spec:RegisterHook( "reset_precast", function ()
     if talent.collateral_damage.enabled and buff.sweeping_strikes.up then
         state:QueueAuraExpiration( "sweeping_strikes_collateral_dmg", TriggerCollateralDamage, buff.sweeping_strikes.expires )
     end
+
+    for k, v in pairs( marked_for_execution_stacks ) do
+        marked_for_execution_virtual[ k ] = v
+
+        if k == target.unit then
+            applyDebuff( "target", "marked_for_execution", nil, v )
+        else
+            active_dot.marked_for_execution = active_dot.marked_for_execution + 1
+        end
+    end
+
+    for k, v in pairs( overwhelmed_stacks ) do
+        overwhelmed_virtual[ k ] = v
+
+        if k == target.unit then
+            applyDebuff( "target", "overwhelmed", nil, v )
+        else
+            active_dot.overwhelmed = active_dot.overwhelmed + 1
+        end
+    end
+
+    if tactician_proc == 1 then
+        gainCharges( "overpower", 1 )
+        if talent.opportunist.enabled then applyBuff( "opportunist" ) end
+        tactician_proc = 0
+    end
+
+    if sudden_death_via_slayer_strike_proc == 1 then
+        applyBuff( "sudden_death" )
+        sudden_death_via_slayer_strike_proc = 0
+    end
+
+    if fierce_followthrough_proc == 1 then
+        applyBuff( "fierce_followthrough" )
+    end
+
 end )
 
 spec:RegisterStateExpr( "cycle_for_execute", function ()
@@ -705,6 +809,19 @@ spec:RegisterAura( "finishing_wound", {
     id = 426284,
     duration = 5,
     max_stack = 1
+} )
+
+spec:RegisterGear( "tier32", 211987, 211985, 211984, 211983, 211982 )
+spec:RegisterSetBonuses( "tier32_2pc", 453636, "tier32_4pc", 453637 )
+spec:RegisterAura( "overpowering_might", {
+    id = 455483,
+    duration = 12,
+    max_stack = 1
+})
+spec:RegisterAura( "lethal_blows", {
+    id = 455485,
+    duration = 12,
+    max_stack = 2
 } )
 
 -- Abilities
@@ -847,6 +964,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            removeBuff( "imminent_demise" )
             applyBuff( "bladestorm" )
             setCooldown( "global_cooldown", class.auras.bladestorm.duration )
             if talent.blademasters_torment.enabled then applyBuff( "avatar", 4 ) end
@@ -1043,6 +1161,13 @@ spec:RegisterAbilities( {
             return rage.time_to_20
         end,
         handler = function ()
+            if marked_for_execution_virtual[ target.unit ] then
+                if tonumber(marked_for_execution_virtual[ target.unit ]) > 0 then
+                    reduceCooldown( "bladestorm", 5 * debuff.marked_for_execution.stacks )
+                    applyDebuff( "target", "overwhelmed", 2 * debuff.marked_for_execution.stacks )
+                    removeDebuff( "target" , "marked_for_execution" )
+                end
+            end
             if not buff.sudden_death.up and not buff.stone_heart.up then
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
@@ -1054,6 +1179,7 @@ spec:RegisterAbilities( {
                 end
             end
             if buff.sudden_death.up then
+                if talent.imminent_demise.enabled then addStack( "imminent_demise" ) end
                 removeBuff( "sudden_death" )
                 if set_bonus.tier31_4pc > 0 then
                     spec.abilities.thunder_clap.handler()
