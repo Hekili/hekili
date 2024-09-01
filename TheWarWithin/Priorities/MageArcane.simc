@@ -72,7 +72,7 @@ actions.spellslinger+=/presence_of_mind,if=debuff.touch_of_the_magi.remains<=gcd
 ## actions.spellslinger+=/wait,sec=0.05,if=buff.presence_of_mind.up&prev_gcd.1.arcane_blast,line_cd=15
 actions.spellslinger+=/supernova,if=debuff.touch_of_the_magi.remains<=gcd.max&buff.unerring_proficiency.stack=30
 # Always queue Arcane Barrage on the second stack of Nether Precision
-actions.spellslinger+=/arcane_barrage,if=(buff.nether_precision.stack=1&time-action.arcane_blast.last_used<0.015)|(cooldown.touch_of_the_magi.ready)
+actions.spellslinger+=/arcane_barrage,if=(buff.nether_precision.stack=2)|(cooldown.touch_of_the_magi.ready)
 # Missiles if you dont have Nether Precision or if you have 3 stacks to prevent munching, always clip off GCD unless you have Aether Attunement
 actions.spellslinger+=/arcane_missiles,if=(buff.clearcasting.up&buff.nether_precision.down)|buff.clearcasting.stack=3,interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1
 actions.spellslinger+=/arcane_orb,if=buff.arcane_charge.stack<2
