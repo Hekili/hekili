@@ -966,7 +966,7 @@ spec:RegisterAuras( {
     -- Talent: Critical strike chance of your next damaging ability increased by $s1%.
     -- https://wowhead.com/beta/spell=382245
     cold_blood = {
-        id = 382245,
+        id = function() return talent.inevitability.enabled and 456330 or 382245 end,
         duration = 3600,
         max_stack = function() return talent.inevitability.enabled and 2 or 1 end,
         onRemove = function()
