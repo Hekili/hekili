@@ -270,6 +270,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 279793 -- Azerite.
     },
+    harmony_of_the_grove = {
+        id = 428737,
+        duration = 15,
+        max_stack = 1
+    },
     incarnation_tree_of_life = {
         id = 33891,
         duration = 30,
@@ -525,6 +530,7 @@ spec:RegisterAbilities( {
             class.abilities.swiftmend.handler()
             if talent.wild_synthesis.enabled then class.abilities.wild_growth.handler() end
             applyBuff( "grove_guardians" ) -- Just for tracking.
+            if talent.harmony_of_the_grove.enabled then applyBuff( "harmony_of_the_grove" ) end
         end,
     },
 
