@@ -898,6 +898,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "bestial_barrage" )
             removeBuff( "butchers_bone_fragments" )
+            removeStack( "tip_of_the_spear" )
 
             if talent.frenzy_strikes.enabled then
                 gainChargeTime( "wildfire_bomb", min( 5, true_active_enemies ) )
@@ -980,6 +981,25 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Fires an explosive shot at your target. After $t1 sec, the shot will explode, dealing $212680s1 Fire damage to all enemies within $212680A1 yds. Deals reduced damage beyond $s2 targets.
+    explosive_shot = {
+        id = 212431,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+        school = "fire",
+
+        spend = 20,
+        spendType = "focus",
+
+        talent = "explosive_shot",
+        startsCombat = true,
+
+        handler = function()
+            removeStack( "tip_of_the_spear" )
+        end,
+    },
+
     -- You and your pet leap to the target and strike it as one, dealing a total of $<damage> Physical damage.; Tip of the Spear grants an additional $260285s1% damage bonus to Flanking Strike and Flanking Strike generates $s2 stacks of Tip of the Spear.
     flanking_strike = {
         id = 269751,
@@ -1014,6 +1034,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         start = function()
+            removeStack( "tip_of_the_spear" )
+
             if set_bonus.tier31_2pc > 0 then applyBuff( "fury_strikes" ) end
             if set_bonus.tier31_4pc > 0 then applyBuff( "contained_explosion" ) end
         end,
@@ -1120,6 +1142,7 @@ spec:RegisterAbilities( {
         usable = function () return buff.sic_em.up or target.health_pct < 20, "requires sic_em or target health below 20 percent" end,
         handler = function ()
             removeBuff( "sic_em" )
+            removeStack( "tip_of_the_spear" )
         end,
     },
 
@@ -1175,9 +1198,9 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.furious_assault.up then removeBuff( "furious_assault" )
             else removeBuff( "bestial_barrage" ) end
-            -- removeBuff( "tip_of_the_spear" )
             removeDebuff( "target", "latent_poison" )
             removeDebuff( "target", "latent_poison_injection" )
+            removeStack( "tip_of_the_spear" )
 
             if buff.mongoose_fury.down then applyBuff( "mongoose_fury" )
             else
@@ -1225,9 +1248,9 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.furious_assault.up then removeBuff( "furious_assault" )
             else removeBuff( "bestial_barrage" ) end
-            -- removeBuff( "tip_of_the_spear" )
             removeDebuff( "target", "latent_poison" )
             removeDebuff( "target", "latent_poison_injection" )
+            removeStack( "tip_of_the_spear" )
 
             if buff.spearhead.up then
                 applyDebuff( "target", "spearhead_damage" )
@@ -1293,6 +1316,7 @@ spec:RegisterAbilities( {
         start = function ()
             removeBuff( "flame_infusion" )
             removeBuff( "coordinated_assault_empower" )
+            removeStack( "tip_of_the_spear" )
             if buff.contained_explosion.up then
                 removeBuff( "contained_explosion" )
                 gainCharges( 1, "wildfire_bomb" )
