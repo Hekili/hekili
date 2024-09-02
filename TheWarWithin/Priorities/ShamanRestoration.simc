@@ -15,6 +15,7 @@ actions+=/berserking
 actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
+actions+=/surging_totem,if=talent.acid_rain
 actions+=/healing_rain,if=!moving&talent.acid_rain
 actions+=/flame_shock,cycle_targets=1,if=active_enemies<3&refreshable
 # actions+=/primordial_wave
