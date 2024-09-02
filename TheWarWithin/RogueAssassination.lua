@@ -234,7 +234,7 @@ spec:RegisterPvpTalents( {
 
 
 spec:RegisterStateExpr( "cp_max_spend", function ()
-    return min( 6, combo_points.max )
+    return combo_points.max
 end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
