@@ -207,8 +207,8 @@ spec:RegisterAuras( {
     -- Your Healing Rain is currently active.  $?$w1!=0[Magic damage taken reduced by $w1%.][]
     -- https://wowhead.com/beta/spell=73920
     healing_rain = {
-        id = 73920,
-        duration = 10,
+        id = function() return talent.surging_totem.enabled and 456366 or 73920 end,
+        duration = function() return talent.surging_totem.enabled and 24 or 10 end,
         max_stack = 1
     },
     master_of_the_elements = {
@@ -318,6 +318,7 @@ spec:RegisterTotem( "cloudburst_totem", 971076 )
 spec:RegisterTotem( "earthen_wall_totem", 136098 )
 spec:RegisterTotem( "poison_cleansing_totem", 136070 )
 spec:RegisterTotem( "stoneskin_totem", 4667425 )
+spec:RegisterTotem( "surging_totem", 444995 )
 
 spec:RegisterStateExpr( "recall_totem_1", function()
     return recallTotem1
@@ -636,6 +637,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136037,
         nobuff = "downpour",
+        notalent = "surging_totem",
 
         handler = function ()
             applyBuff( "healing_rain" )
@@ -909,6 +911,23 @@ spec:RegisterAbilities( {
         end,
     },
 
+    surging_totem = {
+        id = 444995,
+        cast = 0,
+        cooldown = 24,
+        gcd = "totem",
+
+        spend = 0.11,
+        spendType = "mana",
+        talent = "surging_totem",
+        startsCombat = false,
+        texture = 5927655,
+
+        handler = function ()
+            summonTotem( "surging_totem" )
+        end,
+    },
+
     tidecallers_guard = {
         id = 457481,
         cast = 0,
@@ -1044,4 +1063,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Restoration Shaman", 20240730, [[Hekili:nBvWUnUnq0VLGc4KGKv1Y2BY2I4CO9stqXEOAb6njrlnYMWuIQKu2nag8BVdPSLOOLZwSx29sIWmp)Mhho8rghg)L4OCIcI)8SPZwm9X5tdM(PPZdNhhPERgIJQjzBjRXpQiL4F)lqQ4cIIYR0PrBiLKkdM3yCsUHljVrKH4IJw1qzQxQIxnEbMHyRHmm8dlIJ2qZZHwSGmloYG9dtF8dZN(R60VSb0P)nrG)HQ2qnfuWlOmSmKmJsKb1ciJxUIOUB5pdeHAdJUJwTozpqQrL(6y42JQsKi3qbw(90ILRAkkcCdg0uFNnOLr)Gm66nQktr6s8u4DkcdQubadkX)tyjCXkQkqqQ2oUk8P57NsC5(7Tk6WpoOAUDa81USymznvqv7jSTGqMSwqYG7l5MPGLHMLd(TLZGCQurQYGNFq)6pPtFPcxHIMALoLxOtZisLmWL490QCCnHcZn6jj0hPrcjufukDdUIX55jfnI3gefLii2IAZnAbvaw8UbnkvQeyNlJWydiHSoHxKOe0STdQjkvMzFqqOvMv(vTTHjh3liz0CBUb1MHhVXvjpB79zVLXGefrSguY2MNb4oibQGskiFA(ebuia5gYkgy7IongbTKlYPOI3t2bUfHr2rsw1iKkdN3mK0LHho4fz2K2jlZpt2GYbNPUDsoxf4i3abuIlg5ZMDUefTeMKX5SC((QebGm6QGlnDn4G4koZkq0FIXo1hcY2GvjPd1tZoC4QJDuVuUS6L6Rs7ZHxAx50S8G8coUMhMpoAhoDHao54gI(R7jcd7Y4iRzkTSMlWb(coAQEDouqAyQR1Pc4FAWHWCDQKxI4inkEj6aGbqDwTgmNm(tAfMk04m)78kSy28x7pDH0P4JepaQmtn5y(Bc)3B7jCX4e61G8O1l75KRF9f7I1q5StZP6ugT9yECK9l71GTTb8ZpBVw8ivX)2PptABXMazOvdiOK4OZSv0PpRtF40vtMB5oZxY(RmmHfsHBtEvZCfOGw3(Zh1EQN9EZjdtZnmDkvRdLlZiIfUi6CS8a9rxq9oyEOEyaQohnpup6IQZHZd0NCbn0XZd5VmOOUoGEadN61v73YUsN22)1PtWPPlmF2xgx)ul1(JhDlV(JRU1BORMo9jD6CBPDmrr8UUUhNmc9hnovPENuVXLJEdbhhMp3p2vy30EEWvBlXdI60dhgnZmRQp3twNERnZfCMTNi6CNTih6qBxQdMD98P93BxCX9231C126N1U8UQBN)cwion7b3myfWh)wfa2jc7z2lTLA7XQE)HZ9EgDABy)5X)3C0FbYqouMhzF8bxDoId2Dg8cBpb4p223Eg7rL607oov59WY(eJ84s7MzOfY78ithNsNI25v(dMg9POZX(hmD6Y9zxy8(NDF4RDfLD2dF4XgUio6pGTug1gl()c]] )
+spec:RegisterPack( "Restoration Shaman", 20240901, [[Hekili:nBv3UnUnt0NLGc4KGKv1soRZUfX5I2BAck2lQwGENKOLgztykrvsQ4gad9S)nKYwIK(NDX3n7IaK4mZXhE4mdpKjHjFnjUGOGKVenn6HPFEAuW0WOWOzjXQ3BGK4gs(gYk8d1Kk83)nivCbrr51DzXRjvKAnM3zCsHMljVvKJ4sIx2szQxQtw6SapoBkcQbYX)F(djXRPffqpiqMNeRb9HPp(Hzt)TUSVUg6Y(hIa)fvTMQxjbVKYq(j5AjidAeqoVAjrD3IFfic1Ag9nA9Q0TaPbL4RNc3wuoIu5AkWkUNwUyzBzzGDWG2M7mbnm6hKrxTwvRxKHepfENIWGAvaWGk8VewkxSKQceK6nNwf(08Jtj2C)Jwfd4pnOgUzY71HSymzdvqvBjSnGqMUsqYH7R46PGfH6Td(zdNbfuPIuNdppV71FPl7LAChkABuDz8YUSCIujdSjElTUa3tOWSJEqcJrALqkvbvs7GlzCErAzR4DNOOebXguB2rlPcWG3oOwPsLaRC5egZHeYQuEzQsqZ34SMOuz6(GGqR178R6ldt23li50ctoN1MHNRXDjpFZ95VNZGufrScuY(INg4Bqkudvuq(0SjcOuaY1KLmWufTkmcAfxuqrfVL8gyVimYBK0LTcPsZ5nUKUiC3oVirt6NS0FnzlkhCM62jfCvGLCdeqfUzKpR7CPkAfmjNZzf8T1Pcaz0wbNB6Y5G4soZiq0FIXouhcYxJRs6aQNI2T7Q9vuVu2S6L6Bs7ZHNRRCyw2jVGJ7z38jXVHtxiaBR2TeHMDzsSXmLw1Wf4aFjhnvVUakjTm11Dzc4FBXHWIUmjVcXrAv8k0badG6SEfOpz8x0AmvO2z(p414IzYFT)0fsNIFI4bqTEQPaZFt4)D7iHpCAc9kqE06L9yY7E9fZMvtz0H50UmgT)yoEfsRAnxKe)NWgkJMeBYyUpSVSGF8lM7h3tDYVF4JP9LCDGC06beuss8r2mDzp3Ln3Kqdg5A)Tw6lapYYkrHTnVvtFLOG20)DoPD1iLJMvAMMPz6qQEhlBMrepyJyWbZd0hTbn6O5HAUdQbhopupAJAWXZd0NSb56a6H8ZolQTJOhWWPhAKkNI7qVa9x0h(vCSay3qp38RHu)bJVJV2WkABtBiZVVpsMRVyx2tDzZ6YMOpWoydBvvhDnqsSnZ1fa9kn7sty7Txc2p)FSLUTYUP)iLT4wGNL7Y2T7KzImY(yB9USBnzoJ5U5q0GbVbPRj)4UF8sgZw1za3Z(3Fe5JNTbCrpBt)iQFlFfApDrNjlH6CHJraZ))vay1XYxXlTHAZ5olpOJSWo50JB95tF3CmEVKlhk9B33)oUbJvNUJZd39eW5pGCQ3Q2LD3(jnV3RoM4eVz10mdnqUWBxTmCTw0bl3FY0Opfdg))KPtBUp6ENlF2D(36MUd)K8)c]] )
