@@ -1,5 +1,5 @@
 -- TheWarWithin/Items.lua
--- July 2024
+-- September 2024
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
@@ -10,8 +10,133 @@ local all = Hekili.Class.specs[ 0 ]
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 local RegisterEvent = ns.RegisterEvent
 
--- 10.0
+-- 11.0
 all:RegisterAbilities( {
+    signet_of_the_priory = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 219308,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "bolstering_light")
+        end,
+
+        proc = "secondary",
+        self_buff = "bolstering_light",
+
+        auras = {
+            bolstering_light = {
+                id = 443531,
+                duration = 20,
+                max_stack = 1
+            },
+        },
+    },
+
+    ravenous_honey_buzzer = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 219298,
+        toggle = "cooldowns",
+
+        proc = "damage",
+    },	
+	
+    bursting_light_shard = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 219310,
+        toggle = "cooldowns",
+
+        proc = "damage",
+    },		
+	
+    mereldars_toll = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 219313,
+        toggle = "cooldowns",
+
+        proc = "damage",
+    },			
+
+    charged_stormrook_plume = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 219294,
+        toggle = "cooldowns",
+
+        proc = "damage",
+    },		
+
+    high_speakers_accretion = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 219303,
+        toggle = "cooldowns",
+
+        proc = "damage",
+    },	
+
+    overclocked_geararang_launcher = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 219301,
+        toggle = "cooldowns",
+
+        proc = "damage",
+    },	
+	
+    skarmorak_shard = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 219300,
+        toggle = "cooldowns",
+
+        handler = function()
+            applyBuff( "skarmorak_shard")
+        end,
+
+        proc = "mastery",
+        self_buff = "skarmorak_shard",
+
+        auras = {
+            skarmorak_shard = {
+                id = 443407,
+                duration = 15,
+                max_stack = 1
+            },
+        },
+    },
+	
+    oppressive_orators_larynx = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 219298,
+        toggle = "cooldowns",
+
+        proc = "damage",
+    },		
+	
     spymasters_web = {
         cast = 0,
         cooldown = 20,
