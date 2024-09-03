@@ -609,9 +609,9 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    hammer_of_light = {
+    hammer_of_light_ready = {
         id = 427453,
-        duration = 20,
+        duration = 12,
         max_stack = 1
     },
     -- Talent: Movement speed reduced by $w1%.
@@ -1115,7 +1115,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if IsActiveSpell( 427453 ) then
-        applyBuff( "hammer_of_light" )
+        applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.wake_of_ashes.lastCast ) )
     end
 
     if time > 0 and talent.crusading_strikes.enabled then
@@ -1749,22 +1749,27 @@ spec:RegisterAbilities( {
     -- Hammer down your enemy with the power of the Light, dealing $429826s1 Holy damage and ${$429826s1/2} Holy damage up to 4 nearby enemies. ; Additionally, calls down Empyrean Hammers from the sky to strike $427445s2 nearby enemies for $431398s1 Holy damage each.;
     hammer_of_light = {
         id = 427453,
-        flash = 255937,
+        known = function() return state.spec.protection and 387174 or 255937 end,
+        flash = function() return state.spec.protection and 387174 or 255937 end,
         cast = 0.0,
         cooldown = 0.0,
         gcd = "spell",
 
-        spend = function() return buff.divine_purpose.up and 0 or 5 end,
+        spend = function()
+            if buff.divine_purpose.up then return 0 end
+            return state.spec.protection and 3 or 5
+        end,
         spendType = 'holy_power',
 
         startsCombat = true,
-        buff = "hammer_of_light",
+        buff = "hammer_of_light_ready",
 
         handler = function ()
-            removeBuff( "hammer_of_light" )
+            removeBuff( "divine_purpose" )
+            removeBuff( "hammer_of_light_ready" )
         end,
 
-        bind = "wake_of_ashes"
+        bind = { "wake_of_ashes", "eye_of_tyr" }
     },
 
     hammer_of_reckoning = {
@@ -2231,7 +2236,7 @@ spec:RegisterAbilities( {
         spendType = "holy_power",
 
         talent = "wake_of_ashes",
-        nobuff = "hammer_of_light",
+        nobuff = "hammer_of_light_ready",
         startsCombat = true,
 
         usable = function ()
@@ -2241,11 +2246,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if target.is_undead or target.is_demon then applyDebuff( "target", "wake_of_ashes" ) end
+            if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
+            if talent.lights_guidance.enabled then applyBuff( "hammer_of_light_ready" ) end
             if talent.radiant_glory.enabled then
                 if talent.crusade.enabled then applyBuff( "crusade", 10 )
                 else applyBuff( "avenging_wrath", 8 ) end
             end
-            if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if conduit.truths_wake.enabled then applyDebuff( "target", "truths_wake" ) end
         end,
 
