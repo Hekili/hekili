@@ -487,6 +487,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 1698701,
         buff = "downpour",
+        notalent = "surging_totem",
 
         handler = function ()
             removeBuff( "downpour" )
@@ -637,6 +638,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 136037,
         nobuff = "downpour",
+        notalent = "surging_totem",
 
         handler = function ()
             applyBuff( "healing_rain" )
@@ -649,7 +651,7 @@ spec:RegisterAbilities( {
             end
         end,
 
-        bind = "downpour"
+        bind = { "downpour", "surging_totem" }
     },
 
     -- Talent: Summons a totem at your feet for $d that heals $?s147074[two injured party or raid members][an injured party or raid member] within $52042A1 yards for $52042s1 every $5672t1 sec.    If you already know $?s157153[$@spellname157153][$@spellname5394], instead gain $392915s1 additional $Lcharge:charges; of $?s157153[$@spellname157153][$@spellname5394].
@@ -925,6 +927,8 @@ spec:RegisterAbilities( {
         handler = function ()
             summonTotem( "surging_totem" )
         end,
+
+        bind = { "healing_rain", "downpour" }
     },
 
     tidecallers_guard = {
