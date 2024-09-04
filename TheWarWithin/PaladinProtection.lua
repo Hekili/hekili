@@ -923,9 +923,6 @@ spec:RegisterStateExpr( "next_armament", function()
     return "holy_bulwark"
 end )
 
-spec:RegisterStateExpr( "sacred_weapon", function() return buff.sacred_weapon_ready.up end )
-spec:RegisterStateExpr( "holy_bulwark" , function() return buff.sacred_weapon_ready.down end )
-
 spec:RegisterStateExpr( "judgment_holy_power", function()
     return 1 + ( buff.bastion_of_light.up and 2 or 0 ) + ( ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.sanctified_wrath.enabled and 1 or 0 )
 end )
@@ -1561,7 +1558,7 @@ spec:RegisterAbilities( {
     -- [432496] While wielding a Holy Bulwark, gain an absorb shield for ${$s2/10}.1% of your max health and an additional ${$s4/10}.1% every $t2 sec. Lasts $d.
     holy_armaments = {
         id = function() return buff.holy_bulwark_ready.up and 432459 or 432472 end,
-        known = function() return talent.holy_armaments.enabled end,
+        known = 432459,
         cast = 0.0,
         cooldown = 60,
         charges = 2,
@@ -1573,20 +1570,17 @@ spec:RegisterAbilities( {
             if buff.holy_bulwark_ready.up then return "holy_bulwark_ready" end
             return "sacred_weapon_ready"
         end,
+        texture = function() return buff.holy_bulwark_ready.up and 5927636 or 5927637 end,
 
         handler = function ()
             if buff.holy_bulwark_ready.up then
                 applyBuff( "holy_bulwark" )
-                applyBuff( "sacred_weapon_ready" )
                 removeBuff( "holy_bulwark_ready" )
-                -- Assuming shared CD.
-                setCooldown( "sacred_weapon", 60 )
+                applyBuff( "sacred_weapon_ready" )
             else
                 applyBuff( "sacred_weapon" )
-                applyBuff( "holy_bulwark_ready" )
                 removeBuff( "sacred_weapon_ready" )
-                -- Assuming shared CD.
-                setCooldown( "holy_bulwark", 60 )
+                applyBuff( "holy_bulwark_ready" )
             end
         end,
 
