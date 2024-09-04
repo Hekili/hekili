@@ -2613,7 +2613,7 @@ spec:RegisterOptions( {
 
 spec:RegisterSetting( "funnel_priority", false, {
     name = "Enhancement Shaman is able to do funnel damage. Head over to |cFFFFD100Toggles|r to learn how to turn the feature on and off. " ..
-    "If funnel is enabled, the default priority will recommend building combo points with |T1375677:0|t Shuriken Storm and spending on single-target finishers in order to do priority damage.\n\n",
+    "If funnel is enabled, the default priority will recommend spending resources on single target spenders in AoE to deal high priority damage to an important mob.\n\n",
     desc = "",
     type = "description",
     fontSize = "medium",
