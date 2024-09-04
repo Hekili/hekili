@@ -1644,7 +1644,7 @@ spec:RegisterAbilities( {
             return 34433
         end,
         known = 34433,
-        flash = { 123040, 200174, 34433 },
+        flash = { 34433, 123040, 200174 },
         cast = 0,
         cooldown = function () return talent.mindbender.enabled and 60 or 180 end,
         gcd = "spell",
