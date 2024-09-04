@@ -697,7 +697,7 @@ spec:RegisterStateExpr( "improved_garrote_remains", function()
 end )
 
 spec:RegisterStateExpr( "priority_rotation", function ()
-    return settings.priority_rotation
+    return toggle.funnel
 end )
 
 
@@ -2998,11 +2998,13 @@ spec:RegisterOptions( {
 
 
 spec:RegisterSetting( "priority_rotation", false, {
-    name = "Funnel AOE -> Current Target",
-    desc = "If checked, the addon's default priority list will focus on funneling damage into your primary target when multiple enemies are present.",
-    type = "toggle",
-    width = 1.5
-} )
+    name = "Assassination Rogue is able to do funnel damage. Head over to |cFFFFD100Toggles|r to learn how to turn the feature on and off. " ..
+    "If funnel is enabled, the default priority will change slightly to do priority damage to a mob.\n\n",
+    desc = "",
+    type = "description",
+    fontSize = "medium",
+    width = "full"
+})
 
 spec:RegisterSetting( "envenom_pool_pct", 50, {
     name = "Energy % for |T132287:0|t Envenom",
