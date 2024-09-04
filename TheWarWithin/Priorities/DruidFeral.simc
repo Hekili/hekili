@@ -45,7 +45,7 @@ actions.aoe_builder+=/brutal_slash,if=!(buff.bt_swipe.up&variable.need_bt)
 actions.aoe_builder+=/moonfire_cat,cycle_targets=1,if=refreshable&(spell_targets.swipe_cat<4|talent.brutal_slash)&!(buff.bt_moonfire.up&variable.need_bt)
 actions.aoe_builder+=/swipe_cat,if=!(buff.bt_swipe.up&variable.need_bt)
 actions.aoe_builder+=/moonfire_cat,cycle_targets=1,if=refreshable&!(buff.bt_moonfire.up&variable.need_bt)
-actions.aoe_builder+=/rake,cycle_targets=1,if=!(buff.bt_rake.up&variable.need_bt)
+actions.aoe_builder+=/rake,cycle_targets=1,if=(refreshable|dot.rake.pmultiplier<persistent_multiplier)&!(buff.bt_rake.up&variable.need_bt)
 # fill with shred if sudden ambush is not up. If easy swipe is enabled, skip this line. Thrashing instead is net-neutral up to at least 10t, but we prefer shred for priority damage.
 actions.aoe_builder+=/shred,if=!(buff.bt_shred.up&variable.need_bt)&!variable.easy_swipe&!buff.sudden_ambush.up
 actions.aoe_builder+=/thrash_cat,if=!(buff.bt_thrash.up&variable.need_bt)&!talent.thrashing_claws
@@ -113,9 +113,9 @@ actions.cooldown+=/convoke_the_spirits,if=boss&fight_remains<5|(buff.tigers_fury
 actions.finisher+=/primal_wrath,if=spell_targets.primal_wrath>1&((dot.primal_wrath.remains<6.5&!buff.bs_inc.up|dot.primal_wrath.refreshable)|(!talent.rampant_ferocity.enabled&(spell_targets.primal_wrath>1&!dot.bloodseeker_vines.ticking&!buff.ravage.up|spell_targets.primal_wrath>6+talent.ravage))|dot.primal_wrath.pmultiplier<persistent_multiplier)
 # rip if single target or pw isnt up. Rip with bloodtalons if talented. If tigers fury will be up before rip falls off, then delay refresh
 actions.finisher+=/rip,cycle_targets=1,if=refreshable&(!talent.primal_wrath|spell_targets=1)&(buff.bloodtalons.up|!talent.bloodtalons)&(buff.tigers_fury.up|dot.rip.remains<cooldown.tigers_fury.remains)
+actions.finisher+=/ferocious_bite,cycle_targets=1,if=buff.bs_inc.up&talent.soul_of_the_forest.enabled
 actions.finisher+=/pool_resource,for_next=1
-actions.finisher+=/ferocious_bite,max_energy=1,cycle_targets=1,if=!buff.bs_inc.up|!talent.soul_of_the_forest.enabled
-actions.finisher+=/ferocious_bite,cycle_targets=1
+actions.finisher+=/ferocious_bite,max_energy=1,cycle_targets=1
 
 # most expensive bt cycle is Shred + Thrash + Rake, 40+40+35 for 115 energy. During incarn it is 32+32+28 for 92energy
 actions.variable+=/variable,name=effective_energy,op=set,value=energy+(40*buff.clearcasting.stack)+(3*energy.regen)+(50*(cooldown.tigers_fury.remains<3.5))

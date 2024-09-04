@@ -222,3 +222,18 @@ all:RegisterAbilities( {
         }
     }
 } )
+
+
+all:RegisterAuras( {
+    -- Darkmoon Card: Ascendance
+    ascendance_haste = {
+        id = 458503,
+        duration = 15,
+        max_stack = 1
+    },
+    ascendance_vers = {
+        id = 458524,
+        duration = 15,
+        max_stack = 1
+    }
+} )
