@@ -1134,10 +1134,10 @@ spec:RegisterHook( "reset_precast", function ()
 
     incanters_flow.reset()
 
-    if buff.magis_spark.up then
-        if action.arcane_barrage.lastCast < buff.magis_spark.applied then applyBuff( "magis_spark_arcane_barrage", buff.magis_spark.remains ) end
-        if action.arcane_blast.lastCast < buff.magis_spark.applied then applyBuff( "magis_spark_arcane_blast", buff.magis_spark.remains ) end
-        if action.arcane_missiles.lastCast < buff.magis_spark.applied then applyBuff( "magis_spark_arcane_missiles", buff.magis_spark.remains ) end
+    if debuff.magis_spark.up then
+        if action.arcane_barrage.lastCast < debuff.magis_spark.applied then applyDebuff( "target", "magis_spark_arcane_barrage", buff.magis_spark.remains ) end
+        if action.arcane_blast.lastCast < debuff.magis_spark.applied then applyDebuff( "target", "magis_spark_arcane_blast", buff.magis_spark.remains ) end
+        if action.arcane_missiles.lastCast < debuff.magis_spark.applied then applyDebuff( "target", "magis_spark_arcane_missiles", buff.magis_spark.remains ) end
     end
 
     if talent.nether_munitions.enabled and debuff.touch_of_the_magi.up then
