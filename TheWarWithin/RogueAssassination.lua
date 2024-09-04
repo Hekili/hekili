@@ -1899,7 +1899,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Increases the critical strike chance of your next damaging ability by $s1%.
     cold_blood = {
-        id = 382245,
+        id = function() return talent.inevitability.enabled and 456330 or 382245 end,
         cast = 0,
         cooldown = 45,
         gcd = "off",
@@ -1913,6 +1913,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "cold_blood", nil, talent.inevitability.enabled and 2 or nil )
         end,
+            
+        copy = { 382245, 456330 },
     },
 
     -- Drink an alchemical concoction that heals you for $?a354425&a193546[${$O1}.1][$o1]% of your maximum health over $d.
