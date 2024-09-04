@@ -2621,7 +2621,7 @@ spec:RegisterSetting( "funnel_priority", false, {
 })
 
 spec:RegisterStateExpr( "funnel", function()
-    return settings.funnel_priority
+    return toggle.funnel
 end )
 
 spec:RegisterStateTable( "rotation", setmetatable( {}, {
