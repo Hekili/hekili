@@ -29,6 +29,7 @@ actions.precombat+=/soul_fire
 actions.precombat+=/cataclysm,if=raid_event.adds.in>15
 actions.precombat+=/incinerate
 
+actions+=/spell_lock
 actions+=/call_action_list,name=variables
 actions+=/call_action_list,name=ogcd
 actions+=/call_action_list,name=items
