@@ -42,7 +42,7 @@ actions.main+=/devouring_plague,cycle_targets=1,if=active_dot.devouring_plague<=
 # Cast Void Torrent at very high priority if Voidweaver
 actions.main+=/void_torrent,cycle_targets=1,if=(dot.devouring_plague.ticking|talent.void_eruption&cooldown.void_eruption.up)&talent.entropic_rift&!variable.holding_crash
 # Snipe SWDs with Depth of Shadows to spawn pets. Prefer targets with Devouring Plague on them.
-actions.main+=/shadow_word_death,cycle_targets=1,if=talent.depth_of_shadows
+actions.main+=/shadow_word_death,cycle_targets=1,if=talent.depth_of_shadows&(target.health.pct<=20|buff.deathspeaker.up&talent.deathspeaker)
 # Use Mind Blasts if using Inescapable Torment and you are capping charges or it will expire soon. Do not use if pooling Mindblast.
 actions.main+=/mind_blast,cycle_targets=1,if=(cooldown.mind_blast.full_recharge_time<=gcd.max+execute_time|pet.fiend.remains<=execute_time+gcd.max)&pet.fiend.active&talent.inescapable_torment&pet.fiend.remains>=execute_time&active_enemies<=7&(!buff.mind_devourer.up|!talent.mind_devourer)&dot.devouring_plague.remains>execute_time&!variable.pooling_mindblasts
 # High Priority Shadow Word: Death is Mindbender is expiring in less than a gcd plus wiggle room
