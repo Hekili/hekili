@@ -1419,9 +1419,9 @@ spec:RegisterAbilities( {
 
     -- Blasts the target's mind for $s1 Shadow damage$?s424509[ and increases your spell damage to the target by $424509s1% for $214621d.][.]$?s137033[; Generates ${$s2/100} Insanity.][]
     mind_blast = {
-        id = function() return state.spec.shadow and talent.void_blast.enabled and buff.entropic_rift.up and 450983 or 8092 end,
+        id = function () return state.spec.shadow and talent.void_blast.enabled and buff.entropic_rift.up and 450983 or 8092 end,
         cast = function () return buff.shadowy_insight.up and 0 or ( 1.5 * haste ) end,
-        charges = function ()
+        charges = function()
             if talent.thought_harvester.enabled then return 2 end
         end,
         cooldown = 9,
@@ -1432,13 +1432,14 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "shadow",
 
-        spend = function() return set_bonus.tier30_2pc > 0 and buff.shadowy_insight.up and -10 or -6 end,
+        spend = function () return set_bonus.tier30_2pc > 0 and buff.shadowy_insight.up and -10 or -6 end,
         spendType = "insanity",
 
         startsCombat = true,
+        texture = function () return state.spec.shadow and talent.void_blast.enabled and buff.entropic_rift.up and 4914668 or 136224 end,
         velocity = 15,
 
-        handler = function ()
+        handler = function()
             removeBuff( "empty_mind" )
             removeBuff( "harvested_thoughts" )
             removeBuff( "mind_melt" )
