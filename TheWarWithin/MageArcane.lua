@@ -282,7 +282,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=365362
     arcane_surge = {
         id = 365362,
-        duration = function() return 15 + ( set_bonus.tier30_2pc > 0 and 3 or 0 ) end,
+        duration = function() return 15 + ( set_bonus.tier30_2pc > 0 and 3 or 0 ) + (buff.spellfire_spheres.stacks * 0.5) end,
         type = "Magic",
         max_stack = 1
     },
@@ -470,6 +470,13 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
+
+    lengering_embers = {
+        id = 461145,
+        duration = 10,
+        max_stack = 30
+    },
+    
     magis_spark = {
         id = 450004,
         duration = 12,
@@ -677,6 +684,11 @@ spec:RegisterAuras( {
     spellfire_spheres = {
         id = 449400,
         duration = 30,
+        max_stack = 6,
+    },
+
+    next_blast_spheres = {
+        duration = 3600,
         max_stack = 6,
     }
 	
@@ -1196,6 +1208,11 @@ spec:RegisterAbilities( {
             removeBuff( "bursting_energy" )
             removeBuff( "leydrinker" )
 
+            if buff.glorious_incandescence.up then
+                gain(4, "arcane_charges")
+                removeBuff ("glorious_incandescence")
+            end
+
             if buff.arcane_soul.up then
                 addStack( "clearcasting" )
                 gain( 4, "arcane_charges" )
@@ -1246,10 +1263,24 @@ spec:RegisterAbilities( {
                 if buff.presence_of_mind.down then setCooldown( "presence_of_mind", 60 ) end
             end
 
-        
             removeBuff( "burden_of_power" )
             removeStack( "concentration" )
             removeBuff( "leydrinker" )
+            
+            if buff.next_blast_spheres.stacks == 6 then
+                removeBuff ("next_blast_spheres")
+                addStack ("spellfire_spheres")
+                applyBuff ("burden_of_power")
+            elseif buff.next.next_blast_spheres.up then
+                addStack ("next_blast_spheres")
+            else
+                applyBuff ("next_blast_spheres")
+            end
+
+            if buff.burden_of_power.up then
+                removeBuff ("burden_of_power")
+                applyBuff ("glorious_incandescence")
+            end
 
             if buff.nether_precision.up then
                 removeStack( "nether_precision" )
