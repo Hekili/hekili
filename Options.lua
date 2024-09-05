@@ -3982,7 +3982,13 @@ do
 
         for line in apl:gmatch( "\n([^\n^$]*)") do
             local newComment = line:match( "^# (.+)" )
-            if newComment then comment = newComment end
+            if newComment then
+                if comment then
+                    comment = comment .. ' ' .. newComment
+                else
+                    comment = newComment
+                end
+            end
 
             local list, action = line:match( "^actions%.(%S-)%+?=/?([^\n^$]*)" )
 
