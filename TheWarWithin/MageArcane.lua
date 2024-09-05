@@ -1245,6 +1245,8 @@ spec:RegisterAbilities( {
                 removeStack( "presence_of_mind" )
                 if buff.presence_of_mind.down then setCooldown( "presence_of_mind", 60 ) end
             end
+
+        
             removeBuff( "burden_of_power" )
             removeStack( "concentration" )
             removeBuff( "leydrinker" )
@@ -1485,7 +1487,8 @@ spec:RegisterAbilities( {
         cooldown = 90,
         gcd = "spell",
         school = "arcane",
-
+        
+        
         spend = function() return mana.current end,
         spendType = "mana",
 
@@ -1607,7 +1610,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             applyBuff( "evocation" )
-
+            addStack( "clearcasting" )
             if azerite.brain_storm.enabled then
                 gain( 2, "arcane_charges" )
                 applyBuff( "brain_storm" )
@@ -2116,7 +2119,7 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "arcane",
 
-        spend = 0.05,
+        spend = function () return buff.arcane_surge.up and 0 or 0.05 end,
         spendType = "mana",
 
         talent = "touch_of_the_magi",
