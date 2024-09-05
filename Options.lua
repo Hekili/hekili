@@ -11585,7 +11585,7 @@ do
                             value = SpaceOut( value )
                         end
 
-                        if key == 'description' then
+                        if key == 'caption' or key == 'description' then
                             value = value:gsub( ";", "," )
                         end
 
