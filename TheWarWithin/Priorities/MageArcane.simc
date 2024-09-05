@@ -4,7 +4,6 @@ actions.precombat+=/variable,name=aoe_target_count,op=set,value=9,if=!talent.arc
 actions.precombat+=/variable,name=opener,op=set,if=action.touch_of_the_magi.time_since<time
 actions.precombat+=/variable,name=alt_rotation,op=set,if=talent.high_voltage,value=1
 # Variable indicates use of a trinket that boosts stats during burst
-actions.precombat+=/variable,name=sunfury_aoe_list,default=!toggle.funnel
 actions.precombat+=/variable,name=steroid_trinket_equipped,op=set,value=equipped.gladiators_badge|equipped.signet_of_the_priory|equipped.high_speakers_accretion|equipped.spymasters_web|equipped.treacherous_transmitter|equipped.imperfect_ascendancy_serum
 actions.precombat+=/mirror_image
 actions.precombat+=/arcane_blast,if=!talent.evocation
@@ -36,7 +35,6 @@ actions+=/use_item,name=aberrant_spellforge,if=!variable.steroid_trinket_equippe
 actions+=/arcane_barrage,if=fight_remains<2
 # Enter cooldowns, then action list depending on your hero talent choices
 actions+=/call_action_list,name=cd_opener
-actions+=/call_action_list,name=sunfury_aoe,strict=1,if=talent.spellfire_spheres&variable.sunfury_aoe_list
 actions+=/call_action_list,name=spellslinger_aoe,strict=1,if=active_enemies>=(variable.aoe_target_count+talent.impetus)&!talent.spellfire_spheres
 actions+=/call_action_list,name=sunfury,strict=1,if=talent.spellfire_spheres
 actions+=/call_action_list,name=spellslinger,strict=1,if=!talent.spellfire_spheres
@@ -81,20 +79,6 @@ actions.spellslinger+=/arcane_missiles,if=(buff.clearcasting.up&buff.nether_prec
 actions.spellslinger+=/arcane_orb,if=buff.arcane_charge.stack<2
 actions.spellslinger+=/arcane_blast
 actions.spellslinger+=/arcane_barrage
-
-# This list is only used with a variable for extra information, it is not a default list called.
-actions.sunfury_aoe+=/arcane_barrage,if=(buff.arcane_soul.up&((buff.clearcasting.react<3)|buff.arcane_soul.remains<gcd.max))
-actions.sunfury_aoe+=/arcane_missiles,if=buff.arcane_soul.up,interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1
-actions.sunfury_aoe+=/cancel_buff,name=presence_of_mind,use_off_gcd=1,if=settings.cancel_pom&(debuff.magis_spark_arcane_blast.up)
-actions.sunfury_aoe+=/shifting_power,if=(buff.arcane_surge.down&buff.siphon_storm.down&debuff.touch_of_the_magi.down&cooldown.evocation.remains>15&cooldown.touch_of_the_magi.remains>15)&(cooldown.arcane_orb.remains&action.arcane_orb.charges=0)&fight_remains>10
-actions.sunfury_aoe+=/arcane_orb,if=buff.arcane_charge.stack<2&(!talent.high_voltage|!buff.clearcasting.react)
-actions.sunfury_aoe+=/arcane_blast,if=(debuff.magis_spark_arcane_blast.up)
-actions.sunfury_aoe+=/arcane_barrage,if=(buff.arcane_charge.stack=buff.arcane_charge.max_stack)
-actions.sunfury_aoe+=/arcane_missiles,if=buff.clearcasting.react&(buff.aether_attunement.up|talent.arcane_harmony),interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1
-actions.sunfury_aoe+=/presence_of_mind,if=buff.arcane_charge.stack=3|buff.arcane_charge.stack=2
-actions.sunfury_aoe+=/arcane_explosion,if=talent.reverberate|buff.arcane_charge.stack<1
-actions.sunfury_aoe+=/arcane_blast
-actions.sunfury_aoe+=/arcane_barrage
 
 # For Sunfury, Shifting Power only when you're not under the effect of any cooldowns
 actions.sunfury+=/shifting_power,if=((buff.arcane_surge.down&buff.siphon_storm.down&debuff.touch_of_the_magi.down&cooldown.evocation.remains>15&cooldown.touch_of_the_magi.remains>10)&fight_remains>10)&buff.arcane_soul.down
