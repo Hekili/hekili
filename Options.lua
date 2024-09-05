@@ -8741,7 +8741,15 @@ do
                                     width = 2,
                                     order = 2,
                                         },
-                                    },
+                                    
+                                supportedSpecs = {
+                                    type = "description",
+                                    name = "Supported Specs: Subtlety, Assassination, Enhancement, Destruction",
+                                    desc = "",
+                                    width = "full",
+                                    order = 3,
+                                        },
+                                },
                         },
 
                                 --[[ potLineBreak1 = {

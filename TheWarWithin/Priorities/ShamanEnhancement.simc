@@ -33,8 +33,8 @@ actions+=/feral_spirit,if=talent.elemental_spirits.enabled|(talent.alpha_wolf.en
 actions+=/surging_totem
 actions+=/ascendance,if=dot.flame_shock.ticking&((ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)|(ti_chain_lightning&active_enemies>1))
 actions+=/call_action_list,name=single,strict=1,if=active_enemies=1
-actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1&(rotation.standard|rotation.simple)
-actions+=/call_action_list,name=funnel,strict=1,if=active_enemies>1&rotation.funnel
+actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1&(!toggle.funnel)
+actions+=/call_action_list,name=funnel,strict=1,if=active_enemies>1&toggle.funnel
 
 actions.single+=/windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>1&ti_lightning_bolt&!talent.elemental_spirits.enabled
 actions.single+=/feral_spirit
