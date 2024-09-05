@@ -4001,7 +4001,18 @@ do
                 end
 
                 if comment then
-                    action = action .. ',description=' .. comment:gsub( ",", ";" )
+                    -- Comments can have the form 'Caption::Description'.
+                    -- Any whitespace around the '::' is truncated.
+                    local caption, description= comment:match( "(.+)::(.*)" )
+                    if caption and description then
+                        -- Truncate whitespace and change commas to semicolons.
+                        caption = caption:gsub( "%s+$", "" ):gsub( ",", ";" )
+                        description = description:gsub( "^%s+", "" ):gsub( ",", ";" )
+                        action = action .. ',caption=' .. caption .. ',description=' .. description
+                    else
+                        -- Change commas to semicolons.
+                        action = action .. ',description=' .. comment:gsub( ",", ";" )
+                    end
                     comment = nil
                 end
 
