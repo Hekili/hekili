@@ -5,7 +5,7 @@ actions+=/spear_hand_strike,if=target.debuff.casting.react
 actions+=/diffuse_magic
 actions+=/vivify,if=health.pct<=settings.vivify_percent&buff.vivacious_vivification.up
 actions+=/purifying_brew,if=tanking&settings.purify_for_celestial&(time_to_max_charges<gcd.max|buff.purified_chi.up&buff.purified_chi.remains<1.5*gcd.max)|cooldown.celestial_brew.remains<2*gcd.max&charges_fractional>1.5
-actions+=/celestial_brew,if=tanking&(!talent.improved_celestial_brew|buff.purified_chi.up)&(!settings.max_damage|buff.blackout_combo.down)
+actions+=/celestial_brew,if=tanking&buff.celestial_brew.down&(!talent.improved_celestial_brew|buff.purified_chi.up)&(!settings.max_damage|buff.blackout_combo.down)
 ## actions+=/purifying_brew,line_cd=5,if=talent.improved_invoke_niuzao_the_black_ox&settings.purify_for_niuzao&pet.niuzao_the_black_ox.active
 actions+=/purifying_brew,if=group&(!settings.max_damage|buff.blackout_combo.down)&settings.purify_stagger_currhp>0&stagger.pct>=settings.purify_stagger_currhp
 actions+=/purifying_brew,if=solo&(!settings.max_damage|buff.blackout_combo.down)&settings.purify_stagger_currhp>0&stagger.pct>=settings.purify_stagger_currhp*0.5
