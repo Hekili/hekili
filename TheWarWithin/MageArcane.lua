@@ -1544,7 +1544,7 @@ spec:RegisterAbilities( {
             addStack( "clearcasting" )
             mana.regen = mana.regen * 5.25
             -- trick addon into thinking you have enough mana to cast arcane blast right after, because in reality you do
-            gain ((mana.modmax*0.16), "mana")
+            gain ((mana.modmax*0.25), "mana")
             forecastResources( "mana" )
             if talent.rune_of_power.enabled then applyBuff( "rune_of_power" ) end
             -- start_burn_phase()
