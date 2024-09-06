@@ -1780,7 +1780,8 @@ spec:RegisterAbilities( {
 
     -- Finishing move that causes Physical damage per combo point and consumes up to $?a102543[${$s2*(1+$102543s2/100)}][$s2] additional Energy to increase damage by up to 100%.       1 point  : ${$m1*1/5} damage     2 points: ${$m1*2/5} damage     3 points: ${$m1*3/5} damage     4 points: ${$m1*4/5} damage     5 points: ${$m1*5/5} damage
     ferocious_bite = {
-        id = 22568,
+        id = function() return buff.ravage.up and 441591 or 22568 end,
+        known = 22568,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1814,6 +1815,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "coiled_to_spring" )
+            removeBuff( "ravage" )
 
             if pvptalent.ferocious_wound.enabled and combo_points.current >= 5 then
                 applyDebuff( "target", "ferocious_wound", nil, min( 2, debuff.ferocious_wound.stack + 1 ) )
@@ -1839,8 +1841,7 @@ spec:RegisterAbilities( {
             opener_done = true
         end,
 
-        bind = "ravage",
-        copy = { 22568, "ferocious_bite_max" }
+        copy = { 22568, "ferocious_bite_max", 441591, "ravage" }
     },
 
     -- Talent: Heals you for $o1% health over $d$?s301768[, and increases healing received by $301768s1%][].
@@ -2322,73 +2323,6 @@ spec:RegisterAbilities( {
         end,
 
         copy = "rake_bleed"
-    },
-
-    -- Finishing move that slashes through your target in a wide arc, dealing Physical damage per combo point to your target and consuming up to $?a102543[${$s2*(1+$102543s3/100)}][$s2] additional Energy to increase that damage by up to 100%. Hits all other enemies in front of you for reduced damage per combo point spent. ;   1 point: ${$m1*1/5} damage, ${$m3*1/5} in an arc;   2 points: ${$m1*2/5} damage, ${$m3*2/5} in an arc;   3 points: ${$m1*3/5} damage, ${$m3*3/5} in an arc;   4 points: ${$m1*4/5} damage, ${$m3*4/5} in an arc;   5 points: ${$m1*5/5} damage, ${$m3*5/5} in an arc
-    ravage = {
-        id = 441591,
-        flash = 22568,
-        cast = 0.0,
-        cooldown = 0.0,
-        gcd = "spell",
-
-        spend = function ()
-            if buff.apex_predator.up or buff.apex_predators_craving.up then return 0 end
-            -- Support true/false or 1/0 through this awkward transition.
-            if args.max_energy and ( type( args.max_energy ) == 'boolean' or args.max_energy > 0 ) then return 50 * ( buff.incarnation.up and 0.75 or 1 ) * ( talent.relentless_predator.enabled and 0.9 or 1 ) end
-            return max( 25, min( 50 * ( buff.incarnation.up and 0.75 or 1 ), energy.current ) ) * ( talent.relentless_predator.enabled and 0.9 or 1 )
-        end,
-        spendType = 'energy',
-
-        startsCombat = true,
-        form = "cat_form",
-
-        cycle = "rip",
-        cycle_to = true,
-
-        -- Use maximum damage.
-        damage = function () -- TODO: Taste For Blood soulbind conduit
-            return calculate_damage( 1.888 * 2 , true, true ) * ( buff.bloodtalons.up and class.auras.bloodtalons.multiplier or 1 ) * ( talent.sabertooth.enabled and 1.15 or 1 ) * ( talent.soul_of_the_forest.enabled and 1.05 or 1 ) * ( talent.lions_strength.enabled and 1.15 or 1 ) *
-                ( 1 + 0.05 * talent.taste_for_blood.rank * ( ( debuff.rip.up and 1 or 0 ) + ( debuff.tear.up and 1 or 0 ) + ( debuff.thrash_cat.up and 1 or 0 ) + ( debuff.sickle_of_the_lion.up and 1 or 0 ) ) )
-        end,
-
-        -- This will override action.X.cost to avoid a non-zero return value, as APL compares damage/cost with Shred.
-        cost = function () return max( 1, class.abilities.ravage.spend ) end,
-
-        usable = function () return buff.apex_predator.up or buff.apex_predators_craving.up or combo_points.current > 0 end,
-
-        handler = function ()
-            removeBuff( "coiled_to_spring" )
-
-            if talent.sabertooth.enabled and debuff.rip.up then
-                debuff.rip.expires = debuff.rip.expires + ( 4 * combo_points.current )
-            end
-
-            if pvptalent.ferocious_wound.enabled and combo_points.current >= 5 then
-                applyDebuff( "target", "ferocious_wound", nil, min( 2, debuff.ferocious_wound.stack + 1 ) )
-            end
-
-            if buff.apex_predator.up or buff.apex_predators_craving.up then
-                applyBuff( "predatory_swiftness" )
-                removeBuff( "apex_predator" )
-                removeBuff( "apex_predators_craving" )
-            else
-                spend( min( 5, combo_points.current ), "combo_points" )
-            end
-
-            removeStack( "bloodtalons" )
-
-            if buff.eye_of_fearful_symmetry.up then
-                gain( 2, "combo_points" )
-                removeStack( "eye_of_fearful_symmetry" )
-            end
-
-            if talent.sabertooth.enabled then applyDebuff( "target", "sabertooth" ) end
-
-            opener_done = true
-        end,
-
-        bind = "ferocious_bite",
     },
 
     -- Heals a friendly target for $s1 and another ${$o2*$<mult>} over $d.$?s231032[ Initial heal has a $231032s1% increased chance for a critical effect if the target is already affected by Regrowth.][]$?s24858|s197625[ Usable while in Moonkin Form.][]$?s33891[    |C0033AA11Tree of Life: Instant cast.|R][]

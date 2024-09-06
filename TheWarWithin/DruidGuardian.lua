@@ -572,6 +572,11 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    ravage = {
+        id = 441602,
+        duration = 15,
+        max_stack = 1
+    },
     -- Heals $w2 every $t2 sec.
     -- https://wowhead.com/beta/spell=8936
     regrowth = {
@@ -1591,7 +1596,8 @@ spec:RegisterAbilities( {
 
     -- Talent: Maul the target for $s2 Physical damage.
     maul = {
-        id = 6807,
+        id = function() return buff.ravage.up and 441605 or 6807 end,
+        known = 6807,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1605,6 +1611,7 @@ spec:RegisterAbilities( {
 
         talent = "maul",
         startsCombat = true,
+        texture = function() return buff.ravage.up and 5927623 or 132136 end,
         form = "bear_form",
 
         usable = function ()
@@ -1616,6 +1623,8 @@ spec:RegisterAbilities( {
             addStack( "vicious_cycle_mangle" )
             removeBuff( "savage_combatant" )
             removeBuff( "vicious_cycle_maul" )
+            removeBuff( "ravage" )
+
             if buff.tooth_and_claw.up then
                 removeStack( "tooth_and_claw" )
                 applyDebuff( "target", "tooth_and_claw_debuff" )
@@ -1625,6 +1634,8 @@ spec:RegisterAbilities( {
             if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
             if pvptalent.sharpened_claws.enabled or essence.conflict_and_strife.major then applyBuff( "sharpened_claws" ) end
         end,
+
+        copy = { 6807, "ravage", 441605}
     },
 
     -- Talent: Invokes the spirit of Ursoc to stun the target for $d. Usable in all shapeshift forms.
