@@ -22,9 +22,9 @@ actions.aoe+=/vampiric_touch,cycle_targets=1,if=(refreshable&target.time_to_die>
 # Use Shadow Crash to apply Vampiric Touch to as many adds as possible while being efficient with Vampiric Touch refresh windows
 actions.aoe+=/shadow_crash,cycle_targets=1,if=!variable.holding_crash&(dot.vampiric_touch.refreshable|dot.vampiric_touch.remains<=target.time_to_die&!buff.voidform.up&(raid_event.adds.in-dot.vampiric_touch.remains)<15)
 
-actions.main+=/variable,name=dots_up,op=set,value=active_dot.vampiric_touch=active_enemies|action.shadow_crash.in_flight&talent.whispering_shadows,if=active_enemies<3
-# Are we pooling mindblasts? Currently only used for Voidweaver.
-actions.main+=/variable,name=pooling_mindblasts,op=setif,value=1,value_else=0,condition=talent.void_blast&(cooldown.void_torrent.remains<?(variable.holding_crash*raid_event.adds.in))<=gcd.max*(1+talent.mind_melt*3)
+actions.main+=/variable,name=dots_up,op=set,value=active_dot.vampiric_touch>=cycle_enemies|action.shadow_crash.in_flight&talent.whispering_shadows,if=active_enemies<3
+# Are we pooling mindblasts? Currently only used for Voidweaver; [Hekili] modified to still allow us to build Insanity when CDs are toggled off.
+actions.main+=/variable,name=pooling_mindblasts,op=setif,value=1,value_else=0,condition=talent.void_blast&cooldown.void_torrent.remains<=gcd.max*(1+talent.mind_melt*3)&insanity>action.devouring_plague.cost
 actions.main+=/call_action_list,name=cds,if=boss&fight_remains<30|target.time_to_die>15&(!variable.holding_crash|active_enemies>2)
 # Use Shadowfiend and Mindbender on cooldown as long as Vampiric Touch and Shadow Word: Pain are active and sync with Dark Ascension
 actions.main+=/mindbender,if=(dot.shadow_word_pain.ticking&variable.dots_up|action.shadow_crash.in_flight&talent.whispering_shadows)&(boss&fight_remains<30|target.time_to_die>15)&(!talent.dark_ascension|cooldown.dark_ascension.remains<gcd.max|boss&fight_remains<15)
