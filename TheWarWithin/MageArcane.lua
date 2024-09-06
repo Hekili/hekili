@@ -1258,6 +1258,7 @@ spec:RegisterAbilities( {
         school = "arcane",
 
         spend = function ()
+            if prev_gcd[1].touch_of_the_magi then return 0 end
             if buff.concentration.up then return 0 end
             local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( 1 - 0.03 * talent.consortiums_bauble.rank )
             -- if azerite.equipoise.enabled and mana.pct < 70 then return ( mana.modmax * mult ) - 190 end
@@ -1529,7 +1530,7 @@ spec:RegisterAbilities( {
         school = "arcane",
         
         
-        spend = function() return mana.current end,
+        spend = function() return min(mana.current, 2900001) end,
         spendType = "mana",
 
         talent = "arcane_surge",
@@ -1540,9 +1541,12 @@ spec:RegisterAbilities( {
             applyBuff( "arcane_surge" )
             addStack( "clearcasting" )
             mana.regen = mana.regen * 5.25
+            -- trick addon into thinking you have enough mana to cast arcane blast right after, because in reality you do
+            gain (mana.regen/2, "mana")
             forecastResources( "mana" )
             if talent.rune_of_power.enabled then applyBuff( "rune_of_power" ) end
             -- start_burn_phase()
+            
         end,
 
         copy = "arcane_power"
