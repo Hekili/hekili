@@ -46,7 +46,7 @@ actions.cd_opener+=/touch_of_the_magi,use_off_gcd=1,if=(prev_gcd.1.arcane_barrag
 ## actions.cd_opener+=/wait,sec=0.05,if=prev_gcd.1.arcane_surge&time-action.touch_of_the_magi.last_used<0.015,line_cd=15
 actions.cd_opener+=/arcane_blast,if=buff.presence_of_mind.up
 # Use Orb for charges if you have High Voltage, then evocation, then Missiles for Nether Precision, then Arcane Surge
-actions.cd_opener+=/arcane_orb,if=talent.high_voltage,line_cd=10
+actions.cd_opener+=/arcane_orb,if=talent.high_voltage&buff.arcane_charge.stack<4,line_cd=10
 actions.cd_opener+=/evocation,if=cooldown.arcane_surge.remains<(gcd.max*3)&cooldown.touch_of_the_magi.remains<(gcd.max*6)
 actions.cd_opener+=/arcane_missiles,interrupt_if=tick_time>gcd.remains,interrupt_immediate=1,interrupt_global=1,chain=1,line_cd=10
 actions.cd_opener+=/arcane_surge,if=cooldown.touch_of_the_magi.remains<gcd.max*3
