@@ -980,7 +980,8 @@ spec:RegisterAbilities( {
         texture = 135610,
 
         usable = function()
-            -- if settings.crackshot_lock and talent.crackshot.enabled and not stealthed.all then return false, "userpref requires stealth" end
+            if not boss and buff.stealth.up then return false, "bte subterfuge bug workaround" end
+            if settings.crackshot_lock and talent.crackshot.enabled and not stealthed.all then return false, "userpref requires stealth" end
             return combo_points.current > 0, "requires combo points"
         end,
 
@@ -1470,7 +1471,7 @@ spec:RegisterSetting( "stealth_padding", 0.1, {
     width = "full",
 } )
 
---[[ spec:RegisterSetting( "crackshot_lock", false, {
+spec:RegisterSetting( "crackshot_lock", false, {
     name = strformat( "%s: %s |cFFFF0000Only|r", Hekili:GetSpellLinkWithTexture( spec.abilities.between_the_eyes.id ), Hekili:GetSpellLinkWithTexture( assassin.abilities.stealth.id ) ),
     desc = strformat( "If checked and %s is talented, %s will never be recommended outside of %s.\n\nThis is |cFFFF0000NOT|r the default simulation behavior, "
         .. "but can prevent %s from being placed on a long cooldown.", Hekili:GetSpellLinkWithTexture( spec.talents.crackshot[2] ),
@@ -1478,7 +1479,7 @@ spec:RegisterSetting( "stealth_padding", 0.1, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.between_the_eyes.id ), assassin.abilities.stealth.name ),
     type = "toggle",
     width = "full"
-} ) ]]
+} )
 
 spec:RegisterSetting( "check_blade_rush_range", true, {
     name = strformat( "%s: Melee Only", Hekili:GetSpellLinkWithTexture( spec.abilities.blade_rush.id ) ),
