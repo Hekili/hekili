@@ -24,7 +24,7 @@ actions.precombat+=/blistering_scales,if=active_dot.blistering_scales=0
 actions.precombat+=/living_flame
 
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
-actions+=/variable,name=pool_for_id,if=talent.imminent_destruction,default=0,op=set,value=cooldown.allied_virtual_cd_time.remains<8&essence.deficit>=1&!buff.essence_burst.up
+actions+=/variable,name=pool_for_id,if=talent.imminent_destruction,default=0,op=set,value=cooldown.breath_of_eons.remains<8&essence.deficit>=1&!buff.essence_burst.up
 actions+=/prescience,cycle_targets=1,if=(active_dot.prescience<group_members|solo&buff.prescience.down)&((full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*0.4|variable.temp_wound>=(gcd.max+action.eruption.cast_time)|boss&fight_remains<=30)&(buff.trembling_earth.stack+evoker.prescience_buffs)<=(5+(full_recharge_time<=gcd.max*3)))
 actions+=/potion,if=debuff.temporal_wound.up&buff.ebon_might_self.up|boss&fight_remains<=30
 actions+=/call_action_list,name=ebon_logic,if=(buff.ebon_might_self.remains-cast_time)<=buff.ebon_might_self.duration*0.4
@@ -37,12 +37,12 @@ actions+=/tip_the_scales,if=talent.threads_of_fate&(prev_gcd.1.breath_of_eons|bo
 actions+=/call_action_list,name=fb,if=cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads|empowering.fire_breath
 actions+=/tip_the_scales,if=cooldown.upheaval.ready&!cooldown.fire_breath.ready&talent.molten_embers&!talent.threads_of_fate,line_cd=110
 actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might_self.remains>cast_time&cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads
-actions+=/breath_of_eons,if=((cooldown.ebon_might.remains<=4|buff.ebon_might_self.up)&target.time_to_die>15&raid_event.adds.in>15&(!equipped.nymues_unraveling_spindle|trinket.nymues_unraveling_spindle.cooldown.remains>=10|fight_remains<30|trinket.1.is.nymues_unraveling_spindle&variable.trinket_priority=2|trinket.2.is.nymues_unraveling_spindle&variable.trinket_priority=1)|boss&fight_remains<30)&boss
-actions+=/breath_of_eons,if=evoker.allied_cds_up>0&((cooldown.ebon_might.remains<=4|buff.ebon_might_self.up)&target.time_to_die>15&(!equipped.nymues_unraveling_spindle|trinket.nymues_unraveling_spindle.cooldown.remains>=10|fight_remains<30|trinket.1.is.nymues_unraveling_spindle&variable.trinket_priority=2|trinket.2.is.nymues_unraveling_spindle&variable.trinket_priority=1)|boss&fight_remains<30)&!boss
+actions+=/breath_of_eons,if=((cooldown.ebon_might.remains<=4|buff.ebon_might_self.up)&target.time_to_die>15&raid_event.adds.in>15&(!equipped.nymues_unraveling_spindle|trinket.nymues_unraveling_spindle.cooldown.remains>=10|boss&fight_remains<30|trinket.1.is.nymues_unraveling_spindle&variable.trinket_priority=2|trinket.2.is.nymues_unraveling_spindle&variable.trinket_priority=1)|boss&fight_remains<30)&boss
+actions+=/breath_of_eons,if=(solo|evoker.allied_cds_up>0)&((cooldown.ebon_might.remains<=4|buff.ebon_might_self.up)&target.time_to_die>15&(!equipped.nymues_unraveling_spindle|trinket.nymues_unraveling_spindle.cooldown.remains>=10|boss&fight_remains<30|trinket.1.is.nymues_unraveling_spindle&variable.trinket_priority=2|trinket.2.is.nymues_unraveling_spindle&variable.trinket_priority=1)|boss&fight_remains<30)&!boss
 actions+=/living_flame,if=buff.leaping_flames.up&cooldown.fire_breath.up&!boss
 actions+=/living_flame,if=cooldown.breath_of_eons.up&evoker.allied_cds_up=0&target.time_to_die>15&boss
-actions+=/call_action_list,name=fb,if=(raid_event.adds.remains>13|raid_event.adds.in>20|evoker.allied_cds_up>0|!raid_event.adds.exists)&(cooldown.allied_virtual_cd_time.remains>=variable.hold_empower_for|!talent.breath_of_eons)
-actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might_self.remains>cast_time&(raid_event.adds.remains>13|!raid_event.adds.exists|raid_event.adds.in>20)&(!talent.molten_embers|dot.fire_breath_damage.ticking)&(cooldown.allied_virtual_cd_time.remains>=variable.hold_empower_for|!talent.breath_of_eons)
+actions+=/call_action_list,name=fb,if=(raid_event.adds.remains>13|raid_event.adds.in>20|(solo|evoker.allied_cds_up>0)|!raid_event.adds.exists)&(cooldown.breath_of_eons.remains>=variable.hold_empower_for|!talent.breath_of_eons)
+actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might_self.remains>cast_time&(raid_event.adds.remains>13|!raid_event.adds.exists|raid_event.adds.in>20)&(!talent.molten_embers|dot.fire_breath_damage.ticking)&(cooldown.breath_of_eons.remains>=variable.hold_empower_for|!talent.breath_of_eons)
 actions+=/time_skip,if=(cooldown.fire_breath.remains+cooldown.upheaval.remains+cooldown.prescience.full_recharge_time)>=35
 actions+=/emerald_blossom,if=talent.dream_of_spring&buff.essence_burst.up&(variable.spam_heal=2|variable.spam_heal=1&!buff.ancient_flame.up)&(buff.ebon_might_self.up|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4)
 actions+=/eruption,if=(buff.ebon_might_self.remains>execute_time|essence.deficit=0|buff.essence_burst.stack=buff.essence_burst.max_stack&cooldown.ebon_might.remains>4)&!variable.pool_for_id
@@ -69,7 +69,7 @@ actions.items+=/use_item,name=nymues_unraveling_spindle,if=cooldown.breath_of_eo
 actions.items+=/use_item,name=aberrant_spellforge
 actions.items+=/use_item,name=treacherous_transmitter,if=cooldown.breath_of_eons.remains<=10
 ## actions.items+=/do_treacherous_transmitter_task,use_off_gcd=1,if=(debuff.temporal_wound.up|prev_gcd.1.breath_of_eons|fight_remains<=15)
-actions.items+=/use_item,name=spymasters_web,if=buff.spymasters_report.stack=1&!cooldown.breath_of_eons.up&!buff.spymasters_web.up&time<10|(debuff.temporal_wound.up|prev_gcd.1.breath_of_eons)&(fight_remains<120)|(fight_remains<=20|evoker.allied_cds_up>0&fight_remains<=60|evoker.allied_cds_up>0&fight_remains<=30&(trinket.1.is.spymasters_web&(trinket.2.cooldown.duration=0|trinket.2.cooldown.remains)|trinket.2.is.spymasters_web&(trinket.1.cooldown.duration=0|trinket.1.cooldown.remains)))&!buff.spymasters_web.up
+actions.items+=/use_item,name=spymasters_web,if=buff.spymasters_report.stack=1&!cooldown.breath_of_eons.up&!buff.spymasters_web.up&time<10|(debuff.temporal_wound.up|prev_gcd.1.breath_of_eons)&(fight_remains<120)|(fight_remains<=20|(solo|evoker.allied_cds_up>0)&fight_remains<=60|(solo|evoker.allied_cds_up>0)&fight_remains<=30&(trinket.1.is.spymasters_web&(trinket.2.cooldown.duration=0|trinket.2.cooldown.remains)|trinket.2.is.spymasters_web&(trinket.1.cooldown.duration=0|trinket.1.cooldown.remains)))&!buff.spymasters_web.up
 actions.items+=/use_item,slot=trinket1,if=variable.trinket_1_buffs&!variable.trinket_1_manual&((debuff.temporal_wound.up|prev_gcd.1.breath_of_eons)|variable.trinket_2_buffs&!trinket.2.cooldown.up&(prev_gcd.1.fire_breath|prev_gcd.1.upheaval)&buff.ebon_might_self.up)&(variable.trinket_2_exclude|!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|trinket.1.proc.any_dps.duration>=fight_remains&boss
 actions.items+=/use_item,slot=trinket2,if=variable.trinket_2_buffs&!variable.trinket_2_manual&((debuff.temporal_wound.up|prev_gcd.1.breath_of_eons)|variable.trinket_1_buffs&!trinket.1.cooldown.up&(prev_gcd.1.fire_breath|prev_gcd.1.upheaval)&buff.ebon_might_self.up)&(variable.trinket_1_exclude|!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2)|trinket.2.proc.any_dps.duration>=fight_remains&boss
 ## Azure Strike for OGCD trinkets. Ideally this would be Prescience casts in reality but this is simpler and seems to have no noticeable diferrence in DPS.
@@ -80,8 +80,8 @@ actions.items+=/use_item,use_off_gcd=1,slot=trinket2,if=!variable.trinket_2_buff
 # Use on use weapons
 actions.items+=/use_item,slot=main_hand,use_off_gcd=1,if=gcd.remains>=gcd.max*0.6
 
-actions.opener_filler+=/variable,name=opener_delay,value=variable.opener_delay>?variable.minimum_opener_delay,if=!variable.opener_cds_detected&evoker.allied_cds_up>0
+actions.opener_filler+=/variable,name=opener_delay,value=variable.opener_delay>?variable.minimum_opener_delay,if=!variable.opener_cds_detected&(solo|evoker.allied_cds_up>0)
 actions.opener_filler+=/variable,name=opener_delay,value=variable.opener_delay-1
-actions.opener_filler+=/variable,name=opener_cds_detected,value=1,if=!variable.opener_cds_detected&evoker.allied_cds_up>0
+actions.opener_filler+=/variable,name=opener_cds_detected,value=1,if=!variable.opener_cds_detected&(solo|evoker.allied_cds_up>0)
 actions.opener_filler+=/living_flame,if=active_enemies=1|talent.pupil_of_alexstrasza
 actions.opener_filler+=/azure_strike
