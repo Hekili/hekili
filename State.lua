@@ -5266,7 +5266,7 @@ local mt_default_action = {
             return false
 
         elseif k == "cooldown_react" then
-            return ability.remains == 0
+            return state.cooldown[ t.action ].remains == 0
 
         elseif k == "cast_delay" then
             return 0
