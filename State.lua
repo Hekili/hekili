@@ -6211,6 +6211,7 @@ do
             -- Perform the action.
             self:RunHandler( action )
             self.hardcast = nil
+            self.whitelist = nil
             self.removeBuff( "casting" ) -- TODO: Revisit for Casting while Casting scenarios; check Fire Mage.
 
             if wasCycling then
@@ -6228,7 +6229,8 @@ do
 
         elseif e.type == "CHANNEL_FINISH" then
             if ability.finish then ability.finish() end
-            -- self.stopChanneling( false, ability.key )
+            self.whitelist = nil
+            self.removeBuff( "casting" )
 
         elseif e.type == "PROJECTILE_IMPACT" then
             local wasCycling = self.IsCycling( nil, true )
