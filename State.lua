@@ -4685,12 +4685,12 @@ do
                         end
 
                         -- Cache the value in case it is an intermediate value (i.e., multiple calculation steps).
-                        --[[ if debug then
+                        if debug then
                             conditions = format( "%s: %s", passed and "PASS" or "FAIL", scripts:GetConditionsAndValues( scriptID ) )
                             valueString = format( "%s: %s", state.args.value ~= nil and tostring( state.args.value ) or "nil", scripts:GetModifierValues( "value", scriptID ) )
 
                             Hekili:Debug( var .. " #" .. i .. " [" .. scriptID .. "]; conditions = " .. conditions .. "\n - value = " .. valueString )
-                        end ]]
+                        end
                         state.variable[ var ] = value
                         cache[ var ][ pathKey ] = value
                     end
