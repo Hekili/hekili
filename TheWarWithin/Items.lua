@@ -111,7 +111,7 @@ all:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function()
-            applyBuff( "skarmorak_shard")
+            applyBuff( "skarmorak_shard" )
         end,
 
         proc = "mastery",
