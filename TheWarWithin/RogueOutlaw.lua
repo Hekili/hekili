@@ -1481,9 +1481,9 @@ spec:RegisterSetting( "crackshot_lock", false, {
 } )
 
 spec:RegisterSetting( "stealth_lock", false, {
-    name = strformat( "%s: %s |cFFFF0000Only|r", Hekili:GetSpellLinkWithTexture( spec.abilities.stealth.id ), Hekili:GetSpellLinkWithTexture( assassin.abilities.stealth.id ) ),
-    desc = strformat( "If checked and %s is talented, %s will never be recommended outside of %s.\n\nThis is |cFFFF0000NOT|r the default simulation behavior, "
-        .. "but can prevent %s from being placed on a long cooldown.", Hekili:GetSpellLinkWithTexture( spec.talents.crackshot[2] ),
+    name = strformat( "%s: Not in normal Stealth", Hekili:GetSpellLinkWithTexture( spec.abilities.between_the_eyes.id ), Hekili:GetSpellLinkWithTexture( assassin.abilities.stealth.id ) ),
+    desc = strformat( "If checked and %s is talented, %s will NOT be recommended as an opener spell during normal Stealth.\n\nThis is |cFFFF0000NOT|r the default simulation behavior, "
+        .. "but can prevent %s from being placed on a long cooldown due to the notorious bug.", Hekili:GetSpellLinkWithTexture( spec.talents.crackshot[2] ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.between_the_eyes.id ), Hekili:GetSpellLinkWithTexture( assassin.abilities.stealth.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.between_the_eyes.id ), assassin.abilities.stealth.name ),
     type = "toggle",
