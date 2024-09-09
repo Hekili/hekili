@@ -63,7 +63,7 @@ actions.single+=/stormstrike,if=talent.elemental_spirits.enabled&(buff.doom_wind
 actions.single+=/lightning_bolt,if=((buff.maelstrom_weapon.stack>=8)|(talent.static_accumulation.enabled&buff.maelstrom_weapon.stack>=5))&buff.primordial_wave.down
 actions.single+=/crash_lightning,if=talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0
 actions.single+=/flame_shock,if=!ticking&!talent.tempest.enabled
-actions.single+=/windstrike,if=(talent.totemic_rebound.enabled&(talent.totemic_rebound.enabled&time_since_tr>=3.5)|(talent.awakening_storms.enabled&time_since_as>=3.5)
+actions.single+=/windstrike,if=(talent.totemic_rebound.enabled&time_since_tr>=3.5)|(talent.awakening_storms.enabled&time_since_as>=3.5)
 actions.single+=/stormstrike,if=(talent.totemic_rebound.enabled&time_since_tr>=3.5)|(talent.awakening_storms.enabled&time_since_as>=3.5)
 actions.single+=/lava_lash,if=talent.lively_totems.enabled&(action.lava_lash.time_since>=3.5)
 actions.single+=/doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled
