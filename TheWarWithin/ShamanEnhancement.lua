@@ -696,10 +696,10 @@ spec:RegisterAuras( {
     -- Talent: Tempest
     -- https://www.wowhead.com/spell=454015/tempest
     tempest = {
-        id = 454015
+        id = 454015,
         duration = 30.0,
         max_stack = 10,
-        copy = 454009, 452201,
+        copy = 454009, 452201
     },
     -- Talent: Movement speed increased by $378075s1%.
     -- https://wowhead.com/ptr-2/spell=378076
