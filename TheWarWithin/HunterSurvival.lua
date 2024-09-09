@@ -728,11 +728,9 @@ end )
 
 
 spec:RegisterHook( "reset_precast", function()
-
     if buff.coordinated_assault.up and talent.bombardier.enabled then
-        state:QueueAuraEvent( "coordinated_Assault", TriggerBombardier, buff.coordinated_assault.expires, "AURA_EXPIRATION" )
+        state:QueueAuraEvent( "coordinated_assault", TriggerBombardier, buff.coordinated_assault.expires, "AURA_EXPIRATION" )
     end
-
 
     if now - action.harpoon.lastCast < 1.5 then
         setDistance( 5 )
