@@ -424,7 +424,7 @@ spec:RegisterAuras( {
     },
     subterfuge = {
         id = 115192,
-        duration = 3,
+        duration = function() return 3 * talent.subterfuge.rank end,
         max_stack = 1,
     },
     -- Damage taken increased by $w1%.
