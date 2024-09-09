@@ -45,7 +45,7 @@ all:RegisterAbilities( {
         toggle = "cooldowns",
 
         proc = "damage",
-    },	
+    },
 	
     bursting_light_shard = {
         cast = 0,

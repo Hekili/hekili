@@ -34,7 +34,7 @@ actions.cat+=/sunfire,if=prev_gcd.1.moonfire&remains<duration*0.8
 actions.cat+=/starsurge,if=active_enemies=1|(active_enemies<8&!buff.cat_form.up)
 actions.cat+=/cat_form,if=!buff.cat_form.up&energy>50
 actions.cat+=/pool_resource,for_next=1
-actions.cat+=/ferocious_bite,cycle_targets=1,if=(combo_points>3&target.time_to_die<3)|(combo_points=5&energy>=50&dot.rip.remains>10)&spell_targets.swipe_cat<4
+actions.cat+=/ferocious_bite,cycle_targets=1,if=combo_points>3&target.time_to_die<3|combo_points=5&energy>=50
 actions.cat+=/thrash_cat,cycle_targets=1,if=refreshable&target.time_to_die>6&(spell_targets.thrash_cat>1|talent.liveliness.enabled)
 actions.cat+=/swipe_cat,if=active_enemies>3&combo_points<5&talent.improved_swipe.enabled
 actions.cat+=/sunfire,cycle_targets=1,if=refreshable&target.time_to_die>5&active_enemies<7&!talent.improved_sunfire.enabled
