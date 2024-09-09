@@ -290,13 +290,13 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     bladestorm = {
-        id = 227847,
+        id = 46924,
         duration = function () return ( buff.dance_of_death.up and 9 or 6 ) * haste end,
         max_stack = 1,
         onCancel = function()
             setCooldown( "global_cooldown", 0 )
         end,
-        copy = 389774
+        copy = { 227847, 389774 }
     },
     
     bloodcraze = {
