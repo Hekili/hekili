@@ -2019,6 +2019,7 @@ spec:RegisterAbilities( {
             consume_maelstrom()
 
             removeBuff( "natures_swiftness" )
+            removeStack( "tempest" )
 
             if buff.primordial_wave.up and state.spec.enhancement and ( talent.splintered_elements.enabled or legendary.splintered_elements.enabled ) then
                 if buff.splintered_elements.down then stat.haste = stat.haste + 0.1 * active_dot.flame_shock end
