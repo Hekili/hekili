@@ -1677,7 +1677,8 @@ spec:RegisterAbilities( {
 
 
     word_of_glory = {
-        id = 85673,
+        id = function() return talent.eternal_flame.enabled and 156322 or 85673 end,
+        known = 85673,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1689,19 +1690,24 @@ spec:RegisterAbilities( {
         spendType = "holy_power",
 
         startsCombat = false,
-        texture = 133192,
+        texture = function() return talent.eternal_flame.enabled and 135433 or 133192 end,
 
         handler = function ()
             if buff.afterimage_stacks.stack >= 20 then removeStack( "afterimage_stacks", 20 ) end
             if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
+
             removeBuff( "divine_purpose" )
             removeBuff( "shining_righteousness_ready" )
             removeBuff( "empyrean_legacy" )
 
+
             spend( 0.06, "mana" )
 
+            if talent.eternal_flame.enabled then applyBuff( "eternal_flame" ) end
             if talent.faiths_armor.enabled then applyBuff( "faiths_armor" ) end
         end,
+
+        copy = { 85673, "eternal_flame", 156322 }
     },
 } )
 
