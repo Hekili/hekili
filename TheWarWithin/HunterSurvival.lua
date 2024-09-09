@@ -245,7 +245,7 @@ spec:RegisterAuras( {
     bombardier = {
         id = 459859,
         duration = 60.0,
-        max_stack = 1,
+        max_stack = 2,
     },
     -- Disoriented.
     bursting_shot = {
@@ -678,7 +678,7 @@ end, state )
 
 
 local TriggerBombardier = setfenv( function()
-    setCooldown( "wildfire_bomb", 0 )
+    setCooldown( "explosive_shot", 0 )
     applyBuff( "bombardier", nil, 2 )
 end, state )
 
@@ -728,8 +728,8 @@ end )
 
 
 spec:RegisterHook( "reset_precast", function()
-    if talent.bombardier.enabled and buff.coordinated_assault.up then
-        state:QueueAuraExpiration( "coordinated_assault", TriggerBombardier, buff.coordinated_assault.expires )
+    if buff.coordinated_assault.up and talent.bombardier.enabled then
+        state:QueueAuraEvent( "coordinated_assault", TriggerBombardier, buff.coordinated_assault.expires, "AURA_EXPIRATION" )
     end
 
     if now - action.harpoon.lastCast < 1.5 then
@@ -898,6 +898,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "bestial_barrage" )
             removeBuff( "butchers_bone_fragments" )
+            removeStack( "tip_of_the_spear" )
 
             if talent.frenzy_strikes.enabled then
                 gainChargeTime( "wildfire_bomb", min( 5, true_active_enemies ) )
@@ -971,8 +972,6 @@ spec:RegisterAbilities( {
             applyBuff( "coordinated_assault" )
             if talent.bombardier.enabled then
                 setCooldown( "wildfire_bomb", 0 )
-                TriggerBombardier()
-                state:QueueAuraExpiration( "coordinated_assault", TriggerBombardier, buff.coordinated_assault.expires )
             end
             if talent.relentless_primal_ferocity.enabled then
                 applyBuff( "relentless_primal_ferocity", buff.coordinated_assault.remains )
@@ -997,7 +996,7 @@ spec:RegisterAbilities( {
         usable = function () return pet.alive end,
 
         handler = function()
-            addStack( "tip_of_the_spear", nil, 2 )
+            addStack( "tip_of_the_spear" )
         end,
     },
 
@@ -1120,6 +1119,7 @@ spec:RegisterAbilities( {
         usable = function () return buff.sic_em.up or target.health_pct < 20, "requires sic_em or target health below 20 percent" end,
         handler = function ()
             removeBuff( "sic_em" )
+            removeStack ( "tip_of_the_spear" )
         end,
     },
 
@@ -1175,7 +1175,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.furious_assault.up then removeBuff( "furious_assault" )
             else removeBuff( "bestial_barrage" ) end
-            -- removeBuff( "tip_of_the_spear" )
+            removeStack( "tip_of_the_spear" )
             removeDebuff( "target", "latent_poison" )
             removeDebuff( "target", "latent_poison_injection" )
 
@@ -1225,7 +1225,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.furious_assault.up then removeBuff( "furious_assault" )
             else removeBuff( "bestial_barrage" ) end
-            -- removeBuff( "tip_of_the_spear" )
+            removeStack( "tip_of_the_spear" )
             removeDebuff( "target", "latent_poison" )
             removeDebuff( "target", "latent_poison_injection" )
 
@@ -1305,6 +1305,7 @@ spec:RegisterAbilities( {
 
         impact = function ()
             applyDebuff( "target", "wildfire_bomb_dot" )
+            removeStack ( "tip_of_the_spear" )
         end,
 
         impactSpell = "wildfire_bomb",

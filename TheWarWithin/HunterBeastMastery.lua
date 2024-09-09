@@ -1737,7 +1737,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "explosive_shot" )
-
+            removeStack ( "tip_of_the_spear" )
             -- If triggered by Kill Command, don't consume Bombardier or reduce WfB's cooldown.
             if buff.sulfurlined_pockets_ready.up and buff.sulfurlined_pockets_ready.v1 == 259489 then return end
 
