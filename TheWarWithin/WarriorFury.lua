@@ -521,16 +521,15 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
-    whirlwind = {
+    meat_cleaver = {
         id = 85739,
         duration = 20,
         max_stack = function ()
             if talent.meat_cleaver.enabled then return 4
             elseif talent.improved_whirlwind.enabled or talent.titanic_rage.enabled then return 2
-            else return 0
-            end
+            else return 0 end
         end,
-        copy = "meat_cleaver"
+        copy = "whirlwind"
     },
 } )
 
@@ -623,8 +622,6 @@ local whirlwind_consumers = {
     victory_rush = 1
 }
 
-local whirlwind_stacks = 0
-
 local rageSpent = 0
 local gloryRage = 0
 
@@ -656,15 +653,7 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
             local ability = class.abilities[ spellID ]
 
             if not ability then return end
-            if state.talent.improved_whirlwind.enabled and ability.key == "whirlwind" then
-                whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
-            elseif state.talent.titanic_rage.enabled and ( ability.key == "odyns_fury" or ( ability.key == "avatar" and state.talent.titans_torment.enabled ) ) then
-                whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
-            elseif state.talent.improved_whirlwind.enabled and state.talent.crashing_thunder.enabled and ( ability.key == "thunder_clap" or ability.key == "thunder_blast" ) then
-                whirlwind_stacks = state.talent.meat_cleaver.enabled and 4 or 2
-            elseif whirlwind_consumers[ ability.key ] and whirlwind_stacks > 0 then
-                whirlwind_stacks = whirlwind_stacks - 1
-            elseif ability.key == "rampage" and last_rampage_target ~= destGUID and state.talent.frenzy.enabled then
+            if ability.key == "rampage" and last_rampage_target ~= destGUID and state.talent.frenzy.enabled then
                 RemoveFrenzy()
                 last_rampage_target = destGUID
             end
@@ -679,12 +668,8 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
             local ability = class.abilities[ spellID ]
             if not ability then return end
 
-            if ability.key == "bloodthirst" or ability.key == "bloodbath" then
-                if critical and state.talent.cold_steel_hot_blood.enabled then -- Critical boolean is the 21st parameter in SPELL_DAMAGE within CLEU (Ref: https://wowpedia.fandom.com/wiki/COMBAT_LOG_EVENT#Payload)
-                    TriggerColdSteelHotBlood() -- Bloodthirst/bath critical strike occured.
-                elseif state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
-                    fresh_meat_actual[ destGUID ] = true
-                end
+            if ( ability.key == "bloodthirst" or ability.key == "bloodbath" ) and state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
+                fresh_meat_actual[ destGUID ] = true
             end
         elseif state.talent.thunder_blast.enabled and spellID == 435615 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
             Hekili:ForceUpdate( "THUNDERBLAST_CHANGED", true )
@@ -766,13 +751,6 @@ end, state )
 spec:RegisterHook( "reset_precast", function ()
     rage_spent = nil
     glory_rage = nil
-
-    if buff.whirlwind.up then
-        if whirlwind_stacks == 0 then removeBuff( "whirlwind" )
-        elseif whirlwind_stacks < buff.whirlwind.stack then
-            applyBuff( "whirlwind", buff.whirlwind.remains, whirlwind_stacks )
-        end
-    end
 
     if legendary.will_of_the_berserker.enabled and buff.recklessness.up then
         state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
@@ -1908,7 +1886,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.improved_whirlwind.enabled then
-                applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
+                applyBuff( "meat_cleaver", nil, talent.meat_cleaver.enabled and 4 or 2 )
             end
         end,
     },
