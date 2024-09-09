@@ -697,8 +697,9 @@ spec:RegisterAuras( {
     -- https://www.wowhead.com/spell=454015/tempest
     tempest = {
         id = 454015
-        duration = 30,
-        max_stack = 10 -- according to Discord
+        duration = 30.0,
+        max_stack = 10,
+        copy = 454009, 452201,
     },
     -- Talent: Movement speed increased by $378075s1%.
     -- https://wowhead.com/ptr-2/spell=378076
@@ -2036,7 +2037,7 @@ spec:RegisterAbilities( {
         end,
 
         bind = "lightning_bolt",
-        copy = 454009
+        copy = 454009, 454015
     },
 
     -- Talent: Grips the target in lightning, stunning and dealing $305485o1 Nature damage over $305485d while the target is lassoed. Can move while channeling.
