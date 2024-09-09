@@ -80,7 +80,7 @@ actions.single+=/frost_shock
 actions.single+=/crash_lightning
 actions.single+=/fire_nova,if=active_dot.flame_shock
 actions.single+=/earth_elemental
-actions.single+=/flame_shock
+actions.single+=/flame_shock,if=settings.filler_shock
 actions.single+=/chain_lightning,if=buff.maelstrom_weapon.stack>=5&buff.crackling_thunder.up&talent.elemental_spirits.enabled
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack>=5&buff.primordial_wave.down
 
@@ -105,7 +105,7 @@ actions.aoe+=/ice_strike,if=talent.hailstorm.enabled&!buff.ice_strike.up
 actions.aoe+=/frost_shock,if=talent.hailstorm.enabled&buff.hailstorm.up
 actions.aoe+=/sundering
 actions.aoe+=/flame_shock,if=talent.molten_assault.enabled&!ticking
-actions.aoe+=/flame_shock,cycle_targets=1,if=(talent.fire_nova.enabled|talent.primordial_wave.enabled)&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
+actions.aoe+=/flame_shock,cycle_targets=1,if=(refreshable|settings.filler_shock)&(talent.fire_nova.enabled|talent.primordial_wave.enabled)&(active_dot.flame_shock<cycle_enemies)&active_dot.flame_shock<6
 actions.aoe+=/fire_nova,if=active_dot.flame_shock>=3
 actions.aoe+=/stormstrike,if=buff.crash_lightning.up&(talent.deeply_rooted_elements.enabled|buff.converging_storms.stack=6)
 actions.aoe+=/crash_lightning,if=talent.crashing_storms.enabled&buff.cl_crash_lightning.up&active_enemies>=4
@@ -139,12 +139,12 @@ actions.funnel+=/lightning_bolt,if=buff.maelstrom_weapon.stack=buff.maelstrom_we
 actions.funnel+=/chain_lightning,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
 actions.funnel+=/crash_lightning,if=buff.doom_winds.up|!buff.crash_lightning.up|(talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0)|(talent.converging_storms.enabled&buff.converging_storms.stack<buff.converging_storms.max_stack)
 actions.funnel+=/sundering,if=buff.doom_winds.up|set_bonus.tier30_2pc|talent.earthsurge.enabled
-actions.funnel+=/fire_nova,if=active_dot.flame_shock=6|(active_dot.flame_shock>=4&active_dot.flame_shock=active_enemies)
+actions.funnel+=/fire_nova,if=active_dot.flame_shock=6|(active_dot.flame_shock>=4&active_dot.flame_shock>=cycle_enemies)
 actions.funnel+=/ice_strike,if=talent.hailstorm.enabled&!buff.ice_strike.up
 actions.funnel+=/frost_shock,if=talent.hailstorm.enabled&buff.hailstorm.up
 actions.funnel+=/sundering
 actions.funnel+=/flame_shock,if=talent.molten_assault.enabled&!ticking
-actions.funnel+=/flame_shock,cycle_targets=1,if=(talent.fire_nova.enabled|talent.primordial_wave.enabled)&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
+actions.funnel+=/flame_shock,cycle_targets=1,if=(refreshable|settings.filler_shock)&(talent.fire_nova.enabled|talent.primordial_wave.enabled)&(active_dot.flame_shock<cycle_enemies)&active_dot.flame_shock<6
 actions.funnel+=/fire_nova,if=active_dot.flame_shock>=3
 actions.funnel+=/stormstrike,if=buff.crash_lightning.up&talent.deeply_rooted_elements.enabled
 actions.funnel+=/crash_lightning,if=talent.crashing_storms.enabled&buff.cl_crash_lightning.up&active_enemies>=4
