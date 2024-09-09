@@ -240,7 +240,7 @@ spec:RegisterAuras( {
     -- Armor increased by $w4%.; Stamina increased by $1178s2%.; Immune to Polymorph effects.$?$w13<0[; Arcane damage taken reduced by $w14% and all other magic damage taken reduced by $w13%.][]
     barkskin = {
         id = 22812,
-        duration = function() return ( talent.improved_barkskin.enabled and 12 or 8 ) + ( talent.ursocs_endurance.rank and 2 or 0 ) end,
+        duration = function() return ( talent.improved_barkskin.enabled and 12 or 8 ) + ( talent.ursocs_endurance.enabled and 2 or 0 ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -488,7 +488,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=192081
     ironfur = {
         id = 192081,
-        duration = function() return 7 + ( buff.guardian_of_elune.up and 3 or 0 ) + ( talent.ursocs_endurance.rank and 2 or 0 ) end,
+        duration = function() return 7 + ( buff.guardian_of_elune.up and 3 or 0 ) + ( talent.ursocs_endurance.enabled and 2 or 0 ) end,
         max_stack = 5,
     },
     -- Agility increased by $w1% and armor granted by Ironfur increased by $w2%.
