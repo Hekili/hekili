@@ -256,6 +256,7 @@ local stealth = {
 
     improved_garrote = { "improved_garrote", "sepsis_buff" },
 
+    primal = { "stealth" },
     basic = { "stealth", "vanish" },
     mantle = { "stealth", "vanish" },
     rogue = { "stealth", "vanish", "subterfuge", "shadow_dance" },
