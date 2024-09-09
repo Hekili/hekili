@@ -9,6 +9,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_coo
 
 actions+=/rebuke
 actions+=/call_action_list,name=cooldowns
+actions+=/call_action_list,name=mitigation
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=standard
 
@@ -20,6 +21,14 @@ actions.cooldowns+=/divine_toll,if=spell_targets.shield_of_the_righteous>=3
 actions.cooldowns+=/bastion_of_light,if=buff.avenging_wrath.up|cooldown.avenging_wrath.remains<=30
 ## actions.cooldowns+=/invoke_external_buff,name=power_infusion,if=buff.avenging_wrath.up
 actions.cooldowns+=/fireblood,if=buff.avenging_wrath.remains>8
+
+actions.mitigation+=/shield_of_the_righteous,if=tanking&buff.shield_of_the_righteous.down&(holy_power.deficit=0|buff.divine_purpose.up)
+actions.mitigation+=/word_of_glory,if=health.pct<wog_health&(holy_power.deficit=0|buff.divine_purpose.up|buff.shining_light_free.up)
+actions.mitigation+=/divine_shield,if=talent.final_stand.enabled&tanking&incoming_damage_5s>ds_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
+actions.mitigation+=/guardian_of_ancient_kings,if=tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
+actions.mitigation+=/sentinel,if=defensive_sentinel&tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
+actions.mitigation+=/ardent_defender,if=tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
+actions.mitigation+=/lay_on_hands,if=health.pct<15
 
 actions.standard+=/call_action_list,name=hammer_of_light,if=talent.lights_guidance.enabled&(cooldown.eye_of_tyr.remains<2|buff.hammer_of_light_ready.up)&(!talent.redoubt.enabled|buff.redoubt.stack>=2|!talent.bastion_of_light.enabled)
 actions.standard+=/hammer_of_light,if=(!talent.redoubt.enabled|buff.redoubt.stack=3)&(buff.blessing_of_dawn.stack>=1|!talent.of_dusk_and_dawn.enabled)
