@@ -227,7 +227,7 @@ spec:RegisterAuras( {
     },
     -- The healing or damage of your next Holy Shock is increased by $s1%.
     blessing_of_anshe = {
-        id = 445204,
+        id = 445206,
         duration = 20.0,
         max_stack = 1
     },
