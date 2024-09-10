@@ -1271,8 +1271,7 @@ spec:RegisterAbilities( {
             if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled or set_bonus.tier30_2pc > 0 ) then return true end
 
             local dmg_required = ( ( settings.last_stand_amount or 10 ) * 0.01 ) * health.max * ( solo and 0.5 or 1 )
-            local hp_required = ( ( settings.last_stand_health or 10 ) * 0.01 )
-            local hp = health.percent or 10
+            local hp_required = ( settings.last_stand_health or 10 )
 
             if settings.last_stand_condition then
                 if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
@@ -1282,7 +1281,7 @@ spec:RegisterAbilities( {
 
             if incoming_damage_5s >= dmg_required or hp <= hp_required then return true end
             if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-            if hp > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", hp, hp_required ) end
+            if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
             return false
         end,
 
@@ -1637,7 +1636,7 @@ spec:RegisterAbilities( {
 
         usable = function()
             local dmg_required = ( ( settings.shield_wall_amount or 10 ) * 0.01 ) * health.max * ( solo and 0.5 or 1 )
-            local hp_required = ( ( settings.shield_wall_health or 10 ) * 0.01 )
+            local hp_required = ( settings.shield_wall_health or 10 )
 
             if settings.shield_wall_condition then
                 if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
