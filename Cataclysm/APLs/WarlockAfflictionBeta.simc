@@ -9,8 +9,8 @@ actions+=/solo_curse,if=debuff.my_curse.down
 actions+=/haunt,use_off_gcd=1,if=!target.debuff.haunt.up|dot.haunt.remains<cast_time+latency+1
 actions+=/demon_soul,if=pet.alive
 actions+=/unstable_affliction,if=debuff.unstable_affliction.down
+actions+=/run_action_list,name=aoe,if=active_enemies>1
 actions+=/run_action_list,name=st
-actions+=/call_action_list,name=aoe,if=active_enemies>1
 
 # Single Target Rotation
 actions.st+=/summon_felhunter,if=!pet.alive
