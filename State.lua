@@ -7512,12 +7512,10 @@ function state:TimeToReady( action, pool )
         wait = z
     end
 
-    local line_cd = state.args.line_cd
-    if line_cd and type( line_cd ) == "number" and self.time > 0 and self.query_time - lastCast > max( self.combat, self.false_start ) then
-        if lastCast > self.combat then
-            if Hekili.ActiveDebug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. lastCast .. ", remaining CD: " .. max( 0, lastCast + line_cd - now ) ) end
-            wait = max( wait, lastCast + line_cd - now )
-        end
+    local line_cd = self.args.line_cd
+    if self.time > 0 and lastCast > max( self.combat, self.false_start ) and line_cd and type( line_cd ) == "number" then
+        if Hekili.ActiveDebug then Hekili:Debug( "Line CD is " .. line_cd .. ", last cast was " .. lastCast .. ", remaining CD: " .. max( 0, lastCast + line_cd - now ) ) end
+        wait = max( wait, lastCast + line_cd - now )
     end
 
     local sync = state.args.sync
