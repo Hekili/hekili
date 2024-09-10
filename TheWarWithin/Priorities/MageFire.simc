@@ -82,6 +82,8 @@ actions.combustion_phase+=/flamestrike,if=buff.combustion.down&buff.fury_of_the_
 actions.combustion_phase+=/pyroblast,if=buff.combustion.down&buff.fury_of_the_sun_king.up&buff.fury_of_the_sun_king.remains>cast_time&(buff.fury_of_the_sun_king.expiration_delay_remains=0|buff.flame_accelerant.up)
 actions.combustion_phase+=/fireball,if=buff.combustion.down&cooldown.combustion.remains<cast_time&active_enemies<2&!improved_scorch.active&!(talent.sun_kings_blessing&talent.flame_accelerant)
 actions.combustion_phase+=/scorch,if=buff.combustion.down&cooldown.combustion.remains<cast_time
+# If no precast was available, spend Frostfire Empowerment so that Fireball can be used as a precast.
+actions.combustion_phase+=/fireball,if=buff.combustion.down&buff.frostfire_empowerment.up
 # Combustion should be used when the precast is almost finished or when Meteor is about to land.
 actions.combustion_phase+=/combustion,use_off_gcd=1,use_while_casting=1,if=hot_streak_spells_in_flight=0&buff.combustion.down&variable.time_to_combustion<=0&(action.scorch.executing&action.scorch.execute_remains<variable.combustion_cast_remains|action.fireball.executing&action.fireball.execute_remains<variable.combustion_cast_remains|action.pyroblast.executing&action.pyroblast.execute_remains<variable.combustion_cast_remains|action.flamestrike.executing&action.flamestrike.execute_remains<variable.combustion_cast_remains|action.meteor.in_flight&action.meteor.in_flight_remains<variable.combustion_cast_remains)
 # Variable to determine which Fire Blast conditions are used.
@@ -108,7 +110,7 @@ actions.combustion_phase+=/scorch,if=buff.heat_shimmer.up&(talent.scald|talent.i
 actions.combustion_phase+=/phoenix_flames,if=(!talent.call_of_the_sun_king&travel_time<buff.combustion.remains|(talent.call_of_the_sun_king&buff.combustion.remains<4|buff.sun_kings_blessing.stack<8))&buff.heating_up.react+hot_streak_spells_in_flight<2
 actions.combustion_phase+=/fireball,if=buff.frostfire_empowerment.up&!buff.hot_streak.up
 actions.combustion_phase+=/scorch,if=buff.combustion.remains>cast_time&cast_time>=gcd.max
-actions.combustion_phase+=/fireball,if=buff.combustion.remains>cast_time
+actions.combustion_phase+=/fireball
 
 # Helper variable that contains the actual estimated time that the next Combustion will be ready.
 actions.combustion_timing+=/variable,use_off_gcd=1,use_while_casting=1,name=combustion_ready_time,value=cooldown.combustion.remains_expected
