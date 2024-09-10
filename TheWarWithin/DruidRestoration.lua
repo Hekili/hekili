@@ -614,7 +614,7 @@ spec:RegisterAbilities( {
 
     -- Heals the target for 7,866 over 15 sec. When Lifebloom expires or is dispelled, the target is instantly healed for 4,004. May be active on one target at a time. Lifebloom counts for 2 stacks of Mastery: Harmony.
     lifebloom = {
-        id = 33763,
+        id = 188550,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
