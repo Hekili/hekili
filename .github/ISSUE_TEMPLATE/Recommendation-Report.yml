@@ -21,6 +21,53 @@ body:
           required: true
         - label: I am reporting an issue with the default priority included with the specialization (imported or edited priorities are not supported).
           required: true
+  - type: dropdown
+    id: spec
+    attributes:
+      label: Spec
+      description: Which spec
+      options: 
+        - DK - Blood
+        - DK - Frost
+        - DK - Unholy
+        - DH - Havoc
+        - DH - Vengeance
+        - Druid - Balance
+        - Druid - Feral
+        - Druid - Guardian
+        - Druid - Restoration
+        - Evoker - Augmentation
+        - Evoker - Devastation
+        - Evoker - Preservation
+        - Hunter - Beast Mastery
+        - Hunter - Marksmanship
+        - Hunter - Survival
+        - Mage - Arcane
+        - Mage - Fire
+        - Mage - Frost
+        - Monk - Brewmaster
+        - Monk - Windwalker
+        - Paladin - Holy
+        - Paladin - Protection
+        - Paladin - Retribution
+        - Priest - Discipline
+        - Priest - Holy
+        - Priest - Shadow
+        - Rogue - Assassination
+        - Rogue - Outlaw
+        - Rogue - subtlety
+        - Shaman - Elemental
+        - Shaman - Enhancement
+        - Shaman - Restoration
+        - Warlock - Affliction
+        - Warlock - Demonology
+        - Warlock - Destruction
+        - Warrior - Arms
+        - Warrior - Fury
+        - Warrior - Protection
+      default: 0
+    validations:
+      required: true
   - type: textarea
     id: description
     attributes:
