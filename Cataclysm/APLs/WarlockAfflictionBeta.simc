@@ -39,7 +39,7 @@ actions.aoe+=/seed_of_corruption,if=buff.soulburn.up&active_enemies>2
 actions.aoe+=/seed_of_corruption,if=active_enemies>=6
 actions.aoe+=/shadowflame,if=target.distance<7
 actions.aoe+=/shadow_bolt,cycle_targets=1
-actions.aoe+=/curse_of_the_elements,if=active_enemies>5&debuff.curse_of_elements.remains<3&!target.distance.yard>5
+actions.aoe+=/curse_of_the_elements,if=active_enemies>5&debuff.curse_of_the_elements.remains<3&!target.distance>5
 
 # Soul Swap Logic (2 targets)
 actions.aoe+=/soul_swap,if=target.debuff.bane_of_agony.up&active_enemies=2
