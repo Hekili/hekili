@@ -864,8 +864,8 @@ end, state )
 
 
 spec:RegisterHook( "reset_precast", function ()
-    if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
-    else removeBuff( "rune_of_power" ) end
+    --[[ if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
+    else removeBuff( "rune_of_power" ) end --]]
 
     frost_info.last_target_virtual = frost_info.last_target_actual
     -- frost_info.virtual_brain_freeze = frost_info.real_brain_freeze
@@ -1134,7 +1134,7 @@ spec:RegisterAbilities( {
                 addStack( "deaths_chill", buff.icy_veins.remains, 1 )
             end
 
-            removeBuff( "ice_floes" )
+            removeStack( "ice_floes" )
 
             if buff.cold_front_ready.up then
                 spec.abilities.frozen_orb.handler()
@@ -1167,6 +1167,7 @@ spec:RegisterAbilities( {
             --[[ if debuff.winters_chill.stack > 0 and action.frostbolt.lastCast > action.flurry.lastCast then
                 removeDebuffStack( "target", "winters_chill" )
             end ]]
+            removeDebuffStack( "target", "winters_chill" )
         end,
 
         copy = { 116, 228597, "frostfire_bolt", 431044 }
@@ -1304,9 +1305,18 @@ spec:RegisterAbilities( {
                 removeBuff( "excess_frost" )
             end
 
+            if buff.fingers_of_frost.up then
+                removeStack( "fingers_of_frost" )
+                if talent.cryopathy.enabled then addStack( "cryopathy" ) end
+                if set_bonus.tier29_4pc > 0 then applyBuff( "touch_of_ice" ) end
+            end
+
             if buff.fingers_of_frost.up or debuff.frozen.up then
                 if talent.chain_reaction.enabled then addStack( "chain_reaction" ) end
-                if talent.thermal_void.enabled and buff.icy_veins.up then buff.icy_veins.expires = buff.icy_veins.expires + 0.5 end
+                if talent.thermal_void.enabled and buff.icy_veins.up then 
+                    buff.icy_veins.expires = buff.icy_veins.expires + 0.5 
+                    pet.water_elemental.expires = buff.icy_veins.expires
+                end
             end
 
             if not talent.glacial_spike.enabled then removeStack( "icicles" ) end
@@ -1318,7 +1328,7 @@ spec:RegisterAbilities( {
         end,
 
         impact = function ()
-            if ( buff.fingers_of_frost.up or debuff.frozen.up ) and talent.hailstones.rank == 2 then
+            if ( buff.fingers_of_frost.up or debuff.frozen.up ) and talent.hailstones.enabled then
                 addStack( "icicles" )
                 if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
                     applyBuff( "glacial_spike_usable" )
@@ -1327,11 +1337,7 @@ spec:RegisterAbilities( {
 
             removeDebuffStack( "target", "winters_chill" )
 
-            if buff.fingers_of_frost.up then
-                removeStack( "fingers_of_frost" )
-                if talent.cryopathy.enabled then addStack( "cryopathy" ) end
-                if set_bonus.tier29_4pc > 0 then applyBuff( "touch_of_ice" ) end
-            end
+
         end,
 
         copy = 228598
@@ -1394,18 +1400,18 @@ spec:RegisterAbilities( {
 
             if talent.bone_chilling.enabled then addStack( "bone_chilling" ) end
             if talent.cryopathy.enabled then addStack( "cryopathy", nil, 10 ) end
-            if talent.rune_of_power.enabled then applyBuff( "rune_of_power" ) end
+           -- if talent.rune_of_power.enabled then applyBuff( "rune_of_power" ) end
 
             if pvptalent.ice_form.enabled then applyBuff( "ice_form" )
             else
                 if buff.icy_veins.down then stat.haste = stat.haste + 0.30 end
                 applyBuff( "icy_veins" )
 
-                if talent.snap_freeze.enabled then
+               --[[ if talent.snap_freeze.enabled then
                     if talent.flurry.enabled then gainCharges( "flurry", 1 ) end
                     addStack( "brain_freeze" )
                     addStack( "fingers_of_frost" )
-                end
+                end --]]
             end
 
             if azerite.frigid_grasp.enabled then
