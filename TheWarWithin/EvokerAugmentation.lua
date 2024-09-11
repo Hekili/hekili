@@ -433,8 +433,8 @@ spec:RegisterAuras( {
         duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
         dot = "buff",
-        friendly = true,
-        no_ticks = true
+        -- friendly = true,
+        -- no_ticks = true
     },
     prescience_applied = {
         duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,
