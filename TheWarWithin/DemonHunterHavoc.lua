@@ -1028,7 +1028,7 @@ spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266, 217228, 217
 -- (4) Throw Glaive reduces the remaining cooldown of The Hunt by ${$s1/1000}.1 sec, and The Hunt's damage over time effect lasts ${$s2/1000} sec longer.
 
 
-spec:RegisterGear( "tww1", 200345, 200347, 200342, 200344, 200346 )
+spec:RegisterGear( "tww1", 212068, 212066, 212065, 212064, 212063 )
 spec:RegisterAura( "blade_rhapsody", {
     id = 454628,
     duration = 12,
