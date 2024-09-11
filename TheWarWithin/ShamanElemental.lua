@@ -1212,6 +1212,13 @@ spec:RegisterAuras( {
     }
 } )
 
+spec:RegisterGear( "tww1", 212014, 212012, 212011, 212010, 212009 )
+spec:RegisterAura( "maelstrom_surge", {
+    id = 457727,
+    duration = 5,
+    max_stack = 1
+} )
+
 
 local TriggerHeatWave = setfenv( function()
     applyBuff( "lava_surge" )
@@ -1304,6 +1311,10 @@ spec:RegisterHook( "reset_precast", function ()
             expires = expires - 1
         end
     end ]]
+end )
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if amt > 0 and resource == "maelstrom" and set_bonus.tww1_4pc > 0 then applyBuff( "maelstrom_surge" ) end
 end )
 
 

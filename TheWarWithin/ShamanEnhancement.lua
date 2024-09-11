@@ -1627,6 +1627,13 @@ spec:RegisterAbilities( {
                 alpha_expires = 0
             } )
 
+            if set_bonus.tww1_4pc > 0 then
+                insert( virtual_spirits, {
+                    expires = query_time + 15,
+                    alpha_expires = 0
+                } )
+            end
+
             if set_bonus.tier31_4pc > 0 then
                 reduceCooldown( "primordial_wave", 14 )
             end
