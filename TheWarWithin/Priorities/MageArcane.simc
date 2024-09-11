@@ -2,7 +2,7 @@ actions.precombat+=/arcane_intellect
 actions.precombat+=/variable,name=aoe_target_count,op=reset,default=2
 actions.precombat+=/variable,name=aoe_target_count,op=set,value=9,if=!talent.arcing_cleave
 #Hacky way to keep the CD opener rotation intact
-actions.precombat+=/variable,name=opener,op=set,value=time<10&(cooldown.touch_of_the_magi.up)&(cooldown.arcane_surge.up|action.arcane_surge.time_since<5|cooldown.arcane_surge.remains>15)&(cooldown.evocation.up|action.evocation.time_since<5|cooldown.evocation.remains>15)
+actions.precombat+=/variable,name=opener,op=set,value=(cooldown.touch_of_the_magi.up)&(cooldown.arcane_surge.up|action.arcane_surge.time_since<5|cooldown.arcane_surge.remains>15)&(cooldown.evocation.up|action.evocation.time_since<5|cooldown.evocation.remains>15)
 actions.precombat+=/variable,name=alt_rotation,op=set,if=talent.high_voltage,value=1
 # Variable indicates use of a trinket that boosts stats during burst
 actions.precombat+=/variable,name=steroid_trinket_equipped,op=set,value=equipped.gladiators_badge|equipped.signet_of_the_priory|equipped.high_speakers_accretion|equipped.spymasters_web|equipped.treacherous_transmitter|equipped.imperfect_ascendancy_serum
