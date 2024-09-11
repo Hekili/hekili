@@ -387,6 +387,12 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1,
     },
+    jinx_curse_elements = {
+        id = 86105,
+	copy = { 86105, 85547 },
+	duration = 4,
+        max_stack = 1,
+    },
     -- Damage taken from Shadow damage-over-time effects increased by $s3%.
     haunt = {
         id = 48181,

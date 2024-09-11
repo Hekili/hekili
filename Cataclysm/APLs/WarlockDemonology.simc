@@ -9,10 +9,12 @@ actions.precombat+=/metamorphosis
 actions.precombat+=/demon_soul,if=pet.alive&settings.pet_twisting
 actions.precombat+=/soul_harvest,if=soul_shards<3
 
+actions+=/fel_flame, if=buff.fel_spark.up
 actions+=/immolate,if=!ticking&debuff.immolate.remains<tick_time
 actions+=/corruption,if=!ticking&debuff.corruption<tick_time
 actions+=/volcanic_potion,if=buff.metamorphosis.up 
 actions+=/life_tap,if=mana.pct<55 & cooldown.metamorphosis.remains<10
+#todo add evaluation of Impending doom talent. cooldown.metamorphosis.remains can be 90 in that case
 actions+=/synapse_springs,if=cooldown.metamorphosis.remains>61
 actions+=/metamorphosis,use_off_gcd=1
 actions+=/soulburn,if=soul_shard>1&buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
@@ -30,7 +32,7 @@ actions.sdr+=/bane_of_doom,if=!ticking&target.time_to_die>15
 actions.sdr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.bane_of_doom.up
 actions.sdr+=/summon_infernal,if=settings.inferno_enabled&target.time_to_die>45&soul_shards=3
 actions.sdr+=/hand_of_guldan,use_off_gcd=1
-actions.sdr+=/shadowflame,if=!debuff.shadowflame.up&buff.fel_spark.up
+actions.sdr+=/shadowflame,if=target.distance<7
 actions.sdr+=/soulburn,if=soul_shard>1&settings.pet_twisting&!buff.fel_intelligence.up & buff.demon_soul_felguard.down
 actions.sdr+=/summon_felhunter,if=soul_shard>1&buff.soulburn.up&!buff.fel_intelligence.up&settings.pet_twisting&buff.demon_soul_felguard.down
 actions.sdr+=/summon_doomguard,if=buff.demonic_pact.up&buff.molten_core.stack>=1&cooldown.hand_of_gul_dan.remains<10
@@ -45,7 +47,7 @@ actions.nr+=/hand_of_guldan,use_off_gcd=1
 actions.nr+=/bane_of_doom,if=!ticking&target.time_to_die>30
 actions.nr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.bane_of_doom.up
 actions.nr+=/corruption,if=!ticking
-actions.nr+=/shadowflame,if=!debuff.shadowflame.up&buff.fel_spark.up
+actions.nr+=/shadowflame,if=target.distance<7
 actions.nr+=/incinerate,if=buff.molten_core.up
 actions.nr+=/soul_fire,if=target.health.pct<25&buff.decimation.up
 actions.nr+=/shadow_bolt
