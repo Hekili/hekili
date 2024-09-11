@@ -1279,7 +1279,7 @@ spec:RegisterAbilities( {
                 return true
             end
 
-            if incoming_damage_5s >= dmg_required or hp <= hp_required then return true end
+            if incoming_damage_5s >= dmg_required or health.percent <= hp_required then return true end
             if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
             if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
             return false
