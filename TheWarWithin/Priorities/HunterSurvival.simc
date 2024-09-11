@@ -5,6 +5,7 @@ actions.precombat+=/use_item,name=algethar_puzzle_box
 actions+=/muzzle
 actions+=/tranquilizing_shot
 actions+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.time_to_pct_80>20
+actions+=/mend_pet,if=pet.health_pct<pet_healing
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=plst,strict=1,if=active_enemies<3&talent.vicious_hunt
 actions+=/call_action_list,name=plcleave,strict=1,if=active_enemies>2&talent.vicious_hunt

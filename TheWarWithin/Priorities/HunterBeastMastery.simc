@@ -6,6 +6,7 @@ actions.precombat+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_do
 
 actions+=/counter_shot
 actions+=/tranquilizing_shot
+actions+=/mend_pet,if=pet.health_pct<pet_healing
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=trinkets
 actions+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.time_to_pct_80>20
