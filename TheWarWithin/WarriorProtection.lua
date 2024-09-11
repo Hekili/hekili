@@ -1272,16 +1272,17 @@ spec:RegisterAbilities( {
 
             local dmg_required = ( ( settings.last_stand_amount or 10 ) * 0.01 ) * health.max * ( solo and 0.5 or 1 )
             local hp_required = ( settings.last_stand_health or 10 )
+            local hp = health.percent or 10
 
             if settings.last_stand_condition then
                 if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-                if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
+                if hp > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", hp, hp_required ) end
                 return true
             end
 
             if incoming_damage_5s >= dmg_required or hp <= hp_required then return true end
             if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-            if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
+            if hp > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", hp, hp_required ) end
             return false
         end,
 
