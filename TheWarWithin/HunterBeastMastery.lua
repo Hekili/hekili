@@ -382,7 +382,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_2 = {
         id = 246851,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function () return spec.auras.barbed_shot.duration end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -390,7 +390,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_3 = {
         id = 246852,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function () return spec.auras.barbed_shot.duration end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -398,7 +398,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_4 = {
         id = 246853,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function () return spec.auras.barbed_shot.duration end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -406,7 +406,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_5 = {
         id = 246854,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function () return spec.auras.barbed_shot.duration end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -414,7 +414,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_6 = {
         id = 284255,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function () return spec.auras.barbed_shot.duration end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -422,7 +422,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_7 = {
         id = 284257,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function () return spec.auras.barbed_shot.duration end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -430,7 +430,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_8 = {
         id = 284258,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function () return spec.auras.barbed_shot.duration end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -438,7 +438,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_dot = {
         id = 217200,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function () return spec.auras.barbed_shot.duration end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -731,7 +731,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=272790
     frenzy = {
         id = 272790,
-        duration = function () return azerite.feeding_frenzy.enabled and 9 or 8 end,
+        duration = function () return azerite.feeding_frenzy.enabled and 9 or spec.auras.barbed_shot.duration end,
         max_stack = 3,
         generate = function ()
             local fr = buff.frenzy
@@ -1047,7 +1047,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=257946
     thrill_of_the_hunt = {
         id = 257946,
-        duration = 8,
+        duration = function () return spec.auras.barbed_shot.duration end,
         max_stack = 3,
         copy = 312365
     },
@@ -1215,17 +1215,34 @@ spec:RegisterAura( "lethal_command", {
 } )
 
 
+local CallOfTheWildCDR = setfenv( function()
+    reduceCooldown( "kill_command", spec.abilities.kill_command.cooldown/2 )
+    reduceCooldown( "barbed_shot", spec.abilities.barbed_shot.cooldown/2 )
+end, state )
+
+
 spec:RegisterHook( "reset_precast", function()
     if debuff.tar_trap.up then
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
     end
 
-    if talent.blood_frenzy.enabled and buff.call_of_the_wild.up then
+    if talent.bloody_frenzy.enabled and buff.call_of_the_wild.up then
         applyBuff( "beast_cleave", max( buff.beast_cleave.remains, buff.call_of_the_wild.remains ) )
     end
 
     if buff.nesingwarys_apparatus.up then
         state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireNesingwarysTrappingApparatus, buff.nesingwarys_apparatus.expires )
+    end
+
+    if buff.call_of_the_wild.up then
+        local tick, expires = buff.call_of_the_wild.applied, buff.call_of_the_wild.expires
+
+        for i = 1, 5 do
+            tick = tick + 4
+            if tick > query_time and tick < expires then
+                state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, tick, "AURA_TICK" )
+            end
+        end
     end
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
@@ -1376,7 +1393,7 @@ spec:RegisterAbilities( {
             end
 
             applyDebuff( "target", "barbed_shot_dot" )
-            addStack( "frenzy", 8, 1 )
+            addStack( "frenzy", spec.auras.frenzy.duration, 1 )
 
             if talent.barbed_wrath.enabled then reduceCooldown( "bestial_wrath", 12 ) end
             if talent.thrill_of_the_hunt.enabled then addStack( "thrill_of_the_hunt", nil, 1 ) end
@@ -1518,6 +1535,13 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "call_of_the_wild" )
+            reduceCooldown( "kill_command", spec.abilities.kill_command.cooldown/2 )
+            reduceCooldown( "barbed_shot", spec.abilities.barbed_shot.cooldown/2 )
+            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 4, "AURA_TICK" )
+            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 8, "AURA_TICK" )
+            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 12, "AURA_TICK" )
+            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 16, "AURA_TICK" )
+            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 20, "AURA_TICK" )
             if talent.bloody_frenzy.enabled then applyBuff( "beast_cleave", 20 ) end
         end,
     },
@@ -2412,8 +2436,21 @@ spec:RegisterSetting( "barbed_shot_grace_period", 0.5, {
     min = 0,
     max = 1,
     step = 0.01,
-    width = "full"
+    width = "normal"
 } )
+
+--[[
+spec:RegisterSetting( "pet_healing", 0, {
+    name = "|T132179:0|t Mend Pet Usage",
+    desc = "If set above zero, the addon will recommend |T132179:0|t Mend Pet when your pet falls below this HP, only when solo.",
+    icon = 132179,
+    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "normal"
+} ) ]]--
 
 spec:RegisterSetting( "avoid_bw_overlap", false, {
     name = "Avoid |T132127:0|t Bestial Wrath Overlap",
