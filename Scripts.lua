@@ -463,6 +463,7 @@ do
         { "^(.-)%.deficit>=?(.-)$"         , "0.01+%1.timeTo(%1.max-(%2))" },
         { "^target%.health%.pe?r?ce?n?t[<>=]+(.-)$"
                                            , "0.01+target['time_to_pct_' .. %1]" },
+        { "^health.pe?r?ce?n?t([<>=]+)(.-)$" , "health.pct%1%2" },
         { "^(.-)%.pe?r?ce?n?t[<>=]+(.-)$"  , "0.01+%1.timeTo(%1.max*(%2/100))" },
 
         { "^cooldown%.([a-z0-9_]+)%.ready$"                      , "cooldown.%1.remains"                      },
