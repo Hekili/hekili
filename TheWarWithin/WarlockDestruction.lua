@@ -1124,6 +1124,7 @@ spec:RegisterHook( "spend", function( amt, resource )
             if buff.art_pit_lord.up then
                 summon_demon( "pit_lord" )
                 removeBuff( "art_pit_lord" )
+                if talent.ruination.enabled then applyBuff( "ruination" ) end
             end
 
             if talent.diabolic_ritual.enabled then
@@ -1186,10 +1187,6 @@ end )
 
 spec:RegisterStateExpr( "havoc_active", function ()
     return buff.active_havoc.up
-end )
-
-spec:RegisterStateExpr( "diabolic_ritual", function ()
-    return buff.diabolic_ritual_overlord.up or buff.diabolic_ritual_mother_of_chaos.up or buff.diabolic_ritual_pit_lord.up
 end )
 
 spec:RegisterStateExpr( "demonic_art", function ()
@@ -1844,6 +1841,7 @@ spec:RegisterAbilities( {
 
     ruination = {
         id = 434635,
+        known = 116858,
         cast = function () return 1.5
             * ( buff.ritual_of_ruin.up and 0.5 or 1 )
             * ( buff.backdraft.up and 0.7 or 1 )
@@ -1881,11 +1879,13 @@ spec:RegisterAbilities( {
                 if debuff.immolate.remains <= 5 then removeDebuff( "target", "immolate" )
                 else debuff.immolate.expires = debuff.immolate.expires - 5 end
             end
-            summon_demon( "diabolic_imp", 1 )
+            -- summon_demon( "diabolic_imp", 1 )
             removeBuff( "ruination" )
         end,
 
         impact = function() end,
+
+        bind = "chaos_bolt"
     },
 
     -- Conjure a Shadow Rift at the target location lasting $d. Enemy players within the rift when it expires are teleported to your Demonic Circle.; Must be within $s2 yds of your Demonic Circle to cast.
