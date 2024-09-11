@@ -109,7 +109,7 @@ actions.finisher+=/primal_wrath,if=spell_targets.primal_wrath>1&((dot.primal_wra
 actions.finisher+=/rip,cycle_targets=1,if=refreshable&(!talent.primal_wrath|spell_targets=1)&(buff.bloodtalons.up|!talent.bloodtalons)&(buff.tigers_fury.up|dot.rip.remains<cooldown.tigers_fury.remains)&(remains<fight_remains|remains<4&buff.ravage.up)
 actions.finisher+=/pool_resource,for_next=1
 actions.finisher+=/ferocious_bite,max_energy=1,cycle_targets=1,if=!buff.bs_inc.up
-actions.finisher+=/ferocious_bite,cycle_targets=1
+actions.finisher+=/ferocious_bite,cycle_targets=1,if=buff.bs_inc.up
 
 # most expensive bt cycle is Shred + Thrash + Rake, 40+40+35 for 115 energy. During incarn it is 32+32+28 for 92energy
 actions.variable+=/variable,name=effective_energy,op=set,value=energy+(40*buff.clearcasting.stack)+(3*energy.regen)+(50*(cooldown.tigers_fury.remains<3.5))
