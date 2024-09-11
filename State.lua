@@ -108,6 +108,7 @@ state.empowering = {}
 
 state.health = {
     max = 1,
+    percent = 100,
     initialized = false
 }
 state.legendary = {}
@@ -6577,6 +6578,7 @@ do
         if not state.health.initialized then
             state.health.resource = "health"
             state.health.meta = {}
+            state.health.percent = nil
             setmetatable( state.health, mt_resource )
             state.health.initialized = true
         end

@@ -102,7 +102,7 @@ actions.direct+=/ambush,if=variable.use_filler&(buff.blindside.up|stealthed.rogu
 # Tab-Mutilate to apply Deadly Poison at 2 targets
 actions.direct+=/mutilate,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&!debuff.amplifying_poison.up&variable.use_filler&spell_targets.fan_of_knives=2
 # Fallback Envenom
-actions.direct+=/envenom,if=!variable.use_filler&effective_combo_points>=cp_max_spend&(energy.pct>=(40+30*talent.hand_of_fate-15*talent.vicious_venoms)|boss&fight_remains<=20)
+actions.direct+=/envenom,if=!variable.use_filler&combo_points.deficit<=1&(energy.pct>=(40+30*talent.hand_of_fate-15*talent.vicious_venoms)|boss&fight_remains<=20)
 # Fallback Mutilate
 actions.direct+=/mutilate,if=variable.use_filler
 
