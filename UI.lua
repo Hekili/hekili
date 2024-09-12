@@ -25,8 +25,6 @@ local GetItemCooldown = C_Item.GetItemCooldown
 local GetSpellTexture = C_Spell.GetSpellTexture
 local IsUsableSpell = C_Spell.IsSpellUsable
 
-local WasExtended = 0
-
 local GetSpellCooldown = function(spellID)
     local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
     if spellCooldownInfo then
@@ -1072,6 +1070,7 @@ do
             local now = GetTime()
 
             self.recTimer = self.recTimer - elapsed
+            self.recIsExtended = false
 
             if not self:IsThreadLocked() and ( self.NewRecommendations or self.recTimer < 0 ) then
                 local alpha = self.alpha
@@ -1307,7 +1306,7 @@ do
                                 if i == 1 and conf.delays.fade then
                                     local delay = 0
                                     if conf.delays.extend then
-                                        if WasExtended == 1 then
+                                        if self.recIsExtended == true then
                                             delay = b.ExactTime and ( b.ExactTime - now ) or 0
                                         end
                                     else
@@ -1658,11 +1657,11 @@ do
                         start, duration, enabled, modRate = GetSpellCooldown( ability.id )
                     end
 
-                    WasExtended = 0
+                    self.recIsExtended = false
                     if i == 1 and conf.delays.extend and rec.exact_time > max( now, start + duration ) then
                         start = ( start > 0 and start ) or ( cStart > 0 and cStart ) or ( gStart > 0 and gStart ) or max( state.gcd.lastStart, state.combat )
                         duration = rec.exact_time - start
-                        WasExtended = 1
+                        self.recIsExtended = true
                     elseif enabled and enabled == 0 then
                         start = 0
                         duration = 0
