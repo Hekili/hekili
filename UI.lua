@@ -25,6 +25,8 @@ local GetItemCooldown = C_Item.GetItemCooldown
 local GetSpellTexture = C_Spell.GetSpellTexture
 local IsUsableSpell = C_Spell.IsSpellUsable
 
+local WasExtended = 0
+
 local GetSpellCooldown = function(spellID)
     local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
     if spellCooldownInfo then
@@ -1303,8 +1305,16 @@ do
                                 end
 
                                 if i == 1 and conf.delays.fade then
-                                    local delay = b.ExactTime and ( b.ExactTime - now ) or 0
-                                    --[[ local start, duration = 0, 0
+                                    local delay = 0
+                                    if conf.delays.extend then
+                                        if WasExtended == 1 then
+                                            delay = b.ExactTime and ( b.ExactTime - now ) or 0
+                                        end
+                                    else
+                                        delay = b.ExactTime and ( b.ExactTime - now ) or 0
+                                    end
+
+                                        --[[ local start, duration = 0, 0
 
                                     if a.gcd ~= "off" then
                                         start, duration = GetSpellCooldown( 61304 )
@@ -1648,10 +1658,11 @@ do
                         start, duration, enabled, modRate = GetSpellCooldown( ability.id )
                     end
 
+                    WasExtended = 0
                     if i == 1 and conf.delays.extend and rec.exact_time > max( now, start + duration ) then
                         start = ( start > 0 and start ) or ( cStart > 0 and cStart ) or ( gStart > 0 and gStart ) or max( state.gcd.lastStart, state.combat )
                         duration = rec.exact_time - start
-
+                        WasExtended = 1
                     elseif enabled and enabled == 0 then
                         start = 0
                         duration = 0
