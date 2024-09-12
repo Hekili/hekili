@@ -3481,10 +3481,19 @@ do
                                 order = 1.1
                             },
 
+                            onlyFadeIfExtended = {
+                                type = "toggle",
+                                name = "Only Fade if Extended",
+                                desc = "If checked, the primary icon will fade only when extended beyond the GCD.",
+                                width = 1.49,
+                                order = 1.2,
+                                disabled = function () return data.delays.extend == false or data.delays.fade == false end
+                            },
+
                             break01 = {
                                 type = "description",
                                 name = " ",
-                                order = 1.2,
+                                order = 1.3,
                                 width = "full",
                             },
 

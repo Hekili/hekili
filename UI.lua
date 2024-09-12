@@ -1305,7 +1305,7 @@ do
 
                                 if i == 1 and conf.delays.fade then
                                     local delay = 0
-                                    if conf.delays.extend then
+                                    if conf.delays.extend and conf.delays.onlyFadeIfExtended then
                                         if self.recIsExtended == true then
                                             delay = b.ExactTime and ( b.ExactTime - now ) or 0
                                         end
