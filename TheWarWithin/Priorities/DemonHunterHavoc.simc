@@ -1,7 +1,7 @@
 actions.precombat+=/variable,name=trinket1_steroids,value=trinket.1.has_stat.any_dps
 actions.precombat+=/variable,name=trinket2_steroids,value=trinket.2.has_stat.any_dps
 actions.precombat+=/variable,name=rg_ds,default=0,op=reset
-actions.precombat+=/sigil_of_flame
+actions.precombat+=/sigil_of_flame,if=!talent.demonic_intensity.enabled|cooldown.metamorphosis.remains
 actions.precombat+=/immolation_aura,if=buff.immolation_aura.down
 
 ## actions+=/retarget_auto_attack,line_cd=1,target_if=mindebuff.burning_wound.remains,if=talent.burning_wound&talent.demon_blades&active_dot.burning_wound<(spell_targets>?3)
