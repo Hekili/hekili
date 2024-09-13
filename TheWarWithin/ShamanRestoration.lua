@@ -660,8 +660,11 @@ spec:RegisterAbilities( {
         charges = function()
             if talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank > 1 then return 2 end
         end,
-        cooldown = function () return 30 - talent.totemic_surge.enabled and 6 or 0 end,
-        recharge = function() return 30 - talent.totemic_surge.enabled and 6 or 0 end,
+        cooldown = function () return 30 - ( talent.totemic_surge.enabled and 6 or 0 ) end,
+        recharge = function() 
+            if talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank > 1 then return ( 30 - talent.totemic_surge.enabled and 6 or 0 )
+            else return nil end
+        end,
         gcd = "totem",
 
         spend = 0.09,
@@ -868,7 +871,7 @@ spec:RegisterAbilities( {
     riptide = {
         id = 61295,
         cast = 0,
-        charges = function () return 2 + talent.elemental_reverb.enabled and 1 or 0 end,
+        charges = function () return 2 + ( talent.elemental_reverb.enabled and 1 or 0 ) end,
         cooldown = 6,
         recharge = 6,
         gcd = "spell",
