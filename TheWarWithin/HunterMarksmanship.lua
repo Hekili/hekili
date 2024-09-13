@@ -861,14 +861,14 @@ spec:RegisterAbilities( {
             return 2.5 * haste * ( buff.rapid_fire.up and 0.7 or 1 ) * ( buff.trueshot.up and 0.5 or 1 ) * ( buff.streamline.up and ( 1 - 0.15 * talent.streamline.rank ) or 1 )
         end,
         charges = 2,
-        cooldown = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) * ( 1 - 0.1 * talent.tactical_reload.rank ) end,
-        recharge = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) * ( 1 - 0.1 * talent.tactical_reload.rank ) end,
+        cooldown = function () return haste * 12 *( buff.trueshot.up and 0.3 or 1 ) * ( talent.tactical_reload.enabled and 0.9 or 1 ) end,
+        recharge = function () return haste * 12 *( buff.trueshot.up and 0.3 or 1 ) * ( talent.tactical_reload.enabled and 0.9 or 1 ) end,
         gcd = "spell",
         school = "physical",
 
         spend = function ()
             if buff.lock_and_load.up or buff.secrets_of_the_unblinking_vigil.up then return 0 end
-            return 35 * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) * ( buff.trueshot.up and ( 1 - 0.5 * talent.eagletalons_true_focus.rank ) or 1 )
+            return 35 * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) * ( buff.trueshot.up and ( talent.eagletalons_true_focus.enabled and 0.5  ) or 1 )
         end,
         spendType = "focus",
 
@@ -910,9 +910,9 @@ spec:RegisterAbilities( {
             if buff.lock_and_load.up then return 0 end
             return 2 * haste * ( buff.rapid_fire.up and 0.7 or 1 ) * ( buff.trueshot.up and 0.5 or 1 ) * ( buff.streamline.up and ( 1 - 0.15 * talent.streamline.rank ) or 1 )
         end,
-        cooldown = function () return haste * ( buff.trueshot.up and 4.8 or 12 ) * ( 1 - 0.1 * talent.tactical_reload.rank ) end,
+        cooldown = function () return haste * 12 *( buff.trueshot.up and 0.3 or 1 ) * ( talent.tactical_reload.enabled and 0.9 or 1 ) end,
         gcd = "spell",
-        school = "physical",
+        school = "shadow",
 
         spend = function ()
             if buff.lock_and_load.up or buff.secrets_of_the_unblinking_vigil.up then return 0 end

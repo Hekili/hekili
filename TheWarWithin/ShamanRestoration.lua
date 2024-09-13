@@ -186,7 +186,7 @@ spec:RegisterAuras( {
     },
     downpour = {
         id = 462488,
-        duration = 10,
+        duration = 12,
         max_stack = 1
     },
     downpour_hot = {
@@ -660,9 +660,10 @@ spec:RegisterAbilities( {
         charges = function()
             if talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank > 1 then return 2 end
         end,
-        cooldown = 30,
-        recharge = function()
-            if talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank > 1 then return 30 end
+        cooldown = function () return 30 - ( talent.totemic_surge.enabled and 6 or 0 ) end,
+        recharge = function() 
+            if talent.healing_stream_totem.rank + talent.healing_stream_totem_2.rank > 1 then return ( 30 - talent.totemic_surge.enabled and 6 or 0 )
+            else return nil end
         end,
         gcd = "totem",
 
@@ -870,7 +871,7 @@ spec:RegisterAbilities( {
     riptide = {
         id = 61295,
         cast = 0,
-        charges = 2,
+        charges = function () return 2 + ( talent.elemental_reverb.enabled and 1 or 0 ) end,
         cooldown = 6,
         recharge = 6,
         gcd = "spell",
@@ -925,6 +926,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "surging_totem" )
+            if talent.downpour.enabled then applyBuff( "downpour" ) end
         end,
 
         bind = { "healing_rain", "downpour" }
