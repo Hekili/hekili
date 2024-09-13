@@ -487,7 +487,6 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 1698701,
         buff = "downpour",
-        notalent = "surging_totem",
 
         handler = function ()
             removeBuff( "downpour" )
