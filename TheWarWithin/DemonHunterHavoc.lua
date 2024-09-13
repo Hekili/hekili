@@ -1580,8 +1580,7 @@ spec:RegisterAbilities( {
                     if talent.demonsurge.enabled then
                         if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires
                         else applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains ) end
+                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
 
                         applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
                         applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
@@ -1600,7 +1599,7 @@ spec:RegisterAbilities( {
 
                     if talent.demonsurge.enabled then
                         applyBuff( "demonsurge_demonic", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
+                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
 
                         applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
                         applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
@@ -1668,8 +1667,7 @@ spec:RegisterAbilities( {
                     if talent.demonsurge.enabled then
                         if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires
                         else applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains ) end
+                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
 
                         applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
                         applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
@@ -1681,7 +1679,7 @@ spec:RegisterAbilities( {
 
                     if talent.demonsurge.enabled then
                         applyBuff( "demonsurge_demonic", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
+                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
                         applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
                         applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
                     end
@@ -1883,6 +1881,8 @@ spec:RegisterAbilities( {
 
         spend = -20,
         spendType = "fury",
+        talent = "demonic_intensity",
+        buff = "metamorphosis",
 
         startsCombat = false,
         texture = 135794,
@@ -1956,7 +1956,6 @@ spec:RegisterAbilities( {
                 applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
                 applyBuff( "demonsurge_sigil_of_doom", buff.metamorphosis.remains )
             end
-
 
             if talent.violent_transformation.enabled then
                 setCooldown( "sigil_of_flame", 0 )

@@ -1,7 +1,6 @@
 actions.precombat+=/variable,name=single_target,value=spell_targets.spirit_bomb=1
 actions.precombat+=/variable,name=small_aoe,value=spell_targets.spirit_bomb>=2&spell_targets.spirit_bomb<=5
 actions.precombat+=/variable,name=big_aoe,value=spell_targets.spirit_bomb>=6
-actions.precombat+=/arcane_torrent
 actions.precombat+=/sigil_of_flame,if=hero_tree.aldrachi_reaver|level<71|(hero_tree.felscarred&talent.student_of_suffering)
 actions.precombat+=/immolation_aura
 
@@ -11,7 +10,7 @@ actions+=/variable,name=num_spawnable_souls,op=max,value=2,if=talent.fracture&co
 actions+=/variable,name=num_spawnable_souls,op=max,value=3,if=talent.fracture&cooldown.fracture.charges_fractional>=1&buff.metamorphosis.up
 actions+=/variable,name=num_spawnable_souls,op=add,value=1,if=talent.soul_carver&(cooldown.soul_carver.remains>(cooldown.soul_carver.duration-3))
 actions+=/disrupt,if=target.debuff.casting.up
-actions+=/infernal_strike,use_off_gcd=1
+actions+=/infernal_strike,use_off_gcd=1,if=time>0
 actions+=/demon_spikes,use_off_gcd=1,if=!buff.demon_spikes.up&tanking
 actions+=/run_action_list,name=ar,strict=1,if=hero_tree.aldrachi_reaver|level<71
 actions+=/run_action_list,name=fs,strict=1,if=hero_tree.felscarred
