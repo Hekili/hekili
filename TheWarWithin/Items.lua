@@ -235,5 +235,15 @@ all:RegisterAuras( {
         id = 458524,
         duration = 15,
         max_stack = 1
-    }
+    },
+    ascendance_crit = {
+        id = 458502,
+        duration = 15,
+        max_stack = 1
+    },
+    ascendance_mastery = {
+        id = 458525,
+        duration = 15,
+        max_stack = 1
+    },
 } )
