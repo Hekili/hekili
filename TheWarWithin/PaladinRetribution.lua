@@ -1208,6 +1208,10 @@ spec:RegisterAbilities( {
                 spec.abilities.consecration.handler()
                 removeBuff( "consecrated_blade" )
             end
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_dot" )
+                removeStack( "dawnlight" )
+            end
             if talent.expurgation.enabled then
                 applyDebuff( "target", "expurgation" )
             end
@@ -1550,6 +1554,11 @@ spec:RegisterAbilities( {
             removeBuff( "echoes_of_wrath" )
             removeDebuffStack( "target", "judgment" )
             removeDebuff( "target", "reckoning" )
+
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_dot" )
+                removeStack( "dawnlight" )
+            end
 
             if buff.empyrean_power.up then
                 removeBuff( "empyrean_power" )
@@ -1963,6 +1972,10 @@ spec:RegisterAbilities( {
                 removeBuff( "blessing_of_dawn" )
                 applyBuff( "blessing_of_dusk" )
             end
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_dot" )
+                removeStack( "dawnlight" )
+            end
             if buff.divine_purpose.up then removeBuff( "divine_purpose" )
             else
                 removeBuff( "hidden_retribution_t21_4p" )
@@ -2081,6 +2094,11 @@ spec:RegisterAbilities( {
             removeBuff( "divine_purpose" )
             removeBuff( "the_magistrates_judgment" )
             applyBuff( "shield_of_the_righteous" )
+
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_dot" )
+                removeStack( "dawnlight" )
+            end
         end,
     },
 
@@ -2186,6 +2204,12 @@ spec:RegisterAbilities( {
             removeDebuffStack( "target", "judgment" )
             removeDebuff( "target", "reckoning" )
             removeStack( "vanquishers_hammer" )
+
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_dot" )
+                removeStack( "dawnlight" )
+            end
+
             if buff.divine_purpose.up then removeBuff( "divine_purpose" )
             else
                 removeBuff( "hidden_retribution_t21_4p" )
@@ -2245,6 +2269,10 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_dot" )
+                removeStack( "dawnlight" )
+            end
             if target.is_undead or target.is_demon then applyDebuff( "target", "wake_of_ashes" ) end
             if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if talent.lights_guidance.enabled then applyBuff( "hammer_of_light_ready" ) end

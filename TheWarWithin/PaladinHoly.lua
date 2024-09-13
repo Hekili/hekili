@@ -346,6 +346,21 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+    dawnlight = {
+        id = 431522,
+        duration = 30,
+        max_stack = 2
+    },
+    dawnlight_dot = {
+        id = 431380,
+        duration = 8,
+        max_stack = 1
+    },
+    dawnlight_hot = {
+        id = 431381,
+        duration = 8,
+        max_stack = 1
+    },
     devotion_aura = {
         id = 465,
         duration = 3600,
@@ -693,6 +708,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "barrier_of_faith" )
+            if talent.dawnlight.enabled then applyBuff( "dawnlight", nil, 2 ) end
         end,
     },
 
@@ -1379,6 +1395,7 @@ spec:RegisterAbilities( {
         texture = 613408,
 
         handler = function ()
+            if talent.dawnlight.enabled then applyBuff( "dawnlight", nil, 2 ) end
             if set_bonus.tier30_4pc > 0 then
                 gain( 1, "holy_power" )
                 HandleAwakening()
@@ -1511,6 +1528,10 @@ spec:RegisterAbilities( {
         handler = function ()
             spend( 0.18 * mana.max, "mana" )
             if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_hot" )
+                removeStack( "dawnlight" )
+            end
             removeBuff( "divine_purpose" )
             removeBuff( "shining_righteousness_ready" )
             if talent.maraads_dying_breath.enabled then applyBuff( "maraads_dying_breath" ) end
@@ -1610,6 +1631,11 @@ spec:RegisterAbilities( {
             removeBuff( "divine_purpose" )
             reduceCooldown( "crusader_strike", 1.5 )
 
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_dot" )
+                removeStack( "dawnlight" )
+            end
+
             if talent.shining_righteousness.enabled then
                 if buff.shining_righteousness.stack == buff.shining_righteousness.max_stack - 1 then
                     removeBuff( "shining_righteousness" )
@@ -1697,6 +1723,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.afterimage_stacks.stack >= 20 then removeStack( "afterimage_stacks", 20 ) end
+            if buff.dawnlight.up then
+                applyBuff( "dawnlight_hot" )
+                removeStack( "dawnlight" )
+            end
             if buff.divine_purpose.down and buff.shining_righteousness_ready.down then addStack( "afterimage_stacks", nil, 3 ) end
 
             removeBuff( "divine_purpose" )
