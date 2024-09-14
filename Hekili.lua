@@ -256,6 +256,25 @@ function Hekili:SaveDebugSnapshot( dispName )
 				v.log[ i ] = nil
 			end
 
+            -- Store previous spell data.
+            local prevString = "\nprevious_spells:"
+            -- Skip over the actions in the "prev" table that were added to computed the next recommended ability in the queue.
+            local i, j = ( #state.predictions + 1 ), 1
+            local spell = state.prev[i].spell or "no_action"
+            if spell == "no_action" then
+                prevString = prevString .. "  no history available"
+            else
+                local numHistory = #state.prev.history
+                while i <= numHistory and spell ~= "no_action" do
+                    prevString = format( "%s\n   %d - %s", prevString, j, spell )
+                    i, j = i + 1, j + 1
+                    spell = state.prev[i].spell or "no_action"
+                end
+            end
+            prevString = prevString .. "\n\n"
+
+            insert( v.log, 1, prevString )
+
             -- Store aura data.
             local auraString = "\nplayer_buffs:"
             local now = GetTime()
@@ -320,8 +339,6 @@ function Hekili:SaveDebugSnapshot( dispName )
                     auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
                 end
             end
-
-            auraString = auraString .. "\n\n"
 
             insert( v.log, 1, auraString )
             insert( v.log, 1, "targets:  " .. ( Hekili.TargetDebug or "no data" ) )
