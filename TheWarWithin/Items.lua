@@ -36,6 +36,30 @@ all:RegisterAbilities( {
         },
     },
 
+    quickwick_candlestick = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+        
+        item = 225649,
+        toggle = "cooldowns",
+        
+        handler = function()
+            applyBuff( "quickwicks_quick_trick_wick_walk" )
+        end,
+        
+        proc = "haste",
+        self_buff = "quickwicks_quick_trick_wick_walk",
+        
+        auras = {
+            quickwicks_quick_trick_wick_walk = {
+                id = 455451,
+                duration = 20,
+                max_stack = 1
+            },
+        },
+    },
+
     ravenous_honey_buzzer = {
         cast = 0,
         cooldown = 90,
