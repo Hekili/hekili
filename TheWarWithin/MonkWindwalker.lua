@@ -1893,6 +1893,11 @@ spec:RegisterAbilities( {
                     applyDebuff( "target", "recently_challenged" )
                 end
             end
+
+            if buff.darting_hurricane.up then
+                setCooldown( "global_cooldown", cooldown.global_cooldown.remains * 0.5 )
+                removeStack( "darting_hurricane" )
+            end
         end,
     },
 
