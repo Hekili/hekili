@@ -869,6 +869,7 @@ all:RegisterAbilities( {
     },
 } )
 
+all:RegisterGear( "scroll_of_momentum", 226539 )
 
 all:RegisterAuras( {
     -- Darkmoon Card: Ascendance
@@ -892,4 +893,16 @@ all:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+
+    -- Scroll of Momentum
+    building_momentum = {
+        id = 459224,
+        duration = 30,
+        max_stack = 5
+    },
+    full_momentum = {
+        id = 459228,
+        duration = 10,
+        max_stack = 1
+    }
 } )

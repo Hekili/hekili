@@ -980,8 +980,7 @@ spec:RegisterAbilities( {
             st_gain( "echoing_reprimand" )
             removeBuff( "premeditation" )
 
-            if buff.cold_blood.up then removeBuff( "cold_blood" )
-            elseif buff.the_rotten.up then removeStack( "the_rotten" ) end
+            if buff.the_rotten.up then removeStack( "the_rotten" ) end
         end,
 
         copy = { 385616, 323547 },
@@ -1011,7 +1010,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "masterful_finish" )
-            removeBuff( "cold_blood" )
 
             if talent.alacrity.enabled and combo_points.current > 4 then
                 addStack( "alacrity" )
@@ -1094,8 +1092,7 @@ spec:RegisterAbilities( {
             st_gain( "gloomblade" )
             removeBuff( "premeditation" )
 
-            if buff.cold_blood.up then removeBuff( "cold_blood" )
-            elseif buff.the_rotten.up then removeStack( "the_rotten" )
+            if buff.the_rotten.up then removeStack( "the_rotten" )
             else removeBuff( "symbols_of_death_crit" ) end
         end,
 
@@ -1127,8 +1124,7 @@ spec:RegisterAbilities( {
             removeBuff( "premeditation" )
 
             applyBuff( "goremaws_bite" )
-            if buff.cold_blood.up then removeBuff( "cold_blood" )
-            elseif buff.the_rotten.up then removeStack( "the_rotten" ) end
+            if buff.the_rotten.up then removeStack( "the_rotten" ) end
         end,
 
         -- Effects:
