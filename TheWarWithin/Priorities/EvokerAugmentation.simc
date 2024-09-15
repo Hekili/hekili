@@ -23,6 +23,7 @@ actions.precombat+=/use_item,name=aberrant_spellforge
 actions.precombat+=/blistering_scales,if=active_dot.blistering_scales=0
 actions.precombat+=/living_flame
 
+actions+=/quell
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
 actions+=/variable,name=pool_for_id,if=talent.imminent_destruction,default=0,op=set,value=cooldown.breath_of_eons.remains<8&essence.deficit>=1&!buff.essence_burst.up
 actions+=/prescience,cycle_targets=1,if=(active_dot.prescience<group_members|solo&buff.prescience.down)&((full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*0.4|variable.temp_wound>=(gcd.max+action.eruption.cast_time)|boss&fight_remains<=30)&(buff.trembling_earth.stack+evoker.prescience_buffs)<=(5+(full_recharge_time<=gcd.max*3)))

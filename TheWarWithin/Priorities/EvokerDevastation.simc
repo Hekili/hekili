@@ -44,11 +44,11 @@ actions.aoe+=/firestorm,if=talent.feed_the_flames
 # Grab Irid Red before Dragonrage without griefing extension
 actions.aoe+=/call_action_list,name=fb,if=talent.dragonrage&cooldown.dragonrage.up&talent.iridescence|empowering.fire_breath
 actions.aoe+=/deep_breath,if=talent.maneuverability&talent.melt_armor
-actions.aoe+=/dragonrage,if=target.time_to_die>=32|boss&fight_remains<30
+actions.aoe+=/dragonrage
 # Tip ES at appropiate target count or when playing Flameshaper otherwise Tip FB
 actions.aoe+=/tip_the_scales,if=buff.dragonrage.up&((active_enemies<=3+3*talent.eternitys_span&!talent.engulf)|!cooldown.fire_breath.up)
 # Cast Fire Breath DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
-actions.aoe+=/call_action_list,name=fb,if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity)&(target.time_to_die>=8|fight_remains<30)
+actions.aoe+=/call_action_list,name=fb,if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity)&(fight_remains>=8|fight_remains<30)
 # Cast Eternity Surge DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
 actions.aoe+=/call_action_list,name=es,if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity)&(target.time_to_die>=8|fight_remains<30)|empowering.eternity_surge
 # Cast DB if not in DR and not going to overflow essence.
