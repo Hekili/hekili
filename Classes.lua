@@ -5013,7 +5013,9 @@ do
         obsidian_gladiators_emblem = 205710,
         verdant_aspirants_emblem = 209766,
         verdant_combatants_emblem = 208309,
-        verdant_gladiators_emblem = 209345
+        verdant_gladiators_emblem = 209345,
+        algari_competitors_emblem = 219933,
+        forged_gladiators_emblem = 218715
     }
 
     local pvp_emblems_copy = {}
@@ -5047,7 +5049,7 @@ do
             end
             return e
         end,
-        items = { 162898, 161675, 165221, 165056, 167378, 167526, 172667, 172847, 178334, 178447, 185242, 185282, 186946, 186868, 192392, 192297, 201452, 201809, 204166, 205781, 205710, 209766, 208309, 209345 },
+        items = { 162898, 161675, 165221, 165056, 167378, 167526, 172667, 172847, 178334, 178447, 185242, 185282, 186946, 186868, 192392, 192297, 201452, 201809, 204166, 205781, 205710, 209766, 208309, 209345, 219933, 218715 },
         toggle = "cooldowns",
 
         handler = function ()
