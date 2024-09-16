@@ -15,7 +15,7 @@ if SpellFlashCore and not SpellFlashCore.LS then
     a.print(L["Old uncompletable version of SFC detected, shuttingdown. \r\n Please update other copies of SFC before use."])
     return
 end
-SpellFlashCore = LibStub:NewLibrary("SpellFlashCore", tonumber("20240730150302") or tonumber(date("%Y%m%d%H%M%S")))
+SpellFlashCore = LibStub:NewLibrary("SpellFlashCore", tonumber("20240915150302") or tonumber(date("%Y%m%d%H%M%S")))
 if not SpellFlashCore then return end
 SpellFlashCore.LS = true
 local FrameNames = {}
@@ -284,7 +284,7 @@ local function FrameScriptCheck(script,tipe)
             if script == _G["PetActionButton" .. i]:GetScript("OnClick") then return true end
         end
     elseif tipe == "Action" then
-        local BarNames = {"Action","MultiBarBottomRight","MultiBarBottomLeft","MultiBarRight","MultiBarLeft","MultiBar5","MultiBar6","MultiBar7"}
+        local BarNames = {"Action","MultiBarBottomRight","MultiBarBottomLeft","MultiBarRight","MultiBarLeft","MultiBar5","MultiBar6","MultiBar7","MultiBarRightAction","MultiBarLeftAction","MultiBarBottomRightAction","MultiBarBottomLeftAction","MultiBar5Action","MultiBar6Action","MultiBar7Action"}
         for _, BarName in pairs(BarNames) do
             for i=1, 12, 1 do
                 local button = _G[BarName .. "Button" .. i]
