@@ -31,7 +31,7 @@ actions+=/frost_shock,moving=1
 actions.healing+=/downpour,if=buff.unleash_life.up|buff.downpour.up&buff.downpour.remains<2
 actions.healing+=/mana_tide_totem,if=mana.pct<85
 actions.healing+=/totemic_recall,if=prev_gcd.earthen_wall_totem
-actions.healing+=/earthen_wall_totem,if=
+actions.healing+=/earthen_wall_totem
 actions.healing+=/chain_heal,if=buff.high_tide.up
 actions.healing+=/run_action_list,name=unleash,if=buff.unleash_life.up
 actions.healing+=/surging_totem
