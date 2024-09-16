@@ -85,6 +85,20 @@ spec:RegisterResource( Enum.PowerType.Insanity, {
         value = 6,
     },
 
+    voidwraith = {
+        aura = "voidwraith",
+
+        last = function ()
+            local app = state.buff.voidwraith.expires - 15
+            local t = state.query_time
+
+            return app + floor( ( t - app ) / ( 1.5 * state.haste ) ) * ( 1.5 * state.haste )
+        end,
+
+        interval = function () return 1.5 * state.haste * ( state.conduit.rabid_shadows.enabled and 0.85 or 1 ) end,
+        value = 2
+    },
+
     mindbender = {
         aura = "mindbender",
 
@@ -390,6 +404,11 @@ spec:RegisterHook( "reset_precast", function ()
         buff.shadowfiend.applied = action.shadowfiend.lastCast
         buff.shadowfiend.duration = 15
         buff.shadowfiend.expires = action.shadowfiend.lastCast + 15
+    elseif pet.voidwraith.active then
+        applyBuff( "voidwraith", pet.voidwraith.remains )
+        buff.voidwraith.applied = action.voidwraith.lastCast
+        buff.voidwraith.duration = 15
+        buff.voidwraith.expires = action.voidwraith.lastCast + 15
     end
 
     if buff.voidform.up then
@@ -410,6 +429,8 @@ spec:RegisterHook( "reset_precast", function ()
     if settings.pad_ascended_blast and cooldown.ascended_blast.remains > 0 then
         reduceCooldown( "ascended_blast", latency * 2 )
     end
+
+    local er_trigger = query_time - ( talent.void_eruption.enabled and action.void_eruption.lastCast or action.void_torrent.lastCast )
 
     if talent.entropic_rift.enabled and query_time - action.void_torrent.lastCast < 8 then
         applyBuff( "entropic_rift", 8 - ( query_time - action.void_torrent.lastCast ) )
@@ -696,6 +717,10 @@ spec:RegisterAuras( {
     mindbender = {
         duration = 15,
         max_stack = 1,
+    },
+    voidwraith = {
+        duration = 15,
+        max_stack = 1
     },
     -- Talent / Covenant: The next $w2 damage and $w5 healing dealt will be reversed.
     -- https://wowhead.com/beta/spell=323673
@@ -1449,7 +1474,8 @@ spec:RegisterAbilities( {
 
             if talent.inescapable_torment.enabled then
                 if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 0.7
-                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + 0.7 end
+                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + 0.7
+                elseif buff.voidwraith.up then buff.voidwraith.expires = buff.voidwraith.expires + 0.7 end
             end
 
             if talent.schism.enabled then applyDebuff( "target", "schism" ) end
@@ -1479,7 +1505,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "shadow",
 
-        spend = function () return set_bonus.tier30_2pc > 0 and buff.shadowy_insight.up and -10 or -6 end,
+        spend = function () return ( set_bonus.tier30_2pc > 0 and buff.shadowy_insight.up and -4 or 0 ) + ( talent.void_infusion.enabled and -12 or -6 ) end,
         spendType = "insanity",
 
         startsCombat = true,

@@ -7061,13 +7061,12 @@ function state:IsKnown( sID )
 
     if not sID then
         return false, "could not find valid ID" -- no ability
-
     end
 
     local ability = class.abilities[ sID ]
 
     if not ability then
-        Error( "IsKnown() - " .. sID .. " / " .. original .. " not found in abilities table.\n\n" .. debugstack() )
+        Error( "IsKnown() - " .. tostring( sID ) .. " / " .. original .. " not found in abilities table.\n\n" .. debugstack() )
         return false, format( "%s / %s not found in abilities table", tostring( original ), tostring( sID ) )
     end
 

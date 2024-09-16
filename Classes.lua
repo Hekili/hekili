@@ -678,6 +678,7 @@ local HekiliSpecMixin = {
                 self.pseudoAbilities = self.pseudoAbilities + 1
                 data.id = -1000 * self.id - self.pseudoAbilities
             end
+            a.id = data.id
         end
 
         if data.id and type( data.id ) == "function" then

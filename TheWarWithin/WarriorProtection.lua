@@ -717,6 +717,25 @@ spec:RegisterHook( "reset_precast", function ()
     end
 end )
 
+spec:RegisterStateExpr( "last_stand_damage_taken", function ()
+    return health.max * ( ( settings.last_stand_amount or 0 ) * 0.01 ) * ( solo and 0.5 or 1 )
+end )
+spec:RegisterStateExpr( "last_stand_health_pct", function ()
+    return ( settings.last_stand_health or 100 )
+end )
+spec:RegisterStateExpr( "rallying_cry_damage_taken", function ()
+    return health.max * ( ( settings.rallying_cry_amount or 0 ) * 0.01 ) * ( solo and 0.5 or 1 )
+end )
+spec:RegisterStateExpr( "rallying_cry_health_pct", function ()
+    return ( settings.rallying_cry_health or 100 )
+end )
+spec:RegisterStateExpr( "shield_wall_damage_taken", function ()
+    return health.max * ( ( settings.shield_wall_amount or 0 ) * 0.01 ) * ( solo and 0.5 or 1 )
+end )
+spec:RegisterStateExpr( "shield_wall_health_pct", function ()
+    return ( settings.shield_wall_health or 100 )
+end )
+
 -- Abilities
 spec:RegisterAbilities( {
     avatar = {
@@ -1264,25 +1283,10 @@ spec:RegisterAbilities( {
         texture = 135871,
 
         toggle = function()
-            return settings.last_stand_offensively and "cooldowns" or "defensives"
-        end,
-
-        usable = function()
-            if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled or set_bonus.tier30_2pc > 0 ) then return true end
-
-            local dmg_required = ( ( settings.last_stand_amount or 10 ) * 0.01 ) * health.max * ( solo and 0.5 or 1 )
-            local hp_required = ( settings.last_stand_health or 10 )
-
-            if settings.last_stand_condition then
-                if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-                if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
-                return true
+            if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled or set_bonus.tier30_2pc > 0 ) then
+                return "cooldowns"
             end
-
-            if incoming_damage_5s >= dmg_required or health.percent <= hp_required then return true end
-            if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-            if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
-            return false
+            return "defensives"
         end,
 
         handler = function ()
@@ -1369,22 +1373,6 @@ spec:RegisterAbilities( {
         texture = 132351,
 
         toggle = "defensives",
-
-        usable = function()
-            local dmg_required = ( settings.rallying_cry_amount * 0.01 ) * health.max * ( solo and 0.5 or 1 )
-            local hp_required = ( settings.rallying_cry_health * 0.01 )
-
-            if settings.rallying_cry_condition then
-                if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-                if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
-                return true
-            end
-
-            if incoming_damage_5s >= dmg_required or ( health.percent or 50 ) <= hp_required then return true end
-            if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-            if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
-            return false
-        end,
 
         handler = function ()
             applyBuff( "rallying_cry" )
@@ -1633,22 +1621,6 @@ spec:RegisterAbilities( {
         texture = 132362,
 
         toggle = "defensives",
-
-        usable = function()
-            local dmg_required = ( ( settings.shield_wall_amount or 10 ) * 0.01 ) * health.max * ( solo and 0.5 or 1 )
-            local hp_required = ( settings.shield_wall_health or 10 )
-
-            if settings.shield_wall_condition then
-                if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-                if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
-                return true
-            end
-
-            if incoming_damage_5s >= dmg_required or ( health.percent or 50 ) <= hp_required then return true end
-            if incoming_damage_5s < dmg_required then return false, format( "incoming_damage_5s[%.2f] < dmg_required[%.2f] setting", incoming_damage_5s, dmg_required ) end
-            if health.percent > hp_required then return false, format( "health.percent[%.2f] > hp_required[%.2f] setting", health.percent, hp_required ) end
-            return false
-        end,
 
         handler = function ()
             applyBuff( "shield_wall" )
@@ -1959,8 +1931,8 @@ spec:RegisterSetting( "reserve_rage", 35, { -- Ignore Pain cost is 35, Shield Bl
 
 spec:RegisterSetting( "shield_wall_amount", 50, {
     name = "|T132362:0|t Shield Wall Damage Required",
-    desc = "If set above 0, the addon will not recommend |T132362:0|t Shield Wall unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Shield Wall when you've taken 25,000 damage in the past 5 seconds.\n\n"
+    desc = "If set above 0, the priority can recommend |T132362:0|t Shield Wall if you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then Shield Wall can be recommended when you've taken 25,000 damage in the past 5 seconds.\n\n"
         .. "This value is reduced by 50% when playing solo.",
     type = "range",
     min = 0,
@@ -1971,7 +1943,7 @@ spec:RegisterSetting( "shield_wall_amount", 50, {
 
 spec:RegisterSetting( "shield_wall_health", 50, {
     name = "|T132362:0|t Shield Wall Health Percentage",
-    desc = "If set below 100, the addon will not recommend |T132362:0|t Shield Wall unless your current health has fallen below this percentage.",
+    desc = "If set below 100, the priority can recommend |T132362:0|t Shield Wall if your current health has fallen below this percentage.",
     type = "range",
     min = 0,
     max = 100,
@@ -1979,18 +1951,10 @@ spec:RegisterSetting( "shield_wall_health", 50, {
     width = "full",
 } )
 
-spec:RegisterSetting( "shield_wall_condition", false, {
-    name = "Require |T132362:0|t Shield Wall Damage and Health",
-    desc = "If checked, |T132362:0|t Shield Wall will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
-        .. "Otherwise, Shield Wall can be recommended when |cFFFFD100either|r requirement is met.",
-    type = "toggle",
-    width = "full"
-} )
-
 spec:RegisterSetting( "rallying_cry_amount", 50, {
     name = "|T132351:0|t Rallying Cry Damage Required",
-    desc = "If set above 0, the addon will not recommend |T132351:0|t Rallying Cry unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Rallying Cry when you've taken 25,000 damage in the past 5 seconds.\n\n"
+    desc = "If set above 0, the priority can recommend |T132351:0|t Rallying Cry if you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then Rallying Cry can be recommended when you've taken 25,000 damage in the past 5 seconds.\n\n"
         .. "This value is reduced by 50% when playing solo.",
     type = "range",
     min = 0,
@@ -2001,7 +1965,7 @@ spec:RegisterSetting( "rallying_cry_amount", 50, {
 
 spec:RegisterSetting( "rallying_cry_health", 50, {
     name = "|T132351:0|t Rallying Cry Health Percentage",
-    desc = "If set below 100, the addon will not recommend |T132351:0|t Rallying Cry unless your current health has fallen below this percentage.",
+    desc = "If set below 100, the priority can recommend |T132351:0|t Rallying Cry if your current health has fallen below this percentage.",
     type = "range",
     min = 0,
     max = 100,
@@ -2009,19 +1973,10 @@ spec:RegisterSetting( "rallying_cry_health", 50, {
     width = "full",
 } )
 
-spec:RegisterSetting( "rallying_cry_condition", false, {
-    name = "Require |T132351:0|t Rallying Cry Damage and Health",
-    desc = "If checked, |T132351:0|t Rallying Cry will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
-        .. "Otherwise, Rallying Cry can be recommended when |cFFFFD100either|r requirement is met.",
-    type = "toggle",
-    width = "full"
-} )
-
 spec:RegisterSetting( "last_stand_offensively", false, {
     name = "Use |T135871:0|t Last Stand Offensively",
     desc = function()
-        return "If checked, the addon will recommend using |T135871:0|t Last Stand to generate rage.\n\n"
-            .. "If unchecked, the addon will only recommend |T135871:0|t Last Stand defensively after taking significant damage.\n\n"
+        return "If checked, the addon will recommend |T135871:0|t Last Stand as an offensive cooldown instead of a defensive cooldown.\n\n"
             .. "Requires " .. ( state.set_bonus.tier30_2pc > 0 and "|cFF00FF00" or "|cFFFF0000" ) .. "2-piece Tier 30|r or "
             .. "|W|T571316:0|t " .. ( ( state.talent.unnerving_focus.enabled or state.conduit.unnerving_focus.enabled ) and "|cFF00FF00" or "|cFFFF0000" ) .. " Unnerving Focus|r|w"
     end,
@@ -2031,8 +1986,8 @@ spec:RegisterSetting( "last_stand_offensively", false, {
 
 spec:RegisterSetting( "last_stand_amount", 50, {
     name = "|T135871:0|t Last Stand Damage Required",
-    desc = "If set above 0, the addon will not recommend |T135871:0|t Last Stand unless you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
-        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then the addon will only recommend Last Stand when you've taken 25,000 damage in the past 5 seconds.\n\n"
+    desc = "If set above 0, the priority can recommend |T135871:0|t Last Stand if you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then Last Stand can be recommended when you've taken 25,000 damage in the past 5 seconds.\n\n"
         .. "This value is reduced by 50% when playing solo.",
     type = "range",
     min = 0,
@@ -2044,20 +1999,11 @@ spec:RegisterSetting( "last_stand_amount", 50, {
 
 spec:RegisterSetting( "last_stand_health", 50, {
     name = "|T135871:0|t Last Stand Health Percentage",
-    desc = "If set below 100, the addon will not recommend |T135871:0|t Last Stand unless your current health has fallen below this percentage.",
+    desc = "If set below 100, the priority can recommend |T135871:0|t Last Stand if your current health has fallen below this percentage.",
     type = "range",
     min = 0,
     max = 100,
     step = 1,
-    width = "full",
-    disabled = function() return state.settings.last_stand_offensively end,
-} )
-
-spec:RegisterSetting( "last_stand_condition", false, {
-    name = "Require |T135871:0|t Last Stand Damage and Health",
-    desc = "If checked, |T135871:0|t Last Stand will not be recommended unless both the Damage Required |cFFFFD100and|r Health Percentage requirements are met.\n\n"
-        .. "Otherwise, Last Stand can be recommended when |cFFFFD100either|r requirement is met.",
-    type = "toggle",
     width = "full",
     disabled = function() return state.settings.last_stand_offensively end,
 } )

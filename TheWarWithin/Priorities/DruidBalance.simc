@@ -5,7 +5,7 @@ actions.precombat+=/variable,name=on_use_trinket,value=0
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=(trinket.1.has_proc&trinket.1.cooldown.duration|trinket.1.is.spymasters_web|trinket.1.is.signet_of_the_priory)&!trinket.1.is.arakara_sacbrood
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=((trinket.2.has_proc&trinket.2.cooldown.duration|trinket.2.is.spymasters_web|trinket.2.is.signet_of_the_priory)*2&!trinket.2.is.arakara_sacbrood)
 ## Regrowth to stack for Keeper of the Grove...
-## ctions.precombat+=/regrowth,if=boss&hero_tree.keeper_of_the_grove&!(prev.1.regrowth&prev.2.regrowth&prev.3.regrowth&prev.4.regrowth)
+## actions.precombat+=/regrowth,if=boss&hero_tree.keeper_of_the_grove&!(prev.1.regrowth&prev.2.regrowth&prev.3.regrowth&prev.4.regrowth)
 actions.precombat+=/wrath,line_cd=15,if=!prev.1.wrath
 actions.precombat+=/wrath,if=prev.1.wrath&!(prev.2.wrath|prev.3.wrath|prev.4.wrath)
 actions.precombat+=/starfire,if=!talent.stellar_flare&hero_tree.elunes_chosen
@@ -22,7 +22,7 @@ actions+=/berserking,if=buff.ca_inc.remains>=10|variable.no_cd_talent|boss&fight
 # Variables + Eclipse
 actions+=/variable,name=eclipse,value=buff.eclipse_lunar.up|buff.eclipse_solar.up
 actions+=/variable,name=eclipse_remains,value=buff.eclipse_lunar.remains<?buff.eclipse_solar.remains
-actions+=/variable,name=enter_lunar,value=talent.lunar_calling|spell_targets.starfire>2
+actions+=/variable,name=enter_lunar,value=talent.lunar_calling|spell_targets.starfire>2-(talent.umbral_intensity.rank+talent.soul_of_the_forest>1)
 actions+=/variable,name=boat_stacks,value=buff.balance_of_all_things_arcane.stack+buff.balance_of_all_things_nature.stack
 actions+=/warrior_of_elune,if=talent.lunar_calling|!talent.lunar_calling&variable.eclipse_remains>=7&cooldown.ca_inc.remains>20
 actions+=/wrath,if=variable.enter_lunar&(!variable.eclipse|variable.eclipse_remains<cast_time)
@@ -55,14 +55,14 @@ actions.st+=/sunfire,cycle_targets=1,if=refreshable&remains<3
 actions.st+=/moonfire,cycle_targets=1,if=refreshable&remains<3&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
 actions.st+=/celestial_alignment,if=boss&fight_remains<15*(1+talent.greater_alignment*0.4)|!hero_tree.keeper_of_the_grove|(buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>25)
 actions.st+=/incarnation,if=boss&fight_remains<20*(1+talent.greater_alignment*0.4)|!hero_tree.keeper_of_the_grove|(buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>25)
-actions.st+=/force_of_nature,if=cooldown.ca_inc.remains<gcd.max&(!talent.natures_grace|!variable.eclipse|variable.eclipse_remains>6)|variable.eclipse_remains>=3&cooldown.ca_inc.remains>10+15*talent.control_of_the_dream
+actions.st+=/force_of_nature,if=cooldown.ca_inc.remains<gcd.max&(!talent.natures_grace|!variable.eclipse|variable.eclipse_remains>6)|variable.eclipse_remains>=3&cooldown.ca_inc.remains>10+15*talent.control_of_the_dream&(fight_remains>cooldown+5|cooldown.ca_inc.remains>fight_remains)
 actions.st+=/fury_of_elune,if=5+variable.passive_asp<astral_power.deficit
 actions.st+=/starsurge,if=talent.starlord&buff.starlord.stack<3
 actions.st+=/sunfire,cycle_targets=1,if=refreshable
 actions.st+=/moonfire,cycle_targets=1,if=refreshable&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
 actions.st+=/stellar_flare,cycle_targets=1,if=refreshable&(target.time_to_die-remains-target>7+spell_targets)
-actions.st+=/variable,name=convoke_condition,value=boss&fight_remains<5|(buff.ca_inc.up|cooldown.ca_inc.remains>40)|(buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>15)
-actions.st+=/starsurge,if=cooldown.convoke_the_spirits.remains<gcd.max&variable.convoke_condition
+actions.st+=/variable,name=convoke_condition,value=boss&fight_remains<5|(buff.ca_inc.up|cooldown.ca_inc.remains>40)&(!hero_tree.keeper_of_the_grove|buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>15)
+actions.st+=/starsurge,if=cooldown.convoke_the_spirits.remains<gcd.max*2&variable.convoke_condition
 actions.st+=/convoke_the_spirits,if=variable.convoke_condition
 actions.st+=/starsurge,if=buff.starlord.remains>4&variable.boat_stacks>=3|fight_remains<4
 actions.st+=/new_moon,if=astral_power.deficit>variable.passive_asp+energize_amount|fight_remains<20|cooldown.ca_inc.remains>15
