@@ -1485,6 +1485,7 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "black_arrow" )
+            if talent.death_shade.enabled then applyBuff ( "hunters_prey" ) end
         end,
     },
 

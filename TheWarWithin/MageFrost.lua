@@ -1297,7 +1297,7 @@ spec:RegisterAbilities( {
             return true
         end,
 
-        start = function ()
+        handler = function ()
             applyDebuff( "target", "chilled" )
 
             if buff.excess_frost.up then
@@ -1305,16 +1305,10 @@ spec:RegisterAbilities( {
                 removeBuff( "excess_frost" )
             end
 
-            if buff.fingers_of_frost.up then
-                removeStack( "fingers_of_frost" )
-                if talent.cryopathy.enabled then addStack( "cryopathy" ) end
-                if set_bonus.tier29_4pc > 0 then applyBuff( "touch_of_ice" ) end
-            end
-
             if buff.fingers_of_frost.up or debuff.frozen.up then
                 if talent.chain_reaction.enabled then addStack( "chain_reaction" ) end
-                if talent.thermal_void.enabled and buff.icy_veins.up then 
-                    buff.icy_veins.expires = buff.icy_veins.expires + 0.5 
+                if talent.thermal_void.enabled and buff.icy_veins.up then
+                    buff.icy_veins.expires = buff.icy_veins.expires + 0.5
                     pet.water_elemental.expires = buff.icy_veins.expires
                 end
             end
@@ -1324,6 +1318,12 @@ spec:RegisterAbilities( {
 
             if azerite.whiteout.enabled then
                 cooldown.frozen_orb.expires = max( 0, cooldown.frozen_orb.expires - 0.5 )
+            end
+
+            if buff.fingers_of_frost.up then
+                removeStack( "fingers_of_frost" )
+                if talent.cryopathy.enabled then addStack( "cryopathy" ) end
+                if set_bonus.tier29_4pc > 0 then applyBuff( "touch_of_ice" ) end
             end
         end,
 
@@ -1336,8 +1336,6 @@ spec:RegisterAbilities( {
             end
 
             removeDebuffStack( "target", "winters_chill" )
-
-
         end,
 
         copy = 228598
@@ -1537,7 +1535,9 @@ spec:RegisterAbilities( {
         end,
     },
 
-    splinterstorm = {}, -- TODO: Support action.splinterstorm.in_flight
+    splinterstorm = {
+
+    }, -- TODO: Support action.splinterstorm.in_flight
 
     --[[ Summons a Water Elemental to follow and fight for you.
     water_elemental = {
