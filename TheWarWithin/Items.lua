@@ -867,6 +867,30 @@ all:RegisterAbilities( {
 
         -- Cannot find these auras.
     },
+
+    mark_of_khadros = {
+        cast = 0,
+        cooldown = 90,
+        gcd = "off",
+
+        item = 219304,
+        toggle = "cooldowns",
+
+        proc = "mastery",
+        self_buff = "battle_prowess",
+
+        handler = function()
+            applyBuff( "battle_prowess" )
+        end,
+
+        auras = {
+            battle_prowess = {
+                id = 91374,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    }
 } )
 
 all:RegisterGear( "scroll_of_momentum", 226539 )
