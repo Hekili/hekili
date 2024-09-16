@@ -1,62 +1,102 @@
 Smufrik demo
 # Start the fight with Felguard for the Demon Soul buff and Felstorm
+actions.precombat+=/soul_harvest,if=soul_shards<3
 actions.precombat+=/summon_felguard,if=settings.pet_twisting&!pet.alive
 actions.precombat+=/summon_felhunter,if=!settings.pet_twisting&!pet.alive
 actions.precombat+=/fel_armor,if=buff.fel_armor.down
 actions.precombat+=/soul_link,if=!buff.soul_link.up
-actions.precombat+=/volcanic_potion
-actions.precombat+=/metamorphosis
 actions.precombat+=/demon_soul,if=pet.alive&settings.pet_twisting
-actions.precombat+=/soul_harvest,if=soul_shards<3
+actions.precombat+=/volcanic_potion
 
-actions+=/fel_flame, if=buff.fel_spark.up
-actions+=/immolate,if=!ticking&debuff.immolate.remains<tick_time
-actions+=/corruption,if=!ticking&debuff.corruption<tick_time
-actions+=/volcanic_potion,if=buff.metamorphosis.up 
-actions+=/life_tap,if=mana.pct<55 & cooldown.metamorphosis.remains<10
+# Demonology Warlock DPS Opener
+# Shadow and Flame	By pre-casting  Incinerate or  Shadow Bolt (Filler spell depending on your build)
+# shadow_and_flame does not work... otherwise it shouldbe like this
+# actions+=/shadow_bolt,if=target.debuff.shadow_and_flame.down&glyph.corruption.enabled
+# actions+=/incinerate,if=target.debuff.shadow_and_flame.down&glyph.incinerate.enabled
+
 #todo add evaluation of Impending doom talent. cooldown.metamorphosis.remains can be 90 in that case
 actions+=/synapse_springs,if=cooldown.metamorphosis.remains>61
 actions+=/metamorphosis,use_off_gcd=1
+actions+=/fel_flame,if=buff.fel_spark.up
+actions+=/volcanic_potion,if=buff.metamorphosis.up 
+actions+=/life_tap,if=mana.pct<25
 actions+=/soulburn,if=soul_shard>1&buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
 actions+=/summon_felguard,if=buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
-actions+=/run_action_list,name=sdr,if=buff.metamorphosis.up
-actions+=/call_action_list,name=nr,if=buff.metamorphosis.down& cooldown.metamorphosis.remains>1
-actions+=/run_action_list,name=aoe,if=active_enemies>2
-
-
-actions.sdr+=/blood_fury
-actions.sdr+=/demon_soul,if=pet.alive&!buff.fel_intelligence.up 
-actions.sdr+=/immolation_aura,if=buff.metamorphosis.up
-actions.sdr+=/felstorm,if=buff.demon_soul_felguard.up
-actions.sdr+=/bane_of_doom,if=!ticking&target.time_to_die>15
-actions.sdr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.bane_of_doom.up
-actions.sdr+=/summon_infernal,if=settings.inferno_enabled&target.time_to_die>45&soul_shards=3
-actions.sdr+=/hand_of_guldan,use_off_gcd=1
-actions.sdr+=/shadowflame,if=target.distance<7
-actions.sdr+=/soulburn,if=soul_shard>1&settings.pet_twisting&!buff.fel_intelligence.up & buff.demon_soul_felguard.down
-actions.sdr+=/summon_felhunter,if=soul_shard>1&buff.soulburn.up&!buff.fel_intelligence.up&settings.pet_twisting&buff.demon_soul_felguard.down
-actions.sdr+=/summon_doomguard,if=buff.demonic_pact.up&buff.molten_core.stack>=1&cooldown.hand_of_gul_dan.remains<10
-actions.sdr+=call_action_list,name=nr
-
-
+# Curse of the Elements:If no one else provides the debuff
 actions+=/group_curse,if=debuff.my_curse.down&curse_grouped
 actions+=/solo_curse,if=debuff.my_curse.down
-actions.nr+=/shadow_bolt,if=!ticking&dot.shadow_and_flame.remains<cast_time
-# Use Hand of Gul'dan when available
-actions.nr+=/hand_of_guldan,use_off_gcd=1
-actions.nr+=/bane_of_doom,if=!ticking&target.time_to_die>30
-actions.nr+=/bane_of_agony,if=!ticking&target.time_to_die<30&!debuff.bane_of_doom.up
-actions.nr+=/corruption,if=!ticking
-actions.nr+=/shadowflame,if=target.distance<7
-actions.nr+=/incinerate,if=buff.molten_core.up
-actions.nr+=/soul_fire,if=target.health.pct<25&buff.decimation.up
-actions.nr+=/shadow_bolt
 
-actions.aoe+=/metamorphosis
-actions.aoe+=/immolation_aura,if=buff.metamorphosis.up
-actions.aoe+=/shadowflame,if=target.distance<7
-actions.aoe+=/hellfire,if=spell_targets.hellfire>6
-actions.aoe+=/corruption,cycle_targets=1,if=spell_targets.corruption<6
-actions.aoe+=/immolate,cycle_targets=1,if=spell_targets.immolate<6
-actions.aoe+=/bane_of_doom,cycle_targets=1,if=spell_targets.doom<6
+# Spell boost with Metamorphosis
+actions+=/call_action_list,name=spell_damage_rotation,if=buff.metamorphosis.up&buff.metamorphosis.remains>2
+# AOE when 4 or more mobs and Metamorphosis is on cooldown
+actions+=/call_action_list,name=aoe,if=active_enemies>=4&cooldown.metamorphosis.remains>1
+# STR when less then 4 mobs and Metamorphosis is on cooldown
+actions+=/call_action_list,name=single_target_rotation,if=active_enemies<4&cooldown.metamorphosis.remains>1
+
+# Demonology Warlock DPS Spell Damage Rotation
+# 1. Blood Fury: If you are an Orc
+actions.spell_damage_rotation+=/blood_fury
+# 2. Demon Soul: Felguard
+actions.spell_damage_rotation+=/demon_soul,if=pet.alive&!buff.fel_intelligence.up 
+# 3. Immolation Aura: You must be in melee range
+actions.spell_damage_rotation+=/immolation_aura,if=buff.metamorphosis.up&buff.metamorphosis.remains>2
+# 4. Felstorm: Pet must be in melee range
+actions.spell_damage_rotation+=/felstorm,if=buff.demon_soul_felguard.up
+# 5.1 Bane of Doom	Do not use if the target won't live long enough (15 seconds) to receive a damage tick
+actions.spell_damage_rotation+=/bane_of_doom,if=!ticking&target.time_to_die>15
+# 5.2 Bane of Agony:
+# It should be noted that Bane of Agony deals most of its damage in the last four ticks, due to the ramping nature of the spell. 
+# This means if you cannot guarantee the full duration of Bane of Agony you should avoid using it.
+actions.spell_damage_rotation+=/bane_of_agony,if=!ticking&target.time_to_die>25&!debuff.bane_of_doom.up
+# 6. Summon Doomguard
+actions.spell_damage_rotation+=/summon_doomguard,if=buff.demonic_pact.up&buff.molten_core.stack>=1&cooldown.hand_of_gul_dan.remains<10
+actions.spell_damage_rotation+=/summon_infernal,if=settings.inferno_enabled&target.time_to_die>45
+# 7. Hand of Gul'dan: Whenever off cooldown
+actions.spell_damage_rotation+=/hand_of_guldan,use_off_gcd=1
+# 8. Shadowflame: Must be in melee range.
+actions.spell_damage_rotation+=/shadowflame,if=target.distance<7
+
+actions.spell_damage_rotation+=/call_action_list,name=aoe,if=active_enemies>3
+actions.spell_damage_rotation+=/call_action_list,name=single_target_rotation,if=active_enemies<4
+
+# Standard Rotation for Demonology Warlock DPS
+# 1. One of our main damage over time abilities is Immolate
+actions.single_target_rotation+=/immolate,if=!ticking&debuff.immolate.remains<tick_time
+# 2. Hand of Gul'dan: Whenever off cooldown
+actions.single_target_rotation+=/hand_of_guldan,use_off_gcd=1
+# 3. Bane of Doom: Do not use if the target won't live long enough (15 seconds) to receive a damage tick.
+actions.single_target_rotation+=/bane_of_doom,if=!ticking&target.time_to_die>15
+# It should be noted that Bane of Agony deals most of its damage in the last four ticks, due to the ramping nature of the spell. 
+# This means if you cannot guarantee the full duration of Bane of Agony you should avoid using it.
+actions.single_target_rotation+=/bane_of_agony,if=!ticking&target.time_to_die>25&!debuff.bane_of_doom.up
+# 4. Corruption
+actions.single_target_rotation+=/corruption,if=!ticking
+# 5. Shadowflame: In melee range
+actions.single_target_rotation+=/shadowflame,if=target.distance<7
+# 6. Incinerate: Whenever  Molten Core procs
+actions.single_target_rotation+=/incinerate,if=buff.molten_core.up
+# 7. Soul Fire: Whenever  Decimation procs
+actions.single_target_rotation+=/soul_fire,if=target.health.pct<25&buff.decimation.up
+# 8. Filler spell depending on your build
+actions.single_target_rotation+=/incinerate,if=glyph.incinerate.enabled
+actions.single_target_rotation+=/shadow_bolt,if=glyph.corruption.enabled
+# 9.  Soulburn -> Summon Felhunter : Once  Felstorm wears off
+actions.single_target_rotation+=/soulburn,if=soul_shard>1&settings.pet_twisting&!buff.fel_intelligence.up&buff.demon_soul_felguard.down
+actions.single_target_rotation+=/summon_felhunter,if=buff.soulburn.up&!buff.fel_intelligence.up&settings.pet_twisting&buff.demon_soul_felguard.down
+
+# AoE Rotation for Demonology Warlock DPS
+# 1. Demon Soul: Felguard
+actions.aoe+=/demon_soul,if=pet.alive&!buff.fel_intelligence.up 
+# 2. Felstorm: Pet must be in melee range
 actions.aoe+=/felstorm,if=pet.alive
+# 3. Metamorphosis:You must be in melee range
+actions.aoe+=/metamorphosis,use_off_gcd=1
+actions.aoe+=/immolation_aura,if=buff.metamorphosis.up
+# 4. Shadowflame: Whenever off cooldown.
+actions.aoe+=/shadowflame,if=target.distance<7
+# 5. Hellfire: As filler, clip when needed
+actions.aoe+=/hellfire,if=spell_targets.hellfire>5
+# 6.1 Corruption: Spam on all with less than 6 mobs
+actions.aoe+=/corruption,cycle_targets=1,if=spell_targets.corruption<6
+# 6.2 Immolate: Spam on all with less than 6 mobs
+actions.aoe+=/immolate,cycle_targets=1,if=spell_targets.immolate<6
