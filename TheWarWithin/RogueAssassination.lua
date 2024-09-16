@@ -1904,7 +1904,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Increases the critical strike chance of your next damaging ability by $s1%.
     cold_blood = {
-        id = function() return  talent.inevitability.enabled and not state.spec.subtlety and 456330 or 382245 end,
+        id = function() return talent.inevitability.enabled and not state.spec.subtlety and 456330 or 382245 end,
         known = 382245,
         cast = 0,
         cooldown = 45,
@@ -1914,7 +1914,6 @@ spec:RegisterAbilities( {
         talent = "cold_blood",
         startsCombat = false,
         nobuff = "cold_blood",
-        readyTime = function() return gcd.remains end,
 
         handler = function ()
             applyBuff( "cold_blood", nil,  talent.inevitability.enabled and not state.spec.subtlety and 2 or nil )
