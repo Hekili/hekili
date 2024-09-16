@@ -1044,6 +1044,18 @@ spec:RegisterSetting( "experimental_msg", nil, {
     width = "full",
 } )
 
+--[[spec:RegisterSetting( "second_shield", "earth_shield", {
+    name = "|T136082:0|t Preferred 2nd shield",
+    desc = "Specify which shield you want to use alongside water shield when you have talented into Elemental Orbit",
+    type = "select",
+    values = function()
+        return {
+            earth_shield = class.abilityList.earth_shield,
+            lightning_shield = class.abilityList.lightning_shield,
+        }
+    end,
+    width = "normal"
+} )--]]
 
 spec:RegisterRanges( "lightning_bolt", "flame_shock", "wind_shear", "primal_strike" )
 

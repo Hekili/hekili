@@ -268,6 +268,7 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = function() return 9 + 3 * talent.earthen_communion.rank end,
         dot = "buff",
+        friendly = true,
         shared = "player",
         copy = { 383648, 974 }
     },
