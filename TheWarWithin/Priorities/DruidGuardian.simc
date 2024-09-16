@@ -2,7 +2,7 @@ actions.precombat+=/mark_of_the_wild
 actions.precombat+=/variable,name=if_build,value=1,value_else=0,if=talent.thorns_of_iron.enabled&talent.reinforced_fur.enabled
 actions.precombat+=/variable,name=ripweaving,value=1,value_else=0,if=talent.primal_fury.enabled&talent.fluid_form.enabled&talent.wildpower_surge.enabled
 actions.precombat+=/heart_of_the_wild,if=talent.heart_of_the_wild.enabled&!talent.rip.enabled
-actions.precombat+=/bear_form
+actions.precombat+=/bear_form,if=buff.any_form.down
 
 actions+=/skull_bash
 actions+=/soothe
@@ -10,7 +10,7 @@ actions+=/use_item,slot=trinket1
 actions+=/use_item,slot=trinket2
 actions+=/potion,if=(buff.berserk_bear.up|buff.incarnation_guardian_of_ursoc.up)
 actions+=/call_action_list,name=mitigation
-actions+=/run_action_list,name=bear
+actions+=/run_action_list,name=bearn
 
 actions.bear+=/maul,if=buff.ravage.up&active_enemies>1
 actions.bear+=/heart_of_the_wild,if=(talent.heart_of_the_wild.enabled&!talent.rip.enabled)|talent.heart_of_the_wild.enabled&buff.feline_potential_counter.stack=6&active_enemies<3
