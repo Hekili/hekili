@@ -873,7 +873,7 @@ all:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
-        item = 219304,
+        item = 133300,
         toggle = "cooldowns",
 
         proc = "mastery",
