@@ -463,6 +463,11 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = "recklessness_warlords_torment"
     },
+    slaughterhouse = {
+        id = 354788,
+        duration = 20,
+        max_stack = 12
+    },
     slaughtering_strikes_raging_blow = {
         id = 393931,
         duration = 12,
