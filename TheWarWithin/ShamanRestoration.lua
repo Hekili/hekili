@@ -208,7 +208,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=73920
     healing_rain = {
         id = 73920,
-        duration = 10,
+        duration = function () return 24 and talent.surging_totem.enabled or 10 end,
         max_stack = 1
     },
     master_of_the_elements = {
@@ -485,7 +485,7 @@ spec:RegisterAbilities( {
     -- A burst of water at your Healing Rain's location heals up to 5 injured allies within 12 yards for (275% of Spell power) and increases their maximum health by 10% for 6 sec.
     downpour = {
         id = 462603,
-        known = function() return talent.downpour.enabled and 73920 or nil end,
+        known = 73920,
         cast = 0,
         cooldown = function() return talent.surging_totem.enabled and 24 or 10 end,
         gcd = "off",
@@ -496,6 +496,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 1698701,
         buff = "downpour",
+        talent = "downpour",
 
         handler = function ()
             removeBuff( "downpour" )
@@ -649,11 +650,13 @@ spec:RegisterAbilities( {
         notalent = "surging_totem",
 
         handler = function ()
-            setCooldown( "downpour", 0 )
+            
             applyBuff( "healing_rain" )
 
-            if talent.downpour.enabled then applyBuff( "downpour" ) end
-
+            if talent.downpour.enabled then 
+                applyBuff( "downpour" )
+                setCooldown( "downpour", 0 )
+            end
             if set_bonus.tier30_4pc > 0 and active_dot.riptide > 0 then
                 applyBuff( "rainstorm", nil, active_dot.riptide )
                 applyBuff( "swelling_rain", nil, active_dot.riptide )
