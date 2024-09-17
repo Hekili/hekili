@@ -430,7 +430,7 @@ spec:RegisterAbilities( {
             removeBuff( "swelling_rain" ) -- T30
             removeStack( "natures_swiftness" )
             removeStack( "ancestral_swiftness" )
-            removeStack ( "high_tide" )
+            removeStack( "high_tide" )
 
             if set_bonus.tier31_2pc > 0 then applyDebuff( "target", "tidal_reservoir" ) end
         end,
@@ -936,8 +936,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "surging_totem" )
-            setCooldown( "downpour", 0 )
-            if talent.downpour.enabled then applyBuff( "downpour" ) end
+            
+            if talent.downpour.enabled then
+                setCooldown( "downpour", 0 )
+                applyBuff( "downpour" )
+            end
         end,
 
         bind = { "healing_rain", "downpour" }
@@ -966,8 +969,7 @@ spec:RegisterAbilities( {
         cooldown = function() return talent.call_of_the_elements.enabled and 120 or 180 end,
         gcd = "spell",
         school = "nature",
-        toggle = "cooldowns",
-
+        toggle = function() if settings.healing_mode then return "cooldowns" end end,
         talent = "totemic_recall",
         startsCombat = false,
 
@@ -1064,7 +1066,7 @@ spec:RegisterSetting( "experimental_msg", nil, {
 
 spec:RegisterSetting( "healing_mode", false, {
     name = "Healing Helper Mode",
-    desc = "Restoration Shaman currently has support for some basic healing maintenance with the totemic chain heal build. It will not necessarily tell you how to heal, but will assist with keeping healing rain / surging totem up, stop you from overcapping on riptide and healing stream totem, use unleash life on CD with good spells and maintain your earth shields.",
+    desc = "This setting turns healing mode on and off, as described above.",
     type = "toggle",
     width = "normal",
 } )

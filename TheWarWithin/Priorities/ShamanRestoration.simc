@@ -9,7 +9,7 @@ actions.precombat+=/potion
 actions+=/spiritwalkers_grace,moving=1,if=movement.distance>6
 # Interrupt of casts.
 actions+=/wind_shear
-actions+=/run_action_list,name=healing,if=settings.healing_mode
+actions+=/call_action_list,name=healing,strict=1,if=settings.healing_mode
 actions+=/potion
 actions+=/use_items
 actions+=/blood_fury
@@ -20,7 +20,7 @@ actions+=/bag_of_tricks
 actions+=/surging_totem,if=talent.acid_rain
 actions+=/healing_rain,if=!moving&talent.acid_rain
 actions+=/flame_shock,cycle_targets=1,if=active_enemies<3&refreshable
-actions+=/primordial_wave
+# actions+=/primordial_wave
 actions+=/lava_burst,if=(active_enemies=1|active_enemies=2&buff.lava_surge.up)&dot.flame_shock.remains>cast_time&cooldown_react
 actions+=/earth_elemental
 actions+=/lightning_bolt,if=spell_targets.chain_lightning<2|!talent.chain_lightning
@@ -33,7 +33,7 @@ actions.healing+=/mana_tide_totem,if=mana.pct<85
 actions.healing+=/totemic_recall,if=prev_gcd.earthen_wall_totem
 actions.healing+=/earthen_wall_totem
 actions.healing+=/chain_heal,if=buff.high_tide.up
-actions.healing+=/run_action_list,name=unleash,if=buff.unleash_life.up
+actions.healing+=/call_action_list,strict=1,name=unleash,if=buff.unleash_life.up
 actions.healing+=/surging_totem
 actions.healing+=/healing_rain
 actions.healing+=/earth_shield,if=active_dot.earth_shield<1+talent.elemental_orbit.rank&buff.earth_shield.up
