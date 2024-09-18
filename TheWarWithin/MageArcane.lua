@@ -1212,8 +1212,8 @@ spec:RegisterAbilities( {
             removeBuff( "leydrinker" )
 
             if buff.glorious_incandescence.up then
-                gain(4, "arcane_charges")
-                removeBuff ( "glorious_incandescence" )
+                gain( 4, "arcane_charges")
+                removeBuff( "glorious_incandescence" )
             end
 
             if buff.arcane_soul.up then
