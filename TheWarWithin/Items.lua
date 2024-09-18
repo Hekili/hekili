@@ -165,7 +165,7 @@ all:RegisterAbilities( {
         end,
 
         auras = {
-            oppressive_orators_larynx = {
+            oppressive_orators_influence = {
                 id = 443540,
                 duration = 30,
                 max_stack = 10
