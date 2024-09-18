@@ -1895,7 +1895,7 @@ spec:RegisterAbilities( {
             end
 
             if buff.darting_hurricane.up then
-                setCooldown( "global_cooldown", cooldown.global_cooldown.remains * 0.5 )
+                setCooldown( "global_cooldown", cooldown.global_cooldown.remains * 0.75 )
                 removeStack( "darting_hurricane" )
             end
         end,
