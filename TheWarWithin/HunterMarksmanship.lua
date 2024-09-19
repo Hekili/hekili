@@ -1308,7 +1308,7 @@ spec:RegisterAbilities( {
                 removeBuff( "salvo" )
             end
 
-            if talent.trick_shots.enabled and active_enemies > 2 then applyBuff( "trick_shots" ) end
+            if talent.trick_shots.enabled and active_enemies > 2 and buff.volley.down then applyBuff( "trick_shots" ) end
         end,
     },
 
@@ -1470,6 +1470,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "trick_shots" )
             applyBuff( "volley" )
             applyBuff( "trick_shots", 6 )
 
@@ -1483,6 +1484,7 @@ spec:RegisterAbilities( {
                 removeBuff( "rangers_finesse" )
                 reduceCooldown( "aspect_of_the_turtle", 20 )
             end
+
         end,
     },
 

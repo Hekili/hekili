@@ -1201,19 +1201,23 @@ spec:RegisterAbilities( {
 
         -- TODO: Determine if I need to separate what is consumed/built on impact vs. on cast.
         -- velocity = 24,
-
         handler = function ()
             gain( 0.02 * mana.modmax * arcane_charges.current, "mana" )
+            
+            if buff.burden_of_power.up then
+                removeBuff( "burden_of_power" )
+                gain(4, "arcane_charges")
+            end
 
             spend( arcane_charges.current, "arcane_charges" )
             removeBuff( "arcane_harmony" )
-            removeBuff( "burden_of_power" )
+            
             removeBuff( "bursting_energy" )
             removeBuff( "leydrinker" )
 
             if buff.glorious_incandescence.up then
-                gain( 4, "arcane_charges")
-                removeBuff( "glorious_incandescence" )
+                gain(4, "arcane_charges")
+                removeBuff ( "glorious_incandescence" )
             end
 
             if buff.arcane_soul.up then
