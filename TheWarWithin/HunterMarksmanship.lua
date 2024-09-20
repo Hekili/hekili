@@ -977,18 +977,23 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "focusing_aim" )
-            removeStack( "precise_shots" )
 
-            if talent.bombardment.enabled then
+            if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
+                removeBuff("precise_shots")
+            else removeStack( "precise_shots" )
+            end
+
+           --[[ if talent.bombardment.enabled then
                 if bombardment_count == 3 then
                     applyBuff( "bombardment" )
                     bombardment_count = 0
                 else
                     bombardment_count = bombardment_count + 1
                 end
-            end
+            end]]-- this talent is not currently in the game
         end,
     },
+
 
     -- The Hunter takes on the aspect of a chameleon, becoming untrackable.
     aspect_of_the_chameleon = {
@@ -1295,12 +1300,17 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "bulletstorm" )
             removeBuff( "focusing_aim" )
-            removeStack( "precise_shots" )
 
-            if buff.bombardment.up then
+            if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
+                removeBuff("precise_shots")
+            else removeStack( "precise_shots" )
+            end
+            
+
+            --[[if buff.bombardment.up then
                 applyBuff( "trick_shots" )
                 removeBuff( "bombardment" )
-            end
+            end]]-- This talent is not currently in the game
 
             if buff.salvo.up then
                 applyDebuff( "target", "explosive_shot" )
@@ -1308,7 +1318,7 @@ spec:RegisterAbilities( {
                 removeBuff( "salvo" )
             end
 
-            if talent.trick_shots.enabled and active_enemies > 2 and buff.volley.down then applyBuff( "trick_shots" ) end
+            if talent.trick_shots.enabled and active_enemies > 2 then applyBuff( "trick_shots" ) end
         end,
     },
 
