@@ -4008,6 +4008,8 @@ do
                         -- Truncate whitespace and change commas to semicolons.
                         caption = caption:gsub( "%s+$", "" ):gsub( ",", ";" )
                         description = description:gsub( "^%s+", "" ):gsub( ",", ";" )
+                        -- Replace "[<texture-id>]" in the caption with the escape sequence for the texture.
+                        caption = caption:gsub( "%[(%d+)%]", "|T%1:0|t" )
                         action = action .. ',caption=' .. caption .. ',description=' .. description
                     else
                         -- Change commas to semicolons.
@@ -11602,7 +11604,11 @@ do
                             value = SpaceOut( value )
                         end
 
-                        if key == 'caption' or key == 'description' then
+                        if key == 'caption' then
+                            value = value:gsub( "||", "|" ):gsub( ";", "," )
+                        end
+
+                        if key == 'description' then
                             value = value:gsub( ";", "," )
                         end
 
