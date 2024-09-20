@@ -1206,7 +1206,7 @@ spec:RegisterAbilities( {
             
             if buff.burden_of_power.up then
                 removeBuff( "burden_of_power" )
-                gain(4, "arcane_charges")
+                gain( 4, "arcane_charges")
             end
 
             spend( arcane_charges.current, "arcane_charges" )
@@ -1216,8 +1216,8 @@ spec:RegisterAbilities( {
             removeBuff( "leydrinker" )
 
             if buff.glorious_incandescence.up then
-                gain(4, "arcane_charges")
-                removeBuff ( "glorious_incandescence" )
+                gain( 4, "arcane_charges")
+                removeBuff( "glorious_incandescence" )
             end
 
             if buff.arcane_soul.up then
