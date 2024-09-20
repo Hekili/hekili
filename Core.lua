@@ -33,12 +33,11 @@ end
 
 -- checkImports()
 -- Remove any displays or action lists that were unsuccessfully imported.
-local function checkImports()
-end
+local function checkImports() end
 ns.checkImports = checkImports
 
 
-local function EmbedBlizOptions()
+local function EmbedBlizOptions_Defect()
     local panel = CreateFrame( "Frame", "HekiliDummyPanel", UIParent )
     panel.name = "Hekili"
 
@@ -59,6 +58,8 @@ local function EmbedBlizOptions()
 
     InterfaceOptions_AddCategory( panel )
 end
+
+local function EmbedBlizOptions() end
 
 
 -- OnInitialize()
