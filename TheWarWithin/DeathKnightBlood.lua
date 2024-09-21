@@ -1037,6 +1037,38 @@ spec:RegisterAuras( {
 } )
 
 
+-- TWW
+spec:RegisterGear( "tww1", 212005, 212003, 212002, 212001, 212000 )
+spec:RegisterAuras( {
+    unbreakable = {
+        id = 457468,
+        duration = 3600,
+        max_stack = 1
+    },
+    unbroken = {
+        id = 457473,
+        duration = 6,
+        max_stack = 1
+    },
+    piledriver = {
+        id = 457506,
+        duration = 3600,
+        max_stack = 10
+    },
+
+    icy_vigor = {
+        id = 457189,
+        duration = 8,
+        max_stack = 1
+    },
+
+    unholy_commander = {
+        id = 456698,
+        duration = 8,
+        max_stack = 1
+    }
+})
+
 -- Tier 29
 spec:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
 -- TODO: Proactively count Bone Shields consumed and proactively model Vigorous Lifeblood proc.
@@ -1380,6 +1412,10 @@ spec:RegisterAbilities( {
             gain( consume * 0.02 * health.max, "health" )
             applyBuff( "bonestorm", 2 * consume )
             removeStack( "bone_shield", nil, consume )
+            if set_bonus.tww1_4pc > 0 then
+                if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
+                else removeBuff( "piledriver" ) end
+            end
         end,
 
         -- TODO Bone Shield regeneration (1 per sec.)
@@ -1460,6 +1496,11 @@ spec:RegisterAbilities( {
             if azerite.eternal_rune_weapon.enabled then applyBuff( "dancing_rune_weapon" ) end
             if legendary.crimson_rune_weapon.enabled then addStack( "bone_shield", nil, buff.dancing_rune_weapon.up and 10 or 5 ) end
             if talent.insatiable_blade.enabled then addStack( "bone_shield", nil, buff.dancing_rune_weapon.up and 10 or 5 ) end
+
+            if set_bonus.tww1_4pc > 0 then
+                if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
+                else removeBuff( "piledriver" ) end
+            end
         end,
     },
 
@@ -1706,6 +1747,11 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "blood_plague" )
             addStack( "bone_shield", nil, buff.dancing_rune_weapon.up and 4 or 2 )
+
+            if set_bonus.tww1_4pc > 0 then
+                if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
+                else removeBuff( "piledriver" ) end
+            end
         end,
     },
 
@@ -1877,6 +1923,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             addStack( "bone_shield", 30, buff.bone_shield.stack + ( buff.dancing_rune_weapon.up and 6 or 3 ) )
+
+            if set_bonus.tww1_4pc > 0 then
+                if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
+                else removeBuff( "piledriver" ) end
+            end
+
             if azerite.bones_of_the_damned.enabled then applyBuff( "bones_of_the_damned" ) end
         end,
     },
@@ -2146,6 +2198,11 @@ spec:RegisterAbilities( {
 
             if set_bonus.tier21_2pc == 1 then
                 cooldown.dancing_rune_weapon.expires = max( 0, cooldown.dancing_rune_weapon.expires - ( 3 * bs ) )
+            end
+
+            if set_bonus.tww1_4pc > 0 then
+                if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
+                else removeBuff( "piledriver" ) end
             end
 
             applyBuff( "tombstone" )
