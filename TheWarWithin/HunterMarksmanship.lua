@@ -979,18 +979,9 @@ spec:RegisterAbilities( {
             removeBuff( "focusing_aim" )
 
             if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
-                removeBuff("precise_shots")
+                removeBuff( "precise_shots" )
             else removeStack( "precise_shots" )
             end
-
-           --[[ if talent.bombardment.enabled then
-                if bombardment_count == 3 then
-                    applyBuff( "bombardment" )
-                    bombardment_count = 0
-                else
-                    bombardment_count = bombardment_count + 1
-                end
-            end]]-- this talent is not currently in the game
         end,
     },
 
@@ -1305,12 +1296,6 @@ spec:RegisterAbilities( {
                 removeBuff("precise_shots")
             else removeStack( "precise_shots" )
             end
-            
-
-            --[[if buff.bombardment.up then
-                applyBuff( "trick_shots" )
-                removeBuff( "bombardment" )
-            end]]-- This talent is not currently in the game
 
             if buff.salvo.up then
                 applyDebuff( "target", "explosive_shot" )
