@@ -1135,6 +1135,10 @@ local affinities = {
 spec:RegisterStateFunction( "shift", function( form )
     if conduit.tireless_pursuit.enabled and ( buff.cat_form.up or buff.travel_form.up ) then applyBuff( "tireless_pursuit" ) end
 
+    if buff.bear_form.up and form == "cat_form" and talent.wildshape_mastery.enabled then
+        applyBuff( "wildshape_mastery" )
+    end
+
     removeBuff( "cat_form" )
     removeBuff( "bear_form" )
     removeBuff( "travel_form" )
