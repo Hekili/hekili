@@ -886,7 +886,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.lock_and_load.up then removeBuff( "lock_and_load" )
             elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
-            if talent.precise_shots.enabled then applyBuff( "precise_shots", 15, 2, nil ) end
+            if talent.precise_shots.enabled then applyBuff( "precise_shots", nil, 2 ) end
             if talent.bulletstorm.enabled and buff.trick_shots.up then
                 addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end
