@@ -93,10 +93,7 @@ actions.stealth_cds+=/vanish,if=!talent.invigorating_shadowdust&talent.subterfug
 actions.stealth_cds+=/shadowmeld,if=energy>=40&combo_points.deficit>3
 
 actions.stealthed+=/shadowstrike,if=talent.deathstalkers_mark&!debuff.deathstalkers_mark.up&!buff.darkest_night.up
-actions.stealthed+=/call_action_list,name=finish,if=buff.darkest_night.up&combo_points==cp_max_spend
-actions.stealthed+=/call_action_list,name=finish,if=effective_combo_points>=cp_max_spend&!buff.darkest_night.up
-actions.stealthed+=/call_action_list,name=finish,if=buff.shuriken_tornado.up&combo_points.deficit<=2&!buff.darkest_night.up
-actions.stealthed+=/call_action_list,name=finish,if=(combo_points.deficit<=1+talent.deathstalkers_mark)&!buff.darkest_night.up
+actions.stealthed+=/call_action_list,name=finish,if=buff.darkest_night.up&combo_points=cp_max_spend|effective_combo_points>=cp_max_spend&!buff.darkest_night.up|buff.shuriken_tornado.up&combo_points.deficit<=2&!buff.darkest_night.up|(combo_points.deficit<=1+talent.deathstalkers_mark)&!buff.darkest_night.up
 # Use shadowstrike for Danse Macabre on aoe and for Trickster use it instead of storm on 2+ targets
 actions.stealthed+=/shadowstrike,if=(!used_for_danse&buff.shadow_blades.up)|(talent.unseen_blade&spell_targets>=2)
 actions.stealthed+=/shuriken_storm,if=!buff.premeditation.up&spell_targets>=4
