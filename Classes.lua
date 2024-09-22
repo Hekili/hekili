@@ -2343,9 +2343,13 @@ do
         {
             name = "elemental_potion_of_power",
             items = { 191907, 191906, 191905, 191389, 191388, 191387 }
-        },
-
+        }
     }
+
+    all:RegisterAura( "fake_potion", {
+        duration = 30,
+        max_stack = 1,
+    } )
 
     local first_potion, first_potion_key
     local potion_items = {}
@@ -2363,7 +2367,7 @@ do
     end )
 
     all:RegisterAura( "potion", {
-        alias = {},
+        alias = { "fake_potion" },
         aliasMode = "first",
         aliasType = "buff",
         duration = 30
