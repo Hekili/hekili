@@ -1405,6 +1405,10 @@ spec:RegisterAbilities( {
             end
             if talent.from_the_ashes.enabled then reduceCooldown( "phoenix_flames", 1 ) end
 
+            if talent.frostfire_bolt.enabled then
+                applyDebuff( "target", "frostfire_bolt" )
+            end
+
             if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
                 if buff.calefaction.stack == 19 then
                     removeBuff( "calefaction" )

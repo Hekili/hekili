@@ -1697,6 +1697,7 @@ spec:RegisterAbilities( {
         end,
 
         usable = function ()
+            if state.spec.restoration then return end
             return max( cooldown.fire_elemental.true_remains, cooldown.storm_elemental.true_remains ) > 0, "DPS elementals must be on CD first"
         end,
 

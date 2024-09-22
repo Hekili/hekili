@@ -156,8 +156,8 @@ local oneTimeFixes = {
             havoc.date = 20240727
             havoc.version = 20240727
         end
-    end,
-  }
+    end
+}
 
 
 function Hekili:RunOneTimeFixes()
@@ -4178,6 +4178,10 @@ do
         if option == "package" then self:UpdateUseItems(); self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
         elseif option == "enabled" then ns.StartConfiguration() end
 
+        if WeakAuras and WeakAuras.ScanEvents then
+            WeakAuras.ScanEvents( "HEKILI_SPEC_OPTION_CHANGED", option, val )
+        end
+
         Hekili:UpdateDamageDetectionForCLEU()
     end
 
@@ -4186,7 +4190,7 @@ do
         local n = #info
         local spec, option = info[1], info[n]
 
-        spec = specIDByName[ spec ]
+        if type( spec ) == 'string' then spec = specIDByName[ spec ] end
         if not spec then return end
 
         self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
@@ -5335,6 +5339,20 @@ do
                                     end,
                                     order = 1.1,
                                     width = 0.15,
+                                },
+
+                                potion = {
+                                    type = "select",
+                                    name = "Potion",
+                                    desc = "Unless otherwise specified in the priority, the selected potion will be recommended.",
+                                    order = 1.2,
+                                    width = 3,
+                                    values = class.potionList,
+                                    get = function()
+                                        local p = self.DB.profile.specs[ id ].potion or class.specs[ id ].options.potion or "default"
+                                        if not class.potionList[ p ] then p = "default" end
+                                        return p
+                                    end,
                                 },
 
                                 blankLine1 = {
@@ -7400,7 +7418,7 @@ do
                                                     end,
                                                 },
 
-                                                --[[ potion = {
+                                                potion = {
                                                     type = "select",
                                                     name = "Potion",
                                                     order = 3.2,
@@ -7411,7 +7429,7 @@ do
                                                         return e.action ~= "potion"
                                                     end,
                                                     width = 1.5,
-                                                }, ]]
+                                                },
 
                                                 sec = {
                                                     type = "input",
@@ -10769,6 +10787,9 @@ do
                     setting.info.set( info, to )
 
                     Hekili:ForceUpdate( "CLI_TOGGLE" )
+                    if WeakAuras and WeakAuras.ScanEvents then
+                        WeakAuras.ScanEvents( "HEKILI_SPEC_OPTION_CHANGED", args[2], to )
+                    end
                     return
 
                 elseif setting.info.type == "range" then
@@ -10793,6 +10814,9 @@ do
                     Hekili:Print( format( "%s set to |cFF00B4FF%.2f|r.", settingName, to ) )
                     prefs[ setting.name ] = to
                     Hekili:ForceUpdate( "CLI_NUMBER" )
+                    if WeakAuras and WeakAuras.ScanEvents then
+                        WeakAuras.ScanEvents( "HEKILI_SPEC_OPTION_CHANGED", args[2], to )
+                    end
                     return
 
                 end

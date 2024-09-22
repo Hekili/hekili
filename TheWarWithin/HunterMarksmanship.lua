@@ -1525,7 +1525,7 @@ spec:RegisterOptions( {
 local beastMastery = class.specs[ 253 ]
 
 spec:RegisterSetting( "pet_healing", 0, {
-    name = strformat( "%s Below Health %", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
+    name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
     desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage.  Setting to |cFFFFD1000|r disables this feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
     icon = 132179,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
@@ -1549,6 +1549,7 @@ spec:RegisterSetting( "trueshot_rapid_fire", true, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
+        spec.abilities.rapid_fire.name,
         spec.abilities.aimed_shot.name,
         Hekili:GetSpellLinkWithTexture( spec.talents.deathblow[ 2 ] ),
         Hekili:GetSpellLinkWithTexture( spec.talents.surging_shots[ 2 ] ) ),
