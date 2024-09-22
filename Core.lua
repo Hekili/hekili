@@ -803,9 +803,6 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             action = nil
                             ability = nil
                             state.this_action = "wait"
-                            action = class.abilities[ usePotion ].key
-                            ability = class.abilities[ action ]
-                            state.this_action = action
                         else
                             action = class.abilities[ usePotion ] and class.abilities[ usePotion ].key or "elemental_potion_of_power"
                             ability = class.abilities[ action ]
@@ -1480,6 +1477,8 @@ local lastDisplay = "AOE"
 
 local hasSnapped
 
+local lastSnapshot = {}
+
 function Hekili.Update( initial )
     if not Hekili:ScriptsLoaded() then
         Hekili:LoadScripts()
@@ -1519,8 +1518,15 @@ function Hekili.Update( initial )
 
         fullReset = fullReset or state.offset > 0
 
+        if debug and lastSnapshot[ dispName ] and GetTime() - lastSnapshot[ dispName ] < 0.5 then
+            -- Disable snapshotting to prevent loops with errors.
+            Hekili.ActiveDebug = false
+            debug = false
+        end
+
         if debug then
             Hekili:SetupDebug( dispName )
+            lastSnapshot[ dispName ] = GetTime()
             Hekili:Debug( "*** START OF NEW DISPLAY: %s ***", dispName )
         end
 

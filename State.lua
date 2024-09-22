@@ -4154,7 +4154,7 @@ local logged_talent_errors = {}
 
 local mt_talents = {
     __index = function( t, k )
-        if class.talents[ k ] == nil and not logged_talent_errors[ k ] then
+        if class.talents[ k ] == nil and not logged_talent_errors[ k ] and #class.specs > 1 then
             Hekili:Error( "Unknown talent in [ " .. state.scriptID .. " ]: " .. k .. "\n\n" .. debugstack() )
             logged_talent_errors[ k ] = true
         end
