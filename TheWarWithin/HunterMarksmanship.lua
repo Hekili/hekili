@@ -739,7 +739,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             if spellID == 185358 and state.talent.bombardment.enabled then
                 bombardment_arcane_shots = ( bombardment_arcane_shots + 1 ) % 4
             end
-        
+
             if state.talent.steady_focus.enabled then
                 if spellID == 56641 and GetTime() - steady_focus_applied > 0.5 then
                     steady_focus_casts = ( steady_focus_casts + 1 ) % 2
@@ -876,6 +876,7 @@ spec:RegisterAbilities( {
         texture = 135130,
         startsCombat = true,
         nobuff = "wailing_arrow_override",
+        indicator = function() if settings.trueshot_rapid_fire and buff.trueshot.up then return spec.abilities.rapid_fire.texture end end,
 
         usable = function ()
             if action.aimed_shot.cast > 0 and moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
@@ -885,7 +886,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.lock_and_load.up then removeBuff( "lock_and_load" )
             elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
-            if talent.precise_shots.enabled then applyBuff( "precise_shots" ) end
+            if talent.precise_shots.enabled then applyBuff( "precise_shots", nil, 2 ) end
             if talent.bulletstorm.enabled and buff.trick_shots.up then
                 addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end
@@ -976,18 +977,14 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "focusing_aim" )
-            removeStack( "precise_shots" )
 
-            if talent.bombardment.enabled then
-                if bombardment_count == 3 then
-                    applyBuff( "bombardment" )
-                    bombardment_count = 0
-                else
-                    bombardment_count = bombardment_count + 1
-                end
+            if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
+                removeBuff( "precise_shots" )
+            else removeStack( "precise_shots" )
             end
         end,
     },
+
 
     -- The Hunter takes on the aspect of a chameleon, becoming untrackable.
     aspect_of_the_chameleon = {
@@ -1294,11 +1291,10 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "bulletstorm" )
             removeBuff( "focusing_aim" )
-            removeStack( "precise_shots" )
 
-            if buff.bombardment.up then
-                applyBuff( "trick_shots" )
-                removeBuff( "bombardment" )
+            if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
+                removeBuff("precise_shots")
+            else removeStack( "precise_shots" )
             end
 
             if buff.salvo.up then
@@ -1469,6 +1465,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "trick_shots" )
             applyBuff( "volley" )
             applyBuff( "trick_shots", 6 )
 
@@ -1482,6 +1479,7 @@ spec:RegisterAbilities( {
                 removeBuff( "rangers_finesse" )
                 reduceCooldown( "aspect_of_the_turtle", 20 )
             end
+
         end,
     },
 
@@ -1527,8 +1525,8 @@ spec:RegisterOptions( {
 local beastMastery = class.specs[ 253 ]
 
 spec:RegisterSetting( "pet_healing", 0, {
-    name = "|T132179:0|t Mend Pet below %hp",
-    desc = "If set above zero, the addon will recommend |T132179:0|t Mend Pet when your pet falls below this HP %. Leave at 0 to disable the feature.",
+    name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
+    desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage.  Setting to |cFFFFD1000|r disables this feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
     icon = 132179,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
@@ -1545,9 +1543,23 @@ spec:RegisterSetting( "mark_any", false, {
     width = "full"
 } )
 
+spec:RegisterSetting( "trueshot_rapid_fire", true, {
+    name = strformat( "%s Indicator during %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ) ),
+    desc = strformat( "If checked, when %s is recommended during %s, a %s indicator will also be shown.  This icon means that you should attempt to queue %s during the cast, in case %s's cooldown is reset by %s / %s.  Otherwise, use the next recommended ability in the queue.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
+        spec.abilities.rapid_fire.name,
+        spec.abilities.aimed_shot.name,
+        Hekili:GetSpellLinkWithTexture( spec.talents.deathblow[ 2 ] ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.surging_shots[ 2 ] ) ),
+    type = "toggle",
+    width = "full"
+} )
+
 spec:RegisterSetting( "prevent_hardcasts", false, {
     name = "Prevent Hardcasts While Moving",
-    desc = "If checked, the addon will not recommend |T135130:0|t Aimed Shot or |T132323:0|t Wailing Arrow when moving and hardcasting.",
+    desc = strformat( "If checked, the addon will not recommend %s or %s when moving and hardcasting.", Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.wailing_arrow.id ) ),
     type = "toggle",
     width = "full"
 } )

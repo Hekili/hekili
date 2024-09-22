@@ -1246,6 +1246,8 @@ spec:RegisterHook( "reset_precast", function()
     end
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
+
+    if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then reduceCooldown( "barbed_shot", barbed_shot_grace_period ) end
 end )
 
 
@@ -1373,8 +1375,8 @@ spec:RegisterAbilities( {
         id = 217200,
         cast = 0,
         charges = 2,
-        cooldown = function () return ( conduit.bloodletting.enabled and 11 or 12 ) * haste end,
-        recharge = function () return ( conduit.bloodletting.enabled and 11 or 12 ) * haste end,
+        cooldown = function () return ( ( conduit.bloodletting.enabled and 11 or 12 ) * haste ) - barbed_shot_grace_period end,
+        recharge = function () return ( ( conduit.bloodletting.enabled and 11 or 12 ) * haste ) - barbed_shot_grace_period end,
         gcd = "spell",
         school = "physical",
 
@@ -2428,21 +2430,27 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterSetting( "barbed_shot_grace_period", 0.5, {
-    name = "|T2058007:0|t Barbed Shot Grace Period",
-    desc = "If set above zero, the addon (using the default priority or |cFFFFD100barbed_shot_grace_period|r expression) will recommend |T2058007:0|t Barbed Shot up to 1 global cooldown earlier.",
+spec:RegisterSetting( "barbed_shot_grace_period", 1, {
+    name = strformat( "%s Grace Period", Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ) ),
+    desc = strformat( "If set above zero, %s's cooldown will be reduced by this number of global cooldowns.  This feature helps to ensure that you maintain %s stacks by recommending %s with time remaining on %s.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ), Hekili:GetSpellLinkWithTexture( spec.auras.frenzy.id ), spec.abilities.barbed_shot.name, spec.auras.frenzy.name ),
     icon = 2058007,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
     min = 0,
-    max = 1,
+    max = 2,
     step = 0.01,
     width = "normal"
 } )
 
+spec:RegisterStateExpr( "barbed_shot_grace_period", function()
+    return settings.barbed_shot_grace_period or 0.5
+end )
+
 spec:RegisterSetting( "pet_healing", 0, {
-    name = "|T132179:0|t Mend Pet below %hp",
-    desc = "If set above zero, the addon will recommend |T132179:0|t Mend Pet when your pet falls below this HP %. Leave at 0 to disable the feature.",
+    name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( spec.abilities.mend_pet.id ) ),
+    desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage.  Setting to |cFFFFd1000|r disables this feature.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.mend_pet.id ) ),
     icon = 132179,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
@@ -2453,8 +2461,8 @@ spec:RegisterSetting( "pet_healing", 0, {
 } )
 
 spec:RegisterSetting( "avoid_bw_overlap", false, {
-    name = "Avoid |T132127:0|t Bestial Wrath Overlap",
-    desc = "If checked, the addon will not recommend |T132127:0|t Bestial Wrath if the buff is already applied.",
+    name = strformat( "Avoid %s Overlap", Hekili:GetSpellLinkWithTexture( spec.abilities.bestial_wrath.id ) ),
+    desc = strformat( "If checked, %s will not be recommended if the buff is already active.", Hekili:GetSpellLinkWithTexture( spec.abilities.bestial_wrath.id ) ),
     type = "toggle",
     width = "full"
 } )

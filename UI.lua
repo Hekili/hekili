@@ -512,8 +512,7 @@ do
             text = "Potions",
             func = function() Hekili:FireToggle( "potions" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.potions.value end,
-        },
-
+        }
     }
 
     local specsParsed = false
@@ -563,6 +562,34 @@ do
                             end,
                             hidden = function () return Hekili.State.spec.id ~= i end,
                         } )
+
+                        local potionMenu = {
+                            text = "|T967533:0|t Preferred Potion",
+                            tooltipTitle = "|T967533:0|t Preferred Potion",
+                            tooltipText = "Select the potion you would like to use when the |cFFFFD100Potions|r toggle is enabled.",
+                            tooltipOnButton = true,
+                            hasArrow = true,
+                            menuList = {},
+                            notCheckable = true,
+                            hidden = function () return Hekili.State.spec.id ~= i end,
+                        }
+
+                        for k, v in orderedPairs( class.potionList ) do
+                            insert( potionMenu.menuList, {
+                                text = v,
+                                func = function ()
+                                    Hekili.DB.profile.specs[ Hekili.State.spec.id ].potion = k
+                                    for _, display in pairs( Hekili.DisplayPool ) do
+                                        display:OnEvent( "HEKILI_MENU" )
+                                    end
+                                end,
+                                checked = function ()
+                                    return Hekili.DB.profile.specs[ Hekili.State.spec.id ].potion == k
+                                end,
+                            } )
+                        end
+
+                        insert( menuData, potionMenu )
 
                         -- Check for Toggles.
                         for n, setting in pairs( spec.settings ) do

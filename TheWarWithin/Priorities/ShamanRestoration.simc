@@ -1,13 +1,15 @@
 actions.precombat+=/earthliving_weapon
-actions.precombat+=/water_shield,if=buff.water_shield.up+buff.earth_shield.up+buff.lightning_shield.up<1+talent.elemental_orbit.rank
-actions.precombat+=/lightning_shield,if=buff.water_shield.up+buff.earth_shield.up+buff.lightning_shield.up<1+talent.elemental_orbit.rank
-actions.precombat+=/earth_shield,if=buff.water_shield.up+buff.earth_shield.up+buff.lightning_shield.up<1+talent.elemental_orbit.rank
+actions.precombat+=/tidecallers_guard
+actions.precombat+=/water_shield,if=buff.water_shield.up+buff.earth_shield.up+buff.lightning_shield.up<1+talent.elemental_orbit.rank|(!buff.water_shield.up&settings.healing_mode)
+actions.precombat+=/lightning_shield,if=(buff.water_shield.up+buff.earth_shield.up+buff.lightning_shield.up<1+talent.elemental_orbit.rank)&settings.second_shield=lightning_shield
+actions.precombat+=/earth_shield,if=(buff.water_shield.up+buff.earth_shield.up+buff.lightning_shield.up<1+talent.elemental_orbit.rank)&settings.second_shield=earth_shield
 actions.precombat+=/earth_elemental
 actions.precombat+=/potion
 
 actions+=/spiritwalkers_grace,moving=1,if=movement.distance>6
 # Interrupt of casts.
 actions+=/wind_shear
+actions+=/call_action_list,name=healing,strict=1,if=settings.healing_mode
 actions+=/potion
 actions+=/use_items
 actions+=/blood_fury
@@ -25,3 +27,22 @@ actions+=/lightning_bolt,if=spell_targets.chain_lightning<2|!talent.chain_lightn
 actions+=/chain_lightning,if=spell_targets.chain_lightning>1
 actions+=/flame_shock,moving=1
 actions+=/frost_shock,moving=1
+
+actions.healing+=/downpour,if=buff.unleash_life.up|buff.downpour.up&buff.downpour.remains<2
+actions.healing+=/mana_tide_totem,if=mana.pct<85
+actions.healing+=/totemic_recall,if=prev_gcd.earthen_wall_totem
+actions.healing+=/earthen_wall_totem
+actions.healing+=/chain_heal,if=buff.high_tide.up
+actions.healing+=/call_action_list,strict=1,name=unleash,if=buff.unleash_life.up
+actions.healing+=/surging_totem
+actions.healing+=/healing_rain
+actions.healing+=/earth_shield,if=active_dot.earth_shield<1+talent.elemental_orbit.rank&buff.earth_shield.up
+actions.healing+=/earth_shield,if=(!buff.earth_shield.up&settings.second_shield=earth_shield&talent.elemental_orbit.enabled)
+actions.healing+=/healing_stream_totem,if=totem.surging_totem.up&!totem.healing_stream_totem.up
+actions.healing+=/riptide,if=cooldown.riptide.charges=cooldown.riptide.charges_max
+actions.healing+=/unleash_life,if=talent.call_of_the_ancestors.enabled|cooldown.wellspring.remains<2|(cooldown.surging_totem.remains<3|buff.downpour.up&buff.downpour.remains>3)
+actions.healing+=/wellspring
+
+actions.unleash+=/downpour
+actions.unleash+=/wellspring
+actions.unleash+=/riptide

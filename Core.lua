@@ -791,8 +791,27 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         end
                     elseif action == "main_hand" and class.abilities[ action ].key ~= action and not Hekili:IsItemScripted( action, true ) then
                         action = class.abilities[ action ].key
+                        ability = class.abilities[ action ]
                         state.this_action = action
                         entryReplaced = true
+                    elseif action == "potion" then
+                        local usePotion = entry.potion or spec.potion
+                        if not usePotion or not class.abilities[ usePotion ] then usePotion = class.specs[ specID ].options.potion end
+                        if not usePotion or not class.abilities[ usePotion ] then usePotion = "elemental_potion_of_power" end
+
+                        if not class.abilities[ usePotion ] then
+                            action = nil
+                            ability = nil
+                            state.this_action = "wait"
+                            action = class.abilities[ usePotion ].key
+                            ability = class.abilities[ action ]
+                            state.this_action = action
+                        else
+                            action = class.abilities[ usePotion ] and class.abilities[ usePotion ].key or "elemental_potion_of_power"
+                            ability = class.abilities[ action ]
+                            state.this_action = action
+                            entryReplaced = true
+                        end
                     end
 
                     rDepth = rDepth + 1
@@ -1097,7 +1116,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                 Timer:Track("Post Recheck")
 
                                                 if aScriptPass then
-                                                    if action == "potion" then
+                                                    --[[ if action == "potion" then
                                                         local item = class.abilities.potion.item
 
                                                         slot.scriptType = "simc"
@@ -1130,9 +1149,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         -- slot.indicator = ( entry.Indicator and entry.Indicator ~= "none" ) and entry.Indicator
 
                                                         state.selection_time = state.delay
-                                                        state.selected_action = rAction
+                                                        state.selected_action = rAction ]]
 
-                                                    elseif action == "wait" then
+                                                    if action == "wait" then
                                                         local sec = state.args.sec or 0.5
 
                                                         if sec <= 0 then
@@ -2028,6 +2047,7 @@ function Hekili.Update( initial )
 
             if debug then
                 Hekili:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
+                Hekili:Yield( "Yield before saving the snapshot for " .. dispName .. "." )
 
                 if Hekili:SaveDebugSnapshot( dispName ) then
                     if snaps then

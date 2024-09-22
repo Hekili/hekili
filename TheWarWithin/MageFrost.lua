@@ -1118,6 +1118,8 @@ spec:RegisterAbilities( {
         handler = function ()
             addStack( "icicles" )
 
+            if action.frostbolt.cast_time > 0 then removeStack( "ice_floes" ) end
+
             if buff.frostfire_empowerment.up then
                 applyBuff( "frost_mastery", nil, 6 )
                 if talent.excess_frost.enabled then applyBuff( "excess_frost" ) end
@@ -1134,7 +1136,6 @@ spec:RegisterAbilities( {
                 addStack( "deaths_chill", buff.icy_veins.remains, 1 )
             end
 
-            removeStack( "ice_floes" )
 
             if buff.cold_front_ready.up then
                 spec.abilities.frozen_orb.handler()
@@ -1164,10 +1165,11 @@ spec:RegisterAbilities( {
 
         impact = function ()
             applyDebuff( "target", "chilled" )
-            --[[ if debuff.winters_chill.stack > 0 and action.frostbolt.lastCast > action.flurry.lastCast then
-                removeDebuffStack( "target", "winters_chill" )
-            end ]]
             removeDebuffStack( "target", "winters_chill" )
+
+            if talent.frostfire_bolt.enabled then
+                applyDebuff( "target", "frostfire_bolt" )
+            end
         end,
 
         copy = { 116, 228597, "frostfire_bolt", 431044 }
