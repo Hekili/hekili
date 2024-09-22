@@ -6112,18 +6112,15 @@ do
 
     ns.callHook = function( hook, ... )
         if not class.hooks[ hook ] or inProgress[ hook ] then return ... end
-        local a1, a2, a3, a4, a5 = ...
+        local vars = { ... }
 
         inProgress[ hook ] = true
         for _, h in ipairs( class.hooks[ hook ] ) do
-            a1, a2, a3, a4, a5 = h( a1, a2, a3, a4, a5 )
+            vars = { h( unpack( vars ) ) }
         end
         inProgress[ hook ] = nil
 
-        if ( a1 ~= nil or a2 ~= nil or a3 ~= nil or a4 ~= nil or a5 ~= nil ) then
-            return a1, a2, a3, a4, a5
-        end
-        return ...
+        return unpack( vars )
     end
 end
 
