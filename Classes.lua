@@ -6109,16 +6109,27 @@ end
 
 do
     local inProgress = {}
+    local vars = {}
 
-    ns.callHook = function( hook, ... )
-        if not class.hooks[ hook ] or inProgress[ hook ] then return ... end
-        local vars = { ... }
+    local function load_args( ... )
+        local count = select( "#", ... )
+        if count == 0 then return end
 
-        inProgress[ hook ] = true
-        for _, h in ipairs( class.hooks[ hook ] ) do
-            vars = { h( unpack( vars ) ) }
+        for i = 1, count do
+            vars[ i ] = select( i, ... )
         end
-        inProgress[ hook ] = nil
+    end
+
+    ns.callHook = function( event, ... )
+        if not class.hooks[ event ] or inProgress[ event ] then return ... end
+        wipe( vars )
+        load_args( ... )
+
+        inProgress[ event ] = true
+        for i, hook in ipairs( class.hooks[ event ] ) do
+            load_args( hook( unpack( vars ) ) )
+        end
+        inProgress[ event ] = nil
 
         return unpack( vars )
     end

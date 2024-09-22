@@ -6909,7 +6909,7 @@ function state.advance( time )
         end
     end ]]
 
-    ns.callHook( "advance_end", time )
+    time = ns.callHook( "advance_end", time ) or time
 
     return time
 end
