@@ -909,7 +909,8 @@ spec:RegisterHook( "reset_precast", function ()
         else applyBuff( "holy_bulwark_ready" ) end
     end
 
-    if talent.lights_guidance.enabled and IsActiveSpell( 427453 ) then
+    if talent.lights_guidance.enabled and ( IsActiveSpell( 427453 ) or IsActiveSpell( 429826 ) ) then
+        applyBuff( "hammer_of_light_free" )
         applyBuff( "hammer_of_light_ready" )
     end
 

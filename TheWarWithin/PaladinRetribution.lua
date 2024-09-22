@@ -1114,7 +1114,8 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "templar_strikes" )
     end
 
-    if IsActiveSpell( 427453 ) then
+    if IsActiveSpell( 429826 ) then
+        applyBuff( "hammer_of_light_free" )
         applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.wake_of_ashes.lastCast ) )
     end
 
@@ -1765,7 +1766,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            if buff.divine_purpose.up then return 0 end
+            if buff.divine_purpose.up or buff.hammer_of_light_free.up then return 0 end
             return state.spec.protection and 3 or 5
         end,
         spendType = 'holy_power',

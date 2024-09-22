@@ -157,7 +157,15 @@ local oneTimeFixes = {
             havoc.version = 20240727
         end
     end,
-  }
+
+    resetPotionsIfBroke = function( p )
+      for _, spec in pairs( p.specs ) do
+          if spec.potion ~= "default" and not class.potionList[ spec.potion ] then spec.potion = "default" end
+      end
+
+      p.runOnce.resetPotionsIfBroke = nil
+    end
+}
 
 
 function Hekili:RunOneTimeFixes()
@@ -5328,6 +5336,20 @@ do
                                     width = 0.15,
                                 },
 
+                                potion = {
+                                    type = "select",
+                                    name = "Potion",
+                                    desc = "Unless otherwise specified in the priority, the selected potion will be recommended.",
+                                    order = 1.2,
+                                    width = 3,
+                                    values = class.potionList,
+                                    get = function()
+                                        local p = self.DB.profile.specs[ id ].potion or class.specs[ id ].options.potion or "default"
+                                        if not class.potionList[ p ] then p = "default" end
+                                        return p
+                                    end,
+                                },
+
                                 blankLine1 = {
                                     type = 'description',
                                     name = '',
@@ -7391,7 +7413,7 @@ do
                                                     end,
                                                 },
 
-                                                --[[ potion = {
+                                                potion = {
                                                     type = "select",
                                                     name = "Potion",
                                                     order = 3.2,
@@ -7402,7 +7424,7 @@ do
                                                         return e.action ~= "potion"
                                                     end,
                                                     width = 1.5,
-                                                }, ]]
+                                                },
 
                                                 sec = {
                                                     type = "input",
