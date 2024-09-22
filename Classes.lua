@@ -2464,7 +2464,7 @@ do
         consumable = function() return state.args.potion or settings.potion or first_potion_key or "elemental_potion_of_power" end,
         item = function()
             if state.args.potion and class.abilities[ state.args.potion ] then return class.abilities[ state.args.potion ].item end
-            if settings.potion and class.abilities[ settings.potion ] then return class.abilities[ settings.potion ].item end
+            if spec.potion and class.abilities[ spec.potion ] then return class.abilities[ spec.potion ].item end
             if first_potion and class.abilities[ first_potion ] then return class.abilities[ first_potion ].item end
             return 191387
         end,
@@ -6109,21 +6109,29 @@ end
 
 do
     local inProgress = {}
+    local vars = {}
 
-    ns.callHook = function( hook, ... )
-        if not class.hooks[ hook ] or inProgress[ hook ] then return ... end
-        local a1, a2, a3, a4, a5 = ...
+    local function load_args( ... )
+        local count = select( "#", ... )
+        if count == 0 then return end
 
-        inProgress[ hook ] = true
-        for _, h in ipairs( class.hooks[ hook ] ) do
-            a1, a2, a3, a4, a5 = h( a1, a2, a3, a4, a5 )
+        for i = 1, count do
+            vars[ i ] = select( i, ... )
         end
-        inProgress[ hook ] = nil
+    end
 
-        if ( a1 ~= nil or a2 ~= nil or a3 ~= nil or a4 ~= nil or a5 ~= nil ) then
-            return a1, a2, a3, a4, a5
+    ns.callHook = function( event, ... )
+        if not class.hooks[ event ] or inProgress[ event ] then return ... end
+        wipe( vars )
+        load_args( ... )
+
+        inProgress[ event ] = true
+        for i, hook in ipairs( class.hooks[ event ] ) do
+            load_args( hook( unpack( vars ) ) )
         end
-        return ...
+        inProgress[ event ] = nil
+
+        return unpack( vars )
     end
 end
 
