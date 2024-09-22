@@ -2374,6 +2374,8 @@ do
     for _, potion in ipairs( exp_potions ) do
         local potionItem = Item:CreateFromItemID( potion.items[ #potion.items ] )
 
+        -- all:RegisterAbility( potion.name, {} ) -- Create stub.
+
         potionItem:ContinueOnItemLoad( function()
             all:RegisterAbility( potion.name, {
                 name = potionItem:GetItemName(),
@@ -2396,6 +2398,8 @@ do
                     applyBuff( potion.name )
                 end,
             } )
+
+            class.abilities[ potion.name ] = all.abilities[ potion.name ]
 
             class.potions[ potion.name ] = {
                 name = potionItem:GetItemName(),
@@ -2458,7 +2462,7 @@ do
             if state.args.potion and class.abilities[ state.args.potion ] then return class.abilities[ state.args.potion ].item end
             if settings.potion and class.abilities[ settings.potion ] then return class.abilities[ settings.potion ].item end
             if first_potion and class.abilities[ first_potion ] then return class.abilities[ first_potion ].item end
-            return class.abilities.elemental_potion_of_power.item
+            return 191387
         end,
         bagItem = true,
 
@@ -2466,7 +2470,7 @@ do
             local use = all.abilities.potion
             use = use and use.consumable
 
-            if use ~= "global_cooldown" then
+            if use and use ~= "global_cooldown" then
                 class.abilities[ use ].handler()
                 setCooldown( use, action[ use ].cooldown )
             end

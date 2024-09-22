@@ -156,14 +156,6 @@ local oneTimeFixes = {
             havoc.date = 20240727
             havoc.version = 20240727
         end
-    end,
-
-    resetPotionsIfBroke = function( p )
-      for _, spec in pairs( p.specs ) do
-          if spec.potion ~= "default" and not class.potionList[ spec.potion ] then spec.potion = "default" end
-      end
-
-      p.runOnce.resetPotionsIfBroke = nil
     end
 }
 
