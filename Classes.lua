@@ -2464,7 +2464,7 @@ do
         consumable = function() return state.args.potion or settings.potion or first_potion_key or "elemental_potion_of_power" end,
         item = function()
             if state.args.potion and class.abilities[ state.args.potion ] then return class.abilities[ state.args.potion ].item end
-            if settings.potion and class.abilities[ settings.potion ] then return class.abilities[ settings.potion ].item end
+            if spec.potion and class.abilities[ spec.potion ] then return class.abilities[ spec.potion ].item end
             if first_potion and class.abilities[ first_potion ] then return class.abilities[ first_potion ].item end
             return 191387
         end,
