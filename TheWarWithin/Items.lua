@@ -166,9 +166,10 @@ all:RegisterAbilities( {
 
         auras = {
             oppressive_orators_influence = {
-                id = 443540,
+                id = 451011,
                 duration = 30,
-                max_stack = 10
+                max_stack = 10,
+                copy = 443540
             },
             oppressive_oration = {
                 id = 443552,
