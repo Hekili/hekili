@@ -204,6 +204,7 @@ local enemyExclusions = {
     [168112] = 329636,    -- Kaal (when shielded)
     [193760] = true,      -- Surging Ruiner (Raszageth) -- gives bad range information.
     [204560] = true,      -- Incorporeal Being
+    [229296] = true       -- Orb of Ascendance (TWW S1 Affix)
 }
 
 local requiredForInclusion = {
