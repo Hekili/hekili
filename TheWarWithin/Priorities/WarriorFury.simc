@@ -1,5 +1,7 @@
 actions.precombat+=/battle_shout
 actions.precombat+=/berserker_stance,toggle=on
+actions.precombat+=/variable,name=treacherous_transmitter_precombat_cast,value=2
+actions.precombat+=/use_item,name=treacherous_transmitter
 actions.precombat+=/recklessness,if=!equipped.fyralath_the_dreamrender
 actions.precombat+=/avatar,if=!talent.titans_torment
 actions.precombat+=/variable,name=trinket_1_exclude,value=trinket.1.is.treacherous_transmitter
