@@ -1480,6 +1480,8 @@ local lastDisplay = "AOE"
 
 local hasSnapped
 
+local lastSnapshot = {}
+
 function Hekili.Update( initial )
     if not Hekili:ScriptsLoaded() then
         Hekili:LoadScripts()
@@ -1519,8 +1521,15 @@ function Hekili.Update( initial )
 
         fullReset = fullReset or state.offset > 0
 
+        if debug and lastSnapshot[ dispName ] and GetTime() - lastSnapshot[ dispName ] < 0.5 then
+            -- Disable snapshotting to prevent loops with errors.
+            Hekili.ActiveDebug = false
+            debug = false
+        end
+
         if debug then
             Hekili:SetupDebug( dispName )
+            lastSnapshot[ dispName ] = GetTime()
             Hekili:Debug( "*** START OF NEW DISPLAY: %s ***", dispName )
         end
 
