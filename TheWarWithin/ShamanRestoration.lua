@@ -9,7 +9,8 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 264 )
 
-local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
+local GetSpecializationInfoByID, GetWeaponEnchantInfo = _G.GetSpecializationInfoByID, _G.GetWeaponEnchantInfo
+local strformat = string.format
 
 spec:RegisterResource( Enum.PowerType.Mana )
 
@@ -1063,20 +1064,24 @@ spec:RegisterAbilities( {
 
 spec:RegisterSetting( "experimental_msg", nil, {
     type = "description",
-    name = "Restoration Shaman currently has support for some basic healing maintenance with the totemic chain heal build. It will not necessarily tell you how to heal, but will assist with keeping healing rain / surging totem up, stop you from overcapping on riptide and healing stream totem, use unleash life on CD with good spells and maintain your earth shields.",
+    name = strformat( "%s %s supports a healing maintenance with the Totemic %s build.  It will recommend using %s and %s, keep %s / %s recharging, and use %s with to enhance particular spells.  Your %s will also be maintained.",
+        select( 7, GetSpecializationInfoByID( spec.id ) ), ( UnitClass( "player" ) ), Hekili:GetSpellLinkWithTexture( spec.abilities.chain_heal.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.healing_rain.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.surging_totem.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.riptide.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.healing_stream_totem.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.unleash_life.id ), Hekili:GetSpellLinkWithTexture( spec.talents.earth_shield[2] ) ),
     width = "full",
 } )
 
 spec:RegisterSetting( "healing_mode", false, {
     name = "Healing Helper Mode",
-    desc = "This setting turns healing mode on and off, as described above.",
+    desc = "If checked, healing abilities may be recommended using the default priority package.",
     type = "toggle",
-    width = "normal",
+    width = "full",
 } )
 
 spec:RegisterSetting( "second_shield", "earth_shield", {
-    name = "|T136082:0|t Preferred 2nd shield",
-    desc = "Specify which shield you want to use alongside water shield when you have talented into Elemental Orbit",
+    name = strformat( "|T236224:0|t Preferred Second %s", _G.SHIELDSLOT ),
+    desc = strformat( "Specify which %s spell to use after %s when %s is talented.", _G.SHIELDSLOT, Hekili:GetSpellLinkWithTexture( spec.abilities.water_shield.id ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.elemental_orbit[2] ) ),
     type = "select",
     values = function()
         return {
@@ -1084,7 +1089,7 @@ spec:RegisterSetting( "second_shield", "earth_shield", {
             lightning_shield = class.abilityList.lightning_shield,
         }
     end,
-    width = "normal"
+    width = "full"
 } )
 
 spec:RegisterRanges( "lightning_bolt", "flame_shock", "wind_shear", "primal_strike" )
