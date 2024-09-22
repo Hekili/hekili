@@ -886,7 +886,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.lock_and_load.up then removeBuff( "lock_and_load" )
             elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
-            if talent.precise_shots.enabled then applyBuff( "precise_shots" ) end
+            if talent.precise_shots.enabled then applyBuff( "precise_shots", nil, 2 ) end
             if talent.bulletstorm.enabled and buff.trick_shots.up then
                 addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end
@@ -977,18 +977,14 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "focusing_aim" )
-            removeStack( "precise_shots" )
 
-            if talent.bombardment.enabled then
-                if bombardment_count == 3 then
-                    applyBuff( "bombardment" )
-                    bombardment_count = 0
-                else
-                    bombardment_count = bombardment_count + 1
-                end
+            if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
+                removeBuff( "precise_shots" )
+            else removeStack( "precise_shots" )
             end
         end,
     },
+
 
     -- The Hunter takes on the aspect of a chameleon, becoming untrackable.
     aspect_of_the_chameleon = {
@@ -1295,11 +1291,10 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "bulletstorm" )
             removeBuff( "focusing_aim" )
-            removeStack( "precise_shots" )
 
-            if buff.bombardment.up then
-                applyBuff( "trick_shots" )
-                removeBuff( "bombardment" )
+            if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
+                removeBuff("precise_shots")
+            else removeStack( "precise_shots" )
             end
 
             if buff.salvo.up then
@@ -1470,6 +1465,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            removeBuff( "trick_shots" )
             applyBuff( "volley" )
             applyBuff( "trick_shots", 6 )
 
@@ -1483,6 +1479,7 @@ spec:RegisterAbilities( {
                 removeBuff( "rangers_finesse" )
                 reduceCooldown( "aspect_of_the_turtle", 20 )
             end
+
         end,
     },
 

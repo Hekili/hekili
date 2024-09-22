@@ -1840,6 +1840,8 @@ end
 -- Gives calculated values for some state options in order to emulate SimC syntax.
 local mt_state
 do
+    local logged_state_errors = {}
+
     local autoReset = setmetatable( {
         -- Internal processing stuff.
         display = 1,
@@ -2381,6 +2383,9 @@ do
                 elseif k == "time_to_refresh" then return 0 end
             end
 
+            -- Fallback to action cast time; found in Augmentation APL.
+            if k == "duration" then return ability and ability.cast or 0 end
+
             -- Check if this is a resource table pre-init.
             for key in pairs( class.resources ) do
                 if key == k then
@@ -2392,8 +2397,10 @@ do
             if t.settings[ k ] ~= nil then return t.settings[ k ] end
             if t.toggle[ k ]   ~= nil then return t.toggle[ k ] end
 
-            if k ~= "scriptID" then
-                Hekili:Error( "Returned unknown string '" .. k .. "' in state metatable [" .. t.scriptID .. "].\n\n" .. debugstack() )
+            if k ~= "scriptID" and not ( logged_state_errors[ t.scriptID ] and logged_state_errors[ t.scriptID ][ k ] ) then
+                Hekili:Error( "Unknown key '" .. k .. "' in emulated environment for [ " .. t.scriptID .. " : " .. t.this_action .. " ].\n\n" .. debugstack() )
+                logged_state_errors[ t.script ] = logged_state_errors[ t.script ] or {}
+                logged_state_errors[ t.script ][ k ] = true
             end
         end,
         __newindex = function( t, k, v )
@@ -4143,9 +4150,14 @@ local null_talent = setmetatable( {
 }, mt_default_talent )
 ns.metatables.null_talent = null_talent
 
+local logged_talent_errors = {}
 
 local mt_talents = {
     __index = function( t, k )
+        if class.talents[ k ] == nil and not logged_talent_errors[ k ] then
+            Hekili:Error( "Unknown talent in [ " .. state.scriptID .. " ]: " .. k .. "\n\n" .. debugstack() )
+            logged_talent_errors[ k ] = true
+        end
         return ( null_talent )
     end,
 

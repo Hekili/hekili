@@ -2028,6 +2028,7 @@ function Hekili.Update( initial )
 
             if debug then
                 Hekili:Debug( "Time spent generating recommendations:  %.2fms",  debugprofilestop() - actualStartTime )
+                Hekili:Yield( "Yield before saving the snapshot for " .. dispName .. "." )
 
                 if Hekili:SaveDebugSnapshot( dispName ) then
                     if snaps then
