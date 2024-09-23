@@ -919,6 +919,13 @@ all:RegisterAuras( {
         max_stack = 1
     },
 
+    -- Refracting Aggression Module
+    refracting_resistance = {
+        id = 451568,
+        duration = 30,
+        max_stack = 1
+    },
+
     -- Scroll of Momentum
     building_momentum = {
         id = 459224,
