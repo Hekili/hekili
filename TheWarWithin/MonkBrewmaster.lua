@@ -1740,14 +1740,18 @@ spec:RegisterAbilities( {
     -- Causes a surge of invigorating mists, healing the target for $<healing>$?s274586[ and all allies with your Renewing Mist active for $425804s1, reduced beyond $274586s1 allies][].
     vivify = {
         id = 116670,
-        cast = 1.3,
+        cast = function() return buff.vivacious_vivification.up and 0 or 1.5 end,
         cooldown = 0.0,
         gcd = "spell",
 
-        spend = 30,
+        spend = function() return buff.vivacious_vivification.up and 7.5 or 30 end,
         spendType = 'energy',
 
         startsCombat = false,
+
+        handler = function ()
+            removeBuff( "vivacious_vivification" )
+        end,
     },
 
     -- For the next 30 sec, your Mastery is increased by 10%. Additionally, Keg Smash cooldown is reset instantly and enemies hit by Keg Smash take 8% increased damage from you for 10 sec, stacking up to 4 times.
