@@ -1973,7 +1973,8 @@ spec:RegisterSetting( "rallying_cry_health", 50, {
     width = "full",
 } )
 
-spec:RegisterSetting( "last_stand_offensively", false, {
+-- Not used in TWW onwards
+--[[spec:RegisterSetting( "last_stand_offensively", false, {
     name = "Use |T135871:0|t Last Stand Offensively",
     desc = function()
         return "If checked, the addon will recommend |T135871:0|t Last Stand as an offensive cooldown instead of a defensive cooldown.\n\n"
@@ -1982,7 +1983,7 @@ spec:RegisterSetting( "last_stand_offensively", false, {
     end,
     type = "toggle",
     width = "full"
-} )
+} ) ]]--
 
 spec:RegisterSetting( "last_stand_amount", 50, {
     name = "|T135871:0|t Last Stand Damage Required",
