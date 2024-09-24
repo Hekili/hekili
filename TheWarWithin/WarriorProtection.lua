@@ -736,7 +736,7 @@ spec:RegisterStateExpr( "shield_wall_health_pct", function ()
     return ( settings.shield_wall_health or 100 )
 end )
 spec:RegisterStateExpr( "victory_rush_health_pct", function ()
-	return ( settings.victory_rush_health or 100 )
+	return ( settings.victory_rush_health or 0 )
 end )
 
 
@@ -2013,9 +2013,9 @@ spec:RegisterSetting( "last_stand_health", 50, {
     disabled = function() return state.settings.last_stand_offensively end,
 } )
 
-spec:RegisterSetting( "victory_rush_health", 50, {
+spec:RegisterSetting( "victory_rush_health", 75, {
 	name = "|T589768:0|t Victory Rush Health Threshold",
-	desc = "If set below 100, the addon may recommend |T589768:0|t Victory Rush when your health falls below this percentage.",
+	desc = "When set above zero, the addon may recommend |T589768:0|t Victory Rush when your health falls below this percentage.",
 	type = "range",
 	min = 0,
 	max = 100,
