@@ -2032,8 +2032,8 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
 
-        spend = 0.038,
-        spendType = "mana",
+        spend = function() return buff.vivacious_vivification.up and 2 or 8 end,
+        spendType = "energy",
 
         startsCombat = false,
 

@@ -1117,7 +1117,7 @@ spec:RegisterAbilities( {
 
     vivify = {
         id = 116670,
-        cast = 1.5,
+        cast = function() return buff.vivacious_vivification.up and 0 or 1.5 end,
         cooldown = 0,
         gcd = function()
             return buff.soothing_mist.up and "totem" or "spell"
@@ -1125,7 +1125,7 @@ spec:RegisterAbilities( {
 
         spend = function()
             if buff.tea_of_serenity_v.up then return 0 end
-            return 0.03 * ( buff.mana_tea.up and 0.5 or 1 )
+            return 0.03 * ( buff.mana_tea.up and 0.5 or 1 ) * ( buff.vivacious_vivification.up and 0.25 or 1 )
         end,
         spendType = "mana",
 
