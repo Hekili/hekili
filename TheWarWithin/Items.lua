@@ -421,7 +421,7 @@ all:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
-        item = 219307,
+        item = 219915,
 
         proc = "damage",
 
