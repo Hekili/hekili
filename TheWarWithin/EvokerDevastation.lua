@@ -1209,6 +1209,7 @@ spec:RegisterAbilities( {
             if talent.mass_eruption.enabled then applyBuff( "mass_eruption_stacks" ) end -- ???
 
             applyDebuff( "target", "fire_breath" )
+            applyDebuff( "target", "fire_breath_damage" )
 
             if buff.tip_the_scales.up then
                 removeBuff( "tip_the_scales" )

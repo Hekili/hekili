@@ -776,7 +776,7 @@ do
                     state.trinket.t1.__has_use_buff = not aura.ignore_buff and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
                     state.trinket.t1.__use_buff_duration = aura.duration > 0 and aura.duration or 0.01
                 elseif ability.self_buff then
-                    state.trinket.t1.__has_use_buff = true
+                    state.trinket.t1.__has_use_buff = not aura.ignore_buff and not ( ability and ability.proc and ( ability.proc == "damage" or ability.proc == "healing" or ability.proc == "mana" or ability.proc == "absorb" or ability.proc == "speed" ) )
                     state.trinket.t1.__use_buff_duration = aura and aura.duration > 0 and aura.duration or 0.01
                 end
 
