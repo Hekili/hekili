@@ -421,7 +421,7 @@ all:RegisterAbilities( {
         cooldown = 90,
         gcd = "off",
 
-        item = 219307,
+        item = 219915,
 
         proc = "damage",
 
@@ -916,6 +916,13 @@ all:RegisterAuras( {
     ascendance_mastery = {
         id = 458525,
         duration = 15,
+        max_stack = 1
+    },
+
+    -- Refracting Aggression Module
+    refracting_resistance = {
+        id = 451568,
+        duration = 30,
         max_stack = 1
     },
 
