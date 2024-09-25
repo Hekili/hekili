@@ -1837,6 +1837,7 @@ spec:RegisterAbilities( {
     -- Engulf yourself in flames, $?a320364 [instantly causing $258921s1 $@spelldesc395020 damage to enemies within $258921A1 yards and ][]radiating ${$258922s1*$d} $@spelldesc395020 damage over $d.$?s320374[    |cFFFFFFFFGenerates $<havocTalentFury> Fury over $d.|r][]$?(s212612 & !s320374)[    |cFFFFFFFFGenerates $<havocFury> Fury.|r][]$?s212613[    |cFFFFFFFFGenerates $<vengeFury> Fury over $d.|r][]
     immolation_aura = {
         id = function() return talent.demonic_intensity.enabled and buff.metamorphosis.up and 452487 or 258920 end,
+        known = 258920,
         cast = 0,
         cooldown = function() return 30 * haste end,
         charges = function()
