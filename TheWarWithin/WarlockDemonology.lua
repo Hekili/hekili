@@ -1934,6 +1934,7 @@ spec:RegisterAbilities( {
         buff = "ruination",
 
         handler = function ()
+            removeBuff( "ruination" )
             removeBuff( "blazing_meteor" )
 
             insert( guldan_v, query_time + 0.6 )
