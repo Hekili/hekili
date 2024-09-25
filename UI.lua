@@ -1554,25 +1554,8 @@ do
 
                                 if i == 1 and conf.delays.fade then
                                     local delay = b.ExactTime and ( b.ExactTime - now ) or 0
-                                    --[[ local start, duration = 0, 0
-
-                                    if a.gcd ~= "off" then
-                                        start, duration = GetSpellCooldown( 61304 )
-                                        if start > 0 then moment = start + duration - now end
-                                    end
-
-                                    local rStart, rDuration
-                                    if a.item then
-                                        rStart, rDuration = GetItemCooldown( a.item )
-                                    else
-                                        rStart, rDuration = GetSpellCooldown( a.id )
-                                    end
-                                    if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
-
-                                    start, duration = select( 4, UnitCastingInfo( "player" ) )
-                                    if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end ]]
-
-                                    if delay > 0.05 then
+                                    local earliest_time = b.EarliestTime or delay
+                                    if delay > earliest_time + 0.05 then
                                         unusable = true
                                     end
                                 end
