@@ -1332,7 +1332,6 @@ do
 
                                 if i == 1 and conf.delays.fade and ((conf.delays.extend and conf.delays.onlyFadeIfExtended and self.recIsExtended) or (not conf.delays.extend or not conf.delays.onlyFadeIfExtended)) then
                                     local delay = b.ExactTime and ( b.ExactTime - now ) or 0
-                                    
                                         --[[ local start, duration = 0, 0
 
                                     if a.gcd ~= "off" then
