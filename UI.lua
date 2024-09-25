@@ -1330,16 +1330,9 @@ do
                                     _, unusable = IsUsableSpell( a.actualName or a.name )
                                 end
 
-                                if i == 1 and conf.delays.fade then
-                                    local delay = 0
-                                    if conf.delays.extend and conf.delays.onlyFadeIfExtended then
-                                        if self.recIsExtended == true then
-                                            delay = b.ExactTime and ( b.ExactTime - now ) or 0
-                                        end
-                                    else
-                                        delay = b.ExactTime and ( b.ExactTime - now ) or 0
-                                    end
-
+                                if i == 1 and conf.delays.fade and ((conf.delays.extend and conf.delays.onlyFadeIfExtended and self.recIsExtended) or (not conf.delays.extend or not conf.delays.onlyFadeIfExtended)) then
+                                    local delay = b.ExactTime and ( b.ExactTime - now ) or 0
+                                    
                                         --[[ local start, duration = 0, 0
 
                                     if a.gcd ~= "off" then
