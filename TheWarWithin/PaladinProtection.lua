@@ -909,10 +909,8 @@ spec:RegisterHook( "reset_precast", function ()
         else applyBuff( "holy_bulwark_ready" ) end
     end
 
-    if talent.lights_guidance.enabled and ( IsActiveSpell( 427453 ) or IsActiveSpell( 429826 ) ) then
-        applyBuff( "hammer_of_light_free" )
-        applyBuff( "hammer_of_light_ready" )
-    end
+    if IsActiveSpell( 429826 ) then applyBuff( "hammer_of_light_free" ) end
+    if IsActiveSpell( 427453 ) then applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.eye_of_tyr.lastCast ) ) end
 
     hpg_used = nil
     hpg_to_2dawn = nil
@@ -1355,7 +1353,7 @@ spec:RegisterAbilities( {
 
         talent = "eye_of_tyr",
         startsCombat = true,
-        nobuff = "hammer_of_light_ready",
+        nobuff = function() return buff.hammer_of_light_free.up and "hammer_of_light_free" or "hammer_of_light_ready" end,
 
         toggle = function()
             if not talent.lights_guidance.enabled then return "defensives" end
