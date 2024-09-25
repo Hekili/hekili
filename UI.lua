@@ -1292,84 +1292,6 @@ do
 
                 local postGlow = debugprofilestop()
 
-                self.rangeTimer = self.rangeTimer - elapsed
-
-                if self.rangeTimer < 0 or self.NewRecommendations then
-                    for i, b in ipairs( self.Buttons ) do
-                        local a = b.Ability
-
-                        if a and a.id then
-                            local outOfRange = false
-
-                            if conf.range.enabled and UnitCanAttack( "player", "target" ) then
-                                if conf.range.type == "melee" then
-                                    outOfRange = ( LRC:GetRange( "target" ) or 10 ) > 7
-                                elseif conf.range.type == "ability" then
-                                    local name = a.rangeSpell or a.itemSpellName or a.actualName or a.name
-                                    if name then outOfRange = LSR.IsSpellInRange( name, "target" ) == 0 end
-                                end
-                            end
-
-                            if outOfRange and not b.outOfRange then
-                                b.Texture:SetDesaturated(true)
-                                b.Texture:SetVertexColor(1.0, 0.0, 0.0, 1.0)
-                                b.outOfRange = true
-                            elseif b.outOfRange and not outOfRange then
-                                b.Texture:SetDesaturated(false)
-                                b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
-                                b.outOfRange = false
-                            end
-
-                            if not b.outOfRange then
-                                local _, unusable
-
-                                if a.itemCd or a.item then
-                                    unusable = not IsUsableItem( a.itemCd or a.item )
-                                else
-                                    _, unusable = IsUsableSpell( a.actualName or a.name )
-                                end
-
-                                if i == 1 and conf.delays.fade then
-                                    local delay = b.ExactTime and ( b.ExactTime - now ) or 0
-                                    --[[ local start, duration = 0, 0
-
-                                    if a.gcd ~= "off" then
-                                        start, duration = GetSpellCooldown( 61304 )
-                                        if start > 0 then moment = start + duration - now end
-                                    end
-
-                                    local rStart, rDuration
-                                    if a.item then
-                                        rStart, rDuration = GetItemCooldown( a.item )
-                                    else
-                                        rStart, rDuration = GetSpellCooldown( a.id )
-                                    end
-                                    if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
-
-                                    start, duration = select( 4, UnitCastingInfo( "player" ) )
-                                    if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end ]]
-
-                                    if delay > 0.05 then
-                                        unusable = true
-                                    end
-                                end
-
-                                if unusable and not b.unusable then
-                                    b.Texture:SetVertexColor(0.4, 0.4, 0.4, 1.0)
-                                    b.unusable = true
-                                elseif b.unusable and not unusable then
-                                    b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
-                                    b.unusable = false
-                                end
-                            end
-                        end
-                    end
-
-                    self.rangeTimer = pulseRange
-                end
-
-                local postRange = debugprofilestop()
-
                 if self.flashReady and conf.flash.enabled and LSF and ( InCombatLockdown() or not conf.flash.combat ) then
                     self.flashTimer = self.flashTimer - elapsed
                     self.flashWarnings = self.flashWarnings or {}
@@ -1590,6 +1512,84 @@ do
 
                     self.delayTimer = pulseDelay
                 end
+
+                self.rangeTimer = self.rangeTimer - elapsed
+
+                if self.rangeTimer < 0 or self.NewRecommendations then
+                    for i, b in ipairs( self.Buttons ) do
+                        local a = b.Ability
+
+                        if a and a.id then
+                            local outOfRange = false
+
+                            if conf.range.enabled and UnitCanAttack( "player", "target" ) then
+                                if conf.range.type == "melee" then
+                                    outOfRange = ( LRC:GetRange( "target" ) or 10 ) > 7
+                                elseif conf.range.type == "ability" then
+                                    local name = a.rangeSpell or a.itemSpellName or a.actualName or a.name
+                                    if name then outOfRange = LSR.IsSpellInRange( name, "target" ) == 0 end
+                                end
+                            end
+
+                            if outOfRange and not b.outOfRange then
+                                b.Texture:SetDesaturated(true)
+                                b.Texture:SetVertexColor(1.0, 0.0, 0.0, 1.0)
+                                b.outOfRange = true
+                            elseif b.outOfRange and not outOfRange then
+                                b.Texture:SetDesaturated(false)
+                                b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
+                                b.outOfRange = false
+                            end
+
+                            if not b.outOfRange then
+                                local _, unusable
+
+                                if a.itemCd or a.item then
+                                    unusable = not IsUsableItem( a.itemCd or a.item )
+                                else
+                                    _, unusable = IsUsableSpell( a.actualName or a.name )
+                                end
+
+                                if i == 1 and conf.delays.fade then
+                                    local delay = b.ExactTime and ( b.ExactTime - now ) or 0
+                                    --[[ local start, duration = 0, 0
+
+                                    if a.gcd ~= "off" then
+                                        start, duration = GetSpellCooldown( 61304 )
+                                        if start > 0 then moment = start + duration - now end
+                                    end
+
+                                    local rStart, rDuration
+                                    if a.item then
+                                        rStart, rDuration = GetItemCooldown( a.item )
+                                    else
+                                        rStart, rDuration = GetSpellCooldown( a.id )
+                                    end
+                                    if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
+
+                                    start, duration = select( 4, UnitCastingInfo( "player" ) )
+                                    if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end ]]
+
+                                    if delay > 0.05 then
+                                        unusable = true
+                                    end
+                                end
+
+                                if unusable and not b.unusable then
+                                    b.Texture:SetVertexColor(0.4, 0.4, 0.4, 1.0)
+                                    b.unusable = true
+                                elseif b.unusable and not unusable then
+                                    b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
+                                    b.unusable = false
+                                end
+                            end
+                        end
+                    end
+
+                    self.rangeTimer = pulseRange
+                end
+
+                local postRange = debugprofilestop()
 
                 self.NewRecommendations = false
 
