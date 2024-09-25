@@ -1508,11 +1508,10 @@ do
 
                 local postTargets = debugprofilestop()
 
-                local b = self.Buttons[ 1 ]
-
                 self.delayTimer = self.delayTimer - elapsed
 
-                if b.ExactTime and ( self.delayTimer < 0 or self.NewRecommendations ) then
+                if self.Buttons[ 1 ].ExactTime and ( self.delayTimer < 0 or self.NewRecommendations ) then
+                    local b = self.Buttons[ 1 ]
                     local a = b.Ability
 
                     local delay = b.ExactTime - now
