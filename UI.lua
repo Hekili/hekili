@@ -1437,18 +1437,18 @@ do
                     local a = b.Ability
 
                     local delay = b.ExactTime - now
-                    local moment = 0
+                    local earliest_time = 0
 
                     if delay > 0 then
                         local start, duration = 0, 0
 
                         if a.gcd ~= "off" then
                             start, duration = GetSpellCooldown( 61304 )
-                            if start > 0 then moment = start + duration - now end
+                            if start > 0 then earliest_time = start + duration - now end
                         end
 
                         start, duration = select( 4, UnitCastingInfo( "player" ) )
-                        if start and start > 0 then moment = max( ( start / 1000 ) + ( duration / 1000 ) - now, moment ) end
+                        if start and start > 0 then earliest_time = max( ( start / 1000 ) + ( duration / 1000 ) - now, earliest_time ) end
 
                         local rStart, rDuration = 0, 0
                         if a.item then
@@ -1458,7 +1458,7 @@ do
                                 rStart, rDuration = GetSpellCooldown( a.id )
                             end
                         end
-                        if rStart > 0 then moment = max( moment, rStart + rDuration - now ) end
+                        if rStart > 0 then earliest_time = max( earliest_time, rStart + rDuration - now ) end
                     end
 
                     if conf.delays.type == "TEXT" then
@@ -1467,7 +1467,7 @@ do
                             self.delayIconShown = false
                         end
 
-                        if delay > moment + 0.05 then
+                        if delay > earliest_time + 0.05 then
                             b.DelayText:SetText( format( "%.1f", delay ) )
                             self.delayTextShown = true
                         else
@@ -1481,7 +1481,7 @@ do
                             self.delayTextShown = false
                         end
 
-                        if delay > moment + 0.05 then
+                        if delay > earliest_time + 0.05 then
                             b.DelayIcon:Show()
                             b.DelayIcon:SetAlpha( self.alpha )
 
@@ -1509,6 +1509,8 @@ do
                             self.delayIconShown = false
                         end
                     end
+
+                    b.EarliestTime = earliest_time
 
                     self.delayTimer = pulseDelay
                 end
