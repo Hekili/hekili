@@ -5,6 +5,7 @@ actions+=/pummel
 actions+=/charge,if=time=0|movement.distance>8
 actions+=/use_items
 actions+=/avatar,if=buff.thunder_blast.down|buff.thunder_blast.stack<=2
+actions+=/spell_block,use_off_gcd=1,if=tanking&incoming_magic_damage_5s>spell_block_damage_taken&health.pct<=spell_block_health_pct&!(buff.spell_reflection_defense.up)
 actions+=/shield_wall,use_off_gcd=1,if=tanking&incoming_damage_5s>shield_wall_damage_taken&health.pct<=shield_wall_health_pct&!(buff.shield_wall.up|buff.last_stand.up|buff.rallying_cry.up|buff.potion.up)
 actions+=/blood_fury
 actions+=/berserking

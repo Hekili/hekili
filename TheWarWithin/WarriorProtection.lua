@@ -718,22 +718,28 @@ spec:RegisterHook( "reset_precast", function ()
 end )
 
 spec:RegisterStateExpr( "last_stand_damage_taken", function ()
-    return health.max * ( ( settings.last_stand_amount or 0 ) * 0.01 ) * ( solo and 0.5 or 1 )
+	return ( settings.last_stand_amount or 0 ) * health.max * 0.01
 end )
 spec:RegisterStateExpr( "last_stand_health_pct", function ()
     return ( settings.last_stand_health or 0 )
 end )
 spec:RegisterStateExpr( "rallying_cry_damage_taken", function ()
-    return health.max * ( ( settings.rallying_cry_amount or 0 ) * 0.01 ) * ( solo and 0.5 or 1 )
+	return ( settings.rallying_cry_amount or 0 ) * health.max * 0.01
 end )
 spec:RegisterStateExpr( "rallying_cry_health_pct", function ()
     return ( settings.rallying_cry_health or 0 )
 end )
 spec:RegisterStateExpr( "shield_wall_damage_taken", function ()
-    return health.max * ( ( settings.shield_wall_amount or 0 ) * 0.01 ) * ( solo and 0.5 or 1 )
+	return ( settings.shield_wall_amount or 0 ) * health.max * 0.01
 end )
 spec:RegisterStateExpr( "shield_wall_health_pct", function ()
     return ( settings.shield_wall_health or 0 )
+end )
+spec:RegisterStateExpr( "spell_block_damage_taken", function ()
+	return ( settings.spell_block_amount or 0 ) * health.max * 0.01
+end )
+spec:RegisterStateExpr( "spell_block_health_pct", function ()
+    return ( settings.spell_block_health or 0 )
 end )
 spec:RegisterStateExpr( "victory_rush_health_pct", function ()
 	return ( settings.victory_rush_health or 0 )
@@ -1933,11 +1939,11 @@ spec:RegisterSetting( "reserve_rage", 35, { -- Ignore Pain cost is 35, Shield Bl
     width = "full",
 } )
 
-spec:RegisterSetting( "shield_wall_amount", 50, {
+spec:RegisterSetting( "shield_wall_amount", 20, {
     name = "|T132362:0|t Shield Wall Damage Required",
     desc = "When set above zero, the priority can recommend |T132362:0|t Shield Wall if you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
         .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then Shield Wall can be recommended when you've taken 25,000 damage in the past 5 seconds.\n\n"
-        .. "This value is reduced by 50% when playing solo.",
+        .. "By default, your Defensives toggle must also be enabled.",
     type = "range",
     min = 0,
     max = 200,
@@ -1945,7 +1951,7 @@ spec:RegisterSetting( "shield_wall_amount", 50, {
     width = "full",
 } )
 
-spec:RegisterSetting( "shield_wall_health", 50, {
+spec:RegisterSetting( "shield_wall_health", 75, {
     name = "|T132362:0|t Shield Wall Health Percentage",
     desc = "When set above zero, the priority can recommend |T132362:0|t Shield Wall if your current health has fallen below this percentage.",
     type = "range",
@@ -1955,11 +1961,11 @@ spec:RegisterSetting( "shield_wall_health", 50, {
     width = "full",
 } )
 
-spec:RegisterSetting( "rallying_cry_amount", 50, {
+spec:RegisterSetting( "rallying_cry_amount", 25, {
     name = "|T132351:0|t Rallying Cry Damage Required",
     desc = "When set above zero, the priority can recommend |T132351:0|t Rallying Cry if you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
         .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then Rallying Cry can be recommended when you've taken 25,000 damage in the past 5 seconds.\n\n"
-        .. "This value is reduced by 50% when playing solo.",
+        .. "By default, your Defensives toggle must also be enabled.",
     type = "range",
     min = 0,
     max = 200,
@@ -1967,7 +1973,7 @@ spec:RegisterSetting( "rallying_cry_amount", 50, {
     width = "full",
 } )
 
-spec:RegisterSetting( "rallying_cry_health", 50, {
+spec:RegisterSetting( "rallying_cry_health", 80, {
     name = "|T132351:0|t Rallying Cry Health Percentage",
     desc = "When set above zero, the priority can recommend |T132351:0|t Rallying Cry if your current health has fallen below this percentage.",
     type = "range",
@@ -1989,11 +1995,11 @@ spec:RegisterSetting( "rallying_cry_health", 50, {
     width = "full"
 } ) ]]--
 
-spec:RegisterSetting( "last_stand_amount", 50, {
+spec:RegisterSetting( "last_stand_amount", 25, {
     name = "|T135871:0|t Last Stand Damage Required",
     desc = "When set above zero, the priority can recommend |T135871:0|t Last Stand if you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
         .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then Last Stand can be recommended when you've taken 25,000 damage in the past 5 seconds.\n\n"
-        .. "This value is reduced by 50% when playing solo.",
+        .. "By default, your Defensives toggle must also be enabled.",
     type = "range",
     min = 0,
     max = 200,
@@ -2002,7 +2008,7 @@ spec:RegisterSetting( "last_stand_amount", 50, {
     disabled = function() return state.settings.last_stand_offensively end,
 } )
 
-spec:RegisterSetting( "last_stand_health", 50, {
+spec:RegisterSetting( "last_stand_health", 70, {
     name = "|T135871:0|t Last Stand Health Percentage",
     desc = "When set above zero, the priority can recommend |T135871:0|t Last Stand if your current health has fallen below this percentage.",
     type = "range",
@@ -2011,6 +2017,28 @@ spec:RegisterSetting( "last_stand_health", 50, {
     step = 1,
     width = "full",
     disabled = function() return state.settings.last_stand_offensively end,
+} )
+
+spec:RegisterSetting( "spell_block_amount", 25, {
+    name = "|T132358:0|t Spell Block Damage Required",
+    desc = "When set above zero, the priority can recommend |T132358:0|t Spell Block if you have taken this much damage in the past 5 seconds, as a percentage of your maximum health.\n\n"
+        .. "If set to |cFFFFD10050%|r and your maximum health is 50,000, then Spell Block can be recommended when you've taken 25,000 damage in the past 5 seconds.\n\n"
+        .. "By default, your Defensives toggle must also be enabled.",
+    type = "range",
+    min = 0,
+    max = 200,
+    step = 1,
+    width = "full",
+} )
+
+spec:RegisterSetting( "spell_block_health", 75, {
+    name = "|T132358:0|t Spell Block Health Percentage",
+    desc = "When set above zero, the priority can recommend |T132358:0|t Spell Block if your current health has fallen below this percentage.",
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = "full",
 } )
 
 spec:RegisterSetting( "victory_rush_health", 75, {
@@ -2050,4 +2078,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Protection Warrior", 20240924, [[Hekili:nV1wVTTos4Fl9fJySPo(sCS7bX5HTalqlW2Db8bN9njrlrBRn6gOOCpzHH(TVdj1fsAs6lPT7cuKMipCMV5cNzi1yVjE)U36ief79TPJN(44pn9Xrtwo)tZEYBn9TcS36cu4RODWVKHsHF(pj5uCinopRo4FHiK4CcJM3sYrrmEvMxrcb62tPfL)2dpSlMUVAZOW80hkJtRsqSLgsqBPS)o8bV1BQItOFjZBJjGSC2cGNf4qVVTygW14OiSGuCzO3AgPFC8N(40h)T6G)EmnEhN)L1bOSO6GVKwGJIZ2vh8hXH0CYB1b)T4)ehv)16Vkw6Ypoz(91balg)jGfRJt)CDqbtRIPa1vfmiv2t)cHO(99yU6d)a0V4mWeqY3gNakoIBCkhvqWGsVbr)lREa(jnb7xsrzH47P572LGxbwWV6I495vuMGBOb(KIQ0uCI8tc3Ji7W3hVDfnofVA8XJP5hWP4m6OOyH4EzP8cQkX(XuCAP8drhqueHXLnvB3ocCyzryI)MeujWN8VND8OHpayF4RpVAQmNk3hJtI8)okj5EMOY3U1Fxy0QjCiIYEfCgdIZaDf(f)iukez5pV8fP11(uk6vC2G9yucD)OIq6ZRKjs8CF45d(WDCWj9PJQkAqmdOCZEu)ZiafVXeFi5T(NwKZ0b4VhkRpBsYZJ83wbroYpftkXeMUOyfjHOma35ecy)L)KK4D7PL()7QODPAF02ycMlefobUTskGt)qaRksgTdSP(usC4RkUqb87CHcpAV2193dOSag6iz760XYCkExwob7xGIZeonn6FbOFWDeWfnkcVnomg4WK5dcZZtyHkT(HYeu6icgf92XJQe)44tiweglihqycl(fEwAbdt(BQs(oI86iCgAtcosNFtDZpDYNjrEeonhmZX)hw4aFdNkg2KlcupKhhIVe53yNnR3ZFNcEWPH0T0xLLHjhyRyBEyvPnOoZcuF)CE64lWn3htie4H4CMm8b1FtfbsP0lwiE7WB(eCbMasTKNKS1m0qsmKCpddBtGhk22BbBZDfDAhjxTn5Nb2NSWf2pVapHFlVa(zfDdpEKVZ)Lvlg3KzPeJzgccosuqy1IbckMnFOnrLc5wkbSmqoXnKfm812p8LvpoOet93KNb2xAmMmBI)0Iq1Ikk5y7CuxvHN(LzVUJen)Ik7it7zuazsTRcku9lsjoiA5YNuvUNPes4r(JAGJsSxep3NGiwJm8GpLIu6u9EeqtWTQd4ayijYp60u2cpJ981AnQ1undAMfPWyLUQy8eOa6Wru4TuTPlO47aBTIP2jgdUjXclpFfH5j5LLqpfPSUrelb2LAaj5vL(KCvqQuy1WhW392jltBPH97k9zqQY8f)LpGt69SJxScLJVVK1DdvSZ1SPimbvObDwJsNYUDqAmGzsDrpcKGjBEuoRcmeQ3JwBRHj9RCjDIXAXgJkQqpB84YTW1ufQKMxuWtsVnNyiUZcWVfq841cIU24iiiAa2A0WU(ct3amE6ArHUPGGpGZehyQTowlpkXXLPXH(msiqh(8ds2PnQyQHnYXGncqQqxRqEE1tJVfTfAH6CgrNXBUcdoRDzwt)CVW6JRnjhIa)dmrqNbXzaC6Hrp)A2Yzk4)o7zUe(vUnHD(MI8VdkzZbmNCTo9HMqJMJ5oRc0rgwal2DKdfgSNLcPAZbFQ7Qhx4)ehwrvIi7AYYEl08eo2etRNBU7LpSTdUk2DQ4hHrqXZEZRYJDOasC(IIconT5ul9GZaUlwApr8TYX(qvhfEGyaNELpync5suMFDswApFt82YXNE9aVmTn5vd9wVeHbIWF7NWGdYlGzGi7pOHrmnB(fWg44UZ)XHj2XzA2zKIG(OcjgkYCY2Ah293DC4QZfoCvrdxtC4pwjhHpaAl7MFxdvEzNET)kG9w)DeHvQP0B9xslYjuWCh8yDGGn1bSE9khv)vV18FJDd0qfn4)(g)MTB8qE)vV1HKykirK3A98f1bpVQoys7v36TwXn4rb48(5fZWXy1mRSYMrRoyqDG1UeQdEbe4uorQ1j5p6C1kDO0p(tbPpERivMiR9dfC8ydZVf4vh80TIo7o85wnJSCtcJYIXYcXzNOguI2ekCwnRhjnpNbINodiybTpn(9z(EUZ7EgVupcLYDWq5c(2xJXJsGhiCPjc5gCv6(0fy7N1O29p5rfVH1UEnzObG2KyZDkO7AmZgAYSoqD)SPEuBYYCRbR1bdVPKD35esQW2OM1GA3rzdL9hpFYUd9UDTgnzptR6gpMWUZG)3vfoxaspCA(LWUHswfTgYvsnyOP8EdqtthDjVnzyu3Gyp5K5cBsoyJnx7iSYEkOFuIQnJ7cxbW2BRHxaOj68S((p4mc2Hzy5)hcUwdN90Lk7pw2UFuRhzogNkxfPVJABRG7Pf8RFd)KLxWoMRqinWAOH96o1LzZVkXWGoBj)S1fMmgkNvq)ajgBbyYy5ucTPkuthmzImnTlwJgN1hCgbV6YdHVQ43UnxtSNZ))vyRDV1eLmYsN5r24szFYwuvcTR9H2viM9dnFHDxbBCq4LKB2oEYyHWJKw2ZFXn73v3S9XDZlIMKpZHduR(ZV2L(GCRTgmTxUIgACxIQ5TIX9jN(MX4kO0l2s5LJXxJ(ExzI7FhzTzuBB(r9DLjPwkVVm590QVZmPpP79MPe5ijaH9V5DzYciARJ2sB)8PO5FuALUFEvC1hT68RyQt6wk1MNf9eekjA6gWfNPAuN4fJzC6ug5rGrNYZC6AP2K7Cc6ToBPeL0orUxRFpTK4AjrAgAudypnDEF9VM6sTVR(MYhZDv(af9wF3MQl0stSYtgJCjeRtBJn(p9s4V5LotBP2gggz8z(fSEHytEuxSAVM)ddudmNqyG0bZmo)ixQ9svD(rlTPJVYqk5yrNvh7HKJbwrMmRZHIneo)87wohcVrB5pFDBYIlr3UeqyH)oBuvJ)oqVPUSxiFOa9jgI3MIq5KUvMUECD3oM29G0qJYGhiFVJMMPitfzN8U66WYqfXxIELfJdxeNYFL9C0ZhJwd7ND)cSgwNqjJ2dltQ0VClIm9CBG9BvqrfQdmm7rNS1X4ao1lCzwWfU9Bn49k8wM237IojCaO0)xZ0rPFyKXoIsSxVu(qr6LC5SvPrrT5Oshc2pqKJHQ6KxHI1BL1XrpNEMwpnn(vNCJ9TxLiNHkhySrETJMLUEpxMwLwX0P0(wzhjq5zzhFIe4uX5Q9nhN7q3G2lg4lwUM(im1Hdt8298fFduyVFpMm13t0fIOnkyklU9255N1U7BDr3PTfF1m8wZpts3boK(YBy6a46eYJC1oxpL9XL4O)rMLVcnOk6E2)VU7ljZNzFjz4l17)(]] )
+spec:RegisterPack( "Protection Warrior", 20240926, [[Hekili:nV16VnoUr8)wUVyeJM1XpJ9EioF4oGcSlq3waFO9BsIwI2wn6fOOCUuyO)27qs9GKMK2oz3Tf3HD3inCMFZdoZqQjEt8(dVnrik27BthpD(4pp9XrJNm(XXl92qFRa7TPaf(cAp8pYqPWF(pi5uCinopRo4FHiK4CcJM3sYrrmEvMxrcb6oqPfL)6dpSpMEOA7OW80hkJtRsqSLgsq7OSFo8bVnBRItOFjZBRjGSy(kGNf4qVVTCgW14OiSGuCzO3ggPFA8N)00h)16Gnf4KK6GFljp8L6aeqzu9xR)AhnZbA(BX049CmucKKfvh8L0cCuC2(6G)zCinN8wDWFn(pLx6QpnzX91balg)zMyIt)96GcMMhtbQRkyWUSN(Lcr9hhWCte8hGniodmtK8DXjGXbXnGLJkiyWWSfr)lRFa(tAc2VKIYcX3tZ3VpbVgSYF1fXhYROmb3qd8MIQ0uCI8tcpGi7X3hVBnnofVE8PtP5hXP4m6OOyH4EEL8cQkX(XuCAP8drhrueHXLTv72ncCQzryI)2eujWN8xZoDYWla2h(YtRNkZPsMBcEp4LUNjQ8D783hgTEchIOSxaNXG4mqxH)HFkAFCOFec(BS)IYNLwD7tPOxWzdoGrj0dJkcPpTwMiXZ9HNp4xUJdrXBj4DjIaz)i8oCwjEuvXqfGEigNe5)kkj5kaQee7xNdikrKbi2)wavnMwMfLhFe1)mcqXBmXhsER)Pf5mDqxFa7rEK)Ukiex(PysjMW0ff3njeLb4oNqGaf53KeV)aT0)FxfTpv7v7IjyUqu4eeFvsbC6hcyvrYO9Gn1NsIdFrjwta)UynrOxV219ZdOSiB6iz760XYCkEFwob7xGIZeonn6FgOFWDeWfncccIdJbomzXGW88ewmDRFOmbLoIGrrVD6KkXZhFgXI9BcYbeMW2ObplTGHj)TvjVIiVmcNH2MGJ053u38tN8zsKhHtZbZC8)HfoWZmOIHT5Ia1J5XH4Rr(n2zZ69IpOGhCEiDl9vzzyYr2k2LhwvAdQZSa1poNNo(kCZ9XecbEmoNjdFq93wrGCF9IfI3o(gKWPataPwYZM3AgAijgQcLHHTjWdfB7TGTfUIoTJKB2M8Ja7tw6c7xwGNXVvxb)SIUHNoX35)86LJBYSuIXmdbbhjQCTE5abfZwm0MOsHClLawgiN4Mx6P9LpVE(Gsm1FBEgyFPXyYSj(tlcvlQOKJTZrDtfE6xM96os08tQSJmTxqbKj1UkOq1pjL4OO3qFsv5bMsiHh5x1ahLyViEUpbrSoU4bFkfP0P6JiGMGBvhWrWqsKF05PSfEg75R16OSPAg0kfsHXkT)X4POzlrH3s1UdHIVdS1ZOAlJm4MelS88veMNKxwc9uKY6grSeyxQbKKxv6tYvbPsHvdVq0BARSmTLg2VR0NbPkZx8t(aoP3ZoR0Auo((sw3nuXoxZMIWeuHg0znkDo72dPXaMj1U)iqcMS5r5SkWqOEpATTgM0VXL0jgRfBmQOc9SXJl3cxtvOsAErbpj9UCIH4ola)9aI53ki6AJJGGObyRrd76lm9oGXJ3kk0nfe8rCM4KDT1XA5rjoUmfo3eJec0Hp)eVDAJkMAyJCmyJaKk01kKNw)443J2cTqDjJOZ4nxHbx0UmRPFUNz9X1MKdrG)hmrqNbXzaC6Hrp)A2Yzk4)o7zUe(vUnHD(MI8xbLS5KWtUvN(qtOrZXCNvb6idlGf7oYHcd2tsHuT5Gp3D1Jl8FIdROkrKDnzzVfAEchBIP1ZTW9Yh22bxf7cIGt0JGIN9MxLh7qbK48vffCEAZPw6bNbCxS0EI43lh7dvDu4bIbC6v(fRrixJY8ZtYs75BI3wn(8Rh45PTjVAO36Limqe(B)egCqEfmdez)bnmIPzlUc2ah3DX3pmXootZoJue0hviXqrMZ2w7WU)HJdxFPWHBkA4wId)(k5i8rqBzxJ9gOYl70RD3N9CVnVIiSsnLEB(sAroHcM7G51bc2uhW61RCu9x92GQOhyxS(MURm)3zxzU3MTOsC0FpZY9WZza7w4HcHWF9n(T734y9(nVnHKykauK3g90m1bpTUoys7vt7TrX75rbT4JZlM9MXQzwzLnBDDWG6aRnxuh8miWPCIulVYF0LkX6qPN)dbPZFVivMiRTrfC6udZFpWRo4X3l6S7Wxy1mYsPjmklhlleNnWAqjAZdXz1SEK08CgiE8cGGf0(44pM57PoV7f8s9iukLddLl5BFngpkbEGWvMiKBWvP7ZxHTFwJA3)K5kEdRnlBYqdaTjFO7uq31yMn0BADG6(ztT22KL59gSwhm8DLS7oNqsf2g1Sgu7okBOS)4PZ2DO3KS1Oj7zAv34Xe2Dg8)Ukm6cq6HtlUg2nuYQO1hVsQbd9Y3BaA6vPl5TjdJ6ge7jNmxytYbBSNChHv2tb99suTzCx6ka2E3q8canrNx03)loJGDygw9)HGR1WzpDPY(JvT7h1ATMJXPYvr6Be32k4EAb)63Wpz1vSJ5gesdSgAyVUtDz2IBsmmOZwYpADHjJHYzf0phJXwaMmwoLqBQc10btMitt7I1OXz9bNrWRV(q4Bk(TBZ1e758)Ff2A3BnrjJS0rLKnUu2B2HQsODTp0UcXSTO5lS7kyJ7cVKCZ2XZg7fEK0QE(l(GaD1nBFC38WOj5lC4a1Q)8BRPpi3ARbt7LROHg3LOA(yACFITzMHRM2MBg(k13bBE(zAZR22cKJ5OrjmqIBcJzZ3ZK5DDwu0OYPPw9FSVRqTKi2HAP89dL8zkFdr5ewQFhrP309TevTh9cWK9q5ea9ZSJR2)7NHhtn)3fpPmtp6P0usnQnKpotr2n1pgts2jCLXasNuL9BkZfKoLxytN0Ha68c6hmWsbyP8mC3gxC678AjrAWIuJypVyvF19MQUTdWqtXXfUkoIIERVxA1fAPfD5XfsUaP1rqYg)NEn838sNPTuBtiKm(m)vNVsSjp)pwTxl(UbQbMZimq6yNghQMR1EPQoFVL20X3yiLCSOZA)9qYXu8itM1HZXgcxC5DlxcHVtB5pEDBYYRr3UgqyH)oBdxJ)oqVPZqSu(ip6JrfVjmHYjDNtDDW7UztTB5PHgLPXq(wvnnOvMQYo5d12HLjTIVe9klgN4koL)mB6ONpgTg2VVGRWAyDSTmApSm(w)0TiY0ZTb2VwcfvOoWWazD2whJt9vVWLzbx42V3HpQWBzAFVl6KWpgLs)FnJmM(rTSFzUUQxkFKp9sUC2Q0OO2WLPdb7NU1XKMD2hiY6Do74G1tVqRNMMjTZ(EeTxukNHlK17g51oVA669JY0Q0kMoL23k7ibkpl74ZKG4qBmUAFZXLUsbq7ftbhlxtFeM6eZj(2L(IFhJyF9sMm13t0fIOnFCklU9BpWVjHUFNz6UlbXVynEB4NjP7ahs)Q3y66f0jKh5QDRfI)Z7)(d]] )
