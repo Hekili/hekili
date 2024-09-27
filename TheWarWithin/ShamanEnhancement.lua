@@ -1321,7 +1321,8 @@ spec:RegisterAbilities( {
 
             removeStack( "arc_discharge" )
             removeBuff( "chains_of_devastation_cl" )
-            removeBuff( "natures_swiftness" ) -- TODO: Determine order of instant cast effect consumption.
+            
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end -- TODO: Determine order of instant cast effect consumption.
             removeBuff( "master_of_the_elements" )
 
             if legendary.chains_of_devastation.enabled then
@@ -1556,7 +1557,7 @@ spec:RegisterAbilities( {
         handler = function ()
             consume_maelstrom()
 
-            removeBuff( "natures_swiftness" )
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
             applyBuff( "elemental_blast" )
 
             if talent.lightning_rod.enabled then applyDebuff( "target", "lightning_rod" ) end
@@ -1987,7 +1988,7 @@ spec:RegisterAbilities( {
         handler = function ()
             consume_maelstrom()
 
-            removeBuff( "natures_swiftness" )
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
 
             if buff.primordial_wave.up and state.spec.enhancement and ( talent.splintered_elements.enabled or legendary.splintered_elements.enabled ) then
                 if buff.splintered_elements.down then stat.haste = stat.haste + 0.1 * active_dot.flame_shock end
@@ -2026,7 +2027,7 @@ spec:RegisterAbilities( {
         handler = function ()
             consume_maelstrom()
 
-            removeBuff( "natures_swiftness" )
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
             removeStack( "tempest" )
 
             if buff.primordial_wave.up and state.spec.enhancement and ( talent.splintered_elements.enabled or legendary.splintered_elements.enabled ) then
