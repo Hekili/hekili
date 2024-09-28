@@ -67,8 +67,6 @@ actions.core_dot+=/crimson_tempest,if=effective_combo_points>=variable.effective
 
 # AoE Damage over time abilities Check what the maximum Scent of Blood stacks is currently
 actions.aoe_dot+=/variable,name=scent_effective_max_stacks,value=(spell_targets.fan_of_knives*talent.scent_of_blood.rank*2)>?20
-# We are Scent Saturated when our stack count is hitting the maximum
-actions.aoe_dot+=/variable,name=scent_saturation,value=buff.scent_of_blood.stack>=variable.scent_effective_max_stacks
 # Helper Variable to check basic finisher conditions
 actions.aoe_dot+=/variable,name=dot_finisher_condition,value=effective_combo_points>=variable.effective_spend_cp&(pmultiplier<=1)
 # Crimson Tempest on 2+ Targets if we have enough energy regen
@@ -83,8 +81,9 @@ actions.aoe_dot+=/garrote,if=refreshable&combo_points.deficit>=1&(pmultiplier<=1
 
 # Direct Damage Abilities   Envenom at applicable cp if not pooling, capped on amplifying poison stacks, on an animacharged CP, or in aoe.
 actions.direct+=/envenom,if=!buff.darkest_night.up&effective_combo_points>=variable.effective_spend_cp&(variable.not_pooling|debuff.amplifying_poison.stack>=20|effective_combo_points>cp_max_spend|!variable.single_target)&!buff.vanish.up
+actions.direct+=/pool_resource,for_next=1,extra_amount=energy.max*(0.4+0.3*talent.hand_of_fate.rank-0.15*talent.vicious_venoms.rank)-action.envenom.cost,if=active_dot.envenom=0
 # Special Envenom handling for Darkest Night
-actions.direct+=/envenom,if=buff.darkest_night.up&effective_combo_points>=cp_max_spend
+actions.direct+=/envenom,if=buff.darkest_night.up&effective_combo_points>=variable.effective_spend_cp
 # Check if we should be using a filler
 actions.direct+=/variable,name=use_filler,value=combo_points.deficit>1+envenom_at_5cp|variable.not_pooling|!variable.single_target
 # Maintain Caustic Spatter
@@ -101,17 +100,16 @@ actions.direct+=/fan_of_knives,cycle_targets=1,if=!dot.deadly_poison_dot.ticking
 actions.direct+=/ambush,if=variable.use_filler&(buff.blindside.up|stealthed.rogue)&(!dot.kingsbane.ticking|debuff.deathmark.down|buff.blindside.up)
 # Tab-Mutilate to apply Deadly Poison at 2 targets
 actions.direct+=/mutilate,cycle_targets=1,if=!dot.deadly_poison_dot.ticking&!debuff.amplifying_poison.up&variable.use_filler&spell_targets.fan_of_knives=2
-# Fallback Envenom
-actions.direct+=/envenom,if=!variable.use_filler&combo_points.deficit<=1&(energy.pct>=(40+30*talent.hand_of_fate-15*talent.vicious_venoms)|boss&fight_remains<=20)
 # Fallback Mutilate (without breaking Envenom pooling)
 actions.direct+=/mutilate,if=variable.use_filler
 
 # Special Case Trinkets
-actions.items+=/variable,name=base_trinket_condition,value=dot.rupture.ticking&cooldown.deathmark.remains<2|boss&fight_remains<=22
+actions.items+=/variable,name=base_trinket_condition,value=dot.rupture.ticking&cooldown.deathmark.remains<2|dot.deathmark.ticking|boss&fight_remains<=22
 actions.items+=/use_item,name=ashes_of_the_embersoul,use_off_gcd=1,if=(dot.kingsbane.ticking&dot.kingsbane.remains<=11)|boss&fight_remains<=22
 actions.items+=/use_item,name=algethar_puzzle_box,use_off_gcd=1,if=variable.base_trinket_condition
 actions.items+=/use_item,name=treacherous_transmitter,use_off_gcd=1,if=variable.base_trinket_condition
-## actions.items+=/do_treacherous_transmitter_task,use_off_gcd=1,if=dot.deathmark.ticking|fight_remains<=20
+actions.items+=/use_item,name=mad_queens_mandate,if=cooldown.deathmark.remains>=30&!dot.deathmark.ticking|boss&fight_remains<=3
+## actions.items+=/do_treacherous_transmitter_task,use_off_gcd=1,if=dot.deathmark.ticking&variable.single_target|buff.realigning_nexus_convergence_divergence.up&buff.realigning_nexus_convergence_divergence.remains<=2|buff.cryptic_instructions.up&buff.cryptic_instructions.remains<=2|buff.errant_manaforge_emission.up&buff.errant_manaforge_emission.remains<=2|fight_remains<=15
 actions.items+=/use_item,name=imperfect_ascendancy_serum,use_off_gcd=1,if=variable.base_trinket_condition
 actions.items+=/use_item,name=algethar_puzzle_box,use_off_gcd=1,if=dot.rupture.ticking&cooldown.deathmark.remains<2|boss&fight_remains<=22
 # Fallback case for using stat trinkets
@@ -173,5 +171,3 @@ actions.vanish+=/vanish,if=!talent.master_assassin&talent.indiscriminate_carnage
 actions.vanish+=/vanish,if=!talent.improved_garrote&talent.master_assassin&!dot.rupture.refreshable&dot.garrote.remains>3&debuff.deathmark.up&(debuff.shiv.up|debuff.deathmark.remains<4)
 # Vanish fallback for Improved Garrote during Deathmark if no add waves are expected
 actions.vanish+=/vanish,if=talent.improved_garrote&cooldown.garrote.up&(dot.garrote.pmultiplier<=1|dot.garrote.refreshable)&(debuff.deathmark.up|cooldown.deathmark.remains<4)&raid_event.adds.in>30
-# Vanish for slightly more mark uptime since you can apply mark and have darkest night at the same time
-actions.vanish+=/vanish,if=!talent.improved_garrote&buff.darkest_night.up&combo_points.deficit>=3&variable.single_target
