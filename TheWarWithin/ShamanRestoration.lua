@@ -452,7 +452,8 @@ spec:RegisterAbilities( {
         texture = 136015,
 
         handler = function ()
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
         end,
     },
 
@@ -820,7 +821,8 @@ spec:RegisterAbilities( {
         texture = 136048,
 
         handler = function ()
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
         end,
     },
 
@@ -1050,7 +1052,8 @@ spec:RegisterAbilities( {
         texture = 893778,
 
         handler = function ()
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
         end,
     },
 } )
