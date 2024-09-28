@@ -79,11 +79,11 @@ actions.aoe_dot+=/rupture,cycle_targets=1,if=variable.dot_finisher_condition&ref
 # Garrote as a special generator for the last CP before a finisher for edge case handling
 actions.aoe_dot+=/garrote,if=refreshable&combo_points.deficit>=1&(pmultiplier<=1|remains<=tick_time&spell_targets.fan_of_knives>=3)&(remains<=tick_time*2&spell_targets.fan_of_knives>=3)&(target.time_to_die-remains)>4&master_assassin_remains=0
 
+actions.direct+=/pool_resource,for_next=1,extra_amount=energy.max*(0.4+0.3*talent.hand_of_fate.rank-0.15*talent.vicious_venoms.rank)-action.envenom.cost,if=active_dot.envenom=0
 # Direct Damage Abilities   Envenom at applicable cp if not pooling, capped on amplifying poison stacks, on an animacharged CP, or in aoe.
 actions.direct+=/envenom,if=!buff.darkest_night.up&effective_combo_points>=variable.effective_spend_cp&(variable.not_pooling|debuff.amplifying_poison.stack>=20|effective_combo_points>cp_max_spend|!variable.single_target)&!buff.vanish.up
-actions.direct+=/pool_resource,for_next=1,extra_amount=energy.max*(0.4+0.3*talent.hand_of_fate.rank-0.15*talent.vicious_venoms.rank)-action.envenom.cost,if=active_dot.envenom=0
 # Special Envenom handling for Darkest Night
-actions.direct+=/envenom,if=buff.darkest_night.up&effective_combo_points>=variable.effective_spend_cp
+actions.direct+=/envenom,if=buff.darkest_night.up&effective_combo_points>=cp_max_spend
 # Check if we should be using a filler
 actions.direct+=/variable,name=use_filler,value=combo_points.deficit>1+envenom_at_5cp|variable.not_pooling|!variable.single_target
 # Maintain Caustic Spatter
