@@ -698,7 +698,7 @@ spec:RegisterAuras( {
     tempest = {
         id = 454015,
         duration = 30.0,
-        max_stack = 10,
+        max_stack = 2,
         copy = { 454009, 452201 }
     },
     -- Talent: Movement speed increased by $378075s1%.
