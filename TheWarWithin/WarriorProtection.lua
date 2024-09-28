@@ -1711,6 +1711,17 @@ spec:RegisterAbilities( {
         toggle = "defensives",
         debuff = "casting",
 
+        usable = function()
+            if not settings.spell_reflection_filter then return true end
+
+            local filters = class.reflectableFilters
+            local npcid = target.npcid
+            local t = debuff.casting
+
+            -- Only use on a reflectable spell targeted at the player.
+            return not not ( t.up and npcid and filters and filters[ npcid ] and filters[ npcid ][ t.v1 ] and UnitIsUnit( "player", t.caster .. "target" ) )
+        end,
+
         handler = function()
             applyBuff( "spell_reflection" )
             applyBuff( "spell_reflection_defense" )
@@ -1890,6 +1901,15 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
     },
+} )
+
+local NewFeature = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
+
+spec:RegisterSetting( "spell_reflection_filter", true, {
+    name = format( "%s Filter M+ |T132361:0|t Spell Reflection (TWW Season 1)", NewFeature ),
+    desc = "If checked, then the addon will only suggest |T132361:0|t Spell Reflection on reflectable spells that target the player.",
+    type = "toggle",
+    width = "full",
 } )
 
 spec:RegisterSetting( "shockwave_interrupt", true, {
