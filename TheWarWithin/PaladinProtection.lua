@@ -499,9 +499,8 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     hammer_of_light_free = {
-        id = 433732,
-        duration = 12,
-        max_stack = 60
+        duration = 3600,
+        max_stack = 1
     },
     hammer_of_light_ready = {
         id = 427453,
@@ -909,8 +908,12 @@ spec:RegisterHook( "reset_precast", function ()
         else applyBuff( "holy_bulwark_ready" ) end
     end
 
-    if IsActiveSpell( 429826 ) then applyBuff( "hammer_of_light_free" ) end
     if IsActiveSpell( 427453 ) then applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.eye_of_tyr.lastCast ) ) end
+
+    if buff.hammer_of_light_ready.down and buff.lights_deliverance.stack_pct == 100 and cooldown.eye_of_tyr.remains > 0 then
+        removeBuff( "lights_deliverance" )
+        applyBuff( "hammer_of_light_free" )
+    end
 
     hpg_used = nil
     hpg_to_2dawn = nil
@@ -1363,7 +1366,9 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "eye_of_tyr" )
             active_dot.eye_of_tyr = active_enemies
 
-            if talent.lights_guidance.enabled then applyBuff( "hammer_of_light_ready" ) end
+            if talent.lights_guidance.enabled then
+                applyBuff( "hammer_of_light_ready" )
+            end
         end,
 
         bind = "hammer_of_light"

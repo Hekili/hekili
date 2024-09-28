@@ -1193,6 +1193,7 @@ local newModifiers = {
     default = 'raw',
     empower_to = 'raw',
     for_next = 'raw',
+    extra_amount = 'raw',
     line_cd = 'raw',
     max_cycle_targets = 'raw',
     sec = 'raw',
