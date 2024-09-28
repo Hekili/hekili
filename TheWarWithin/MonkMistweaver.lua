@@ -539,7 +539,7 @@ spec:RegisterAuras( {
     teachings_of_the_monastery = {
         id = 202090,
         duration = 10,
-        max_stack = 3
+        max_stack = 4
     },
     thunder_focus_tea = {
         id = 116680,
@@ -1111,7 +1111,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "eye_of_the_tiger" )
                 applyBuff( "eye_of_the_tiger" )
             end
-            addStack( "teachings_of_the_monastery" )
+            addStack( "teachings_of_the_monastery", nil, talent.awakened_jadefire.enabled and buff.jadefire_stomp.up and 2 or 1 )
         end,
     },
 
