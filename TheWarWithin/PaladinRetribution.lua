@@ -1114,8 +1114,12 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "templar_strikes" )
     end
 
-    if IsActiveSpell( 429826 ) then applyBuff( "hammer_of_light_free" ) end
     if IsActiveSpell( 427453 ) then applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.wake_of_ashes.lastCast ) ) end
+
+    if buff.hammer_of_light_ready.down and buff.lights_deliverance.stack_pct == 100 and cooldown.wake_of_ashes.remains > 0 then
+        removeBuff( "lights_deliverance" )
+        applyBuff( "hammer_of_light_free" )
+    end
 
     if time > 0 and talent.crusading_strikes.enabled then
         if not action.rebuke.in_range then
@@ -1770,12 +1774,17 @@ spec:RegisterAbilities( {
         spendType = 'holy_power',
 
         startsCombat = true,
-        buff = "hammer_of_light_ready",
+        buff = function() return buff.hammer_of_light_free.up and "hammer_of_light_free" or "hammer_of_light_ready" end,
 
         handler = function ()
             removeBuff( "divine_purpose" )
-            removeBuff( "hammer_of_light_free" )
-            removeBuff( "hammer_of_light_ready" )
+
+            if buff.hammer_of_light_free.up then
+                removeBuff( "hammer_of_light_free" )
+            elseif buff.hammer_of_light_ready.up and buff.lights_deliverance.stack_pct == 100 then
+                removeBuff( "lights_deliverance" )
+                applyBuff( "hammer_of_light_free" )
+            end
         end,
 
         bind = { "wake_of_ashes", "eye_of_tyr" }
