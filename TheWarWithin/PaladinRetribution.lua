@@ -1107,6 +1107,9 @@ local IsSpellOverlayed = IsSpellOverlayed
 local C_Spell, C_UnitAuras = C_Spell, C_UnitAuras
 local tostringall = tostringall
 
+local ld_stacks = 0
+local free_hol_triggered = 0
+
 spec:RegisterHook( "reset_precast", function ()
     if buff.divine_resonance.up then
         state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
@@ -1143,11 +1146,14 @@ spec:RegisterHook( "reset_precast", function ()
         end
     end
 
-    if IsActiveSpell( 427453 ) then applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.wake_of_ashes.lastCast ) ) end
-
-    if buff.hammer_of_light_ready.down and buff.lights_deliverance.stack_pct == 100 and cooldown.wake_of_ashes.remains > 0 then
-        removeBuff( "lights_deliverance" )
-        applyBuff( "hammer_of_light_free" )
+    if IsSpellKnownOrOverridesKnown( 427453 ) then
+        if action.hammer_of_light.lastCast > action.wake_of_ashes.lastCast then
+            applyBuff( "hammer_of_light_free", 12 - ( query_time - action.hammer_of_light.lastCast ) )
+            if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; applied hammer_of_light_free: %.2f", buff.hammer_of_light_free.remains ) end
+        else
+            applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.wake_of_ashes.lastCast ) )
+            if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light not active; applied hammer_of_light_ready: %.2f", buff.hammer_of_light_ready.remains ) end
+        end
     end
 
     if time > 0 and talent.crusading_strikes.enabled then
