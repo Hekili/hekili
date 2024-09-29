@@ -1117,7 +1117,7 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "templar_strikes" )
     end
 
-    if hero_spec.templar and Hekili.ActiveDebug then
+    if hero_tree.templar and Hekili.ActiveDebug then
         for _, spellID in ipairs( tempDebug ) do
             Hekili:Debug( "[%d]: ISK:%5s IPS:%5s ISO:%5s ISKOOK:%5s GOS:%5s, ISU:%5s", spellID, IsSpellKnown(spellID), IsPlayerSpell(spellID), IsSpellOverlayed(spellID), IsSpellKnownOrOverridesKnown(spellID), C_Spell.GetOverrideSpell(spellID), C_Spell.IsSpellUsable(spellID) )
         end
