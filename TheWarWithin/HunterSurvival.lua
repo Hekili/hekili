@@ -838,7 +838,6 @@ spec:RegisterAbilities( {
         gcd = "off",
         school = "physical",
 
-        talent = "aspect_of_the_eagle",
         startsCombat = false,
 
         toggle = "interrupts",
