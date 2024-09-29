@@ -1863,7 +1863,7 @@ spec:RegisterAbilities( {
             if talent.ragefire.enabled then applyBuff( "ragefire" ) end
         end,
 
-        copy = { 258920, "consuming_fire", 452487 }
+        copy = { 258920, 427917, "consuming_fire", 452487 }
     },
 
     -- Talent: Imprisons a demon, beast, or humanoid, incapacitating them for $d. Damage will cancel the effect. Limit 1.

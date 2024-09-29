@@ -684,7 +684,7 @@ spec:RegisterAuras( {
     lights_deliverance = {
         id = 433674,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 60
     },
     -- The damage and healing of your next Dawnlight is increased by $w1%.
     morning_star = {
@@ -1101,6 +1101,12 @@ spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
 
 spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
 
+
+local tempDebug = { 387174, 255937, 427453, 429826, 427441 }
+local IsSpellOverlayed = IsSpellOverlayed
+local C_Spell, C_UnitAuras = C_Spell, C_UnitAuras
+local tostringall = tostringall
+
 spec:RegisterHook( "reset_precast", function ()
     if buff.divine_resonance.up then
         state:QueueAuraEvent( "divine_toll", class.abilities.judgment.handler, buff.divine_resonance.expires, "AURA_PERIODIC" )
@@ -1112,6 +1118,21 @@ spec:RegisterHook( "reset_precast", function ()
 
     if now - last_ts < 3 and action.templar_slash.lastCast < last_ts then
         applyBuff( "templar_strikes" )
+    end
+
+    if hero_tree.templar and Hekili.ActiveDebug then
+        for _, spellID in ipairs( tempDebug ) do
+            Hekili:Debug( "[%d]: ISK:%5s IPS:%5s ISO:%5s ISKOOK:%5s GOS:%5s, ISU:%5s", spellID, tostringall( IsSpellKnown(spellID), IsPlayerSpell(spellID), IsSpellOverlayed(spellID), IsSpellKnownOrOverridesKnown(spellID), C_Spell.GetOverrideSpell(spellID), C_Spell.IsSpellUsable(spellID) ) )
+        end
+
+        local ld = C_UnitAuras.GetPlayerAuraBySpellID( 433674 )
+        if ld then
+            local ldInfo = "Light's Deliverance: "
+            for k, v in pairs( ld ) do
+                ldInfo = ldInfo "\n  ".. k .. " = " .. tostring( v )
+            end
+            Hekili:Debug( ldInfo )
+        end
     end
 
     if IsActiveSpell( 427453 ) then applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.wake_of_ashes.lastCast ) ) end

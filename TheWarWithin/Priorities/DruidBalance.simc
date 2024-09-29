@@ -41,8 +41,9 @@ actions.aoe+=/incarnation,if=boss&fight_remains<20*(1+talent.greater_alignment*0
 actions.aoe+=/warrior_of_elune,if=!talent.lunar_calling&buff.eclipse_solar.remains<7|talent.lunar_calling
 actions.aoe+=/starfire,if=(!talent.lunar_calling&spell_targets.starfire=1)&(buff.eclipse_solar.up&buff.eclipse_solar.remains<action.starfire.cast_time|eclipse.in_none)
 actions.aoe+=/starfall,if=buff.starweavers_warp.up|buff.touch_the_cosmos_starfall.up
-actions.aoe+=/starsurge,if=!talent.starweaver&!talent.touch_the_cosmos|!talent.starfall&astral_power.deficit<35|buff.starweavers_weft.up|buff.touch_the_cosmos_starsurge.up
+actions.aoe+=/starsurge,if=!talent.starfall&(buff.starweavers_weft.up|buff.touch_the_cosmos_starsurge.up)
 actions.aoe+=/starfall
+actions.aoe+=/starsurge,if=!talent.starfall&astral_power.deficit<20
 actions.aoe+=/convoke_the_spirits,if=(!buff.dreamstate.up&!buff.umbral_embrace.up&spell_targets.starfire<7|spell_targets.starfire=1)&(boss&fight_remains<5|(buff.ca_inc.up|cooldown.ca_inc.remains>40)&(!hero_tree.keeper_of_the_grove|buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>15))
 actions.aoe+=/new_moon
 actions.aoe+=/half_moon
