@@ -1129,7 +1129,15 @@ spec:RegisterHook( "reset_precast", function ()
         if ld then
             local ldInfo = "Light's Deliverance: "
             for k, v in pairs( ld ) do
-                ldInfo = ldInfo "\n  ".. k .. " = " .. tostring( v )
+                if type( v ) == "table" then
+                    local subTable = "\n  " .. k .. " = { "
+                    for i, val in ipairs( v ) do
+                        subTable = subTable .. tostring( val ) .. ( i < #v and ", " or " }" )
+                    end
+                    ldInfo = ldInfo .. subTable
+                else
+                    ldInfo = ldInfo .. "\n  ".. k .. " = " .. tostring( v )
+                end
             end
             Hekili:Debug( ldInfo )
         end
