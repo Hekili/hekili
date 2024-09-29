@@ -1103,6 +1103,9 @@ spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
 
 
 local tempDebug = { 387174, 255937, 427453, 429826, 427441 }
+local IsSpellOverlayed = IsSpellOverlayed
+local C_Spell, C_UnitAuras = C_Spell, C_UnitAuras
+local tostringall = tostringall
 
 spec:RegisterHook( "reset_precast", function ()
     if buff.divine_resonance.up then
@@ -1119,7 +1122,7 @@ spec:RegisterHook( "reset_precast", function ()
 
     if hero_tree.templar and Hekili.ActiveDebug then
         for _, spellID in ipairs( tempDebug ) do
-            Hekili:Debug( "[%d]: ISK:%5s IPS:%5s ISO:%5s ISKOOK:%5s GOS:%5s, ISU:%5s", spellID, IsSpellKnown(spellID), IsPlayerSpell(spellID), IsSpellOverlayed(spellID), IsSpellKnownOrOverridesKnown(spellID), C_Spell.GetOverrideSpell(spellID), C_Spell.IsSpellUsable(spellID) )
+            Hekili:Debug( "[%d]: ISK:%5s IPS:%5s ISO:%5s ISKOOK:%5s GOS:%5s, ISU:%5s", spellID, tostringall( IsSpellKnown(spellID), IsPlayerSpell(spellID), IsSpellOverlayed(spellID), IsSpellKnownOrOverridesKnown(spellID), C_Spell.GetOverrideSpell(spellID), C_Spell.IsSpellUsable(spellID) ) )
         end
 
         local ld = C_UnitAuras.GetPlayerAuraBySpellID( 433674 )
