@@ -684,7 +684,7 @@ spec:RegisterAuras( {
     lights_deliverance = {
         id = 433674,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 60
     },
     -- The damage and healing of your next Dawnlight is increased by $w1%.
     morning_star = {
