@@ -2094,7 +2094,11 @@ spec:RegisterAbilities( {
 
     -- Place a demonic sigil at the target location that activates after $d.; Detonates to deal $389860s1 Chaos damage and shatter up to $s3 Lesser Soul Fragments from
     sigil_of_spite = {
-        id = 390163,
+        id = function()
+            if talent.precise_sigils.enabled then return 389815 end
+            return 390163
+        end,
+        known = 390163,
         cast = 0.0,
         cooldown = function() return 60 * ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) end,
         gcd = "spell",
@@ -2107,6 +2111,8 @@ spec:RegisterAbilities( {
         handler = function ()
             create_sigil( "spite" )
         end,
+
+        copy = { 390163, 389815 }
     },
 
     -- Allows you to see enemies and treasures through physical barriers, as well as enemies that are stealthed and invisible. Lasts $d.    Attacking or taking damage disrupts the sight.
