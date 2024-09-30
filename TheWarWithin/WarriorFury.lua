@@ -296,7 +296,7 @@ spec:RegisterAuras( {
         onCancel = function()
             setCooldown( "global_cooldown", 0 )
         end,
-        copy = { 227847, 389774 }
+        copy = { 227847, 389774, 446035 }
     },
     
     bloodcraze = {
