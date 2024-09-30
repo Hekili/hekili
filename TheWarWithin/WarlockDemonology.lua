@@ -359,6 +359,17 @@ local ExpireNetherPortal = setfenv( function()
     summon_demon( "pit_lord", 10 )
 end, state )
 
+spec:RegisterStateFunction( "SoulStrikeIfNotCapped", function()
+    if soul_shard < 5 then
+        class.abilities.soul_strike.handler()
+        setCooldown( "soul_strike", 10 )
+        if Hekili.ActiveDebug then Hekili:Debug( "*** Soul Strike cast by pet at %.2f; gained 1 Soul Shard (to %d).", query_time, soul_shard ) end
+    else
+        state:QueueAuraExpiration( "soul_strike", SoulStrikeIfNotCapped, gcd.remains > 0 and gcd.remains or gcd.max )
+        if Hekili.ActiveDebug then Hekili:Debug( "*** Soul Strike not cast at %.2f due to capped shards; requeuing in cast by pet at %.2f.", query_time, gcd.remains > 0 and gcd.remains or gcd.max ) end
+    end
+end )
+
 
 -- Tier 29
 spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
@@ -527,6 +538,11 @@ spec:RegisterHook( "reset_precast", function()
         applyBuff( "infernal_bolt" )
     end
 
+    if talent.soul_strike.enabled and cooldown.soul_strike.remains > 0 then
+        state:QueueAuraExpiration( "soul_strike", SoulStrikeIfNotCapped, query_time + cooldown.soul_strike.remains )
+        if Hekili.ActiveDebug then Hekili:Debug( "*** Soul Strike queued for %.2f.", cooldown.soul_strike.remains ) end
+    end
+
     if Hekili.ActiveDebug then
         Hekili:Debug(   " - Dreadstalkers: %d, %.2f\n" ..
                         " - Vilefiend    : %d, %.2f\n" ..
@@ -588,18 +604,18 @@ spec:RegisterHook( "spend", function( amt, resource )
             end
 
             if buff.art_overlord.up then
-                summon_demon( "overlord" )
+                summon_demon( "overlord", 2 )
                 removeBuff( "art_overlord" )
             end
 
             if buff.art_mother.up then
-                summon_demon( "mother_of_chaos" )
+                summon_demon( "mother_of_chaos", 6 )
                 removeBuff( "art_mother" )
                 if talent.secrets_of_the_coven.enabled then applyBuff( "infernal_bolt" ) end
             end
 
             if buff.art_pit_lord.up then
-                summon_demon( "pit_lord" )
+                summon_demon( "pit_lord", 5 )
                 removeBuff( "art_pit_lord" )
                 if talent.ruination.enabled then applyBuff( "ruination" ) end
             end
@@ -2180,6 +2196,24 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 264119, "summon_charhound", 455476, "summon_gloomhound", 455465 }
+    },
+
+
+    -- Pet: Felguard
+    soul_strike = {
+        id = 264057,
+        cast = 0,
+        cooldown = 10,
+        gcd = "off", -- Pet's gonna pet.
+
+        talent = "soul_strike",
+        startsCombat = true,
+
+        hidden = true,
+
+        handler = function()
+            gain( 1, "soul_shards" )
+        end
     }
 } )
 
