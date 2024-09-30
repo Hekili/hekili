@@ -475,6 +475,7 @@ local mt_trinket_is = {
         local item = state.trinket[ t.slot ]
 
         if item.usable and item.ability == k then return true end
+        if item.__id and class.gear[ k ] and class.gear[ k ][ 1 ] == item.__id then return true end
 
         return false
     end,
