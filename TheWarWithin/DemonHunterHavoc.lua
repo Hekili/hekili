@@ -389,7 +389,8 @@ spec:RegisterAuras( {
     elysian_decree = { -- TODO: This aura determines sigil pop time.
         id = 390163,
         duration = function () return talent.quickened_sigils.enabled and 1 or 2 end,
-        max_stack = 1
+        max_stack = 1,
+        copy = "sigil_of_spite"
     },
     essence_break = {
         id = 320338,
@@ -911,8 +912,9 @@ local sigils = setmetatable( {}, {
 
 spec:RegisterStateFunction( "create_sigil", function( sigil )
     sigils[ sigil ] = query_time + activation_time
+    if sigil == "sigil_of_spite" or "elysian_decree" then return end
 
-    local effect = sigil == "elysian_dcreee" and "elysian_decree" or ( "sigil_of_" .. sigil )
+    local effect = ( "sigil_of_" .. sigil )
     applyDebuff( "target", effect )
     debuff[ effect ].applied = debuff[ effect ].applied + 1
     debuff[ effect ].expires = debuff[ effect ].expires + 1
