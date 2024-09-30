@@ -847,7 +847,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
     if sourceGUID == state.GUID then
         -- Summons.
         if subtype == "SPELL_SUMMON" then
-            if spellID == 262627 then
+            if spellID == 262627 or spellID == 426516 then
                 actual_spirits[ destGUID ] = {
                     expires = GetTime() + 15,
                     alpha_expires = 0
