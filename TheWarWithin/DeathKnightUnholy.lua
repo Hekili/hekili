@@ -1195,14 +1195,16 @@ me:RegisterHook( "reset_precast", function ()
         any_dnd_set = true
     end
 
-    if state:IsKnown( "clawing_shadows" ) then
-        class.abilities.wound_spender = class.abilities.clawing_shadows
-        class.abilities[ 433895 ] = class.abilities.clawing_shadows
-        cooldown.wound_spender = cooldown.clawing_shadows
-    else
+    if IsActiveSpell( 433899 ) or IsActiveSpell( 433895 ) then applyBuff( "vampiric_strike" ) end
+
+    if not talent.clawing_shadows.enabled or buff.vampiric_strike.up or buff.gift_of_the_sanlayn.up then
         class.abilities.wound_spender = class.abilities.scourge_strike
         class.abilities[ 433895 ] = class.abilities.scourge_strike
         cooldown.wound_spender = cooldown.scourge_strike
+    else
+        class.abilities.wound_spender = class.abilities.clawing_shadows
+        class.abilities[ 433895 ] = class.abilities.clawing_shadows
+        cooldown.wound_spender = cooldown.clawing_shadows
     end
 
     if not wound_spender_set then
@@ -1214,14 +1216,12 @@ me:RegisterHook( "reset_precast", function ()
     elseif talent.defile.enabled and cooldown.defile.remains then setCooldown( "death_and_decay", cooldown.defile.remains ) end
 
     -- Reset CDs on any Rune abilities that do not have an actual cooldown.
-        for action in pairs( class.abilityList ) do
-            local data = class.abilities[ action ]
-            if data and data.cooldown == 0 and data.spendType == "runes" then
-                setCooldown( action, 0 )
-            end
+    for action in pairs( class.abilityList ) do
+        local data = class.abilities[ action ]
+        if data and data.cooldown == 0 and data.spendType == "runes" then
+            setCooldown( action, 0 )
         end
-
-    if IsActiveSpell( 433899 ) or IsActiveSpell( 433895 ) then applyBuff( "vampiric_strike" ) end
+    end
 
     if buff.empower_rune_weapon.up then
         local expires = buff.empower_rune_weapon.expires
@@ -2166,7 +2166,7 @@ me:RegisterAbilities( {
         end,
 
         bind = { "clawing_shadows", "wound_spender" },
-        copy = { 55090, 433895 }
+        copy = { 55090, "vampiric_strike", 433895 }
     },
 
 
