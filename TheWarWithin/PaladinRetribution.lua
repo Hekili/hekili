@@ -1146,12 +1146,35 @@ spec:RegisterHook( "reset_precast", function ()
         end
     end
 
+
+    if buff.lights_deliverance.up then
+        -- We need to track when it ticks over from 59/60 stacks.
+        local stacks = buff.lights_deliverance.stack
+        if stacks < ld_stacks then
+            free_hol_triggered = now
+        end
+        ld_stacks = stacks
+    end
+
+    if free_hol_triggered + 12 < now then free_hol_triggered = 0 end -- Reset.
+
     if IsSpellKnownOrOverridesKnown( 427453 ) then
-        if action.hammer_of_light.lastCast > action.wake_of_ashes.lastCast then
-            applyBuff( "hammer_of_light_free", 12 - ( query_time - action.hammer_of_light.lastCast ) )
-            if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; applied hammer_of_light_free: %.2f", buff.hammer_of_light_free.remains ) end
+
+        if talent.lights_deliverance.enabled then
+            if query_time - free_hol_triggered < 12 and action.hammer_of_light.lastCast < free_hol_triggered then
+                local hol_remains = free_hol_triggered + 12 - query_time
+                hol_remains = hol_remains > 0 and hol_remains or ( 2 * gcd.max )
+
+                applyBuff( "hammer_of_light_free", max( 2 * gcd.max, hol_remains ) )
+                if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; applied hammer_of_light_free: %.2f", buff.hammer_of_light_free.remains ) end
+            else
+                -- Don't trust that HoL is still active.
+                if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light appears active [ %.2f ] but we just cast HoL [ %.2f ]; ignoring...", free_hol_triggered ) end
+            end
         else
-            applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.wake_of_ashes.lastCast ) )
+            local hol_remains = action.wake_of_ashes.lastCast + 12 - query_time
+            hol_remains = hol_remains > 0 and hol_remains or ( 2 * gcd.max )
+            applyBuff( "hammer_of_light_ready", hol_remains )
             if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light not active; applied hammer_of_light_ready: %.2f", buff.hammer_of_light_ready.remains ) end
         end
     end
