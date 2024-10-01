@@ -1146,26 +1146,26 @@ spec:RegisterHook( "reset_precast", function ()
         end
     end
 
-
-    if buff.lights_deliverance.up then
-        -- We need to track when it ticks over from 59/60 stacks.
-        local stacks = buff.lights_deliverance.stack
-        if stacks < ld_stacks then
-            free_hol_triggered = now
-        end
-        ld_stacks = stacks
-    end
-
-    if free_hol_triggered + 12 < now then free_hol_triggered = 0 end -- Reset.
-
     if IsSpellKnownOrOverridesKnown( 427453 ) then
         if talent.lights_deliverance.enabled then
-            if query_time - free_hol_triggered < 12 and action.hammer_of_light.lastCast > action.wake_of_ashes.lastCast then
+            -- We need to track when it ticks over from 59/60 stacks.
+            local stacks = buff.lights_deliverance.stack
+
+            if stacks < ld_stacks then
+                free_hol_triggered = now
+            end
+            ld_stacks = stacks
+
+            if free_hol_triggered + 12 < now then free_hol_triggered = 0 end -- Reset.
+
+            if free_hol_triggered > 0 and action.hammer_of_light.lastCast > action.wake_of_ashes.lastCast then
                 local hol_remains = free_hol_triggered + 12 - query_time
                 hol_remains = hol_remains > 0 and hol_remains or ( 2 * gcd.max )
 
                 applyBuff( "hammer_of_light_free", max( 2 * gcd.max, hol_remains ) )
-                if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; applied hammer_of_light_free: %.2f", buff.hammer_of_light_free.remains ) end
+                if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; applied hammer_of_light_free: %.2f : %.2f : %.2f : %d", buff.hammer_of_light_free.remains, free_hol_triggered, query_time, ld_stacks ) end
+            else
+                if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; hammer_of_light_free ruled out: %.2f : %.2f : %d", free_hol_triggered, query_time, ld_stacks ) end
             end
         end
 
