@@ -1842,9 +1842,13 @@ spec:RegisterAbilities( {
 
             if buff.hammer_of_light_free.up then
                 removeBuff( "hammer_of_light_free" )
-            elseif buff.hammer_of_light_ready.up and buff.lights_deliverance.stack_pct == 100 then
-                removeBuff( "lights_deliverance" )
-                applyBuff( "hammer_of_light_free" )
+            else
+                removeBuff( "hammer_of_light_ready" )
+
+                if buff.lights_deliverance.stack_pct == 100 then
+                    removeBuff( "lights_deliverance" )
+                    applyBuff( "hammer_of_light_free" )
+                end
             end
         end,
 
