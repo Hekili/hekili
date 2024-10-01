@@ -1159,23 +1159,26 @@ spec:RegisterHook( "reset_precast", function ()
     if free_hol_triggered + 12 < now then free_hol_triggered = 0 end -- Reset.
 
     if IsSpellKnownOrOverridesKnown( 427453 ) then
-
         if talent.lights_deliverance.enabled then
-            if query_time - free_hol_triggered < 12 and action.hammer_of_light.lastCast < free_hol_triggered then
+            if query_time - free_hol_triggered < 12 and action.hammer_of_light.lastCast > action.wake_of_ashes.lastCast then
                 local hol_remains = free_hol_triggered + 12 - query_time
                 hol_remains = hol_remains > 0 and hol_remains or ( 2 * gcd.max )
 
                 applyBuff( "hammer_of_light_free", max( 2 * gcd.max, hol_remains ) )
                 if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; applied hammer_of_light_free: %.2f", buff.hammer_of_light_free.remains ) end
-            else
-                -- Don't trust that HoL is still active.
-                if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light appears active [ %.2f ] but we just cast HoL [ %.2f ]; ignoring...", free_hol_triggered ) end
             end
-        else
+        end
+
+        if not buff.hammer_of_light_free.up then
             local hol_remains = action.wake_of_ashes.lastCast + 12 - query_time
             hol_remains = hol_remains > 0 and hol_remains or ( 2 * gcd.max )
             applyBuff( "hammer_of_light_ready", hol_remains )
             if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light not active; applied hammer_of_light_ready: %.2f", buff.hammer_of_light_ready.remains ) end
+        end
+
+        if buff.hammer_of_light_ready.down and buff.hammer_of_light_free.down then
+            if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light appears active [ %.2f ] but I don't know why; applying hammer_of_light_ready." ) end
+            applyBuff( "hammer_of_light_ready", 2 * gcd.max )
         end
     end
 

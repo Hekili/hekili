@@ -2297,7 +2297,6 @@ me:RegisterAbilities( {
         startsCombat = false,
 
         toggle = "cooldowns",
-
         debuff = "festering_wound",
 
         handler = function ()
