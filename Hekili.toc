@@ -72,6 +72,7 @@ TheWarWithin\ShamanRestoration.lua
 TheWarWithin\WarlockAffliction.lua
 TheWarWithin\WarlockDemonology.lua
 TheWarWithin\WarlockDestruction.lua
+TheWarWithin\Warrior\ReflectableSpells.lua
 TheWarWithin\WarriorArms.lua
 TheWarWithin\WarriorFury.lua
 TheWarWithin\WarriorProtection.lua
