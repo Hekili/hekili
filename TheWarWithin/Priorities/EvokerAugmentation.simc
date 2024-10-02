@@ -28,7 +28,7 @@ actions+=/quell
 actions+=/unravel
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
 actions+=/variable,name=pool_for_id,if=talent.imminent_destruction,default=0,op=set,value=(talent.wingleader&cooldown.breath_of_eons.remains<8|!talent.wingleader&cooldown.breath_of_eons.remains<8)&essence.deficit>=1&!buff.essence_burst.up
-actions+=/prescience,cycle_targets=1,if=(full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold|boss&fight_remains<=30)|cooldown.breath_of_eons.remains<=8&talent.wingleader|evoker.allied_cds_up>0&!talent.wingleader
+actions+=/prescience,cycle_targets=1,if=(group&active_dot.prescience<2|active_dot.prescience=0)&((full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold|boss&fight_remains<=30)|cooldown.breath_of_eons.remains<=8&talent.wingleader|evoker.allied_cds_up>0&!talent.wingleader)
 actions+=/potion,if=cooldown.breath_of_eons.up|cooldown.breath_of_eons.up&talent.wingleader|boss&fight_remains<=30
 actions+=/call_action_list,name=ebon_logic,if=active_dot.ebon_might=0|(buff.ebon_might_self.remains-action.ebon_might.cast_time)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold
 actions+=/call_action_list,name=items
@@ -38,9 +38,9 @@ actions+=/deep_breath
 actions+=/tip_the_scales,if=talent.threads_of_fate&(prev_gcd.1.breath_of_eons|boss&fight_remains<=30)
 # actions+=/cancel_buff,name=tip_the_scales,if=cooldown.fire_breath.remains>=gcd.max*2&cooldown.upheaval.remains>=gcd.max*2|cooldown.fire_breath.up&cooldown.upheaval.remains>=12&talent.molten_embers
 actions+=/call_action_list,name=fb,if=cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads|talent.mass_eruption&talent.overlord&(cooldown.breath_of_eons.remains<=1|action.breath_of_eons.disabled)&talent.molten_embers&active_enemies>=3|empowering.fire_breath
-actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might_self.remains>duration&cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads|talent.mass_eruption&talent.overlord&cooldown.breath_of_eons.remains<=1&!talent.molten_embers&active_enemies>=3|empowering.upheaval
+actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might_self.remains>cast_time&cooldown.time_skip.up&talent.time_skip&!talent.interwoven_threads|talent.mass_eruption&talent.overlord&cooldown.breath_of_eons.remains<=1&!talent.molten_embers&active_enemies>=3|empowering.upheaval
 actions+=/call_action_list,name=fb,if=buff.ebon_might_self.remains>2&cooldown.breath_of_eons.remains<=1|(cooldown.breath_of_eons.remains>=variable.hold_empower_for|!talent.breath_of_eons|talent.wingleader&cooldown.breath_of_eons.remains>=variable.hold_empower_for)
-actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might_self.remains>duration&(!talent.molten_embers|active_dot.fire_breath_damage>0)&(cooldown.breath_of_eons.remains>=variable.hold_empower_for|!talent.breath_of_eons|talent.wingleader&cooldown.breath_of_eons.remains>=variable.hold_empower_for)|empowering.upheaval
+actions+=/upheaval,cycle_targets=1,empower_to=1,if=target.time_to_die>cast_time+0.2&buff.ebon_might_self.remains>cast_time&(!talent.molten_embers|active_dot.fire_breath_damage>0)&(cooldown.breath_of_eons.remains>=variable.hold_empower_for|!talent.breath_of_eons|talent.wingleader&cooldown.breath_of_eons.remains>=variable.hold_empower_for)|empowering.upheaval
 actions+=/breath_of_eons,if=talent.wingleader&(buff.mass_eruption_stacks.up&talent.overlord|!talent.overlord)&(fight_remains>=15&(raid_event.adds.in>=20|raid_event.adds.remains>=15))|boss&fight_remains<=30
 actions+=/breath_of_eons,if=((cooldown.ebon_might.remains<=4|buff.ebon_might_self.up)&fight_remains>15&raid_event.adds.in>15|fight_remains<30)&boss
 actions+=/breath_of_eons,if=((cooldown.ebon_might.remains<=4|buff.ebon_might_self.up)&fight_remains>15|fight_remains<30)&!boss
@@ -54,9 +54,10 @@ actions.ebon_logic+=/ebon_might
 
 actions.fb+=/tip_the_scales,if=cooldown.fire_breath.ready&buff.ebon_might_self.up
 actions.fb+=/fire_breath,empower_to=4,cycle_targets=1,if=fight_remains>4&talent.font_of_magic&(buff.ebon_might_self.remains>cast_time&(!talent.molten_embers|cooldown.upheaval.remains<=(20+4*talent.blast_furnace-6*3))|buff.tip_the_scales.up)
-actions.fb+=/fire_breath,empower_to=3,cycle_targets=1,if=fight_remains>8&(buff.ebon_might_self.remains>cast_time&(!talent.molten_embers|cooldown.upheaval.remains<=(20+4*talent.blast_furnace-6*2))|buff.tip_the_scales.up)
-actions.fb+=/fire_breath,empower_to=2,cycle_targets=1,if=fight_remains>12&buff.ebon_might_self.remains>cast_time&(!talent.molten_embers|cooldown.upheaval.remains<=(20+4*talent.blast_furnace-6*1))
+actions.fb+=/fire_breath,empower_to=3,cycle_targets=1,if=fight_remains>8&(buff.ebon_might_self.remains>cast_time&(!talent.molten_embers|cooldown.upheaval.remains<=(20+4*talent.blast_furnace-6*2))|buff.tip_the_scales.up|empowering.fire_breath)
+actions.fb+=/fire_breath,empower_to=2,cycle_targets=1,if=fight_remains>12&(buff.ebon_might_self.remains>cast_time&(!talent.molten_embers|cooldown.upheaval.remains<=(20+4*talent.blast_furnace-6*1))|empowering.fire_breath)
 actions.fb+=/fire_breath,empower_to=1,cycle_targets=1,if=fight_remains>16&(buff.ebon_might_self.remains>cast_time&(!talent.molten_embers|cooldown.upheaval.remains<=(20+4*talent.blast_furnace-6*0))|empowering.fire_breath)
+actions.fb+=/fire_breath,empower_to=1,cycle_targets=1,if=fight_remains<=4&empowering.fire_breath
 
 actions.filler+=/living_flame,if=(buff.ancient_flame.up|mana>=200000|!talent.dream_of_spring|variable.spam_heal=0)&(active_enemies=1|talent.pupil_of_alexstrasza)
 actions.filler+=/emerald_blossom,if=!buff.ebon_might_self.up&talent.ancient_flame&talent.scarlet_adaptation&!talent.dream_of_spring&!buff.ancient_flame.up&active_enemies=1
