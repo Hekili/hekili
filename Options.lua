@@ -3103,6 +3103,14 @@ do
                                 order = 1.1
                             },
 
+                            desaturate = {
+                                type = "toggle",
+                                name = format( "%s Desaturate", NewFeature ),
+                                desc = "Desaturate the primary icon when you should wait before using the ability.",
+                                width = 1.49,
+                                order = 1.15
+                            },
+
                             break01 = {
                                 type = "description",
                                 name = " ",

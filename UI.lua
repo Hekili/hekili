@@ -1523,6 +1523,7 @@ do
 
                         if a and a.id then
                             local outOfRange = false
+                            local desaturated = false
 
                             if conf.range.enabled and UnitCanAttack( "player", "target" ) then
                                 if conf.range.type == "melee" then
@@ -1534,13 +1535,13 @@ do
                             end
 
                             if outOfRange and not b.outOfRange then
-                                b.Texture:SetDesaturated(true)
                                 b.Texture:SetVertexColor(1.0, 0.0, 0.0, 1.0)
                                 b.outOfRange = true
+                                desaturated = true
                             elseif b.outOfRange and not outOfRange then
-                                b.Texture:SetDesaturated(false)
                                 b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
                                 b.outOfRange = false
+                                desaturated = false
                             end
 
                             if not b.outOfRange then
@@ -1552,11 +1553,12 @@ do
                                     _, unusable = IsUsableSpell( a.actualName or a.name )
                                 end
 
-                                if i == 1 and conf.delays.fade then
+                                if i == 1 and ( conf.delays.fade or conf.delays.desaturate ) then
                                     local delay = b.ExactTime and ( b.ExactTime - now ) or 0
                                     local earliest_time = b.EarliestTime or delay
                                     if delay > earliest_time + 0.05 then
-                                        unusable = true
+                                        if conf.delays.fade then unusable = true end
+                                        if conf.delays.desaturate then desaturate = true end
                                     end
                                 end
 
@@ -1567,6 +1569,14 @@ do
                                     b.Texture:SetVertexColor(1.0, 1.0, 1.0, 1.0)
                                     b.unusable = false
                                 end
+                            end
+
+                            if desaturated and not b.desaturated then
+                                b.Texture:SetDesaturated(true)
+                                b.desaturated = true
+                            elseif b.desaturated and not desaturated then
+                                b.Texture:SetDesaturated(false)
+                                b.desaturated = false
                             end
                         end
                     end
