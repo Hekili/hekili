@@ -1912,6 +1912,14 @@ spec:RegisterAbilities( {
     },
 } )
 
+local NewFeature = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
+
+spec:RegisterSetting( "spell_reflection_filter", true, {
+    name = format( "%s Filter M+ |T132361:0|t Spell Reflection (TWW Season 1)", NewFeature ),
+    desc = "If checked, then the addon will only suggest |T132361:0|t Spell Reflection on reflectable spells that target the player.",
+    type = "toggle",
+    width = "full",
+} )
 
 spec:RegisterSetting( "check_ww_range", false, {
     name = "Check |T132369:0|t Whirlwind Range",
