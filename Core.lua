@@ -2012,7 +2012,7 @@ function Hekili.Update( initial )
                             Hekili:Debug( resInfo )
                         end
                     else
-                        if not hasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 50 and ( dispName == "Primary" or dispName == "AOE" ) then
+                        if not hasSnapped and profile.autoSnapshot and InCombatLockdown() and state.level >= 70 and ( dispName == "Primary" or dispName == "AOE" ) then
                             Hekili:Print( "Unable to make recommendation for " .. dispName .. " #" .. i .. "; triggering auto-snapshot..." )
                             hasSnapped = dispName
                             UI:SetThreadLocked( false )
