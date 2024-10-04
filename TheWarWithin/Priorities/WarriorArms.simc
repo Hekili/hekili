@@ -26,7 +26,7 @@ actions+=/ancestral_call,if=debuff.colossus_smash.up
 ## actions+=/invoke_external_buff,name=power_infusion,if=debuff.colossus_smash.up&fight_remains>=135|variable.execute_phase&buff.avatar.up|fight_remains<=25
 actions+=/run_action_list,name=colossus_aoe,strict=1,if=talent.demolish&active_enemies>2
 actions+=/run_action_list,name=colossus_execute,cycle_targets=1,strict=1,if=talent.demolish&variable.execute_phase
-actions+=/run_action_list,name=colossus_sweep,srtict=1,if=talent.demolish&active_enemies=2&!variable.execute_phase
+actions+=/run_action_list,name=colossus_sweep,strict=1,if=talent.demolish&active_enemies=2&!variable.execute_phase
 actions+=/run_action_list,name=colossus_st,strict=1,if=talent.demolish
 actions+=/run_action_list,name=slayer_aoe,strict=1,if=!talent.demolish&active_enemies>2
 actions+=/run_action_list,name=slayer_execute,cycle_targets=1,strict=1,if=!talent.demolish&variable.execute_phase
