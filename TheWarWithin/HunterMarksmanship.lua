@@ -1432,8 +1432,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             focus.regen = focus.regen * 1.5
-            reduceCooldown( "aimed_shot", ( 1 - 0.3077 ) * 12 * haste )
-            reduceCooldown( "rapid_fire", ( 1 - 0.3077 ) * 20 * haste )
+            reduceCooldown( "aimed_shot", cooldown.aimed_shot.remains * 0.7 )
+            reduceCooldown( "rapid_fire", cooldown.rapid_fire.remains * 0.7 )
             applyBuff( "trueshot" )
 
             if talent.readiness.enabled then
