@@ -1629,6 +1629,7 @@ local death_events = {
 
 local dmg_filtered = {
     [280705] = true, -- Laser Matrix.
+    [450412] = true, -- Sentinel.
 }
 
 
