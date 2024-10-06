@@ -37,7 +37,8 @@ actions.precombat+=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5
 actions.precombat+=/variable,name=damage_trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&!variable.trinket_2_buffs&trinket.2.ilvl>trinket.1.ilvl
 actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&variable.trinket_2_buffs|variable.trinket_2_buffs&((trinket.2.cooldown.duration%variable.trinket_2_buff_duration)*(1.5+trinket.2.has_buff.intellect)*(variable.trinket_2_sync))>(((trinket.1.cooldown.duration%variable.trinket_1_buff_duration)*(1.5+trinket.1.has_buff.intellect)*(variable.trinket_1_sync))*(1+((trinket.1.ilvl-trinket.2.ilvl)%100)))
 actions.precombat+=/power_siphon
-actions.precombat+=/demonbolt,if=!buff.power_siphon.up
+actions.precombat+=/lights_judgment
+actions.precombat+=/demonbolt,if=!buff.power_siphon.up|soul_shards.deficit>1
 actions.precombat+=/shadow_bolt
 
 actions+=/axe_toss
@@ -74,9 +75,10 @@ actions+=/demonbolt,cycle_targets=1,if=((!debuff.doom.up)|active_enemies<4)&tale
 actions+=/demonbolt,if=fight_remains<buff.demonic_core.stack*gcd.max
 actions+=/demonbolt,cycle_targets=1,if=((!debuff.doom.up)|active_enemies<4)&buff.demonic_core.up&(cooldown.power_siphon.remains<4)&(soul_shard<4-talent.quietus)&!variable.pool_cores_for_tyrant
 actions+=/power_siphon,if=!buff.demonic_core.up&cooldown.summon_demonic_tyrant.remains>25
-actions+=/summon_vilefiend,if=fight_remains<cooldown.summon_demonic_tyrant.remains+5
-actions+=/shadow_bolt
+actions+=/summon_vilefiend,if=boss&fight_remains<cooldown.summon_demonic_tyrant.remains+5
 actions+=/infernal_bolt
+actions+=/lights_judgment,if=!pet.tyrant.active&cooldown.tyrant_remains>15&active_enemies>1
+actions+=/shadow_bolt
 
 actions.fight_end+=/grimoire_felguard,if=fight_remains<20
 actions.fight_end+=/ruination
