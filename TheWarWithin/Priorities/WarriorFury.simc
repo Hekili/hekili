@@ -19,8 +19,8 @@ actions+=/pummel,if=target.debuff.casting.react
 actions+=/charge,if=time<=0.5|movement.distance>5
 actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
 actions+=/potion
-actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=variables
+actions+=/call_action_list,name=trinkets
 actions+=/lights_judgment,if=variable.on_gcd_racials
 actions+=/bag_of_tricks,if=variable.on_gcd_racials
 actions+=/berserking,if=buff.recklessness.up

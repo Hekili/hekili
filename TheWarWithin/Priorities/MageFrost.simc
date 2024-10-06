@@ -5,7 +5,7 @@ actions.precombat+=/frostbolt,if=active_enemies<=2
 
 actions+=/counterspell
 actions+=/call_action_list,name=cds
-actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>=7&!set_bonus.tier30_2pc|active_enemies>=4&talent.ice_caller
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>=7|active_enemies>=3&talent.ice_caller
 actions+=/run_action_list,name=ss_cleave,strict=1,if=active_enemies>=2&active_enemies<=3&talent.splinterstorm
 actions+=/run_action_list,name=cleave,strict=1,if=active_enemies>=2&active_enemies<=3
 actions+=/run_action_list,name=ss_st,strict=1,if=talent.splinterstorm
