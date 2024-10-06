@@ -10131,54 +10131,20 @@ do
 
             snapshots = {
                 type = "group",
-                name = "Issue Reporting (Snapshots)",
+                name = "Snapshots (Troubleshooting)",
                 desc = "Learn how to report an issue with the addon, such as incorrect recommendations or bugs.",
                 order = 86,
+                childGroups = "tab",
                 args = {
-                    autoSnapshot = {
-                        type = "toggle",
-                        name = "Auto Snapshot",
-                        desc = "If checked, the addon will automatically create a snapshot whenever it failed to generate a recommendation.\n\n" ..
-                            "This automatic snapshot can only occur once per episode of combat.",
-                        order = 1,
-                        width = "full",
-                    },
-
-                    screenshot = {
-                        type = "toggle",
-                        name = "Take Screenshot",
-                        desc = "If checked, the addon will take a screenshot when you manually create a snapshot.\n\n" ..
-                            "Submitting both with your issue tickets will provide useful information for investigation purposes.",
-                        order = 2,
-                        width = "full",
-                    },
-
                     prefHeader = {
                         type = "header",
-                        name = "Snapshots / Troubleshooting",
-                        order = 2.5,
+                        name = "Snapshots",
+                        order = 1,
                         width = "full"
                     },
-
-                    header = {
-                        type = "description",
-                        name = function()
-                            return "Snapshots are logs of the addon's decision-making process for a set of recommendations.  If you have questions about -- or disagree with -- the addon's recommendations, " ..
-                            "reviewing a snapshot can help identify what factors led to the specific recommendations that you saw.\n\n" ..
-                            "Snapshots only capture a specific point in time, so snapshots have to be taken at the time you saw the specific recommendations that you are concerned about.  You can generate " ..
-                            "snapshots by using the |cffffd100Snapshot|r binding ( |cffffd100" .. ( Hekili.DB.profile.toggles.snapshot.key or "NOT BOUND" ) .. "|r ) from the Toggles section.\n\n" ..
-                            "You can also freeze the addon's recommendations using the |cffffd100Pause|r binding ( |cffffd100" .. ( Hekili.DB.profile.toggles.pause.key or "NOT BOUND" ) .. "|r ).  Doing so will freeze the addon's recommendations, allowing you to mouseover the display " ..
-                            "and see which conditions were met to display those recommendations.  Press Pause again to unfreeze the addon.\n\n" ..
-                            "Finally, using the settings at the bottom of this panel, you can ask the addon to automatically generate a snapshot for you when no recommendations were able to be made.\n\n"
-                        end,
-                        fontSize = "medium",
-                        order = 10,
-                        width = "full",
-                    },
-
                     SnapID = {
                         type = "select",
-                        name = "Select Entry",
+                        name = "Select a Snapshot",
                         desc = "Select a Snapshot to export.",
                         values = function( info )
                             if #ns.snapshots == 0 then
@@ -10198,14 +10164,92 @@ do
                         get = function( info )
                             return snapshots.selected
                         end,
-                        order = 12,
+                        order = 3,
                         width = "full",
                         disabled = function() return #ns.snapshots == 0 end,
                     },
+                    autoSnapshot = {
+                        type = "toggle",
+                        name = "Auto Snapshot",
+                        desc = "If checked, the addon will automatically create a snapshot whenever it failed to generate a recommendation.\n\n" ..
+                            "This automatic snapshot can only occur once per episode of combat.",
+                        order = 2,
+                        width = "normal",
+                    },
+                    screenshot = {
+                        type = "toggle",
+                        name = "Take Screenshot",
+                        desc = "If checked, the addon will take a screenshot when you manually create a snapshot.\n\n" ..
+                            "Submitting both with your issue tickets will provide useful information for investigation purposes.",
+                        order = 2.1,
+                        width = "normal",
+                    },
+                    issueReporting_snapshot = {
+                        type = "group",
+                        name = "What is a snapshot?",
+                        order = 4,
+                        args = {
+                            issueReporting_snapshot_what = {
+                                type = "description",
+                                name = function()
+                                    return "Snapshots are logs of the addon's decision-making process for a set of recommendations.  If you have questions about -- or disagree with -- the addon's recommendations, " ..
+                                    "reviewing a snapshot can help identify what factors led to the specific recommendations that you saw.\n\n" ..
+                                    "Snapshots only capture a specific point in time, and explain the current recommendation as well as all future recommendations based on icons shown. So if you show 3 icons in the addon, the snapshot will explain the current recommendation and the next 2." ..
+                                    "\n\nYou can also freeze the addon's recommendations using the |cffffd100Pause|r binding ( |cffffd100" .. ( Hekili.DB.profile.toggles.pause.key or "NOT BOUND" ) .. "|r ).  Doing so will freeze the addon's recommendations, allowing you to mouseover the display " ..
+                                    "and see which conditions were met to display those recommendations.  Press Pause again to unfreeze the addon.\n\n" ..
+                                    "Using the settings at the top of this panel, you can ask the addon to automatically generate a snapshot for you when no recommendations were able to be made.\n\n"
+                                end,
+                                order = 4,
+                                width = "full",
+                                fontSize = "medium",
+                            },
+                        },
+                    },
 
+                    issueReporting_snapshot_how = {
+                        type = "group",
+                        name = "How do I get one?",
+                        order = 5,
+                        args = {
+                            issueReporting_snapshot_how_info = {
+                                type = "description",
+                                name = function()
+                                return "|cFFFFD100When should I do it|r\n" ..
+                                "You should generate the snapshot when the issue is actively happening. If you look at the recommendations and think \"this seems wrong\", that's when you should do it. Most of the time, issues can be recreated at training dummies." ..
+                                "\n\nFor example, if the issue usually happens 20 seconds into your rotation, then an out-of-combat prepull snapshot isn't going to help the Dev or other community members diagnose and fix the issue." ..
+                                "\n\n|cFFFFD100How do I do it|r\n" ..
+                                "You can generate a snapshot one of 3 ways:\n" ..
+                                "• Pressing the snapshot keybind: |cffffd100" .. ( Hekili.DB.profile.toggles.snapshot.key or "NOT BOUND" ) .. "|r" ..
+                                "\n• Pressing the pause keybind: |cffffd100" .. ( Hekili.DB.profile.toggles.pause.key or "NOT BOUND" ) .. "|r" ..
+                                "\n• One can be automatically generated if the addon fails to recommend something, if you allow it to via the checkbox at the top of this window (|cFFFFD100Auto Snapshot|r)" ..
+                                "\n\n|cFFFFD100Okay I made one, where is it?|r\n" ..
+                                "The snapshot can be retrieved by picking it from dropdown list near the top of this window, then copying it from the textbox that appears. Be sure to press |cFFFFD100Ctrl + A|r before copying it so that you get the entire thing. It should be very, very long."
+                                end,
+                                order = 4.1,
+                                fontSize = "medium",
+                                width = "full",
+                                },
+                        },
+                    },
+                    issueReporting_snapshot_next = {
+                        type = "group",
+                        name = "What do I do with it now?",
+                        order = 6,
+                        args = {
+                            issueReporting_snapshot_next_info = {
+                                type = "description",
+                                name = "|cFFFFD100Now that the snapshot is in your clipboard ready to be pasted|r\n\n" .. 
+                                "1. Head to the Pastebin website: https://pastebin.com/" .. 
+                                "\n\n2. Create a paste with it and post the link wherever it's required (probably the discord, or a github ticket)",
+                                order = 5.1,
+                                fontSize = "medium",
+                                width = "full",
+                            },
+                        },
+                    },
                     Snapshot = {
                         type = 'input',
-                        name = "Snapshot",
+                        name = "Grab your Snapshot from this textbox",
                         desc = "Click here and press CTRL+A, CTRL+C to copy the snapshot.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket.",
                         order = 20,
                         get = function( info )
@@ -10219,16 +10263,16 @@ do
 
                     SnapshotInstructions = {
                         type = "description",
-                        name = "Click the Snapshot and press CTRL+A, CTRL+C to select all text and copy it to the clipboard.\n\n"
-                            .. "Paste the text into a text editor for your own review, or upload to Pastebin to link to an issue report on GitHub.",
+                        name = "|cFF00CCFFClick the textbox above and press CTRL+A, CTRL+C to select ALL text and copy it to the clipboard. It should be hundreds of lines long.|r\n\n",
                         order = 30,
                         width = "full",
+                        fontSize = "medium",
                         hidden = function() return snapshots.selected == 0 or #ns.snapshots == 0 end,
-                    }
-                }
+                        }
+
+                },
             },
         },
-
         plugins = {
             specializations = {},
         }
