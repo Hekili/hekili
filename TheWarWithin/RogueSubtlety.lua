@@ -572,9 +572,9 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
-    if c < 2 or c > 5 then return c end
-    if buff[ "echoing_reprimand_" .. c ].up then return 7 end
+    if not talent.coup_de_grace.enabled and not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
+    if buff[ "echoing_reprimand_" .. c ].up then c = 7 end
+    if this_action == "coup_de_grace" and buff.coup_de_grace.up then c = c + 5 end
     return c
 end )
 
@@ -1001,7 +1001,8 @@ spec:RegisterAbilities( {
 
     -- Finishing move that disembowels the target, causing damage per combo point. Targets with Find Weakness suffer an additional 20% damage as Shadow. 1 point : 273 damage 2 points: 546 damage 3 points: 818 damage 4 points: 1,091 damage 5 points: 1,363 damage 6 points: 1,636 damage
     eviscerate = {
-        id = 196819,
+        id = function() return buff.coup_de_grace.up and 441776 or 196819 end,
+        known = 196819,
         cast = 0,
         cooldown = 0,
         gcd = "totem",
@@ -1024,6 +1025,11 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "masterful_finish" )
 
+            if buff.coup_de_grace.up then
+                if debuff.fazed.up then addStack( "flawless_form", nil, 5 ) end
+                removeBuff( "coup_de_grace" )
+            end
+
             if talent.alacrity.enabled and combo_points.current > 4 then
                 addStack( "alacrity" )
             end
@@ -1044,7 +1050,7 @@ spec:RegisterAbilities( {
             if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
 
-        copy = 328082
+        copy = { 196819, 328082, "coup_de_grace", 441776 }
     },
 
     -- TODO: Does Flagellation generate combo points with Shadow Blades?
