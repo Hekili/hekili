@@ -3022,6 +3022,7 @@ spec:RegisterSetting( "envenom_pool_5_points", true, {
 } )
 
 spec:RegisterStateExpr( "envenom_at_5cp", function ()
+    if buff.darkest_night.up then return 0 end -- Bypass with Darkest Night to ensure pooling to CP cap.
     return settings.envenom_pool_5_points and 1 or 0
 end )
 
