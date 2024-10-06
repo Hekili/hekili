@@ -5324,16 +5324,18 @@ local mt_default_action = {
             return class.primaryResource
 
         elseif k == "in_flight" then
-            if ability and ability.flightTime then
-                return ability.lastCast + ability.flightTime > state.query_time
+            if ability.flightTime then
+                return ability.lastCast + max( ability.flightTime, 0.25 ) > state.query_time
             end
-            return state:IsInFlight( t.action )
+
+            return state:IsInFlight( t.action ) or ability.isProjectile and ability.lastCast + 0.25 > state.query_time
 
         elseif k == "in_flight_remains" then
-            if ability and ability.flightTime then
-                return max( 0, ability.lastCast + ability.flightTime - state.query_time )
+            if ability.flightTime then
+
+                return max( 0, ability.lastCast + max( ability.flightTime, 0.25 ) - state.query_time )
             end
-            return state:InFlightRemains( t.action )
+            return max( state:InFlightRemains( t.action ), ability.isProjectile and ability.lastCast + 0.25 - state.query_time )
 
         elseif k == "channeling" then
             return state:IsChanneling( t.action )
