@@ -884,6 +884,9 @@ end )
 rawset( state, "holy_bulwark", "holy_bulwark" )
 rawset( state, "sacred_weapon", "sacred_weapon" )
 
+local ld_stacks = 0
+local free_hol_triggered = 0
+
 spec:RegisterHook( "reset_precast", function ()
     last_consecration = nil
     last_blessed_hammer = nil
@@ -908,11 +911,40 @@ spec:RegisterHook( "reset_precast", function ()
         else applyBuff( "holy_bulwark_ready" ) end
     end
 
-    if IsActiveSpell( 427453 ) then applyBuff( "hammer_of_light_ready", 12 - ( query_time - action.eye_of_tyr.lastCast ) ) end
+    if IsSpellKnownOrOverridesKnown( 427453 ) then
+        if talent.lights_deliverance.enabled then
+            -- We need to track when it ticks over from 59/60 stacks.
+            local stacks = buff.lights_deliverance.stack
 
-    if buff.hammer_of_light_ready.down and buff.lights_deliverance.stack_pct == 100 and cooldown.eye_of_tyr.remains > 0 then
-        removeBuff( "lights_deliverance" )
-        applyBuff( "hammer_of_light_free" )
+            if stacks < ld_stacks then
+                free_hol_triggered = now
+            end
+            ld_stacks = stacks
+
+            if free_hol_triggered + 12 < now then free_hol_triggered = 0 end -- Reset.
+
+            if free_hol_triggered > 0 and action.hammer_of_light.lastCast > action.eye_of_tyr.lastCast then
+                local hol_remains = free_hol_triggered + 12 - query_time
+                hol_remains = hol_remains > 0 and hol_remains or ( 2 * gcd.max )
+
+                applyBuff( "hammer_of_light_free", max( 2 * gcd.max, hol_remains ) )
+                if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; applied hammer_of_light_free: %.2f : %.2f : %.2f : %d", buff.hammer_of_light_free.remains, free_hol_triggered, query_time, ld_stacks ) end
+            else
+                if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light active; hammer_of_light_free ruled out: %.2f : %.2f : %d", free_hol_triggered, query_time, ld_stacks ) end
+            end
+        end
+
+        if not buff.hammer_of_light_free.up then
+            local hol_remains = action.eye_of_tyr.lastCast + 12 - query_time
+            hol_remains = hol_remains > 0 and hol_remains or ( 2 * gcd.max )
+            applyBuff( "hammer_of_light_ready", hol_remains )
+            if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light not active; applied hammer_of_light_ready: %.2f", buff.hammer_of_light_ready.remains ) end
+        end
+
+        if buff.hammer_of_light_ready.down and buff.hammer_of_light_free.down then
+            if Hekili.ActiveDebug then Hekili:Debug( "Hammer of Light appears active [ %.2f ] but I don't know why; applying hammer_of_light_ready." ) end
+            applyBuff( "hammer_of_light_ready", 2 * gcd.max )
+        end
     end
 
     hpg_used = nil

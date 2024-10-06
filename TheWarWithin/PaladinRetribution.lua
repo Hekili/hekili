@@ -1123,29 +1123,6 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "templar_strikes" )
     end
 
-    if hero_tree.templar and Hekili.ActiveDebug then
-        for _, spellID in ipairs( tempDebug ) do
-            Hekili:Debug( "[%d]: ISK:%5s IPS:%5s ISO:%5s ISKOOK:%5s GOS:%5s, ISU:%5s", spellID, tostringall( IsSpellKnown(spellID), IsPlayerSpell(spellID), IsSpellOverlayed(spellID), IsSpellKnownOrOverridesKnown(spellID), C_Spell.GetOverrideSpell(spellID), C_Spell.IsSpellUsable(spellID) ) )
-        end
-
-        local ld = C_UnitAuras.GetPlayerAuraBySpellID( 433674 )
-        if ld then
-            local ldInfo = "Light's Deliverance: "
-            for k, v in pairs( ld ) do
-                if type( v ) == "table" then
-                    local subTable = "\n  " .. k .. " = { "
-                    for i, val in ipairs( v ) do
-                        subTable = subTable .. tostring( val ) .. ( i < #v and ", " or " }" )
-                    end
-                    ldInfo = ldInfo .. subTable
-                else
-                    ldInfo = ldInfo .. "\n  ".. k .. " = " .. tostring( v )
-                end
-            end
-            Hekili:Debug( ldInfo )
-        end
-    end
-
     if IsSpellKnownOrOverridesKnown( 427453 ) then
         if talent.lights_deliverance.enabled then
             -- We need to track when it ticks over from 59/60 stacks.
