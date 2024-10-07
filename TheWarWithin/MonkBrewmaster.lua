@@ -326,6 +326,16 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = "jadefire_stomp"
     },
+    flow_of_battle_damage = {
+        id = 457257,
+        duration = 15,
+        max_stack = 3,
+    },
+    flow_of_battle_free_keg_smash= {
+        id = 457271,
+        duration = 15,
+        max_stack = 1,
+    },
     flow_of_chi_speed = {
         id = 450574,
         duration = 3600,
