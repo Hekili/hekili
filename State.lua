@@ -5335,7 +5335,7 @@ local mt_default_action = {
 
                 return max( 0, ability.lastCast + max( ability.flightTime, 0.25 ) - state.query_time )
             end
-            return max( state:InFlightRemains( t.action ), ability.isProjectile and ability.lastCast + 0.25 - state.query_time )
+            return max( state:InFlightRemains( t.action ), ability.isProjectile and ability.lastCast + 0.25 - state.query_time or 0 )
 
         elseif k == "channeling" then
             return state:IsChanneling( t.action )
