@@ -326,6 +326,16 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = "jadefire_stomp"
     },
+    flow_of_battle_damage = {
+        id = 457257,
+        duration = 15,
+        max_stack = 3,
+    },
+    flow_of_battle_free_keg_smash= {
+        id = 457271,
+        duration = 15,
+        max_stack = 1,
+    },
     flow_of_chi_speed = {
         id = 450574,
         duration = 3600,
@@ -1348,7 +1358,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = 40,
+        spend = function () return buff.flow_of_battle_free_keg_smash.up and 0 or 40 end,
         spendType = "energy",
 
         talent = "keg_smash",
@@ -1375,6 +1385,7 @@ spec:RegisterAbilities( {
             if talent.salsalabims_strength.enabled then setCooldown( "breath_of_fire", 0 ) end
             if talent.walk_with_the_ox.enabled then reduceCooldown( "invoke_niuzao", 0.25 * talent.walk_with_the_ox.rank ) end
 
+            removeBuff( "flow_of_battle_free_keg_smash" )
             removeBuff( "blackout_combo" )
             addStack( "elusive_brawler" )
         end,
