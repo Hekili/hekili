@@ -1083,6 +1083,12 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "black_arrow" )
+            if talent.death_shade.enabled then
+                applyBuff ( "deathblow" )
+                    if talent.razor_fragments.enabled then
+                        applyBuff ( "razor_fragments" )
+                    end
+                end
         end,
     },
 
