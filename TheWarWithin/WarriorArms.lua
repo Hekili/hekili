@@ -355,6 +355,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    imminent_demise = {
+        id = 445606,
+        duration = 60,
+        max_stack = 3
+    },
     fatality = {
         id = 383703
     },
@@ -384,6 +389,16 @@ spec:RegisterAuras( {
         duration = function () return talent.menace.enabled and 15 or 8 end,
         max_stack = 1
     },
+    juggernaut = {
+        id = 383290,
+        duration = 12,
+        max_stack = 15
+    },
+    marked_for_execution = {
+        id = 445584,
+        duration = 30,
+        max_stack = 3
+    },
     merciless_bonegrinder = {
         id = 383316,
         duration = 9,
@@ -393,11 +408,6 @@ spec:RegisterAuras( {
         id = 115804,
         duration = 10,
         max_stack = 1
-    },
-    juggernaut = {
-        id = 383290,
-        duration = 12,
-        max_stack = 15
     },
     opportunist = {
         id = 456120,
@@ -589,16 +599,32 @@ local TriggerCollateralDamage = setfenv( function()
     collateralDmgStacks = 0
 end, state )
 
+local marked_for_execution_stacks = {}
+local marked_for_execution_virtual = {}
+
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical_swing, _, _, critical_spell )
     if sourceGUID == state.GUID then
         if subtype == "SPELL_CAST_SUCCESS" then
             if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
                 last_cs_target = destGUID
             end
+        elseif subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID then
+            if spellID == 445579 then -- Slayer's Strike occurred
+                marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
+            end
         end
     end
 end )
 
+local wipe = table.wipe
+
+spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
+    wipe( marked_for_execution_stacks )
+end )
+
+spec:RegisterHook( "UNIT_ELIMINATED", function( id )
+    marked_for_execution_stacks[ id ] = nil
+end )
 
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
@@ -668,6 +694,16 @@ spec:RegisterHook( "reset_precast", function ()
 
     if talent.collateral_damage.enabled and buff.sweeping_strikes.up then
         state:QueueAuraExpiration( "sweeping_strikes_collateral_dmg", TriggerCollateralDamage, buff.sweeping_strikes.expires )
+    end
+
+    for k, v in pairs( marked_for_execution_stacks ) do
+        marked_for_execution_virtual[ k ] = v
+
+        if k == target.unit then
+            applyDebuff( "target", "marked_for_execution", nil, v )
+        else
+            active_dot.marked_for_execution = active_dot.marked_for_execution + 1
+        end
     end
 end )
 
@@ -867,6 +903,7 @@ spec:RegisterAbilities( {
             if talent.brutal_finish.enabled and not talent.imminent_demise.enabled then
                 applyBuff( "brutal_finish" )
             end
+            removeBuff( "imminent_demise" )
         end,
 
         copy = { 227847, 389774, 446035 }
@@ -1051,6 +1088,7 @@ spec:RegisterAbilities( {
             return rage.time_to_20
         end,
         handler = function ()
+            removeDebuff( "target", "marked_for_execution" )
             if not buff.sudden_death.up and not buff.stone_heart.up then
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
@@ -1063,6 +1101,9 @@ spec:RegisterAbilities( {
             end
             if buff.sudden_death.up then
                 removeBuff( "sudden_death" )
+                if talent.imminent_demise.enabled then
+                    addStack( "imminent_demise" )
+                end
                 if set_bonus.tier31_4pc > 0 then
                     spec.abilities.thunder_clap.handler()
                     applyDebuff( "target", "finishing_wound" )
