@@ -197,7 +197,6 @@ spec:RegisterAuras( {
         id = 450711,
         duration = 10,
         max_stack = 1,
-        copy = "aspect_of_harmony_dot"
     },
     aspect_of_harmony_accumulator = {
         id = 450521,
@@ -242,6 +241,11 @@ spec:RegisterAuras( {
             t.v1 = 0
             t.caster = "nobody"
         end,
+    },
+    aspect_of_harmony_damage = {
+        id = 450763,
+        duration = 8,
+        max_stack = 1,
     },
     august_blessing = {
         id = 454494,
