@@ -1767,8 +1767,8 @@ all:RegisterAuras( {
                         local npcid = state.target.npcid
 
                         if npcid and filters[ npcid ] and not filters[ npcid ][ spellID ] then
-                            if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' ignored per user preference.", spell ) end
-                            removeDebuff( "casting" )
+                            if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' not interruptible per user preference.", spell ) end
+                            t.v2 = 1
                         end
                     end
 
@@ -1798,8 +1798,8 @@ all:RegisterAuras( {
                         local npcid = state.target.npcid
 
                         if npcid and filters[ npcid ] and not filters[ npcid ][ spellID ] then
-                            if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' ignored per user preference.", spell ) end
-                            removeDebuff( "casting" )
+                            if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' not interruptible per user preference.", spell ) end
+                            t.v2 = 1
                         end
                     end
 

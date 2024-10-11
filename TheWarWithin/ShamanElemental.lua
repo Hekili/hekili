@@ -1541,8 +1541,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "chains_of_devastation_ch" )
-            removeBuff( "ancestral_swiftness" )
-            removeBuff( "natures_swiftness" ) -- TODO: Determine order of instant cast effect consumption.
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end -- TODO: Determine order of instant cast effect consumption.
             removeBuff( "echoing_shock" )
 
             if legendary.chains_of_devastation.enabled then
@@ -1582,8 +1582,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "chains_of_devastation_cl" )
-            removeBuff( "ancestral_swiftness" )
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
             removeBuff( "master_of_the_elements" )
             removeBuff( "echoing_shock" )
             removeStack( "storm_frenzy" )
@@ -1621,8 +1621,6 @@ spec:RegisterAbilities( {
             end
 
             if talent.flash_of_lightning.enabled then flash_of_lightning() end
-
-            if talent.lightning_rod.enabled then applyDebuff( "target", "lightning_rod" ) end
 
             if set_bonus.tier29_2pc > 0 then
                 addStack( "seismic_accumulation" )
@@ -1930,8 +1928,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "master_of_the_elements" )
-            removeBuff( "ancestral_swiftness" )
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
             removeBuff( "magma_chamber" )
             removeBuff( "echoing_shock" )
 
@@ -2328,8 +2326,8 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( ( buff.stormkeeper.up and 3 or 2 ) * min( ( level > 42 and 5 or 3 ) + ( buff.surge_of_power.up and 1 or 0 ), true_active_enemies ), "maelstrom" )
 
-            removeBuff( "ancestral_swiftness" )
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
             removeStack( "stormkeeper" )
             removeStack( "arc_discharge" )
             removeBuff( "surge_of_power" )
@@ -2373,8 +2371,8 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "windspeakers_lava_resurgence" )
             removeBuff( "lava_surge" )
-            removeBuff( "ancestral_swiftness" )
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
             removeBuff( "flux_melting" )
             removeStack( "molten_charge" )
             removeBuff( "echoing_shock" )
@@ -2459,8 +2457,8 @@ spec:RegisterAbilities( {
 
             gain( ms, "maelstrom" )
 
-            removeBuff( "ancestral_swiftness" )
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
             removeBuff( "master_of_the_elements" )
             removeBuff( "surge_of_power" )
             removeStack( "power_of_the_maelstrom" )
@@ -2487,8 +2485,6 @@ spec:RegisterAbilities( {
             if talent.arc_discharge.enabled and active_enemies > 1 then
                 addStack( "arc_discharge", nil, 3 )
             end
-
-            if talent.lightning_rod.enabled then applyDebuff( "target", "lightning_rod" ) end
 
             if set_bonus.tier29_2pc > 0 then
                 addStack( "seismic_accumulation" )
@@ -2533,8 +2529,8 @@ spec:RegisterAbilities( {
 
             gain( ms, "maelstrom" )
 
-            removeBuff( "ancestral_swiftness" )
-            removeBuff( "natures_swiftness" )
+            if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
+            if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
             removeBuff( "master_of_the_elements" )
             removeBuff( "surge_of_power" )
             removeStack( "power_of_the_maelstrom" )

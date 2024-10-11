@@ -11,6 +11,9 @@ local strformat = string.format
 
 local spec = Hekili:NewSpecialization( 268 )
 local GetSpellCount = C_Spell.GetSpellCastCount
+local GetUnitBuffByAuraInstanceID = C_TooltipInfo.GetUnitBuffByAuraInstanceID
+
+rawset( state, "ColorMixin", ColorMixin )
 
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.Energy )
@@ -190,6 +193,60 @@ spec:RegisterAuras( {
     admonishment = {
         id = 207025,
     },
+    aspect_of_harmony = {
+        id = 450711,
+        duration = 10,
+        max_stack = 1,
+    },
+    aspect_of_harmony_accumulator = {
+        id = 450521,
+        duration = 3600,
+        max_stack = 1,
+        copy = { 450521, 450526, 450531 },
+
+        generate = function( t )
+            local aura = GetPlayerAuraBySpellID( 450521 ) or GetPlayerAuraBySpellID( 450526 ) or GetPlayerAuraBySpellID( 450531 )
+
+            if aura then
+                t.name = aura.name
+                t.count = 1
+                t.applied = query_time
+                t.expires = t.applied + 3600
+                t.duration = 3600
+                t.caster = "player"
+
+                local tooltip = GetUnitBuffByAuraInstanceID( "player", aura.auraInstanceID )
+                if not tooltip then
+                    t.v1 = 0
+                    return
+                end
+
+                local value = tooltip.lines and tooltip.lines[2] and tooltip.lines[2].leftText
+                value = value and value:match( "%d+" )
+
+                if not value then
+                    t.v1 = 0
+                    return
+                end
+
+                t.v1 = tonumber( value ) or 0
+                return
+            end
+
+            t.name = t.name or class.auras.aspect_of_harmony_accumulator.name or "Aspect of Harmony"
+            t.count = 0
+            t.expires = 0
+            t.duration = 3600
+            t.applied = 0
+            t.v1 = 0
+            t.caster = "nobody"
+        end,
+    },
+    aspect_of_harmony_damage = {
+        id = 450763,
+        duration = 8,
+        max_stack = 1,
+    },
     august_blessing = {
         id = 454494,
         duration = 10,
@@ -325,6 +382,16 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1,
         copy = "jadefire_stomp"
+    },
+    flow_of_battle_damage = {
+        id = 457257,
+        duration = 15,
+        max_stack = 3,
+    },
+    flow_of_battle_free_keg_smash= {
+        id = 457271,
+        duration = 15,
+        max_stack = 1,
     },
     flow_of_chi_speed = {
         id = 450574,
@@ -1057,6 +1124,11 @@ spec:RegisterAbilities( {
             removeBuff( "purified_chi" )
             applyBuff( "celestial_brew" )
 
+            if buff.aspect_of_harmony_accumulator.up then
+                removeBuff( "aspect_of_harmony_accumulator" )
+                applyBuff( "aspect_of_harmony" )
+            end
+
             if talent.pretense_of_instability.enabled then applyBuff( "pretense_of_instability" ) end
         end,
     },
@@ -1348,7 +1420,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = 40,
+        spend = function () return buff.flow_of_battle_free_keg_smash.up and 0 or 40 end,
         spendType = "energy",
 
         talent = "keg_smash",
@@ -1375,6 +1447,7 @@ spec:RegisterAbilities( {
             if talent.salsalabims_strength.enabled then setCooldown( "breath_of_fire", 0 ) end
             if talent.walk_with_the_ox.enabled then reduceCooldown( "invoke_niuzao", 0.25 * talent.walk_with_the_ox.rank ) end
 
+            removeBuff( "flow_of_battle_free_keg_smash" )
             removeBuff( "blackout_combo" )
             addStack( "elusive_brawler" )
         end,
@@ -1708,6 +1781,7 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         startsCombat = true,
+        notalent = "press_the_advantage",
 
         handler = function ()
             removeBuff( "blackout_combo" )
@@ -1952,4 +2026,4 @@ spec:RegisterSetting( "max_damage", true, {
 } )
 
 
-spec:RegisterPack( "Brewmaster", 20240922, [[Hekili:TR16VTnos8)wcwax70gfzh7M09SnW1(PwCyVfi9q)WH1s0s02AJE4vpsAoeO)2Vzi1dsjrA5eN9XH7lTouKZloCMFZqUA8QVU6wxskD1pnXCYuZpmzIH5nMxB((v3M(4E6QB3tCUJSf(rija(3pgtFiGKKsJXp9OFeXfjrsuwSd85DPP7t(XlVCRx6US1gorbxM4fK5ts9IcDIjBsX)25Yv3UoZZp9ZHRw3n)NU6wsw6UiGn36f8jGYEUUu(0PjoRUfN(fMF4Ijt(XC7pffMKfqZT)OpiUrzP4qbRJYTFaeKC7V6TLgNB)Ze)G8VK)LY1Aodw7F)(ip3CB3OS1(0l(0hRNWnCIxmHqGh0WephIpqPSyVnp6fUfyjyrsQx01xm59WI(6oqA(gby63ajWlC1T(EjPjOTYlLgG)4NygFAib4R7QpU6wNy4tXEeW4eLKKBpi3EJ32DPwX0aIximY8CBNOiF3OhcTCZIzw1C7NEk3EiOb01zB2y8aLShevROnwrXU0yRIXtsbttU9YC7R4lPbTxkq7QbhbBdoixwDloI1osO7QuyZ6VuIEASx4D00XOKF1FPK8GhDjjwPeW5jGecYFk6)VHK5NQ3dkLeVLMAuigoWjwWz1iMceUM6j7PKy2EQvcyJUJwT1wodxVnBYsOwbKTEoISsRLChL4NUZyVdCoC(IC7eAkY(eJ79Uho2yTNcblctzgBM8bJtC8IYsSyZaoJHS3iBFTKWxkY3PAu6W7yNjhiWZ9SJQwBIITCO(uWqGhGhW29s9cOwPrG69DlNDOjJVFV1X1agJVLXKqgv8OUW08a5Qw0L(GOpZyJz52NlqRrCYvUFBujnwRHqisRDI8kbEviDwBI5geuhwYysTjAFzqjgbrt1SEzQ4UiYsdkHLwPZadfXh2Wm8c2hhDpQSYZUGf6SxJeOw1EdA3DjGZfvyPRlIHB5GHWlKeHZeY8gvZ3Run3ghvSz985CNUtWb7TqoflNS44D7z7fM8jY)a35F5IdTsD7ExRuTsI8J(ZSwXCFn17BEt)206u3g88vnGmppnJTqDk0h(dB76LPt9zZASz)2TEn0UsxQfvQNETzr3MbiQQPwvuDY0x79VtMgowVgQg1Mug7C7RNXiVxiOdif4kP1vCelftMLA6CMrX0aYy926FIjV4UfJk1DMTbscNkiumJJaydsWEkIXmoGjU9eGrU9mZtU4oSqIfKP2zIAOomHEQi8P9r8)xc304zItjnkZzhIB0Lss31CQnZSvLdK47BX)dlSWcE5fw8A04fyGl)AroT2pkY1Atw8Jn5YnstJgNqJrWbnN2heNMpcKnX6xZC3gaqdAm3jMIZDJxmLX9MZAS4SiHoqE9yiVoQDnNQeS01KTOjdWS6CxsZz20TPCr0VVN6Z9Uy1qg7TN)H)vcC(Dob8uIPBw8MYAyF4HhmEi6bW9XLxilSC)fJnnFV5L7JEGgFHxiaogiXBw(Z4FNB)5IbMFjbC8GLg2FcF1nxp(MPxwujXfrBUGvjXBw(n(i52rBYT)N4yCYJG53HawNYceawcdPYzq33TEBszwQDuROVluoYuMxEJZrvHDO7kXOZSO6qCZWfUpMMKWycX9EsievIwIjeIEIBtO)tpDFJJszW)T2NsySxnk2AKPVosW6ihEnxa5XW5K6QU0EexDG2cXfqfBTolojTwiRKSYpX5SKS0rjFvXrWwCyTN4h0YjOrgjSQkNhD8HkFyfjMGeTzHFvR5o4iwVl8RmQjyTaT0QOiGeHcaAwiHx49r3rTc9Y(pKi2(hJZOZAlltZIS1xmyPSOHdvf5OuOl)wtwlxP30tH2PEU6RK7iBcbxq7OKUtNSQUCmPIjBztlwIukw9CsDfsd7dBofMIUCkvxAtrphYTVi3MtH2YNpbceLLGsiVvacMJ7OBTscij70xWXW(42w1EHZzCrPRE9H3xOPss41urXZr6F5N)KLoPy8XEjigVKSWUchQbwnOj0qA82hzWn5)e0ITmCbak(PMs7ULcxnAYdhQTvWDMHaP49ulGJbEiebGxJLBjAD6IkuRA5d2aQyWKUNKGiCsm6Q)OgsPnm6QJMGQb4CX9uevynE4JZtOqn7xGp0sFL6JrTaz3XXvmkV5rWYQyTfTjMtLLvu5WXMeSyrHu3miMqLxH2WEhza22uxB0lUpN4A4XhKGz7h5INxaRCDDdQiyTRJerR7q(cSWD9CyI2yj1gezw0L1OnPLceu730v1jDkafSoolzhs2FL4sTEWl0TDaOwtPUAgfhEAieQpe3D4aPi6nIJ0s6KdyObtEtEHo91KjzVxyiQLoXKqkpCksV3lQM1qGL0W0g1g0ekUgSc9fEoV31DulrzOe2P5RzHZRUqmJj7KCIAMUqlK5dXrW89HodPxevtOxfDKkad)CO94dj7ho3Wbf)rDQbyqsfXKpk3Rz1GxKo)kHGVv(lXlxsHx577BfrQdiFG0)AY9Rom8lpF8j2PPDoDPwfjNIPb4jTHU1KWPk1AVtGCGSuQB)7lnhIEaIVI7cAGpEOZTZLBMSmGPd2pONB2onqb74C)KdEaEC)sRadCpngpgv(mumNbv2rIrsMS6w2J5akQikon3EtuCU9BkUe(3GTH73Ya7nSxKeHG8izPrbKuCa4mA4wAIr(x(hEHWNMXFQkaVyF(n6VvvG2PrhCwLwwy2dh)9rg4lr5R78alem9nE(OKd)rGxcgyheYS9c6XwmOKNdWj(tKaKv7C7pNYxeRPxb0qxuAt3rGHPGW)isBViyR5rwt39ZCXDeQh4jf)JGaGv3(VzDv9ZyRO)L3H9c1ZzN4SjHpwZv811Geho5454L6xtxx8xiZP1m9VLBdYEbB(kNeG76VGe1vCOjcC(bpFFbnQGKPLtLznydfMfSMY3p9Jsb75NzB84aZklAp3M9AEGpITgKzMlDZsmQ6v4BxCjV7G5FPRVv5o(oVnlu1xqC7SyXWsA9Gn4lv5t9qCTspLdXpWFzfiLQBh88fkEZgdymr571qKUYxafxszp6GbAFBgdg2XRYyEr5(p9epWL8Rlyq7blc)pFSXSZlw7ONE6aV9I5tkN7G2V3IL4d6qq9KjHO6X3hA)Ekgm8m9NL7w7gbRRJRCSyYDCDJJY)Yp8dLUQDSt4dbJSCCxmtWXRhTmPZTn(8gShCa7Qll8O269kyx92rRJTKg5ltDP5aHlhD5IdC1RAfq86F)Jv(o3u23tPrSdzCWXlISRzUVsi)oP)D0aE8sxVnFNkrKVRTWuVoSqwhaqQ)oAfFwI4yjru4UXBK946zdAFz8lRVi(ZhAAm5T4)CoZYpAe3lTR3hGihB89gCDM5rZ1Hm228s(hjTriNchgr(k7LYj04wfFhEFIl8qqqItR(M4LgT6I3fhTX9SlznkVwDXbLVfDj6lEP58ue)VZnF3mLxrAm63HYhcX0RW(mF3GPawLka6c1zdDRWeSyI5Gd1q1V8)TLf2YZoOPQMU1piJQDHUEVclNoq4qEhVrHdFcuSTHVJ)Aawmwa9JMxpWrq81rose)S(q96AdyHjaUu1xrMvjkjzG0JgFERhJ(tpnSp3kXYRE6jjkTS5tpFuBHP8PZ)NizzYFeYsT0i6lvF4OdWVkxsJESw58RSDmZhE9Bf728OthPx(HbCm6LDwz(IRkYk2QNup90zA7gLAXQQ9rOan8qs0OgI0YRus4o67dYIgRFghDrZMdxuOw7gdRKDsTtvkmzZz2g(2WZ62QQ2Qj1syKe8oi)wXgjpFXut1eqQJGvodQAD8C9Tn(07wi1lvLZsABJzjleKgnfgQVFO(MbVeYLpsT40MrNPRPVA0Rw29tUPt6e1bIEmwThsRUWkKuuztCFHNgNO9GJcAmCSX4LSodDbFHgbuFk2nRYWIvpBMrNpC8BzOHGpKKshDr)IDw17ToJ2dj3Xuqv3c67KEcD8e(DVjRKy9jAcFMDenrvfFfNsB(y2Wpj0)lzcA0r3UaByZwd1yrfEdxyAmEeukv)BKu5khuFCvf67LtnfKALy0N11Uk301Cn1gV2V3VNJsOKXQxATiCG3M4afY5a9vSmE6VNks)GynAqREF(6jshQiKJ0B5qu7KQAYqLed4P(HcoFIAnQdOxkDC264E(efox4PJxp9ShY1ZZN(4cQQcI2jvZBGrxF6br4FdvG)t9MVq6k1GqAG2EXy10tfWMNjIYxMxli59j2duqJgfseyx1joaXuVinewdWCIRy54d2KOJriE(bWAJHTBSYhbb6bM6JGAhnK6goeQpwDIGY2LNEppG18G0a9O7vs1(HJESY1l8qhaCWo4ZR7g2ZCy1)9]] )
+spec:RegisterPack( "Brewmaster", 20241011.1, [[Hekili:nR16UTnow4NLGbq1oDIIKSCtYGydST)zNGfdwaxG5FwIwI2MnsIAPOsAwyON99qQBKYsYoPPZSOafjIhEUZZLV212R)66vHioE9F4y54ABzBBADRRRZS1R4VKIxVkff8iAh8djOy4V)md)CmkJJzIJEjIIcfSiJMZcGJ3Z5Pz)21xVJW3NVXmGgFDgjopcXj0KagAlx87bxVE1MCse)3twVPx5BF76vOC(EkiMvK4VaCMegIljhNfSELG8RSTUY2(3k8)hzP4aEHpDBH))eXIPjVu4JccYLIMYGFjjSWxWPc)8uHalEO4bjpSU7khhGhFHMKLhJl8)CeyY0CU4tXBOf(pdgtH)xj7WaJ(3OOy17Anxi)NOeG)H08nr4R(YNBj42sMxrqcidCsgjafbCkNr2(cjzhisWRM1EPBUY5tWL(6EqB(tei0)e0asY6vrKmEMmKH3IYJ4Wp(hYqiobbsoC9NxVkGrGOdbbbqeBhMBgI3KVDRzae1aHzYWOao4DdeHeiYLIrmV9G)XlJZipIxZHyHGN1ues2Unpd7fJ2rcuffq4Sbf(EmkIV3mvewUFrHFgMleFM5tKNaZ2lfdjmjWHgf(s9d(okGqZZ8Kua(iH4nZtB1KYRkKR7igDYJsFQHImtLUAVTuMxaocdocraaOysHpNeJ94uW8(UxWEHlld04c)DbHMW3k8pCOsdLCHGdbYiGE1Q6AhWWXissjpSnNx4FPcVMwYUaknkK(CIzJ24Tbsb0URJ(nbzvPDEBzLoeHnSukKwxuADsLKHcx18ZYvvMIORncnS2lDb4OqrqaZKeNYOpjmwDQReXy(RPkCRj2i87Hii5cRC1nvVb9cepbR0KPTMPUSfM5Ng0m3XOvbR3UK7nDkJJ2b1e8cYzS9PYyHvjHLhuM8VCXPU5yrVBg0SYOr0)F2QKPVwJNBE75f0612mE7MgWM3MLjV4yg0D)TfU(XSPZjyzBDErRFgwxDk1IgZBCRzr)UbOQQ1OM4Wnt)zh)E3Sq7XTqNZRJDH)nZLSNKa2GGdLgP3SmPuQiw2A6sPtXYe6y9X2Fu08QmTyATTl9nqtyUIsjDokdBGItXjW8iSyP6EMdyu4p36DxDNuPXk60XDI6yosL2vD8jonpyVhDRxigX33z(j7H7olf9oYwU4U89yp63nHyDWJsdYvQHD8bnPm491Zx1Qh4VNIJADSFsvhtPv0OPB3OsYMikn0BBo7LUKDRgzywgMjgROlz3PsgIfGseJDXysLuJuhlvsJi72ZZ8(wE4U4EO1wL2TegwQODPsBGwusam8adgEaMdpQlPZ0mh0oP7NrcEmRlLDhcTjIZijpI52qrJikx53fxQBaVZLC6Cjh5LgE4gCcMT7fz031snAbjkqgttoPZWdsuNMJKlrjm39LRq5PSbL5tOOCCz)fZzYNlQVPQFC)mgLc74iycLfcvLQAlCHy5iEpIO8zQjh8VYrrhDgpNHNx4DYiAhZ9ilPz(23pZz4Pfe7LuU9w96jHeC5AbL1567urXF32yX57kCoYvmQEpB4bbENcdn7hDuuOzdPLnUI3NGXmB9QDvnWFeUC3DE1kMa724TjNL1TW0mT6iDTJUep8(STzKBJYjHe(lcMellyxNt2khgjt0jklpPuZf8(eTy6mRI6(2CbKhEPOizlJzdxfQsdZG6PHnn2ps5EedAwmkBVKBdxqQIBI1DzW2JPOSm4(zAVahtITpboIfQBTF0HQBFptsNiVc4m03w40fDx0i6ojrcZ7jShujoMGlZmDBn6SussIqddyIoEnrLHlL9dgUhUOYqJMo28IUN(T(r(X(XnyGqLyM5UEqX4C1ZHjoVLjdNtiOBYjJyZoJKhLYe6Cs6p0ktaZufrLSaYT78M2vRmrBUFhQ0ktWYZ2l423qHyVNjjDNJXvBYssYt0hXEjK8)lIkhrSUTF3RnCjG65hejTq50RuQ92OYTEqOsD5fGpTdNmuLc3tpVYpO86)vfudoLHfj2OwOrBYT7Bg3H3gQjHRQ8(Xp(AR8x(NvpbZ(korcLT1DWqNREgXeQjm6OemxsCkSUqH)wbK0FOce3pu4ZW)NCibds(YOciOr5CAmIl(aKXNSdNzw8W)IKahnVeQAqwYJ)W4OYb8Mtpjv12gq9e7Vp1uGe9VlvvHiCkFGsH30s8NHJf(z6wseU2BaBPw74)4IRlD1fp03znETFLSDXqozHcuDz4khbrD5vheCB17QbET6bLyjl4u7su3VyauQnghHAv(QxcTutLWSAmkA0gt6bh67Rq)9WH(Wt1yqSNV32C(Lv3D6HdNaT57DQP14yeMxkGWwX80zHQ5necYgtUy8SV(TUPW96bKLkI7Pl20Ih(LFPovTNire88XliCXCLeVgnA4sP9g2kPZifsa75kML9ZgpRqc2WR2gpsB0HpAPLHcCqlxCcWMgvbfaE93R(DPLEU3GoXE0rJxVkkbw7C1Wsu4(l0b(61UZ299EPILrTfwJBdl0TbyjU)c9IVjv0wtfvqdSt3JBMBCm8JlBxT9YjWQ2Fu8xxk98tNAmiIOQsSZ5DK6CRxTuN0lSMtvLPoQLQN0IJOqrgeLYLUgkkzpitQf21hya(slCJAFTbDr1VQdMO6jDWouZPwdvOgN0qgutYQabQEGy4cyMX4FvaB3IAO(ojfo6gRcADcVA5qV37AnER3jNlwllTmNDzBkHXqy1zCX5GKY0FsA1fNa6T3hT7yKZU3XY44VU0214vyjokwYPuHxbB1CqNewmOA6BWjPb2LMQxpxU6h7kB1Z6GhHWyV4KWzOv2PzpYMIlhHpLk9n7mQmux)R1RCPEwEuBzK(HyWym2BmeCtdCq9O3ZmggWI7VZqOZTaJS09e(6xLR(4wTd1ovlxrtvBZM7feO2r)71PD4GU9D)8PW2kxCI4WHdtgXNnB0W00onYAbVP3Kkn3DxOzupuB9HHZNllRV016QHb94svapoJS2xnpL)x(kq8pQ0Tsylw))c]] )

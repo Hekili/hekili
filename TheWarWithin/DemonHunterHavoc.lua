@@ -389,7 +389,8 @@ spec:RegisterAuras( {
     elysian_decree = { -- TODO: This aura determines sigil pop time.
         id = 390163,
         duration = function () return talent.quickened_sigils.enabled and 1 or 2 end,
-        max_stack = 1
+        max_stack = 1,
+        copy = "sigil_of_spite"
     },
     essence_break = {
         id = 320338,
@@ -911,8 +912,9 @@ local sigils = setmetatable( {}, {
 
 spec:RegisterStateFunction( "create_sigil", function( sigil )
     sigils[ sigil ] = query_time + activation_time
+    if sigil == "sigil_of_spite" or "elysian_decree" then return end
 
-    local effect = sigil == "elysian_dcreee" and "elysian_decree" or ( "sigil_of_" .. sigil )
+    local effect = ( "sigil_of_" .. sigil )
     applyDebuff( "target", effect )
     debuff[ effect ].applied = debuff[ effect ].applied + 1
     debuff[ effect ].expires = debuff[ effect ].expires + 1
@@ -1863,7 +1865,7 @@ spec:RegisterAbilities( {
             if talent.ragefire.enabled then applyBuff( "ragefire" ) end
         end,
 
-        copy = { 258920, "consuming_fire", 452487 }
+        copy = { 258920, 427917, "consuming_fire", 452487 }
     },
 
     -- Talent: Imprisons a demon, beast, or humanoid, incapacitating them for $d. Damage will cancel the effect. Limit 1.
@@ -2094,7 +2096,11 @@ spec:RegisterAbilities( {
 
     -- Place a demonic sigil at the target location that activates after $d.; Detonates to deal $389860s1 Chaos damage and shatter up to $s3 Lesser Soul Fragments from
     sigil_of_spite = {
-        id = 390163,
+        id = function()
+            if talent.precise_sigils.enabled then return 389815 end
+            return 390163
+        end,
+        known = 390163,
         cast = 0.0,
         cooldown = function() return 60 * ( pvptalent.sigil_mastery.enabled and 0.75 or 1 ) end,
         gcd = "spell",
@@ -2107,6 +2113,8 @@ spec:RegisterAbilities( {
         handler = function ()
             create_sigil( "spite" )
         end,
+
+        copy = { 390163, 389815 }
     },
 
     -- Allows you to see enemies and treasures through physical barriers, as well as enemies that are stealthed and invisible. Lasts $d.    Attacking or taking damage disrupts the sight.

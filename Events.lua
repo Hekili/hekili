@@ -1192,8 +1192,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( eve
     if not noClassWarned and not class.initialized then
         Hekili:Notify( UnitClass( "player" ) .. " does not have any Hekili modules loaded (yet).\nWatch for updates.", 5 )
         noClassWarned = true
-    elseif not lowLevelWarned and UnitLevel( "player" ) < 50 then
-        Hekili:Notify( "Hekili is designed for current content.\nUse below level 50 at your own risk.", 5 )
+    elseif not lowLevelWarned and UnitLevel( "player" ) < 70 then
+        Hekili:Notify( "Hekili is designed for current content.\nUse below level 70 at your own risk.", 5 )
         lowLevelWarned = true
     end
 
@@ -1629,6 +1629,7 @@ local death_events = {
 
 local dmg_filtered = {
     [280705] = true, -- Laser Matrix.
+    [450412] = true, -- Sentinel.
 }
 
 

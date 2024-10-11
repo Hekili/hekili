@@ -17,10 +17,10 @@ actions.precombat+=/variable,name=trinket_2_manual,value=trinket.2.is.algethar_p
 
 actions+=/pummel,if=target.debuff.casting.react
 actions+=/charge,if=time<=0.5|movement.distance>5
-actions+=/heroic_leap,if=(raid_event.movement.distance>25&raid_event.movement.in>45)
+actions+=/heroic_leap,if=movement.distance>25
 actions+=/potion
-actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=variables
+actions+=/call_action_list,name=trinkets
 actions+=/lights_judgment,if=variable.on_gcd_racials
 actions+=/bag_of_tricks,if=variable.on_gcd_racials
 actions+=/berserking,if=buff.recklessness.up
@@ -142,7 +142,7 @@ actions.trinkets+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(trinket.
 actions.trinkets+=/use_item,slot=main_hand,if=!equipped.fyralath_the_dreamrender&(!variable.trinket_1_buffs|trinket.1.cooldown.remains)&(!variable.trinket_2_buffs|trinket.2.cooldown.remains)
 
 # Variables
-actions.variables+=/variable,name=st_planning,value=active_enemies=1&(raid_event.adds.in>15|!raid_event.adds.exists)
-actions.variables+=/variable,name=adds_remain,value=active_enemies>=2&(!raid_event.adds.exists|raid_event.adds.exists&raid_event.adds.remains>5)
+actions.variables+=/variable,name=st_planning,value=active_enemies=1
+actions.variables+=/variable,name=adds_remain,value=active_enemies>=2
 actions.variables+=/variable,name=execute_phase,value=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20
 actions.variables+=/variable,name=on_gcd_racials,value=buff.recklessness.down&buff.avatar.down&rage<80&buff.bloodbath.down&buff.crushing_blow.down&buff.sudden_death.down&!cooldown.bladestorm.ready&(!cooldown.execute.ready|!variable.execute_phase)
