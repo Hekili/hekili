@@ -5480,7 +5480,7 @@ do
                                 },
                                 nameplates = {
                                     type = "toggle",
-                                    name = "Count Nameplates around your character",
+                                    name = "Count Nameplates Around Your Character",
                                     desc = "If checked, enemy nameplates within the specified radius of your character will be counted as enemy targets.\n\n"
                                         .. AtlasToString( "common-icon-checkmark" ) .. " Recommended for melee specializations using a range of 10 yds or fewer\n\n"
                                         .. AtlasToString( "common-icon-redx" ) .. " Discouraged for ranged specializations.",
@@ -5748,7 +5748,7 @@ do
 
                                 cycle = {
                                     type = "toggle",
-                                    name = "Allow addon to recommend Target Swaps |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t",
+                                    name = "Allow Target Swaps |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t",
                                     desc = "When target swapping is enabled, an icon (|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t) may be shown when you should use an ability on a different target.\n\n" ..
                                         "This works well for some specs that simply want to apply a debuff to another target (like Windwalker), but can be less-effective for specializations that are concerned with " ..
                                         "maintaining dots/debuffs based on their durations (like Affliction).\n\nThis feature is targeted for improvement in a future update.",
