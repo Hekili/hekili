@@ -611,7 +611,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             end
         elseif subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID then
             if spellID == 445579 then -- Slayer's Strike occurred
-                marked_for_execution_stacks[ destGUID ] = max( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
+                marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
             end
         end
     end
@@ -1089,7 +1089,7 @@ spec:RegisterAbilities( {
             return rage.time_to_20
         end,
         handler = function ()
-            removeBuff( "marked_for_execution" )
+            removeDebuff( "target", "marked_for_execution" )
             if not buff.sudden_death.up and not buff.stone_heart.up then
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
