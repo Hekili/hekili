@@ -1343,10 +1343,6 @@ spec:RegisterAbilities( {
         talent = "cataclysm",
         startsCombat = true,
 
-        toggle = function()
-            if active_enemies == 1 then return "interrupts" end
-        end,
-
         handler = function ()
             local applies = talent.wither.enabled and "wither" or "immolate"
             applyDebuff( "target", applies )
