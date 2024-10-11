@@ -5434,7 +5434,7 @@ do
                                     args = {
                                         damagePets = {
                                             type = "toggle",
-                                            name = "Include enemies damaged by your pets and minions",
+                                            name = "Include Enemies Damaged By Your Pets and Minions",
                                             desc = "If checked, the addon will count enemies that your pets or minions have hit (or hit you) within the past several seconds.  "
                                                 .. "This may give misleading target counts if your pet/minions are spread out over the battlefield.",
                                             order = 2,
@@ -5457,7 +5457,7 @@ do
 
                                         damageDots = {
                                             type = "toggle",
-                                            name = "Include enemies with your DOTs / Debuffs",
+                                            name = "Include Enemies With Your DOTs / Debuffs",
                                             desc = "When checked, enemies that have your debuffs or damage-over-time effects will be counted as targets, regardless of their location on the battlefield.\n\n"
                                                 .. "This may not be ideal for melee specializations, as enemies may wander away after you've applied your dots/bleeds.  If |cFFFFD100Count Nameplates|r is "
                                                 .. "enabled, enemies that are no longer in range will be filtered.\n\n"
