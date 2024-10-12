@@ -1478,6 +1478,7 @@ spec:RegisterAbilities( {
         cooldown = 60,
         gcd = "spell",
         school = "nature",
+        toggle = "cooldowns",
 
         spend = 0.05,
         spendType = "mana",
