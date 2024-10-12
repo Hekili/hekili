@@ -5295,13 +5295,13 @@ do
                     args = {
                         core = {
                             type = "group",
-                            name = "Core",
+                            name = "Specialization Settings",
                             desc = "Core features and specialization options for " .. specs[ id ] .. ".",
                             order = 1,
                             args = {
                                 enabled = {
                                     type = "toggle",
-                                    name = "Enabled",
+                                    name = specs[ id ] .. " Enabled",
                                     desc = "If checked, the addon will provide priority recommendations for " .. name .. " based on the selected priority list.",
                                     order = 0,
                                     width = "full",
@@ -5323,7 +5323,7 @@ do
                                     name = "Priority",
                                     desc = "The addon will use the selected package when making its priority recommendations.",
                                     order = 1,
-                                    width = 2.85,
+                                    width = 1.5,
                                     values = function( info, val )
                                         wipe( packs )
 
@@ -5363,8 +5363,8 @@ do
                                     type = "select",
                                     name = "Potion",
                                     desc = "Unless otherwise specified in the priority, the selected potion will be recommended.",
-                                    order = 1.2,
-                                    width = 3,
+                                    order = 3,
+                                    width = 1.5,
                                     values = class.potionList,
                                     get = function()
                                         local p = self.DB.profile.specs[ id ].potion or class.specs[ id ].options.potion or "default"
@@ -5376,7 +5376,7 @@ do
                                 blankLine1 = {
                                     type = 'description',
                                     name = '',
-                                    order = 1.2,
+                                    order = 2,
                                     width = 'full'
                                 },
                             },
@@ -5452,7 +5452,7 @@ do
                                             max = 10,
                                             step = 0.1,
                                             order = 1,
-                                            width = "normal",
+                                            width = 1.5,
                                         },
 
                                         damageDots = {
@@ -5928,7 +5928,7 @@ do
 
                     options.args.core.plugins.settings.prefHeader = {
                         type = "header",
-                        name = "Preferences",
+                        name = specs[ id ] .. " Preferences",
                         order = 100.1,
                     }
 
