@@ -11,7 +11,12 @@ all:RegisterAbility( "wrathstone", {
     cooldown = 120,
     gcd = "off",
 
-    item = 45263,
+    item = function ()
+        -- Short-circuit the most likely match first.
+        if equipped[156000] then return 156000 end
+        return 45263
+    end,
+    items = { 45263, 156000 },
     toggle = "cooldowns",
 
     handler = function ()
