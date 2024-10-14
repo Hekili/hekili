@@ -22,8 +22,14 @@ Events.lua
 
 Classes.lua
 
+TheBurningCrusade\Items.lua
+Wrath\Items.lua
+Cataclysm\Items.lua
+Legion\Items.lua
+
 BfA\AzeritePowers.lua
 BfA\Essences.lua
+BfA\Items.lua
 
 Shadowlands\AnimaPowers.lua
 Shadowlands\Covenants.lua
