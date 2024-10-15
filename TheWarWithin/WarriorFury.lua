@@ -635,8 +635,8 @@ local fresh_meat_virtual = {}
 
 local last_rampage_target = nil
 
-local slayers_strike_stacks = {}
-local slayers_strike_virtual = {}
+local marked_for_execution_stacks = {}
+local marked_for_execution_virtual = {}
 
 local TriggerColdSteelHotBlood = setfenv( function()
     applyDebuff( "target", "gushing_wound" )
@@ -664,9 +664,8 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
             end
 
         elseif subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID then
-            if spellID == 445579 then -- Slayer's Strike occured
-                slayers_strike_stacks[ destGUID ] = ( slayers_strike_stacks[ destGUID ] or 0 ) + 1
-                if slayers_strike_stacks[ destGUID ] > 3 then slayers_strike_stacks[ destGUID ] = slayers_strike_stacks[ destGUID ] % 3 end
+            if spellID == 445579 then -- Slayer's Strike occurred
+                marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
                 return
             end
 
@@ -690,12 +689,12 @@ local wipe = table.wipe
 
 spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
     wipe( fresh_meat_actual )
-    wipe( slayers_strike_stacks )
+    wipe( marked_for_execution_stacks )
 end )
 
 spec:RegisterHook( "UNIT_ELIMINATED", function( id )
     fresh_meat_actual[ id ] = nil
-    slayers_strike_stacks[ id ] = nil
+    marked_for_execution_stacks[ id ] = nil
 end )
 
 
@@ -774,13 +773,13 @@ spec:RegisterHook( "reset_precast", function ()
         end
     end
 
-    for k, v in pairs( slayers_strike_stacks ) do
-        slayers_strike_virtual[ k ] = v
+    for k, v in pairs( marked_for_execution_stacks ) do
+        marked_for_execution_virtual[ k ] = v
 
         if k == target.unit then
-            applyDebuff( "target", "slayers_strike", nil, v )
+            applyDebuff( "target", "marked_for_execution", nil, v )
         else
-            active_dot.slayers_strike = active_dot.slayers_strike + 1
+            active_dot.marked_for_execution = active_dot.marked_for_execution + 1
         end
     end
 end )
@@ -954,6 +953,7 @@ spec:RegisterAbilities( {
             end
 
             if talent.brutal_finish.enabled then applyBuff( "brutal_finish" ) end
+            removeBuff( "imminent_demise" )
         end,
 
         copy = { 227847, 389774, 446035 }
@@ -1303,14 +1303,15 @@ spec:RegisterAbilities( {
         indicator = function () if cycle_for_execute then return "cycle" end end,
 
         handler = function ()
-            if talent.imminent_demise.enabled then
-                addStack( "imminent_demise" )
-            end
+            removeDebuff( "target", "marked_for_execution" )
             if not buff.sudden_death.up and not buff.stone_heart.up and not talent.improved_execute.enabled then -- Execute costs rage
                 local cost = min( rage.current, 40 )
                 spend( cost, "rage", nil, true )
             else
                 removeBuff( "sudden_death" )
+                if talent.imminent_demise.enabled then
+                    addStack( "imminent_demise" )
+                end
             end
 
             removeStack( "whirlwind" )

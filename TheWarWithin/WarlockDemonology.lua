@@ -365,8 +365,8 @@ spec:RegisterStateFunction( "SoulStrikeIfNotCapped", function()
         setCooldown( "soul_strike", 10 )
         if Hekili.ActiveDebug then Hekili:Debug( "*** Soul Strike cast by pet at %.2f; gained 1 Soul Shard (to %d).", query_time, soul_shard ) end
     else
-        state:QueueAuraExpiration( "soul_strike", SoulStrikeIfNotCapped, gcd.remains > 0 and gcd.remains or gcd.max )
-        if Hekili.ActiveDebug then Hekili:Debug( "*** Soul Strike not cast at %.2f due to capped shards; requeuing in cast by pet at %.2f.", query_time, gcd.remains > 0 and gcd.remains or gcd.max ) end
+        state:QueueAuraExpiration( "soul_strike", SoulStrikeIfNotCapped, gcd.remains > 0 and gcd.expires or ( query_time + gcd.max ) )
+        if Hekili.ActiveDebug then Hekili:Debug( "*** Soul Strike not cast at %.2f due to capped shards; requeuing in cast by pet at %.2f.", query_time, gcd.remains > 0 and gcd.expires or ( query_time + gcd.max ) ) end
     end
 end )
 
@@ -624,7 +624,7 @@ spec:RegisterHook( "spend", function( amt, resource )
                 if buff.diabolic_ritual.down then applyBuff( "diabolic_ritual" )
                 else
                     if buff.ritual_overlord.up then buff.ritual_overlord.expires = buff.ritual_overlord.expires - amt; if buff.ritual_overlord.down then applyBuff( "art_overlord" ) end end
-                    if buff.ritual_mother.up then buff.ritual_mother.expires = buff.ritual_mother.expires - amt; if buff.ritual_mother.down then applyBuff( "art_mother" ) end end
+                    if buff.ritual_mother  .up then buff.ritual_mother  .expires = buff.ritual_mother  .expires - amt; if buff.ritual_mother  .down then applyBuff( "art_mother"   ) end end
                     if buff.ritual_pit_lord.up then buff.ritual_pit_lord.expires = buff.ritual_pit_lord.expires - amt; if buff.ritual_pit_lord.down then applyBuff( "art_pit_lord" ) end end
                 end
             end
@@ -642,7 +642,7 @@ end )
 
 spec:RegisterHook( "advance_end", function( time )
     if buff.art_mother.expires > query_time - time and buff.art_mother.down then
-        summon_demon( "mother_of_chaos" )
+        summon_demon( "mother_of_chaos", 6 )
         removeBuff( "art_mother" )
         if talent.secrets_of_the_coven.enabled then applyBuff( "infernal_bolt" ) end
     end
