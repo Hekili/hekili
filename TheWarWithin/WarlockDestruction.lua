@@ -1266,7 +1266,7 @@ spec:RegisterHook( "reset_precast", function ()
         class.abilities.havoc = class.abilities.real_havoc
     end
 
-    if IsActiveSpell( 433891 ) then
+    if IsActiveSpell( 434506 ) then
         applyBuff( "infernal_bolt" )
     end
 end )
