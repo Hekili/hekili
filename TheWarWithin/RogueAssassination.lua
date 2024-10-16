@@ -1741,7 +1741,7 @@ spec:RegisterAbilities( {
 
         spend = function()
             if buff.blindside.up then return 0 end
-            return 50 * ( 1 - 0.06 * talent.tight_spender.rank )
+            return 50 + ( talent.vicious_venoms.rank * 5 )
         end,
         spendType = "energy",
 
@@ -2451,7 +2451,9 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = 50,
+        spend = function()
+            return 50 + ( talent.vicious_venoms.rank * 5 )
+        end,
         spendType = "energy",
 
         startsCombat = true,
