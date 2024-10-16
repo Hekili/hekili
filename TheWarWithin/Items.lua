@@ -546,7 +546,7 @@ all:RegisterAbilities( {
 
         auras = {
             kaheti_shadeweavers_dark_ritual = {
-                id = 455479,
+                id = 455464,
                 duration = 30,
                 max_stack = 10
             }
