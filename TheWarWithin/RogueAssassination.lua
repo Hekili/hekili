@@ -2536,6 +2536,7 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function()
+            if buff.goremaws_bite.up then return 0 end
             return 25 * ( 1 - 0.06 * talent.tight_spender.rank )
         end,
         spendType = "energy",
