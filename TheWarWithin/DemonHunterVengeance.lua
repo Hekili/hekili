@@ -1152,19 +1152,6 @@ spec:RegisterAbilities( {
 
                         applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
                         applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-
-                        if talent.violent_transformation.enabled then
-                            setCooldown( "sigil_of_flame", 0 )
-                            setCooldown( "sigil_of_doom", 0 )
-                            setCooldown( "immolation_aura", 0 )
-                            setCooldown( "consuming_fire", 0 )
-                            if talent.demonic_intensity.enabled then
-                                setCooldown( "fel_devastation", max( cooldown.fel_devastation.remains, cooldown.fel_desolation.remains, buff.metamorphosis.remains ) )
-                                setCooldown( "fel_desolation", 0 )
-                            else
-                                setCooldown( "fel_devastation", 0 )
-                            end
-                        end
                     end
                 else
                     applyBuff( "metamorphosis", 5 )
@@ -1176,25 +1163,8 @@ spec:RegisterAbilities( {
 
                         applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
                         applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-
-                        if talent.violent_transformation.enabled then
-                            setCooldown( "sigil_of_flame", 0 )
-                            setCooldown( "sigil_of_doom", 0 )
-                            setCooldown( "immolation_aura", 0 )
-                            setCooldown( "consuming_fire", 0 )
-
-                            if talent.demonic_intensity.enabled then
-                                setCooldown( "fel_devastation", max( cooldown.fel_devastation.remains, cooldown.fel_desolation.remains, buff.metamorphosis.remains ) )
-                                setCooldown( "fel_desolation", 0 )
-                            else
-                                setCooldown( "fel_devastation", 0 )
-                            end
-                        end
                     end
 
-                    if talent.inner_demon.enabled then
-                        applyBuff( "inner_demon" )
-                    end
                 end
             end
             if talent.darkglare_boon.enabled then
@@ -1250,19 +1220,6 @@ spec:RegisterAbilities( {
 
                         applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
                         applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-
-                        if talent.violent_transformation.enabled then
-                            setCooldown( "sigil_of_flame", 0 )
-                            setCooldown( "sigil_of_doom", 0 )
-                            setCooldown( "immolation_aura", 0 )
-                            setCooldown( "consuming_fire", 0 )
-                            if talent.demonic_intensity.enabled then
-                                setCooldown( "fel_devastation", max( cooldown.fel_devastation.remains, cooldown.fel_desolation.remains, buff.metamorphosis.remains ) )
-                                setCooldown( "fel_desolation", 0 )
-                            else
-                                setCooldown( "fel_devastation", 0 )
-                            end
-                        end
                     end
                 else
                     applyBuff( "metamorphosis", 5 )
@@ -1274,24 +1231,6 @@ spec:RegisterAbilities( {
 
                         applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
                         applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-
-                        if talent.violent_transformation.enabled then
-                            setCooldown( "sigil_of_flame", 0 )
-                            setCooldown( "sigil_of_doom", 0 )
-                            setCooldown( "immolation_aura", 0 )
-                            setCooldown( "consuming_fire", 0 )
-
-                            if talent.demonic_intensity.enabled then
-                                setCooldown( "fel_devastation", max( cooldown.fel_devastation.remains, cooldown.fel_desolation.remains, buff.metamorphosis.remains ) )
-                                setCooldown( "fel_desolation", 0 )
-                            else
-                                setCooldown( "fel_devastation", 0 )
-                            end
-                        end
-                    end
-
-                    if talent.inner_demon.enabled then
-                        applyBuff( "inner_demon" )
                     end
                 end
             end
@@ -1525,16 +1464,24 @@ spec:RegisterAbilities( {
             if talent.demonsurge.enabled then
                 applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
                 if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires end
+                applyBuff( "demonsurge_soul_cleave", buff.metamorphosis.remains )
+                applyBuff( "demonsurge_spirit_bomb", buff.metamorphosis.remains )
             end
 
             if talent.demonic_intensity.enabled then
-                applyBuff( "demonsurge_abyssal_gaze", buff.metamorphosis.remains )
-                setCooldown( "eye_beam", max( cooldown.eye_beam.remains, cooldown.abyssal_gaze.remains, buff.metamorphosis.remains ) )
-
-                applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
                 applyBuff( "demonsurge_consuming_fire", buff.metamorphosis.remains )
-                applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
+                applyBuff( "demonsurge_fel_desolation", buff.metamorphosis.remains )
                 applyBuff( "demonsurge_sigil_of_doom", buff.metamorphosis.remains )
+            end
+
+            if talent.violent_transformation.enabled then
+                setCooldown( "sigil_of_flame", 0 )
+                setCooldown( "fel_devastation", 0 )
+
+                if talent.demonic_intensity.enabled then
+                    setCooldown( "sigil_of_doom", 0 )
+                    setCooldown( "fel_desolation", 0 )
+                end
             end
 
             if action.sinful_brand.known then
