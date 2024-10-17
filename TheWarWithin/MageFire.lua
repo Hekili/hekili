@@ -1376,6 +1376,7 @@ spec:RegisterAbilities( {
         end,
 
         impact = function ()
+            -- TODO: Determine if I need to model Frostfire Empowerment here or in hot_streak.
             if hot_streak( firestarter.active or stat.crit + buff.fireball.stack * 10 >= 100 ) then
                 removeBuff( "fireball" )
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
