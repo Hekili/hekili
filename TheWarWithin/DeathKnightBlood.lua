@@ -459,7 +459,7 @@ spec:RegisterAuras( {
     bone_shield = {
         id = 195181,
         duration = 30.0,
-        max_stack = 1,
+        max_stack = 10,
 
         -- Affected by:
         -- foul_bulwark[206974] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 1.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
@@ -1148,6 +1148,11 @@ local TriggerERW = setfenv( function()
     gain( 5, "runic_power" )
 end, state )
 
+local BonestormShield = setfenv( function()
+    addStack( "bone_shield" )
+end, state )
+
+
 spec:RegisterHook( "reset_precast", function ()
     if UnitExists( "pet" ) then
         for i = 1, 40 do
@@ -1176,14 +1181,15 @@ spec:RegisterHook( "reset_precast", function ()
 
     if talent.vampiric_strike.enabled and IsActiveSpell( 433899 ) then applyBuff( "vampiric_strike" ) end
 
-    --[[ if buff.empower_rune_weapon.up then
-        local expires = buff.empower_rune_weapon.expires
+    if buff.bonestorm.up then
+        local tick_time = buff.bonestorm.expires
+        state:QueueAuraExpiration( "bonestorm", BonestormShield, tick_time )
 
-        while expires >= query_time do
-            state:QueueAuraExpiration( "empower_rune_weapon", TriggerERW, expires )
-            expires = expires - 5
+        tick_time = tick_time - 1
+        while( tick_time > query_time ) do
+            state:QueueAuraExpiration( "bonestorm", BonestormShield, tick_time, "AURA_TICK" )
         end
-    end ]]
+    end
 end )
 
 spec:RegisterStateExpr( "save_blood_shield", function ()
@@ -1410,8 +1416,15 @@ spec:RegisterAbilities( {
         handler = function ()
             local consume = min( 5, buff.bone_shield.stack )
             gain( consume * 0.02 * health.max, "health" )
-            applyBuff( "bonestorm", 2 * consume )
+
+            local dur = 2 * consume
+            applyBuff( "bonestorm", dur )
             removeStack( "bone_shield", nil, consume )
+
+            for i = 1, dur do
+                state:QueueAuraEvent( "bonestorm", BonestormShield, query_time + i, i == dur and "AURA_EXPIRATION" or "AURA_TICK" )
+            end
+
             if set_bonus.tww1_4pc > 0 then
                 if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
                 else removeBuff( "piledriver" ) end
