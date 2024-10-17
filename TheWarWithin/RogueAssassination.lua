@@ -1848,7 +1848,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if talent.dirty_tricks.enabled then return 0 end
-            return 40 * ( 1 - 0.06 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+            return 40 * ( 1 + conduit.rushed_setup.mod * 0.01 ) * ( 1 - 0.2 * talent.rushed_setup.rank ) end,
         spendType = "energy",
 
         startsCombat = true,
