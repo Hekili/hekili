@@ -1757,7 +1757,7 @@ spec:RegisterAbilities( {
 
         spend = function()
             if buff.blindside.up then return 0 end
-            return 50 * ( 1 - 0.06 * talent.tight_spender.rank )
+            return 50 + ( talent.vicious_venoms.rank * 5 )
         end,
         spendType = "energy",
 
@@ -1864,7 +1864,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if talent.dirty_tricks.enabled then return 0 end
-            return 40 * ( 1 - 0.06 * talent.tight_spender.rank ) * ( 1 + conduit.rushed_setup.mod * 0.01 ) end,
+            return 40 * ( 1 + conduit.rushed_setup.mod * 0.01 ) * ( 1 - 0.2 * talent.rushed_setup.rank ) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -1965,7 +1965,9 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = 30,
+        spend = function ()
+            return 45 * ( 1 - 0.06 * talent.tight_spender.rank )
+        end,
         spendType = "energy",
 
         talent = "crimson_tempest",
@@ -2100,7 +2102,9 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "nature",
 
-        spend = 35,
+        spend = function ()
+            return 35 * ( 1 - 0.06 * talent.tight_spender.rank )
+        end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2467,7 +2471,9 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = 50,
+        spend = function()
+            return 50 + ( talent.vicious_venoms.rank * 5 )
+        end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2547,7 +2553,7 @@ spec:RegisterAbilities( {
 
         spend = function()
             if buff.goremaws_bite.up then return 0 end
-            return 25
+            return 25 * ( 1 - 0.06 * talent.tight_spender.rank )
         end,
         spendType = "energy",
 
