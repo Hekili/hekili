@@ -2941,7 +2941,7 @@ do
             elseif k == "is_player" then
                 local isPlayer = UnitIsPlayer( "target" )
                 if not isPlayer then isPlayer = PvpDummies[ t.npcid ] end
-                t[k] = isPlayer -- Enables proper treatment of Absolute Corruption and similar modified-in-PvP effects.
+                t[k] = isPlayer or false -- Enables proper treatment of Absolute Corruption and similar modified-in-PvP effects.
 
             elseif k == "is_undead" then t[k] = UnitCreatureType( "target" ) == BATTLE_PET_NAME_4
 
@@ -3582,7 +3582,7 @@ end
 
 
 local mt_resource = {
-    __index = function(t, k)
+    __index = function( t, k )
 
         local meta = t.meta[ k ]
         if meta ~= nil then

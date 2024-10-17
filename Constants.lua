@@ -218,11 +218,13 @@ end
 
 
 ns.PvpDummies = {
-    [114840] = 1, -- Orgrimmar
-    [114832] = 1, -- Stormwind
-    [189082] = 1, -- Nowhere
-    [197833] = 1, -- Valdrakken
-    [197834] = 1  -- Healing
+    [114840] = true,  -- Orgrimmar
+    [114832] = true,  -- Stormwind
+    [189082] = true,  -- Nowhere
+    [197833] = true,  -- Valdrakken
+    [197834] = true,  -- Healing
+    [219250] = true,  -- Dornogal
+    [219251] = true   -- Dornogal Healing
 }
 
 
