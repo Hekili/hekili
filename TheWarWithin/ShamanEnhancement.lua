@@ -669,7 +669,8 @@ spec:RegisterAuras( {
     stormbringer = {
         id = 201846,
         duration = 12,
-        max_stack = 1
+        max_stack = 1,
+        copy = "stormsurge"
     },
     -- Your next Lightning Bolt or Chain Lightning will deal $s2% increased damage and be instant cast.
     -- https://wowhead.com/ptr-2/spell=383009
