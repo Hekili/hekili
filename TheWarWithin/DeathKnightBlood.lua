@@ -2232,7 +2232,7 @@ spec:RegisterAbilities( {
         talent = "vampiric_blood",
         startsCombat = false,
 
-        toggle = "defensives",
+        toggle = function () return talent.gift_of_the_sanlayn.enabled and "cooldowns" or "defensives" end,
 
         handler = function ()
             applyBuff( "vampiric_blood" )
