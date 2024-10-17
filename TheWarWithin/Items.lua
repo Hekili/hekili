@@ -892,31 +892,6 @@ all:RegisterAbilities( {
             }
         }
     },
-
-
-    -- Timewalking Stuff As Needed
-    shadowmoon_insignia = {
-        cast = 0,
-        cooldown = 60,
-        gcd = "off",
-
-        item = 150526,
-        toggle = "defensives",
-
-        proc = "health",
-
-        handler = function()
-            applyBuff( "protectors_vigor" )
-        end,
-
-        auras = {
-            protectors_vigor = {
-                id = 244189,
-                duration = 20,
-                max_stack = 1
-            }
-        }
-    },
 } )
 
 all:RegisterGear( "scroll_of_momentum", 226539 )
