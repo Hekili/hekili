@@ -1771,6 +1771,7 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         talent = "thunder_clap",
+        nobuff = "thunder_blast",
         startsCombat = true,
         texture = 136105,
         bind = "thunder_blast",
@@ -1810,11 +1811,13 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         talent = "thunder_clap",
+        buff = "thunder_blast",
         startsCombat = true,
-        texture = 136105,
+        texture = 460957,
         bind = "thunder_clap",
 
         handler = function ()
+            removeStack( "thunder_blast" )
             applyDebuff( "target", "thunder_clap" )
             active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
             removeBuff( "show_of_force" )
