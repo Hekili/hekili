@@ -179,11 +179,6 @@ local HekiliSpecMixin = {
             timeTo = function( x )
                 return state:TimeToResource( r.state, x )
             end,
-
-            --[[ reset = function()
-                wipe( r.state.times )
-                wipe( r.state.values )
-            end ]]
         }, mt_resource )
         r.state.regenModel = regen
         r.state.meta = meta or {}

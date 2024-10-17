@@ -833,6 +833,8 @@ spec:RegisterHook( "reset_precast", function ()
         if Hekili.ActiveDebug then Hekili:Debug( "Resetting Steady Focus counter as last GCD spell was '%s'.", ( prev_gcd.last or "Unknown" ) ) end
         steady_focus_count = 0
     end
+
+    if IsSpellKnownOrOverridesKnown( 392060 ) then applyBuff( "wailing_arrow_override" ) end
 end )
 
 spec:RegisterHook( "runHandler", function( token )
@@ -1081,6 +1083,10 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "black_arrow" )
+            if talent.death_shade.enabled then
+                applyBuff( "deathblow" )
+                if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
+            end
         end,
     },
 
