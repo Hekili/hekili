@@ -5295,13 +5295,13 @@ do
                     args = {
                         core = {
                             type = "group",
-                            name = "Core",
+                            name = "Specialization Settings",
                             desc = "Core features and specialization options for " .. specs[ id ] .. ".",
                             order = 1,
                             args = {
                                 enabled = {
                                     type = "toggle",
-                                    name = "Enabled",
+                                    name = specs[ id ] .. " Enabled",
                                     desc = "If checked, the addon will provide priority recommendations for " .. name .. " based on the selected priority list.",
                                     order = 0,
                                     width = "full",
@@ -5323,7 +5323,7 @@ do
                                     name = "Priority",
                                     desc = "The addon will use the selected package when making its priority recommendations.",
                                     order = 1,
-                                    width = 2.85,
+                                    width = 1.5,
                                     values = function( info, val )
                                         wipe( packs )
 
@@ -5363,8 +5363,8 @@ do
                                     type = "select",
                                     name = "Potion",
                                     desc = "Unless otherwise specified in the priority, the selected potion will be recommended.",
-                                    order = 1.2,
-                                    width = 3,
+                                    order = 3,
+                                    width = 1.5,
                                     values = class.potionList,
                                     get = function()
                                         local p = self.DB.profile.specs[ id ].potion or class.specs[ id ].options.potion or "default"
@@ -5376,7 +5376,7 @@ do
                                 blankLine1 = {
                                     type = 'description',
                                     name = '',
-                                    order = 1.2,
+                                    order = 2,
                                     width = 'full'
                                 },
                             },
@@ -5395,8 +5395,10 @@ do
                                     type = "description",
                                     name = "These settings control how targets are counted when generating ability recommendations.\n\nBy default, the number of "
                                         .. "targets is shown on the bottom-right of the primary icon in the Primary and AOE displays, unless only one target is "
-                                        .. "detected.\n\n",
+                                        .. "detected.\n\n"
+                                        .. "Your true in-game target is always counted. Be aware that action-targeting mode does not work great, particularly with dot-based specs.\n\n",
                                     width = "full",
+                                    fontSize = "medium",
                                     order = 0.01
                                 },
                                 yourTarget = {
@@ -5408,6 +5410,7 @@ do
                                     get = function() return true end,
                                     set = function() end,
                                     order = 0.02,
+                                    hidden = true,
                                 },
 
                                 -- Damage Detection Quasi-Group
@@ -5431,10 +5434,10 @@ do
                                     args = {
                                         damagePets = {
                                             type = "toggle",
-                                            name = "Enemies Damaged by Minions",
+                                            name = "Include Enemies Damaged By Your Pets and Minions",
                                             desc = "If checked, the addon will count enemies that your pets or minions have hit (or hit you) within the past several seconds.  "
                                                 .. "This may give misleading target counts if your pet/minions are spread out over the battlefield.",
-                                            order = 1,
+                                            order = 2,
                                             width = "full",
                                         },
 
@@ -5448,13 +5451,13 @@ do
                                             min = 1,
                                             max = 10,
                                             step = 0.1,
-                                            order = 2,
-                                            width = "full",
+                                            order = 1,
+                                            width = 1.5,
                                         },
 
                                         damageDots = {
                                             type = "toggle",
-                                            name = "DOTted / Debuffed Enemies",
+                                            name = "Include Enemies With Your DOTs / Debuffs",
                                             desc = "When checked, enemies that have your debuffs or damage-over-time effects will be counted as targets, regardless of their location on the battlefield.\n\n"
                                                 .. "This may not be ideal for melee specializations, as enemies may wander away after you've applied your dots/bleeds.  If |cFFFFD100Count Nameplates|r is "
                                                 .. "enabled, enemies that are no longer in range will be filtered.\n\n"
@@ -5477,19 +5480,112 @@ do
                                 },
                                 nameplates = {
                                     type = "toggle",
-                                    name = "Count Nameplates",
-                                    desc = "If checked, enemy nameplates within the specified radius will be counted as enemy targets.\n\n"
+                                    name = "Count Nameplates Around Your Character",
+                                    desc = "If checked, enemy nameplates within the specified radius of your character will be counted as enemy targets.\n\n"
                                         .. AtlasToString( "common-icon-checkmark" ) .. " Recommended for melee specializations using a range of 10 yds or fewer\n\n"
                                         .. AtlasToString( "common-icon-redx" ) .. " Discouraged for ranged specializations.",
                                     width = "full",
                                     order = 0.1,
                                 },
 
+                                petbased = {
+                                    type = "toggle",
+                                    name = "Count Targets Near Your Pet",
+                                    desc = function ()
+                                        local msg = "If checked and properly configured, the addon will count targets near your pet as valid targets, when your target is also within range of your pet."
+
+                                        if Hekili:HasPetBasedTargetSpell() then
+                                            local spell = Hekili:GetPetBasedTargetSpell()
+                                            local link = Hekili:GetSpellLinkWithTexture( spell )
+
+                                            msg = msg .. "\n\n" .. link .. "|w|r is on your action bar and will be used for all your " .. UnitClass( "player" ) .. " pets."
+                                        else
+                                            msg = msg .. "\n\n|cFFFF0000Requires pet ability on one of your action bars.|r"
+                                        end
+
+                                        if GetCVar( "nameplateShowEnemies" ) == "1" then
+                                            msg = msg .. "\n\nEnemy nameplates are |cFF00FF00enabled|r and will be used to detect targets near your pet."
+                                        else
+                                            msg = msg .. "\n\n|cFFFF0000Requires enemy nameplates.|r"
+                                        end
+
+                                        return msg
+                                    end,
+                                    width = "full",
+                                    hidden = function ()
+                                        return Hekili:GetPetBasedTargetSpells() == nil
+                                    end,
+                                    order = 0.2
+                                },
+
+                                petbasedGuidance = {
+                                    type = "description",
+                                    name = function ()
+                                        local out
+
+                                        if not self:HasPetBasedTargetSpell() then
+                                            out = "For pet-based detection to work, you must take an ability from your |cFF00FF00pet's spellbook|r and place it on one of |cFF00FF00your|r action bars.\n\n"
+                                            local spells = Hekili:GetPetBasedTargetSpells()
+
+                                            if not spells then return " " end
+
+                                            out = out .. "For %s, %s is recommended due to its range.  It will work for all your pets."
+
+                                            if spells.count > 1 then
+                                                out = out .. "\nAlternative(s): "
+                                            end
+
+                                            local n = 1
+
+                                            local link = Hekili:GetSpellLinkWithTexture( spells.best )
+                                            out = format( out, UnitClass( "player" ), link )
+                                            for spell in pairs( spells ) do
+                                                if type( spell ) == "number" and spell ~= spells.best then
+                                                    n = n + 1
+
+                                                    link = Hekili:GetSpellLinkWithTexture( spell )
+
+                                                    if n == 2 and spells.count == 2 then
+                                                        out = out .. link .. "."
+                                                    elseif n ~= spells.count then
+                                                        out = out .. link .. ", "
+                                                    else
+                                                        out = out .. "and " .. link .. "."
+                                                    end
+                                                end
+                                            end
+                                        end
+
+                                        if GetCVar( "nameplateShowEnemies" ) ~= "1" then
+                                            if not out then
+                                                out = "|cFFFF0000WARNING!|r  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."
+                                            else
+                                                out = out .. "\n\n|cFFFF0000WARNING!|r  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."
+                                            end
+                                        end
+
+                                        return out
+                                    end,
+                                    fontSize = "medium",
+                                    width = "full",
+                                    disabled = function ( info, val )
+                                        if Hekili:GetPetBasedTargetSpells() == nil then return true end
+                                        if self.DB.profile.specs[ id ].petbased == false then return true end
+                                        if self:HasPetBasedTargetSpell() and GetCVar( "nameplateShowEnemies" ) == "1" then return true end
+
+                                        return false
+                                    end,
+                                    order = 0.21,
+                                    hidden = function ()
+                                        return not self.DB.profile.specs[ id ].petbased
+                                    end
+                                },
+
                                 npGroup = {
                                     type = "group",
                                     inline = true,
                                     name = "Nameplate Detection",
-                                    order = 0.2,
+                                    order = 0.11,
                                     hidden = function ()
                                         return not self.DB.profile.specs[ id ].nameplates
                                     end,
@@ -5562,7 +5658,7 @@ do
                                             desc = "If |cFFFFD100Count Nameplates|r is enabled, enemies within this range will be included in target counts.\n\n"
                                                 .. "This setting is only available if |cFFFFD100Show Enemy Nameplates|r and |cFFFFD100Show All Nameplates|r are both enabled.",
                                             width = "full",
-                                            order = 1.7,
+                                            order = 0.1,
                                             min = 0,
                                             max = 100,
                                             step = 1,
@@ -5631,95 +5727,8 @@ do
                                         }, ]]
 
                                         -- Pet-Based Cluster Detection
-                                        petbased = {
-                                            type = "toggle",
-                                            name = "Count Targets Near Your Pet",
-                                            desc = function ()
-                                                local msg = "If checked and properly configured, the addon will count targets near your pet as valid targets, when your target is also within range of your pet."
 
-                                                if Hekili:HasPetBasedTargetSpell() then
-                                                    local spell = Hekili:GetPetBasedTargetSpell()
-                                                    local link = Hekili:GetSpellLinkWithTexture( spell )
 
-                                                    msg = msg .. "\n\n" .. link .. "|w|r is on your action bar and will be used for all your " .. UnitClass( "player" ) .. " pets."
-                                                else
-                                                    msg = msg .. "\n\n|cFFFF0000Requires pet ability on one of your action bars.|r"
-                                                end
-
-                                                if GetCVar( "nameplateShowEnemies" ) == "1" then
-                                                    msg = msg .. "\n\nEnemy nameplates are |cFF00FF00enabled|r and will be used to detect targets near your pet."
-                                                else
-                                                    msg = msg .. "\n\n|cFFFF0000Requires enemy nameplates.|r"
-                                                end
-
-                                                return msg
-                                            end,
-                                            width = "full",
-                                            hidden = function ()
-                                                return Hekili:GetPetBasedTargetSpells() == nil
-                                            end,
-                                            order = 3.1
-                                        },
-
-                                        petbasedGuidance = {
-                                            type = "description",
-                                            name = function ()
-                                                local out
-
-                                                if not self:HasPetBasedTargetSpell() then
-                                                    out = "For pet-based detection to work, you must take an ability from your |cFF00FF00pet's spellbook|r and place it on one of |cFF00FF00your|r action bars.\n\n"
-                                                    local spells = Hekili:GetPetBasedTargetSpells()
-
-                                                    if not spells then return " " end
-
-                                                    out = out .. "For %s, %s is recommended due to its range.  It will work for all your pets."
-
-                                                    if spells.count > 1 then
-                                                        out = out .. "\nAlternative(s): "
-                                                    end
-
-                                                    local n = 1
-
-                                                    local link = Hekili:GetSpellLinkWithTexture( spells.best )
-                                                    out = format( out, UnitClass( "player" ), link )
-                                                    for spell in pairs( spells ) do
-                                                        if type( spell ) == "number" and spell ~= spells.best then
-                                                            n = n + 1
-
-                                                            link = Hekili:GetSpellLinkWithTexture( spell )
-
-                                                            if n == 2 and spells.count == 2 then
-                                                                out = out .. link .. "."
-                                                            elseif n ~= spells.count then
-                                                                out = out .. link .. ", "
-                                                            else
-                                                                out = out .. "and " .. link .. "."
-                                                            end
-                                                        end
-                                                    end
-                                                end
-
-                                                if GetCVar( "nameplateShowEnemies" ) ~= "1" then
-                                                    if not out then
-                                                        out = "|cFFFF0000WARNING!|r  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."
-                                                    else
-                                                        out = out .. "\n\n|cFFFF0000WARNING!|r  Pet-based target detection requires |cFFFFD100enemy nameplates|r to be enabled."
-                                                    end
-                                                end
-
-                                                return out
-                                            end,
-                                            fontSize = "medium",
-                                            width = "full",
-                                            disabled = function ( info, val )
-                                                if Hekili:GetPetBasedTargetSpells() == nil then return true end
-                                                if self.DB.profile.specs[ id ].petbased == false then return true end
-                                                if self:HasPetBasedTargetSpell() and GetCVar( "nameplateShowEnemies" ) == "1" then return true end
-
-                                                return false
-                                            end,
-                                            order = 3.11,
-                                        }
                                     }
                                 },
 
@@ -5739,7 +5748,7 @@ do
 
                                 cycle = {
                                     type = "toggle",
-                                    name = "Recommend Changing Targets |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t",
+                                    name = "Allow Target Swaps |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t",
                                     desc = "When target swapping is enabled, an icon (|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t) may be shown when you should use an ability on a different target.\n\n" ..
                                         "This works well for some specs that simply want to apply a debuff to another target (like Windwalker), but can be less-effective for specializations that are concerned with " ..
                                         "maintaining dots/debuffs based on their durations (like Affliction).\n\nThis feature is targeted for improvement in a future update.",
@@ -5771,7 +5780,7 @@ do
 
                                 aoe = {
                                     type = "range",
-                                    name = "AOE Display:  Minimum Targets",
+                                    name = "AOE Display: Show rotation as if there are at least this many targets",
                                     desc = "When the AOE Display is shown (or the Primary display is in AOE mode), its recommendations will assume that there are at least this many targets available.",
                                     width = "full",
                                     min = 2,
@@ -5919,7 +5928,7 @@ do
 
                     options.args.core.plugins.settings.prefHeader = {
                         type = "header",
-                        name = "Preferences",
+                        name = specs[ id ] .. " Preferences",
                         order = 100.1,
                     }
 
