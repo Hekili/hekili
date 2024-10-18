@@ -1352,7 +1352,7 @@ spec:RegisterSetting( "pet_healing", 0, {
     min = 0,
     max = 100,
     step = 1,
-    width = "normal"
+    width = "1.5"
 } )
 
 spec:RegisterSetting( "use_harpoon", true, {
