@@ -127,7 +127,7 @@ spec:RegisterTalents( {
     ranger                     = { 102288, 385695, 1 }, -- Kill Shot, Serpent Sting, Arcane Shot, Steady Shot, and Explosive Shot deal 20% increased damage.
     raptor_strike              = { 102262, 186270, 1 }, -- A vicious slash dealing 27,051 Physical damage.
     relentless_primal_ferocity = { 102258, 459922, 1 }, -- Coordinated Assault sends you and your pet into a state of primal power. For the duration of Coordinated Assault, Kill Command generates 1 additional stack of Tip of the Spear, you gain 10% Haste, and Tip of the Spear's damage bonus is increased by 50%.
-    ruthless_marauder          = { 102261, 385718, 2 }, -- Fury of the Eagle now gains bonus critical strike chance against targets below 35% health, and Fury of the Eagle critical strikes reduce the cooldown of Wildfire Bomb and Flanking Strike by 1.0 sec.
+    ruthless_marauder          = { 102261, 470068, 2 }, -- Fury of the Eagle now gains bonus critical strike chance against targets below 35% health, and Fury of the Eagle critical strikes reduce the cooldown of Wildfire Bomb and Flanking Strike by 1.0 sec.
     sic_em                     = { 102280, 459920, 1 }, -- Casting Kill Command has a 15% chance to reset the cooldown of Kill Shot, make it usable on targets regardless of Health, and strike up to 2 additional targets. This chance is doubled during Coordinated Assault.
     spearhead                  = { 102291, 360966, 1 }, -- You give the signal, and your pet charges your target, bleeding them for 32,723 damage over 10 sec and increasing your chance to critically strike your target by 30% for 10 sec.
     sulfurlined_pockets        = { 102266, 459828, 1 }, -- Every 3 Quick Shots is replaced with an Explosive Shot at 100% effectiveness.
@@ -300,6 +300,12 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 3
     },
+
+    deathblow = {
+        id = 378770,
+        duration = 12,
+        max_stack = 1
+    },
     -- Rooted.
     entrapment = {
         id = 393456,
@@ -432,9 +438,12 @@ spec:RegisterAuras( {
     -- Your next Raptor Strike or Mongoose Bite hits $s1 targets.
     merciless_blows = {
         id = 459870,
-        duration = 10.0,
+        duration = 8,
+        mechanic = "bleed",
+        type = "melee",
         max_stack = 1,
     },
+
     -- Talent: Threat redirected from Hunter.
     -- https://wowhead.com/beta/spell=34477
     misdirection_buff = {
@@ -497,6 +506,12 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
+
+    ruthless_marauder = {
+        id = 470070,
+        duration = 10,
+        max_stack = 1,
+    },
     -- Sentinel from $@auracaster has a chance to start dealing $450412s1 Arcane damage every sec.
     sentinel = {
         id = 450387,
@@ -512,11 +527,11 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Kill Shot usable on any target and it hits up to ${$s2-1} additional targets.
-    sic_em = {
+    --[[sic_em = {
         id = 461409,
         duration = 3600,
         max_stack = 1,
-    },
+    },--]]
     -- Movement slowed by $w1%.
     sideline = {
         id = 450845,
@@ -881,9 +896,7 @@ spec:RegisterAbilities( {
     butchery = {
         id = 212436,
         cast = 0,
-        charges = 3,
-        cooldown = 9,
-        recharge = 9,
+        cooldown = 15,
         gcd = "spell",
         school = "physical",
 
@@ -893,19 +906,22 @@ spec:RegisterAbilities( {
         talent = "butchery",
         startsCombat = true,
 
-        usable = function () return charges > 1 or active_enemies > 1 or target.time_to_die < ( 9 * haste ) end,
         handler = function ()
+            
             removeBuff( "bestial_barrage" )
             removeBuff( "butchers_bone_fragments" )
             removeStack( "tip_of_the_spear" )
 
             if talent.frenzy_strikes.enabled then
-                gainChargeTime( "wildfire_bomb", min( 5, true_active_enemies ) )
+                gainChargeTime( "wildfire_bomb", max( 5, true_active_enemies )*3 )
             end
 
             if conduit.flame_infusion.enabled then
                 addStack( "flame_infusion", nil, 1 )
             end
+
+            if talent.merciless_blows.enabled then applyDebuff( "target", "merciless_blows" ) end
+
         end,
     },
 
@@ -1002,7 +1018,7 @@ spec:RegisterAbilities( {
     -- Talent: Furiously strikes all enemies in front of you, dealing ${$203413s1*9} Physical damage over $d. Critical strike chance increased by $s3% against any target below $s4% health. Deals reduced damage beyond $s5 targets.    Kill Command cooldown resets reduce the cooldown of Fury of the Eagle by ${$m2/1000}.1 sec$?s385718[ and the cooldown of Wildfire Bomb and Flanking Strike by ${$m1/1000}.1 sec][].
     fury_of_the_eagle = {
         id = 203415,
-        cast = 4,
+        cast = 3,
         channeled = true,
         cooldown = 45,
         gcd = "spell",
@@ -1014,6 +1030,10 @@ spec:RegisterAbilities( {
         start = function()
             if set_bonus.tier31_2pc > 0 then applyBuff( "fury_strikes" ) end
             if set_bonus.tier31_4pc > 0 then applyBuff( "contained_explosion" ) end
+        end,
+
+        finish = function ()
+            if talent.ruthless_marauder.enabled then applyBuff( "ruthless_marauder" ) end
         end,
     },
 
@@ -1086,18 +1106,22 @@ spec:RegisterAbilities( {
             end
 
             if talent.tip_of_the_spear.enabled then
-                addStack( "tip_of_the_spear", nil, talent.relentless_primal_ferocity.enabled and buff.coordinated_assault.up and 2 or 1 )
+                addStack( "tip_of_the_spear", nil, talent.relentless_primal_ferocity.enabled and buff.coordinated_assault.up and 3 or buff.exposed_flank.up and max( 3, true_active_enemies ) or 1 )
             end
 
             if talent.wildfire_infusion.enabled then
                 gainChargeTime( "wildfire_bomb", 0.5 )
             end
 
-
             if set_bonus.tier30_4pc > 0 then
                 applyDebuff( "target", "shredded_armor" )
                 active_dot.shredded_armor = 1 -- Only applies to last target.
             end
+
+            if buff.mongoose_fury.up and talent.bloody_claws.enabled then
+                buff.mongoose_fury.expires = buff.mongoose_fury.expires + 1.5
+            end
+
         end,
     },
 
@@ -1115,10 +1139,10 @@ spec:RegisterAbilities( {
         talent = "kill_shot",
         startsCombat = true,
 
-        usable = function () return buff.sic_em.up or target.health_pct < 20, "requires sic_em or target health below 20 percent" end,
+        usable = function () return buff.deathblow.up or target.health_pct < 20, "requires Deathblow buff or target health below 20 percent" end,
         handler = function ()
-            removeBuff( "sic_em" )
             removeStack ( "tip_of_the_spear" )
+            removeBuff( "deathblow" )
         end,
     },
 
@@ -1352,7 +1376,7 @@ spec:RegisterSetting( "pet_healing", 0, {
     min = 0,
     max = 100,
     step = 1,
-    width = "normal"
+    width = 1.5
 } )
 
 spec:RegisterSetting( "use_harpoon", true, {

@@ -73,6 +73,7 @@ spec:RegisterTalents( {
     no_hard_feelings          = { 102412, 459546, 1 }, -- When Misdirection targets your pet, it reduces the damage they take by 50% for 5 sec.
     padded_armor              = { 102406, 459450, 1 }, -- Survival of the Fittest gains an additional charge.
     pathfinding               = { 102404, 378002, 1 }, -- Movement speed increased by 4%.
+    -- pin_cushion               = { xxxxx , 468392, 1 }, -- Steady Shot reduces the cooldown of Aimed Shot by 2 seconds.
     posthaste                 = { 102411, 109215, 1 }, -- Disengage also frees you from all movement impairing effects and increases your movement speed by 50% for 4 sec.
     quick_load                = { 102413, 378771, 1 }, -- When you fall below 40% health, Bursting Shot and Scatter Shot have their cooldown immediately reset. This can only occur once every 25 sec.
     rejuvenating_wind         = { 102381, 385539, 1 }, -- Maximum health increased by 8%, and Exhilaration now also heals you for an additional 12.0% of your maximum health over 8 sec.
@@ -102,8 +103,7 @@ spec:RegisterTalents( {
     careful_aim               = { 102313, 260228, 1 }, -- Aimed Shot deals 50% bonus damage to targets who are above 70% health.
     chimaera_shot             = { 102323, 342049, 1 }, -- A two-headed shot that hits your primary target for 9,917 Nature damage and another nearby target for 4,958 Frost damage.
     crack_shot                = { 102329, 321293, 1 }, -- Arcane Shot and Chimaera Shot Focus cost reduced by 20.
-    deathblow                 = { 102305, 378769, 1 }, -- Aimed Shot has a 15% and Rapid Fire has a 25% chance to grant a charge of Kill Shot, and cause your next Kill Shot to be usable on any target regardless of their current health.
-    eagletalons_true_focus    = { 102306, 389449, 1 }, -- Trueshot lasts an additional 3.0 sec, reduces the Focus Cost of Aimed Shot by 50%, and causes your Arcane Shot, Chimaera Shot, and Multi-Shot to be cast again at 30% effectiveness.
+    improved_deathblow        = { 102305, 378769, 1 }, -- Aimed Shot has a 15% and Rapid Fire has a 25% chance to grant a charge of Kill Shot, and cause your next Kill Shot to be usable on any target regardless of their current health.
     fan_the_hammer            = { 102314, 459794, 1 }, -- Rapid Fire shoots 3 additional shots.
     focused_aim               = { 102333, 378767, 2 }, -- Aimed Shot and Rapid Fire damage increased by 5.0%.
     heavy_ammo                = { 102334, 378910, 1 }, -- Trick Shots now ricochets to 2 fewer targets, but each ricochet deals an additional 25% damage.
@@ -120,7 +120,7 @@ spec:RegisterTalents( {
     multishot                 = { 102295, 257620, 1 }, -- Fires several missiles, hitting your current target and all enemies within 10 yards for 6,192 Physical damage. Deals reduced damage beyond 5 targets.
     night_hunter              = { 102321, 378766, 1 }, -- Aimed Shot and Rapid Fire critical strike chance increased by 5%.
     penetrating_shots         = { 102331, 459783, 1 }, -- Gain critical strike damage equal to 40% of your critical strike chance.
-    precise_shots             = { 102294, 260240, 1 }, -- Aimed Shot causes your next 2 Arcane Shots or Multi-Shots to deal 70% more damage and cost 50% less Focus.
+    precise_shot              = { 102294, 260240, 1 }, -- Aimed Shot causes your next 2 Arcane Shots or Multi-Shots to deal 70% more damage and cost 50% less Focus.
     rapid_fire                = { 102318, 257044, 1 }, -- Shoot a stream of 7 shots at your target over 1.6 sec, dealing a total of 51,660 Physical damage. Usable while moving. Each shot generates 1 Focus.
     rapid_fire_barrage        = { 102302, 459800, 1 }, -- Barrage now instead shoots Rapid Fires at your target and up to 4 nearby enemies at 30% effectiveness, but its cooldown is increased by 40 sec.
     razor_fragments           = { 102322, 384790, 1 }, -- When the Trick Shots effect fades or is consumed, or after gaining Deathblow, your next Kill Shot will deal 75% increased damage, and shred up to 5 targets near your Kill Shot target for 25% of the damage dealt by Kill Shot over 6 sec.
@@ -128,7 +128,7 @@ spec:RegisterTalents( {
     salvo                     = { 102316, 400456, 1 }, -- Your next Multi-Shot or Volley now also applies Explosive Shot to up to 2 targets hit.
     serpentstalkers_trickery  = { 102315, 378888, 1 }, -- Aimed Shot also fires a Serpent Sting at the primary target.  Serpent Sting Fire a shot that poisons your target, causing them to take 1,836 Nature damage instantly and an additional 13,834 Nature damage over 18 sec.
     small_game_hunter         = { 102325, 459802, 1 }, -- Multi-Shot deals 75% increased damage and Explosive Shot deals 25% increased damage.
-    steady_focus              = { 102293, 193533, 1 }, -- Using Steady Shot twice in a row increases your haste by 8% for 15 sec.
+    steady_focus              = { 102293, 193533, 1 }, -- Casting Steady Shot increases your Haste by 8% for 15 seconds.
     streamline                = { 102308, 260367, 1 }, -- Rapid Fire's damage is increased by 15%, and Rapid Fire also causes your next Aimed Shot to cast 30% faster.
     surging_shots             = { 102320, 391559, 1 }, -- Rapid Fire deals 35% additional damage, and Aimed Shot has a 15% chance to reset the cooldown of Rapid Fire.
     tactical_reload           = { 102311, 400472, 1 }, -- Aimed Shot and Rapid Fire cooldown reduced by 10%.
@@ -139,20 +139,21 @@ spec:RegisterTalents( {
     wailing_arrow             = { 102299, 459806, 1 }, -- After summoning 20 Wind Arrows, your next Aimed Shot becomes a Wailing Arrow. Wailing Arrow
 
     -- Dark Ranger
-    black_arrow               = { 94987, 430703, 1, "dark_ranger" }, -- Fire a Black Arrow into your target, dealing 30,024 Shadow damage over 18 sec. Each time Black Arrow deals damage, you have a 10% chance to generate a charge of Aimed Shot and reduce its cast time by 50%.
+    banshees_mark             = { 11111, 467902, 1 }, -- 
+    black_arrow               = { 94987, 466932, 1, "dark_ranger" }, -- Fire a Black Arrow into your target, dealing 30,024 Shadow damage over 18 sec. Each time Black Arrow deals damage, you have a 10% chance to generate a charge of Aimed Shot and reduce its cast time by 50%.    
+    bleak_arrows              = { 11111, 467749, 1 }, -- Your auto shot now deals Shadow damage, allowing it to bypass armor. Your auto shot has a 20% chance to grant Deathblow.
+    bleak_powder              = { 11111, 467911, 1 }, -- 
     dark_chains               = { 94960, 430712, 1 }, -- Disengage will chain the closest target to the ground, causing them to move 40% slower until they move 8 yards away.
-    dark_empowerment          = { 94986, 430718, 1 }, -- When Black Arrow resets the cooldown of an ability, gain 15 Focus.
-    darkness_calls            = { 94974, 430722, 1 }, -- All Shadow damage you and your pets deal is increased by 10%.
-    death_shade               = { 94968, 430711, 1 }, -- When you apply Black Arrow to a target, you gain the Deathblow effect.
     embrace_the_shadows       = { 94959, 430704, 1 }, -- You heal for 15% of all Shadow damage dealt by you or your pets.
-    grave_reaper              = { 94986, 430719, 1 }, -- When a target affected by Black Arrow dies, the cooldown of Black Arrow is reduced by 12 sec.
-    overshadow                = { 94961, 430716, 1 }, -- Aimed Shot and Rapid Fire deal 15% increased damage.
-    shadow_erasure            = { 94974, 430720, 1 }, -- Kill Shot has a 15% chance to generate a charge of Aimed Shot when used on a target affected by Black Arrow.
+    ebon_bowstring            = { 11111, 467897, 1 }, -- 
+    phantom_pain              = { 11111, 467941, 1 }, -- 
+    shadow_dagger             = { 11111, 467741, 1 }, -- 
     shadow_hounds             = { 94983, 430707, 1 }, -- Each time Black Arrow deals damage, you have a 10% chance to manifest a Dark Hound to charge to your target and deal Shadow damage.
-    shadow_lash               = { 94957, 430717, 1 }, -- When Trueshot is active, Black Arrow deals damage 50% faster.
-    shadow_surge              = { 94982, 430714, 1 }, -- When Multi-Shot hits a target affected by Black Arrow, a burst of Shadow energy erupts, dealing moderate Shadow damage to all enemies near the target. This can only occur once every 6 sec.
+    shadow_surge              = { 94982, 467936, 1 }, -- 
+    soul_drinker              = { 11111, 469638, 1 }, -- When an enemy affected by Black Arrow dies, you have a 10% chance to gain Deathblow.
     smoke_screen              = { 94959, 430709, 1 }, -- Exhilaration grants you 3 sec of Survival of the Fittest. Survival of the Fittest activates Exhilaration at 50% effectiveness.
-    withering_fire            = { 94993, 430715, 1 }, -- When Black Arrow resets the cooldown of Aimed Shot, a barrage of dark arrows will strike your target for Shadow damage and increase the damage you and your pets deal by 10% for 6 sec.
+    the_bell_tolls            = { 11111, 467644, 1 }, -- Black Arrow is now usable on enemies with greater than 80% health or less than 20% health.
+    withering_fire            = { 94993, 466990, 1 }, -- While Trueshot is active, you surrender to darkness. If you would gain Deathblow while under the effects of Withering Fire, you instead instantly fire a Black Arrow at your target and 2 additional Black Arrows at nearby targets at 50% effectiveness.
 
     -- Sentinel
     catch_out                 = { 94990, 451516, 1 }, -- When a target affected by Sentinel deals damage to you, they are rooted for 3 sec. May only occur every 1 min per target.
@@ -249,11 +250,6 @@ spec:RegisterAuras( {
         duration = 18,
         tick_time = 3,
         max_stack = 1
-    },
-    bombardment = {
-        id = 386875,
-        duration = 120,
-        max_stack = 1,
     },
     bulletstorm = {
         id = 389020,
@@ -456,6 +452,12 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
+
+    moving_target = {
+        id = 457116,
+        duration = 15,
+        max_stack = 1
+    },
     -- Damage taken reduced by $w1%
     no_hard_feelings = {
         id = 459547,
@@ -484,10 +486,10 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Damage of $?s342049[Chimaera Shot][Arcane Shot] or Multi-Shot increased by $s1 and their Focus cost is reduced by $s6%.
-    precise_shots = {
+    precise_shot = {
         id = 260242,
         duration = 15,
-        max_stack = 2
+        max_stack = 1
     },
     -- Recently benefitted from Quick Load.
     quick_load = {
@@ -644,7 +646,7 @@ spec:RegisterAuras( {
     },
     trueshot = {
         id = 288613,
-        duration = function () return ( 15 + ( legendary.eagletalons_true_focus.enabled and 3 or 0 ) + ( 3 * talent.eagletalons_true_focus.rank ) ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
+        duration = function () return ( 15 + ( legendary.eagletalons_true_focus.enabled and 3 or 0 ) ) * ( 1 + ( conduit.sharpshooters_focus.mod * 0.01 ) ) end,
         max_stack = 1,
     },
     -- Talent: Critical strike chance increased by $s1%. Critical damage dealt increased by $s2%.
@@ -678,6 +680,13 @@ spec:RegisterAuras( {
         id = 195645,
         duration = 15,
         max_stack = 1
+    },
+
+    withering_fire = {
+        id = 466991,
+        duration = function () return spec.auras.trueshot.duration end,
+        max_stack = 1
+
     },
 
     -- Conduit
@@ -718,49 +727,17 @@ spec:RegisterStateExpr( "ca_active", function ()
 end )
 
 
-local steady_focus_applied = 0
-local steady_focus_casts = 0
-local bombardment_arcane_shots = 0
 local lunar_storm_expires = 0
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
 
     if sourceGUID == state.GUID then
         if ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
-            if spellID == 193534 then -- Steady Aim.
-                steady_focus_applied = GetTime()
-                steady_focus_casts = 0
-            elseif spellID == 378880 then
-                bombardment_arcane_shots = 0
-            elseif spellID == 450978 then
+                if spellID == 450978 then
                 lunar_storm_expires = GetTime() + 13.7
-            end
-        elseif subtype == "SPELL_CAST_SUCCESS" then
-            if spellID == 185358 and state.talent.bombardment.enabled then
-                bombardment_arcane_shots = ( bombardment_arcane_shots + 1 ) % 4
-            end
-
-            if state.talent.steady_focus.enabled then
-                if spellID == 56641 and GetTime() - steady_focus_applied > 0.5 then
-                    steady_focus_casts = ( steady_focus_casts + 1 ) % 2
-                elseif class.abilities[ spellName ] and class.abilities[ spellName ].gcd ~= "off" then
-                    steady_focus_casts = 0
-                end
             end
         end
     end
-end )
-
-spec:RegisterStateExpr( "last_steady_focus", function ()
-    return steady_focus_applied
-end )
-
-spec:RegisterStateExpr( "steady_focus_count", function ()
-    return steady_focus_casts
-end )
-
-spec:RegisterStateExpr( "bombardment_count", function ()
-    return bombardment_arcane_shots
 end )
 
 
@@ -823,35 +800,10 @@ spec:RegisterHook( "reset_precast", function ()
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
 
-    last_steady_focus = nil
-    steady_focus_count = nil
-
     if lunar_storm_expires > query_time then setCooldown( "lunar_storm", lunar_storm_expires - query_time ) end
-
-    -- If the last GCD ability wasn't Stready Shot, reset the counter.
-    if talent.steady_focus.enabled and steady_focus_count > 0 and prev_gcd.last ~= "steady_shot" then
-        if Hekili.ActiveDebug then Hekili:Debug( "Resetting Steady Focus counter as last GCD spell was '%s'.", ( prev_gcd.last or "Unknown" ) ) end
-        steady_focus_count = 0
-    end
-
     if IsSpellKnownOrOverridesKnown( 392060 ) then applyBuff( "wailing_arrow_override" ) end
+    
 end )
-
-spec:RegisterHook( "runHandler", function( token )
-    if talent.steady_focus.enabled then
-        if token == "steady_shot" then
-            steady_focus_count = steady_focus_count + 1
-
-            if steady_focus_count == 2 then
-                applyBuff( "steady_focus" )
-                steady_focus_count = 0
-            end
-        elseif class.abilities[ token ] and class.abilities[ token ].gcd ~= "off" then
-            steady_focus_count = 0
-        end
-    end
-end )
-
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -870,7 +822,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.lock_and_load.up or buff.secrets_of_the_unblinking_vigil.up then return 0 end
-            return 35 * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) * ( buff.trueshot.up and ( talent.eagletalons_true_focus.enabled and 0.5  ) or 1 )
+            return 35 * ( ( buff.trueshot.up and 0.5 or 1 ) * ( legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) )
         end,
         spendType = "focus",
 
@@ -888,7 +840,7 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.lock_and_load.up then removeBuff( "lock_and_load" )
             elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
-            if talent.precise_shots.enabled then applyBuff( "precise_shots", nil, 2 ) end
+            if talent.precise_shot.enabled then applyBuff( "precise_shot" ) end
             if talent.bulletstorm.enabled and buff.trick_shots.up then
                 addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end
@@ -896,6 +848,8 @@ spec:RegisterAbilities( {
                 removeBuff( "find_the_mark" )
                 applyDebuff( "target", "hit_the_mark" )
             end
+
+            removeBuff ( "moving_target" )
             if buff.volley.down and buff.trick_shots.up then
                 removeBuff( "trick_shots" )
                 if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
@@ -919,7 +873,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.lock_and_load.up or buff.secrets_of_the_unblinking_vigil.up then return 0 end
-            return 15 * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) * ( buff.trueshot.up and ( 1 - 0.5 * talent.eagletalons_true_focus.rank ) or 1 )
+            return 15 * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) * ( buff.trueshot.up and 0.5 or 1 )
         end,
         spendType = "focus",
 
@@ -944,17 +898,10 @@ spec:RegisterAbilities( {
                 setCooldown( "rapid_fire", 0 )
             end
 
-            if talent.precise_shots.enabled then applyBuff( "precise_shots" ) end
-            if talent.bulletstorm.enabled and buff.trick_shots.up then
-                addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
-            end
+            if talent.precise_shot.enabled then applyBuff( "precise_shot" ) end
             if buff.find_the_mark.up then
                 removeBuff( "find_the_mark" )
                 applyDebuff( "target", "hit_the_mark" )
-            end
-            if buff.volley.down and buff.trick_shots.up then
-                removeBuff( "trick_shots" )
-                if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
             end
             if pvptalent.rangers_finesse.enabled then addStack( "rangers_finesse" ) end
         end,
@@ -970,7 +917,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "arcane",
 
-        spend = function () return ( talent.crack_shot.enabled and 20 or 40 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
+        spend = function () return ( 40 - ( talent.crack_shot.enabled and 20 or 0 ) ) * ( buff.precise_shot.up and 0.5 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
 
         startsCombat = true,
@@ -979,10 +926,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "focusing_aim" )
-
-            if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
-                removeBuff( "precise_shots" )
-            else removeStack( "precise_shots" )
+            if buff.precise_shot.up then
+                removeBuff( "precise_shot" )
+                applyBuff ( "moving_target" )
             end
         end,
     },
@@ -1070,9 +1016,9 @@ spec:RegisterAbilities( {
 
     -- Fire a Black Arrow into your target, dealing $o1 Shadow damage over $d.; Each time Black Arrow deals damage, you have a $s2% chance to generate a charge of $?a137015[Barbed Shot]?a137016[Aimed Shot and reduce its cast time by $439659s2%][Barbed Shot or Aimed Shot].
     black_arrow = {
-        id = 430703,
+        id = 466930,
         cast = 0.0,
-        cooldown = 30.0,
+        cooldown = 10.0,
         gcd = "spell",
 
         spend = 10,
@@ -1081,13 +1027,26 @@ spec:RegisterAbilities( {
         talent = "black_arrow",
         startsCombat = true,
 
-        handler = function()
+        usable = function () return buff.deathblow.up or buff.flayers_mark.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark or target health below 20 percent or above 80 percent" end,
+        handler = function ()
             applyDebuff( "target", "black_arrow" )
-            if talent.death_shade.enabled then
-                applyBuff( "deathblow" )
-                if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
+            removeBuff( "deathblow" )
+            removeBuff( "flayers_mark" )
+
+            if buff.razor_fragments.up then
+                removeBuff( "razor_fragments" )
+                applyDebuff( "target", "razor_fragments_bleed" )
             end
-        end,
+
+            if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
+                applyDebuff( "target", "pouch_of_razor_fragments" )
+            end
+
+            if set_bonus.tier30_4pc > 0 then
+                reduceCooldown( "aimed_shot", 1.5 )
+                reduceCooldown( "rapid_fire", 1.5 )
+            end
+        end
     },
 
     -- Talent: Fires an explosion of bolts at all enemies in front of you, knocking them back, snaring them by $s4% for $d, and dealing $s1 Physical damage.$?s378771[    When you fall below $378771s1% heath, Bursting Shot's cooldown is immediately reset. This can only occur once every $385646d.][]
@@ -1135,7 +1094,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "nature",
 
-        spend = function () return ( talent.crack_shot.enabled and 20 or 40 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) * ( buff.precise_shots.up and 0.5 or 1 ) end,
+        spend = function () return ( 40 - ( talent.crack_shot.enabled and 20 or 0 ) ) * ( buff.precise_shot.up and 0.5 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
 
         talent = "chimaera_shot",
@@ -1143,7 +1102,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "focusing_aim" )
-            removeStack( "precise_shots" )
+            removeStack( "precise_shot" )
         end,
     },
 
@@ -1237,9 +1196,7 @@ spec:RegisterAbilities( {
     kill_shot = {
         id = 53351,
         cast = 0,
-        charges = function() return talent.deadeye.enabled and 2 or nil end,
         cooldown = 10,
-        recharge = function() return talent.deadeye.enabled and 7 or nil end,
         gcd = "spell",
         school = "physical",
 
@@ -1247,30 +1204,28 @@ spec:RegisterAbilities( {
         spendType = "focus",
 
         talent = "kill_shot",
+        notalent = "black_arrow",
         startsCombat = true,
 
-        usable = function () return buff.deathblow.up or buff.hunters_prey.up or buff.flayers_mark.up or target.health_pct < 20, "requires flayers_mark/hunters_prey or target health below 20 percent" end,
+        usable = function () return buff.deathblow.up or buff.flayers_mark.up or target.health_pct < 20, "requires flayers_mark or target health below 20 percent" end,
         handler = function ()
+            removeBuff( "deathblow" )
+            removeBuff( "flayers_mark" )
+
             if buff.razor_fragments.up then
                 removeBuff( "razor_fragments" )
                 applyDebuff( "target", "razor_fragments_bleed" )
             end
+
             if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
                 applyDebuff( "target", "pouch_of_razor_fragments" )
-            else
-                removeBuff( "hunters_prey" )
-                if buff.deathblow.up then
-                    removeBuff( "deathblow" )
-                    if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
-                end
             end
-            removeBuff( "flayers_mark" )
 
             if set_bonus.tier30_4pc > 0 then
                 reduceCooldown( "aimed_shot", 1.5 )
                 reduceCooldown( "rapid_fire", 1.5 )
             end
-        end,
+        end
     },
 
     lunar_storm = {
@@ -1288,19 +1243,18 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function () return 30 * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) * ( buff.precise_shots.up and 0.5 or 1 ) end,
+        spend = function () return 40 * ( buff.precise_shot.up and 0.5 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
 
         talent = "multishot",
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "bulletstorm" )
             removeBuff( "focusing_aim" )
 
-            if talent.eagletalons_true_focus.enabled and buff.trueshot.up then
-                removeBuff("precise_shots")
-            else removeStack( "precise_shots" )
+            if buff.precise_shot.up then
+                removeBuff( "precise_shot" )
+                applyBuff ( "moving_target" )
             end
 
             if buff.salvo.up then
@@ -1407,7 +1361,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return talent.improved_steady_shot.enabled and ( buff.trueshot.up and -15 or -10 ) or 0 end,
+        spend = function () return talent.improved_steady_shot.enabled and -20  or -10 end,
         spendType = "focus",
 
         startsCombat = true,
@@ -1415,9 +1369,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end
+            if talent.pin_cushion.enabled then reduceCooldown( "aimed_shot", 2 ) end
+            applyBuff ( "steady_focus" )
         end,
     },
-
+ 
     -- Talent: Reduces the cooldown of your Aimed Shot and Rapid Fire by ${100*(1-(100/(100+$m1)))}%, and causes Aimed Shot to cast $s4% faster for $d.    While Trueshot is active, you generate $s5% additional Focus$?s386878[ and you gain $386877s1% critical strike chance and $386877s2% increased critical damage dealt every $386876t1 sec, stacking up to $386877u times.][].$?s260404[    Every $260404s2 Focus spent reduces the cooldown of Trueshot by ${$260404m1/1000}.1 sec.][]
     trueshot = {
         id = 288613,
@@ -1446,6 +1402,8 @@ spec:RegisterAbilities( {
                 -- Trueshot grants Wailing Arrow and you generate 2 additional Wind Arrows while in Trueshot. Wailing Arrow resets the cooldown of Rapid Fire and generates 2 charges of Aimed Shot.
                 applyBuff( "wailing_arrow_override" )
             end
+
+            if talent.withering_fire.enabled then applyBuff ( "withering_fire" ) end
 
             if azerite.unerring_vision.enabled or talent.unerring_vision.enabled then
                 applyBuff( "unerring_vision" )
@@ -1539,7 +1497,7 @@ spec:RegisterSetting( "pet_healing", 0, {
     min = 0,
     max = 100,
     step = 1,
-    width = "normal"
+    width = 1.5
 } )
 
 spec:RegisterSetting( "mark_any", false, {
@@ -1557,7 +1515,7 @@ spec:RegisterSetting( "trueshot_rapid_fire", true, {
         Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
         spec.abilities.rapid_fire.name,
         spec.abilities.aimed_shot.name,
-        Hekili:GetSpellLinkWithTexture( spec.talents.deathblow[ 2 ] ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.improved_deathblow[ 2 ] ),
         Hekili:GetSpellLinkWithTexture( spec.talents.surging_shots[ 2 ] ) ),
     type = "toggle",
     width = "full"
