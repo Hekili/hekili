@@ -833,8 +833,6 @@ spec:RegisterHook( "reset_precast", function ()
         if Hekili.ActiveDebug then Hekili:Debug( "Resetting Steady Focus counter as last GCD spell was '%s'.", ( prev_gcd.last or "Unknown" ) ) end
         steady_focus_count = 0
     end
-
-    if IsSpellKnownOrOverridesKnown( 392060 ) then applyBuff( "wailing_arrow_override" ) end
 end )
 
 spec:RegisterHook( "runHandler", function( token )
@@ -881,8 +879,11 @@ spec:RegisterAbilities( {
         indicator = function() if settings.trueshot_rapid_fire and buff.trueshot.up then return spec.abilities.rapid_fire.texture end end,
 
         usable = function ()
-            if action.aimed_shot.cast > 0 and moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
+            if IsSpellKnownOrOverridesKnown(392060) then
+                return false
+            else if action.aimed_shot.cast > 0 and moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
             return true
+            end
         end,
 
         handler = function ()
@@ -908,7 +909,7 @@ spec:RegisterAbilities( {
 
     wailing_arrow = {
         id = 392060,
-        known = 19434,
+        known = function () return IsSpellKnownOrOverridesKnown( 392060 ) or buff.wailing_arrow_override.up end,
         cast = function ()
             if buff.lock_and_load.up then return 0 end
             return 2 * haste * ( buff.rapid_fire.up and 0.7 or 1 ) * ( buff.trueshot.up and 0.5 or 1 ) * ( buff.streamline.up and ( 1 - 0.15 * talent.streamline.rank ) or 1 )
@@ -926,7 +927,6 @@ spec:RegisterAbilities( {
         talent = "wailing_arrow",
         texture = 132323,
         startsCombat = true,
-        buff = "wailing_arrow_override",
 
         usable = function ()
             if action.wailing_arrow.cast > 0 and moving and settings.prevent_hardcasts then return false, "prevent_hardcasts is checked and player is moving" end
@@ -1084,9 +1084,11 @@ spec:RegisterAbilities( {
         handler = function()
             applyDebuff( "target", "black_arrow" )
             if talent.death_shade.enabled then
-                applyBuff( "deathblow" )
-                if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
-            end
+                applyBuff ( "deathblow" )
+                    if talent.razor_fragments.enabled then
+                        applyBuff ( "razor_fragments" )
+                    end
+                end
         end,
     },
 
@@ -1539,7 +1541,7 @@ spec:RegisterSetting( "pet_healing", 0, {
     min = 0,
     max = 100,
     step = 1,
-    width = "normal"
+    width = 1.5
 } )
 
 spec:RegisterSetting( "mark_any", false, {
