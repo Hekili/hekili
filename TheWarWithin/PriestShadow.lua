@@ -432,10 +432,6 @@ spec:RegisterHook( "reset_precast", function ()
 
     local er_trigger = query_time - ( talent.void_eruption.enabled and action.void_eruption.lastCast or action.void_torrent.lastCast )
 
-    if talent.entropic_rift.enabled and query_time - action.void_torrent.lastCast < 8 then
-        applyBuff( "entropic_rift", 8 - ( query_time - action.void_torrent.lastCast ) )
-    end
-
     if talent.power_surge.enabled and query_time - action.halo.lastCast < 10 then
         applyBuff( "power_surge", 10 - ( query_time - action.halo.lastCast ) )
         if buff.power_surge.remains > 5 then
@@ -577,7 +573,10 @@ spec:RegisterAuras( {
     },
     entropic_rift = {
         duration = 8,
-        max_stack = 1
+        max_stack = 1,
+        alias = "voidheart",
+        aliasMode = "first",
+        aliasType = "buff"
     },
     -- Reduced threat level. Enemies have a reduced attack range against you.$?e3  [   Damage taken reduced by $s4%.][]
     -- https://wowhead.com/beta/spell=586
@@ -973,6 +972,11 @@ spec:RegisterAuras( {
         duration = 15, -- function () return talent.legacy_of_the_void.enabled and 3600 or 15 end,
         max_stack = 1,
     },
+    voidheart = {
+        id = 449887,
+        duration = 8,
+        max_stack = 1,
+    },
     void_tendril_mind_flay = {
         id = 193473,
         duration = 15,
@@ -1064,7 +1068,7 @@ spec:RegisterAuras( {
 
 
 
-
+local void_blast_extension_count = 0  -- Track the number of Void Blast extensions during each Voidheart window
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -1529,6 +1533,14 @@ spec:RegisterAbilities( {
 
             if set_bonus.tier29_2pc > 0 then
                 addStack( "gathering_shadows" )
+            end
+
+            if buff.voidheart.up then
+                -- Extend Voidheart by 1 second, up to a maximum of 3 seconds during the active window
+                if void_blast_extension_count < 3 then  -- Ensure no more than 3 seconds extension
+                    buff.void_heart.expires = buff.void_heart.expires + 1
+                    void_blast_extension_count = void_blast_extension_count + 1  -- Increment the extension counter
+                end
             end
         end,
 
@@ -2342,12 +2354,13 @@ spec:RegisterAbilities( {
         end,
 
         start = function ()
+            void_blast_extension_count = 0
             applyDebuff( "target", "void_torrent" )
             applyDebuff( "target", "devouring_plague" )
             if debuff.vampiric_touch.up then applyDebuff( "target", "vampiric_touch" ) end -- This should refresh/pandemic properly.
             if debuff.shadow_word_pain.up then applyDebuff( "target", "shadow_word_pain" ) end -- This should refresh/pandemic properly.
             if talent.dark_evangelism.enabled then addStack( "dark_evangelism" ) end
-            if talent.entropic_rift.enabled then applyBuff( "entropic_rift" ) end
+            if talent.entropic_rift.enabled then applyBuff( "voidheart" ) end
             if talent.idol_of_cthun.enabled then applyDebuff( "target", "void_tendril_mind_flay" ) end
         end,
 
@@ -2355,6 +2368,7 @@ spec:RegisterAbilities( {
             if debuff.vampiric_touch.up then applyDebuff( "target", "vampiric_touch" ) end -- This should refresh/pandemic properly.
             if debuff.shadow_word_pain.up then applyDebuff( "target", "shadow_word_pain" ) end -- This should refresh/pandemic properly.
             if talent.dark_evangelism.enabled then addStack( "dark_evangelism" ) end
+            if talent.entropic_rift.enabled then applyBuff( "voidheart", 8 ) end
         end,
     },
 } )
