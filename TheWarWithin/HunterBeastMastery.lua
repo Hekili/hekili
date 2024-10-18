@@ -2440,7 +2440,7 @@ spec:RegisterSetting( "barbed_shot_grace_period", 1, {
     min = 0,
     max = 2,
     step = 0.01,
-    width = "normal"
+    width = 1.5
 } )
 
 spec:RegisterStateExpr( "barbed_shot_grace_period", function()
@@ -2457,7 +2457,7 @@ spec:RegisterSetting( "pet_healing", 0, {
     min = 0,
     max = 100,
     step = 1,
-    width = "normal"
+    width = 1.5
 } )
 
 spec:RegisterSetting( "avoid_bw_overlap", false, {
