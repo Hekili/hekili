@@ -1216,8 +1216,8 @@ spec:RegisterAura( "lethal_command", {
 
 
 local CallOfTheWildCDR = setfenv( function()
-    reduceCooldown( "kill_command", spec.abilities.kill_command.cooldown/2 )
-    reduceCooldown( "barbed_shot", spec.abilities.barbed_shot.cooldown/2 )
+    gainChargeTime( "kill_command", spec.abilities.kill_command.recharge_time/2)
+    gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge_time/2)
 end, state )
 
 
@@ -1538,8 +1538,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "call_of_the_wild" )
-            reduceCooldown( "kill_command", spec.abilities.kill_command.cooldown/2 )
-            reduceCooldown( "barbed_shot", spec.abilities.barbed_shot.cooldown/2 )
+            gainCharges( "kill_command", 1 )
+            gainCharges( "barbed_shot", 1 )
             state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 4, "AURA_TICK" )
             state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 8, "AURA_TICK" )
             state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 12, "AURA_TICK" )
