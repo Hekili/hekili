@@ -1229,35 +1229,44 @@ local CallOfTheWildCDR = setfenv( function()
     reduceCooldown( "barbed_shot", spec.abilities.barbed_shot.cooldown/2 )
 end, state )
 
+local last_cotw_tick = nil
 
 spec:RegisterHook( "reset_precast", function()
+
     if debuff.tar_trap.up then
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
-    end
-
-    if talent.bloody_frenzy.enabled and buff.call_of_the_wild.up then
-        applyBuff( "beast_cleave", max( buff.beast_cleave.remains, buff.call_of_the_wild.remains ) )
     end
 
     if buff.nesingwarys_apparatus.up then
         state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireNesingwarysTrappingApparatus, buff.nesingwarys_apparatus.expires )
     end
 
+    -- Handle Call of the Wild (updated version with last_cotw_tick caching)
     if buff.call_of_the_wild.up then
-        local tick, expires = buff.call_of_the_wild.applied, buff.call_of_the_wild.expires
+        local tick = buff.call_of_the_wild.applied
+        local expires = buff.call_of_the_wild.expires
 
+        -- Loop through the possible 5 ticks
         for i = 1, 5 do
-            tick = tick + 4
-            if tick > query_time and tick < expires then
+            tick = tick + 4  -- Increment tick by 4 seconds
+
+            -- Only queue the event if it's a new tick and within the valid range
+            if tick > query_time and tick < expires and tick ~= last_cotw_tick then
                 state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, tick, "AURA_TICK" )
+                last_cotw_tick = tick  -- Update the last processed tick
             end
         end
     end
 
-    if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
+    if now - action.resonating_arrow.lastCast < 6 then
+        applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) )
+    end
 
-    if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then reduceCooldown( "barbed_shot", barbed_shot_grace_period ) end
+    if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then
+        reduceCooldown( "barbed_shot", barbed_shot_grace_period )
+    end
 end )
+
 
 
 local trapUnits = { "target", "focus" }
