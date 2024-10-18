@@ -31,7 +31,8 @@ actions+=/spell_lock
 actions+=/call_action_list,name=variables
 actions+=/call_action_list,name=ogcd
 actions+=/call_action_list,name=items
-actions+=/call_action_list,name=cleave,if=active_enemies!=1&active_enemies<3|variable.cleave_apl
+# This entry is manually translated and will differ from SIMC, but maintains the same functionality.
+actions+=/call_action_list,name=cleave,if=active_enemies=2|(active_enemies>=3&variable.cleave_apl)
 actions+=/call_action_list,name=aoe,if=active_enemies>2
 actions+=/call_action_list,name=end_of_fight
 actions+=/agony,if=(!talent.vile_taint|remains<cooldown.vile_taint.remains+action.vile_taint.cast_time)&(talent.absolute_corruption&remains<3|!talent.absolute_corruption&remains<5|cooldown.soul_rot.remains<5&remains<8)&fight_remains>dot.agony.remains+5

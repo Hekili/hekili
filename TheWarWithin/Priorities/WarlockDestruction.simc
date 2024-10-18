@@ -34,7 +34,8 @@ actions+=/call_action_list,name=variables
 actions+=/call_action_list,name=ogcd
 actions+=/call_action_list,name=items
 actions+=/call_action_list,name=aoe,strict=1,if=(active_enemies>=3)&!variable.cleave_apl
-actions+=/call_action_list,name=cleave,strict=1,if=active_enemies!=1|variable.cleave_apl
+# This entry is manually translated and will differ from SIMC, but maintains the same functionality.
+actions+=/call_action_list,name=cleave,strict=1,if=active_enemies!=1
 actions+=/malevolence,if=cooldown.summon_infernal.remains>=55
 actions+=/wait,sec=((buff.diabolic_ritual_mother_of_chaos.remains+buff.diabolic_ritual_overlord.remains+buff.diabolic_ritual_pit_lord.remains)),if=(diabolic_ritual&(buff.diabolic_ritual_mother_of_chaos.remains+buff.diabolic_ritual_overlord.remains+buff.diabolic_ritual_pit_lord.remains)<gcd.max*0.25)&soul_shard>2
 actions+=/chaos_bolt,if=demonic_art
