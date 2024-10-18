@@ -17,6 +17,7 @@ local GetSpellCount = C_Spell.GetSpellCastCount
 local spec = Hekili:NewSpecialization( 253, true )
 
 
+
 spec:RegisterResource( Enum.PowerType.Focus, {
     barbed_shot = {
         resource = "focus",
@@ -300,6 +301,7 @@ spec:RegisterPvpTalents( {
     wild_kingdom        = 5441, -- (356707) Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
 } )
 
+local barbed_shot_duration = 12 + ( talent.savagery.enabled and 2 or 0 )
 
 -- Auras
 spec:RegisterAuras( {
@@ -374,7 +376,14 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=217200
     barbed_shot = {
         id = 246152,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function()
+            -- Recalculate duration only if it has changed
+            local current_duration = 12 + ( talent.savagery.enabled and 2 or 0 )
+            if current_duration ~= barbed_shot_duration then
+                barbed_shot_duration = current_duration
+            end
+            return barbed_shot_duration
+        end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -382,7 +391,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_2 = {
         id = 246851,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -390,7 +399,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_3 = {
         id = 246852,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -398,7 +407,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_4 = {
         id = 246853,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -406,7 +415,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_5 = {
         id = 246854,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -414,7 +423,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_6 = {
         id = 284255,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -422,7 +431,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_7 = {
         id = 284257,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -430,7 +439,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_8 = {
         id = 284258,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -438,7 +447,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_dot = {
         id = 217200,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -731,7 +740,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=272790
     frenzy = {
         id = 272790,
-        duration = function () return azerite.feeding_frenzy.enabled and 9 or spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         max_stack = 3,
         generate = function ()
             local fr = buff.frenzy
@@ -1047,7 +1056,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=257946
     thrill_of_the_hunt = {
         id = 257946,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         max_stack = 3,
         copy = 312365
     },
