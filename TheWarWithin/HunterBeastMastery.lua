@@ -17,7 +17,6 @@ local GetSpellCount = C_Spell.GetSpellCastCount
 local spec = Hekili:NewSpecialization( 253, true )
 
 
-
 spec:RegisterResource( Enum.PowerType.Focus, {
     barbed_shot = {
         resource = "focus",
