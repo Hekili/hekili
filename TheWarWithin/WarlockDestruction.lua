@@ -634,10 +634,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=80240
     havoc = {
         id = 80240,
-        duration = function()
-            if talent.mayhem.enabled then return 5 end
-            return talent.pandemonium.enabled and 15 or 12
-        end,
+        duration = function() return talent.mayhem.enabled and 5 or 12 end,
         type = "Magic",
         max_stack = 1
     },
@@ -1097,6 +1094,28 @@ spec:RegisterAuras( {
     },
 } )
 
+local TriggerDemonicArtBuff = setfenv( function( demonType )
+    applyBuff( demonType or "demonic_art")
+end, state )
+
+local TriggerDemonicArtSummon = setfenv( function()
+    if buff.demonic_art_overlord.up then
+        summon_demon( "overlord", 2 )
+        removeBuff( "art_overlord" )
+    elseif buff.demonic_art_mother then
+        summon_demon( "mother_of_chaos", 6 )
+        removeBuff( "art_mother" )
+        if talent.secrets_of_the_coven.enabled then
+            applyBuff( "infernal_bolt" )
+        end
+    elseif buff.demonic_art_pit_lord.up then
+        summon_demon( "pit_lord", 5 )
+        removeBuff( "art_pit_lord" )
+        if talent.ruination.enabled then
+            applyBuff( "ruination" )
+        end
+    end
+end, state )
 
 spec:RegisterHook( "runHandler", function( a )
     if talent.rolling_havoc.enabled and havoc_active and not debuff.havoc.up and action[ a ].startsCombat then
@@ -1109,33 +1128,6 @@ spec:RegisterHook( "spend", function( amt, resource )
     if resource == "soul_shards" then
         if amt > 0 then
             if legendary.wilfreds_sigil_of_superior_summoning.enabled then reduceCooldown( "summon_infernal", amt * 1.5 ) end
-
-            if buff.art_overlord.up then
-                summon_demon( "overlord" )
-                removeBuff( "art_overlord" )
-            end
-
-            if buff.art_mother.up then
-                summon_demon( "mother_of_chaos" )
-                removeBuff( "art_mother" )
-                if talent.secrets_of_the_coven.enabled then applyBuff( "infernal_bolt" ) end
-            end
-
-            if buff.art_pit_lord.up then
-                summon_demon( "pit_lord" )
-                removeBuff( "art_pit_lord" )
-                if talent.ruination.enabled then applyBuff( "ruination" ) end
-            end
-
-            if talent.diabolic_ritual.enabled then
-                if buff.diabolic_ritual.down then applyBuff( "diabolic_ritual" )
-                else
-                    if buff.ritual_overlord.up then buff.ritual_overlord.expires = buff.ritual_overlord.expires - amt; if buff.ritual_overlord.down then applyBuff( "art_overlord" ) end end
-                    if buff.ritual_mother.up then buff.ritual_mother.expires = buff.ritual_mother.expires - amt; if buff.ritual_mother.down then applyBuff( "art_mother" ) end end
-                    if buff.ritual_pit_lord.up then buff.ritual_pit_lord.expires = buff.ritual_pit_lord.expires - amt; if buff.ritual_pit_lord.down then applyBuff( "art_pit_lord" ) end end
-                end
-            end
-
             if talent.grand_warlocks_design.enabled then reduceCooldown( "summon_infernal", amt * 1.5 ) end
             if talent.power_overwhelming.enabled then addStack( "power_overwhelming", ( buff.power_overwhelming.up and buff.power_overwhelming.remains or nil ), amt ) end
             if talent.ritual_of_ruin.enabled then
@@ -1236,7 +1228,6 @@ spec:RegisterAura( "searing_bolt", {
 } )
 
 
-
 local SUMMON_DEMON_TEXT
 
 spec:RegisterHook( "reset_precast", function ()
@@ -1244,6 +1235,18 @@ spec:RegisterHook( "reset_precast", function ()
     soul_shards.actual = nil
 
     class.abilities.summon_pet = class.abilities[ settings.default_pet ]
+
+    if buff.ritual_overlord.up then
+        state:QueueAuraEvent( "diabolic_ritual", TriggerDemonicArtBuff( "art_overlord" ), buff.diabolic_ritual.expires, "AURA_EXPIRATION" )
+    end
+
+    if buff.ritual_mother.up then
+        state:QueueAuraEvent( "diabolic_ritual", TriggerDemonicArtBuff( "art_mother" ), buff.diabolic_ritual.expires, "AURA_EXPIRATION" )
+    end
+
+    if buff.ritual_pit_lord.up then
+        state:QueueAuraEvent( "diabolic_ritual", TriggerDemonicArtBuff( "art_pit_lord" ), buff.diabolic_ritual.expires, "AURA_EXPIRATION" )
+    end
 
     if not SUMMON_DEMON_TEXT then
         local summon_demon = GetSpellInfo( 180284 )
@@ -1381,6 +1384,7 @@ spec:RegisterAbilities( {
         cast = function () return ( 3 - 0.5 * talent.improved_chaos_bolt.rank )
             * ( buff.ritual_of_ruin.up and 0.5 or 1 )
             * ( buff.backdraft.up and 0.7 or 1 )
+            * ( buff.demonic_art.up and 0.5 or 1 )
             * haste
         end,
         cooldown = 0,
@@ -1401,6 +1405,15 @@ spec:RegisterAbilities( {
         velocity = 16,
 
         handler = function ()
+            -- Diabolist tree interactions
+            if talent.diabolic_ritual.enabled then
+                if buff.diabolic_ritual.up then
+                    buff.diabolic_ritual.expires = buff.diabolic_ritual.expires - (talent.touch_of_rancora.enabled and 2 or 1)
+                else applyBuff( "diabolic_ritual" ) end
+                if buff.demonic_art.up then
+                    TriggerDemonicArtSummon()
+                end
+            end
             removeStack( "crashing_chaos" )
             if buff.ritual_of_ruin.up then
                 removeBuff( "ritual_of_ruin" )
@@ -1408,20 +1421,26 @@ spec:RegisterAbilities( {
             else
                 removeStack( "backdraft" )
             end
+
             if debuff.wither.up then
                 applyDebuff( "target", "wither", nil, debuff.wither.stack + 1 + ( buff.malevolence.up and 1 or 0 ) )
             end
+
             if talent.burn_to_ashes.enabled then
                 addStack( "burn_to_ashes", nil, 2 )
             end
+
             if talent.eradication.enabled then
                 applyDebuff( "target", "eradication" )
                 active_dot.eradication = max( active_dot.eradication, active_dot.bane_of_havoc )
             end
+
             if talent.internal_combustion.enabled and debuff.immolate.up then
                 if debuff.immolate.remains <= 5 then removeDebuff( "target", "immolate" )
                 else debuff.immolate.expires = debuff.immolate.expires - 5 end
             end
+
+
         end,
 
         impact = function() end,
@@ -1787,6 +1806,17 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            -- Diabolist tree interactions
+            if talent.diabolic_ritual.enabled then
+                if buff.diabolic_ritual.up then
+                    buff.diabolic_ritual.expires = buff.diabolic_ritual.expires - 1
+                else applyBuff( "diabolic_ritual" ) end
+
+                if buff.demonic_art.up then
+                    TriggerDemonicArtSummon()
+                end
+            end
+
             removeStack( "crashing_chaos" )
             if buff.ritual_of_ruin.up then
                 removeBuff( "ritual_of_ruin" )
@@ -1919,6 +1949,16 @@ spec:RegisterAbilities( {
         nodebuff = "shadowburn",
 
         handler = function ()
+            -- Diabolist tree interactions
+            if talent.diabolic_ritual.enabled then
+                if buff.diabolic_ritual.up then
+                    buff.diabolic_ritual.expires = buff.diabolic_ritual.expires - 1
+                else applyBuff( "diabolic_ritual" ) end
+
+                if buff.demonic_art.up then
+                    TriggerDemonicArtSummon()
+                end
+            end
             -- gain( 0.3, "soul_shards" )
             applyDebuff( "target", "shadowburn" )
             active_dot.shadowburn = max( active_dot.shadowburn, active_dot.bane_of_havoc )
