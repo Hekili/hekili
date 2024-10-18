@@ -1232,7 +1232,6 @@ end, state )
 local last_cotw_tick = nil
 
 spec:RegisterHook( "reset_precast", function()
-
     if debuff.tar_trap.up then
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
     end
@@ -1243,8 +1242,7 @@ spec:RegisterHook( "reset_precast", function()
 
     -- Handle Call of the Wild (updated version with last_cotw_tick caching)
     if buff.call_of_the_wild.up then
-        local tick = buff.call_of_the_wild.applied
-        local expires = buff.call_of_the_wild.expires
+        local tick, expires = buff.call_of_the_wild.applied, buff.call_of_the_wild.expires
 
         -- Loop through the possible 5 ticks
         for i = 1, 5 do
