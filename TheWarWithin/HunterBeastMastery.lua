@@ -1252,6 +1252,7 @@ spec:RegisterHook( "reset_precast", function()
                 last_cotw_tick = tick  -- Update the last processed tick
             end
         end
+    else last_cotw_tick = nil -- reset after buff goes away to prep for next cast
     end
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
