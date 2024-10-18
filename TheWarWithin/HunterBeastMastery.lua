@@ -1244,9 +1244,8 @@ spec:RegisterHook( "reset_precast", function()
     if buff.call_of_the_wild.up then
         local tick, expires = buff.call_of_the_wild.applied, buff.call_of_the_wild.expires
 
-        -- Loop through the possible 5 ticks
         for i = 1, 5 do
-            tick = tick + 4  -- Increment tick by 4 seconds
+            tick = tick + 4
 
             -- Only queue the event if it's a new tick and within the valid range
             if tick > query_time and tick < expires and tick ~= last_cotw_tick then
@@ -1256,13 +1255,9 @@ spec:RegisterHook( "reset_precast", function()
         end
     end
 
-    if now - action.resonating_arrow.lastCast < 6 then
-        applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) )
-    end
+    if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
 
-    if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then
-        reduceCooldown( "barbed_shot", barbed_shot_grace_period )
-    end
+    if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then reduceCooldown( "barbed_shot", barbed_shot_grace_period ) end
 end )
 
 
