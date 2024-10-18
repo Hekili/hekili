@@ -574,7 +574,7 @@ spec:RegisterAuras( {
     entropic_rift = {
         duration = 8,
         max_stack = 1,
-        alias = "voidheart",
+        alias = { "voidheart" },
         aliasMode = "first",
         aliasType = "buff"
     },
@@ -1535,7 +1535,7 @@ spec:RegisterAbilities( {
                 addStack( "gathering_shadows" )
             end
 
-            if buff.voidheart.up then
+            if buff.voidheart.up and talent.darkening_horizon.enabled then
                 -- Extend Voidheart by 1 second, up to a maximum of 3 seconds during the active window
                 if void_blast_extension_count < 3 then  -- Ensure no more than 3 seconds extension
                     buff.void_heart.expires = buff.void_heart.expires + 1
