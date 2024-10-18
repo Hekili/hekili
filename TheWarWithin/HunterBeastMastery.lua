@@ -1261,7 +1261,6 @@ spec:RegisterHook( "reset_precast", function()
 end )
 
 
-
 local trapUnits = { "target", "focus" }
 local trappableClassifications = {
     rare = true,
