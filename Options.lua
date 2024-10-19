@@ -5396,7 +5396,7 @@ do
                                     name = "These settings control how targets are counted when generating ability recommendations.\n\nBy default, the number of "
                                         .. "targets is shown on the bottom-right of the primary icon in the Primary and AOE displays, unless only one target is "
                                         .. "detected.\n\n"
-                                        .. "Your true in-game target is always counted. Be aware that action-targeting mode does not work great, particularly with dot-based specs.\n\n",
+                                        .. "Your true in-game target is always counted. \n\n|cFFFF0000WARNING:|r 'Soft' targets from the Action Targeting system are not presently supported.\n\n",
                                     width = "full",
                                     fontSize = "medium",
                                     order = 0.01
@@ -5410,7 +5410,6 @@ do
                                     get = function() return true end,
                                     set = function() end,
                                     order = 0.02,
-                                    hidden = true,
                                 },
 
                                 -- Damage Detection Quasi-Group
@@ -5434,7 +5433,7 @@ do
                                     args = {
                                         damagePets = {
                                             type = "toggle",
-                                            name = "Include Enemies Damaged By Your Pets and Minions",
+                                            name = "Include Enemies Damaged by Your Pets and Minions",
                                             desc = "If checked, the addon will count enemies that your pets or minions have hit (or hit you) within the past several seconds.  "
                                                 .. "This may give misleading target counts if your pet/minions are spread out over the battlefield.",
                                             order = 2,
@@ -5480,7 +5479,7 @@ do
                                 },
                                 nameplates = {
                                     type = "toggle",
-                                    name = "Count Nameplates Around Your Character",
+                                    name = "Count Nameplates Near You",
                                     desc = "If checked, enemy nameplates within the specified radius of your character will be counted as enemy targets.\n\n"
                                         .. AtlasToString( "common-icon-checkmark" ) .. " Recommended for melee specializations using a range of 10 yds or fewer\n\n"
                                         .. AtlasToString( "common-icon-redx" ) .. " Discouraged for ranged specializations.",
@@ -5780,8 +5779,8 @@ do
 
                                 aoe = {
                                     type = "range",
-                                    name = "AOE Display: Show rotation as if there are at least this many targets",
-                                    desc = "When the AOE Display is shown (or the Primary display is in AOE mode), its recommendations will assume that there are at least this many targets available.",
+                                    name = "Minimum Targets for Dedicated AOE Recommendations",
+                                    desc = "When the AOE display is shown (or AOE mode is active), its recommendations will assume that there are at least this many targets available. \n\nThis can be useful with the Dual display mode to guarantee your AOE rotation is shown if it doesn't normally change until, for example, 5 targets. \n\nUsing a setting of 5 would make sure the right priority is followed for \"AOE\" mode. Different values may be optimal different specs and builds.",
                                     width = "full",
                                     min = 2,
                                     max = 10,
