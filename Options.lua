@@ -5780,7 +5780,7 @@ do
                                 aoe = {
                                     type = "range",
                                     name = "Minimum Targets for Dedicated AOE Recommendations",
-                                    desc = "When the AOE display is shown (or AOE mode is active), its recommendations will assume that there are at least this many targets available. \n\nThis can be useful with the Dual display mode to guarantee your AOE rotation is shown if it doesn't normally change until, for example, 5 targets. \n\nUsing a setting of 5 would make sure the right priority is followed for \"AOE\" mode. Different values may be optimal different specs and builds.",
+                                    desc = "When the AOE display is shown (or AOE mode is active), its recommendations will assume that there are at least this many targets available. \n\nThis can be useful with the Dual display mode to guarantee your AOE priority is shown if it doesn't normally change until, for example, 5 targets. \n\nUsing a setting of 5 would make sure the right priority is followed for \"AOE\" mode. Different values may be optimal different specializations and builds.",
                                     width = "full",
                                     min = 2,
                                     max = 10,
@@ -8403,23 +8403,23 @@ do
                             args = {
                                 key = {
                                     type = "keybinding",
-                                    name = "Funnel Rotation",
-                                    desc = "Set a key to toggle Funnel Rotation on or off, for specs which support it.",
+                                    name = "Funnel Priority",
+                                    desc = "Set a key to toggle Funnel Priority on or off, for specializations which support it.",
                                     width = 1,
                                     order = 1,
                                         },
 
                                 value = {
                                     type = "toggle",
-                                    name = "Enable Funnel Rotation",
-                                    desc = "If checked, rotations for funnel specs may change slightly to use single target spenders in AoE.\n\n",
+                                    name = "Enable Funnel Priority",
+                                    desc = "If checked, priorities for funnel specializations may change slightly to use single target spenders in AoE.\n\n",
                                     width = 2,
                                     order = 2,
                                         },
                                     
                                 supportedSpecs = {
                                     type = "description",
-                                    name = "Supported Specs: Subtlety, Assassination, Enhancement, Destruction",
+                                    name = "Supported Specializations: Subtlety, Assassination, Enhancement, Destruction",
                                     desc = "",
                                     width = "full",
                                     order = 3,
@@ -10037,7 +10037,7 @@ do
                         args = {
                             gettingStarted_displays_info = {
                             type = "description",
-                            name = "|cFFFFD100Displays|r are where Hekili shows you the recommended spells and items to cast, with the |cFF00CCFFPrimary|r display being your DPS rotation. When this options window is open, all displays are visible.\n" ..
+                            name = "|cFFFFD100Displays|r are where Hekili shows you the recommended spells and items to cast, with the |cFF00CCFFPrimary|r display being your DPS priority. When this options window is open, all displays are visible.\n" ..
                                 "\n|cFFFFD100Displays|r can be moved by:\n" ..
                                 "• Clicking and Dragging them\n" ..   
                                 "  - You can move this window out of the way by clicking the |cFFFFD100Hekili " .. Hekili.Version .. " |rtitle at the very top and dragging it out of the way.\n" ..
