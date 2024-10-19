@@ -1216,8 +1216,8 @@ spec:RegisterAura( "lethal_command", {
 
 
 local CallOfTheWildCDR = setfenv( function()
-    gainChargeTime( "kill_command", spec.abilities.kill_command.recharge_time/2)
-    gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge_time/2)
+    gainChargeTime( "kill_command", spec.abilities.kill_command.recharge/2)
+    gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge/2)
 end, state )
 
 
