@@ -73,7 +73,7 @@ spec:RegisterTalents( {
     no_hard_feelings          = { 102412, 459546, 1 }, -- When Misdirection targets your pet, it reduces the damage they take by 50% for 5 sec.
     padded_armor              = { 102406, 459450, 1 }, -- Survival of the Fittest gains an additional charge.
     pathfinding               = { 102404, 378002, 1 }, -- Movement speed increased by 4%.
-    -- pin_cushion               = { xxxxx , 468392, 1 }, -- Steady Shot reduces the cooldown of Aimed Shot by 2 seconds.
+    pin_cushion               = { 111111, 468392, 1 }, -- Steady Shot reduces the cooldown of Aimed Shot by 2 seconds.
     posthaste                 = { 102411, 109215, 1 }, -- Disengage also frees you from all movement impairing effects and increases your movement speed by 50% for 4 sec.
     quick_load                = { 102413, 378771, 1 }, -- When you fall below 40% health, Bursting Shot and Scatter Shot have their cooldown immediately reset. This can only occur once every 25 sec.
     rejuvenating_wind         = { 102381, 385539, 1 }, -- Maximum health increased by 8%, and Exhilaration now also heals you for an additional 12.0% of your maximum health over 8 sec.

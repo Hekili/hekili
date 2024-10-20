@@ -994,6 +994,30 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Talent: Fires an explosive shot at your target. After $t1 sec, the shot will explode, dealing $212680s1 Fire damage to all enemies within $212680A1 yards. Deals reduced damage beyond $s2 targets.
+    explosive_shot = {
+        id = 212431,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+        school = "fire",
+
+        spend = 20,
+        spendType = "focus",
+
+        talent = "explosive_shot",
+        startsCombat = true,
+
+        handler = function ()
+            applyDebuff( "target", "explosive_shot" )
+            removeStack ( "tip_of_the_spear" )
+            -- If triggered by Kill Command, don't consume Bombardier or reduce WfB's cooldown.
+            if buff.sulfurlined_pockets_ready.up and buff.sulfurlined_pockets_ready.v1 == 259489 then return end
+
+            removeStack( "bombardier" )
+            if talent.grenade_juggler.enabled then reduceCooldown( "wildfire_bomb", 2 ) end
+        end,
+    },
     -- You and your pet leap to the target and strike it as one, dealing a total of $<damage> Physical damage.; Tip of the Spear grants an additional $260285s1% damage bonus to Flanking Strike and Flanking Strike generates $s2 stacks of Tip of the Spear.
     flanking_strike = {
         id = 269751,

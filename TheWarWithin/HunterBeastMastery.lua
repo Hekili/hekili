@@ -1207,6 +1207,23 @@ spec:RegisterAuras( {
     }
 } )
 
+--- Shadowlands
+local ExpireNesingwarysTrappingApparatus = setfenv( function()
+    focus.regen = focus.regen * 0.5
+    forecastResources( "focus" )
+end, state )
+
+--- Dragonflight
+spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221, 217183, 217185, 217181, 217182, 217184 )
+spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
+spec:RegisterAura( "lethal_command", {
+    id = 394298,
+    duration = 15,
+    max_stack = 1
+} )
+
+--- The War Within
+spec:RegisterGear( "tww1", 212018, 212019, 212020, 212021, 212023 )
 
 spec:RegisterStateExpr( "barbed_shot_grace_period", function ()
     return ( settings.barbed_shot_grace_period or 0 ) * gcd.max
@@ -1219,22 +1236,6 @@ spec:RegisterHook( "spend", function( amt, resource )
 
     return amt, resource
 end )
-
-
-local ExpireNesingwarysTrappingApparatus = setfenv( function()
-    focus.regen = focus.regen * 0.5
-    forecastResources( "focus" )
-end, state )
-
-spec:RegisterGear( "tww1", 212018, 212019, 212020, 212021, 212023 )
-spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221, 217183, 217185, 217181, 217182, 217184 )
-spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
-spec:RegisterAura( "lethal_command", {
-    id = 394298,
-    duration = 15,
-    max_stack = 1
-} )
-
 
 local CallOfTheWildCDR = setfenv( function()
     gainChargeTime( "kill_command", spec.abilities.kill_command.recharge/2)
@@ -1264,7 +1265,7 @@ spec:RegisterHook( "reset_precast", function()
         end
     end
 
-    if covenent.kyrian then
+    if covenant.kyrian then
         if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
     end
 
@@ -1312,8 +1313,9 @@ spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
 
 -- Abilities
 spec:RegisterAbilities( {
+    -- BM does not currently have arcane shot
     -- A quick shot that causes $sw2 Arcane damage.$?s260393[    Arcane Shot has a $260393h% chance to reduce the cooldown of Rapid Fire by ${$260393m1/10}.1 sec.][]
-    arcane_shot = {
+    --[[arcane_shot = {
         id = 185358,
         cast = 0,
         cooldown = 0,
@@ -1327,7 +1329,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
         end,
-    },
+    },--]]
 
     -- Increases your movement speed by $s1% for $d, and then by $186258s1% for another $186258d$?a445701[, and then by $445701s1% for another $445701s2 sec][].$?a459455[; You cannot be slowed below $s2% of your normal movement speed.][]
     aspect_of_the_cheetah = {
@@ -1480,7 +1482,6 @@ spec:RegisterAbilities( {
     },
 
     -- Fire a Black Arrow into your target, dealing $o1 Shadow damage over $d.; Each time Black Arrow deals damage, you have a $s2% chance to generate a charge of $?a137015[Barbed Shot]?a137016[Aimed Shot and reduce its cast time by $439659s2%][Barbed Shot or Aimed Shot].
-    -- Fire a Black Arrow into your target, dealing $o1 Shadow damage over $d.; Each time Black Arrow deals damage, you have a $s2% chance to generate a charge of $?a137015[Barbed Shot]?a137016[Aimed Shot and reduce its cast time by $439659s2%][Barbed Shot or Aimed Shot].
     black_arrow = {
         id = 466930,
         cast = 0.0,
@@ -1550,11 +1551,10 @@ spec:RegisterAbilities( {
             applyBuff( "call_of_the_wild" )
             gainCharges( "kill_command", 1 )
             gainCharges( "barbed_shot", 1 )
-            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 4, "AURA_TICK" )
-            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 8, "AURA_TICK" )
-            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 12, "AURA_TICK" )
-            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 16, "AURA_TICK" )
-            state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 20, "AURA_TICK" )
+            -- Queue the pet summons for CDR calculation
+            for i = 4, 20, 4 do
+                state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + i, "AURA_TICK" )
+            end
             if talent.bloody_frenzy.enabled then applyBuff( "beast_cleave", 20 ) end
         end,
     },
@@ -1600,11 +1600,13 @@ spec:RegisterAbilities( {
             end
 
             if talent.barbed_scales.enabled then
-                reduceCooldown("barbed_shot", 2)
+                gainChargeTime("barbed_shot", 2)
             end
 
-            if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end
             if talent.killer_cobra.enabled and buff.bestial_wrath.up then setCooldown( "kill_command", 0 ) end
+
+            -- Legacy / PvP Stuff
+            if debuff.concussive_shot.up then debuff.concussive_shot.expires = debuff.concussive_shot.expires + 3 end
             if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
         end,
     },
@@ -1670,7 +1672,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     dire_beast_basilisk = {
         id = 205691,
         cast = 0,
@@ -1690,7 +1691,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "dire_beast_basilisk" )
         end,
     },
-
 
     dire_beast_hawk = {
         id = 208652,
@@ -1776,12 +1776,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "explosive_shot" )
-            removeStack ( "tip_of_the_spear" )
-            -- If triggered by Kill Command, don't consume Bombardier or reduce WfB's cooldown.
-            if buff.sulfurlined_pockets_ready.up and buff.sulfurlined_pockets_ready.v1 == 259489 then return end
-
-            removeStack( "bombardier" )
-            if talent.grenade_juggler.enabled then reduceCooldown( "wildfire_bomb", 2 ) end
         end,
     },
 
@@ -1815,6 +1809,11 @@ spec:RegisterAbilities( {
 
             if pvptalent.survival_tactics.enabled then
                 applyBuff( "survival_tactics" )
+            end
+
+            if talent.emergency_salve.enabled then
+                removeDebuff( "player", "dispellable_disease" )
+                removeDebuff( "player", "dispellable_poison" )
             end
 
             if legendary.craven_strategem.enabled then
@@ -1997,9 +1996,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            if legendary.flamewakers_cobra_sting.enabled then removeBuff( "flamewakers_cobra_sting" ) end
-            if set_bonus.tier29_4pc > 0 then removeBuff( "lethal_command" ) end
-            if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
+
 
             if talent.a_murder_of_crows.enabled then
                 if buff.a_murder_of_crows_stack.stack == 4 then
@@ -2015,6 +2012,11 @@ spec:RegisterAbilities( {
             end
 
             if talent.covering_fire.enabled then buff.beast_cleave.expires = buff.beast_cleave.expires + 1 end
+
+            --- Legacy / PvP Stuff
+            if legendary.flamewakers_cobra_sting.enabled then removeBuff( "flamewakers_cobra_sting" ) end
+            if set_bonus.tier29_4pc > 0 then removeBuff( "lethal_command" ) end
+            if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
         end,
     },
 
@@ -2033,7 +2035,7 @@ spec:RegisterAbilities( {
         notalent = "black_arrow",
         startsCombat = true,
 
-        usable = function () return buff.flayers_mark.up or buff.deathblow.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark or target health below 20 percent" end,
+        usable = function () return buff.deathblow.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20 or buff.flayers_mark.up, "requires flayers_mark or target health below 20 percent" end,
         
         handler = function ()
             removeBuff( "deathblow" )
@@ -2110,7 +2112,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "beast_cleave", 6 )
-            
 
             if talent.scattered_prey.enabled then
                 if buff.scattered_prey.up then
@@ -2144,7 +2145,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     primal_rage = {
         id = 272678,
         cast = 0,
@@ -2163,7 +2163,6 @@ spec:RegisterAbilities( {
             applyDebuff( "player", "exhaustion" )
         end,
     },
-
 
     roar_of_sacrifice = {
         id = 53480,
@@ -2219,23 +2218,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    sentinel_owl = {
-        id = 388045,
-        cast = 0,
-        cooldown = 0,
-        gcd = 0,
-
-        talent = "sentinel_owl",
-        startsCombat = true,
-
-        usable = function() return buff.sentinel_owl_ready.stack > 4, "requires 5+ stacks of sentinel_owl_ready" end,
-
-        handler = function ()
-            removeBuff( "sentinel_owl_ready" )
-            applyDebuff( "target", "sentinel_owl" )
-        end,
-    },
-
     spirit_mend = {
         id = 90361,
         cast = 0,
@@ -2247,24 +2229,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "spirit_mend" )
-        end,
-    },
-
-    -- Talent: Summon a herd of stampeding animals from the wilds around you that deal ${$201594s1*6} Physical damage to your enemies over $d.    Enemies struck by the stampede are snared by $201594s2%, and you have $201594s3% increased critical strike chance against them for $201594d.
-    stampede = {
-        id = 201430,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-        school = "physical",
-
-        talent = "stampede",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyDebuff( "target", "stampede" )
         end,
     },
 
@@ -2295,7 +2259,6 @@ spec:RegisterAbilities( {
             applyBuff( "survival_of_the_fittest" )
         end,
     },
-
 
     summon_pet = {
         id = 883,
@@ -2369,7 +2332,7 @@ spec:RegisterAbilities( {
 
     -- Sylvanas Legendary / Talent: Fire an enchanted arrow, dealing $354831s1 Shadow damage to your target and an additional $354831s2 Shadow damage to all enemies within $354831A2 yds of your target. Targets struck by a Wailing Arrow are silenced for $355596d.
     wailing_arrow = {
-        id = function() return talent.wailing_arrow.enabled and 392060 or 355589 end,
+        id = 355589,
         cast = function()
             if buff.lock_and_load.up then return 0 end
             return ( buff.trueshot.up and 1 or 2 ) * haste
@@ -2379,7 +2342,7 @@ spec:RegisterAbilities( {
 
         spend = function()
             if buff.lock_and_load.up then return 0 end
-            return 15 * ( talent.eagletalons_true_focus.enabled and buff.trueshot.up and 0.5 or 1 )
+            return 15 * ( buff.trueshot.up and 0.5 or 1 )
         end, -- TODO: Does game match spell data?
         spendType = "focus",
 
@@ -2454,7 +2417,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 3,
 
-    potion = "spectral_agility",
+    potion = "tempered_potion",
     package = "Beast Mastery",
 } )
 

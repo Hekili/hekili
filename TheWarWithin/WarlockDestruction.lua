@@ -1810,7 +1810,8 @@ spec:RegisterAbilities( {
             if talent.diabolic_ritual.enabled then
                 if buff.diabolic_ritual.up then
                     buff.diabolic_ritual.expires = buff.diabolic_ritual.expires - 1
-                else applyBuff( "diabolic_ritual" ) end
+                else applyBuff( "diabolic_ritual" ) 
+                end
 
                 if buff.demonic_art.up then
                     TriggerDemonicArtSummon()
@@ -2066,9 +2067,6 @@ spec:RegisterOptions( {
     package = "Destruction",
 } )
 
-
-
-
 spec:RegisterSetting( "default_pet", "summon_sayaad", {
     name = "|T136082:0|t Preferred Demon",
     desc = "Specify which demon should be summoned if you have no active pet.",
@@ -2092,24 +2090,6 @@ spec:RegisterSetting( "cleave_apl", false, {
     fontSize = "medium",
     width = "full",
 } )
-
---[[
-spec:RegisterVariable( "cleave_apl", function()
-    if settings.cleave_apl ~= nil then return settings.cleave_apl end
-    return false
-end )
---]]
-
---[[ Retired 2023-02-20.
-spec:RegisterSetting( "fixed_aoe_3_plus", false, {
-    name = "Require 3+ Targets for AOE",
-    desc = function()
-        return "If checked, the default action list will only use its AOE action list (including |T" .. ( GetSpellTexture( 5740 ) ) .. ":0|t Rain of Fire) when there are 3+ targets.\n\n" ..
-        "In multi-target Patchwerk simulations, this setting creates a significant DPS loss.  However, this option may be useful in real-world scenarios, especially if you are fighting two moving targets that will not stand in your Rain of Fire for the whole duration."
-    end,
-    type = "toggle",
-    width = "full",
-} ) ]]
 
 spec:RegisterSetting( "havoc_macro_text", nil, {
     name = "When |T460695:0|t Havoc is shown with a |TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t indicator, the addon is recommending that you cast Havoc on a different target (without swapping).  A mouseover macro is useful for this and an example is included below.",
