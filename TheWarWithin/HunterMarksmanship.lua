@@ -219,8 +219,8 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=120360
     barrage = {
         id = 120360,
-        duration = 2,
-        tick_time = function() return 0.33 * ( 1 - 0.34 * talent.fan_the_hammer.rank ) end,
+        duration = function() return ( talent.rapid_fire_barrage.enabled and 2 or 3 ) * haste end,
+        tick_time = function() return talent.rapid_fire_barrage.enabled and spec.auras.rapid_fire.tick_time or ( 3 * haste / 16) end,
         max_stack = 1
     },
      -- Lore revealed.
@@ -452,7 +452,7 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
-
+    -- tww1_4pc
     moving_target = {
         id = 457116,
         duration = 15,
@@ -786,8 +786,10 @@ spec:RegisterHook( "reset_precast", function ()
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
     end
 
-    if buff.nesingwarys_apparatus.up then
-        state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireNesingwarysTrappingApparatus, buff.nesingwarys_apparatus.expires )
+    if legendary.nessingwarys_trapping_apparatus.enabled then
+        if buff.nesingwarys_apparatus.up then
+            state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireNesingwarysTrappingApparatus, buff.nesingwarys_apparatus.expires )
+        end
     end
 
     if legendary.eagletalons_true_focus.enabled then
@@ -796,13 +798,10 @@ spec:RegisterHook( "reset_precast", function ()
         rawset( buff, "eagletalons_true_focus", buff.eagletalons_true_focus_stub )
     end
 
-    if now - action.volley.lastCast < 6 then applyBuff( "volley", 6 - ( now - action.volley.lastCast ) ) end
-
-    if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
+    if covenant.kyrian then if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end end
 
     if lunar_storm_expires > query_time then setCooldown( "lunar_storm", lunar_storm_expires - query_time ) end
     if IsSpellKnownOrOverridesKnown( 392060 ) then applyBuff( "wailing_arrow_override" ) end
-    
 end )
 
 -- Abilities
@@ -845,7 +844,7 @@ spec:RegisterAbilities( {
 
             -- Trick Shots
             if buff.trick_shots.up then
-                if talent.bulletstorm.enabled then addStack( "bulletstorm", nil, min( 5 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) ) end
+                if talent.bulletstorm.enabled then addStack( "bulletstorm", nil, min( 5 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies -1 ) ) end
                 if buff.volley.down then 
                     removeBuff( "trick_shots" )
                     if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
@@ -1012,7 +1011,17 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         start = function ()
+            if talent.rapid_fire_barrage.enabled then 
+                if talent.bulletstorm.enabled and buff.trick_shots.up then
+                    addStack( "bulletstorm", nil, min( 4, true_active_enemies - 1 ) )
+                end
+                if talent.streamline.enabled then applyBuff( "streamline" ) end
+            end
             applyBuff( "barrage" )
+        end,
+
+        finish = function ()
+            if talent.rapid_fire_barrage.enabled then spec.abilities.rapid_fire.finish() end
         end,
 
         copy = { 120360, 459796, "rapid_fire_barrage" }
@@ -1169,24 +1178,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    --[[ Removed in 10.0.5 -- Talent: Your next Aimed Shot will fire a second time instantly at $s4% power without consuming Focus, or your next Rapid Fire will shoot $s3% additional shots during its channel.
-    double_tap = {
-        id = 260402,
-        cast = 0,
-        cooldown = 60,
-        gcd = "spell",
-        school = "physical",
-
-        talent = "double_tap",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "double_tap" )
-        end,
-    }, ]]
-
 
     interlope = {
         id = 248518,
@@ -1201,7 +1192,6 @@ spec:RegisterAbilities( {
         handler = function ()
         end,
     },
-
 
     -- Talent: You attempt to finish off a wounded target, dealing $s1 Physical damage. Only usable on enemies with less than $s2% health.$?s343248[    Kill Shot deals $343248s1% increased critical damage.][]
     kill_shot = {
@@ -1218,7 +1208,7 @@ spec:RegisterAbilities( {
         notalent = "black_arrow",
         startsCombat = true,
 
-        usable = function () return buff.deathblow.up or buff.flayers_mark.up or target.health_pct < 20, "requires flayers_mark or target health below 20 percent" end,
+        usable = function () return buff.deathblow.up or target.health_pct < 20 or buff.flayers_mark.up, "requires flayers_mark or target health below 20 percent" end,
         handler = function ()
 
             removeBuff( "deathblow" )
@@ -1303,13 +1293,14 @@ spec:RegisterAbilities( {
 
         start = function ()
             if talent.bulletstorm.enabled and buff.trick_shots.up then
-                addStack( "bulletstorm", nil, min( 5 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
+                addStack( "bulletstorm", nil, min( 5 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies - 1 ) )
             end
             if talent.lunar_storm.enabled and cooldown.lunar_storm.ready then
                 setCooldown( "lunar_storm", 13.7 )
                 applyDebuff( "target", "lunar_storm" )
             end
             if talent.streamline.enabled then applyBuff( "streamline" ) end
+
             -- Legacy / PvP stuff
             if conduit.brutal_projectiles.enabled then removeBuff( "brutal_projectiles" ) end
             if set_bonus.tier31_2pc > 0 then applyBuff( "volley", 2 * haste ) end
@@ -1356,24 +1347,6 @@ spec:RegisterAbilities( {
         texture = 1412205,
 
         handler = function ()
-        end,
-    },
-
-    -- Talent: Summon a herd of stampeding animals from the wilds around you that deal ${$201594s1*6} Physical damage to your enemies over $d.    Enemies struck by the stampede are snared by $201594s2%, and you have $201594s3% increased critical strike chance against them for $201594d.
-    stampede = {
-        id = 201430,
-        cast = 0,
-        cooldown = 120,
-        gcd = "spell",
-        school = "physical",
-
-        talent = "stampede",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "stampede" )
         end,
     },
 
@@ -1452,7 +1425,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "trick_shots" )
             applyBuff( "volley" )
             applyBuff( "trick_shots", 6 )
 
@@ -1462,11 +1434,12 @@ spec:RegisterAbilities( {
                 removeBuff( "salvo" )
             end
 
-            if buff.rangers_finesse.stack == 3 then
-                removeBuff( "rangers_finesse" )
-                reduceCooldown( "aspect_of_the_turtle", 20 )
+            if pvptalent.rangers_finesse.enabled then
+                if buff.rangers_finesse.stack == 3 then
+                    removeBuff( "rangers_finesse" )
+                    reduceCooldown( "aspect_of_the_turtle", 20 )
+                end
             end
-
         end,
     },
 
@@ -1550,14 +1523,5 @@ spec:RegisterSetting( "prevent_hardcasts", false, {
     type = "toggle",
     width = "full"
 } )
-
---[[ spec:RegisterSetting( "eagletalon_swap", false, {
-    name = "Use |T132329:0|t Trueshot with Eagletalon's True Focus Runeforge",
-    desc = "If checked, the default priority includes usage of |T132329:0|t Trueshot pre-pull, assuming you will successfully swap " ..
-        "your legendary on your own.  The addon will not tell you to swap your gear.",
-    type = "toggle",
-    width = "full",
-} ) ]]
-
 
 spec:RegisterPack( "Marksmanship", 20240915, [[Hekili:T3vFVnUns)plffN3yKSo2kB2UBFInWD9qX1f31R4s7t)pBRylhRNvwYNK8Mnfb(Z(ZmKus8LHuV449Lcd0UjrKC4WHdN5hhosC6OP)60Bx6Nhm9N9g69QHVD01dgD1O3(Qxn928h3gm92T(lEV)9WVe7Vb(3)LF67Z24hNToClw4Jrj(lrIKLSlDbuHVD)8155BZ((lV8(W817UBWIKnxMfUzxKFEys8Iu)v54FV4YP3E3UWO8FkE6D0mXvtV1Fx(6K0P3EB4MFy6TRdxUmGx9GSftVfR(lh(2xoA4f7NJ)86VF)CSQ7NVBlsX9VB)74v6nqHqL88CvJryH5b(lFC)8FmzXUS9ZtIJG)iC1(55(rbX5blLBXW3cT43yecQ7Q0KncQlxhKQ)wwW(5)JDq7tFbutumUFEwqEEy89vv(7EP33bv(FfgNKcfhUPGl)FGFHGcYn8kOH)6AOo)Up02FhK9HXtVnkmlpdNFYtdx8(S1jS)6NzZ7bX(3ffSC6FB6Tlsdb6g6d1JnkhKXKcZwHcHbIkUFEpGPKky2IeGFyp(UDRwP2O0Gn(HXaNEZ(5VbMixGZ(GEcVoiNmnhMWrgPOSGpUnkjl8db8ILyqOMxjxZpKeff8OwnEvDdQu)THlNTkmny2D(PPGATYqJngyYjw)lneMmE)8GpgSyxEWS8qCDqbJiOd29xBT77cHR4vK2V2nTt9)JK0zRaozdmoZgSBBfHEFyuuP4(7KfI3fbRTNbdGKh0KKVXD3TnnyrywGyWSm5H4kI(GFyeOtlilqR32wATF(tpvozSlalqzaz0dJgATl(Gp8d4XLuAwkQ(vrSINZOJ(QIIk5dZmlf6KlECremx5NEFaSucwi1P55k9nkzjAClnClVZ)r0uWTbPBXzwqr(981))k2nbPpEbAyczg4N4Q)OKhcYG)G31O1LIgJM2G)EW(5)BMnTf(y9qlBHWpFizxeSmagC(FaiZdG9drNaTJXB7N)3tIFbu1KpeK(aoO3p)x4CFrvysrVMVoqB6wvwSBlVOvCdXtaMlb54Z3pNpXmOAEzawu1eg4SjpSCA9Q6yiHsMQI8D(3plz1mUDtgDEL8Ihz7yklEYX5Vv(ahuAOTOnmZLbPuw3uSdMN6h)FbxJH)bQNBZwO0ikbwEaotKSpk07XFlAxa21jr44RA0MYDZb6HNTF(3akm(G9MGpG2j9xUem6)r01HufegrVBxuuwWJsMoztsH3VgxCvOVJtw694YDPmiaZUhEqgBIuBcquH9ZVe8ulPyu2NWcauHCS(Z34)XzIY6lZYPHXVpiFq(ObR9ZMbUqNHTJtzPcl5v5bWvdDvpMWJSV8C1xEnSV8O6lSg1onPxbCzeVq9sQe3NBwyymZZT310DlwmW3VEOvgt0V6pwEupQQ13LKXheAkscwOVMrX)EaSoAtyCqLbSqO2(7NFFscOsYTXMNiGn9RfAy7N)Fa(bSf)bMbXeGCBc)dHui3)9ikUTPHjGfcqKNXAp4ENt9mWY4s0EeyqMzHzBuqH1xSZZqRVObx8342uz2lxge5)i3Sjao2pIXWqvkK)OfzW2D6dmlP(rGjCrVaiTJIeeiJpEIydAu4Y1UcwTkyrEPMtg4pWpg4YhwheJCpZdWFtSo5IsMH7RG5bqmctwjEkBgOyy6)reYhSWcmUJwvMX3gGM7uNGV2c6ZRd8JYxpBlYPWuk8Oz4JaMtYODq8YzqjuyPkTGcYJz8)ygcTLdWvWulwMrHvQrTTq8vcsICOCwjM9mWKtkaEk(rXcxMwWGWSzCnzULbS3a0SlbnV1mt)zZ2Wq(dgWgYQHODO(6S8euan7ndzlo8gwX6Yn2n(mrpgehSjmGV(5kohwzbx2dCbra)zWtZzaAAKall3n4oDgbhrTVxK21cZZkIqizZD(5U3et1yfwqgm7HKOvvJ0sp472Sb6tHgNoQL6DPAAZVWKTHFdvhcnZLHQ7RqqHlea8MIysaG(lY3LcyFYt2KGWGlDairY6BInpovogUH29xvf0jbyrraWvRPvfyVjJT1KE1XNJRJp7x6PXfSG6NzmKY)zxOz3XlZzbSGgC5Ho2eKApZlv2JXlk2erbHXDq8tXOhOSfGPEMJPcFTFVQ7mU9IL(ByEMep7cU7vSVGcbJcP54VxsEBLZCYHIeKbaVrlc9JypwGqyrsCw4sSQ)l2YfURWFSybdGEOAfZdbagbCWU2hgjjOxBdohC5Uiq4IFlSBSub6HTriMG7cYFiaDnZeFl3CFLlCMFB2JLPOMFxMqE2Ozfc(UTDaqfxARXg0KOh9u6r7E7)sXfPocc0ZrXAJP3osQLz(rFiXfWb5T)RSy4x40C)8)kwd(MGXigI)pIOcvuEizFfeXDXrSD(8qaQ2PSHBgEr26L)xwST40rU5dQ3pV(E14HjtDNAeT0dxNta8HCVU0sGIOMwjcuh5ikDCu7NgWasZw9Ri2ylfvI(axqCHyDghDmJYRtdeIxyHzqZeqtk3rPfztptrZyeZcd3rj8qcyh1VAZAuOuKL4Mu4cQstjGzMCHmdQAyksezdS(sMD52m4sowly9HI1dSrvi2BpIhZyY5AaCO8pF2WCaWFE3S7rfge2on5XKqFaX8JcgwcJegMp4zMhcXn0DNRPhg)qzK1Vm8qmcdyOZIsYL)BeNsYQvZUFXsTqtwdKNsn0kveJIm9t0GyBub6QRDbndwfeb3qyUSWUOzaQC3WZr3lgdqdzNZb)eR89l3pF011taOAxZSqBHm9SwcW(V6AghOnWftigICpdrUtoRbvP7mpgTCcHVTUaRU9(4GvESfdqfa)AszN9751rpYzTQDWqlskwpzFW6n0vfUHMW6sJ(TBVu0BnHJTJ0Wa36EddTAdmFuRoKPqTjgivLQ12jI61VPX78zzGP5n73Yqmn0rn0yVAIDJeMXDzXGRHE3eHpueZqmmK4t5b1K5HS0RxvWqQoIjw4qJsyH5Sk0QfBgIjkG9O9JqhMXFosaUkJW9Py)xAB5kK37pw2h(rySBVlqnOTr(Q7yeeYR93UnioZGjjIzRTHhtq5tUvybXUtiQyJuy00NdEvB)TedJW4vbPW)vo(zBMsDkKjfzBToh2vnowZlg6a6Gx6FFCswE4cE0SfWwqQKKY2ZBzyFZ83ip(26hMY2fnBxkPbz7IYLMR41M33UcyRGEEAyv8AewLMTu0fqcpBlyOoZNUHvX0XzdC34WaRBSkKnKcRcH5yNd(wHvHIaD3DFRXQycp0jN1GQ0DMNeRI9U45aRIdLNgfr3UIvHKEnfRI5HN(mHvXbYnRyvQpQUhowLA2O1HyHQP9r9yvSyj45aRs7gy8WSKvZ5685i50SN4inoRRusDn7zDL9GQsemlPtqtlT5k8gxgeeQCLZwSoLs7mv0J)JeehW)blgrOHqsyyQkGaEDg)NBttaSg)ZDXywiEBEs6geBcacbBH8J5WD(DEYCTF(FffiCaN72oGyspcBlOtHuuEoNVSRuLsUALZYO(N7AmHzDUi(OjXduYYmTCWq64fnzk3NGS0YK6tin9J5TOovP3KEa4cVNTE7wmK2CbCr0KdZeqrzsBWKHaOyErBcZhyOHZcnErMCylSYuNdS6zgvtAJvfx8I80qKnhcZRjPCO5lWZCHhI4bvcJ6thqQ44xBA8zlVepZm1e5fSAhSIhA0AKMvhNhaVDallkoNFuuIskDzqhoEvTSfRd34hK6Zt1TsL)(6CevIhsK3Huwtm3U4VZ2WH9epCF7Z7WMRieeYpAn7kekNDqrYl6JPftWkMTg25Vfh8XCUCNS7vssMFqiLTDigyA6u10vPbbfzgUHYzorYK2CVyMUR4QF9mYxUe5ewuZ51iLukSYFKQFG6sos9uYukVnKvkzKYU)lss5qxuGhtiNECZ21jXHaER0mG8rQNNvrTWuLA29W2sNXpkqP1juworgUMm22(y3pfMURC3oYE6zxBMNlbmOkvYhPKN2otl(r2ZfOoK4SMtQ2ZWNgt(p7t0E2tq8gpiSo57zFHURvRgPxSNY6vxPxmMNBoHjt7GYbm(rxjXybGWp99yQ5vpeyJoPeLL(bSXKXfP5Qlw51YqLtsGvn7sFK60((KYk(Xla3BP(rZW8vZnA9Je782kUbnKWeouHERz6Fri9ZM9)TBjB3lu7jW1iQxfUdgJeTlRAOkYydEsFoOiPp9Aw2(kj03MW(Pta1e2v80e4c4QktTe5)bBTf4GpdFAXBI2ieGzkINjdWxJaDc3SnjnxS7NxKxMGIVaX(8F3fYszOSeeRL)U8Kn(4Rm2CawiSvyadX7(NSKNcFNW(HKyO7yf)ccmbVGdqNQOctEqvoB0h7xs1xrtvtVpA02U7PQEy)7ig(I30H2n2VIMllsMFnEt)9nqFmBqnrCguJnsjrPdDsZjQESliimrvoIeVDKfuHCtuEfAp)2icxlj9CpPzuCJ4tZdhJGWDDsRBeVDKLs2suH2ZVnIW2izY2aE4wZ4Nl0lO8WbeO3zFd9lTcuGL14p9KIJHjMuw9Dj6CnpDIc)lEp9e3fLY7p0y1Nv(Ud1hziA7dp9KJLGtUAOTYHHVcv9SrvtDevQQpR0)PNSkunFtC6DMT39NZnFXEUX7AtIhgp51dj6uG2wEdFMmcRp6PVNYKjq((fkDFXPXC5jnMVq1ykTc9gA0d5vr)sdarU5R7snOAkFltAhUgly6kFfu04lJxnfDt4EoDswm7AXjPuXnIOheCj3CAhDNBNtR7nBHG7BqtAuNx)RvdXOSbnPHDE5s6IvJUCFlvNJk5RLWehrRlSITLV7k5RLWsNdmLGqQSMYNwj3O2tUV45UANuoPR2yY3ac)1I97Uo1DKjFTeURtDnKV7k5RLWFXBN4lBUR2jLt6QnM8Le(10qL5rQ9fQ4KvZ2aDw87EgOe5MaYEEq)FGr01IGskVt0ikrgP8PGMw2vwRMgeYXH0Ks5Oj1Oizcsyq4JZm0ilbD340m1PTTt7SXDG(bHQ3b2oOuJoWIcXZYXgi6I3ESfs26GdxirADqyMRLN6JXm5Zb4nBe1margeMSkhrIxlz7QJLgY1DL8hnc)5MVpia(pV6ghvIFKi7jE(ep)Ljp3vlgnKR7k5pAe(eF3n(wr3QrhhCd542t42qYwTB52ZXTI81s4Jc6UogOJtabQLSNeehaz)SWZgzIIL1w9oJ4f7v6HIMj9(L68827)0tFtBjOjlWi1e51U6wy(lxPEE4oR85EQjbGY43XGzcjF9Yrx7QrV86BiBwpYNE(RUEIYabeGoETb7DMJE2zHTJTMm2ZAEtii3KX00RttM0z(rr53OiHS0dN7IcAY4(9DKuiwKiEdPl4gkcvnYy9LTeIrAgtY)04HglI4z0RJKG5GwXwpn1KeUt5gVH9TLZkhaBwdgHVsTJD5j7y)5Xo2L)P1o2LNSJ9SzhReX21hd422i6idoX1MLRQYrK41swcfXgT7ZgY1DL8hnc)5MVpOnL)8QBCuj(rISN45t88xM8CxTy0qUURK)Or4t8D34BfDRg92R1qoU9eUnK0QqGUoTLJBf5RLWhf0DEDlJbpbeOwYEsqCaK9ZcpBpY31TTq6a84rTXot(P5rmYR5rmIWkU9iFtuz1ignYseJmhmniIrMnQDHMPrrmAeveJm7zNf2o2slIruKRRrmICYKoybDmIreuWveJ0D625igr4i0iY36l(Kz62fXiRb(T9RyRNM2JyeXQM2fXOMYM1Gr4Ru7y2J89j7ypdS1Nw7yx(Nw7ygr((KDSUYMiIT9V7Ny5mocu71fFxXWBWZm8Jj47MEB22Gft)zVRFfE9uLSkmQ8()oBq57G(5JVS6Mk8IWvJ)g93F89V7B3p)0fZ2N8lMT9VJAYQqL5c8s9zSPrXlyxfrJlxAO(66xPvPRDR1GIcKwUw)B5E1k46FP0R4ekBCv9PrzknSWkHCdkEgzfhtuXEo4KXo4efJznuEklI(QDy3gntpdnthE0PjS8DVhAH6mJBaqymRC7)1VN472M(9(34H9iVV)aZ009n7R32fY3UFJhnKzr8t8TZhn7v9vKefmQFS6U5QQVNn83jUNEsRgE9vhkFrCn7zzIO6lwP5qDIhQbins7Pw(yp0DPGSaXKVP8LFU5nJVUZVtxh4FIUoWLNw0TSi)PnxyvP0kvN)up9m9jE6a(OGz7l8ebQs5pft6q277WzoHjFks6PtYVQ)4ojRkvClWJ2quV54Vr6wJxXwH2fioxjCXYS6RuXQe5A(j2zMvEd(j41nCr(4ruUoqKn81h5vFFRQNQ5LFVsDq9jmRXFlyy9hygCyR9)foI5FkE1UmM9rUjf1Vq772oG3WcpeW0aWlHXFi59a5)iiAI9Jy66C(HHdFwOGOiROUQTu7XRYRdNMvFNInB1UTKQAJUYGiLFHHPjcLvRQvJuDXR17c1VCWhTUP8tc8Zup8w9oq7dgSz3GKxVr8VGVuSuVZ4gCL(4bxUUQ6dh8nE2SAyia4abjrEuo4v)saFdcuSImzeOyi(oa0Z8sMPhBOqDbZCZB0OF53H)szI5TiJwtKUWy0kr9ddpXyFKwd4JFgKPpT3NlA8r1hoajHS0xzcWRv5CgX11I0mkrPtUMdJM(sCPFLHtP2QXFf6Pi3jTBizynmH4HEHRO1TLF06lvokUaw6PUpboO3KMEBA08Rvfngsr(X60t3kiD(wbrt2kTZqLlJgUdz2SV5DqZtpDMPTDZBEMBUFXYZl3qmG3ud9Gx1IaLpDk9ROVXDjZe57rME6gA63E7OMgnXrypxovunHQ9CLrIfzOHXvZLC6nWyO27mBFCsk3JRXxveDXJ0Dirt5uXxyfjPP5NFfN(hQtCXMdMG31fNlmFQFpE4q0vBJ)uigRLjmePs3bh1bOrxTwg6qfQ6MP63viek9JTzxLkv4VGSWMOs1ZQ9GXkxSu09GQJ(dIuTd5K64KcbLsnuC05W(7b2CrKhKVjnOjytbG8JOtp7EJVOdUJ)3XOdmE4gRUuKvIgkpUHSor4JUbUXhyzO2a)G1QY0RDtxMg9L7bPjkDtYGV2MBIrBPwlm1yZCcBx5C4p85MYJ2sCVoJiCwgKfMI6l7LoWp)9vhdi2ZL3N0ylyQtQtpSOICUEG9QYqcrq9CJnwHlpuMK7(OXCjV6c20CrhYFSycdMEdJeRooyPjEtPZV6TBRiLPt7isPSY5H1KX8NUl3pDxUFuUl3jvzXWtdw03Cb(lI7SDW8mYtfHqLzSoNmo5nnNTOEPcnddEZtzRM)YktMsFwYylI6QKWwwEtLjINFTPRLzBAxAr1OS1I69u2SJDvw7yk1C1IIADmvTiNejpeMULOweeWrEAPFanDnnTiZJ2(otSbjgUv5OvNE5KjxGwlfTMGweltAx(z1qESRM58KnZv3WRUmj11bi2CZCnpZuj1LSyMRU8s1sAP2LSs9qZ(ZgzMJkPuDLtQhktPAM7zmJujNeDNRwTYmx7sh1NRSrL04TQzohPPvRmZ1Pmr1zIOwhChtZChL0qLGhz3PLt))p]] )
