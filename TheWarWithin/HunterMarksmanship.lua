@@ -34,7 +34,7 @@ spec:RegisterResource( Enum.PowerType.Focus, {
             return app + floor( ( t - app ) / class.auras.rapid_fire.tick_time ) * class.auras.rapid_fire.tick_time
         end,
 
-        interval = function () return class.auras.rapid_fire.tick_time * ( state.buff.trueshot.up and 0.667 or 1 ) end,
+        interval = function () return class.auras.rapid_fire.tick_time end,
         value = 1,
     }
 } )
@@ -509,7 +509,7 @@ spec:RegisterAuras( {
         id = 257044,
         duration = function () return 2 * haste end,
         tick_time = function ()
-            return ( 2 * haste ) * ( 1 - 0.34 * talent.fan_the_hammer.rank ) / 7
+            return ( 2 * haste ) / ( talent.fan_the_hammer.enabled and 10 or 7 )
         end,
         type = "Ranged",
         max_stack = 1
@@ -777,7 +777,7 @@ spec:RegisterAuras( {
 
 spec:RegisterGear( "tier30", 202482, 202480, 202479, 202478, 202477 )
 spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221, 217183, 217185, 217181, 217182, 217184 )
-
+spec:RegisterGear( "tww1", 212018, 212019, 212020, 212021, 212023 )
 
 
 
@@ -812,7 +812,7 @@ spec:RegisterAbilities( {
         id = 19434,
         cast = function ()
             if buff.lock_and_load.up then return 0 end
-            return 2.5 * haste * ( buff.rapid_fire.up and 0.7 or 1 ) * ( buff.trueshot.up and 0.5 or 1 ) * ( buff.streamline.up and ( 1 - 0.15 * talent.streamline.rank ) or 1 )
+            return 2.5 * haste * ( buff.trueshot.up and 0.5 or 1 ) * ( buff.streamline.up and 0.7 or 1 )
         end,
         charges = 2,
         cooldown = function () return haste * 12 *( buff.trueshot.up and 0.3 or 1 ) * ( talent.tactical_reload.enabled and 0.9 or 1 ) end,
@@ -838,25 +838,31 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            if buff.lock_and_load.up then removeBuff( "lock_and_load" )
-            elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
+            -- Simple buffs
+            if buff.lock_and_load.up then removeBuff( "lock_and_load" ) end
+            if set_bonus.tww1 >= 4 then removeBuff ( "moving_target" ) end
             if talent.precise_shot.enabled then applyBuff( "precise_shot" ) end
-            if talent.bulletstorm.enabled and buff.trick_shots.up then
-                addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
-            end
-            if buff.find_the_mark.up then
-                removeBuff( "find_the_mark" )
-                applyDebuff( "target", "hit_the_mark" )
-            end
 
-            removeBuff ( "moving_target" )
-            if buff.volley.down and buff.trick_shots.up then
-                removeBuff( "trick_shots" )
-                if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
+            -- Trick Shots
+            if buff.trick_shots.up then
+                if talent.bulletstorm.enabled then addStack( "bulletstorm", nil, min( 5 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) ) end
+                if buff.volley.down then 
+                    removeBuff( "trick_shots" )
+                    if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
+                    end
+            end
+            --- Legacy / PvP stuff
+            if set_bonus.tier29_2pc > 0 then
+                if buff.find_the_mark.up then
+                 removeBuff( "find_the_mark" )
+                    applyDebuff( "target", "hit_the_mark" )
+                end
+            end
+            if legendary.secrets_of_the_unblinking_vigil.enabled then 
+                if buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
             end
             if pvptalent.rangers_finesse.enabled then addStack( "rangers_finesse" ) end
         end,
-
         bind = "wailing_arrow"
     },
 
@@ -865,7 +871,7 @@ spec:RegisterAbilities( {
         known = 19434,
         cast = function ()
             if buff.lock_and_load.up then return 0 end
-            return 2 * haste * ( buff.rapid_fire.up and 0.7 or 1 ) * ( buff.trueshot.up and 0.5 or 1 ) * ( buff.streamline.up and ( 1 - 0.15 * talent.streamline.rank ) or 1 )
+            return 2 * haste * ( buff.trueshot.up and 0.5 or 1 ) * ( buff.streamline.up and 0.7 or 1 )
         end,
         cooldown = function () return haste * 12 *( buff.trueshot.up and 0.3 or 1 ) * ( talent.tactical_reload.enabled and 0.9 or 1 ) end,
         gcd = "spell",
@@ -889,8 +895,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "wailing_arrow_override" )
-            if buff.lock_and_load.up then removeBuff( "lock_and_load" )
-            elseif buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
+            if buff.lock_and_load.up then removeBuff( "lock_and_load" ) end
 
             if talent.readiness.enabled then
                 -- Trueshot grants Wailing Arrow and you generate 2 additional Wind Arrows while in Trueshot. Wailing Arrow resets the cooldown of Rapid Fire and generates 2 charges of Aimed Shot.
@@ -899,9 +904,16 @@ spec:RegisterAbilities( {
             end
 
             if talent.precise_shot.enabled then applyBuff( "precise_shot" ) end
-            if buff.find_the_mark.up then
-                removeBuff( "find_the_mark" )
-                applyDebuff( "target", "hit_the_mark" )
+
+            --- Legacy / PvP stuff
+            if set_bonus.tier29_2pc > 0 then
+                if buff.find_the_mark.up then
+                 removeBuff( "find_the_mark" )
+                    applyDebuff( "target", "hit_the_mark" )
+                end
+            end
+            if legendary.secrets_of_the_unblinking_vigil.enabled then 
+                if buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
             end
             if pvptalent.rangers_finesse.enabled then addStack( "rangers_finesse" ) end
         end,
@@ -925,11 +937,19 @@ spec:RegisterAbilities( {
         notalent = "chimaera_shot",
 
         handler = function ()
-            removeBuff( "focusing_aim" )
+
             if buff.precise_shot.up then
                 removeBuff( "precise_shot" )
-                applyBuff ( "moving_target" )
+                if set_bonus.tww1 >= 4 then
+                    applyBuff ( "moving_target" )
+                end
             end
+
+            -- Legacy / PvP stuff
+            if set_bonus.tier29_4pc > 0 then
+                removeBuff( "focusing_aim" )
+            end
+
         end,
     },
 
@@ -1101,8 +1121,13 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "focusing_aim" )
             removeStack( "precise_shot" )
+
+            -- Legacy / PvP stuff
+            if set_bonus.tier29_4pc > 0 then
+                removeBuff( "focusing_aim" )
+            end
+
         end,
     },
 
@@ -1243,18 +1268,19 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function () return 40 * ( buff.precise_shot.up and 0.5 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
+        spend = function () return 30 * ( buff.precise_shot.up and 0.5 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
 
         talent = "multishot",
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "focusing_aim" )
 
             if buff.precise_shot.up then
                 removeBuff( "precise_shot" )
-                applyBuff ( "moving_target" )
+                if set_bonus.tww1 >= 4 then
+                    applyBuff ( "moving_target" )
+                end
             end
 
             if buff.salvo.up then
@@ -1264,6 +1290,12 @@ spec:RegisterAbilities( {
             end
 
             if talent.trick_shots.enabled and active_enemies > 2 then applyBuff( "trick_shots" ) end
+
+            -- Legacy / PvP stuff
+            if set_bonus.tier29_4pc > 0 then
+                removeBuff( "focusing_aim" )
+            end
+
         end,
     },
 
@@ -1280,25 +1312,26 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         start = function ()
-            removeBuff( "brutal_projectiles" )
-            applyBuff( "rapid_fire" )
-            if set_bonus.tier31_2pc > 0 then applyBuff( "volley", 2 * haste ) end
             if talent.bulletstorm.enabled and buff.trick_shots.up then
-                addStack( "bulletstorm", nil, min( 8 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
+                addStack( "bulletstorm", nil, min( 5 - 2 * talent.heavy_ammo.rank + 2 * talent.light_ammo.rank, true_active_enemies ) )
             end
             if talent.lunar_storm.enabled and cooldown.lunar_storm.ready then
                 setCooldown( "lunar_storm", 13.7 )
                 applyDebuff( "target", "lunar_storm" )
             end
             if talent.streamline.enabled then applyBuff( "streamline" ) end
+            -- Legacy / PvP stuff
+            if conduit.brutal_projectiles.enabled then removeBuff( "brutal_projectiles" ) end
+            if set_bonus.tier31_2pc > 0 then applyBuff( "volley", 2 * haste ) end
         end,
 
         finish = function ()
             if buff.volley.down then
-                removeBuff( "trick_shots" )
-                if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
+                if buff.trick_shots.up then
+                    removeBuff( "trick_shots" )
+                    if talent.razor_fragments.enabled then applyBuff( "razor_fragments" ) end
+                end
             end
-
             if talent.in_the_rhythm.up then applyBuff( "in_the_rhythm" ) end
         end,
     },
