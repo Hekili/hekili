@@ -1216,8 +1216,8 @@ spec:RegisterAura( "lethal_command", {
 
 
 local CallOfTheWildCDR = setfenv( function()
-    reduceCooldown( "kill_command", spec.abilities.kill_command.cooldown/2 )
-    reduceCooldown( "barbed_shot", spec.abilities.barbed_shot.cooldown/2 )
+    gainChargeTime( "kill_command", spec.abilities.kill_command.recharge/2)
+    gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge/2)
 end, state )
 
 
@@ -1538,8 +1538,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "call_of_the_wild" )
-            reduceCooldown( "kill_command", spec.abilities.kill_command.cooldown/2 )
-            reduceCooldown( "barbed_shot", spec.abilities.barbed_shot.cooldown/2 )
+            gainCharges( "kill_command", 1 )
+            gainCharges( "barbed_shot", 1 )
             state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 4, "AURA_TICK" )
             state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 8, "AURA_TICK" )
             state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + 12, "AURA_TICK" )
@@ -2440,7 +2440,7 @@ spec:RegisterSetting( "barbed_shot_grace_period", 1, {
     min = 0,
     max = 2,
     step = 0.01,
-    width = "normal"
+    width = 1.5
 } )
 
 spec:RegisterStateExpr( "barbed_shot_grace_period", function()
@@ -2457,7 +2457,7 @@ spec:RegisterSetting( "pet_healing", 0, {
     min = 0,
     max = 100,
     step = 1,
-    width = "normal"
+    width = 1.5
 } )
 
 spec:RegisterSetting( "avoid_bw_overlap", false, {
