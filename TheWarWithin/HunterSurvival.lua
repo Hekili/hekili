@@ -1054,6 +1054,7 @@ spec:RegisterAbilities( {
         start = function()
             if set_bonus.tier31_2pc > 0 then applyBuff( "fury_strikes" ) end
             if set_bonus.tier31_4pc > 0 then applyBuff( "contained_explosion" ) end
+            removeStack( "tip_of_the_spear" )
         end,
 
         finish = function ()
