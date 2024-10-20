@@ -2109,8 +2109,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyBuff( "beast_cleave" )
-            if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
+            applyBuff( "beast_cleave", 6 )
+            
 
             if talent.scattered_prey.enabled then
                 if buff.scattered_prey.up then
@@ -2118,6 +2118,9 @@ spec:RegisterAbilities( {
                 else applyBuff( "scattered_prey" )
                 end
             end
+
+            -- Legacy / PvP Stuff
+            if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end
     end,
     },
 
