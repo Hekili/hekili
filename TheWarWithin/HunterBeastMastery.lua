@@ -1226,9 +1226,8 @@ local ExpireNesingwarysTrappingApparatus = setfenv( function()
     forecastResources( "focus" )
 end, state )
 
-
+spec:RegisterGear( "tww1", 212018, 212019, 212020, 212021, 212023 )
 spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221, 217183, 217185, 217181, 217182, 217184 )
-
 spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391 )
 spec:RegisterAura( "lethal_command", {
     id = 394298,
@@ -1248,8 +1247,10 @@ spec:RegisterHook( "reset_precast", function()
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
     end
 
-    if buff.nesingwarys_apparatus.up then
-        state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireNesingwarysTrappingApparatus, buff.nesingwarys_apparatus.expires )
+    if legendary.nessingwarys_trapping_apparatus.enabled then
+        if buff.nesingwarys_apparatus.up then
+            state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireNesingwarysTrappingApparatus, buff.nesingwarys_apparatus.expires )
+        end
     end
 
     if buff.call_of_the_wild.up then
@@ -1263,9 +1264,11 @@ spec:RegisterHook( "reset_precast", function()
         end
     end
 
-    if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
+    if covenent.kyrian then
+        if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
+    end
 
-    if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then reduceCooldown( "barbed_shot", barbed_shot_grace_period ) end
+    -- if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then reduceCooldown( "barbed_shot", barbed_shot_grace_period ) end
 end )
 
 
@@ -1362,32 +1365,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    --[[ Talent: Fire off a Cobra Shot at your current target and $s1 other $Lenemy:enemies; near your current target. For the next $d, your Cobra Shot will fire at $s1 extra $Ltarget:targets; and Cobra Shot Focus cost reduced by $s2.$?s389654[    Each temporary beast summoned reduces the cooldown of Aspect of the Wild by ${$389654m1/1000}.1 sec.][]$?s389660[    While Aspect of the Wild is active, Cobra Shot deals $389660s1% increased damage.][]
-    aspect_of_the_wild = {
-        id = 193530,
-        cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * ( legendary.call_of_the_wild.enabled and 0.75 or 1 ) * 120 end,
-        gcd = "spell",
-        school = "physical",
-
-        talent = "aspect_of_the_wild",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        nobuff = function ()
-            if settings.aspect_vop_overlap then return end
-            return "aspect_of_the_wild"
-        end,
-
-        handler = function ()
-            applyBuff( "aspect_of_the_wild" )
-
-
-            if azerite.primal_instincts.enabled then gainCharges( "barbed_shot", 1 ) end
-        end,
-    }, ]]
-
     -- Talent: Fire a shot that tears through your enemy, causing them to bleed for ${$s1*$s2} damage over $d$?s257944[ and  increases your critical strike chance by $257946s1% for $257946d, stacking up to $257946u $Ltime:times;][].    Sends your pet into a frenzy, increasing attack speed by $272790s1% for $272790d, stacking up to $272790u times.    |cFFFFFFFFGenerates ${$246152s1*$246152d/$246152t1} Focus over $246152d.|r
     barbed_shot = {
         id = 217200,
@@ -1413,14 +1390,12 @@ spec:RegisterAbilities( {
             end
 
             applyDebuff( "target", "barbed_shot_dot" )
-            addStack( "frenzy", spec.auras.frenzy.duration, 1 )
+            addStack( "frenzy", spec.auras.barbed_shot.duration, 1 )
 
             if talent.barbed_wrath.enabled then reduceCooldown( "bestial_wrath", 12 ) end
             if talent.thrill_of_the_hunt.enabled then addStack( "thrill_of_the_hunt", nil, 1 ) end
-            -- No longer predictable (11/1 nerfs).
-            -- if talent.war_orders.rank > 1 then setCooldown( "kill_command", 0 ) end
-           
 
+            --- Legacy / PvP Stuff
             if set_bonus.tier29_4pc > 0 then applyBuff( "lethal_command" ) end
             if legendary.qapla_eredun_war_order.enabled then
                 setCooldown( "kill_command", 0 )
@@ -1477,7 +1452,9 @@ spec:RegisterAbilities( {
             end
 
             if talent.scent_of_blood.enabled then 
-                gainCharges( "barbed_shot", talent.scent_of_blood.rank ) end
+                gainCharges( "barbed_shot", talent.scent_of_blood.rank ) 
+            end
+            -- Legacy / PvP Stuff
             if set_bonus.tier31_2pc > 0 then
                 applyBuff( "dire_beast", 15 )
                 summonPet( "dire_beast", 15 )
@@ -1516,16 +1493,12 @@ spec:RegisterAbilities( {
         talent = "black_arrow",
         startsCombat = true,
 
-        usable = function () return buff.deathblow.up or buff.flayers_mark.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark/hunters_prey or target health below 20 percent or above 80 percent" end,
+        usable = function () return buff.deathblow.up or buff.flayers_mark.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark/hunters_prey or target health below 20 percent or above 80 percent with The Bell Tolls talent" end,
         handler = function ()
-            removeBuff( "deathblow" )
-            removeBuff( "flayers_mark" )
-
-            if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
-                applyDebuff( "target", "pouch_of_razor_fragments" )
-            end
-
-        end
+            applyDebuff( "target", "black_arrow" )
+            spec.abilities.kill_shot.handler()
+        end,
+        bind = "kill_shot"
     },
 
     -- Command your pet to tear into your target, causing your target to bleed for $<damage> over $321538d and take $321538s2% increased damage from your pet by for $321538d.
@@ -2061,15 +2034,21 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         usable = function () return buff.flayers_mark.up or buff.deathblow.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark or target health below 20 percent" end,
+        
         handler = function ()
-            if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
-                applyDebuff( "target", "pouch_of_razor_fragments" )
-                removeBuff( "flayers_mark" )
-            end
-            if talent.venoms_bite.enabled then applyDebuff( "target", "serpent_sting" ) end
             removeBuff( "deathblow" )
-        end,
+            if talent.venoms_bite.enabled then applyDebuff( "target", "serpent_sting" ) end
 
+            --- Legacy / PvP Stuff
+            if covenant.venthyr then
+                if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
+                    applyDebuff( "target", "pouch_of_razor_fragments" )
+                    removeBuff( "flayers_mark" )
+                end
+            end
+
+        end,
+        bind = "black_arrow",
         copy = { 53351, 320976 }
     },
 

@@ -1050,23 +1050,9 @@ spec:RegisterAbilities( {
         usable = function () return buff.deathblow.up or buff.flayers_mark.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark or target health below 20 percent or above 80 percent" end,
         handler = function ()
             applyDebuff( "target", "black_arrow" )
-            removeBuff( "deathblow" )
-            removeBuff( "flayers_mark" )
-
-            if buff.razor_fragments.up then
-                removeBuff( "razor_fragments" )
-                applyDebuff( "target", "razor_fragments_bleed" )
-            end
-
-            if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
-                applyDebuff( "target", "pouch_of_razor_fragments" )
-            end
-
-            if set_bonus.tier30_4pc > 0 then
-                reduceCooldown( "aimed_shot", 1.5 )
-                reduceCooldown( "rapid_fire", 1.5 )
-            end
-        end
+            spec.abilities.kill_shot.handler()
+        end,
+        bind = "kill_shot"
     },
 
     -- Talent: Fires an explosion of bolts at all enemies in front of you, knocking them back, snaring them by $s4% for $d, and dealing $s1 Physical damage.$?s378771[    When you fall below $378771s1% heath, Bursting Shot's cooldown is immediately reset. This can only occur once every $385646d.][]
@@ -1234,23 +1220,27 @@ spec:RegisterAbilities( {
 
         usable = function () return buff.deathblow.up or buff.flayers_mark.up or target.health_pct < 20, "requires flayers_mark or target health below 20 percent" end,
         handler = function ()
-            removeBuff( "deathblow" )
-            removeBuff( "flayers_mark" )
 
+            removeBuff( "deathblow" )
             if buff.razor_fragments.up then
                 removeBuff( "razor_fragments" )
                 applyDebuff( "target", "razor_fragments_bleed" )
             end
 
-            if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
-                applyDebuff( "target", "pouch_of_razor_fragments" )
+            --- Legacy / PvP Stuff
+            if covenant.venthyr then
+                if buff.flayers_mark.up and legendary.pouch_of_razor_fragments.enabled then
+                    applyDebuff( "target", "pouch_of_razor_fragments" )
+                    removeBuff( "flayers_mark" )
+                end
             end
-
             if set_bonus.tier30_4pc > 0 then
                 reduceCooldown( "aimed_shot", 1.5 )
                 reduceCooldown( "rapid_fire", 1.5 )
             end
-        end
+        end,
+
+        bind = "black_arrow"
     },
 
     lunar_storm = {
