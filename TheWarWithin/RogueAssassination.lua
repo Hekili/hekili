@@ -2600,6 +2600,8 @@ spec:RegisterAbilities( {
             if buff.finality_rupture.up then removeBuff( "finality_rupture" )
             elseif talent.finality.enabled then applyBuff( "finality_rupture" ) end
 
+            spend( combo_points.current, "combo_points" )
+
             if buff.serrated_bone_spike_charges.up then
                 gain ( 1 + buff.serrated_bone_spike_charges.stack, "combo_points" )
                 removeStack( "serrated_bone_spike_charges" )
@@ -2609,8 +2611,6 @@ spec:RegisterAbilities( {
             if talent.scent_of_blood.enabled or azerite.scent_of_blood.enabled then
                 applyBuff( "scent_of_blood", dot.rupture.remains, active_dot.rupture )
             end
-
-            spend( combo_points.current, "combo_points" )
         end,
     },
 
