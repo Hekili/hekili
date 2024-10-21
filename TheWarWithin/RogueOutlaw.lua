@@ -645,7 +645,8 @@ end )
 
 spec:RegisterStateExpr( "rtb_buffs_normal", function ()
     local n = 0
-
+    local primary = rtb_primary_remains
+                
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
         if bone.up and abs( bone.remains - primary ) < 0.1 then n = n + 1 end
