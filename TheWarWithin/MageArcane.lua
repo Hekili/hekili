@@ -2118,6 +2118,7 @@ spec:RegisterAbilities( {
             end
 
             applyDebuff( "target", "supernova" )
+            removeBuff( "unerring_proficiency" )
         end,
 
         copy = { 157980, "gravity_lapse", 449700 }
