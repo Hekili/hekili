@@ -776,7 +776,7 @@ spec:RegisterAuras( {
     howl_of_the_pack = {
         id = 462515,
         duration = 8.0,
-        max_stack = 1,
+        max_stack = 3,
     },
     -- Talent: Your next Kill Shot is usable on any target, regardless of your target's current health.
     -- https://wowhead.com/beta/spell=378215
