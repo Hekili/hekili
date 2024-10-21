@@ -40,7 +40,6 @@ spec:RegisterTalents( {
     deadened_nerves            = {  90743, 231719, 1 }, -- Physical damage taken reduced by 5%.
     deadly_precision           = {  90760, 381542, 1 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
     deeper_stratagem           = {  90750, 193531, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
-    echoing_reprimand          = {  90639, 385616, 1 }, -- Deal 46,245 Physical damage to an enemy, extracting their anima to Animacharge a combo point for 45 sec. Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed 7 combo points. Awards 2 combo points.
     elusiveness                = {  90742,  79008, 1 }, -- Evasion also reduces damage taken by 20%, and Feint also reduces non-area-of-effect damage taken by 20%.
     evasion                    = {  90764,   5277, 1 }, -- Increases your dodge chance by 100% for 10 sec.
     featherfoot                = {  94563, 423683, 1 }, -- Sprint increases movement speed by an additional 30% and has 4 sec increased duration.
@@ -57,8 +56,6 @@ spec:RegisterTalents( {
     nimble_fingers             = {  90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by 10.
     numbing_poison             = {  90763,   5761, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 18% for 10 sec.
     recuperator                = {  90640, 378996, 1 }, -- Slice and Dice heals you for up to 1% of your maximum health per 2 sec.
-    resounding_clarity         = {  90638, 381622, 1 }, -- Echoing Reprimand Animacharges 2 additional combo points.
-    reverberation              = {  90638, 394332, 1 }, -- Echoing Reprimand's damage is increased by 100%.
     rushed_setup               = {  90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by 20%.
     shadowheart                = { 101714, 455131, 1 }, -- Leech increased by 2% while Stealthed.
     shadowrunner               = {  90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move 20% faster.
@@ -97,7 +94,6 @@ spec:RegisterTalents( {
     improved_shadow_techniques = {  90736, 394023, 1 }, -- Shadow Techniques generates 3 additional Energy.
     improved_shuriken_storm    = {  90710, 319951, 1 }, -- Shuriken Storm has an additional 15% chance to crit, and its critical strikes apply Find Weakness for 10 sec.
     inevitability              = {  90704, 382512, 1 }, -- Gloomblade and Shadowstrike extend the duration of your Symbols of Death by 0.5 sec.
-    invigorating_shadowdust    = {  90706, 382523, 2 }, -- Vanish reduces the remaining cooldown of your other Rogue abilities by 10.0 sec.
     lingering_shadow           = {  90731, 382524, 1 }, -- After Shadow Dance ends, Gloomblade deals an additional 50% damage as Shadow, fading by 2.8% per sec.
     master_of_shadows          = {  90735, 196976, 1 }, -- Gain 25 Energy over 3 sec when you enter Stealth or activate Shadow Dance.
     night_terrors              = {  94582, 277953, 1 }, -- Shuriken Storm reduces enemies' movement speed by 50% for 8 sec.
@@ -329,8 +325,14 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=121471
     shadow_blades = {
         id = 121471,
-        duration = 20,
+        duration = 16,
         max_stack = 1
+    },
+    shadow_dance = {
+        id = 185422,
+        duration = function() return 6 + talent.improved_shadow_dance.rank * 2 + buff.first_dance.up and 4 or 0 end,
+        max_stack = 1,
+        copy = 185313
     },
     shadow_techniques = {
         id = 196911,
@@ -572,8 +574,8 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not talent.coup_de_grace.enabled and not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
-    if buff[ "echoing_reprimand_" .. c ].up then c = 7 end
+    if not talent.coup_de_grace.enabled and not talent.supercharger.enabled and not covenant.kyrian then return c end
+    if talent.supercharger.enabled and buff.supercharger.remains then c = c + 2 end
     if this_action == "coup_de_grace" and buff.coup_de_grace.up then c = c + 5 end
     return c
 end )
@@ -589,7 +591,7 @@ local function comboSpender( amt, resource )
             gain( 6 * amt, "energy" )
         end
 
-        if talent.alacrity.enabled and amt >= 5 then
+        if talent.alacrity.enabled and amt >= 10 then
             addStack( "alacrity" )
         end
 
@@ -597,7 +599,7 @@ local function comboSpender( amt, resource )
             reduceCooldown( "secret_technique", amt )
         end
 
-        reduceCooldown( "shadow_dance", amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) )
+        if talent.deepening_shadows.enabled then reduceCooldown( "shadow_dance", amt * 0.5 ) end
 
         if legendary.obedience.enabled and buff.flagellation_buff.up then
             reduceCooldown( "flagellation", amt )
@@ -908,7 +910,6 @@ spec:RegisterAbilities( {
             removeBuff( "masterful_finish" )
 
             if talent.alacrity.enabled and effective_combo_points > 4 then addStack( "alacrity" ) end
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
 
             if buff.finality_black_powder.up then removeBuff( "finality_black_powder" )
             elseif talent.finality.enabled then applyBuff( "finality_black_powder" ) end
@@ -916,6 +917,7 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
             spend( combo_points.current, "combo_points" )
+            -- removeStack( "supercharged" )
             if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
     },
@@ -963,7 +965,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.    Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.    |cFFFFFFFFAwards $s3 combo $lpoint:points;.|r
     echoing_reprimand = {
-        id = function() return talent.echoing_reprimand.enabled and 385616 or 323547 end,
+        id = 323547,
         cast = 0,
         cooldown = 45,
         gcd = "totem",
@@ -975,6 +977,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         toggle = "cooldowns",
 
+        usable = covenant.kyrian,
+
         cp_gain = function ()
             if buff.shadow_blades.up then return 7 end
             if buff.premeditation.up then return combo_points.max end
@@ -983,12 +987,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             -- Can't predict the Animacharge, unless you have the talent/legendary.
-            if legendary.resounding_clarity.enabled or talent.resounding_clarity.enabled then
-                applyBuff( "echoing_reprimand_2", nil, 2 )
-                applyBuff( "echoing_reprimand_3", nil, 3 )
-                applyBuff( "echoing_reprimand_4", nil, 4 )
-                applyBuff( "echoing_reprimand_5", nil, 5 )
-            end
 
             st_gain( "echoing_reprimand" )
             removeBuff( "premeditation" )
@@ -1044,8 +1042,8 @@ spec:RegisterAbilities( {
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( combo_points.current, "combo_points" )
+            -- removeStack( "supercharged" )
 
             if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
@@ -1181,7 +1179,6 @@ spec:RegisterAbilities( {
             applyBuff( "secret_technique" ) -- fake buff for APL logic.
             removeStack( "goremaws_bite" )
             if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity" ) end
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
         end,
     },
@@ -1190,7 +1187,7 @@ spec:RegisterAbilities( {
     shadow_blades = {
         id = 121471,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 * ( pvptalent.thiefs_bargain.enabled and 0.8 or 1 ) end,
         gcd = "off",
         school = "physical",
 
@@ -1208,14 +1205,9 @@ spec:RegisterAbilities( {
     shadow_dance = {
         id = 185313,
         cast = 0,
-        charges = function ()
-            if state.spec.subtlety and talent.shadow_dance.enabled then return 2 end
-            return talent.enveloping_shadows.enabled and 2 or nil end,
+        charges = function () return 1 + talent.double_dance.rank end,
         cooldown = 60,
-        recharge = function ()
-            if state.spec.subtlety and talent.shadow_dance.enabled then return 60 end
-            return talent.enveloping_shadows.enabled and 60 or nil
-        end,
+        recharge = 6,
         gcd = "off",
 
         startsCombat = false,
@@ -1459,7 +1451,7 @@ spec:RegisterAbilities( {
     symbols_of_death = {
         id = 212283,
         cast = 0,
-        charges = 1,
+        charges = function() return 1 + talent.death_perception.rank end,
         cooldown = 30,
         recharge = 30,
         gcd = "off",
@@ -1472,6 +1464,7 @@ spec:RegisterAbilities( {
             -- applyBuff( "symbols_of_death_crit" )
 
             if legendary.the_rotten.enabled then applyBuff( "the_rotten" ) end
+            if talent.supercharger.enabled then addStack( "supercharged", nil, talent.supercharger.rank ) end
         end,
     }
 } )

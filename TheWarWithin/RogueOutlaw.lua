@@ -63,7 +63,6 @@ spec:RegisterTalents( {
     deadened_nerves           = {  90743, 231719, 1 }, -- Physical damage taken reduced by 5%.
     deadly_precision          = {  90760, 381542, 1 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
     deeper_stratagem          = {  90750, 193531, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
-    echoing_reprimand         = {  90639, 385616, 1 }, -- Deal 59,682 Physical damage to an enemy, extracting their anima to Animacharge a combo point for 45 sec. Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed 7 combo points. Awards 2 combo points.
     elusiveness               = {  90742,  79008, 1 }, -- Evasion also reduces damage taken by 20%, and Feint also reduces non-area-of-effect damage taken by 20%.
     evasion                   = {  90764,   5277, 1 }, -- Increases your dodge chance by 100% for 10 sec. Dodging an attack while Evasion is active will trigger Mastery: Main Gauche.
     featherfoot               = {  94563, 423683, 1 }, -- Sprint increases movement speed by an additional 30% and has 4 sec increased duration.
@@ -80,8 +79,6 @@ spec:RegisterTalents( {
     nimble_fingers            = {  90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by 10.
     numbing_poison            = {  90763,   5761, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 18% for 10 sec.
     recuperator               = {  90640, 378996, 1 }, -- Slice and Dice heals you for up to 1% of your maximum health per 2 sec.
-    resounding_clarity        = {  90638, 381622, 1 }, -- Echoing Reprimand Animacharges 2 additional combo points.
-    reverberation             = {  90638, 394332, 1 }, -- Echoing Reprimand's damage is increased by 100%.
     rushed_setup              = {  90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by 20%.
     shadowheart               = { 101714, 455131, 1 }, -- Leech increased by 2% while Stealthed.
     shadowrunner              = {  90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move 20% faster.
@@ -155,7 +152,7 @@ spec:RegisterTalents( {
     fate_intertwined          = {  95120, 454429, 1 }, -- Fate Intertwined duplicates 20% of Dispatch critical strike damage as Cosmic to 2 additional nearby enemies. If there are no additional nearby targets, duplicate 20% to the primary target instead.
     fateful_ending            = {  95127, 454428, 1 }, -- When your Fatebound Coin flips the same face for the seventh time in a row, keep the lucky coin to gain 7% Agility until you leave combat for 10 seconds. If you already have a lucky coin, it instead deals 39,023 Cosmic damage to your target.
     hand_of_fate              = {  95125, 452536, 1, "fatebound" }, -- Flip a Fatebound Coin each time a finishing move consumes 5 or more combo points. Heads increases the damage of your attacks by 3%, lasting 15 sec or until you flip Tails. Tails deals 22,954 Cosmic damage to your target. For each time the same face is flipped in a row, Heads increases damage by an additional 1% and Tails increases its damage by 10%.
-    inevitability             = {  95114, 454434, 1 }, -- Cold Blood now benefits the next two abilities but only applies to Dispatch. Fatebound Coins flipped by these abilities are guaranteed to match the same face as the last flip.
+    inevitable_end            = {  95114, 454434, 1 }, -- Cold Blood now benefits the next two abilities but only applies to Dispatch. Fatebound Coins flipped by these abilities are guaranteed to match the same face as the last flip.
     inexorable_march          = {  95130, 454432, 1 }, -- You cannot be slowed below 70% of normal movement speed while your Fatebound Coin flips have an active streak of at least 2 flips matching the same face.
     mean_streak               = {  95122, 453428, 1 }, -- Fatebound Coins flipped by Dispatch multiple times in a row are 33% more likely to match the same face as the last flip.
     tempted_fate              = {  95138, 454286, 1 }, -- You have a chance equal to your critical strike chance to absorb 10% of any damage taken, up to a maximum chance of 40%.
@@ -261,44 +258,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-    echoing_reprimand_2 = {
-        id = 323558,
-        duration = 45,
-        max_stack = 6,
-    },
-    echoing_reprimand_3 = {
-        id = 323559,
-        duration = 45,
-        max_stack = 6,
-    },
-    echoing_reprimand_4 = {
-        id = 323560,
-        duration = 45,
-        max_stack = 6,
-        copy = 354835,
-    },
-    echoing_reprimand_5 = {
-        id = 354838,
-        duration = 45,
-        max_stack = 6,
-    },
-    echoing_reprimand = {
-        alias = { "echoing_reprimand_2", "echoing_reprimand_3", "echoing_reprimand_4", "echoing_reprimand_5" },
-        aliasMode = "first",
-        aliasType = "buff",
-        meta = {
-            stack = function ()
-                if combo_points.current > 1 and combo_points.current < 6 and buff[ "echoing_reprimand_" .. combo_points.current ].up then return combo_points.current end
-
-                if buff.echoing_reprimand_2.up then return 2 end
-                if buff.echoing_reprimand_3.up then return 3 end
-                if buff.echoing_reprimand_4.up then return 4 end
-                if buff.echoing_reprimand_5.up then return 5 end
-
-                return 0
-            end
-        }
-    },
     escalating_blade = {
         id = 441786,
         duration = 3600,
@@ -399,12 +358,6 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
-    shadow_dance = {
-        id = 185313,
-        duration = 6,
-        max_stack = 1,
-        copy = 185422
-    },
     sharpened_sabers = {
         id = 252285,
         duration = 15,
@@ -442,7 +395,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=385907
     take_em_by_surprise = {
         id = 385907,
-        duration = 3600,
+        duration = function() return combat and 10 * talent.take_em_by_surprise.rank + 3 * talent.subterfuge.rank or 3600 end,
         max_stack = 1
     },
     -- Talent: Threat redirected from Rogue.
@@ -788,10 +741,10 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
-    if c < 2 or c > 5 then return c end
-    if buff[ "echoing_reprimand_" .. c ].up then return 7 end
-    return c
+
+    if talent.supercharger.enabled and buff.supercharger.remains then
+        return c + 2
+    else return c end
 end )
 
 
@@ -818,7 +771,7 @@ spec:RegisterHook( "runHandler", function( ability )
         removeBuff( "shadowmeld" )
         removeBuff( "vanish" )
     end
-    if buff.cold_blood.up and ( ability == "ambush" or not talent.inevitability.enabled ) and ( not a or a.startsCombat ) then
+    if buff.cold_blood.up and ( ability == "ambush" or not talent.inevitable_end.enabled ) and ( not a or a.startsCombat ) then
         removeStack( "cold_blood" )
     end
 
@@ -1005,8 +958,8 @@ spec:RegisterAbilities( {
                 applyBuff( "greenskins_wickers" )
             end
 
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( combo_points.current, "combo_points" )
+            -- removeStack( "supercharged" )
         end,
     },
 
@@ -1074,6 +1027,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             spend( combo_points.current, "combo_points" )
+            -- removeStack( "supercharged" )
         end,
     },
 
@@ -1111,7 +1065,6 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo points" end,
         handler = function ()
             removeBuff( "brutal_opportunist" )
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
             removeBuff( "storm_of_steel" )
 
             if talent.alacrity.enabled and combo_points.current > 4 then
@@ -1124,6 +1077,7 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_2pc > 0 then applyBuff( "vicious_followup" ) end
 
             spend( combo_points.current, "combo_points" )
+            -- removeStack( "supercharged" )
 
             if buff.coup_de_grace.up then
                 if debuff.fazed.up then addStack( "flawless_form", nil, 5 ) end
@@ -1175,7 +1129,7 @@ spec:RegisterAbilities( {
     keep_it_rolling = {
         id = 381989,
         cast = 0,
-        cooldown = 420,
+        cooldown = 360,
         gcd = "off",
         school = "physical",
 
@@ -1210,6 +1164,7 @@ spec:RegisterAbilities( {
             setCooldown( "global_cooldown", 0.4 * combo_points.current )
             applyBuff( "killing_spree" )
             spend( combo_points.current, "combo_points" )
+            -- removeStack( "supercharged" )
 
             if talent.flawless_form.enabled then addStack( "flawless_form" ) end
         end,
@@ -1294,6 +1249,8 @@ spec:RegisterAbilities( {
             if pvptalent.take_your_cut.enabled then
                 applyBuff( "take_your_cut" )
             end
+
+            if talent.supercharger.enabled then addStack( "supercharged", nil, talent.supercharger.rank ) end
         end,
     },
 
