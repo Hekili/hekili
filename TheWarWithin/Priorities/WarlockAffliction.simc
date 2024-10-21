@@ -32,7 +32,7 @@ actions+=/call_action_list,name=variables
 actions+=/call_action_list,name=ogcd
 actions+=/call_action_list,name=items
 # This entry is manually translated and will differ from SIMC, but maintains the same functionality.
-actions+=/call_action_list,name=cleave,if=active_enemies=2|(active_enemies>=3&variable.cleave_apl)
+actions+=/call_action_list,name=cleave,if=active_enemies=2|active_enemies>2&variable.cleave_apl
 actions+=/call_action_list,name=aoe,if=active_enemies>2
 actions+=/call_action_list,name=end_of_fight
 actions+=/agony,if=(!talent.vile_taint|remains<cooldown.vile_taint.remains+action.vile_taint.cast_time)&(talent.absolute_corruption&remains<3|!talent.absolute_corruption&remains<5|cooldown.soul_rot.remains<5&remains<8)&fight_remains>dot.agony.remains+5
@@ -75,7 +75,7 @@ actions.aoe+=/phantom_singularity,if=(cooldown.soul_rot.remains<=execute_time|co
 actions.aoe+=/unstable_affliction,if=(active_dot.unstable_affliction=0|ticking)&remains<5
 actions.aoe+=/agony,cycle_targets=1,if=active_dot.agony<8&(remains<cooldown.vile_taint.remains+action.vile_taint.cast_time|!talent.vile_taint)&gcd.max+action.soul_rot.cast_time+gcd.max<((variable.min_vt*talent.vile_taint)<?(variable.min_ps*talent.phantom_singularity))&remains<10
 actions.aoe+=/soul_rot,if=variable.vt_up&(variable.ps_up|variable.vt_up)&dot.agony.remains
-actions.aoe+=/malevolence,if=variable.ps_up&variable.vt_up&variable.sr_up|cooldown.invoke_power_infusion_0.duration>0&cooldown.invoke_power_infusion_0.up&!talent.soul_rot
+actions.aoe+=/malevolence,if=variable.ps_up&variable.vt_up&variable.sr_up
 actions.aoe+=/seed_of_corruption,if=((!talent.wither&dot.corruption.remains<5)|(talent.wither&dot.wither.remains<5))&!(action.seed_of_corruption.in_flight|active_dot.seed_of_corruption>0)
 actions.aoe+=/corruption,cycle_targets=1,if=remains<5&!talent.seed_of_corruption
 actions.aoe+=/wither,cycle_targets=1,if=remains<5&!talent.seed_of_corruption
@@ -125,10 +125,10 @@ actions.end_of_fight+=/drain_soul,if=talent.demonic_soul&(boss&fight_remains<5&b
 actions.end_of_fight+=/oblivion,if=soul_shard>1&boss&fight_remains<(soul_shard+buff.tormented_crescendo.up)*gcd.max+execute_time
 actions.end_of_fight+=/malefic_rapture,if=boss&fight_remains<4&(!talent.demonic_soul|talent.demonic_soul&buff.nightfall.stack<1)
 
-actions.se_maintenance+=/drain_soul,interrupt=1,if=talent.shadow_embrace&talent.drain_soul&(debuff.shadow_embrace.stack<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3)&active_enemies<=4&fight_remains>15,interrupt_if=debuff.shadow_embrace.stack=debuff.shadow_embrace.max_stack
-actions.se_maintenance+=/shadow_bolt,if=talent.shadow_embrace&((debuff.shadow_embrace.stack+action.shadow_bolt.in_flight_to_target_count)<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3&!action.shadow_bolt.in_flight_to_target)&active_enemies<=4&fight_remains>15
+actions.se_maintenance+=/drain_soul,interrupt=1,if=talent.shadow_embrace&talent.drain_soul&(debuff.shadow_embrace.stack<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3)&active_enemies<=4&target.time_to_die>15,interrupt_if=debuff.shadow_embrace.stack=debuff.shadow_embrace.max_stack
+actions.se_maintenance+=/shadow_bolt,if=talent.shadow_embrace&((debuff.shadow_embrace.stack+(action.shadow_bolt.time_since<1))<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3&!action.shadow_bolt.in_flight_to_target)&active_enemies<=4&target.time_to_die>15
 
-actions.opener_cleave_se+=/drain_soul,if=talent.shadow_embrace&talent.drain_soul&buff.nightfall.up&(debuff.shadow_embrace.stack<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3)&(fight_remains>15|time<20),interrupt_if=debuff.shadow_embrace.stack=debuff.shadow_embrace.max_stack
+actions.opener_cleave_se+=/drain_soul,if=talent.shadow_embrace&talent.drain_soul&buff.nightfall.up&(debuff.shadow_embrace.stack<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3)&(target.time_to_die>15|time<20),interrupt_if=debuff.shadow_embrace.stack=debuff.shadow_embrace.max_stack
 
 actions.cleave_se_maintenance+=/drain_soul,cycle_targets=1,if=talent.shadow_embrace&talent.drain_soul&(talent.wither|talent.demonic_soul&buff.nightfall.up)&(debuff.shadow_embrace.stack<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3)&fight_remains>15,interrupt_if=debuff.shadow_embrace.stack>3
 actions.cleave_se_maintenance+=/shadow_bolt,cycle_targets=1,if=talent.shadow_embrace&!talent.drain_soul&((debuff.shadow_embrace.stack+action.shadow_bolt.in_flight_to_target_count)<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3&!action.shadow_bolt.in_flight_to_target)&fight_remains>15
@@ -148,9 +148,6 @@ actions.ogcd+=/blood_fury,if=variable.cds_active|fight_remains<17|prev_gcd.1.sou
 ## actions.ogcd+=/invoke_external_buff,name=power_infusion,if=variable.cds_active
 actions.ogcd+=/fireblood,if=variable.cds_active|fight_remains<10|prev_gcd.1.soul_rot&time<20
 actions.ogcd+=/ancestral_call,if=variable.cds_active|fight_remains<17|prev_gcd.1.soul_rot&time<20
-
-actions.se_maintenance+=/drain_soul,interrupt=1,if=talent.shadow_embrace&talent.drain_soul&(debuff.shadow_embrace.stack_pct<100|debuff.shadow_embrace.remains<3)&active_enemies<=4&fight_remains>15,interrupt_if=debuff.shadow_embrace.stack_pct=100
-actions.se_maintenance+=/shadow_bolt,if=talent.shadow_embrace&((debuff.shadow_embrace.stack+action.shadow_bolt.in_flight)<debuff.shadow_embrace.max_stack|debuff.shadow_embrace.remains<3&!action.shadow_bolt.in_flight)&active_enemies<=4&fight_remains>15
 
 actions.variables+=/variable,name=ps_up,op=set,value=!talent.phantom_singularity|dot.phantom_singularity.up
 actions.variables+=/variable,name=vt_up,op=set,value=!talent.vile_taint|dot.vile_taint_dot.up

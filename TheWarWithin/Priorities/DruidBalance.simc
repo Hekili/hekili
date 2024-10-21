@@ -5,7 +5,7 @@ actions.precombat+=/variable,name=on_use_trinket,value=0
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=(trinket.1.has_proc&trinket.1.cooldown.duration|trinket.1.is.spymasters_web|trinket.1.is.signet_of_the_priory)&!trinket.1.is.arakara_sacbrood
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=((trinket.2.has_proc&trinket.2.cooldown.duration|trinket.2.is.spymasters_web|trinket.2.is.signet_of_the_priory)*2&!trinket.2.is.arakara_sacbrood)
 ## Regrowth to stack for Keeper of the Grove...
-## actions.precombat+=/regrowth,if=boss&hero_tree.keeper_of_the_grove&!(prev.1.regrowth&prev.2.regrowth&prev.3.regrowth&prev.4.regrowth)
+actions.precombat+=/regrowth,line_cd=15,if=hero_tree.keeper_of_the_grove&!talent.stellar_flare
 actions.precombat+=/wrath,line_cd=15,if=!prev.1.wrath
 actions.precombat+=/wrath,if=prev.1.wrath&!(prev.2.wrath|prev.3.wrath|prev.4.wrath)
 actions.precombat+=/starfire,if=!talent.stellar_flare&hero_tree.elunes_chosen
@@ -74,7 +74,7 @@ actions.st+=/starfire,if=!variable.enter_lunar&(!variable.eclipse|variable.eclip
 actions.st+=/call_action_list,name=pre_cd
 actions.st+=/celestial_alignment,if=variable.cd_condition
 actions.st+=/incarnation,if=variable.cd_condition
-actions.st+=/force_of_nature,if=cooldown.ca_inc.remains<gcd.max&(!talent.natures_grace|!variable.eclipse|variable.eclipse_remains>6)|variable.eclipse_remains>=3&cooldown.ca_inc.remains>10+15*talent.control_of_the_dream&(fight_remains>cooldown+5|cooldown.ca_inc.remains>fight_remains)
+actions.st+=/force_of_nature,if=cooldown.ca_inc.remains<gcd.max&(!talent.natures_grace|!variable.eclipse|variable.eclipse_remains>6)|variable.eclipse_remains>=6&cooldown.ca_inc.remains>10+15*talent.control_of_the_dream&(fight_remains>cooldown+5|cooldown.ca_inc.remains>fight_remains)
 actions.st+=/fury_of_elune,if=5+variable.passive_asp<astral_power.deficit
 actions.st+=/starsurge,if=talent.starlord&buff.starlord.stack<3
 actions.st+=/sunfire,cycle_targets=1,if=refreshable

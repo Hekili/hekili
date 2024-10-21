@@ -61,9 +61,9 @@ actions.cds+=/cold_blood,if=!buff.edge_case.up&cooldown.deathmark.remains>10&!bu
 # Core damage over time abilities used everywhere Maintain Garrote
 actions.core_dot+=/garrote,if=combo_points.deficit>=1&(pmultiplier<=1)&refreshable&target.time_to_die-remains>12
 # Maintain Rupture unless darkest night is up
-actions.core_dot+=/rupture,if=effective_combo_points>=variable.effective_spend_cp&(pmultiplier<=1)&refreshable&target.time_to_die-remains>(4+(talent.dashing_scoundrel*5)+(variable.regen_saturated*6))&!buff.darkest_night.up
+actions.core_dot+=/rupture,if=effective_combo_points>=variable.effective_spend_cp&(pmultiplier<=1)&refreshable&target.time_to_die-remains>(4+(talent.dashing_scoundrel*5)+(variable.regen_saturated*6))&(!buff.darkest_night.up|talent.caustic_spatter&!debuff.caustic_spatter.up)
 # Crimson Tempest with Momentum of Despair
-actions.core_dot+=/crimson_tempest,if=effective_combo_points>=variable.effective_spend_cp&refreshable&buff.momentum_of_despair.remains>6&variable.single_target
+actions.core_dot+=/crimson_tempest,if=effective_combo_points>=variable.effective_spend_cp&refreshable&target.time_to_die-remains>8&buff.momentum_of_despair.remains>6&variable.single_target
 
 # AoE Damage over time abilities Check what the maximum Scent of Blood stacks is currently
 actions.aoe_dot+=/variable,name=scent_effective_max_stacks,value=(spell_targets.fan_of_knives*talent.scent_of_blood.rank*2)>?20
@@ -85,7 +85,7 @@ actions.direct+=/envenom,if=!buff.darkest_night.up&effective_combo_points>=varia
 # Special Envenom handling for Darkest Night
 actions.direct+=/envenom,if=buff.darkest_night.up&effective_combo_points>=cp_max_spend
 # Check if we should be using a filler
-actions.direct+=/variable,name=use_filler,value=combo_points.deficit>1+envenom_at_5cp|variable.not_pooling|!variable.single_target
+actions.direct+=/variable,name=use_filler,value=combo_points.deficit>1-buff.darkest_night.up|variable.not_pooling|!variable.single_target
 # Maintain Caustic Spatter
 actions.direct+=/variable,name=use_caustic_filler,value=talent.caustic_spatter&dot.rupture.ticking&(!debuff.caustic_spatter.up|debuff.caustic_spatter.remains<=2)&combo_points.deficit>1&!variable.single_target
 actions.direct+=/mutilate,if=variable.use_caustic_filler
@@ -113,8 +113,8 @@ actions.items+=/use_item,name=mad_queens_mandate,if=cooldown.deathmark.remains>=
 actions.items+=/use_item,name=imperfect_ascendancy_serum,use_off_gcd=1,if=variable.base_trinket_condition
 actions.items+=/use_item,name=algethar_puzzle_box,use_off_gcd=1,if=dot.rupture.ticking&cooldown.deathmark.remains<2|boss&fight_remains<=22
 # Fallback case for using stat trinkets
-actions.items+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|!debuff.deathmark.up&cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
-actions.items+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|!debuff.deathmark.up&cooldown.deathmark.remains>20))|!variable.trinket_sync_slot)
+actions.items+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready&dot.kingsbane.ticking|!debuff.deathmark.up&cooldown.deathmark.remains>20&dot.kingsbane.ticking))|!variable.trinket_sync_slot)
+actions.items+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(debuff.deathmark.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready&dot.kingsbane.ticking|!debuff.deathmark.up&cooldown.deathmark.remains>20&dot.kingsbane.ticking))|!variable.trinket_sync_slot)
 
 # Miscellaneous Cooldowns Potion
 actions.misc_cds+=/potion,if=buff.bloodlust.react|boss&fight_remains<30|debuff.deathmark.up
@@ -130,7 +130,7 @@ actions.shiv+=/variable,name=shiv_kingsbane_condition,value=talent.kingsbane&buf
 # Shiv for aoe with Arterial Precision
 actions.shiv+=/shiv,if=talent.arterial_precision&variable.shiv_condition&spell_targets.fan_of_knives>=4&dot.crimson_tempest.ticking
 # Shiv cases for Kingsbane
-actions.shiv+=/shiv,if=!talent.lightweight_shiv.enabled&variable.shiv_kingsbane_condition&(dot.kingsbane.ticking&dot.kingsbane.remains<8|!dot.kingsbane.ticking&cooldown.kingsbane.remains>=24)&(!talent.crimson_tempest.enabled|variable.single_target|dot.crimson_tempest.ticking)
+actions.shiv+=/shiv,if=!talent.lightweight_shiv.enabled&variable.shiv_kingsbane_condition&(dot.kingsbane.ticking&dot.kingsbane.remains<8|!dot.kingsbane.ticking&cooldown.kingsbane.remains>=20)&(!talent.crimson_tempest.enabled|variable.single_target|dot.crimson_tempest.ticking)
 actions.shiv+=/shiv,if=talent.lightweight_shiv.enabled&variable.shiv_kingsbane_condition&(dot.kingsbane.ticking|cooldown.kingsbane.remains<=1)
 # Fallback shiv for arterial during deathmark
 actions.shiv+=/shiv,if=talent.arterial_precision&variable.shiv_condition&debuff.deathmark.up
@@ -144,7 +144,7 @@ actions.stealthed+=/pool_resource,for_next=1
 # Apply Deathstalkers Mark if it has fallen off
 actions.stealthed+=/ambush,if=!debuff.deathstalkers_mark.up&talent.deathstalkers_mark&(active_dot.deathstalkers_mark=0|buff.darkest_night.down)
 # Make sure to have Shiv up during Kingsbane as a final check
-actions.stealthed+=/shiv,if=talent.kingsbane&(dot.kingsbane.ticking|cooldown.kingsbane.up)&(!debuff.shiv.up&debuff.shiv.remains<1)&buff.envenom.up
+actions.stealthed+=/shiv,if=talent.kingsbane&dot.kingsbane.ticking&debuff.shiv.remains<1&buff.envenom.up
 # Envenom to maintain the buff during Subterfuge
 actions.stealthed+=/envenom,if=effective_combo_points>=variable.effective_spend_cp&dot.kingsbane.ticking&buff.envenom.remains<=3&(debuff.deathstalkers_mark.up|buff.edge_case.up|buff.cold_blood.up)
 # Envenom during Master Assassin in single target
@@ -153,7 +153,7 @@ actions.stealthed+=/envenom,if=effective_combo_points>=variable.effective_spend_
 actions.stealthed+=/rupture,cycle_targets=1,if=effective_combo_points>=variable.effective_spend_cp&buff.indiscriminate_carnage.up&(refreshable|!settings.cycle)&(!variable.regen_saturated|!variable.scent_saturation|!dot.rupture.ticking)&target.time_to_die>15
 # Improved Garrote: Apply or Refresh with buffed Garrotes, accounting for Indiscriminate Carnage
 actions.stealthed+=/garrote,cycle_targets=1,if=stealthed.improved_garrote&(remains<12|pmultiplier<=1|(buff.indiscriminate_carnage.up&active_dot.garrote<cycle_enemies))&!variable.single_target&target.time_to_die-remains>2
-actions.stealthed+=/garrote,if=stealthed.improved_garrote&(pmultiplier<=1|remains<12|!variable.single_target&buff.master_assassin_aura.remains<3)&combo_points.deficit>=1+2*talent.shrouded_suffocation
+actions.stealthed+=/garrote,if=stealthed.improved_garrote&(pmultiplier<=1|remains<12|!variable.single_target&buff.master_assassin_aura.up&buff.master_assassin_aura.remains<1.5)&combo_points.deficit>=1+2*talent.shrouded_suffocation
 
 # Stealth Cooldowns   Vanish Sync for Improved Garrote with Deathmark
 actions.vanish+=/pool_resource,for_next=1,extra_amount=45
