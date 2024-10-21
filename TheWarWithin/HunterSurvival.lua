@@ -384,7 +384,7 @@ spec:RegisterAuras( {
     howl_of_the_pack = {
         id = 462515,
         duration = 8.0,
-        max_stack = 1,
+        max_stack = 3,
     },
     -- The next hostile spell cast on the target will cause hostile spells for the next 3 sec. to be redirected to your pet. Your pet must be within 10 yards of the target for spells to be redirected.
     interlope = {
@@ -541,13 +541,8 @@ spec:RegisterAuras( {
     -- Talent: Pet damage dealt increased by $s1%.  $?s259387[Mongoose Bite][Raptor Strike] deals an additional $s2% of damage dealt as a bleed over $389881d.  Kill Command has a $s3% increased chance to reset its cooldown.$?$w4!=0&?s259387[  Mongoose Bite Focus cost reduced by $w4.]?$w4!=0&!s259387[  Raptor Strike Focus cost reduced by $w4.][]
     -- https://wowhead.com/beta/spell=360966
     spearhead = {
-        id = 360966,
-        duration = 12,
-        max_stack = 1
-    },
-    spearhead_damage = {
-        id = 389881,
-        duration = 4,
+        id = 378957,
+        duration = 10,
         max_stack = 1
     },
     -- Talent: Bleeding for $w1 damage every $t1 seconds.
@@ -907,21 +902,21 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            
-            removeBuff( "bestial_barrage" )
-            removeBuff( "butchers_bone_fragments" )
+            if talent.scattered_prey.enabled then applyBuff( "scattered_prey" ) end
             removeStack( "tip_of_the_spear" )
 
             if talent.frenzy_strikes.enabled then
-                gainChargeTime( "wildfire_bomb", max( 5, true_active_enemies )*3 )
-            end
-
-            if conduit.flame_infusion.enabled then
-                addStack( "flame_infusion", nil, 1 )
+                gainChargeTime( "wildfire_bomb", min( 5, true_active_enemies ) * 3 )
             end
 
             if talent.merciless_blows.enabled then applyDebuff( "target", "merciless_blows" ) end
 
+            -- Legacy / PvP Stuff
+            if set_bonus.tier31_2pc > 0 then removeBuff( "bestial_barrage" ) end
+            if legendary.butchers_bone_fragments.enabled then removeBuff( "butchers_bone_fragments" ) end
+            if conduit.flame_infusion.enabled then
+                addStack( "flame_infusion", nil, 1 )
+            end
         end,
     },
 
@@ -941,8 +936,8 @@ spec:RegisterAbilities( {
         notalent = "butchery",
 
         handler = function ()
-            removeBuff( "bestial_barrage" )
-            removeBuff( "butchers_bone_fragments" )
+            if set_bonus.tier31_2pc > 0 then removeBuff( "bestial_barrage" ) end
+            if legendary.butchers_bone_fragments.enabled then removeBuff( "butchers_bone_fragments" ) end
 
             if talent.frenzy_strikes.enabled then
                 gainChargeTime( "wildfire_bomb", min( 5, true_active_enemies ) )
@@ -1221,30 +1216,13 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            if buff.furious_assault.up then removeBuff( "furious_assault" )
-            else removeBuff( "bestial_barrage" ) end
-            removeStack( "tip_of_the_spear" )
-            removeDebuff( "target", "latent_poison" )
-            removeDebuff( "target", "latent_poison_injection" )
-
+            spec.abilities.raptor_strike.handler()
             if buff.mongoose_fury.down then applyBuff( "mongoose_fury" )
             else
                 local r = buff.mongoose_fury.expires
                 applyBuff( "mongoose_fury", buff.mongoose_fury.remains, min( 5, buff.mongoose_fury.stack + 1 ) )
                 buff.mongoose_fury.expires = r
             end
-
-            if talent.vipers_venom.enabled then applyDebuff( "target", "serpent_sting" ) end
-
-
-            if azerite.wilderness_survival.enabled then
-                gainChargeTime( "wildfire_bomb", 1 )
-            end
-
-            if azerite.primeval_intuition.enabled then addStack( "primeval_intuition", nil, 1 ) end
-            if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then addStack( "blur_of_talons", nil, 1) end
-
-            if legendary.butchers_bone_fragments.enabled then addStack( "butchers_bone_fragments", nil, 1 ) end
         end,
 
         copy = { 265888, "mongoose_bite_eagle", "mongoose_strike" }
@@ -1271,35 +1249,36 @@ spec:RegisterAbilities( {
         notalent = "mongoose_bite",
 
         handler = function ()
-            if buff.furious_assault.up then removeBuff( "furious_assault" )
-            else removeBuff( "bestial_barrage" ) end
-            removeStack( "tip_of_the_spear" )
-            removeDebuff( "target", "latent_poison" )
-            removeDebuff( "target", "latent_poison_injection" )
 
-            if buff.spearhead.up then
-                applyDebuff( "target", "spearhead_damage" )
-                if talent.deadly_duo.enabled then addStack( "deadly_duo" ) end
+            if buff.furious_assault.up then removeBuff( "furious_assault" ) end
+            removeStack( "tip_of_the_spear" )
+
+            if talent.vipers_venom.enabled then
+                if talent.contagious_reagents.enabled and debuff.serpent_sting.up then
+                    active_dot.serpent_sting = min( true_active_enemies, active_dot.serpent_sting + 2 )
+                end
+                applyDebuff( "target", "serpent_sting" )
             end
 
-            if talent.vipers_venom.enabled then applyDebuff( "target", "serpent_sting" ) end
-
+            -- Legacy / PvP Stuff
+            if azerite.wilderness_survival.enabled then
+                gainChargeTime( "wildfire_bomb", 1 )
+            end
+            if azerite.primeval_intuition.enabled then addStack( "primeval_intuition", nil, 1 ) end
+            if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then addStack( "blur_of_talons", nil, 1) end
+            if legendary.butchers_bone_fragments.enabled then addStack( "butchers_bone_fragments", nil, 1 ) end
+            if set_bonus.tier31_2pc > 0 then removeBuff( "bestial_barrage" ) end
+            if legendary.latent_poison_injection.enabled then
+                removeDebuff( "target", "latent_poison" )
+                removeDebuff( "target", "latent_poison_injection" )
+            end
             if azerite.wilderness_survival.enabled then
                 gainChargeTime( "wildfire_bomb", 1 )
             end
 
-            if azerite.primeval_intuition.enabled then
-                addStack( "primeval_intuition", nil, 1 )
-            end
-
-            if azerite.blur_of_talons.enabled and buff.coordinated_assault.up then
-                addStack( "blur_of_talons", nil, 1)
-            end
-
-            if legendary.butchers_bone_fragments.enabled then
-                addStack( "butchers_bone_fragments", nil, 1 )
-            end
         end,
+
+        
 
         copy = { "raptor_strike_eagle", 265189 },
     },
