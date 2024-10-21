@@ -120,6 +120,7 @@ spec:RegisterTalents( {
     deadened_nerves        = {  90743, 231719, 1 }, -- Physical damage taken reduced by 5%.
     deadly_precision       = {  90760, 381542, 1 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
     deeper_stratagem       = {  90750, 193531, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
+    echoing_reprimand      = {  90639, 385616, 1 }, -- Deal 58,333 Physical damage to an enemy, extracting their anima to Animacharge a combo point for 45 sec. Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed 7 combo points. Awards 2 combo points.
     elusiveness            = {  90742,  79008, 1 }, -- Evasion also reduces damage taken by 20%, and Feint also reduces non-area-of-effect damage taken by 20%.
     evasion                = {  90764,   5277, 1 }, -- Increases your dodge chance by 100% for 10 sec.
     featherfoot            = {  94563, 423683, 1 }, -- Sprint increases movement speed by an additional 30% and has 4 sec increased duration.
@@ -136,6 +137,8 @@ spec:RegisterTalents( {
     nimble_fingers         = {  90745, 378427, 1 }, -- Energy cost of Feint and Crimson Vial reduced by 10.
     numbing_poison         = {  90763,   5761, 1 }, -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 21% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 18% for 10 sec.
     recuperator            = {  90640, 378996, 1 }, -- Slice and Dice heals you for up to 1% of your maximum health per 2 sec.
+    resounding_clarity     = {  90638, 381622, 1 }, -- Echoing Reprimand Animacharges 2 additional combo points.
+    reverberation          = {  90638, 394332, 1 }, -- Echoing Reprimand's damage is increased by 100%.
     rushed_setup           = {  90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by 20%.
     shadowheart            = { 101714, 455131, 1 }, -- Leech increased by 2% while Stealthed.
     shadowrunner           = {  90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move 20% faster.
@@ -144,7 +147,6 @@ spec:RegisterTalents( {
     soothing_darkness      = {  90691, 393970, 1 }, -- You are healed for 15% of your maximum health over 6 sec after gaining Vanish or Shadow Dance.
     stillshroud            = {  94561, 423662, 1 }, -- Shroud of Concealment has 50% reduced cooldown.
     subterfuge             = {  90688, 108208, 2 }, -- Abilities and combat benefits requiring Stealth remain active for 3 sec after Stealth breaks.
-    supercharger           = {  11111, 470347, 1 }, -- Crippling Poison reduces movement speed by an additional 10%.
     superior_mixture       = {  94567, 423701, 1 }, -- Crippling Poison reduces movement speed by an additional 10%.
     thistle_tea            = {  90756, 381623, 1 }, -- Restore 100 Energy. Mastery increased by 13.6% for 6 sec.
     tight_spender          = {  90692, 381621, 1 }, -- Energy cost of finishing moves reduced by 6%.
@@ -225,7 +227,7 @@ spec:RegisterTalents( {
     fate_intertwined       = {  95120, 454429, 1 }, -- Fate Intertwined duplicates 20% of Envenom critical strike damage as Cosmic to 2 additional nearby enemies. If there are no additional nearby targets, duplicate 20% to the primary target instead.
     fateful_ending         = {  95127, 454428, 1 }, -- When your Fatebound Coin flips the same face for the seventh time in a row, keep the lucky coin to gain 7% Agility until you leave combat for 10 seconds. If you already have a lucky coin, it instead deals 50,054 Cosmic damage to your target.
     hand_of_fate           = {  95125, 452536, 1, "fatebound" }, -- Flip a Fatebound Coin each time a finishing move consumes 5 or more combo points. Heads increases the damage of your attacks by 3%, lasting 15 sec or until you flip Tails. Tails deals 29,443 Cosmic damage to your target. For each time the same face is flipped in a row, Heads increases damage by an additional 1% and Tails increases its damage by 10%.
-    inevitable_end         = {  95114, 454434, 1 }, -- Cold Blood now benefits the next two abilities but only applies to Envenom. Fatebound Coins flipped by these abilities are guaranteed to match the same face as the last flip.
+    inevitability          = {  95114, 454434, 1 }, -- Cold Blood now benefits the next two abilities but only applies to Envenom. Fatebound Coins flipped by these abilities are guaranteed to match the same face as the last flip.
     inexorable_march       = {  95130, 454432, 1 }, -- You cannot be slowed below 70% of normal movement speed while your Fatebound Coin flips have an active streak of at least 2 flips matching the same face.
     mean_streak            = {  95122, 453428, 1 }, -- Fatebound Coins flipped by Envenom multiple times in a row are 33% more likely to match the same face as the last flip.
     tempted_fate           = {  95138, 454286, 1 }, -- You have a chance equal to your critical strike chance to absorb 10% of any damage taken, up to a maximum chance of 40%.
@@ -254,10 +256,10 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-
-    if talent.supercharger.enabled and buff.supercharger.remains then
-        return c + 2
-    else return c end
+    if not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
+    if c < 2 or c > 5 then return c end
+    if buff[ "echoing_reprimand_" .. c ].up then return 7 end
+    return c
 end )
 
 
@@ -339,6 +341,7 @@ local tracked_bleeds = {}
 local function NewBleed( key, spellID )
     tracked_bleeds[ key ] = {
         id = spellID,
+        exsanguinate = {},
         rate = {},
         last_tick = {},
         haste = {}
@@ -347,19 +350,25 @@ local function NewBleed( key, spellID )
     tracked_bleeds[ spellID ] = tracked_bleeds[ key ]
 end
 
-local function ApplyBleed( key, target )
+local function ApplyBleed( key, target, exsanguinate )
     local bleed = tracked_bleeds[ key ]
 
-    bleed.rate[ target ]         = 1
+    bleed.rate[ target ]         = 1 + ( exsanguinate and 1 or 0 )
     bleed.last_tick[ target ]    = GetTime()
+    bleed.exsanguinate[ target ] = exsanguinate
     bleed.haste[ target ]        = 100 + GetHaste()
 end
 
-local function UpdateBleed( key, target )
+local function UpdateBleed( key, target, exsanguinate )
     local bleed = tracked_bleeds[ key ]
 
     if not bleed.rate[ target ] then
         return
+    end
+
+    if exsanguinate and not bleed.exsanguinate[ target ] then
+        bleed.rate[ target ] = bleed.rate[ target ] + 1
+        bleed.exsanguinate[ target ] = true
     end
 
     bleed.haste[ target ] = 100 + GetHaste()
@@ -378,7 +387,12 @@ local function RemoveBleed( key, target )
 
     bleed.rate[ target ]         = nil
     bleed.last_tick[ target ]    = nil
+    bleed.exsanguinate[ target ] = nil
     bleed.haste[ target ]        = nil
+end
+
+local function GetExsanguinateRate( aura, target )
+    return tracked_bleeds[ aura ] and tracked_bleeds[ aura ].rate[ target ] or 1
 end
 
 NewBleed( "garrote", 703 )
@@ -452,6 +466,14 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             end
         end
 
+        -- Exsanguinate was used.
+        if subtype == "SPELL_CAST_SUCCESS" and spellID == 200806 then
+            UpdateBleed( "garrote", destGUID, true )
+            UpdateBleed( "rupture", destGUID, true )
+            UpdateBleed( "crimson_tempest", destGUID, true )
+            UpdateBleed( "internal_bleeding", destGUID, true )
+            return
+        end
     end
 
     if death_events[ subtype ] then
@@ -527,6 +549,15 @@ spec:RegisterHook( "spend", function( amt, resource )
             end
         end
 
+        if amt > 0 and talent.elaborate_planning.enabled then
+            applyBuff( "elaborate_planning" )
+        end
+
+        if amt > 1 and amt < 6 and action.echoing_reprimand.known then
+            local er = "echoing_reprimand_" .. amt
+            if buff[ er ].up then removeBuff( er ) end
+        end
+
         if amt > 4 and debuff.deathstalkers_mark.up then
             if debuff.deathstalkers_mark.stack > 1 then debuff.deathstalkers_mark.stack = debuff.deathstalkers_mark.stack - 1
             else
@@ -550,6 +581,56 @@ spec:RegisterStateExpr( "persistent_multiplier", function ()
 
     return mult
 end )
+
+
+
+
+local exsanguinated_spells = {
+    garrote = "garrote",
+    garrote_deathmark = "garrote_deathmark",
+    kidney_shot = "internal_bleeding",
+    rupture = "rupture",
+    rupture_deathmark = "rupture_deathmark",
+    crimson_tempest = "crimson_tempest",
+
+    deadly_poison = "deadly_poison_dot",
+    sepsis = "sepsis",
+    serrated_bone_spike = "serrated_bone_spike",
+}
+
+local true_exsanguinated = {
+    "garrote",
+    "garrote_deathmark",
+    "internal_bleeding",
+    "rupture",
+    "rupture_deathmark",
+    "crimson_tempest",
+}
+
+spec:RegisterStateExpr( "exsanguinated", function ()
+    local aura = this_action and exsanguinated_spells[ this_action ]
+    aura = aura and debuff[ aura ]
+
+    if not aura or not aura.up then return false end
+    return aura.exsanguinated_rate > 1
+end )
+
+spec:RegisterStateExpr( "will_lose_exsanguinate", function ()
+    local aura = this_action and exsanguinated_spells[ this_action ]
+    aura = aura and debuff[ aura ]
+
+    if not aura or not aura.up then return false end
+    return aura.exsanguinated_rate > 1
+end )
+
+spec:RegisterStateExpr( "exsanguinated_rate", function ()
+    local aura = this_action and exsanguinated_spells[ this_action ]
+    aura = aura and debuff[ aura ]
+
+    if not aura or not aura.up then return 1 end
+    return aura.exsanguinated_rate
+end )
+
 
 -- Enemies with either Deadly Poison or Wound Poison applied.
 spec:RegisterStateExpr( "poisoned_enemies", function ()
@@ -686,12 +767,22 @@ local kingsbaneReady = false
 
 spec:RegisterHook( "reset_precast", function ()
     local status = "Bleed Snapshots       Remains  Multip.  RateMod  Exsang.\n"
+    for _, aura in orderedPairs( exsanguinated_spells ) do
+        local d = debuff[ aura ]
+        d.pmultiplier = nil
+        d.exsanguinated_rate = nil
+        d.exsanguinated = nil
+
+        if Hekili.ActiveDebug then
+            status = format( "%s%-20s  %7.2f  %7.2f  %7.2f  %7s\n", status, aura, d.remains, d.pmultiplier, d.exsanguinated_rate, d.exsanguinated and "true" or "false" )
+        end
+    end
 
     if Hekili.ActiveDebug then Hekili:Debug( status ) end
 
-    if covenant.night_fae and debuff.sepsis.up then
-            state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
-        end
+    if debuff.sepsis.up then
+        state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
+    end
 
     if set_bonus.tier30_4pc > 0 and debuff.deathmark.up then
         state:QueueAuraExpiration( "deathmark", ExpireDeathmarkT30, debuff.deathmark.expires )
@@ -716,7 +807,7 @@ spec:RegisterHook( "reset_precast", function ()
         kingsbaneReady = true
     end
 
-    if buff.master_assassin.up and buff.master_assassin.remains <= spec.auras.master_assassin.duration and buff.master_assassin.remains > 1.5 then
+    if buff.master_assassin.up and buff.master_assassin.remains <= 3 and buff.master_assassin.remains > 1.5 then
         applyBuff( "master_assassin_aura", buff.master_assassin.remains - 1.5 )
     end
 end )
@@ -728,11 +819,15 @@ spec:RegisterHook( "runHandler", function( ability )
     if stealthed.mantle and ( not a or a.startsCombat ) then
         if talent.master_assassin.enabled then
             applyBuff( "master_assassin_aura" ) -- 1.5s
-            applyBuff( "master_assassin" ) -- 6 + 3 * subterfuge rank seconds
+            applyBuff( "master_assassin" ) -- 3.0s
+        end
+
+        if talent.subterfuge.enabled then
+            applyBuff( "subterfuge" )
         end
 
         if talent.indiscriminate_carnage.enabled then
-            applyBuff( "indiscriminate_carnage", ( 6 + 3 * talent.subterfuge.rank ) )
+            applyBuff( "indiscriminate_carnage", 6 )
         end
 
         if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
@@ -752,7 +847,7 @@ spec:RegisterHook( "runHandler", function( ability )
         end
     end
 
-    if buff.cold_blood.up and ( ability == "envenom" or not talent.inevitable_end.enabled ) and ( not a or a.startsCombat ) then
+    if buff.cold_blood.up and ( ability == "envenom" or not talent.inevitability.enabled ) and ( not a or a.startsCombat ) then
         removeStack( "cold_blood" )
     end
 
@@ -830,7 +925,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=2094
     blind = {
         id = 2094,
-        duration = function() return 60 * ( talent.airborne_irritant.enabled and 0.7 or 1 ) end,
+        duration = function() return 60 * ( talent.airborne_irritant.enabled and 0.6 or 1 ) end,
         mechanic = "disorient",
         type = "Ranged",
         max_stack = 1
@@ -887,9 +982,9 @@ spec:RegisterAuras( {
     -- Talent: Critical strike chance of your next damaging ability increased by $s1%.
     -- https://wowhead.com/beta/spell=382245
     cold_blood = {
-        id = function() return talent.inevitable_end.enabled and not state.spec.subtlety and 456330 or 382245 end,
+        id = function() return talent.inevitability.enabled and not state.spec.subtlety and 456330 or 382245 end,
         duration = 3600,
-        max_stack = function() return talent.inevitable_end.enabled and not state.spec.subtlety and 2 or 1 end,
+        max_stack = function() return talent.inevitability.enabled and not state.spec.subtlety and 2 or 1 end,
         onRemove = function()
             setCooldown( "cold_blood", action.cold_blood.cooldown )
         end,
@@ -897,15 +992,17 @@ spec:RegisterAuras( {
     },
     crimson_tempest = {
         id = 121411,
-        duration = function () return 4 + ( 2 * effective_combo_points ) end,
+        duration = function () return 2 * ( 1 + effective_combo_points ) end,
         max_stack = 1,
         meta = {
+            exsanguinated = function( t ) return t.up and tracked_bleeds.crimson_tempest.exsanguinate[ target.unit ] or false end,
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.crimson_tempest.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.crimson_tempest.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t )
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.crimson_tempest.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod
+                return hasteMod / t.exsanguinated_rate
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.crimson_tempest.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
@@ -962,14 +1059,16 @@ spec:RegisterAuras( {
         id = 2818,
         duration = function () return 12 * haste end,
         max_stack = 1,
+        exsanguinated = false,
         copy = 394324,
         meta = {
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.deadly_poison_dot.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.deadly_poison_dot.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t )
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.deadly_poison_dot.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod
+                return hasteMod / t.exsanguinated_rate
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.deadly_poison_dot.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
@@ -979,13 +1078,15 @@ spec:RegisterAuras( {
         id = 394324,
         duration = function () return 12 * haste end,
         max_stack = 1,
+        exsanguinated = false,
         meta = {
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.deadly_poison_dot_deathmark.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.deadly_poison_dot_deathmark.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t )
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.deadly_poison_dot_deathmark.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod
+                return hasteMod / t.exsanguinated_rate
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.deadly_poison_dot_deathmark.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
@@ -1025,11 +1126,11 @@ spec:RegisterAuras( {
     },
     -- Talent: Damage done increased by $w1%.
     -- https://wowhead.com/beta/spell=193641
-   --[[ elaborate_planning = {
+    elaborate_planning = {
         id = 193641,
         duration = 4,
         max_stack = 1
-    },--]]
+    },
     -- Poison application chance increased by $s2%.$?s340081[  Poison critical strikes generate $340426s1 Energy.][]
     -- https://wowhead.com/beta/spell=32645
     envenom = {
@@ -1103,22 +1204,21 @@ spec:RegisterAuras( {
         max_stack = 30,
         copy = 345569,
     },
-
-
-
     garrote = {
         id = 703,
         duration = 18,
         max_stack = 1,
         ss_buffed = false,
         meta = {
-            duration = function( t ) return t.up and ( 18 * haste ) or class.auras.garrote.duration end,
+            duration = function( t ) return t.up and ( 18 * haste / t.exsanguinated_rate ) or class.auras.garrote.duration end,
+            exsanguinated = function( t ) return t.up and tracked_bleeds.garrote.exsanguinate[ target.unit ] or false end,
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.garrote.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.garrote.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t )
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.garrote.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod
+                return hasteMod / t.exsanguinated_rate
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.garrote.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
@@ -1130,13 +1230,15 @@ spec:RegisterAuras( {
         max_stack = 1,
         ss_buffed = false,
         meta = {
-            duration = function( t ) return t.up and ( 18 * haste ) or class.auras.garrote_deathmark.duration end,
+            duration = function( t ) return t.up and ( 18 * haste / t.exsanguinated_rate ) or class.auras.garrote_deathmark.duration end,
+            exsanguinated = function( t ) return t.up and tracked_bleeds.garrote_deathmark.exsanguinate[ target.unit ] or false end,
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.garrote_deathmark.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.garrote_deathmark.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t )
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.garrote_deathmark.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod
+                return hasteMod / t.exsanguinated_rate
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.garrote_deathmark.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
@@ -1170,7 +1272,7 @@ spec:RegisterAuras( {
     },
     improved_garrote = {
         id = 392401,
-        duration = function() return combat and ( 6 + 3 * talent.subterfuge.rank ) or 3600 end,
+        duration = function() return combat and 6 or 3600 end,
         max_stack = 1,
         copy = { 392403, "improved_garrote_aura", "improved_garrote_buff" }
     },
@@ -1178,7 +1280,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=381802
     indiscriminate_carnage = {
         id = 381802,
-        duration = function() return combat and ( 6 + 3 * talent.subterfuge.rank ) or 3600 end,
+        duration = function() return combat and 6 or 3600 end,
         max_stack = 1,
         copy = 385747
     },
@@ -1202,12 +1304,14 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1,
         meta = {
+            exsanguinated = function( t ) return t.up and tracked_bleeds.internal_bleeding.exsanguinate[ target.unit ] or false end,
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.internal_bleeding.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.internal_bleeding.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t )
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.internal_bleeding.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod 
+                return hasteMod / t.exsanguinated_rate
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.internal_bleeding.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
@@ -1224,7 +1328,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=408
     kidney_shot = {
         id = 408,
-        duration = function() return ( 3 + effective_combo_points ) end,
+        duration = function() return ( 1 + effective_combo_points ) end,
         mechanic = "stun",
         max_stack = 1
     },
@@ -1262,7 +1366,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=256735
     master_assassin = {
         id = 256735,
-        duration = function() return 6 + 3 * talent.subterfuge.rank end,
+        duration = 3,
         max_stack = 1,
     },
     master_assassin_aura = {
@@ -1324,16 +1428,18 @@ spec:RegisterAuras( {
     rupture = {
         id = 1943,
         duration = function () return 4 * ( 1 + effective_combo_points ) end,
-        tick_time = haste,
+        tick_time = function () return ( debuff.rupture.exsanguinated and 2 or 1 ) * haste end,
         mechanic = "bleed",
         max_stack = 1,
         meta = {
+            exsanguinated = function( t ) return t.up and tracked_bleeds.rupture.exsanguinate[ target.unit ] or false end,
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.rupture.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.rupture.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t )
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.rupture.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod
+                return hasteMod / t.exsanguinated_rate
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.rupture.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
@@ -1342,16 +1448,18 @@ spec:RegisterAuras( {
     rupture_deathmark = {
         id = 360826,
         duration = function () return 4 * ( 1 + effective_combo_points ) end,
-        tick_time =  haste,
+        tick_time = function () return ( debuff.rupture_deathmark.exsanguinated and 2 or 1 ) * haste end,
         mechanic = "bleed",
         max_stack = 1,
         meta = {
+            exsanguinated = function( t ) return t.up and tracked_bleeds.rupture_deathmark.exsanguinate[ target.unit ] or false end,
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.rupture_deathmark.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.rupture_deathmark.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t )
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.rupture_deathmark.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod
+                return hasteMod / t.exsanguinated_rate
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.rupture_deathmark.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
@@ -1380,9 +1488,11 @@ spec:RegisterAuras( {
         tick_time = 1,
         max_stack = 1,
         copy = { 328305, 375936 },
+        exsanguinated = false,
         meta = {
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.sepsis.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.sepsis.last_tick[ target.unit ] or t.applied ) or 0 end,
-            tick_time = function( t ) return t.up and ( haste * 2 ) or ( haste * 2 ) end,
+            tick_time = function( t ) return t.up and ( haste * 2 / t.exsanguinated_rate ) or ( haste * 2 ) end,
         },
     },
     sepsis_buff = {
@@ -1403,9 +1513,11 @@ spec:RegisterAuras( {
         duration = 3600,
         tick_time = 3,
         max_stack = 1,
+        exsanguinated = false,
         meta = {
+            exsanguinated_rate = function( t ) return t.up and tracked_bleeds.serrated_bone_spike.rate[ target.unit ] or 1 end,
             last_tick = function( t ) return t.up and ( tracked_bleeds.serrated_bone_spike.last_tick[ target.unit ] or t.applied ) or 0 end,
-            tick_time = function( t ) return t.up and ( haste * 2 ) or ( haste * 2 ) end,
+            tick_time = function( t ) return t.up and ( haste * 2 / t.exsanguinated_rate ) or ( haste * 2 ) end,
         },
         copy = { "serrated_bone_spike_dot", 324073 }
     },
@@ -1420,7 +1532,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=185422
     shadow_dance = {
         id = 185422,
-        duration = function() return 6 + talent.improved_shadow_dance.rank * 2 + buff.first_dance.up and 4 or 0 end,
+        duration = 6,
         max_stack = 1,
         copy = 185313
     },
@@ -1654,14 +1766,14 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return 6 end
-            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 )
+            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 )
         end,
 
         handler = function ()
             gain( action.ambush.cp_gain, "combo_points" )
 
             if buff.blindside.up then removeBuff( "blindside" ) end
-            if covenant.night_fae then if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end end
+            if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
             if buff.audacity.up then removeBuff( "audacity" ) end
             if buff.deathstalkers_mark_buff.up then removeStack( "deathstalkers_mark_buff" ) end
 
@@ -1681,6 +1793,7 @@ spec:RegisterAbilities( {
                 end
             end
 
+            if talent.venom_rush.enabled and debuff.poisoned.up then gain( 7, "energy" ) end
         end,
 
         bind = function()
@@ -1729,7 +1842,7 @@ spec:RegisterAbilities( {
     blind = {
         id = 2094,
         cast = 0,
-        cooldown = function () return ( talent.blinding_powder.enabled and 90 or 120 ) * ( talent.airborne_irritant.enabled and 0.5 or 1 ) end,
+        cooldown = function () return ( talent.blinding_powder.enabled and 90 or 120 ) * ( talent.airborne_irritant.enabled and 0.3 or 1 ) end,
         gcd = "spell",
 
         talent = "blind",
@@ -1767,12 +1880,12 @@ spec:RegisterAbilities( {
 
         nodebuff = "cheap_shot",
 
-        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 ) end,
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 ) end,
 
         handler = function ()
             applyDebuff( "target", "cheap_shot", 4 )
 
-            if covenant.night_fae then if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end end
+            if buff.sepsis_buff.up then removeBuff( "sepsis_buff" ) end
 
             if talent.prey_on_the_weak.enabled then
                 applyDebuff( "target", "prey_on_the_weak" )
@@ -1807,7 +1920,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Increases the critical strike chance of your next damaging ability by $s1%.
     cold_blood = {
-        id = function() return talent.inevitable_end.enabled and not state.spec.subtlety and 456330 or 382245 end,
+        id = function() return talent.inevitability.enabled and not state.spec.subtlety and 456330 or 382245 end,
         known = 382245,
         cast = 0,
         cooldown = 45,
@@ -1819,7 +1932,7 @@ spec:RegisterAbilities( {
         nobuff = "cold_blood",
 
         handler = function ()
-            applyBuff( "cold_blood", nil,  talent.inevitable_end.enabled and not state.spec.subtlety and 2 or nil )
+            applyBuff( "cold_blood", nil,  talent.inevitability.enabled and not state.spec.subtlety and 2 or nil )
         end,
 
         copy = { 382245, 456330 }
@@ -1865,13 +1978,15 @@ spec:RegisterAbilities( {
         usable = function () return combo_points.current > 0, "requires combo points" end,
 
         handler = function ()
-            applyDebuff( "target", "crimson_tempest", 4 + ( effective_combo_points * 2 ) )
+            applyDebuff( "target", "crimson_tempest", 2 + ( effective_combo_points * 2 ) )
             debuff.crimson_tempest.pmultiplier = persistent_multiplier
+            debuff.crimson_tempest.exsanguinated_rate = 1
+            debuff.crimson_tempest.exsanguinated = false
 
+            removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
 
-            -- if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+            if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
         end,
     },
 
@@ -1951,7 +2066,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.    Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.    |cFFFFFFFFAwards $s3 combo $lpoint:points;.|r
     echoing_reprimand = {
-        id = 323547,
+        id = function() return talent.echoing_reprimand.enabled and 385616 or 323547 end,
         cast = 0,
         cooldown = 45,
         gcd = "totem",
@@ -1960,14 +2075,19 @@ spec:RegisterAbilities( {
         spend = 10,
         spendType = "energy",
 
-        usable = covenant.kyrian,
         startsCombat = true,
         toggle = "cooldowns",
 
-        cp_gain = function () return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 ) end,
+        cp_gain = function () return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 ) end,
 
         handler = function ()
-            -- Can't predict the Animacharge, unless you have the legendary.
+            -- Can't predict the Animacharge, unless you have the talent/legendary.
+            if legendary.resounding_clarity.enabled or talent.resounding_clarity.enabled then
+                applyBuff( "echoing_reprimand_2", nil, 2 )
+                applyBuff( "echoing_reprimand_3", nil, 3 )
+                applyBuff( "echoing_reprimand_4", nil, 4 )
+                applyBuff( "echoing_reprimand_5", nil, 5 )
+            end
             gain( action.echoing_reprimand.cp_gain, "combo_points" )
         end,
 
@@ -2009,13 +2129,12 @@ spec:RegisterAbilities( {
 
             if level > 17 and buff.slice_and_dice.up then
                 buff.slice_and_dice.expires = buff.slice_and_dice.expires + combo_points.current * 3
-            else applyBuff( "slice_and_dice", combo_points.current * 3 ) end
+            end
 
             applyBuff( "envenom" )
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
 
-           -- if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+            if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
         end,
     },
 
@@ -2034,6 +2153,39 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "evasion" )
+        end,
+    },
+
+    -- Talent: Twist your blades into the target's wounds, causing your Bleed effects on them to bleed out 100% faster.
+    exsanguinate = {
+        id = 200806,
+        cast = 0,
+        cooldown = 180,
+        gcd = "totem",
+        school = "physical",
+
+        spend = 25,
+        spendType = "energy",
+
+        talent = "exsanguinate",
+        startsCombat = true,
+
+        handler = function ()
+            local rate
+
+            for i, aura in ipairs( true_exsanguinated ) do
+                local deb = debuff[ aura ]
+
+                if deb.up and not deb.exsanguinated then
+                    deb.exsanguinated = true
+
+                    rate = deb.exsanguinated_rate
+                    deb.exsanguinated_rate = deb.exsanguinated_rate + 1
+
+                    deb.expires = query_time + ( deb.remains * rate / deb.exsanguinated_rate )
+                    deb.duration = deb.expires - deb.applied
+                end
+            end
         end,
     },
 
@@ -2073,7 +2225,7 @@ spec:RegisterAbilities( {
         cooldown = function() return 15 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
         charges = function() return talent.graceful_guile.enabled and 2 or nil end,
         recharge = function() return talent.graceful_guile.enabled and ( 15 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) ) or nil end,
-        gcd = "off",
+        gcd = "totem",
         school = "physical",
 
         spend = function () return talent.nimble_fingers.enabled and 25 or 35 + conduit.nimble_fingers.mod end,
@@ -2107,10 +2259,14 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "garrote" )
             debuff.garrote.pmultiplier = persistent_multiplier
+            debuff.garrote.exsanguinated_rate = 1
+            debuff.garrote.exsanguinated = false
 
             if debuff.deathmark.up then
                 applyDebuff( "target", "garrote_deathmark" )
                 debuff.garrote_deathmark.pmultiplier = persistent_multiplier * ( buff.improved_garrote.up and 1.5 or 1 )
+                debuff.garrote_deathmark.exsanguinated_rate = 1
+                debuff.garrote_deathmark.exsanguinated = false
             end
 
             if buff.indiscriminate_carnage_garrote.up then
@@ -2152,7 +2308,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return combo_points.max end
-            return 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 )
+            return 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 )
         end,
 
         handler = function ()
@@ -2242,10 +2398,12 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "kidney_shot", 1 + combo_points.current )
             if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity" ) end
-           -- if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
+            if talent.elaborate_planning.enabled then applyBuff( "elaborate_planning" ) end
             if talent.internal_bleeding.enabled then
                 applyDebuff( "target", "internal_bleeding" )
                 debuff.internal_bleeding.pmultiplier = persistent_multiplier
+                debuff.internal_bleeding.exsanguinated = false
+                debuff.internal_bleeding.exsanguinated_rate = 1
             end
 
             if pvptalent.control_is_king.enabled then
@@ -2328,6 +2486,7 @@ spec:RegisterAbilities( {
                 active_dot.caustic_spatter = 1
             end
 
+            if talent.venom_rush.enabled and debuff.poisoned.up then gain( 7, "energy" ) end
 
             if talent.doomblade.enabled or legendary.doomblade.enabled then
                 applyDebuff( "target", "mutilated_flesh" )
@@ -2419,10 +2578,14 @@ spec:RegisterAbilities( {
 
             applyDebuff( "target", "rupture" )
             debuff.rupture.pmultiplier = persistent_multiplier
+            debuff.rupture.exsanguinated = false
+            debuff.rupture.exsanguinated_rate = 1
 
             if debuff.deathmark.up then
                 applyDebuff( "target", "rupture_deathmark" )
                 debuff.rupture_deathmark.pmultiplier = persistent_multiplier
+                debuff.rupture_deathmark.exsanguinated = false
+                debuff.rupture_deathmark.exsanguinated_rate = 1
             end
 
             if buff.indiscriminate_carnage_rupture.up then
@@ -2448,7 +2611,6 @@ spec:RegisterAbilities( {
             end
 
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
         end,
     },
 
@@ -2472,7 +2634,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Infect the target's blood, dealing $o1 Nature damage over $d. If the target survives its full duration, they suffer an additional $328306s1 damage and you gain $s6 use of any Stealth ability for $347037d.    Cooldown reduced by $s3 sec if Sepsis does not last its full duration.    |cFFFFFFFFAwards $s7 combo $lpoint:points;.|r
     sepsis = {
-        id = 328305,
+        id = function() return talent.sepsis.enabled and 385408 or 328305 end,
         cast = 0,
         cooldown = 90,
         gcd = "totem",
@@ -2482,17 +2644,18 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         startsCombat = true,
-        usable = covenant.night_fae,
+
         toggle = "cooldowns",
 
         cp_gain = function()
             if buff.shadow_blades.up then return 7 end
-            return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
+            return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitability.enabled and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
         end,
 
         handler = function ()
             applyBuff( "sepsis_buff" )
             applyDebuff( "target", "sepsis" )
+            debuff.sepsis.exsanguinated_rate = 1
             gain( action.sepsis.cp_gain, "combo_points" )
         end,
 
@@ -2576,7 +2739,6 @@ spec:RegisterAbilities( {
             gain( action.shiv.cp_gain, "combo_points" )
             removeDebuff( "target", "dispellable_enrage" )
             if talent.improved_shiv.enabled then applyDebuff( "target", "shiv" ) end
-            if talent.supercharger.enabled then addStack( "supercharged", nil, talent.supercharger.rank ) end
         end,
     },
 
@@ -2669,8 +2831,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "stealth" )
 
-            if talent.crackshot.enabled then setCooldown( "between_the_eyes", 0 ) end
-
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
             if talent.premeditation.enabled then applyBuff( "premeditation" ) end
             if talent.silent_storm.enabled then applyBuff( "silent_storm" ) end
@@ -2753,7 +2913,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "vanish" )
             applyBuff( "stealth" )
-            if talent.crackshot.enabled then setCooldown( "between_the_eyes", 0 ) end
 
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
             if talent.invigorating_shadowdust.enabled then
