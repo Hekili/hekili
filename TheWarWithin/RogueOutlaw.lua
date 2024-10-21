@@ -572,8 +572,6 @@ local rtbSpellIDs = {
     [193315] = "sinister_strike"
 }
 
-local rtbAuraAppliedBy = {}
-
 local lastRoll = 0
 local rollDuration = 30
 
@@ -638,13 +636,14 @@ spec:RegisterStateExpr( "rtb_buffs_shorter", function ()
 
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
-        if bone.up and bone.remains < primary and abs( bone.remains - primary ) < 0.1 then n = n + 1 end
+        if bone.up and bone.remains < primary - 0.1 then n = n + 1 end
     end
     return n
 end )
 
 spec:RegisterStateExpr( "rtb_buffs_normal", function ()
     local n = 0
+    local primary = rtb_primary_remains
 
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
@@ -682,7 +681,7 @@ spec:RegisterStateExpr( "rtb_buffs_longer", function ()
 
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
-        if bone.up and bone.remains > primary and abs( bone.remains - primary ) < 0.1 then n = n + 1 end
+        if bone.up and bone.remains > primary + 0.1 then n = n + 1 end
     end
     return n
 end )
@@ -700,7 +699,7 @@ end )
 
 spec:RegisterStateTable( "rtb_buffs_will_lose_buff", setmetatable( {}, {
     __index = function( t, k )
-        return buff[ k ].up and buff[ k ].remains <= rtb_primary_remains
+        return buff[ k ].up and buff[ k ].remains <= rtb_primary_remains + 0.1
     end
 } ) )
 
