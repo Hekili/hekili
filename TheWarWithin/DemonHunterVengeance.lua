@@ -1357,7 +1357,6 @@ spec:RegisterAbilities( {
         spend = -20,
         spendType = "fury",
         startsCombat = true,
-        nobuff = function () return talent.demonic_intensity.enabled and "metamorphosis" or nil end,
 
         handler = function ()
             applyBuff( "immolation_aura" )
