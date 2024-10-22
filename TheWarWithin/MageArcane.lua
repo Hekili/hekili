@@ -1274,7 +1274,7 @@ spec:RegisterAbilities( {
         spend = function ()
             -- More mana trickery to achieve the correct rotation
            if buff.concentration.up then return 0 end
-            local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( 0.95 and talent.consortiums_bauble.enabled or 1 )
+            local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( talent.consortiums_bauble.enabled and 0.95 or 1 )
             -- if azerite.equipoise.enabled and mana.pct < 70 then return ( mana.modmax * mult ) - 190 end
             return mana.modmax * mult, "mana"
         end,
