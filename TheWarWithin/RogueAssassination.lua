@@ -1,5 +1,5 @@
 -- RogueAssassination.lua
--- November 2022
+-- October 2024
 
 if UnitClassBase( "player" ) ~= "ROGUE" then return end
 
@@ -120,10 +120,12 @@ spec:RegisterTalents( {
     deadened_nerves        = {  90743, 231719, 1 }, -- Physical damage taken reduced by 5%.
     deadly_precision       = {  90760, 381542, 1 }, -- Increases the critical strike chance of your attacks that generate combo points by 5%.
     deeper_stratagem       = {  90750, 193531, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
+    echoing_reprimand      = {  90638, 470669, 1 }, -- After consuming a supercharged combo point, your next $?s200758[Gloomblade]?a137035[Backstab]?a137036[Sinister Strike][Mutilate] also strikes the target with an Echoing Reprimand dealing $470672s1 Physical damage.
     elusiveness            = {  90742,  79008, 1 }, -- Evasion also reduces damage taken by 20%, and Feint also reduces non-area-of-effect damage taken by 20%.
     evasion                = {  90764,   5277, 1 }, -- Increases your dodge chance by 100% for 10 sec.
     featherfoot            = {  94563, 423683, 1 }, -- Sprint increases movement speed by an additional 30% and has 4 sec increased duration.
     fleet_footed           = {  90762, 378813, 1 }, -- Movement speed increased by 15%.
+    forced_induction       = {  90638, 470668, 1 }, -- Increase the bonus granted when a damaging finishing move consumes a supercharged combo point by $s1.
     gouge                  = {  90741,   1776, 1 }, -- Gouges the eyes of an enemy target, incapacitating for 4 sec. Damage will interrupt the effect. Must be in front of your target. Awards 1 combo point.
     graceful_guile         = {  94562, 423647, 1 }, -- Feint has 1 additional charge.
     improved_ambush        = {  90692, 381620, 1 }, -- Ambush generates 1 additional combo point.
@@ -139,14 +141,14 @@ spec:RegisterTalents( {
     rushed_setup           = {  90754, 378803, 1 }, -- The Energy costs of Kidney Shot, Cheap Shot, Sap, and Distract are reduced by 20%.
     shadowheart            = { 101714, 455131, 1 }, -- Leech increased by 2% while Stealthed.
     shadowrunner           = {  90687, 378807, 1 }, -- While Stealth or Shadow Dance is active, you move 20% faster.
-    shadowstep             = {  90695,  36554, 1 }, -- Step through the shadows to appear behind your target and gain 70% increased movement speed for 2 sec. If you already know Shadowstep, instead gain 1 additional charge of Shadowstep.
     shiv                   = {  90740,   5938, 1 }, -- Attack with your poisoned blades, dealing 21,050 Physical damage, dispelling all enrage effects and applying a concentrated form of your active Non-Lethal poison. Your Nature and Bleed damage done to the target is increased by 30% for 8 sec. Awards 1 combo point.
-    soothing_darkness      = {  90691, 393970, 1 }, -- You are healed for 15% of your maximum health over 6 sec after gaining Vanish or Shadow Dance.
+    soothing_darkness      = {  90691, 393970, 1 }, -- You are healed for ${$393971s1*($393971d/$393971t)}% of your maximum health over $393971d after activating Vanish.
     stillshroud            = {  94561, 423662, 1 }, -- Shroud of Concealment has 50% reduced cooldown.
-    subterfuge             = {  90688, 108208, 2 }, -- Abilities and combat benefits requiring Stealth remain active for 3 sec after Stealth breaks.
-    supercharger           = {  11111, 470347, 1 }, -- Crippling Poison reduces movement speed by an additional 10%.
+    subterfuge             = {  90688, 108208, 2 }, -- Abilities requiring Stealth can be used for ${$s2/1000} sec after Stealth breaks.; Combat benefits requiring Stealth persist for an additional ${$s2/1000} sec after Stealth breaks.
+    supercharger           = {  90639, 470347, 2 }, -- $?a137035[Symbols of Death]?a137036[Roll the Bones][Shiv] supercharges $m1 combo $Lpoint:points;.; Damaging finishing moves consume a supercharged combo point to function as if they spent $m2 additional combo $Lpoint:points;.
     superior_mixture       = {  94567, 423701, 1 }, -- Crippling Poison reduces movement speed by an additional 10%.
-    thistle_tea            = {  90756, 381623, 1 }, -- Restore 100 Energy. Mastery increased by 13.6% for 6 sec.
+    thistle_tea            = {  90756, 381623, 1 }, -- [381623] Restore $s1 Energy. Mastery increased by ${$s2*$mas}.1% for $d.; When your Energy is reduced below $469779s2, drink a Thistle Tea.
+    thrill_seeking         = {  90695, 394931, 1 }, -- $?a137036[Grappling Hook][Shadowstep] has $s1 additional charge.
     tight_spender          = {  90692, 381621, 1 }, -- Energy cost of finishing moves reduced by 6%.
     tricks_of_the_trade    = {  90686,  57934, 1 }, -- Redirects all threat you cause to the targeted party or raid member, beginning with your next damaging attack within the next 30 sec and lasting 6 sec.
     unbreakable_stride     = {  90747, 400804, 1 }, -- Reduces the duration of movement slowing effects 30%.
@@ -160,8 +162,8 @@ spec:RegisterTalents( {
     blindside              = {  90786, 328085, 1 }, -- Ambush and Mutilate have a 15% chance to make your next Ambush free and usable without Stealth. Chance increased to 30% if the target is under 35% health.
     bloody_mess            = {  90625, 381626, 1 }, -- Garrote and Rupture damage increased by 15%.
     caustic_spatter        = {  94556, 421975, 1 }, -- Using Mutilate on a target afflicted by your Rupture and Deadly Poison applies Caustic Spatter for 10 sec. Limit 1. Caustic Spatter causes 45% of your Poison damage dealt to splash onto other nearby enemies, reduced beyond 5 targets.
-    crimson_tempest        = {  90632, 121411, 1 }, -- Finishing move that slashes all enemies within 10 yards, causing victims to bleed. Lasts longer per combo point. Deals extra damage when multiple enemies are afflicted, increasing by 20% per target, up to 100%. Deals reduced damage beyond 5 targets. 1 point : 84,793 over 6 sec 2 points: 105,991 over 8 sec 3 points: 127,190 over 10 sec 4 points: 148,388 over 12 sec 5 points: 169,586 over 14 sec
-    dashing_scoundrel      = {  90766, 381797, 1 }, -- Envenom also increases the critical strike chance of your weapon poisons by 5%, and their critical strikes generate 1 Energy.
+    crimson_tempest        = {  90632, 121411, 1 }, -- Finishing move that slashes all enemies within $A1 yards, causing victims to bleed. Lasts longer per combo point.; Deals extra damage when multiple enemies are afflicted, increasing by $s4% per target, up to ${$s4*5}%.; Deals reduced damage beyond $s3 targets.;    1 point  : ${$o1+(($o1-$s1)*(1/2))} over ${$d+(2*1)} sec;    2 points: ${$o1+(($o1-$s1)*(2/2))} over ${$d+(2*2)} sec;    3 points: ${$o1+(($o1-$s1)*(3/2))} over ${$d+(2*3)} sec;    4 points: ${$o1+(($o1-$s1)*(4/2))} over ${$d+(2*4)} sec;    5 points: ${$o1+(($o1-$s1)*(5/2))} over ${$d+(2*5)} sec$?s193531|((s457512)&!s193531)[;    6 points: ${$o1+(($o1-$s1)*(6/2))} over ${$d+(2*6)} sec][]$?s193531&s457512[;    7 points: ${$o1+(($o1-$s1)*(7/2))} over ${$d+(2*7)} sec][]
+    dashing_scoundrel      = {  90766, 381797, 1 }, -- Envenom's effect also increases the critical strike chance of your weapon poisons by $s1%, and their critical strikes generate $s2 Energy.
     deadly_poison          = {  90783,   2823, 1 }, -- Coats your weapons with a Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 21% chance to poison the enemy for 20,617 Nature damage over 12 sec. Subsequent poison applications will instantly deal 1,995 Nature damage.
     deathmark              = {  90769, 360194, 1 }, -- Carve a deathmark into an enemy, dealing 76,884 Bleed damage over 16 sec. While marked your Garrote, Rupture, and Lethal poisons applied to the target are duplicated, dealing 100% of normal damage.
     doomblade              = {  90777, 381673, 1 }, -- Mutilate deals an additional 20% Bleed damage over 8 sec.
@@ -178,10 +180,10 @@ spec:RegisterTalents( {
     kingsbane              = {  94552, 385627, 1 }, -- Release a lethal poison from your weapons and inject it into your target, dealing 50,579 Nature damage instantly and an additional 45,342 Nature damage over 14 sec. Each time you apply a Lethal Poison to a target affected by Kingsbane, Kingsbane damage increases by 20%, up to 1,000%. Awards 1 combo point.
     lethal_dose            = {  90624, 381640, 2 }, -- Your weapon poisons, Nature damage over time, and Bleed abilities deal 1% increased damage to targets for each weapon poison, Nature damage over time, and Bleed effect on them.
     lightweight_shiv       = {  90633, 394983, 1 }, -- Shiv deals 100% increased damage and has 1 additional charge.
-    master_assassin        = {  90623, 255989, 1 }, -- Critical strike chance increased by 30% while Stealthed and for 3 sec after breaking Stealth.
+    master_assassin        = { 90623, 255989, 1 }, -- Critical strike chance increased by $256735s1% while Stealthed and for $470676d after breaking Stealth.
     path_of_blood          = {  94536, 423054, 1 }, -- Increases maximum Energy by 100.
     poison_bomb            = {  90767, 255544, 2 }, -- Envenom has a 4% chance per combo point spent to smash a vial of poison at the target's location, creating a pool of acidic death that deals 34,201 Nature damage over 2 sec to all enemies within it.
-    rapid_injection        = {  94557, 455072, 1 }, -- Envenom deals 10% increased damage while your Envenom buff is active.
+    rapid_injection        = { 94557, 455072, 1 }, -- Envenom's effect increases the damage of Envenom by $s1%.
     sanguine_blades        = {  90779, 200806, 1 }, -- While above 50% of maximum Energy your Garrote, Rupture, and Crimson Tempest consume 2 Energy to duplicate 30% of any damage dealt.
     sanguine_stratagem     = {  94554, 457512, 1 }, -- Gain 1 additional max combo point. Your finishing moves that consume more than 5 combo points have increased effects, and your finishing moves deal 5% increased damage.
     scent_of_blood         = {  90775, 381799, 2 }, -- Each enemy afflicted by your Rupture increases your Agility by 2%, up to a maximum of 20%.
@@ -192,7 +194,7 @@ spec:RegisterTalents( {
     systemic_failure       = {  90771, 381652, 1 }, -- Garrote increases the damage of Ambush and Mutilate on the target by 20%.
     thrown_precision       = {  90630, 381629, 1 }, -- Fan of Knives has 10% increased critical strike chance and its critical strikes always apply your weapon poisons.
     tiny_toxic_blade       = {  90770, 381800, 1 }, -- Shiv deals 200% increased damage and no longer costs Energy.
-    twist_the_knife        = {  90768, 381669, 1 }, -- Envenom duration increased by 2 sec.
+    twist_the_knife        = { 90768, 381669, 1 }, -- Envenom duration increased by ${$s1/1000} sec. Envenom can now overlap $s3 times.
     venomous_wounds        = {  90635,  79134, 1 }, -- You regain 7 Energy each time your Garrote or Rupture deal Bleed damage to a poisoned target. If an enemy dies while afflicted by your Rupture, you regain energy based on its remaining duration.
     vicious_venoms         = {  90772, 381634, 2 }, -- Ambush and Mutilate cost 5 more Energy and deal 35% additional damage as Nature.
     zoldyck_recipe         = {  90785, 381798, 2 }, -- Your Poisons and Bleeds deal 15% increased damage to targets below 35% health.
@@ -204,28 +206,28 @@ spec:RegisterTalents( {
     darkest_night          = {  95142, 457058, 1 }, -- When you consume the final Deathstalker's Mark from a target or your target dies, gain 40 Energy and your next Envenom cast with maximum combo points is guaranteed to critically strike, deals 60% additional damage, and applies 3 stacks of Deathstalker's Mark to the target.
     deathstalkers_mark     = {  95136, 457052, 1, "deathstalker" }, -- Ambush from Stealth applies 3 stacks of Deathstalker's Mark to your target. When you spend 5 or more combo points on attacks against a Marked target you consume an application of Deathstalker's Mark, dealing 13,656 Plague damage and increasing the damage of your next Ambush or Mutilate by 25%. You may only have one target Marked at a time.
     ethereal_cloak         = {  95106, 457022, 1 }, -- Cloak of Shadows duration increased by 2 sec.
-    fatal_intent           = {  95135, 461980, 1 }, -- Your damaging abilities against enemies above 20% health have a very high chance to apply Fatal Intent. When an enemy falls below 20% health, Fatal Intent inflicts 1,790 Plague damage per stack.
+    fatal_intent           = {  95135, 461980, 1 }, -- Your damaging abilities against enemies above $M3% health have a very high chance to apply Fatal Intent. When an enemy falls below $M3% health, Fatal Intent inflicts ${$461984s1*(1+$@versadmg)} Plague damage per stack.
     follow_the_blood       = {  95131, 457068, 1 }, -- Fan of Knives, Shuriken Storm, Crimson Tempest, and Black Powder deal 20% additional damage while 3 or more enemies are afflicted with Rupture.
     hunt_them_down         = {  95132, 457054, 1 }, -- Auto-attacks against Marked targets deal an additional 3,901 Plague damage.
     lingering_darkness     = {  95109, 457056, 1 }, -- After Deathmark expires, gain 30 sec of 10% increased Nature damage.
-    momentum_of_despair    = {  95131, 457067, 1 }, -- If you have critically struck with Fan of Knives or Shuriken Storm, increase the critical strike chance of Fan of Knives, Shuriken Storm, and Black Powder by 15% for 12 sec.
+    momentum_of_despair    = {  95131, 457067, 1 }, -- If you have critically struck with $?s51723[Fan of Knives]$?s197835[Shuriken Storm], increase the critical strike chance of $?s51723[Fan of Knives]$?s197835[Shuriken Storm] and $?s121411[Crimson Tempest]$?s319175[Black Powder] by $457115s1% and critical strike damage by $457115s2% for $457115d.
     shadewalker            = {  95123, 457057, 1 }, -- Each time you consume a stack of Deathstalker's Mark, reduce the cooldown of Shadowstep by 3 sec.
     shroud_of_night        = {  95123, 457063, 1 }, -- Shroud of Concealment duration increased by 5 sec.
     singular_focus         = {  95117, 457055, 1 }, -- Damage dealt to targets other than your Marked target deals 3% Plague damage to your Marked target.
-    symbolic_victory       = {  95109, 457062, 1 }, -- Shiv additionally increases the damage of your next Envenom by 10%.
+    symbolic_victory       = { 95109, 457062, 1 }, -- $?a137037 [Shiv][Symbols of Death] additionally increases the damage of your next $?a137037 [Envenom][Eviscerate or Black Powder] by $457167s1%.
 
     -- Fatebound
     chosens_revelry        = {  95138, 454300, 1 }, -- Leech increased by 0.5% for each time your Fatebound Coin has flipped the same face in a row.
-    deal_fate              = {  95107, 454419, 1 }, -- Mutilate, Ambush, and Fan of Knives generate 1 additional combo point when they trigger Seal Fate.
-    deaths_arrival         = {  95130, 454433, 1 }, -- Shadowstep may be used a second time within 3 sec, with no cooldown.
-    delivered_doom         = {  95119, 454426, 1 }, -- Damage dealt when your Fatebound Coin flips tails is increased by 21% if there are no other enemies near the target.
+    deal_fate              = {  95107, 454419, 1 }, -- $?a383281[Sinister Strike and Ambush generate]?a137036[Sinister Strike generates][Mutilate, Ambush, and Fan of Knives generate] $454421s1 additional combo point $?a383281[when they strike an additional time]?a137036[when it strikes an additional time][when they trigger Seal Fate].
+    deaths_arrival         = {  95130, 454433, 1 }, -- $?a137037[Shadowstep][Grappling Hook] may be used a second time within $457333d with no cooldown, but its total cooldown is increased by ${$s3/1000} sec.
+    delivered_doom         = {  95119, 454426, 1 }, -- Damage dealt when your Fatebound Coin flips tails is increased by $s1% if there are no other enemies near the target.; Each additional nearby enemy reduces this bonus by $s2%.
     destiny_defined        = {  95114, 454435, 1 }, -- Weapon poisons have 5% increased application chance and your Fatebound Coins flipped have an additional 5% chance to match the same face as the last flip.
-    double_jeopardy        = {  95129, 454430, 1 }, -- Your first Fatebound Coin flip after breaking Stealth flips two coins that are guaranteed to match the same face.
-    edge_case              = {  95139, 453457, 1 }, -- Activating Deathmark causes your next Fatebound Coin flip to land on its edge, counting as both Heads and Tails.
+    double_jeopardy        = {  95129, 454430, 1 }, -- Your first Fatebound Coin flip after breaking Stealth flips two coins that are guaranteed to match the same outcome.
+    edge_case              = {  95139, 453457, 1 }, -- Activating $?a137036[Adrenaline Rush][Deathmark] flips a Fatebound Coin and causes it to land on its edge, counting as both Heads and Tails.
     fate_intertwined       = {  95120, 454429, 1 }, -- Fate Intertwined duplicates 20% of Envenom critical strike damage as Cosmic to 2 additional nearby enemies. If there are no additional nearby targets, duplicate 20% to the primary target instead.
     fateful_ending         = {  95127, 454428, 1 }, -- When your Fatebound Coin flips the same face for the seventh time in a row, keep the lucky coin to gain 7% Agility until you leave combat for 10 seconds. If you already have a lucky coin, it instead deals 50,054 Cosmic damage to your target.
-    hand_of_fate           = {  95125, 452536, 1, "fatebound" }, -- Flip a Fatebound Coin each time a finishing move consumes 5 or more combo points. Heads increases the damage of your attacks by 3%, lasting 15 sec or until you flip Tails. Tails deals 29,443 Cosmic damage to your target. For each time the same face is flipped in a row, Heads increases damage by an additional 1% and Tails increases its damage by 10%.
-    inevitable_end         = {  95114, 454434, 1 }, -- Cold Blood now benefits the next two abilities but only applies to Envenom. Fatebound Coins flipped by these abilities are guaranteed to match the same face as the last flip.
+    hand_of_fate           = {  95125, 452536, 1, "fatebound" }, -- Flip a Fatebound Coin each time a finishing move consumes $s1 or more combo points. Heads increases the damage of your attacks by ${$456479s1+$452923s1}%, lasting $452923d or until you flip Tails. Tails deals $452538s1 Cosmic damage to your target.; For each time the same face is flipped in a row, Heads increases damage by an additional $452923s1% and Tails increases its damage by $452917s1%.
+    inevitabile_end        = {  95114, 454434, 1 }, -- Cold Blood now benefits the next two abilities but only applies to Envenom. Fatebound Coins flipped by these abilities are guaranteed to match the same face as the last flip.
     inexorable_march       = {  95130, 454432, 1 }, -- You cannot be slowed below 70% of normal movement speed while your Fatebound Coin flips have an active streak of at least 2 flips matching the same face.
     mean_streak            = {  95122, 453428, 1 }, -- Fatebound Coins flipped by Envenom multiple times in a row are 33% more likely to match the same face as the last flip.
     tempted_fate           = {  95138, 454286, 1 }, -- You have a chance equal to your critical strike chance to absorb 10% of any damage taken, up to a maximum chance of 40%.
@@ -237,7 +239,7 @@ spec:RegisterPvpTalents( {
     control_is_king    = 5530, -- (354406)
     creeping_venom     =  141, -- (354895)
     dagger_in_the_dark = 5550, -- (198675)
-    death_from_above   = 3479, -- (269513) Finishing move that empowers your weapons with energy to performs a deadly attack. You leap into the air and Envenom your target on the way back down, with such force that it has a 40% stronger effect.
+    death_from_above   = 3479, -- (269513) Finishing move that empowers your weapons with energy to perform a deadly attack.; You leap into the air and $?s32645[Envenom]?s2098[Dispatch][Eviscerate] your target on the way back down, with such force that it has a $269512s2% stronger effect.
     dismantle          = 5405, -- (207777) Disarm the enemy, preventing the use of any weapons or shield for 5 sec.
     hemotoxin          =  830, -- (354124)
     maneuverability    = 3448, -- (197000)
@@ -752,7 +754,7 @@ spec:RegisterHook( "runHandler", function( ability )
         end
     end
 
-    if buff.cold_blood.up and ( ability == "envenom" or not talent.inevitable_end.enabled ) and ( not a or a.startsCombat ) then
+    if buff.cold_blood.up and ( ability == "envenom" or not talent.inevitabile_end.enabled ) and ( not a or a.startsCombat ) then
         removeStack( "cold_blood" )
     end
 
@@ -887,13 +889,18 @@ spec:RegisterAuras( {
     -- Talent: Critical strike chance of your next damaging ability increased by $s1%.
     -- https://wowhead.com/beta/spell=382245
     cold_blood = {
-        id = function() return talent.inevitable_end.enabled and not state.spec.subtlety and 456330 or 382245 end,
+        id = function() return talent.inevitabile_end.enabled and not state.spec.subtlety and 456330 or 382245 end,
         duration = 3600,
-        max_stack = function() return talent.inevitable_end.enabled and not state.spec.subtlety and 2 or 1 end,
+        max_stack = function() return talent.inevitabile_end.enabled and not state.spec.subtlety and 2 or 1 end,
         onRemove = function()
             setCooldown( "cold_blood", action.cold_blood.cooldown )
         end,
         copy = { 382245, 456330 }
+    },
+    conductive_ink = {
+        id = 302565,
+        duration = 120.0,
+        max_stack = 1,
     },
     crimson_tempest = {
         id = 121411,
@@ -1037,7 +1044,7 @@ spec:RegisterAuras( {
         duration = function () return ( effective_combo_points ) + ( 2 * talent.twist_the_knife.rank ) end,
         tick_time = 5,
         type = "Poison",
-        max_stack = 1
+        max_stack = function () return 1 + ( talent.twist_the_knife.enabled and 1 or 0 ) end,
     },
     -- Talent: Dodge chance increased by ${$w1/2}%.$?a344363[ Dodging an attack while Evasion is active will trigger Mastery: Main Gauche.][]
     -- https://wowhead.com/beta/spell=5277
@@ -1654,7 +1661,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return 6 end
-            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 )
+            return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + talent.improved_ambush.rank + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitabile_end.enabled and 1 or 0 )
         end,
 
         handler = function ()
@@ -1767,7 +1774,7 @@ spec:RegisterAbilities( {
 
         nodebuff = "cheap_shot",
 
-        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 ) end,
+        cp_gain = function () return 1 + ( buff.shadow_blades.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitabile_end.enabled and 1 or 0 ) end,
 
         handler = function ()
             applyDebuff( "target", "cheap_shot", 4 )
@@ -1807,7 +1814,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Increases the critical strike chance of your next damaging ability by $s1%.
     cold_blood = {
-        id = function() return talent.inevitable_end.enabled and not state.spec.subtlety and 456330 or 382245 end,
+        id = function() return talent.inevitabile_end.enabled and not state.spec.subtlety and 456330 or 382245 end,
         known = 382245,
         cast = 0,
         cooldown = 45,
@@ -1819,7 +1826,7 @@ spec:RegisterAbilities( {
         nobuff = "cold_blood",
 
         handler = function ()
-            applyBuff( "cold_blood", nil,  talent.inevitable_end.enabled and not state.spec.subtlety and 2 or nil )
+            applyBuff( "cold_blood", nil,  talent.inevitabile_end.enabled and not state.spec.subtlety and 2 or nil )
         end,
 
         copy = { 382245, 456330 }
@@ -1960,11 +1967,11 @@ spec:RegisterAbilities( {
         spend = 10,
         spendType = "energy",
 
-        usable = covenant.kyrian,
+        usable = function() return covenant.kyrian and true or false end,
         startsCombat = true,
         toggle = "cooldowns",
 
-        cp_gain = function () return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 ) end,
+        cp_gain = function () return 2 + ( buff.shadow_blades.up and 1 or 0 ) + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitabile_end.enabled and 1 or 0 ) end,
 
         handler = function ()
             -- Can't predict the Animacharge, unless you have the legendary.
@@ -2011,7 +2018,8 @@ spec:RegisterAbilities( {
                 buff.slice_and_dice.expires = buff.slice_and_dice.expires + combo_points.current * 3
             else applyBuff( "slice_and_dice", combo_points.current * 3 ) end
 
-            applyBuff( "envenom" )
+            -- TODO: Manage async stacks
+            addStack( "envenom" )
             spend( combo_points.current, "combo_points" )
             -- removeStack( "supercharged" )
 
@@ -2152,7 +2160,7 @@ spec:RegisterAbilities( {
 
         cp_gain = function ()
             if buff.shadow_blades.up then return combo_points.max end
-            return 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 )
+            return 1 + ( buff.broadside.up and 1 or 0 ) + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitabile_end.enabled and 1 or 0 )
         end,
 
         handler = function ()
@@ -2437,11 +2445,7 @@ spec:RegisterAbilities( {
             if buff.finality_rupture.up then removeBuff( "finality_rupture" )
             elseif talent.finality.enabled then applyBuff( "finality_rupture" ) end
 
-            if buff.serrated_bone_spike_charges.up then
-                gain ( 1 + buff.serrated_bone_spike_charges.stack, "combo_points" )
-                removeStack( "serrated_bone_spike_charges" )
-                applyDebuff( "target", "serrated_bone_spike_dot" )
-            end
+
 
             if talent.scent_of_blood.enabled or azerite.scent_of_blood.enabled then
                 applyBuff( "scent_of_blood", dot.rupture.remains, active_dot.rupture )
@@ -2449,6 +2453,12 @@ spec:RegisterAbilities( {
 
             spend( combo_points.current, "combo_points" )
             -- removeStack( "supercharged" )
+
+            if buff.serrated_bone_spike_charges.up then
+                gain ( 1 + buff.serrated_bone_spike_charges.stack, "combo_points" )
+                removeStack( "serrated_bone_spike_charges" )
+                applyDebuff( "target", "serrated_bone_spike_dot" )
+            end
         end,
     },
 
@@ -2482,12 +2492,12 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         startsCombat = true,
-        usable = covenant.night_fae,
+        usable = function() return covenant.night_fae and true or false end,
         toggle = "cooldowns",
 
         cp_gain = function()
             if buff.shadow_blades.up then return 7 end
-            return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitable_end.enabled and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
+            return 1 + ( talent.seal_fate.enabled and buff.cold_blood.up and not talent.inevitabile_end.enabled and 1 or 0 ) + ( buff.broadside.up and 1 or 0 )
         end,
 
         handler = function ()
@@ -2943,4 +2953,4 @@ spec:RegisterSetting( "allow_shadowmeld", nil, {
 } )
 
 
-spec:RegisterPack( "Assassination", 20241002, [[Hekili:L3ZAZTTrs(Br1wfdPTKmjLKTCojLYRCYD275KuwEt(MaHabfXjsaU4HS1wQ4V9R75fMzqpdaPPS372kX2sedMPFn97z41JU(txF10WY4R)1XdhF8OHdp6WXJo6OrJV(QYhwfF9vRcJUl8w4hsdxc)9BkkclkssdltYsXN(WISWP4SuKvLhbJyEz5QIF8fV42KY5v3Cyu2YxuKSSAb7nIYdNvI)E0lU(QBQswu(U0RVrheg(6XNE4ORVkSQCEw(1xDvYYlHjnz60y(iJlIU(kCKhm81hm(0FC9KFjdw41twLLTij921tMLLVEYpNEFCA2Y1t(mahzvLRN82W87IlGF4xtUDo8pjZ0gvsX6jtZ(C663V(9Qj)yyY)0NJdVJAYH3sBSJobglcRRNuTcXgJhocE4hJVpPaaZzjlweRbGAJB4j7VEc(VNk(3x7Csp9GX4dFZIfzF2ZCEkhj0NJ)J1tYJxe(L1tItJZV9b8xVnof)N)rvsE8Y40YcJzy8pIZC4nlaOFzwo83V53(z9rmcxJFjbMYIi4TdkclRYz871tUpmpH9QAJF4Rb8B0q4L(7mqcO9ZYrUadovd8vhm(vihyoSI)ziGE)jWktaPUfjfLfmzUY4WfLZJrbWFLjlhZGZPx)x5sk5jR4cQxjhja8r4hvC9vaRmin(lL4REvyKqIgy0b5XcPz4zJ9nTVz1Qfaf8TXHLZlkdxCxCoGmFaK04YxjGC28qe)cboeqoYMn76RG3VmgilxF1EGux8nvZMD4u9PiyjmdhwTA9KERNaFgquPgGaQyJQ)6jikCFCW0mQbVEY5Gm16jp(46j8fKVDiif3nCit2FYGA6q4YBQkMJeGJ8ra(q4Da3POcLkkZqK9E4NG9R3JYBa2vLZ2283G)U4MWu4Hi5ieLztdxSEs084O70jjc09o5lyJLi6v)WYKO7ylaIxraVdreTNJWWa5RwtTlaausF1)iq8pmjfaWZabu5BYECmFRf8s10i8vqk0X(Oqkvmi5bN9s4pWVHs14mxtJUQ6gGgmRc12wtpINnlMZybvP3KfSklb3Go5IZR3CDy9GkwfNonisGA00kBCQgRH58ifH2RGPsokE6TaOfweB(XraRi4Mfzzt58GAQMyvrc3jDIWjPpFie2VdQbK2GGTxWFGF4wuZuzy(TXL7kkhdhwYwWGqX6fecA1KsnQjGV(b8L)BiT7Lw0o5qYRwbAFrrOhIuWvbth3oK0KKonb5vlrxbqCipf8sqsC6JwtMbArNZTAGygS5RiUSeLgpKbA6BlvRjZwK0acUPx8Q1K7gwyeJaL1f4ETK(aHguKgaF6sGEKfmnbaPlGn4NyjX9r(RxlX9odSC9Kl5Ojs(FLdY)TH55zLTq(v2Tomz5Q8S7JNgiEVAYNMIOXCKCf4fvzYQfj4MaCR6i(N3Vt8enRdQ1cMCoycUcSmbTdpqsZ2ZRioff9anOgOUJTiUVtGPRN8FYxE09fU5t0LQpYLx4(RXriTXwSpIarzvPL1EH5H7CQf3zti9UiZuSe)uj3kr0NRJKKC9TIGQJzjrO7dxWHGNdu01tEMYDGI55zvtbOVawKSi2EbPPYMsJLW)D19HPjGjDcxLOD(H0dkGmlSYcqp(F)bBwbRxpKgjzm2SAjxL5NeQgew9VuMhgeUezPxF1XNy6owB(Djxu0M6m2pXw4FbKdMvTaDxDkWnS80IXoMbd5gyrNgSOk6Uha9FjPAQTSgd(uGJMSO4qqnE0DC2XjA6QTg784WP2Jvt)TGf0Mxv6OxXQCyo1iLsLtkIPwmoU2sysieIqwsMgoAvpkhAv0hSCKwBOmgJY3m5dRP5AQKo01Mp9XyyAzaLjxdlTQvU(r6B)oU9TF9rUq8IfsT5atpniBwWDPGgvuB3pXNgk(STVH(L7DhgIxxLKYlSnbG(8W7zsisLNYTF7mPJ)VKOHFohZovtUMTZvUP2nDkTriper30bIlDaqME0t44UBx(BSbXXBxpaXBtrGSD)5FRLGKRvh8kAKW2rEyY0G47rmlCkyXafCWPAOd1i2o0qlqgUyXnmlpKIM0CjVe2oWjTC92G(1ZM2wtioIwMuJXzfPoJr5we2Tg4xVfKocpyim7Iz4jfmrdCqqfBitEieJFi(lRGiNqhXASZ)7OC8UWiPd52Jgsq5XGXZYzHC0A(5UKLxXPHlHT)qab3JygUpciO3KSiPKfCsvbsNGvp)HpppgFHpOYNY)PkUlff3R)09C6RVarTKJ7YE7XuoE73r2Aeqf8zv6I4cmD0Y8vNkYxnsbwTRIIFxJ89zcjpxOhKNXYqyZB6TbfyCBtZJxulR)mUJXYxWD4)WaFPzuPejVupNCY0F0Ml2xcgDkW0h8P4LRyKzUpsFidtaE1smvT4M9IvHj57kIUnDLhGOyfrRkt5RNHMYxYgkDyM14DehFck5OdF7hlbLeB9YacwH(BlND8NwufRNyAJuLQPGXW1IM5EXo6rwgHJYa794huWwYaEnLWviq9iQTmTdVEDAYkbUw0tZv3gUuZOje6v2IJSmdjHzQGFFtotccIo93ZJJskKSnt7dHIrfSsoiduXby3b)uoNTbvWSSKwA6PxNsTTGPgwWQGdIUK(8w7RXcC76NJX)oGjx5g1iO76McD4IRdVJxp5uJ8es)2eLpOEFiq(gFSzTeeiLnTuHt4c6k7qsZ1oyegUYi5f2Ha2q25jL86OalgbrmIeU9gm1VOC8QqBxJARI0RRP1zoAxULHWFOMWVDSooGFP3GW2WigSl2yeIj5KE)aT6Q6N)vGzFFer9gMYBRwUswBqekNX9RbSpQtDUjdD(PN4XbgYxrZryRG5wWPnwDW(WsiAYGOPfT6V5hGbcAlbsFwvHron)9SslnZmrew5ywub4FEmSUIma6cwrpIDeYIUe2Qmxw8ScsjpHbMkrR8q8Fl4zi8gWetXdPridLBQrUpTqhn8cjm0lywv(duw366KeNxeNZmKqy6OJtYSK8yg04xLNH8TJCL4i4sBhBgOkJY2nDBN5i9ATd8UIYCyFEeOnHljdoo4kWP29gQTewQvgbw50GhXl3yEy6DShpMrwWeBoEODppK9ZyZ04nsTlXQ6dsJZdHDkSsDVm8ljlr3QVcxrU31)vCnbqfZwEbpaNOQ8C45OctnhXyazTp1WCfWFPTZzXVgx4Df3Kfr6)kEXk8X)HS9xy7uJ4KLBclsIyDabeOmokA)Ib2FGCmBG3NnJSb)LXqKwFIlnWnv95yz3AaUfxD7CR(bYOMz6YscFHmnardQKX80HyjFPVWAAOxzJQ86onNaElCD3q1r2LjvLVPQv3fhVcR75IImwUpk49teMSa2EquIcngPX6QRloL2t7yK9sP2gEBFFEy7S9g0EvVKZ((1AXLkXvX3OotNv3wzZ5tw7mXtKPOWD)g0mDjV67z6sO77HTsMdDyVOwP(ncL6gsIT3SkFVK78kX5VXt6gNE0RBHv0ytyBHCOuri6KoLxH3ISKWsKHWcJIz4DriAc4YFh9tCgllRH6MEyde7djE8kOnH0PlsmlEUn9El1IA2ffNJ(neDxa35HEDi)fhPPSW188mPTPnA2AJpoGXk55pXUHoudcMZHuzagCfbiKljdkPDNviYTMGh4nJ9JRdGRrb9Aj4furQTzPRKYyxYes(eev(DO4QM7kGxnaXJ)a)PZt53licwGSfqqniEjg(qw1IRVc07aF6SGBJMYmkXNFxJ2iMGn3zCu0CKkiGwike(EPqMfGeeeFAWQQ)5)e2qFt2xCIjudLqdOBkQlFGkz6MJZHOfHxmmTyzsjmRUaeNdFJag3bP5tgLTfCOu34wkNEKetwgon4FufhNITzzk74eOikepZJjPeWrZC01FyhoOYFkeC2dbqyTvlDrf99gBeH0vpfU7eT(6uM0(Md78)ulxYq3rotEg32dZyuvbdQGa8WyhvkAkwKH)t9mzSVxrDLewmHib47W0lRml5SaOEXTH6jjOLLASMhjIrCy54dvuySBUEOoB0osQG3DokiAqZUqKaOgCnrvW3eQ34VDuVruuVrFFPEwIEJBiwpMBKhCekeC6P1Cp(X4czVuIbIVcODjmpR6JPp((QfOxCSpq1wUO)3OtxHL6jDLplTM(W3LcCACxpptasId3z(q(jiQiz5s22UeCW8vOqMorqHIMhk3b6nOme2URmEDj7SMTm8LsLJOJhA5pbPAL8gaaZzuwkRjItfemZuhPNtBklNTd184CeXhGmHKum8aQgi)s1t)zrWrFKF2QsJJNIFmRHofHya87p9BV93(raQlahpzFc4sDbGiyykWBuG(SJgKhOJswbQqzbUDKQVxtUEIKYDYtPQYQXN1Our8xvqFxfv3TLhpKfQl6EqDQkXatqbgSJBRdn(aE431d7Eiye0Fg2AwupWU4GNDQoVSwEdtxwXCWHZP8eUlSsLvLlXaDEuke7Q4ids5RrN4p)7tgCT97PDYdxg0eZ1A6ARG2jxxtsYFglADlbYDvDEa(8C2b3dz0ILGDoe4y78Ks(jsqNe1eZnZgsxoDc5z3wfZfz9DKfWN7mG0lybKwawPIkn6UySmdb8FjapmL8JuPeIvhQsc3gmiA)o2Y5xL(w(r9ljfeDGj(bHFCxIpfv4Xinxoh8WBFvQBKMwQpaUG0ekQXSgnvsSmRAkNRVijkoa1fmf(b9IWq7yRDc(19WOl5)7EhLhv3qSbiHKTrdDYI9Geups3n8tCGsNudkAhqSrUoLhE5(yXtXx2vm7(Fzz7(HZG7IiUN72zAtfwLLjdFfxbf7DcMMKd6gyVV74yfMOmZ01jmBuKEhOf6wEe2KfLzmLISLHzmW65RQwueRV44aFL(az92rrW)t10BX2fZESNQp2BcVLLNeGuIk60hj8IyVeWCLu5OQcyWoviG7dI1cS5fzRm7wGXE4SQ004f6AexLNKbu2hcanykvIBKZKYzQH3668mTOhavpOw)YddtFiy6Qc6i0Aokw6)jcczQkfWOGavqE1JqLiETHLuCiQ9lo)gWZRIGBaB2yc1TwoYrr7GYNNNGtG4LblgyalQdJnlq6)a5kfkUZOTZx4XKuykAhvuCTqHjPFx0glOjb2bPRXQ5Ga7t(AR81oAf3VdSmYmhwbxZo7NyQZ97DRD)ZedeEWkvSWgalCb0reE281kJSos0So2uEKAAxpp(GiwzdUcngbgMra)TSFupIvYqrDLellJKEQUqRgM10HfueJyDbxIUuPpV7hYXA4imsDczJLULWZPV5H2sOYh4PpR)Wdp(5dp8ONrXfrxXpy4HJo5z0HMGpFWbCWsfKuugAGAtolKVLHX1o0)MAN4X)t5HfQfa1WNeXP0ydnW7zTs19BY(yM4wTcD7f3BfUeg(ShyotXnli91FFXay)bcEL3zwtXcnTpVKGyklaRZhs5dNDrWyS9VYUYqneTyVmczTgzeM40JyySODTCcei9sFBSDMJS9o0qsMFKimAZjnh183lXYcVO4JYc0jCZ28ATPHNMBmPwhnjb3n3QHJYfkpxZI5oa2nFsKTx3n4MECECdJDNvhu8IZrxDjMwDXNUvk7LDCzyvbehcqgdXe404m8rfRsF9CAApbwhbk7hBMhdP8NpcFVUtkRpKkxYxwWWaFDTPCsWQMcABOjQzbriErf9DzvzYcrfBCFMd70uvFJ24Tlv)7yHi(5O5zm2YhJb3vxYS)PN7uNlU8MyYBQM4PKrT1IVwWZflvRXD)lOAxm9l)nr2Gqv7h9CzzSjVSeqOK1dP116VOvSGlJ0WHDP0AxkX(b6T4c1rDrFNHyyLZZbAmvtpltIhBlWIyq2dlgm4fxACbGqs9B71E2aRP)gWnzW70J0B3tvxsZPQqQyEw0Cdpb5vMd2gN1g5dCCrN4Ij(DGr1MilR2d8R)do1PqCJzLYDdt6FXdsPAa8yhna8tUbZoopTBYMsKNojjTC9ejXCGy3XNitjIzArzki4l8Ffm4mTizA8lQVvMoem2Mj8xQc1siFb(LxMQOoe35v90o3Oh2LTDY8PFJeougaAKIq9(NR9e3xNXFEnGuBNmxjYBcmNjfsPL(RFpXEE8xZ(OBTjs5N3S8sFk8Md(GaYneiFldcXJca3LxuaASswJm5wokRD903xDhDCtECihDvU0jCWzqlsgKMfl55SBR6TOA9KopH3ouf1OWxA3jm)zyIOuJANvAMriRRdMp8grOLI66zFeYQ9Tqj1c(M(1EubRrAI(8hr32oLtJPHm1O93R2DcaBSjVTSdFHm7WUCUKQ6CEQGUs6JMY7Amu0a7KyOejKNDf(X6wfkQc33x7qrZp8Z7lKxG9xGawjRbg58s9EOxujNcq)FXSemnkuSlV9tLLhHH3QoHJk)OeDD5brgneNaafW2LHPLW0imTvh891Dl308UgKimeZ9ESm1yDTeWQ5I0W5Ntq6vrv(9mdRlYqzcEx)FTJgbHGojm83SrjzzdFyNRWQe1RpsFTLpQl1up8gTmyiUMjly3HnDII66i9zqeOU5ju6eACnr(sPfyQDy9BPxuWI3mSwjlr547arDKw9FuBaBnoN3CFwYuE5FLP8HNyR9fE3W1rJ4RiJotzNFp1zWtvyyw(qqF7cfGhvkFkNdCb01G4qnId))jlVYWHURVIGNiHeJU5L868uC6NfeZwDh(y)Z0lB02d6yxTFvnWlbAnWruH6hVrTZaJ2K3AOH8tV4l(i)8b(IFJRhcpwKR1pvGDAZI6WusftKbhU2CftZCVo3K0Ex)6RWf)(TFzgMyhrRiiKAtwc(hLBAvaT3iC5cnKGY)STylRsJMZDiJfBm2IZuIWM3wN9ATnZgP6U1TltCFZs65MNhtTqoCCP7215LGgQNM06ZSX1I70cqFf7QtW42c)ZH5P4Ydo1JAKswUklVuyX4husN)G6sUg7zLmwhVuvMTK3NhWUVuy33HRF))nRgl41E9LzG8so7X)G8y6GWPXD66pWfTCpaP7LWa7p6lduRWr0RGIqAnXnCx1E(oLE(OUQiTMAF3MK1RY63tqD5YeBgP1bIBP0WcgDeIshjQ0ftYAj8FDK11vYQjDSxdhxau2Z(jpH0ihZ9tanY1kTBOrV8jKg5yU36nNV6jewDm3pb8txR0UHF6qb2t7SVt4aV(jcYjv5kBZQntPRl7z2h7uly05XsTfGeDBENaGB9ooh6NBEPQynXUV1v6OoID4k4y)2wttCmF7eiMumqgeXMjk4WSXwJ27U5JejfDH4obhFQ2pYsM0MbHnuyk6Dk7tZKccDDCNAvt8wpXUvalEf7ZouJPKya(1SV1tSloJ4CdTz8ghsp6nGKLGdvhM1X9jMvr1AEPlXAlsJQg4AZW6gQ0vmd7ElKGDqme)2lusLTo5KdPttorpn6tssBmpPtFRtmrZA6B36Mc3B703HjMSTpjMCxJRtWVJEqLG23PL54Nsrtxt(oztLBiF7yWpXtFRt82UHQJW92o9DyI)gjq2TLPJBV21w5OT)YAG2nZqKdaZQT8SGnhnfOns7iwsIEYXA(901oDCnSBOhRfWv)(0Xz)RYnc(mZ(wd8PM44Ar(QPo0rZVPbhT7ItE97FhduWPbVeu4zDF9e2xWIWZXgTpBwsDbRlou542Zp)f6NxO1VNAeY0)VpwrNZB0PB7Z64HZnoQqRF)Fz9Kn9CT0Lvxml1NMdXQpA)KzN72MxV(752A7Jp6rX9fN7XA0GE71Iot95M(aT8vG0J1r6M4Lgs3KIudye41fEiiA4SdusFQDGZ)fSxhk74bHPlKOMvxtqJ07e(dgF2pDc1P8GbqD9aZqdoYghK(Hgn8Z(no4lCXxTJqtV9A5uT(Egi)1DjuOGvDW)VGFddv(1FvtOp54LnbxJW2DxqOpxMSDJcsk44EAmGZglaJNOB4b3aQ199Gauj7lIlgDIU6ZUDVf4EL1kQSyv7t2Lkp(izFNcFSrN0m4Xh7B1Km9m(DrXZp78rWqRVwiU48(hp85hnKA73bUoDvWmG9mtpJUS4SZhpKrG(2Cdi4r4Z59sGKq7ruuIWe38dpB8Gl(jboUtVsdAdvQVGdeiaNXtCdnCX519eGtQG(Yz3JiILv1LG8JmoxpOvFt(4JUV7eE8rh9OYfCY3t(LBGHoutT8aMSh99eqpI(7SNERJCX5JaJ3(nb84J0TLHHsiXMsewCakEAi1ZoXcOoPDok4hChgKO0xTpsro5nep2Zr7O06KXdruFCMhSFCYn72lGpCYZPBETMZc74)R)5wN2F9hzC4(fgZFkA)6A3ragtJD90TfSyV)EYqUORDk3CH9zBPJlhrhgBTQQr84Je9MuTLaHRKFZBh5UIPnWplLB(2)DXjKkkST(Uhr7F3RLw)M65emfg1D33502ep6TRSADbqaZJ07ZWVI6)5VaIIPQVZeQ57SrzoPjS3jiw8kbinsebB2Nbb6K0zvya(4UE622LTP8RPVSTXt1sGRzFFTPDVMTOnOlAOF)H6qhw3nkp7lXfRrQKoyWUPpHA7r17Z2ZE5GgcR9jAvqP4(5NmKRvPbRWbElCu(jSjOTPcADXBT9DZUIUx)(9Byfz4qAZiaLJdexC(rd6r0RYxC(XaY7Xpsya0V3lvEQB3xZk3YLWhaEdSOTcW6zVK7gvxAi5UjBjBLGUnAEFjYi1gTNCphU9DUyNq2UVzIBaWzYMATwsqV5I75rsF0qra(2TtCp6wjwZD7Mj6OxFQgiwf3MJMh(cqRXJp6WxQbcWt1QWG3OeMHXD(UNbc8xL4ID13uKAmfHpLaNr4ucYwOo78mNR1UzZXiv7PN7LM6EpqX44oCSXFHpscNcd7m3o3g2(wId9p(59D1gkp7KbpVwCYkPfp7Ldg4qULZu3KVngjPirMFrHSTugDcbdC98TZ4fVSNR4j(EKKHdfr88DjzdB733nTd9tj)AGqMfSTGfBl87qaCB(sZHcBiemni3G2unxQjr2UU9KBXDx9nidfYi1pACmV5XwVv6l3ZLcJoOj9P9BTekSxQ1La73eoy)9CKUuMchJVLsgad2jjQV7TMNp(XhD)0Zq2sBPiYhd4KbG6CF2jE1tHDI)1GH4KDSNvEnRLL8km)AF2f)28v9IVD6wfxQJ7YF8rvKwLYVBw65nueigM(nFNNnU93YnXDWfh7ZB)A0MNEpaRnUB42xElSbsu63aCN)KFbWHu9Wi7BJorek)l(99gbvvlvY)RrSlowo9c(29aCymLn8AAZprAZOrg3lDDR6FQB(mc4W07R6lFezrXPuam65M3HBAfyWG34m)7gbgzFjJ1jG08w)s2yjK9DfzQr7VNZlEnLmLJlDTZoF8aAfJJ61wfhQrj5v6IHXRMygXBYVGEA99y5JnU972mkzt7ROSglgFriZ1MicHD1Lwgb4zyuWbO1BVgDFupFX9a2woOV7whRNJE(AG0PbYlNSE7rxRAAceRNj(wEfz1kPLWpR9M67kDc2w1GStw(h(hATPuZzlng5tatJhU(3OR)RUVdwGWCx11VFU0RRnRwqdC7dl59(LqkvFo5eHT8oXYN(SnxOzpp3ayBQiHOoFB9vY1MOPwQP10JaZVX8QNpwrQAylJ(BhmH9m6I)7kxXNn2rnrCukOXnHneRWFwusDYVb(2x7BImo7TpPOypZpTUumJCvBQ2bOMFBN1eAuSiAsBBRHJVJ825RtZVL64zvXDnVoAyV92a(7rML6ucftZcCGIWgQI7AINKlPJmHk0ZaZ)IKBXBOdmEkyvIyTVmeeBeeHtI8hvnvsxhFTOI0SB(dRqFEGpSmVsGPYzL8HnMI4CGcuI8GqWhKBrb9Kcw7CRAxnNJqFYik4OFba3FncUZL160(MnxzJRnXg6FB7B6p3WEX(S()w22YJmlfEJoDgZkbr)n4Qo4ynp9mzJn6dCfDGDYoHaBOAKcp7DHLBGE4qnwVbDMmmUnYW4DjzyKrNH)TGmWdomb2sSyby3GfoGw)oXRVCn1swKywYCyMoLbuZsH3ciMieAJkjjahnKWHjri()rOz)RaoqZlQDDRdHWDSQUXeL3wd6yGtWSQ8hyB2OwuQ3cS5gNJ7f3K3Ag46IQEZD9La9pXGIYWfbyb2zsznAXQEum8MD9B3ETnWPHtLcg8guHQEs4Y3W7k8dB2yvMaCpIWtOszqxwkfK3yrBqs4MwQB3LAdQgWSgwZ0HgMflL3Eto)oAGDEe4r20agzDYcWkflFZR1bxRR)WUoMrGSk1Lr3qjyuSi4D2PHwaPuCJ1nKFoMTtLXKensOfSsqS7TrUIEkQbJC8UBKWloF8Xy0xYunzrcuT8Ol)J8q3g0g3BNtx83XKJgyzkVqtmuj7jd)DADh2TZKbDPAUgK4j4wthTqIJhfBBcA17g3BZbUNkzamL)SMoJVfcd(M3GzSEoZfkrzDx2zwNkvEktIaO7iYw9P8zp3Dvr4PnrLFG6B9omBUYoEele7CS8vZaMe7yhmBg9YuNfed)imVk9anJYkl24H96ZtmwGkefJhF(qHl(MPwhf3hisbn2POfSIkJM0fNZqgzhpeaez2ruxUzjSZLeVFhirolH(AjTnyNiVEW2wRA2bFNnQr3tYWpvYnqKBPkF7SAhIJVgdRZ6fn2OvSITP0n0kzna56WwnDF1wAqg1Mw7Zrw3wtcGep)aR6GGqSO8G8YyX3EQYQ6tbfGbH21MmSkp000VUEIDiDq16es6W7m6damNvSgbGg19u19TMu4SreSkuVAISQ(UrTLSk)UWQEJKl3SWXYZp37eNvivb4)rLEo0y3hnpMpicOnwYkzSreypDzJ7ZZuD5ZhbHIBxo(wA3JEAkofZ3z8vxC6pX2YWHyPNMBySF8Rf8XvlfG4NlGX9(kviEoQv35JE(yvZUrCDOAAZ06m3GrhYp6XxbHak552srsbM3201iE1K9yR1Sdeo(eriP8ff1NpJ9tSf(xaM7SkwXOzLaQ5QO1C0mkg2Uc3GnOtWIQO7Ea29MWY3vFRNIFoqQtwuilN(jcTmwJzEC406XmOb0wSctzGgLrQjs78sOspFRBEOWRsYZGKYXo6TcsFlAimQSgldmejo6bkAlSQ)mnvydCKmgpjw7yxcSElF5pD8GDL0ftMclO59moKunNuAExYD(EZC8rrh3KO009HMUi6Jm4NkOLUe6kNCKRCMylHz9gnYE)))Jx5RTWaR8GXKWKPbX3ZIXBkOQkjfZgPjlwfvjnZUleTg4Vl1s6EOO7YJj6ZH)JiZFwJtwLtXGJ9INeMTiuold0giEGIGqEhDGUug)fi07s9J5OBb)NqPJTrnlHmXr4xG(acD9Vo(KxZUa6V()n]] )
+spec:RegisterPack( "Assassination", 20241022, [[Hekili:L3tAZTTrw(BrvQIH0wsMKsYhzLukp2j7MmBoQipjFJqqKGIyfibhCiBnLk(BFFV(c9XRBast5KPMkXwYen6(D3VRU5Krt(WKRMfxLm5NhpC8PJgoE8Xdpz04HNm5QQhwNm5Q1XtVl(w4xwfVe(73wwgxwMUkUknFf(0hYYJNHZszEDXuyelQQwx(nV4f3MwTO(MJNMV8fLPlRZyVX0I45v4)E6lMC1n1Pzv)WQj3qdcJNCvCD1I8IjxDv6Y3bZC6Szj8HNuoDYv4WpA0WJgp6B2CnoKnxxVgNPn)4MFK9WHV5OXVgE43NdG2MRxNNNLU62nxppVyZ1F3Q7twLVCZ1FeG086Qnx)(4I7skHF5NtVDb8J05AJkTCZ1ZY)4kJj)uyY)WhtIVJAYH3sBSJolauocrHFl5(0samNNMLLObGAJB4zhU5A8NVw8Z34DsF9rJXh(2SS8pgyoFnhj0NJ)RnxxKKf)PnxNSkP42hW)5TjRWF8pRtlswMSQQ0ygg)n4mhFtga9lZlG)(T)Y3PpIr4A89PWuwofE7OY4Q6cMeXMRVpUiL9QAJF4Ba8B0q4L(hmqcO9ZlqUadovd8vhn(vihybSI)rmGE)bWktb5YS0YQsuQe(ZpZeYtyG3Sj)TjxLVgKwtQaXRPCPyjeG)wwn8J(aCUojllQkU42KQYJNhVkkFE0DRsVhHLNT56Q4maroMJoWJUjlpF2XfXRUJ94XBUEWMRV8BHFBixETiDnF1EB(3HIAlbTQnxNFpYvQsxc)E8nPzPvP4c8UfjtHj6JlIbXWke9wg)jqlcPa4kcViiB(3W1ea1kqhTKlHoTUOaEE2dmSkIR0YbYK5Ztae((KiyUI4V0KkqRBRjp3upFUnMZMpaJVOHHECG11KK8hi2JIncK7kU4rYmKeGsEGTfbEcOyEnogeBxKwvX050jrUyEJ0gGVv4ZxLwUGs0WaQUQkjoRAbWnavBu1hwr8)(D2Rdq5dRMku3)HLRlawjaV)3Xff5GEiZQcWNtIRwSeSRm5kyGrRs(ufUQxb)SiokEjIltU60ZAO2ODKOIeH5uc(tdBHHfMWSe2QYrDE83yW33deZ51zOw6mGGn5k4nQsa20KRoyZ1m(5Cyi3aGZSOS6P39q0080vhxVEZ192CDFNXGpf0osZk158NT56hFKESlsINzp2bi6DYUIELRlG5uJIpRUGjmOO5AM2)baVX5zjU1fm23fxSITTMbHqOuVmUe(SOyXEDhlGogPOzuPgtz0u(mAmy5ifshr3YbvJXmviCDS8Hn08z5vQpDnSfAv66Su0EX5a9BeNwRpMIK5GGZcUD4bQzjHXpMjPkSfaFv1k38iW4ECkkNF(MRpvohWw43KhTg4IGLWzjZtNMwX5HTzNeT)DQGpFQh(SP8oHIHUEd8xNTlYlmLGPzjX3ZKqeImLsT09M0X)ojAeMZX2cJVw8HCmUjvuvE0Suykoc9gqiRaJDKqZVioDwuY9iMfpd03txXNQHcHGxUtmV4SSBy2nySXFIr)bxmemaAUuqcBh4KhWPFf1RH9oSOF9SPTneIt4pLsLZqBSCr69kfrNHBRgIKUxThiDeBtry0eD7DfyGf4GGcsmtEGT7CYNwd7KdlVgfVlK7Nw549HjopYTNmK7WWuWN2iamOCzqYheqOfJ4DmVHNf2BV6sKqblFXdG7o4l8taic7UUsXO0j5(ThpssqOiLcm1sqUlk3Jd5gIqdXcVBqGFJ)CalxLLuIbrjJYALiklKcSwhbB8yuhvTCUSzqGHm0lJ1pjiFFMuYZfgczY6ZIbT3v3gvIEIodcvQry)zC)AKVGcyzbqj9dvmWxYgOsgw6hMG8eXOokbzXspnUUSkDkGYXvaXYXIfxpWEu4KmGljJ2D2TyIoW12LLDqyjVJzlPNPTtXNB7DnmlOckSvj(bLgUTdpls9ODlifbfdx5YBIxzArIHhj8yHLOstylMRUnCPMrti0NFSmkofQZSihNRcv4TfmXFWj9FTizAAjBOogAJfJkATCqgiMhKOdB4FbtqxW6qFxkZbp8twUgegvSWa(X5fpNgxYIFhr3)UK2rVPDgkZ)Xe8VJysz(rncUG(EknSDBPYMNOVtWR5Qzhe6TvBMqmfi5J5LJM6SuN1IwQWjCbJ5MWswLSKTvG5UEEydcpcS9e2rw5jLCAS9kfrvy41scjGtGesqFVY)LsnDgLII05LznrzVpvyiCRiKNybHFPtvGs4ugSlulIxVgtwdL2aTPRMN)zGzFzeqFD3juVVEjyfMBWaHX5CFdGn21Pn3KJoq0t84idzTPlqdB8KZ9A(MDlHGWIMoRmKBBRZ5)007f4fbBLaPpVU0i)p)Qy4AWekIWYbwgSRli)dZSini(Gw0XspE(ZLW85RfBzIMxx8GJ)(fPmqvjEveJ)SKNQKBGnzkFy1uwc1yB2i1Cl1rfpqJ9oBHFHgGnPOmPW32gDCsMNwKWW6Wg8mKNP1B8ftMTtnd4CM(760TBB(OzMmg4tLvfGE9uW6bxsgCtWx8hT7j0tH70wYF)pjzRXh)7YC5Ze7MYZI9nXLPyIstXysXrr70hGFrYXe25pjMAz9Xo0l(t3C9h4pMByzm4z(h4UaXnk)rayxab5IgBYRVDHvvp0LYmCGsSNVPPwACyxJ94LH8RufV50hMMLiHkwYLFIcv8Gqb00nmccL0KjPYdr967sswFiSHtwzolKyK)GHhcKpwjtqjk06QghYiX(E9mvfHAik1UWc7hYHrvIWNcwAffjryFr9QbjN9dxKjUWNwSHKJ6CDwndC8KBYManBNjEMmY1bDLVdl(RE6JI2xi0wYCnzKyxK5qpqlBQb3nIAWzij6lh1nsI)zj3fuI7aNA3PxN2UXPh9MwyfokHbIiGoNAkBgXO)ZA(8ClYJIRqoelqbwvbZIrt)V7xrVGMZYgxS(ErSbMmdZoh6roUxWQzzPM1iZMbSJMvzzix3NvKPfXthyVoeF(jAwp8npptUN0wnBTXyhW4T88dyL18g)AH5uKVuGUTK0R72DwHiXrcsEWm5oUjMKMbyQtei2HX2BlDLuK6DmzIpaHzEhkUQ5Uc4vdqR4pOBURag8skrUaixgLSe9poVoBYvGDh4tNhD70zSnL4ZVVrB40727Tjkjos5LBleLaUFeNbcmqixrRR)x)lqH(M8p5ftOgkHfq)uuF7SxXSnNuaH(aVy8QYLPycp9biEh(wbm(mUVmEw0)Sojzvz0sWgsSDs79l)Y0ghkTBUJYWNiXsc4iGj2uW34c01FqHgm5pdI(4HiiUnSpkOPIHEJTIq6lpk7prRppJjTRCyNGdp5(HVXcBNM6sgmuwXAShLzfdLAfPts1Wq3JkZYRKPFPx4QEfeWhQhIBll1yn3neJ44QXhRiFydy8aH5gdH2d8hSCqLcoS6FUhOqKdcJiqWQ4VuIgaypCKUfeXNaCZ341kdBmJ3o204VCSPruSPr)BpBAm3zcW)QyWxkk3jmDRh8Zu0WwyC9RbQBkZHT(yExVVodDoK9bQKzI(5J(YfxPNMA(SqTtUX69dRazb06cpXcsIepOHyEBxwMUCjJkKIdMVcLYCWbgU08e6oGGrTHB7UmXJmr4rpIoPRqh651V2UC0YN(DIWz(nERDUkjzg(XSgRseuaq5(WV8(F5Bacwj4zi7taFElZHjacSaEJs0PACl0b6EgzfAb1g4TJu9dUrya5y)5ZJQOFgFMtTl4VQG(UEAtxpD6qwWP4M2n9ckg5a6Wg25BnbZEepG5MHDpeTa6bcBnlBgyxCjZHFYZWMmpwLlaxeNXZ3RyNgwNtYXaDE0kiAtrhlt5tt78N9bZrhGsrrxzoPj8xPDiAlzV6l(0S01rIHr5zs7loHmYRgYy(MYiLXRUTg0ab9NyGtAkMmmGycpDog6z1RbhXIYsbVyJeCycFs6kSZJWJlxFM4hTap6at895PZIatNu7K2omeSsISS8WDoMCCWUBgCZzrL5CxmhnCRHe1wu6sKUBGjwegCP(qfrOr4JUDo2YzQzSAcQ8zs9ixPb(a8ygXRPGr2BYQL)B(oJjZoUi)26e(838H29ag)5EtxWLy6cG5SiDAfZLEvA9HnpJ4)JiSr(5TZVSfmKlhdwdUb9VIn(7vREpMOpChyiWdyMFq4j(7WNIB3XYs07wa(OFOkvBYTOBo9hGfw0LD2U6ZKP6RBGmwbsey9fkD4xw26z4m4ViAXtnlt7LmlCBlXvwMj8v8fMBWjywAbeyi79TnG3aRcBLM5n7mMfhsxz0ImSyk2Icv5Sd5aBzyMQTE(66SYe9fhh4R1hiRZikJ()QNDlEAwSh7B0h7nX3YsddqkXdUG(iHxeR9oZdsL)PkGbRSFe3HjRfyh6MP8BVfuYNxVAvsMU276I0CGY(qeOXPY)8w5dPCMCCjxNNPfwbOPGNIJQJJx9q0S1L0Xi6okw1fiIozMkdZOGavyMnJqLNFTHLwEmQSMuCdyQTm6gyNjmF9wlh5OO9M6JlsXjq8YGfomQezrcVIf5(VJCLsf3z0U5J7yskmfTJk8UwOWK0VlBJf4sG9q6Cwnpe4qYx7KJNtxZphryvQzUnbbAF(3A5ScLR42DCscq4HGZsePZNfBdwvhETb0QsTos4wMCkNvn3gQi5OPSIqaMDWJHymc4VN9R6bQsgbQH5Ts89JquBw60ehtrcJVeXj7Spb6IUYncwE7dD8KewLbY(Z6p84tF(WJp5zueA0NWJgE8OZEMFFghCehBuELpnVuJD35t)K0BDlMkJe0C86EBttwJ)NA7CuhgTpNofNyGxVw2HwvQtY5HyI7aNQMXJVpEjm85pWcLHBuxEY7ouma2FG4K5DI0mSOthYRxiMNbyV1JNy2NxECqSNzbM6CJAOgIMhDgHD1GcITL0ppwJfTKeLNe2fyLFMd80EqH5qQkRO4fYcUj8lZ8q4oXUtRijxH6WfD7f7MzApv7JrxokOB((5i0(RTLX2hlpxVgrfwMej(0DY(Ah60CFPvVFBnHUMSO9JndqrkWfI03RtuXMdIW74RiygMVK2enje1q887cBtuxUVOI0USUkntu(f7mkSLtv8YBQlxqfEVCegf41PseR4nRWFxu(x083jpxw2x0aw8u2XQTrneblwhf2uB8sVGT80LZnr44sQu4OlLK(i9Eezzo6DE9sCCagTooTG6CCvTOa8IHQnyL5uJjXLLa8BSAQGFkRskbesA)4G2tohvAnctKzPbgJbqUFrjxzoDfxSvURXds(aG5S2Bg)KBW0RY4gQ2nJhrQK4cHQkOUde8Zp4ryiD(fA76pljEMkSe2NCEa2sV(h4WnF8XzUh6d(hAzuyqpcPKEbwUlV4KJ67N33Zd)EazQES0Dm5wVL9HCwWFdmlpRmDwYlUQ(gq8EE9TjhdBeLl8hOgREN8f4xdbQkni7aD1bBGjpPomDh3fvgzQPVrchkBLojCrV5XApnRn5NLxycLQG5knGmTpowXiAFUTK9YI4XGn8H4Bo6NelGHgZ7zIPy)wZ90cLWhRugiZ9Jla7PCSnlyF15d)MIKyo9t5xIy)6bTWc5(E7PlZBF72gtpEpnQYCQBPY5uAhTlPG)iovuwkTZ1jZUU19tWp9wr8iIE11(u60SfPsycCN6Z9SzfSxTr0TTdwYyAitn6WhnRobGo6EYm6AgfMrLqplO7rufOiqvxvYA0uEFJHIgyh5RsKqE4a4NavveqkC)qTZVj)CAEOqEb0MabSkwp0X5L6919g(bgUe2WOCEkg7nf7kyp(yaY)JY4BvhImLRjIg)7OPgnPLaafW27IxvbtJyV3My(M0TeAY7KnchPLVT2rpYuDKfXV1PQMLQz5M9FmfjHL1f3ZCgilhft49GUVonGG0j8dYT99yzvDyxlRyBjX4DAMhERwGZ8tStDj72sWpfvlr0tDBjkw5afLXrpv)IZlMFFN77wUxdRhIj2Oosd8Ql2VLoD4cEHXKMJjQ(zhO1J0UQxuQQHCSVAbqrW9DtIT9HbRre)qLltubptnhk8zHBIhjcI8qmJDkRuNuk1LlelvAOVRXcyMkrfAac1zNXGoDQW)L2C4)0WtZlBNEQ4y6GN(zb7LT65o)mD9IFJFIPEXVWnCGhEmJZjvNSxOoYzuEKAqtB2FHzkTxBnwB3wFXTbrih6A6lChpiW8liUuPeYoPlbxLkmnTJBAi8sc3naLczs)lRxnDb3hkwmJyVZsjiHrugH2S7y)fnAOrYN26ma9xZuNP5jpH3ostzTmLeuows5Q0luAWt)OXLVJzM6KtayXNn8sN7IhVD6mzixkp7RwaeVS7skkXB6c5MJOhRlWw6hV0syx6xZNBj(O7QKCkI09zsE2sChGekdKWsIJL6pfFxcBpAr0jIAaX30Bnz4FIdLWCim)mHB1gL5j0Hk0FhD7XPy7due1n0aLX1Z1eJS2kKYxmjfIoLUQiMqk0sv(2y7SGtEdzQj(AJ6b)zO76Vb4936pNOO1bfNurlBAVQjFswNVMqEj2cHtsFSVAJ4voat2BMYXX9fLJHd2B5exxO2C320ZfEA949dLZx)P3PdV3NnDiWHIRN442ODcGqeb3bpHD7dwEmd0mvevRQZ5Ss8YQb4EqReJGmmYb(93N7BPHaMk2nPaMVl6mcVSLmGoDotd1eq9SoVs4PaLJK(oJu97exrlPMQ1cMCoyQKAvhoq6Ds9qmTouB2PTY5E06B4rfjoEG)MzteH4I2yjt3EagJDGbBdvV9tHwd3WlbQvlf(hG(6Cslf1HdDpNLNpTgMCrrE9maZkHfjFktfPPI(2cPvCFFGiIyxFoQBu4jx9rGGIkRtUIDBXceS8IkbX)R5oL91QB4wGzvMZUKUQRYxY1BHykwbXuC8MF8)L10aN8n4fdbybVG94VMolEFnFxrppvIiWO6p6tdABUP1hSwIW39GDDLSKNSxdp32B2Z(zpH0ipZ9tanY3kTFOrV8pJzFVWbE1teKV5hjurL9b52PKoMgeDo75wWO3ZMUnjWZ8BvCBRz3tP1BHaGoWVxqEL7YwGLtijD0wH71qK1e7)EkQJsR7XvWJm7ott8mF7fiMumqMGPTtuWJjSDgT3FZhjsk6d5Tdhp9jtxNegzvgy7GWxBdHIUN0(evQGqFh5sB2X(BIvt5B8mL2hRqNPKyagW6(BI9XzehyWTJ34r6rV)gTeCO6XuBK1ZSA2LjwZlDlO0rdpwNViRP2ZPpQfjDvlUVDuuNTlumA7oxMGvtmKW7fPK4BDYjhsNMCIoMoKuQ2yEsN(wNyIwbpKLGTfU31PVdtmztLtm5(gxNGFpD4obTVtlJJo)(u003KVxuQ8d57gd(jE6BDI3vfQoc37603Hj(lKaz3wMoQE5XNWDEhu692zn4)2TrKha7ZminpEEXFBIMx0A(d0ARDCnS7csRfWxtX2XzFp4Ic6P3)yvz9AKbIZnpBDW08FA9NQxxv36a52FX0tNKbzgL3lqLB5HSap)1P1wwYtUh2b8oOupv2MTM6qjKwN6(dlLI9yc2LI(SVyYGNJhCZCqGt11uLhRCZ(5x8c9Zo6MFKAesj3dX((4chLGdznY4fghB0n)4xT56T9mo2LvxmlnNSpXQp6qq32VhkGYRFFJE8XaBZE5fb8DyqVdAzho95M(Wn(zG0J1rAx8sdPDPinagbEDzacIgo7bL0NAp48xHnNrvhpuKDHe5wXvbns)mzD04Z)2ZOooHmaQRhEsAWr2M(0p0OpErv2VclD3NZLiKAH0x7VcRUx1N)vfK(KJxwqC15NQl0h9vZKRAvrBblL8K7F5jdzq5xMVYdByZoWS)VjcfGF)a76lfojUGDF24bx(TJ5i5E9lXWwXLMggqGb8U8H4lLXlVWQxdOid67n0TBti)ciA9qNK6s2VSCFYC6Eh4Jn6IPbp(yFREuQhvZ9C(fJGH2Cr8C5f9pD4ZpziLTLJ8DgLHza720EgDA65xGSyFOR(9eJaF)Cqx)lK(L)IotVD6I)509wJXuFMthF1WJAOJwjr8OrddDCV9V0QR4gJv8sGNDg8)bMZaui(vPJCxg3(LtssEzVdiFkEp5TfY1kflDzGhF8a1NlaOM4muiDpYEzTJVBZy0ejE8XMOzC4Qp(yqjA7EkwyPrDmq49Vp3HoRdgZJp6VnuE8rp908LCtMp53qpTJJqeyDyqIIp3(ifvUYGGjIUv4WWLJAFw4z5qFCM38n4SAEl6C5fJo750xeGUZc7(Xr)ZTUoC0FKXTFJWjPNIJAwZgEahXr1J(iqj0cpqgroDBlqMpGUUCkJdExv1iE8XagCUySW)6V4h9QUIPo4NLEo3Gf9HF7YZ6rKELE27oDaXrDRXwgnpM65emfg1D)FkXSjE0QRSsbZ1m(Co1x2lMcHr19(e0HgIKBpmcgeggWzMgV9cDKU6g6ZoGr6g8u6bnhSl7zsXcz4MPhqAks6DT(5VCGJev)MiHTp6ixEXzd5Q(oEI5HUm6mEWkpDhRkBQG2zwcPdhWqpZZzvpI(3)Ylof21nuAkpL(1EjnIRiIeNHQN9s(o1D5ms1nXfzhS0TrZBntg1X4et1ZJNfxieUZ3)NLjhaox2g7nmp9oEVxaHZrd7DaPhG9O7LDTG4CZQsVgJdA(OQcSWZzx6sWqWJpA7CYabCPoNs96t5QmQLs8QeymgrJGLSF(QWvJniCld4fIT35wFCBVyWAyV(AndngRypTE6NWa6rkwfFR7T(B0ws4uSfjZbUDHrVJ4q)tFUSUfo970ZoBWZBeGSYUZZE5GbGeGNGvORvMAFE3RaObczHD97lSgAQWrBxhAi)A0rgI5EGKZLL3lF3IrHntn)onJfWLULEqRvZLisKTRcfCl77RVbUOqgPwPXrhr6JWoOLEGpX0oO)(0(T(ef2l11jW(THd2)ap5nY9SuHQQEjr99NgZlgR0LjE65iBj8bYbFD)mGZgagrczD6vFowNOno9xfgIx2rdJYoHUbfMFJx8vxx(j9BgRqA6aPuNu1rT8hFu5lksmzFvw1sD4brD335zJB)T8tChC5PH8QSbT5PNbWAJJp9HYdhnirPF)zEXt(1N5HMTqH4rcpH)l(vIjbvvMIBLt1o(iVf7E)e6zmJ8UL3NLHr3TlIaJBc3Uv)g1ngjbCy6hvtdXOYMoHQ8OJ84zinz3MKA5yT9n0yNasZRmrzFpq7ykvsQ673BvLCINlRYZVy8aAtCJ65IQo4I8IkZy)hxuI4n53VcT(EaXDFD1psaeg2wDGfrZu52Ew9cvQ1DTbRK79sEfp27a6s9rtGyLK)l512yBK2)dO)445D7l0vYy31Neim33x97mr9AEXso(a)ofsExmkKx1NtoryhVqedzDX2B3TKNkQCXoF9jUng(KgUm3z187GZM5JL2DN9eO)(guRW82Ba4plDNp2tcK9Kx9XUWgIv4VlQoi53PNhQ9DBipAK(KYs9m)0M8wpYxI(BhGC)(t0fAuSiAsBBRHNV1n37RJ737Lg1IGOabNmS3bBb)9eqS8R2CTnumlpYdkckuL35INKlPLddymrmteWmNLElE1fGXwaZ)uwxRcb0nf2qiv(RQM)ORJVrirU3zXdRrNhGpSQOwGJYzL8HotrsbG7vi1pgCK4wuepTK175QwtX7i0NmI6YeM17)RK09UuwN0y2EZm(uFnS8223JO(H9Ydzn4RSVuhzwrrNwzfJqNOwT(kNi2HwbMSXgn6RIoWQlypp7AswQ4a6YJhsptdgO3snoW2GotYg3gjB8(KKnYOnH)RgjJh2wkOQLLbVilwbTEcHxRWgkRSGFSeMW2mwgQllnzzqqliMnTIKyDYqcFOebF)7XM14h8UMxGYM2RaH7evnajkvPg0XaNO51fpWuIPwuQ3c2fpPaPCBZBnhCgsv7WU(sGDnim7I4SiSyPmjsN2qPhLyGBhv2TxBlCd51sbdE)dqvZgC5D8xd)q3MpXeG7reXcvW8DzPuqUZI6qs4Bz10TbnzS1aM1WAMT54Cvtc82c(18aRr25b74aJSgjayLIL39MHW36gosStzeiRYj1qOAyuSW792nwwaPuCJ1XyFmHPPYysIMTYcwji292kNBFnAxJC8(B2km9DyazYKazrcuTfMRhxbOydAJVT3PiH7NSrdSCoOutauj1jJfwPv3gwSfsF(mk3as80hRzDwiRXdPTnrSg9Wd2EGB)Z9XuPZ6ZhUAdgdoVNEyT5JpKHSDBeDwZRLgmDUOv1Mo5ZEU)QnWZEYoC7QsVmnjd5GqxZJYK54(qrwD3h3CQ0qOLmBJGYwOiXlwQ92mUnn15JC66mg(Tlx6P0yJw()3L(tG26Obi3ebRPpQ2SuzyCA9WezrnnjaBZLx6tcfGbHEUFcDcREpsb66TRjnshOy07mrWB95XILQQklSLQ5vxAO2gqpwa7cvl2B2jRXeDJQO3k)IDXzstZd0pk(pednfAEeeOUDHRBPXiKYFAoWEUXnu6GboLkku9)hhgXAbr8v1DeXCGIGQv(FOkUnpLg7IrpFS6OerCwQn3u06WgGH8XpiQxbX1jfbSfQKYpV31RhEXBdSzQzP7p9mrCM8ffT1pN9BSf(7bE98AwTFzf9XDv06EvgfdRZ)nyNTeLvp9Uha97uwYX6B9u8Zb5Z0SszfPptyhYAmlsIN1mMboqB5AmNbAugPTkTEuxLf)w1LOWRkYdFHYNnAndPZdoIOQDQLr7Heh9O)SfH1FMMnUbEYgtGSWDQpb2GfS8BpDW(s6IjtHLW8EghsA1tknVp5o)zZCcrrhhQhDGnsaZwXPZIsUNfsWmq8pD1LqeFM0svqimQQJVjDHO5G)(e113euV7NmrFo8FczIwCobeodQrkneEsykKqHxgxgq8aHRyEFbGoYK8jisTk9Zmeb55Px6yxuDjKjoz4KRWqpN8ZJp7nSlg6j)))]] )
