@@ -449,6 +449,7 @@ spec:RegisterAuras( {
         -- todo: Find a way to find a true buff / ID for this as a failsafe? Currently fully emulated.
         duration = 3600,
         max_stack = function() return combo_points.max end,
+        copy = { "supercharge", "supercharged", "supercharger" }
     },
 
     -- Roll the dice of fate, providing a random combat enhancement for 30 sec.

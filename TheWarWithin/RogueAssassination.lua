@@ -257,7 +257,7 @@ end )
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
 
-    if talent.supercharger.enabled and buff.supercharged_combo_points.remains then
+    if talent.supercharger.enabled and buff.supercharged_combo_points.up then
         if talent.forced_induction.enabled then return c + 3
         else return c + 2
         end
@@ -701,7 +701,7 @@ spec:RegisterHook( "reset_precast", function ()
 
          if charged > 0 then applyBuff( "supercharged_combo_points", nil, charged ) end
         end
-        
+
     if covenant.night_fae and debuff.sepsis.up then
             state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
         end
@@ -1526,6 +1526,7 @@ spec:RegisterAuras( {
     supercharged_combo_points = {
         duration = 3600,
         max_stack = function() return combo_points.max end,
+        copy = { "supercharge", "supercharged", "supercharger" }
     },
     -- Damage done increased by 10%.
     -- https://wowhead.com/beta/spell= = {

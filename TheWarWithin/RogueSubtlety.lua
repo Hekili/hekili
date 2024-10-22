@@ -365,6 +365,7 @@ spec:RegisterAuras( {
         -- todo: Find a way to find a true buff / ID for this as a failsafe? Currently fully emulated.
         duration = 3600,
         max_stack = function() return combo_points.max end,
+        copy = { "supercharge", "supercharged", "supercharger" }
     },
     symbols_of_death_crit = {
         id = 227151,
@@ -581,7 +582,7 @@ spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
     if not talent.coup_de_grace.enabled and not talent.supercharger.enabled and not covenant.kyrian then return c end
 
-    if talent.supercharger.enabled and buff.supercharged_combo_points.remains then
+    if talent.supercharger.enabled and buff.supercharged_combo_points.up then
         if talent.forced_induction.enabled then c = c + 3
         else c = c + 2
         end
