@@ -328,8 +328,14 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=121471
     shadow_blades = {
         id = 121471,
-        duration = 20,
+        duration = 16,
         max_stack = 1
+    },
+    shadow_dance = {
+        id = 185422,
+        duration = function() return 6 + talent.improved_shadow_dance.rank * 2 + buff.first_dance.up and 4 or 0 end,
+        max_stack = 1,
+        copy = 185313
     },
     shadow_techniques = {
         id = 196911,
@@ -357,6 +363,12 @@ spec:RegisterAuras( {
         id = 115192,
         duration = function() return 3 * talent.subterfuge.rank end,
         max_stack = 1,
+    },
+    supercharged_combo_points = {
+        -- todo: Find a way to find a true buff / ID for this as a failsafe? Currently fully emulated.
+        duration = 3600,
+        max_stack = function() return combo_points.max end,
+        copy = { "supercharge", "supercharged", "supercharger" }
     },
     symbols_of_death_crit = {
         id = 227151,
@@ -571,9 +583,15 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not talent.coup_de_grace.enabled and not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
-    if buff[ "echoing_reprimand_" .. c ].up then c = 7 end
-    if this_action == "coup_de_grace" and buff.coup_de_grace.up then c = c + 5 end
+    if not talent.coup_de_grace.enabled and not talent.supercharger.enabled and not covenant.kyrian then return c end
+
+    if talent.supercharger.enabled and buff.supercharged_combo_points.up then
+        if talent.forced_induction.enabled then c = c + 3
+        else c = c + 2
+        end
+    end -- todo: Find out if these stack like this or not? coup de gace and supercharge
+
+    if talent.coup_de_grace.enabled and this_action == "coup_de_grace" and buff.coup_de_grace.up then c = c + 5 end
     return c
 end )
 
@@ -588,7 +606,7 @@ local function comboSpender( amt, resource )
             gain( 6 * amt, "energy" )
         end
 
-        if talent.alacrity.enabled and amt >= 5 then
+        if talent.alacrity.enabled and amt >= 10 then
             addStack( "alacrity" )
         end
 
@@ -596,7 +614,7 @@ local function comboSpender( amt, resource )
             reduceCooldown( "secret_technique", amt )
         end
 
-        reduceCooldown( "shadow_dance", amt * ( talent.enveloping_shadows.enabled and 1.5 or 1 ) )
+        if talent.deepening_shadows.enabled then reduceCooldown( "shadow_dance", amt * 0.5 ) end
 
         if legendary.obedience.enabled and buff.flagellation_buff.up then
             reduceCooldown( "flagellation", amt )
@@ -697,6 +715,17 @@ end )
 
 
 spec:RegisterHook( "reset_precast", function( amt, resource )
+
+    -- Supercharged Combo Point handling
+    local charged = 0
+    if talent.supercharger.enabled then
+        for _, point in pairs( GetUnitChargedPowerPoints( "player" ) ) do
+            charged = charged + 1
+        end
+
+     if charged > 0 then applyBuff( "supercharged_combo_points", nil, charged ) end
+    end
+
     if talent.danse_macabre.enabled then
         wipe( danse_macabre_tracker )
         if buff.shadow_dance.up then
@@ -907,7 +936,6 @@ spec:RegisterAbilities( {
             removeBuff( "masterful_finish" )
 
             if talent.alacrity.enabled and effective_combo_points > 4 then addStack( "alacrity" ) end
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
 
             if buff.finality_black_powder.up then removeBuff( "finality_black_powder" )
             elseif talent.finality.enabled then applyBuff( "finality_black_powder" ) end
@@ -915,6 +943,7 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
             spend( combo_points.current, "combo_points" )
+            removeStack( "supercharged_combo_points" )
             if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
     },
@@ -962,7 +991,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.    Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.    |cFFFFFFFFAwards $s3 combo $lpoint:points;.|r
     echoing_reprimand = {
-        id = function() return talent.echoing_reprimand.enabled and 385616 or 323547 end,
+        id = 323547,
         cast = 0,
         cooldown = 45,
         gcd = "totem",
@@ -974,6 +1003,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         toggle = "cooldowns",
 
+        usable = covenant.kyrian,
+
         cp_gain = function ()
             if buff.shadow_blades.up then return 7 end
             if buff.premeditation.up then return combo_points.max end
@@ -982,12 +1013,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             -- Can't predict the Animacharge, unless you have the talent/legendary.
-            if legendary.resounding_clarity.enabled or talent.resounding_clarity.enabled then
-                applyBuff( "echoing_reprimand_2", nil, 2 )
-                applyBuff( "echoing_reprimand_3", nil, 3 )
-                applyBuff( "echoing_reprimand_4", nil, 4 )
-                applyBuff( "echoing_reprimand_5", nil, 5 )
-            end
 
             st_gain( "echoing_reprimand" )
             removeBuff( "premeditation" )
@@ -1043,8 +1068,8 @@ spec:RegisterAbilities( {
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( combo_points.current, "combo_points" )
+            removeStack( "supercharged_combo_points" )
 
             if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
@@ -1180,7 +1205,6 @@ spec:RegisterAbilities( {
             applyBuff( "secret_technique" ) -- fake buff for APL logic.
             removeStack( "goremaws_bite" )
             if talent.alacrity.enabled and combo_points.current > 4 then addStack( "alacrity" ) end
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( min( talent.deeper_stratagem.enabled and 6 or 5, combo_points.current ), "combo_points" )
         end,
     },
@@ -1189,7 +1213,7 @@ spec:RegisterAbilities( {
     shadow_blades = {
         id = 121471,
         cast = 0,
-        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 180 * ( pvptalent.thiefs_bargain.enabled and 0.667 or 1 ) end,
+        cooldown = function () return ( essence.vision_of_perfection.enabled and 0.87 or 1 ) * 90 * ( pvptalent.thiefs_bargain.enabled and 0.8 or 1 ) end,
         gcd = "off",
         school = "physical",
 
@@ -1207,14 +1231,9 @@ spec:RegisterAbilities( {
     shadow_dance = {
         id = 185313,
         cast = 0,
-        charges = function ()
-            if state.spec.subtlety and talent.shadow_dance.enabled then return 2 end
-            return talent.enveloping_shadows.enabled and 2 or nil end,
+        charges = function () return 1 + talent.double_dance.rank end,
         cooldown = 60,
-        recharge = function ()
-            if state.spec.subtlety and talent.shadow_dance.enabled then return 60 end
-            return talent.enveloping_shadows.enabled and 60 or nil
-        end,
+        recharge = 6,
         gcd = "off",
 
         startsCombat = false,
@@ -1458,9 +1477,9 @@ spec:RegisterAbilities( {
     symbols_of_death = {
         id = 212283,
         cast = 0,
-        charges = 1,
+        charges = function() return talent.death_perception.enabled and 1 or nil end,
         cooldown = 30,
-        recharge = 30,
+        recharge = function() return talent.death_perception.enabled and 30 or nil end,
         gcd = "off",
         school = "physical",
 
@@ -1471,6 +1490,7 @@ spec:RegisterAbilities( {
             -- applyBuff( "symbols_of_death_crit" )
 
             if legendary.the_rotten.enabled then applyBuff( "the_rotten" ) end
+            if talent.supercharger.enabled then addStack( "supercharged_combo_points", nil, talent.supercharger.rank ) end
         end,
     }
 } )
