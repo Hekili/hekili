@@ -86,7 +86,7 @@ actions.sentst+=/raptor_bite,cycle_targets=1,if=!talent.contagious_reagents
 actions.sentst+=/raptor_bite,cycle_targets=1
 
 # SENTINEL | DEFAULT AOE ACTIONLIST
-actions.sentcleave=wildfire_bomb,if=!cooldown.lunar_storm.remains
+actions.sentcleave+=/wildfire_bomb,if=!cooldown.lunar_storm.remains
 actions.sentcleave+=/kill_command,cycle_targets=1,if=buff.relentless_primal_ferocity.up&buff.tip_of_the_spear.stack<1
 actions.sentcleave+=/wildfire_bomb,if=buff.tip_of_the_spear.stack>0&cooldown.wildfire_bomb.charges_fractional>1.7|cooldown.wildfire_bomb.charges_fractional>1.9|(talent.bombardier&cooldown.coordinated_assault.remains<2*gcd)|talent.butchery&cooldown.butchery.remains<gcd
 actions.sentcleave+=/butchery
