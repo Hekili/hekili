@@ -125,7 +125,6 @@ spec:RegisterTalents( {
     prodigious_savant          = { 102450, 384612, 2 }, -- Arcane Charges further increase Mastery effectiveness of Arcane Blast and Arcane Barrage by 20%.
     resonance                  = { 102437, 205028, 1 }, -- Arcane Barrage deals 10% increased damage per target it hits.
     reverberate                = { 102441, 281482, 1 }, -- If Arcane Explosion hits at least 3 targets, it has a 50% chance to generate an extra Arcane Charge.
-    signature_spell            = { 94657, 470021, 1 }, -- $?c1[When your Magi's Spark explodes, you conjure $s1 Arcane Splinters][Consuming Winter's Chill with Glacial Spike conjures $s2 additional Frost Splinters].
     slipstream                 = { 102469, 236457, 1 }, -- Arcane Missiles can now be channeled while moving. Evocation can be channeled while moving.
     static_cloud               = { 102453, 461257, 1 }, -- Each time you cast Arcane Explosion, its damage increases by $461515s1%.; Bonus resets after reaching ${$461515s1*$461515u}% damage.
     surging_urge               = { 102440, 457521, 1 }, -- Arcane Surge damage increased by 5% per Arcane Charge.
@@ -140,6 +139,7 @@ spec:RegisterTalents( {
     phantasmal_image           = {  94660, 444784, 1 }, -- Your Mirror Image summons one extra clone. Mirror Image now reduces all damage taken by an additional 5%.
     reactive_barrier           = {  94660, 444827, 1 }, -- Your Prismatic Barrier can absorb up to 50% more damage based on your missing Health. Max effectiveness when under 50% health.
     shifting_shards            = {  94657, 444675, 1 }, -- Shifting Power fires a barrage of 8 Arcane Splinters at random enemies within 40 yds over its duration.
+    signature_spell            = { 94657, 470021, 1 }, -- $?c1[When your Magi's Spark explodes, you conjure $s1 Arcane Splinters][Consuming Winter's Chill with Glacial Spike conjures $s2 additional Frost Splinters].
     slippery_slinging          = {  94659, 444752, 1 }, -- You have 40% increased movement speed during Alter Time and Evocation.
     spellfrost_teachings       = {  94655, 444986, 1 }, -- Direct damage from Arcane Splinters has a 2% chance to launch an Arcane Orb and increase all damage dealt by Arcane Orb by 10% for 10 sec.
     splintering_orbs           = { 94661, 444256, 1 }, -- Enemies damaged by your $?c1[Arcane Orb][Frozen Orb] conjure $?c1[$s4 Arcane][$s5 Frost] $LSplinter:Splinters;, up to $?c1[$s1][$s6].; $?c1[Arcane Orb][Frozen Orb] damage is increased by $s2%.
