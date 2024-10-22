@@ -83,7 +83,9 @@ spec:RegisterTalents( {
     -- Elemental
     aftershock                  = {  81000, 273221, 1 }, -- Earth Shock, Elemental Blast, and Earthquake have a 25% chance to refund all Maelstrom spent.
     ascendance                  = {  81003, 114050, 1 }, -- Transform into a Flame Ascendant for 18 sec, replacing Chain Lightning with Lava Beam, removing the cooldown on Lava Burst, and increasing the damage of Lava Burst by an amount equal to your critical strike chance. When you transform into the Flame Ascendant, instantly cast a Lava Burst at all enemies affected by your Flame Shock, and refresh your Flame Shock durations to 18 sec.
+    charged_conduit             = {  80991, 468625, 1 }, -- Increases the duration of Lightning Rod by ${$s1/1000} sec and its damage bonus by $s2%.
     deeply_rooted_elements      = { 103641, 378270, 1 }, -- Casting Lava Burst has a 7% chance to activate Ascendance for 6.0 sec.  Ascendance Transform into a Flame Ascendant for 18 sec, replacing Chain Lightning with Lava Beam, removing the cooldown on Lava Burst, and increasing the damage of Lava Burst by an amount equal to your critical strike chance. When you transform into the Flame Ascendant, instantly cast a Lava Burst at all enemies affected by your Flame Shock, and refresh your Flame Shock durations to 18 sec.
+    earthshatter                = {  80995, 468626, 1 }, -- Increases Earth Shock and Earthquake damage by $s1% and the stat bonuses granted by Elemental Blast by $s2%.
     earth_shock                 = {  80984,   8042, 1 }, -- Instantly shocks the target with concussive force, causing 93,303 Nature damage.
     earthen_rage                = { 103634, 170374, 1 }, -- Your damaging spells incite the earth around you to come to your aid for 6 sec, repeatedly dealing 4,311 Nature damage to your most recently attacked target.
     earthquake                  = {  80985,  61882, 1 }, -- Causes the earth within 8 yards of the target location to tremble and break, dealing 51,148 Physical damage over 7 sec and has a 5% chance to knock the enemy down. Multiple uses of Earthquake may overlap. This spell is cast at a selected location.
@@ -91,36 +93,38 @@ spec:RegisterTalents( {
     echo_chamber                = {  81013, 382032, 1 }, -- Increases the damage dealt by your Elemental Overloads by 10%.
     echo_of_the_elementals      = {  81008, 462864, 1 }, -- When your Storm Elemental or Fire Elemental expires, it leaves behind a lesser Elemental to continue attacking your enemies for 15 sec.
     echo_of_the_elements        = {  80999, 333919, 1 }, -- Lava Burst has an additional charge.
-    echoes_of_great_sundering   = {  80991, 384087, 1 }, -- After casting Earth Shock, your next Earthquake deals 120% additional damage. After casting Elemental Blast, your next Earthquake deals 140% additional damage.
+    echoes_of_great_sundering   = { 103641, 384087, 1 }, -- After casting Earth Shock, your next Earthquake deals $s1% additional damage.; After casting Elemental Blast, your next Earthquake deals $s2% additional damage.
+    electroshock                = {  94863, 454022, 1 }, -- Tempest increases your movement speed by $454025s1% for $454025d.
     elemental_blast             = {  80984, 117014, 1 }, -- Harnesses the raw power of the elements, dealing 186,852 Elemental damage and increasing your Critical Strike or Haste by 6% or Mastery by 11% for 10 sec.
     elemental_equilibrium       = {  80993, 378271, 1 }, -- Dealing direct Fire, Frost, and Nature damage within 10 sec will increase all damage dealt by 10% for 10 sec. This can only occur once every 30 sec.
     elemental_fury              = {  80983,  60188, 1 }, -- Your damaging critical strikes deal 275% damage instead of the usual 200%.
     elemental_unity             = { 103630, 462866, 1 }, -- While a Storm Elemental is active, your Nature damage dealt is increased by 10%. While a Fire Elemental is active, your Fire damage dealt is increased by 10%.
+    erupting_lava               = {  81006, 468574, 1 }, -- Increases the duration of Flame Shock by ${$s1/1000} sec and its damage by $s4%.; Lava Burst consumes up to ${$s2/1000} sec of Flame Shock, instantly dealing that damage. Lava Burst overloads benefit at $s3% effectiveness.
     everlasting_elements        = { 103633, 462867, 1 }, -- Increases the duration of your Elementals by 20%.
     eye_of_the_storm            = {  80995, 381708, 1 }, -- Reduces the Maelstrom cost of Earth Shock and Earthquake by 5. Reduces the Maelstrom cost of Elemental Blast by 10.
     fire_elemental              = {  80981, 198067, 1 }, -- Calls forth a Greater Fire Elemental to rain destruction on your enemies for 36 sec. While the Fire Elemental is active, Flame Shock deals damage 33% faster, and newly applied Flame Shocks last 100% longer.
-    first_ascendant             = {  81002, 462440, 1 }, -- The cooldown of Ascendance is reduced by 60 sec.
+    first_ascendant             = { 103640, 462440, 1 }, -- The cooldown of Ascendance is reduced by ${$s1/-1000} sec.
     flames_of_the_cauldron      = {  81010, 378266, 1 }, -- Reduces the cooldown of Flame Shock by 1.5 sec and Flame Shock deals damage 15% faster.
     flash_of_lightning          = {  80990, 381936, 1 }, -- Increases the critical strike chance of Lightning Bolt and Chain Lightning by 10%. Casting Lightning Bolt or Chain Lightning reduces the cooldown of your Nature spells by 1.0 sec.
-    flow_of_power               = {  80998, 385923, 1 }, -- Increases the Maelstrom generated by Lightning Bolt and Lava Burst by 2.
     flux_melting                = {  80996, 381776, 1 }, -- Casting Frost Shock or Icefury increases the damage of your next Lava Burst by 20%.
-    fury_of_the_storms          = { 103640, 191717, 1 }, -- Activating Stormkeeper summons a powerful Lightning Elemental to fight by your side for 9.6 sec.
+    fury_of_the_storms          = {  80998, 191717, 1 }, -- Casting Stormkeeper summons a powerful Lightning Elemental to fight by your side for $191716d.
     fusion_of_elements          = { 103638, 462840, 1 }, -- After casting Icefury, the next time you cast a Nature and a Fire spell, you additionally cast an Elemental Blast at your target at 60% effectiveness.
+    herald_of_the_storms        = {  80998, 468571, 1 }, -- Casting Lightning Bolt$?a454009[, Tempest,][] or Chain Lightning reduces the cooldown of Stormkeeper by ${$s1/-1000}.1 sec.
     icefury                     = {  80997, 462816, 1 }, -- Casting Lava Burst has a chance to replace your next Frost Shock with Icefury, stacking up to 2 times.  Icefury Hurls frigid ice at the target, dealing 48,842 Frost damage and causing your next 2 Frost Shocks to deal 225% increased damage and generate 10 Maelstrom. Generates 12 Maelstrom.
     improved_flametongue_weapon = {  81009, 382027, 1 }, -- Imbuing your weapon with Flametongue increases your Fire spell damage by 5% for 1 hour.
-    lightning_conduit           = { 103631, 462862, 1 }, -- While Lightning Shield is active, your Nature damage dealt is increased by 8%.
-    lightning_rod               = {  80992, 210689, 1 }, -- Earth Shock, Elemental Blast, and Earthquake make your target a Lightning Rod for 8 sec. Lightning Rods take 20% of all damage you deal with Lightning Bolt and Chain Lightning.
+    lightning_capacitor         = { 103631, 462862, 1 }, -- While Lightning Shield is active, your Nature damage dealt is increased by $s3%.
+    lightning_conduit           = {  94863, 467778, 1 }, -- You have a chance to get struck by lightning, increasing your movement speed by $468226s2% for $468226d. The effectiveness is increased to $s3% in outdoor areas.; You call down a Thunderstorm when you Reincarnate.
+    lightning_rod               = {  81012, 210689, 1 }, -- $?s454009[Tempest, ][]$?s137040[Earth Shock, Elemental Blast, and Earthquake][Lightning Bolt, Elemental Blast, and Chain Lightning] make your target a Lightning Rod for $197209d.;  ; Lightning Rods take $s2% of all damage you deal with $?s454009[Tempest, Lightning Bolt,][Lightning Bolt] and Chain Lightning.
     liquid_magma_totem          = { 103637, 192222, 1 }, -- Summons a totem at the target location that erupts dealing 29,601 Fire damage and applying Flame Shock to 3 enemies within 9 yards. Continues hurling liquid magma at a random nearby target every 0.8 sec for 6 sec, dealing 17,420 Fire damage to all enemies within 9 yards.
     magma_chamber               = {  81007, 381932, 1 }, -- Flame Shock damage increases the damage of your next Earth Shock, Elemental Blast, or Earthquake by 1.5%, stacking up to 10 times.
     master_of_the_elements      = {  81004,  16166, 1 }, -- Casting Lava Burst increases the damage or healing of your next Nature, Physical, or Frost spell by 15%.
     mountains_will_fall         = {  81012, 381726, 1 }, -- Earth Shock, Elemental Blast, and Earthquake can trigger your Mastery: Elemental Overload at 50% effectiveness. Overloaded Earthquakes do not knock enemies down.
     power_of_the_maelstrom      = {  81015, 191861, 1 }, -- Casting Lava Burst has a 25% chance to cause your next Lightning Bolt or Chain Lightning cast to trigger Elemental Overload an additional time, stacking up to 2 times.
-    preeminence                 = {  81002, 462443, 1 }, -- Your haste is increased by 25% while Ascendance is active and its duration is increased by 3 sec.
+    preeminence                 = { 103640, 462443, 1 }, -- Your haste is increased by $s2% while Ascendance is active and its duration is increased by ${$s1/1000} sec.
     primal_elementalist         = { 103632, 117013, 1 }, -- Your Earth, Fire, and Storm Elementals are drawn from primal elementals 80% more powerful than regular elementals, with additional abilities, and you gain direct control over them.
     primordial_fury             = { 103639, 378193, 1 }, -- Elemental Fury increases critical strike damage by an additional 25%.
     primordial_wave             = {  81014, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing 11,550 Elemental damage and applying Flame Shock to them. Your next Lava Burst will also hit all targets affected by your Flame Shock for 80% of normal damage.
     searing_flames              = {  81005, 381782, 1 }, -- Flame Shock damage has a chance to generate 2 Maelstrom.
-    skybreakers_fiery_demise    = {  81006, 378310, 1 }, -- Flame Shock damage over time critical strikes reduce the cooldown of your Fire and Storm Elemental by 1.0 sec, and Flame Shock has a 50% increased critical strike chance.
     splintered_elements         = {  80978, 382042, 1 }, -- Primordial Wave grants you 20% Haste plus 4% for each additional Lava Burst generated by Primordial Wave for 12 sec.
     storm_elemental             = {  80981, 192249, 1 }, -- Calls forth a Greater Storm Elemental to hurl gusts of wind that damage the Shaman's enemies for 36 sec. While the Storm Elemental is active, each time you cast Lightning Bolt or Chain Lightning, the cast time of Lightning Bolt and Chain Lightning is reduced by 3%, stacking up to 10 times.
     storm_frenzy                = { 103635, 462695, 1 }, -- Your next Chain Lightning or Lightning Bolt has 40% reduced cast time after casting Earth Shock, Elemental Blast, or Earthquake. Can accumulate up to 2 charges.
@@ -128,14 +132,13 @@ spec:RegisterTalents( {
     surge_of_power              = {  81000, 262303, 1 }, -- Earth Shock, Elemental Blast, and Earthquake enhance your next spell cast within 15 sec: Flame Shock: The next cast also applies Flame Shock to 1 additional target within 8 yards of the target. Lightning Bolt: Your next cast will cause 2 additional Elemental Overloads. Chain Lightning: Your next cast will chain to 1 additional target. Lava Burst: Reduces the cooldown of your Fire and Storm Elemental by 4.0 sec. Frost Shock: Freezes the target in place for 6 sec.
     swelling_maelstrom          = {  81016, 381707, 1 }, -- Increases your maximum Maelstrom by 50. Increases Earth Shock, Elemental Blast, and Earthquake damage by 5%.
     thunderstrike_ward          = { 103636, 462757, 1 }, -- Imbue your shield with the element of Lightning for 1 |4hour:hrs;, giving Lightning Bolt and Chain Lightning a chance to call down 2 Thunderstrikes on your target for 8,151 Nature damage.
-    unrelenting_calamity        = {  80988, 382685, 1 }, -- Reduces the cast time of Lightning Bolt and Chain Lightning by 0.25 sec. Increases the duration of Earthquake by 1 sec.
 
     -- Farseer
     ancestral_swiftness         = {  94894, 443454, 1 }, -- Your next healing or damaging spell is instant, costs no mana, and deals 10% increased damage and healing. If you know Nature's Swiftness, it is replaced by Ancestral Swiftness and causes Ancestral Swiftness to call an Ancestor to your side.
     ancient_fellowship          = {  94862, 443423, 1 }, -- Ancestors have a 15% chance to call another Ancestor when they expire.
     call_of_the_ancestors       = {  94888, 443450, 1, "farseer" }, -- Primordial Wave calls an Ancestor to your side for 6 sec. Whenever you cast a healing or damaging spell, the Ancestor will cast a similar spell.
     earthen_communion           = {  94858, 443441, 1 }, -- Earth Shield has an additional 3 charges and heals you for 25% more.
-    elemental_reverb            = {  94869, 443418, 1 }, -- Lava Burst gains an additional charge and deals 5% increased damage.
+    elemental_reverb            = {  94869, 443418, 1 }, -- Lava Burst gains an additional charge and deals 5% increased damage.$?a137039[; Riptide gains an additional charge and heals for 5% more.][]
     final_calling               = {  94875, 443446, 1 }, -- When an Ancestor expires, they cast Elemental Blast at a nearby enemy.
     heed_my_call                = {  94884, 443444, 1 }, -- Ancestors last an additional 2 sec.
     latent_wisdom               = {  94862, 443449, 1 }, -- Your Ancestors' spells are 20% more powerful.
@@ -152,14 +155,13 @@ spec:RegisterTalents( {
     conductive_energy           = {  94868, 455123, 1 }, -- Lightning Rod targets now also take 20% of the damage that Tempest deals, and Tempest also applies Lightning Rod effect.
     natures_protection          = {  94880, 454027, 1 }, -- Targets struck by your Tempest deal 10% less damage to you for 6 sec.
     rolling_thunder             = {  94889, 454026, 1 }, -- Gain one stack of Stormkeeper every 50 sec.
-    shocking_grasp              = {  94863, 454022, 1 }, -- Your Nature damage critical strikes reduce the target's movement speed by 50% for 3 sec.
-    storm_swell                 = {  94885, 455088, 1 }, -- When Tempest only strikes a single target, gain 30 Maelstrom.
+    storm_swell                 = {  94873, 455088, 1 }, -- Tempest grants ${$455089s1*$mas}% Mastery for $455089d.;
     stormcaller                 = {  94893, 454021, 1 }, -- Increases the critical strike chance of your Nature damage spells by 10% and the critical strike damage of your Nature spells by 5%.
     supercharge                 = {  94873, 455110, 1 }, -- Lightning Bolt and Chain Lightning Elemental Overloads have a 50% chance to cause an additional Elemental Overload.
     surging_currents            = {  94880, 454372, 1 }, -- After using Tempest, your next Chain Heal, or Healing Surge will be instant cast and consume no Mana.
     tempest                     = {  94892, 454009, 1, "stormbringer" }, -- Every 400 Maelstrom spent replaces your next Lightning Bolt with Tempest.
     unlimited_power             = {  94886, 454391, 1 }, -- Spending Maelstrom grants you 3% haste for 15 sec, stacking. Gaining a new stack does not refresh the duration.
-    voltaic_surge               = {  94870, 454919, 1 }, -- Crash Lightning, Chain Lightning, and Earthquake damage increased by 15%.
+    voltaic_surge               = {  94870, 454919, 1 }, -- $?s137040[Earthquake][Crash Lightning] and Chain Lightning damage increased by $s1%.
 } )
 
 
@@ -173,7 +175,6 @@ spec:RegisterPvpTalents( {
     static_field_totem  =  727, -- (355580) Summons a totem with 4% of your health at the target location for 6 sec that forms a circuit of electricity that enemies cannot pass through.
     totem_of_wrath      = 3488, -- (460697) Primordial Wave summons a totem at your feet for 15 sec that increases the critical effect of damage and healing spells of all nearby allies within 46 yards by 20% for 15 sec.
     unleash_shield      = 3491, -- (356736) Unleash your Elemental Shield's energy on an enemy target: Lightning Shield: Knocks them away. Earth Shield: Roots them in place for 2 sec. Water Shield: Summons a whirlpool for 6 sec, reducing damage and healing by 50% while they stand within it.
-    volcanic_surge      = 5571, -- (408572)
 } )
 
 
@@ -203,7 +204,7 @@ spec:RegisterAuras( {
             setCooldown( "ancestral_swiftness", action.ancestral_swiftness.cooldown )
         end
     },
-    -- Your next $s3 Chain Lightning spells are instant cast and will deal $s2% increased damage.
+    -- Your next $s3 Chain Lightning or Lightning Bolt spells are instant cast and will deal $s2% increased damage.
     arc_discharge = {
         id = 455097,
         duration = 15.0,
@@ -319,6 +320,12 @@ spec:RegisterAuras( {
         pandemic = true,
         max_stack = 1,
     },
+    -- Movement speed increased by $w1%.
+    electroshock = {
+        id = 454025,
+        duration = 5.0,
+        max_stack = 1,
+    },
     elemental_blast = {
         alias = { "elemental_blast_critical_strike", "elemental_blast_haste", "elemental_blast_mastery" },
         aliasMode = "first", -- use duration info from the first buff that's up, as they should all be equal.
@@ -389,7 +396,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=198067
     fire_elemental = {
         id = 188592,
-        duration = function() return 30 * ( 1 + 0.2 * talent.everlasting_elements.rank ) end,
+        duration = function() return 20 * ( 1 + 0.2 * talent.everlasting_elements.rank ) end,
         type = "Magic",
         max_stack = 1
     },
@@ -402,7 +409,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=188389
     flame_shock = {
         id = 188389,
-        duration = function() return 18 * ( buff.fire_elemental.up and 0.75 or 1 ) * ( buff.lesser_fire_elemental.up and 2 or 1 ) end,
+        duration = function() return 18 * ( buff.fire_elemental.up and 2 or 1 ) * ( buff.lesser_fire_elemental.up and 2 or 1 ) end,
         tick_time = function() return 2 * haste * ( talent.flame_of_the_cauldron.enabled and 0.85 or 1 ) * ( buff.fire_elemental.up and 0.75 or 1 ) * ( buff.lesser_fire_elemental.up and 0.75 or 1 ) end,
         type = "Magic",
         max_stack = 1
@@ -514,11 +521,27 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
+    -- Fire damage dealt increased by ${$W1}.1%.
+    improved_flametongue_weapon = {
+        id = 382028,
+        duration = 3600.0,
+        max_stack = 1,
+
+        -- Affected by:
+        -- enhanced_imbues[462796] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+        -- enhanced_imbues[462796] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+        -- enhanced_imbues[462796] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
+    },
     -- Talent: Your next Lava Burst casts instantly.
     -- https://wowhead.com/beta/spell=77762
     lava_surge = {
         id = 77762,
         duration = 10,
+        max_stack = 1
+    },
+    lightning_conduit = {
+        id = 468226,
+        duration = 5,
         max_stack = 1
     },
     -- Talent: Stunned. Suffering $w1 Nature damage every $t1 sec.
@@ -533,7 +556,7 @@ spec:RegisterAuras( {
     },
     lightning_rod = {
         id = 197209,
-        duration = 8,
+        duration = function() return talent.charged_conduit.enabled and 12 or 8 end,
         max_stack = 1
     },
     -- Chance to deal $192109s1 Nature damage when you take melee damage$?a137041[ and have a $s3% chance to generate a stack of Maelstrom Weapon]?a137040[ and have a $s4% chance to generate $s5 Maelstrom][].
@@ -599,7 +622,7 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Talent: Lightning Bolt and Chain Lightning will trigger Elemental Overload an additional time.
+    -- Lightning Bolt$?a454009[, Tempest,][] and Chain Lightning will trigger Elemental Overload an additional time.
     -- https://wowhead.com/beta/spell=191877
     power_of_the_maelstrom = {
         id = 191877,
@@ -681,6 +704,12 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 2
     },
+    -- Mastery increased by $w1%.
+    storm_swell = {
+        id = 455089,
+        duration = 6.0,
+        max_stack = 1,
+    },
     -- Stormstrike cooldown has been reset$?$?a319930[ and will deal $319930w1% additional damage as Nature][].
     -- https://wowhead.com/beta/spell=201846
     stormbringer = {
@@ -719,6 +748,12 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1,
     },
+    -- Your next Chain Heal or Healing Surge has $w1% increased effectiveness.
+    surging_currents = {
+        id = 454376,
+        duration = 30.0,
+        max_stack = 1,
+    },
     -- Talent: Your next Healing Surge$?s137039[, Healing Wave, or Riptide][] will be $w1% more effective.
     -- https://wowhead.com/beta/spell=378102
     swirling_currents = {
@@ -753,11 +788,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    volcanic_surge = {
-        id = 408575,
-        duration = 18,
-        max_stack = 2
-    },
     water_walking = {
         id = 546,
         duration = 600,
@@ -768,10 +798,11 @@ spec:RegisterAuras( {
         duration = 5,
         max_stack = 1,
     },
+    -- Haste increased by $w1%.
     wind_gust = {
         id = 263806,
-        duration = 30,
-        max_stack = 20
+        duration = 20,
+        max_stack = 4
     },
     -- Talent: Lava Burst damage increased by $s1%.
     -- https://wowhead.com/beta/spell=378269
@@ -1352,7 +1383,7 @@ spec:RegisterAbilities( {
     ancestral_swiftness = {
         id = 443454,
         cast = 0,
-        cooldown = 45,
+        cooldown = 30,
         gcd = "off",
         school = "nature",
 
@@ -1369,7 +1400,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Transform into a Flame Ascendant for $d, replacing Chain Lightning with Lava Beam, removing the cooldown on Lava Burst, and increasing the damage of Lava Burst by an amount equal to your critical strike chance.    When you transform into the Flame Ascendant, instantly cast a Lava Burst at all enemies affected by your Flame Shock, and refresh your Flame Shock durations to $188389d.
+    -- Transform into a Flame Ascendant for $d, instantly casting a Flame Shock and a $s10% effectiveness Lava Burst at up to $s7 nearby enemies.; While ascended, Elemental Overload damage is increased by $s8% and spells affected by your Mastery: Elemental Overload cause $s9 additional Elemental $LOverload:Overloads;.
     ascendance = {
         id = function()
             if state.spec.elemental then return 114050 end
@@ -1540,6 +1571,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
+            if buff.surging_currents.up then removeBuff( "surging_currents" ) end
             removeBuff( "chains_of_devastation_ch" )
             if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
             if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end -- TODO: Determine order of instant cast effect consumption.
@@ -1562,10 +1594,8 @@ spec:RegisterAbilities( {
             if buff.natures_swiftness.up then return 0 end
             if buff.stormkeeper.up then return 0 end
             return ( talent.unrelenting_calamity.enabled and 1.75 or 2 )
-                * ( 1 - 0.03 * min( 10, buff.wind_gust.stacks ) )
                 * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
                 * ( buff.storm_frenzy.up and 0.6 or 1 )
-                * ( 1 - 0.25 * buff.volcanic_surge.stack )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1587,7 +1617,6 @@ spec:RegisterAbilities( {
             removeBuff( "master_of_the_elements" )
             removeBuff( "echoing_shock" )
             removeStack( "storm_frenzy" )
-            removeBuff( "volcanic_surge" )
 
             if buff.fusion_of_elements_nature.up then
                 removeBuff( "fusion_of_elements_nature" )
@@ -2229,7 +2258,7 @@ spec:RegisterAbilities( {
     healing_surge = {
         id = 8004,
         cast = function ()
-            if buff.ancestral_swiftness.up or buff.natures_swiftness.up or buff.surging_currents.up then return 0 end
+            if buff.ancestral_swiftness.up or buff.natures_swiftness.up then return 0 end
             return 1.5 * haste
         end,
         cooldown = 0,
@@ -2243,8 +2272,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" )
-            elseif buff.natures_swiftness.up then removeBuff( "natures_swiftness" )
-            elseif buff.surging_currents.up then removeBuff( "surging_currents" ) end
+            elseif buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
+            if buff.surging_currents.up then removeBuff( "surging_currents" ) end
             removeBuff( "echoing_shock" )
 
             if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
@@ -2430,11 +2459,10 @@ spec:RegisterAbilities( {
         cast = function ()
             if buff.ancestral_swiftness.up or buff.natures_swiftness.up then return 0 end
             if buff.stormkeeper.up then return 0 end
+            if buff.arc_discharge.up then return 0 end
             return ( talent.unrelenting_calamity.enabled and 1.75 or 2 )
-                * ( 1 - 0.03 * min( 10, buff.wind_gust.stacks ) )
                 * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
                 * ( buff.storm_frenzy.up and 0.6 or 1 )
-                * ( 1 - 0.25 * buff.volcanic_surge.stack )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -2447,7 +2475,6 @@ spec:RegisterAbilities( {
         nobuff = "tempest",
 
         handler = function ()
-            removeBuff( "tempest" )
 
             local ms = 6 + ( 2 * talent.flow_of_power.rank )
             local overload = 2
@@ -2459,12 +2486,12 @@ spec:RegisterAbilities( {
 
             if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
             if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
+            if buff.arc_discharge.up then removeBuff( "arc_discharge" ) end
             removeBuff( "master_of_the_elements" )
             removeBuff( "surge_of_power" )
             removeStack( "power_of_the_maelstrom" )
             removeBuff( "echoing_shock" )
             removeStack( "storm_frenzy" )
-            removeBuff ( "volcanic_surge" )
 
             if buff.fusion_of_elements_nature.up then
                 removeBuff( "fusion_of_elements_nature" )
@@ -2506,7 +2533,6 @@ spec:RegisterAbilities( {
                 * ( 1 - 0.03 * min( 10, buff.wind_gust.stacks ) )
                 * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
                 * ( buff.storm_frenzy.up and 0.6 or 1 )
-                * ( 1 - 0.25 * buff.volcanic_surge.stack )
         end,
         cooldown = 0,
         gcd = "spell",
@@ -2531,12 +2557,12 @@ spec:RegisterAbilities( {
 
             if buff.ancestral_swiftness.up then removeBuff( "ancestral_swiftness" ) end
             if buff.natures_swiftness.up then removeBuff( "natures_swiftness" ) end
+            if buff.arc_discharge.up then removeBuff( "arc_discharge" ) end
             removeBuff( "master_of_the_elements" )
             removeBuff( "surge_of_power" )
             removeStack( "power_of_the_maelstrom" )
             removeBuff( "echoing_shock" )
             removeStack( "storm_frenzy" )
-            removeBuff ( "volcanic_surge" )
 
             if buff.fusion_of_elements_nature.up then
                 removeBuff( "fusion_of_elements_nature" )
@@ -2637,6 +2663,7 @@ spec:RegisterAbilities( {
             summonTotem( "liquid_magma_totem" )
             applyDebuff( "target", "flame_shock" )
             active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 2 )
+            gain( 8, "maelstrom" )
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },

@@ -3,6 +3,7 @@ actions.precombat+=/variable,name=small_aoe,value=spell_targets.spirit_bomb>=2&s
 actions.precombat+=/variable,name=big_aoe,value=spell_targets.spirit_bomb>=6
 actions.precombat+=/sigil_of_flame,if=hero_tree.aldrachi_reaver|level<71|(hero_tree.felscarred&talent.student_of_suffering)
 actions.precombat+=/immolation_aura
+actions.precombat+=/demon_spikes,if=buff.demon_spikes.remains<1
 
 actions+=/variable,name=num_spawnable_souls,op=reset,default=0
 actions+=/variable,name=num_spawnable_souls,op=max,value=1,if=talent.soul_sigils&cooldown.sigil_of_flame.up
@@ -11,7 +12,7 @@ actions+=/variable,name=num_spawnable_souls,op=max,value=3,if=talent.fracture&co
 actions+=/variable,name=num_spawnable_souls,op=add,value=1,if=talent.soul_carver&(cooldown.soul_carver.remains>(cooldown.soul_carver.duration-3))
 actions+=/disrupt,if=target.debuff.casting.up
 actions+=/infernal_strike,use_off_gcd=1,if=time>0
-actions+=/demon_spikes,use_off_gcd=1,if=!buff.demon_spikes.up&tanking
+actions+=/demon_spikes,use_off_gcd=1,if=tanking&buff.demon_spikes.remains<1
 actions+=/run_action_list,name=ar,strict=1,if=hero_tree.aldrachi_reaver|level<71
 actions+=/run_action_list,name=fs,strict=1,if=hero_tree.felscarred
 
@@ -82,6 +83,7 @@ actions.fel_dev+=/fracture,if=buff.demonsurge_spirit_burst.up|buff.demonsurge_so
 actions.fel_dev_prep+=/potion,use_off_gcd=1,if=prev_gcd.1.fiery_brand
 actions.fel_dev_prep+=/sigil_of_flame,if=!variable.hold_sof_for_precombat&!variable.hold_sof_for_student&!variable.hold_sof_for_dot
 actions.fel_dev_prep+=/fiery_brand,if=talent.fiery_demise&((fury+variable.fel_dev_passive_fury_gen)>=120)&(variable.can_spburst|variable.can_spburst_soon|soul_fragments>=4)&active_dot.fiery_brand=0&((cooldown.metamorphosis.remains<(execute_time+action.fel_devastation.execute_time+(gcd.max*2)))|variable.fiery_brand_back_before_meta)
+actions.fel_dev_prep+=/fel_devastation,if=settings.defensive_fd&(tanking|time<5)&buff.metamorphosis.down
 actions.fel_dev_prep+=/fel_devastation,if=((fury+variable.fel_dev_passive_fury_gen)>=120)&(variable.can_spburst|variable.can_spburst_soon|soul_fragments>=4)
 actions.fel_dev_prep+=/sigil_of_spite,if=(!talent.cycle_of_binding|cooldown.metamorphosis.remains>20)&(soul_fragments<=1|(!(variable.can_spburst|variable.can_spburst_soon|soul_fragments>=4)&action.fracture.charges_fractional<1))
 actions.fel_dev_prep+=/soul_carver,if=(!talent.cycle_of_binding|cooldown.metamorphosis.remains>20)&(soul_fragments<=1|(!(variable.can_spburst|variable.can_spburst_soon|soul_fragments>=4)&action.fracture.charges_fractional<1))&!prev_gcd.1.sigil_of_spite&!prev_gcd.2.sigil_of_spite
@@ -132,7 +134,7 @@ actions.fs+=/sigil_of_flame,if=!variable.hold_sof_for_precombat&(charges=max_cha
 actions.fs+=/fiery_brand,if=active_dot.fiery_brand=0&(!talent.fiery_demise|((talent.down_in_flames&charges>=max_charges)|variable.fiery_brand_back_before_meta))
 actions.fs+=/call_action_list,name=fs_execute,if=boss&fight_remains<20
 actions.fs+=/run_action_list,name=fel_dev,if=buff.metamorphosis.up&!buff.demonsurge_hardcast.up&(buff.demonsurge_soul_sunder.up|buff.demonsurge_spirit_burst.up)
-actions.fs+=/run_action_list,name=metamorphosis,stricct=1,if=buff.metamorphosis.up&buff.demonsurge_hardcast.up
+actions.fs+=/run_action_list,name=metamorphosis,strict=1,if=buff.metamorphosis.up&buff.demonsurge_hardcast.up
 actions.fs+=/run_action_list,name=fel_dev_prep,if=!buff.demonsurge_hardcast.up&(cooldown.fel_devastation.up|(cooldown.fel_devastation.remains<=(gcd.max*3)))
 actions.fs+=/run_action_list,name=meta_prep,if=(cooldown.metamorphosis.remains<=variable.meta_prep_time)&!cooldown.fel_devastation.up&!cooldown.fel_devastation.remains<10&!buff.demonsurge_soul_sunder.up&!buff.demonsurge_spirit_burst.up
 actions.fs+=/the_hunt

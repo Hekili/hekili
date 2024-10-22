@@ -42,10 +42,10 @@ local IsHarmfulSpell = C_Spell.IsSpellHarmful or _G.IsHarmfulSpell
 local IsHelpfulSpell = C_Spell.IsSpellHelpful or _G.IsHelpfulSpell
 local IsPressHoldReleaseSpell = C_Spell.IsPressHoldReleaseSpell or _G.IsPressHoldReleaseSpell
 
-local GetNumSpellTabs = C_SpellBook.GetNumSpellBookSkillLines;
+local GetNumSpellTabs = C_SpellBook.GetNumSpellBookSkillLines
 
 local GetSpellTabInfo = function(index)
-    local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(index);
+    local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(index)
     if skillLineInfo then
         return	skillLineInfo.name, 
                 skillLineInfo.iconID, 
@@ -54,7 +54,7 @@ local GetSpellTabInfo = function(index)
                 skillLineInfo.isGuild, 
                 skillLineInfo.offSpecID,
                 skillLineInfo.shouldHide,
-                skillLineInfo.specID;
+                skillLineInfo.specID
     end
 end
 
@@ -63,9 +63,9 @@ local GetSpellInfo = ns.GetUnpackedSpellInfo
 local GetSpellDescription = C_Spell.GetSpellDescription
 
 local GetSpellCharges = function(spellID)
-    local spellChargeInfo = C_Spell.GetSpellCharges(spellID);
+    local spellChargeInfo = C_Spell.GetSpellCharges(spellID)
     if spellChargeInfo then
-        return spellChargeInfo.currentCharges, spellChargeInfo.maxCharges, spellChargeInfo.cooldownStartTime, spellChargeInfo.cooldownDuration, spellChargeInfo.chargeModRate;
+        return spellChargeInfo.currentCharges, spellChargeInfo.maxCharges, spellChargeInfo.cooldownStartTime, spellChargeInfo.cooldownDuration, spellChargeInfo.chargeModRate
     end
 end
 
@@ -978,6 +978,29 @@ do
                         desc = "Siege of Boralus - Bilge Rat Pillager",
                         [454440] = "Stinky Vomit",
                     },
+
+
+                    -- Nerub'ar Palace
+                    [203669] = {
+                        desc = "Nerub'ar Palace - Rasha'nan",
+                        [436996] = "Stalking Shadows"
+                    },
+                    [201792] = {
+                        desc = "Nerub'ar Palace - Nexus-Princess Ky'veza",
+                        [437839] = "Nether Rift",
+                        [436787] = "Regicide",
+                        [436996] = "Stalking Shadows",
+                    },
+                    [201793] = {
+                        desc = "Nerub'ar Palace - The Silken Court",
+                        [438200] = "Poison Bolt",
+                        [441772] = "Void Bolt"
+                    },
+                    [201794] = {
+                        desc = "Nerub'ar Palace - Queen Ansurek",
+                        [451600] = "Expulsion Beam",
+                        [439865] = "Silken Tomb",
+                    },
                 },
 
                 iconStore = {
@@ -1026,7 +1049,8 @@ do
         local option = info[ n ]
 
         if type(val) == 'string' then val = val:trim() end
-        if shareDB[ option ] then shareDB[ option ] = val; return end
+        if shareDB[ option ] then shareDB[ option ] = val
+return end
 
         shareDB.displays[ option ] = val
         shareDB.export = ""
@@ -1718,7 +1742,8 @@ do
                             pos = {
                                 type = "group",
                                 inline = true,
-                                name = function( info ) rangeXY( info ); return "Position" end,
+                                name = function( info ) rangeXY( info )
+return "Position" end,
                                 order = 10,
 
                                 args = {
@@ -2313,7 +2338,8 @@ do
                             pos = {
                                 type = "group",
                                 inline = true,
-                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                name = function( info ) rangeIcon( info )
+return "Position" end,
                                 order = 3,
                                 args = {
                                     anchor = {
@@ -2861,7 +2887,8 @@ do
                             position = {
                                 type = "group",
                                 inline = true,
-                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                name = function( info ) rangeIcon( info )
+return "Position" end,
                                 order = 3,
                                 args = {
                                     anchor = {
@@ -2959,7 +2986,8 @@ do
                             position = {
                                 type = "group",
                                 inline = true,
-                                name = function( info ) rangeIcon( info ); return "Text Position" end,
+                                name = function( info ) rangeIcon( info )
+return "Text Position" end,
                                 order = 3,
                                 args = {
                                     anchor = {
@@ -3037,7 +3065,8 @@ do
                             pos = {
                                 type = "group",
                                 inline = true,
-                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                name = function( info ) rangeIcon( info )
+return "Position" end,
                                 order = 2,
                                 args = {
                                     anchor = {
@@ -3134,7 +3163,8 @@ do
                             pos = {
                                 type = "group",
                                 inline = true,
-                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                name = function( info ) rangeIcon( info )
+return "Position" end,
                                 order = 3,
                                 args = {
                                     anchor = {
@@ -3205,7 +3235,8 @@ do
                             pos = {
                                 type = "group",
                                 inline = true,
-                                name = function( info ) rangeIcon( info ); return "Position" end,
+                                name = function( info ) rangeIcon( info )
+return "Position" end,
                                 order = 2,
                                 args = {
                                     anchor = {
@@ -3314,7 +3345,8 @@ do
 
                         posRow = {
                             type = "group",
-                            name = function( info ) rangeXY( info, true ); return "Position" end,
+                            name = function( info ) rangeXY( info, true )
+return "Position" end,
                             inline = true,
                             order = 2,
                             args = {
@@ -3779,7 +3811,8 @@ do
                                                 local hasDisplay = false
 
                                                 for key, value in pairs( shareDB.displays ) do
-                                                    if value then hasDisplay = true; break end
+                                                    if value then hasDisplay = true
+break end
                                                 end
 
                                                 return not hasDisplay
@@ -4193,7 +4226,8 @@ do
         self.DB.profile.specs[ spec ] = self.DB.profile.specs[ spec ] or {}
         self.DB.profile.specs[ spec ][ option ] = val
 
-        if option == "package" then self:UpdateUseItems(); self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
+        if option == "package" then self:UpdateUseItems()
+self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
         elseif option == "enabled" then ns.StartConfiguration() end
 
         if WeakAuras and WeakAuras.ScanEvents then
@@ -4592,7 +4626,8 @@ do
 
                             if detected then
                                 for page, text in pairs( detected.upper ) do
-                                    if found == false then output = output .. "\n"; found = true end
+                                    if found == false then output = output .. "\n"
+found = true end
                                     output = format( "%s\n|cFFFFD100%s|r detected on action page |cFFFFD100%d.", output, text, page )
                                 end
                             end
@@ -6770,7 +6805,8 @@ do
                                             for pId, pData in pairs( Hekili.DB.profile.packs ) do
                                                 if pData.builtIn and pData.spec == specId then
                                                     defPack = pId
-                                                    if spec.package == pack then spec.package = pId; break end
+                                                    if spec.package == pack then spec.package = pId
+break end
                                                 end
                                             end
                                         end
@@ -6985,7 +7021,8 @@ do
                                             if Hekili.Scripts and Hekili.Scripts.DB then
                                                 local scriptHead = "^" .. pack .. ":" .. k .. ":"
                                                 for k, v in pairs( Hekili.Scripts.DB ) do
-                                                    if k:match( scriptHead ) and v.Error then err = true; break end
+                                                    if k:match( scriptHead ) and v.Error then err = true
+break end
                                                 end
                                             end
 
@@ -7298,7 +7335,8 @@ do
 
                                         remove( p.lists[ packControl.listName ], id )
 
-                                        if not p.lists[ packControl.listName ][ id ] then id = id - 1; packControl.actionID = format( "%04d", id ) end
+                                        if not p.lists[ packControl.listName ][ id ] then id = id - 1
+packControl.actionID = format( "%04d", id ) end
                                         if not p.lists[ packControl.listName ][ id ] then packControl.actionID = "zzzzzzzzzz" end
 
                                         self:LoadScripts()
@@ -7601,7 +7639,8 @@ do
                                                         for_next = {
                                                             type = "toggle",
                                                             name = function ()
-                                                                local n = packControl.actionID; n = tonumber( n ) + 1
+                                                                local n = packControl.actionID
+n = tonumber( n ) + 1
                                                                 local e = Hekili.DB.profile.packs[ pack ].lists[ packControl.listName ][ n ]
 
                                                                 local ability = e and e.action and class.abilities[ e.action ]
@@ -9730,7 +9769,8 @@ function Hekili:GenerateProfile()
     local covenants = { "kyrian", "necrolord", "night_fae", "venthyr" }
     local covenant = "none"
     for i, v in ipairs( covenants ) do
-        if state.covenant[ v ] then covenant = v; break end
+        if state.covenant[ v ] then covenant = v
+break end
     end
 
     local conduits
@@ -11056,7 +11096,8 @@ do
                                 if type( v ) == "function" then
                                     local ok, val = pcall( v )
                                     if not ok then
-                                        if not keyNamed then results = format( "%s - Aura: %s\n", results, k ); keyNamed = true end
+                                        if not keyNamed then results = format( "%s - Aura: %s\n", results, k )
+keyNamed = true end
                                         results = format( "%s    - %s = %s\n", results, tostring( val ) )
                                         count = count + 1
                                     end
@@ -11066,7 +11107,8 @@ do
                                 if type( v ) == "function" then
                                     local ok, val = pcall( v )
                                     if not ok then
-                                        if not keyNamed then results = format( "%s - Aura: %s\n", results, k ); keyNamed = true end
+                                        if not keyNamed then results = format( "%s - Aura: %s\n", results, k )
+keyNamed = true end
                                         results = format( "%s    - %s = %s\n", results, tostring( val ) )
                                         count = count + 1
                                     end
@@ -11083,7 +11125,8 @@ do
                                 if type( v ) == "function" then
                                     local ok, val = pcall( v )
                                     if not ok then
-                                        if not keyNamed then results = format( "%s - Ability: %s\n", results, k ); keyNamed = true end
+                                        if not keyNamed then results = format( "%s - Ability: %s\n", results, k )
+keyNamed = true end
                                         results = format( "%s    - %s = %s\n", results, tostring( val ) )
                                         count = count + 1
                                     end
@@ -11093,7 +11136,8 @@ do
                                 if type( v ) == "function" then
                                     local ok, val = pcall( v )
                                     if not ok then
-                                        if not keyNamed then results = format( "%s - Ability: %s\n", results, k ); keyNamed = true end
+                                        if not keyNamed then results = format( "%s - Ability: %s\n", results, k )
+keyNamed = true end
                                         results = format( "%s    - %s = %s\n", results, tostring( val ) )
                                         count = count + 1
                                     end
@@ -11163,29 +11207,29 @@ local B64tobyte = {
 
 -- This code is based on the Encode7Bit algorithm from LibCompress
 -- Credit goes to Galmok (galmok@gmail.com)
-local encodeB64Table = {};
+local encodeB64Table = {}
 
 local function encodeB64(str)
-    local B64 = encodeB64Table;
-    local remainder = 0;
-    local remainder_length = 0;
-    local encoded_size = 0;
+    local B64 = encodeB64Table
+    local remainder = 0
+    local remainder_length = 0
+    local encoded_size = 0
     local l=#str
     local code
     for i=1,l do
-        code = string.byte(str, i);
-        remainder = remainder + bit_lshift(code, remainder_length);
-        remainder_length = remainder_length + 8;
+        code = string.byte(str, i)
+        remainder = remainder + bit_lshift(code, remainder_length)
+        remainder_length = remainder_length + 8
         while(remainder_length) >= 6 do
-            encoded_size = encoded_size + 1;
-            B64[encoded_size] = bytetoB64[bit_band(remainder, 63)];
-            remainder = bit_rshift(remainder, 6);
-            remainder_length = remainder_length - 6;
+            encoded_size = encoded_size + 1
+            B64[encoded_size] = bytetoB64[bit_band(remainder, 63)]
+            remainder = bit_rshift(remainder, 6)
+            remainder_length = remainder_length - 6
         end
     end
     if remainder_length > 0 then
-        encoded_size = encoded_size + 1;
-        B64[encoded_size] = bytetoB64[remainder];
+        encoded_size = encoded_size + 1
+        B64[encoded_size] = bytetoB64[remainder]
     end
     return table.concat(B64, "", 1, encoded_size)
 end
@@ -11193,27 +11237,27 @@ end
 local decodeB64Table = {}
 
 local function decodeB64(str)
-    local bit8 = decodeB64Table;
-    local decoded_size = 0;
-    local ch;
-    local i = 1;
-    local bitfield_len = 0;
-    local bitfield = 0;
-    local l = #str;
+    local bit8 = decodeB64Table
+    local decoded_size = 0
+    local ch
+    local i = 1
+    local bitfield_len = 0
+    local bitfield = 0
+    local l = #str
     while true do
         if bitfield_len >= 8 then
-            decoded_size = decoded_size + 1;
-            bit8[decoded_size] = string_char(bit_band(bitfield, 255));
-            bitfield = bit_rshift(bitfield, 8);
-            bitfield_len = bitfield_len - 8;
+            decoded_size = decoded_size + 1
+            bit8[decoded_size] = string_char(bit_band(bitfield, 255))
+            bitfield = bit_rshift(bitfield, 8)
+            bitfield_len = bitfield_len - 8
         end
-        ch = B64tobyte[str:sub(i, i)];
-        bitfield = bitfield + bit_lshift(ch or 0, bitfield_len);
-        bitfield_len = bitfield_len + 6;
+        ch = B64tobyte[str:sub(i, i)]
+        bitfield = bitfield + bit_lshift(ch or 0, bitfield_len)
+        bitfield_len = bitfield_len + 6
         if i > l then
-            break;
+            break
         end
-        i = i + 1;
+        i = i + 1
     end
     return table.concat(bit8, "", 1, decoded_size)
 end
@@ -11256,11 +11300,11 @@ StringToTable = function( inString, fromChat )
         decoded = fromChat and decodeB64(inString) or Encoder:Decode(inString)
         if not decoded then return "Unable to decode." end
 
-        decompressed, errorMsg = Compresser:Decompress(decoded);
+        decompressed, errorMsg = Compresser:Decompress(decoded)
         if not decompressed then return "Unable to decompress decoded string: " .. errorMsg end
     end
 
-    local success, deserialized = Serializer:Deserialize(decompressed);
+    local success, deserialized = Serializer:Deserialize(decompressed)
     if not success then return "Unable to deserialized decompressed string: " .. deserialized end
 
     return deserialized
@@ -11717,7 +11761,8 @@ do
             if result.use_off_gcd then result.use_off_gcd = tonumber( result.use_off_gcd ) end
             if result.use_while_casting then result.use_while_casting = tonumber( result.use_while_casting ) end
             if result.strict then result.strict = tonumber( result.strict ) end
-            if result.moving then result.enable_moving = true; result.moving = tonumber( result.moving ) end
+            if result.moving then result.enable_moving = true
+result.moving = tonumber( result.moving ) end
 
             if result.target_if and not result.criteria then
                 result.criteria = result.target_if
