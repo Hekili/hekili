@@ -87,6 +87,8 @@ spec:RegisterTalents( {
 
     -- Arcane
     aether_attunement          = { 102476, 453600, 1 }, -- Every 3 times you consume Clearcasting, gain Aether Attunement. Aether Attunement: Your next Arcane Missiles deals 100% increased damage to your primary target and fires at up to 4 nearby enemies dealing 50% increased damage.
+    aethervision               = { 111111, 467633, 1 }, -- 
+
     amplification              = { 102445, 236628, 1 }, -- Arcane Missiles fires 3 additional missiles.
     arcane_bombardment         = { 102465, 384581, 1 }, -- Arcane Barrage deals an additional 100% damage against targets below 35% health.
     arcane_debilitation        = { 102463, 453598, 2 }, -- Damaging a target with Arcane Missiles increases the damage they take from Arcane Missiles, Arcane Barrage, and Arcane Blast by 0.0% for 6 sec. Multiple instances may overlap.
@@ -122,7 +124,6 @@ spec:RegisterTalents( {
     presence_of_mind           = { 102460, 205025, 1 }, -- Causes your next 2 Arcane Blasts to be instant cast.
     prodigious_savant          = { 102450, 384612, 2 }, -- Arcane Charges further increase Mastery effectiveness of Arcane Blast and Arcane Barrage by 20%.
     resonance                  = { 102437, 205028, 1 }, -- Arcane Barrage deals 10% increased damage per target it hits.
-    resonant_orbs              = { 102453, 461453, 1 }, -- Arcane Orb damage increased by 10%.
     reverberate                = { 102441, 281482, 1 }, -- If Arcane Explosion hits at least 3 targets, it has a 50% chance to generate an extra Arcane Charge.
     slipstream                 = { 102469, 236457, 1 }, -- Arcane Missiles can now be channeled while moving. Evocation can be channeled while moving.
     static_cloud               = { 102475, 461257, 1 }, -- Each time you cast Arcane Explosion, its damage increases by 25%. Bonus resets after reaching 100% damage.
@@ -190,6 +191,11 @@ spec:RegisterAuras( {
         duration = 180,
         max_stack = 3
     },
+    aethervision = {
+        id = 467634,
+        duration = 10,
+        max_stack = 2
+    },
     -- Talent: Altering Time. Returning to past location and health when duration expires.
     -- https://wowhead.com/beta/spell=342246
     alter_time = {
@@ -225,8 +231,8 @@ spec:RegisterAuras( {
     },
     arcane_debilitation = {
         id = 453599,
-        duration = 20,
-        max_stack = 5
+        duration = function () return 6 + (talent.time_loop.enabled and 2 or 0) end,
+        max_stack = 15
     },
     -- Talent: Maximum mana increased by $s1%.
     -- https://wowhead.com/beta/spell=210126
@@ -275,7 +281,7 @@ spec:RegisterAuras( {
     },
     arcane_soul = {
         id = 451038,
-        duration = function () return 2+ ( buff.lingering_embers.stacks * 0.5 ) end,
+        duration = function () return 2 + ( buff.lingering_embers.stacks * 1 ) end,
         max_stack = 1
     },
     -- Talent: Spell damage increased by $w1% and Mana Regeneration increase $w3%.
@@ -487,6 +493,11 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
+    mana_cascade = {
+        id = 449322,
+        duration = 10,
+        max_stack = function () return 10 + talent.ignite_the_future.enabled and 5 or 0 end
+    },
     mass_polymorph = {
         id = 383121,
         duration = 15,
@@ -683,7 +694,7 @@ spec:RegisterAuras( {
     next_blast_spheres = {
         id = 449400,
         duration = 30,
-        max_stack = 6,
+        max_stack = 5,
     }
 	
 } )
@@ -1203,17 +1214,19 @@ spec:RegisterAbilities( {
         -- velocity = 24,
         handler = function ()
             gain( 0.02 * mana.modmax * arcane_charges.current, "mana" )
-            
-            if buff.burden_of_power.up then
-                removeBuff( "burden_of_power" )
-                gain( 4, "arcane_charges")
-            end
 
             spend( arcane_charges.current, "arcane_charges" )
             removeBuff( "arcane_harmony" )
-            
             removeBuff( "bursting_energy" )
-            removeBuff( "leydrinker" )
+
+            if talent.spellfire_spheres.enabled then
+                if buff.next_blast_spheres.stacks == 5 then
+                    removeBuff( "next_blast_spheres" )
+                    addStack( "spellfire_spheres" )
+                    applyBuff( "burden_of_power" )
+                else addStack( "next_blast_spheres" )
+                end
+            end
 
             if buff.glorious_incandescence.up then
                 gain( 4, "arcane_charges")
@@ -1228,6 +1241,11 @@ spec:RegisterAbilities( {
             if buff.intuition.up then
                 gain( 4, "arcane_charges" )
                 removeBuff( "intuition" )
+            end
+
+            if buff.aethervision.up then
+                gain( 2*buff.aethervision.stacks, "arcane_charges" )
+                removeBuff( "aethervision" )
             end
 
             if buff.nether_precision.up then
@@ -1254,8 +1272,8 @@ spec:RegisterAbilities( {
 
         spend = function ()
             -- More mana trickery to achieve the correct rotation
-           -- if prev_gcd[1].touch_of_the_magi or buff.concentration.up then return 0 end
-            local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( 1 - 0.03 * talent.consortiums_bauble.rank )
+           if buff.concentration.up then return 0 end
+            local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( 0.95 and talent.consortiums_bauble.enabled or 1 )
             -- if azerite.equipoise.enabled and mana.pct < 70 then return ( mana.modmax * mult ) - 190 end
             return mana.modmax * mult, "mana"
         end,
@@ -1269,27 +1287,27 @@ spec:RegisterAbilities( {
                 if buff.presence_of_mind.down then setCooldown( "presence_of_mind", 60 ) end
             end
 
-            removeStack( "concentration" )
+            removeBuff( "concentration" )
             removeBuff( "leydrinker" )
-            
-            if buff.next_blast_spheres.stacks == 6 then
-                removeBuff ( "next_blast_spheres" )
-                addStack ( "spellfire_spheres" )
-                applyBuff ( "burden_of_power" )
-            elseif buff.next_blast_spheres.up then
-                addStack ( "next_blast_spheres" )
-            else
-                applyBuff ( "next_blast_spheres" )
+
+            if talent.spellfire_spheres.enabled then
+                if buff.next_blast_spheres.stacks == 5 then
+                    removeBuff( "next_blast_spheres" )
+                    addStack( "spellfire_spheres" )
+                    applyBuff( "burden_of_power" )
+                else addStack( "next_blast_spheres" )
+                end
             end
 
             if buff.burden_of_power.up then
-                removeBuff ( "burden_of_power" )
-                applyBuff ( "glorious_incandescence" )
+                removeBuff( "burden_of_power" )
+                applyBuff( "glorious_incandescence" )
             end
 
             if buff.nether_precision.up then
                 removeStack( "nether_precision" )
                 if talent.dematerialize.enabled then applyDebuff( "target", "dematerialize" ) end
+                if talent.aethervision.enabled then addStack( "aethervision" ) end
             end
 
             if debuff.magis_spark_arcane_blast.up then
@@ -1324,29 +1342,26 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
             else
-                if buff.concentration.up then removeBuff( "concentration" )
-                else
-                    if buff.clearcasting.up then
-                        if buff.expanded_potential.up then removeBuff( "expanded_potential" )
-                        else removeStack( "clearcasting" ) end
-                        if talent.aether_attunement.enabled then
-                            if buff.aether_attunement_stack.stack == 2 then
-                                removeBuff( "aether_attunement_stack" )
-                                applyBuff( "aether_attunement" )
-                            else
-                                addStack( "aether_attunement_stack" )
-                            end
+                if buff.clearcasting.up then
+                    if buff.expanded_potential.up then removeBuff( "expanded_potential" )
+                    else removeStack( "clearcasting" ) end
+                    if talent.aether_attunement.enabled then
+                        if buff.aether_attunement_stack.stack == 2 then
+                            removeBuff( "aether_attunement_stack" )
+                            applyBuff( "aether_attunement" )
+                        else
+                            addStack( "aether_attunement_stack" )
                         end
-                        if talent.arcane_debilitation.enabled then addStack( "arcane_debilitation" ) end
-                        if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
-                        if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
-                        if set_bonus.tier31_4pc > 0 then
-                            if buff.arcane_battery.stack == 2 then
-                                removeBuff( "arcane_battery" )
-                                applyBuff( "arcane_artillery" )
-                            else
-                                addStack( "arcane_battery" )
-                            end
+                    end
+                    if talent.arcane_debilitation.enabled then addStack( "arcane_debilitation" ) end
+                    if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
+                    if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
+                    if set_bonus.tier31_4pc > 0 then
+                        if buff.arcane_battery.stack == 2 then
+                            removeBuff( "arcane_battery" )
+                            applyBuff( "arcane_artillery" )
+                        else
+                            addStack( "arcane_battery" )
                         end
                     end
                 end
@@ -1446,8 +1461,6 @@ spec:RegisterAbilities( {
             end
 
             if buff.clearcasting.up then
-                if buff.concentration.up then removeBuff( "concentration" )
-                else
                     if buff.expanded_potential.up then removeBuff( "expanded_potential" )
                     else removeStack( "clearcasting" ) end
                     if buff.aether_attunement_stack.stack == 2 then
@@ -1467,7 +1480,7 @@ spec:RegisterAbilities( {
                             addStack( "arcane_battery" )
                         end
                     end
-                end
+
                 if talent.amplification.enabled then applyBuff( "clearcasting_channel" ) end
                 if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
             end
@@ -2105,6 +2118,7 @@ spec:RegisterAbilities( {
             end
 
             applyDebuff( "target", "supernova" )
+            removeBuff( "unerring_proficiency" )
         end,
 
         copy = { 157980, "gravity_lapse", 449700 }
@@ -2172,6 +2186,9 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "magis_spark_arcane_barrage" )
                 applyDebuff( "target", "magis_spark_arcane_blast" )
                 applyDebuff( "target", "magis_spark_arcane_missiles" )
+            end
+            if talent.leydrinker.enabled then
+                applyBuff( "leydrinker" )
             end
             gain( 4, "arcane_charges" )
         end,

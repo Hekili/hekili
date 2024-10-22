@@ -1,3 +1,4 @@
+
 -- MageFire.lua
 -- July 2024
 
@@ -256,7 +257,7 @@ spec:RegisterAuras( {
     combustion = {
         id = 190319,
         duration = function()
-            return talent.improved_combustion.enabled and 12 or 10
+            return talent.improved_combustion.enabled and 12 or 10 + ( talent.savor_the_moment.enabled and buff.spellfire_spheres.stacks * 0.5 or 0 )
         end,
         type = "Magic",
         max_stack = 1
@@ -547,7 +548,7 @@ spec:RegisterAuras( {
     majesty_of_the_phoenix = {
         id = 453329,
         duration = 20,
-        max_stack = 2
+        max_stack = 3
     },
     -- Talent: Incapacitated. Cannot attack or cast spells.  Increased health regeneration.
     -- https://wowhead.com/beta/spell=383121
@@ -613,6 +614,7 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 3
     },
+
     -- Absorbs $w1 damage.  Magic damage taken reduced by $s3%.  Duration of all harmful Magic effects reduced by $w4%.
     -- https://wowhead.com/beta/spell=235450
     prismatic_barrier = {
@@ -771,6 +773,35 @@ spec:RegisterAuras( {
         max_stack = 1
     },
 
+    -- Sunfury
+	-- Spellfire Spheres actual buff
+	-- Spellfire Spheres has two diffrent counter. 449400 for create a Sphere, 448604 is Sphere number
+	-- https://www.wowhead.com/spell=449400/spellfire-spheres
+    burden_of_power = {
+        id = 451049,
+        duration = 12,
+        max_stack = 1
+    },
+    glorious_incandescence = {
+        id = 451073,
+        duration = 11,
+        max_stack = 1
+    },
+    lingering_embers = {
+        id = 461145,
+        duration = 10,
+        max_stack = 15
+    },
+    next_blast_spheres = {
+        id = 449400,
+        duration = 30,
+        max_stack = 5,
+    },
+    spellfire_spheres = {
+        id = 448604,
+        duration = 3600,
+        max_stack = function() return 3 + ( talent.rondurmancy.enabled and 2 or 0 ) end,
+    },
 
     -- Legendaries
     expanded_potential = {
@@ -865,10 +896,16 @@ spec:RegisterAuras( {
 
 spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
 
+local TriggerHyperthermia = setfenv( function()
+    applyBuff( "Hyperthermia", 2 + ( buff.lingering_embers.stacks * 1 ) )
+end, state )
 
 spec:RegisterHook( "reset_precast", function ()
-    if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
-    else removeBuff( "rune_of_power" ) end
+
+
+    if buff.combustion.up and talent.memory_of_alar.enabled then
+        state:QueueAuraEvent( "combustion", TriggerHyperthermia, buff.combustion.expires, "AURA_EXPIRATION" )
+    end
 
     incanters_flow.reset()
 end )
@@ -1234,11 +1271,8 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "combustion" )
             stat.crit = stat.crit + 100
-
             removeBuff( "fires_ire" )
-
             if talent.explosivo.enabled then applyBuff( "lit_fuse" ) end
-            if talent.rune_of_power.enabled then applyBuff( "rune_of_power" ) end
             if talent.spontaneous_combustion.enabled then gainCharges( "fire_blast", min( 3, action.fire_blast.charges ) ) end
             if talent.wildfire.enabled or azerite.wildfire.enabled then applyBuff( "wildfire" ) end
         end,
@@ -1328,6 +1362,11 @@ spec:RegisterAbilities( {
                 end
             end
 
+            if buff.glorious_incandescence.up then
+                removeBuff( "glorious_incandescence" )
+                reduceCooldown( "fire_blast" , 4)
+            end
+
 
             if talent.from_the_ashes.enabled then reduceCooldown( "phoenix_flames", 1 ) end
             if azerite.blaster_master.enabled then addStack( "blaster_master" ) end
@@ -1376,7 +1415,6 @@ spec:RegisterAbilities( {
         end,
 
         impact = function ()
-            -- TODO: Determine if I need to model Frostfire Empowerment here or in hot_streak.
             if hot_streak( firestarter.active or stat.crit + buff.fireball.stack * 10 >= 100 ) then
                 removeBuff( "fireball" )
                 if talent.kindling.enabled then setCooldown( "combustion", max( 0, cooldown.combustion.remains - 1 ) ) end
@@ -1450,7 +1488,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "sparking_cinders" )
-            if buff.majesty_of_the_phoenix.up then removeBuff( "majesty_of_the_phoenix" ) end
+            if buff.majesty_of_the_phoenix.up then removeStack( "majesty_of_the_phoenix" ) end
 
             if hardcast or cast_time > 0 then
                 removeBuff( "flame_accelerant" )
@@ -1467,6 +1505,14 @@ spec:RegisterAbilities( {
                 else
                     if buff.hot_streak.up then
                         removeBuff( "hot_streak" )
+                        if talent.spellfire_spheres.enabled then
+                            if buff.next_blast_spheres.stacks == 5 then
+                                removeBuff( "next_blast_spheres" )
+                                addStack( "spellfire_spheres" )
+                                applyBuff( "burden_of_power" )
+                            else addStack( "next_blast_spheres" )
+                            end
+                        end
                     end
                     if buff.majesty_of_the_phoenix.up then removeStack( "majesty_of_the_phoenix" ) end -- Consumed on instant cast?
                     if talent.sun_kings_blessing.enabled then
@@ -1479,6 +1525,10 @@ spec:RegisterAbilities( {
                 end
             end
 
+            if buff.burden_of_power.up then 
+                removeBuff( "burden_of_power" )
+                applyBuff( "glorious_incandescence" )
+            end
             if buff.hyperthermia.up then applyBuff( "hot_streak" ) end
             applyDebuff( "target", "ignite" )
             applyDebuff( "target", "flamestrike" )
@@ -1512,6 +1562,10 @@ spec:RegisterAbilities( {
             end
 
         end,
+    },
+
+    frostfire_bolt = {
+        -- todo. This spell replces both frostbolt and fireball in the rotation
     },
 
 
@@ -1739,6 +1793,14 @@ spec:RegisterAbilities( {
                     if buff.expanded_potential.up then removeBuff( "expanded_potential" )
                     else
                         removeBuff( "hot_streak" )
+                        if talent.spellfire_spheres.enabled then
+                            if buff.next_blast_spheres.stacks == 5 then
+                                removeBuff( "next_blast_spheres" )
+                                addStack( "spellfire_spheres" )
+                                applyBuff( "burden_of_power" )
+                            else addStack( "next_blast_spheres" )
+                            end
+                        end
                         if talent.sun_kings_blessing.enabled then
                             if buff.sun_kings_blessing.stack == 9 then
                                 removeBuff( "sun_kings_blessing" )
@@ -1762,7 +1824,10 @@ spec:RegisterAbilities( {
             end
 
             if talent.unleashed_inferno.enabled and buff.combustion.up then reduceCooldown( "combustion", 1.25 ) end
-
+            if buff.burden_of_power.up then 
+                removeBuff( "burden_of_power" )
+                applyBuff( "glorious_incandescence" )
+            end
             if set_bonus.tier30_4pc > 0 and debuff.charring_embers.up then
                 if buff.calefaction.stack == 19 then
                     removeBuff( "calefaction" )
@@ -1834,14 +1899,15 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            hot_streak( buff.heat_shimmer.up or target.health_pct < 30 )
+            hot_streak( buff.heat_shimmer.up or target.health_pct < ( talent.sunfury_execution.enabled and 35 or 30 ) )
             applyDebuff( "target", "ignite" )
-
-            if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
             if talent.from_the_ashes.enabled then reduceCooldown( "phoenix_flames", 1 ) end
-            if talent.improved_scorch.enabled and ( target.health.pct < 30 or buff.heat_shimmer.up ) then applyDebuff( "target", "improved_scorch", nil, debuff.improved_scorch.stack + 1 ) end
-            removeBuff( "heat_shimmer" )
             if talent.unleashed_inferno.enabled and buff.combustion.up then reduceCooldown( "combustion", 1.25 ) end
+            if target.health.pct < 30 or buff.heat_shimmer.up then
+                if talent.frenetic_speed.enabled then applyBuff( "frenetic_speed" ) end
+                if talent.improved_scorch.enabled then applyDebuff( "target", "improved_scorch", nil, debuff.improved_scorch.stack + 1 ) end
+            end
+            removeBuff( "heat_shimmer" )
         end,
     },
 
