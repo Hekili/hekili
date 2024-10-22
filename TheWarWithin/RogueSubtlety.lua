@@ -361,6 +361,11 @@ spec:RegisterAuras( {
         duration = function() return 3 * talent.subterfuge.rank end,
         max_stack = 1,
     },
+    supercharged_combo_points = {
+        -- todo: Find a way to find a true buff / ID for this as a failsafe? Currently fully emulated.
+        duration = 3600,
+        max_stack = function() return combo_points.max end,
+    },
     symbols_of_death_crit = {
         id = 227151,
         duration = 10,
@@ -575,8 +580,14 @@ end )
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
     if not talent.coup_de_grace.enabled and not talent.supercharger.enabled and not covenant.kyrian then return c end
-    if talent.supercharger.enabled and buff.supercharger.remains then c = c + 2 end
-    if this_action == "coup_de_grace" and buff.coup_de_grace.up then c = c + 5 end
+
+    if talent.supercharger.enabled and buff.supercharged_combo_points.remains then
+        if talent.forced_induction.enabled then c = c + 3
+        else c = c + 2
+        end
+    end -- todo: Find out if these stack like this or not? coup de gace and supercharge
+
+    if talent.coup_de_grace.enabled and this_action == "coup_de_grace" and buff.coup_de_grace.up then c = c + 5 end
     return c
 end )
 
@@ -917,7 +928,7 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
+            removeStack( "supercharged_combo_points" )
             if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
     },
@@ -1043,7 +1054,7 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_2pc > 0 then applyBuff( "honed_blades", nil, effective_combo_points ) end
 
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
+            removeStack( "supercharged_combo_points" )
 
             if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
         end,
@@ -1451,9 +1462,9 @@ spec:RegisterAbilities( {
     symbols_of_death = {
         id = 212283,
         cast = 0,
-        charges = function() return 1 + talent.death_perception.rank end,
+        charges = function() return talent.death_perception.enabled and 1 or nil end,
         cooldown = 30,
-        recharge = 30,
+        recharge = function() return talent.death_perception.enabled and 30 or nil end,
         gcd = "off",
         school = "physical",
 
@@ -1464,7 +1475,7 @@ spec:RegisterAbilities( {
             -- applyBuff( "symbols_of_death_crit" )
 
             if legendary.the_rotten.enabled then applyBuff( "the_rotten" ) end
-            if talent.supercharger.enabled then addStack( "supercharged", nil, talent.supercharger.rank ) end
+            if talent.supercharger.enabled then addStack( "supercharged_combo_points", nil, talent.supercharger.rank ) end
         end,
     }
 } )

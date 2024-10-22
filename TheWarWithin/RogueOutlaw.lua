@@ -445,6 +445,12 @@ spec:RegisterAuras( {
     rtb_buff_2 = {
         duration = 30,
     },
+    supercharged_combo_points = {
+        -- todo: Find a way to find a true buff / ID for this as a failsafe? Currently fully emulated.
+        duration = 3600,
+        max_stack = function() return combo_points.max end,
+    },
+
     -- Roll the dice of fate, providing a random combat enhancement for 30 sec.
     roll_the_bones = {
         alias = rtb_buff_list,
@@ -742,9 +748,12 @@ end )
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
 
-    if talent.supercharger.enabled and buff.supercharger.remains then
-        return c + 2
-    else return c end
+    if talent.supercharger.enabled and buff.supercharged_combo_points.remains then
+        if talent.forced_induction.enabled then return c + 3
+        else return c + 2
+        end
+    else return c
+    end
 end )
 
 
@@ -959,7 +968,7 @@ spec:RegisterAbilities( {
             end
 
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
+            removeStack( "supercharged_combo_points" )
         end,
     },
 
@@ -1027,7 +1036,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
+            removeStack( "supercharged_combo_points" )
         end,
     },
 
@@ -1077,7 +1086,7 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_2pc > 0 then applyBuff( "vicious_followup" ) end
 
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
+            removeStack( "supercharged_combo_points" )
 
             if buff.coup_de_grace.up then
                 if debuff.fazed.up then addStack( "flawless_form", nil, 5 ) end
@@ -1164,7 +1173,7 @@ spec:RegisterAbilities( {
             setCooldown( "global_cooldown", 0.4 * combo_points.current )
             applyBuff( "killing_spree" )
             spend( combo_points.current, "combo_points" )
-            -- removeStack( "supercharged" )
+            removeStack( "supercharged_combo_points" )
 
             if talent.flawless_form.enabled then addStack( "flawless_form" ) end
         end,
@@ -1250,7 +1259,7 @@ spec:RegisterAbilities( {
                 applyBuff( "take_your_cut" )
             end
 
-            if talent.supercharger.enabled then addStack( "supercharged", nil, talent.supercharger.rank ) end
+            if talent.supercharger.enabled then addStack( "supercharged_combo_points", nil, talent.supercharger.rank ) end
         end,
     },
 
