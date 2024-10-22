@@ -28,10 +28,10 @@ actions+=/bag_of_tricks
 actions+=/use_item,slot=trinket1
 actions+=/use_item,slot=trinket2
 actions+=/black_ox_brew,if=energy<40
-actions+=/celestial_brew,if=(buff.aspect_of_harmony_accumulator.value>0.3*health.max&buff.weapons_of_order.up&!dot.aspect_of_harmony_damage.ticking)
-actions+=/celestial_brew,if=(buff.aspect_of_harmony_accumulator.value>0.3*health.max&!talent.weapons_of_order.enabled&!dot.aspect_of_harmony_damage.ticking)
-actions+=/celestial_brew,if=(target.time_to_die<20&target.time_to_die>14&buff.aspect_of_harmony_accumulator.value>0.2*health.max)
-actions+=/celestial_brew,if=(buff.aspect_of_harmony_accumulator.value>0.3*health.max&cooldown.weapons_of_order.remains>20&!dot.aspect_of_harmony_damage.ticking)
+actions+=/celestial_brew,if=(!settings.max_damage|buff.blackout_combo.down)&buff.aspect_of_harmony_accumulator.value>0.3*health.max&buff.weapons_of_order.up&!dot.aspect_of_harmony_damage.ticking
+actions+=/celestial_brew,if=(!settings.max_damage|buff.blackout_combo.down)&buff.aspect_of_harmony_accumulator.value>0.3*health.max&!talent.weapons_of_order.enabled&!dot.aspect_of_harmony_damage.ticking
+actions+=/celestial_brew,if=(!settings.max_damage|buff.blackout_combo.down)&fight_remains<20&fight_remains>14&buff.aspect_of_harmony_accumulator.value>0.2*health.max
+actions+=/celestial_brew,if=(!settings.max_damage|buff.blackout_combo.down)&buff.aspect_of_harmony_accumulator.value>0.3*health.max&cooldown.weapons_of_order.remains>20&!dot.aspect_of_harmony_damage.ticking
 actions+=/blackout_kick
 actions+=/chi_burst
 actions+=/weapons_of_order

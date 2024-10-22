@@ -207,5 +207,5 @@ actions.trinkets+=/use_item,slot=main_hand,if=!equipped.fyralath_the_dreamrender
 
 # Variables
 actions.variables+=/variable,name=st_planning,value=active_enemies=1
-actions.variables+=/variable,name=adds_remain,value=active_enemies>=2
+actions.variables+=/variable,name=adds_remain,value=active_enemies>1
 actions.variables+=/variable,name=execute_phase,value=(talent.massacre.enabled&target.health.pct<35)|target.health.pct<20

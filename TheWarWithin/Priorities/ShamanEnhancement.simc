@@ -31,6 +31,8 @@ actions+=/ancestral_call,if=(buff.ascendance.up|buff.feral_spirit.up|buff.doom_w
 actions+=/primordial_wave,if=set_bonus.tier31_2pc&(raid_event.adds.in>(action.primordial_wave.cooldown%(1+set_bonus.tier31_4pc))|raid_event.adds.in<6)
 actions+=/feral_spirit,if=talent.elemental_spirits.enabled|(talent.alpha_wolf.enabled&active_enemies>1)
 actions+=/surging_totem
+actions+=/lightning_bolt,if=talent.thorims_invocation&!ti_lightning_bolt&buff.maelstrom_weapon.stack>4&cooldown.ascendance.remains<2*gcd.max&active_enemies=1
+actions+=/chain_lightning,if=talent.thorims_invocation&!ti_chain_lightning&buff.maelstrom_weapon.stack>4&cooldown.ascendance.remains<2*gcd.max&active_enemies>1
 actions+=/ascendance,if=dot.flame_shock.ticking&((ti_lightning_bolt&active_enemies=1&raid_event.adds.in>=action.ascendance.cooldown%2)|(ti_chain_lightning&active_enemies>1))
 actions+=/call_action_list,name=single,strict=1,if=active_enemies=1
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>1&(!toggle.funnel)
@@ -52,8 +54,9 @@ actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=7&feral_spirit.
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=7&feral_spirit.active>=1&(buff.icy_edge.stack+buff.molten_weapon.stack>=1)&charges_fractional>=1.8&cooldown.feral_spirit.remains>=3
 actions.single+=/lightning_bolt,if=talent.tempest.enabled&buff.maelstrom_weapon.stack>=(buff.maelstrom_weapon.max_stack-talent.elemental_spirits.enabled*(talent.supercharge.enabled+talent.static_accumulation.enabled))&!buff.primordial_wave.up
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack>=5&buff.ascendance.up&ti_chain_lightning&(buff.ascendance.remains>(cooldown.strike.remains+gcd))&!buff.primordial_wave.up
-actions.single+=/stormstrike,if=!talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormbringer.up))
 actions.single+=/lava_lash,if=buff.hot_hand.up&!talent.tempest.enabled
+actions.single+=/stormstrike,if=!talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormsurge.up))
+actions.single+=/stormstrike,if=!talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormbringer.up))
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5&time_to_max_charges<=gcd.max&!talent.tempest.enabled
 actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack>=8&buff.primordial_wave.up&raid_event.adds.in>buff.primordial_wave.remains&(!buff.splintered_elements.up|boss&fight_remains<=12)
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=8&(feral_spirit.active>=2|!talent.elemental_spirits.enabled)&!talent.tempest.enabled
@@ -63,7 +66,8 @@ actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5&feral_spirit.
 actions.single+=/lightning_bolt,if=((buff.maelstrom_weapon.stack>=8)|(talent.static_accumulation.enabled&buff.maelstrom_weapon.stack>=5))&buff.primordial_wave.down&talent.ascendance.enabled&talent.tempest.enabled
 actions.single+=/doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled&talent.ascendance.enabled&talent.tempest.enabled
 actions.single+=/lava_lash,if=talent.tempest.enabled&(buff.hot_hand.up|(talent.molten_assault.enabled&talent.elemental_spirits.enabled&!talent.deeply_rooted_elements.enabled&dot.flame_shock.remains<=3))
-actions.single+=/stormstrike,if=talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|talent.ascendance.enabled|(talent.stormblast.enabled&buff.stormbringer.up))
+actions.single+=/stormstrike,if=talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormsurge.up))
+actions.single+=/stormstrike,if=talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormbringer.up))
 actions.single+=/frost_shock,if=buff.hailstorm.up&buff.ice_strike.up&talent.swirling_maelstrom.enabled&talent.tempest.enabled&talent.ascendance.enabled
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5&feral_spirit.active>=4&talent.deeply_rooted_elements.enabled&(charges_fractional>=1.8|(buff.icy_edge.stack+buff.molten_weapon.stack>=4))
 actions.single+=/lightning_bolt,if=((buff.maelstrom_weapon.stack>=8)|(talent.static_accumulation.enabled&buff.maelstrom_weapon.stack>=5))&buff.primordial_wave.down
@@ -100,7 +104,7 @@ actions.aoe+=/tempest,cycle_targets=1,if=buff.maelstrom_weapon.stack=buff.maelst
 actions.aoe+=/windstrike,cycle_targets=1,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_chain_lightning
 actions.aoe+=/crash_lightning,if=talent.crashing_storms.enabled&((talent.unruly_winds.enabled&active_enemies>=10)|active_enemies>=15)
 actions.aoe+=/lightning_bolt,cycle_targets=1,if=(!talent.tempest.enabled|(tempest_mael_count<=10&buff.awakening_storms.stack<=1))&((active_dot.flame_shock=active_enemies|active_dot.flame_shock=6)&buff.primordial_wave.up&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!buff.splintered_elements.up|fight_remains<=12|raid_event.adds.remains<=gcd))
-actions.aoe+=/lava_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
+actions.aoe+=/lava_lash,cycle_targets=1,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/chain_lightning,cycle_targets=1,if=buff.arc_discharge.up&buff.maelstrom_weapon.stack>=5
 actions.aoe+=/elemental_blast,cycle_targets=1,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(time_to_max_charges<2*gcd.max|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)

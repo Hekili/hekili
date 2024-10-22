@@ -532,8 +532,6 @@ local rtbSpellIDs = {
     [193315] = "sinister_strike"
 }
 
-local rtbAuraAppliedBy = {}
-
 local lastRoll = 0
 local rollDuration = 30
 
@@ -578,6 +576,8 @@ spec:RegisterStateExpr( "rtb_primary_remains", function ()
     return max( lastRoll, action.roll_the_bones.lastCast ) + rollDuration - query_time
 end )
 
+local abs = math.abs
+
 --[[   local remains = 0
 
     for rtb, appliedBy in pairs( rtbAuraAppliedBy ) do
@@ -596,17 +596,18 @@ spec:RegisterStateExpr( "rtb_buffs_shorter", function ()
 
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
-        if bone.up and bone.remains < primary then n = n + 1 end
+        if bone.up and bone.remains < primary - 0.1 then n = n + 1 end
     end
     return n
 end )
 
 spec:RegisterStateExpr( "rtb_buffs_normal", function ()
     local n = 0
+    local primary = rtb_primary_remains
 
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
-        if bone.up and rtbAuraAppliedBy[ rtb ] == "roll_the_bones" then n = n + 1 end
+        if bone.up and abs( bone.remains - primary ) < 0.1 then n = n + 1 end
     end
 
     return n
@@ -640,7 +641,7 @@ spec:RegisterStateExpr( "rtb_buffs_longer", function ()
 
     for _, rtb in ipairs( rtb_buff_list ) do
         local bone = buff[ rtb ]
-        if bone.up and bone.remains > primary then n = n + 1 end
+        if bone.up and bone.remains > primary + 0.1 then n = n + 1 end
     end
     return n
 end )
@@ -658,7 +659,7 @@ end )
 
 spec:RegisterStateTable( "rtb_buffs_will_lose_buff", setmetatable( {}, {
     __index = function( t, k )
-        return buff[ k ].up and buff[ k ].remains <= rtb_primary_remains
+        return buff[ k ].up and buff[ k ].remains <= rtb_primary_remains + 0.1
     end
 } ) )
 
@@ -879,8 +880,7 @@ spec:RegisterHook( "reset_precast", function()
 
             if buff[ bone ].up then
                 local bone_duration = buff[ bone ].duration
-                rtbAuraAppliedBy[ bone ] = bone_duration < rollDuration and "count_the_odds" or bone_duration > rollDuration and "keep_it_rolling" or "roll_the_bones"
-                Hekili:Debug( " - %-20s %5.2f : %5.2f %s | %s", bone, buff[ bone ].remains, bone_duration, rtb_buffs_will_lose_buff[ bone ] and "lose" or "keep", rtbAuraAppliedBy[ bone ] or "unknown" )
+                Hekili:Debug( " - %-20s %5.2f : %5.2f %s", bone, buff[ bone ].remains, bone_duration, bone_duration < rollDuration and "shorter" or bone_duration > rollDuration and "longer" or "normal" )
             end
         end
     end
