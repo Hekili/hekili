@@ -920,12 +920,12 @@ spec:RegisterHook( "runHandler", function( action )
         if ability.school == "fire" or ability.school == "frostfire" then
             if buff.fire_mastery.up then buff.fire_mastery.stack = buff.fire_mastery.stack + 1
             else applyBuff( "fire_mastery" ) end
-            if talent.excess_fire.enabled and buff.fire_mastery.stack_pct == 100 then applyBufF( "excess_fire" ) end
+            if talent.excess_fire.enabled and buff.fire_mastery.stack_pct == 100 then applyBuff( "excess_fire" ) end
         end
         if ability.school == "frost" or ability.school == "frostfire" then
             if buff.frost_mastery.up then buff.frost_mastery.stack = buff.frost_mastery.stack + 1
             else applyBuff( "frost_mastery" ) end
-            if talent.excess_frost.enabled and buff.frost_mastery.stack_pct == 100 then applyBufF( "excess_frost" ) end
+            if talent.excess_frost.enabled and buff.frost_mastery.stack_pct == 100 then applyBuff( "excess_frost" ) end
         end
 
     end
