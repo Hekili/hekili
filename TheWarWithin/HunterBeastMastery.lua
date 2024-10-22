@@ -1,5 +1,5 @@
 -- HunterBeastMastery.lua
--- July 2024
+-- October 2024
 
 if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
