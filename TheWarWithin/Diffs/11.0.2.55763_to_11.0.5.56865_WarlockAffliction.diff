@@ -1,0 +1,1190 @@
+--- "D:\\Development\\WoW Python Tools\\Output\\11.0.2.55763\\WarlockAffliction.lua"	2024-07-21 09:47:57.233689800 -1000
++++ "D:\\Development\\WoW Python Tools\\Output\\11.0.5.56865\\WarlockAffliction.lua"	2024-10-21 14:01:41.188576900 -1000
+@@ -1,12 +1,12 @@
+ -- WarlockAffliction.lua
+--- July 2024
++-- October 2024
+ 
+ local addon, ns = ...
+ local Hekili = _G[ addon ]
+ local class, state = Hekili.Class, Hekili.State
+ 
+ local spec = Hekili:NewSpecialization( 265 )
+ 
+ -- Resources
+ spec:RegisterResource( Enum.PowerType.Mana )
+ spec:RegisterResource( Enum.PowerType.SoulShards )
+@@ -136,20 +136,21 @@
+     call_observer       = 5543, -- (201996) Summons a demonic Observer to keep a watchful eye over the area for $d.; Anytime an enemy within $m2 yards casts a harmful magical spell, the Observer will deal up to $212529s2% of the target's maximum health in Shadow damage.
+     essence_drain       = 19  , -- (221711) Whenever you heal yourself with Drain Life, the enemy target deals $221715m1% reduced damage to you for $221715d. Stacks up to $221715u times.
+     gateway_mastery     = 15  , -- (248855) Increases the range of your Demonic Gateway by $s1 yards, and reduces the cast time by $s2%.  Reduces the time between how often players can take your Demonic Gateway by $s3 sec.
+     impish_instincts    = 5579, -- (409835) Taking direct Physical damage reduces the cooldown of Demonic Circle by ${$s1/-1000} sec.; Cannot occur more than once every $proccooldown sec.
+     jinx                = 5386, -- (426352) Casting a curse now applies Corruption and Agony to your target, but curses now costs ${$s1/10} Soul $LShard:Shards;.
+     nether_ward         = 18  , -- (212295) Surrounds the caster with a shield that lasts $d, reflecting all harmful spells cast on you.
+     rampant_afflictions = 5379, -- (335052) Unstable Affliction can now be applied to up to $s3 targets, but its damage is reduced by $s2%.
+     rot_and_decay       = 16  , -- (212371) Shadow Bolt damage increases the duration of your Unstable Affliction, Corruption, Agony, and Siphon Life on the target by ${$s2/1000}.1 sec.; Drain Life, Drain Soul, and Oblivion damage increases the duration of your Unstable Affliction, Corruption, Agony, and Siphon Life on the target by ${$s1/1000}.1 sec.; 
+     shadow_rift         = 5392, -- (353294) Conjure a Shadow Rift at the target location lasting $d. Enemy players within the rift when it expires are teleported to your Demonic Circle.; Must be within $s2 yds of your Demonic Circle to cast.
+     soul_rip            = 5608, -- (410598) Fracture the soul of up to $i target players within $r yds into the shadows, reducing their damage done by $s1% and healing received by $s3% for $d. Souls are fractured up to $410615a yds from the player's location.; Players can retrieve their souls to remove this effect.
++    soul_swap           = 5662, -- (386951) Copies your damage over time effects and Haunt from the target, preserving their duration.; Your next use of Soul Swap within $86211d will exhale a copy damage of the effects onto a new target.
+ } )
+ 
+ -- Auras
+ spec:RegisterAuras( {
+     -- Damage taken is reduced by $s1%.
+     abyss_walker = {
+         id = 389614,
+         duration = 10.0,
+         max_stack = 1,
+     },
+@@ -157,21 +158,20 @@
+     accrued_vitality = {
+         id = 386614,
+         duration = 10.0,
+         max_stack = 1,
+     },
+     -- Suffering $w1 Shadow damage every $t1 sec. Damage increases over time.
+     agony = {
+         id = 980,
+         duration = 18.0,
+         tick_time = 2.0,
+-        pandemic = true,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- agony[231792] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 4.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
+         -- socrethars_guile[405936] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- socrethars_guile[405936] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+@@ -208,43 +208,40 @@
+     -- Invulnerable, but unable to act.
+     banish = {
+         id = 710,
+         duration = 30.0,
+         max_stack = 1,
+     },
+     -- Movement speed increased by $s1%.
+     burning_rush = {
+         id = 111400,
+         duration = 3600,
+-        pandemic = true,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- fiendish_stride[386110] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+         -- fiendish_stride[386110] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
+     },
+     -- Suffering $w1 Shadow damage every $t1 sec.
+     corruption = {
+         id = 146739,
+         duration = 14.0,
+         tick_time = 2.0,
+-        pandemic = true,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 22.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -7.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavian_teachings[317031] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- absolute_corruption[196103] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- contagion[453096] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- kindled_malice[405330] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- kindled_malice[405330] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- malediction[453087] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- mark_of_perotharn[440045] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- sacrolashs_dark_strike[386986] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- sataiels_volition[449637] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+@@ -292,34 +289,33 @@
+     -- Increases your damage by $s1%, and doubles the effectiveness of the other traits of the Deadwind Harvester.
+     deadwind_harvester = {
+         id = 216708,
+         duration = 5.0,
+         max_stack = 1,
+     },
+     -- Suffering $s1 Shadow damage every $t1 seconds.; Restoring health to the Warlock.
+     drain_life = {
+         id = 234153,
+         duration = 5.0,
+-        pandemic = true,
+         max_stack = 1,
+ 
+         -- Affected by:
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- soul_rot[386998] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
+     },
+     -- $?j1g[Increases ground speed by $j1g%. ][]$?j1f[Increases flight speed by $j1f%. ][]$?j1s[Increases swim speed by $j1s%. ][]
+     dreadsteed = {
+         id = 23161,
+         duration = 3600,
+         tick_time = 0.5,
+-        pandemic = true,
+         max_stack = 1,
+     },
+     -- Healing for $m1% of maximum health every $t1 sec.; Spell casts are not delayed by taking damage.
+     empowered_healthstone = {
+         id = 262080,
+         duration = 6.0,
+         max_stack = 1,
+     },
+     -- Damage dealt to the Warlock reduced by $w1%.
+     essence_drain = {
+@@ -340,58 +336,54 @@
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- fear[342914] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_9, }
+     },
+     -- Damage is being delayed every $t1 sec.
+     fel_armor = {
+         id = 387846,
+         duration = 3600,
+         tick_time = 0.5,
+-        pandemic = true,
+         max_stack = 1,
+     },
+     -- Imp, Voidwalker, Succubus, Felhunter, or Felguard casting time reduced by $/1000;S1 sec.
+     fel_domination = {
+         id = 333889,
+         duration = 15.0,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- fel_pact[386113] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -60000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+-        -- eternal_servitude[449707] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -90000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
++        -- eternal_servitude[449707] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'pvp_multiplier': 0.33333399892, 'points': -90000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+     },
+     -- Damage taken reduced by $w1%.
+     fel_resilience = {
+         id = 386869,
+         duration = 5.0,
+         max_stack = 1,
+     },
+     -- $?j1g[Increases ground speed by $j1g%. ][]$?j1f[Increases flight speed by $j1f%. ][]$?j1s[Increases swim speed by $j1s%. ][]
+     felsteed = {
+         id = 5784,
+         duration = 3600,
+-        pandemic = true,
+         max_stack = 1,
+     },
+     -- Sacrificed your demon pet to gain its command demon ability.; Your spells sometimes deal additional Shadow damage.
+     grimoire_of_sacrifice = {
+         id = 196099,
+         duration = 3600,
+-        pandemic = true,
+         max_stack = 1,
+     },
+     -- Taking $s2% increased damage from the Warlock. Haunt's cooldown will be reset on death.
+     haunt = {
+         id = 48181,
+         duration = 18.0,
+-        pandemic = true,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- affliction_warlock[137043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- improved_haunt[458034] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 35.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- improved_haunt[458034] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- summoners_embrace[453105] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- summoners_embrace[453105] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+@@ -399,21 +391,20 @@
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- demonology_warlock[137044] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- demonology_warlock[137044] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- infirmity[458219] #0: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'points': 10.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+     },
+     -- Transferring health.
+     health_funnel = {
+         id = 755,
+         duration = 5.0,
+         tick_time = 1.0,
+-        pandemic = true,
+         max_stack = 1,
+     },
+     -- Disoriented.
+     howl_of_terror = {
+         id = 5484,
+         duration = 20.0,
+         max_stack = 1,
+     },
+     -- Damage taken increased by $s1%.
+     infirmity = {
+@@ -460,40 +451,44 @@
+         duration = 3.0,
+         max_stack = 1,
+     },
+     -- Your next $?s198590[Drain Soul drains $s3% faster and][Shadow Bolt is instant and] deals $s2% increased damage.
+     nightfall = {
+         id = 264571,
+         duration = 12.0,
+         max_stack = 1,
+ 
+         -- Affected by:
+-        -- necrolyte_teachings[449620] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
++        -- necrolyte_teachings[449620] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'pvp_multiplier': 0.20000000298, 'points': 50.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+     },
+     -- Dealing $s1 Shadow damage to the target every $t1 sec.
+     oblivion = {
+         id = 417537,
+         duration = 3.0,
+         tick_time = 1.0,
+         max_stack = 1,
++
++        -- Affected by:
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+     },
+     -- Dealing damage to all nearby targets every $t1 sec and healing the casting Warlock.
+     phantom_singularity = {
+         id = 205179,
+         duration = 16.0,
+         tick_time = 2.0,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+     },
+     -- Embeded with a demon seed that will soon explode, dealing Shadow damage to the caster's enemies within $27285A1 yards, and applying Corruption to them.; The seed will detonate early if the target is hit by other detonations, or takes $w3 damage from your spells.
+     seed_of_corruption = {
+         id = 27243,
+         duration = 12.0,
+         tick_time = 12.0,
+         max_stack = 1,
+ 
+@@ -527,27 +522,27 @@
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- darkfury[264874] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -15000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+         -- darkfury[264874] #1: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
+     },
+     -- Dealing $450593s1 Shadow damage to enemies within $450593a1 yds every $t1 sec.
+     shared_fate = {
+         id = 450591,
+         duration = 3.0,
++        tick_time = 1.0,
+         max_stack = 1,
+     },
+     -- Suffering $w1 Shadow damage every $t1 sec and siphoning life to the casting Warlock.
+     siphon_life = {
+         id = 63106,
+         duration = 15.0,
+-        pandemic = true,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- summoners_embrace[453105] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- summoners_embrace[453105] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+@@ -590,24 +585,43 @@
+     -- Mana cost of Drain Life reduced by $s1%.
+     soul_rot = {
+         id = 386998,
+         duration = 8.0,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- deadwind_harvester[216708] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': PROC_CHANCE, }
+     },
++    -- Next target you cast Soul Swap: Exhale on will be afflicted by your Shadow damage-over-time effects.
++    soul_swap = {
++        id = 86211,
++        duration = 10.0,
++        max_stack = 1,
++
++        -- Affected by:
++        -- sargerei_technique[405955] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- dark_virtuosity[405327] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- dark_virtuosity[405327] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- necrolyte_teachings[449620] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.5, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- necrolyte_teachings[449620] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.5, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
++        -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- nightfall[264571] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
++        -- nightfall[264571] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
++    },
+     -- [385899] Consumes a Soul Shard, unlocking the hidden power of your spells.; Demonic Circle: Teleport: Increases your movement speed by $387633s1% and makes you immune to snares and roots for $387633d.; Demonic Gateway: Can be cast instantly.; Drain Life: Gain an absorb shield equal to the amount of healing done for $387630d. This shield cannot exceed $387630s1% of your maximum health.; Health Funnel: Restores $387626s1% more health and reduces the damage taken by your pet by ${$abs($387641s1)}% for $387641d.; Healthstone: Increases the healing of your Healthstone by $387626s2% and increases your maximum health by $387636s1% for $387636d.
+     soulburn = {
+         id = 387626,
+         duration = 20.0,
+         max_stack = 1,
+     },
+     -- Movement speed increased by $s1%. Immune to snares and roots.
+     soulburn_demonic_circle = {
+         id = 387633,
+         duration = 6.0,
+@@ -638,20 +652,23 @@
+     succulent_soul = {
+         id = 449793,
+         duration = 30.0,
+         max_stack = 1,
+     },
+     -- Summons a Darkglare from the Twisting Nether that blasts its target for Shadow damage, dealing increased damage for every damage over time effect you have active on their current target.
+     summon_darkglare = {
+         id = 205180,
+         duration = 20.0,
+         max_stack = 1,
++
++        -- Affected by:
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+     },
+     -- Underwater Breathing. Swim speed increased by $s2%.
+     unending_breath = {
+         id = 5697,
+         duration = 600.0,
+         max_stack = 1,
+     },
+     -- Damage taken reduced by $w3%; Immune to interrupt and silence effects.
+     unending_resolve = {
+         id = 104773,
+@@ -673,63 +690,64 @@
+         -- malediction[453087] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+     },
+     -- Suffering $w1 Shadow damage every $t1 sec.
+     vile_taint = {
+         id = 386931,
+         duration = 10.0,
+         tick_time = 2.0,
+-        pandemic = true,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+     },
+     -- Suffering $w1 Shadowflame damage every $t1 sec.$?a339892[ ; Damage taken by Chaos Bolt and Incinerate increased by $w2%.][]
+     wither = {
+         id = 445474,
+         duration = 18.0,
+         tick_time = 2.0,
+-        pandemic = true,
+         max_stack = 1,
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 22.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -7.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #8: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 35.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #15: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #16: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'pvp_multiplier': 0.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavian_teachings[317031] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- socrethars_guile[405936] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- absolute_corruption[196103] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- bleakheart_tactics[440051] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- contagion[453096] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- hatefury_rituals[440048] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- hatefury_rituals[440048] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+         -- kindled_malice[405330] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- kindled_malice[405330] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- malediction[453087] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- mark_of_perotharn[440045] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- mark_of_xavius[440046] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- sacrolashs_dark_strike[386986] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- sataiels_volition[449637] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- siphon_life[452999] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- siphon_life[452999] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xalans_ferocity[440044] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_ferocity[440044] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xalans_ferocity[440044] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- wither[445465] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 445468, 'value1': 3, 'target': TARGET_UNIT_CASTER, }
+         -- ashen_remains[339892] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+     },
+ } )
+ 
+@@ -754,21 +772,21 @@
+         cast = 0.0,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         spend = 0.010,
+         spendType = 'mana',
+ 
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 2.0, 'sp_bonus': 0.0170247, 'pvp_multiplier': 1.25, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 2.0, 'sp_bonus': 0.02383459918, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'tick_time': 2.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- agony[231792] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 4.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
+         -- socrethars_guile[405936] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- socrethars_guile[405936] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+@@ -892,28 +910,27 @@
+         gcd = "global",
+ 
+         spend = 0.010,
+         spendType = 'mana',
+ 
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 146739, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': DUMMY, 'subtype': NONE, }
+-        -- #2: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 0.138, 'pvp_multiplier': 1.25, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #2: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 0.13799999654, 'pvp_multiplier': 1.25, 'variance': 0.05000000075, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 22.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -7.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavian_teachings[317031] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- absolute_corruption[196103] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- contagion[453096] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- kindled_malice[405330] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- kindled_malice[405330] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- malediction[453087] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- mark_of_perotharn[440045] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- sacrolashs_dark_strike[386986] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- sataiels_volition[449637] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+@@ -993,21 +1010,21 @@
+         gcd = "none",
+ 
+         talent = "dark_pact",
+         startsCombat = false,
+ 
+         -- Effects:
+         -- #0: { 'type': APPLY_AURA, 'subtype': SCHOOL_ABSORB, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_CASTER, }
+         -- #1: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_CASTER, }
+         -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_CASTER, }
+         -- #3: { 'type': DUMMY, 'subtype': NONE, 'sp_bonus': 5.0, }
+-        -- #4: { 'type': APPLY_AURA, 'subtype': PERIODIC_HEAL, 'tick_time': 1.0, 'sp_bonus': 0.182332, 'target': TARGET_UNIT_CASTER, }
++        -- #4: { 'type': APPLY_AURA, 'subtype': PERIODIC_HEAL, 'tick_time': 1.0, 'sp_bonus': 1.64583003521, 'target': TARGET_UNIT_CASTER, }
+ 
+         -- Affected by:
+         -- frequent_donor[386686] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -15000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+         -- ichor_of_devils[386664] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
+         -- ichor_of_devils[386664] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 300.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
+     },
+ 
+     -- Creates a demonic gateway between two locations. Activating the gateway transports the user to the other gateway. Each player can use a Demonic Gateway only once per $<GatewayCooldown> sec.
+     demonic_gateway = {
+         id = 111771,
+@@ -1042,33 +1059,33 @@
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': SCRIPT_EFFECT, 'subtype': NONE, 'points': 24710.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': ENERGIZE, 'subtype': NONE, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'resource': soul_shards, }
+     },
+ 
+     -- [386619] Drain Life heals for $s1% more while below $s2% health.
+     drain_life = {
+         id = 234153,
+-        cast = 5.0,
+-        channeled = true,
++        cast = 0.0,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         spendType = 'mana',
+ 
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_LEECH, 'amplitude': 5.0, 'tick_time': 1.0, 'sp_bonus': 0.15, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_LEECH, 'amplitude': 5.0, 'tick_time': 1.0, 'sp_bonus': 0.15000000596, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- soul_rot[386998] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
+     },
+ 
+     -- Summons an Eye of Kilrogg and binds your vision to it. The eye is stealthed and moves quickly but is very fragile.
+     eye_of_kilrogg = {
+         id = 126,
+         cast = 45.0,
+         channeled = true,
+@@ -1113,21 +1130,21 @@
+ 
+         talent = "fel_domination",
+         startsCombat = false,
+ 
+         -- Effects:
+         -- #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -90.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
+ 
+         -- Affected by:
+         -- fel_pact[386113] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -60000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+-        -- eternal_servitude[449707] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -90000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
++        -- eternal_servitude[449707] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'pvp_multiplier': 0.33333399892, 'points': -90000.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
+     },
+ 
+     -- Sacrifices your demon pet for power, gaining its command demon ability, and causing your spells to sometimes also deal $196100s1 additional Shadow damage.; Lasts $196099d or until you summon a demon pet.
+     grimoire_of_sacrifice = {
+         id = 108503,
+         cast = 0.0,
+         cooldown = 30.0,
+         gcd = "global",
+ 
+         talent = "grimoire_of_sacrifice",
+@@ -1145,21 +1162,21 @@
+         cooldown = 15.0,
+         gcd = "global",
+ 
+         spend = 0.020,
+         spendType = 'mana',
+ 
+         talent = "haunt",
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 2.74519, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 2.74518990517, 'pvp_multiplier': 2.5, 'variance': 0.05000000075, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': APPLY_AURA, 'subtype': SCHOOL_MASK_DAMAGE_FROM_CASTER, 'points': 10.0, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #2: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_TAKEN_FROM_CASTER_PET, 'points': 10.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #3: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE, 'points': 10.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- affliction_warlock[137043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- improved_haunt[458034] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 35.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- improved_haunt[458034] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- summoners_embrace[453105] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+@@ -1168,29 +1185,28 @@
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- demonology_warlock[137044] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- demonology_warlock[137044] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- infirmity[458219] #0: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'points': 10.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+     },
+ 
+     -- Sacrifices ${$m3*$d/$t1}% of your maximum health to heal your summoned Demon for twice as much over $d.
+     health_funnel = {
+         id = 755,
+-        cast = 5.0,
+-        channeled = true,
++        cast = 0.0,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         startsCombat = false,
+ 
+         -- Effects:
+-        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'amplitude': 2.2, 'tick_time': 1.0, 'points': 5.0, 'target': TARGET_UNIT_PET, }
++        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'amplitude': 2.20000004768, 'tick_time': 1.0, 'points': 5.0, 'target': TARGET_UNIT_PET, }
+     },
+ 
+     -- Let loose a terrifying howl, causing $i enemies within $A1 yds to flee in fear, disorienting them for $d. Damage may cancel the effect.
+     howl_of_terror = {
+         id = 5484,
+         cast = 0.0,
+         cooldown = 40.0,
+         gcd = "global",
+ 
+         spend = 0.018,
+@@ -1210,44 +1226,43 @@
+         cast = 1.5,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         spend = 10,
+         spendType = 'soul_shards',
+ 
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'attributes': ['Is Harmful'], 'sp_bonus': 0.31625, 'radius': 100.0, 'target': TARGET_DEST_CASTER, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
++        -- #0: { 'type': DUMMY, 'subtype': NONE, 'attributes': ['Is Harmful'], 'sp_bonus': 0.31624999642, 'radius': 100.0, 'target': TARGET_DEST_CASTER, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+ 
+         -- Affected by:
+         -- improved_malefic_rapture[454378] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+     },
+ 
+     -- [430014] Dark magic erupts from you and corrupts your soul for $442726d, causing enemies suffering from your Wither to take $446285s1 Shadowflame damage and increase its stack count by $s1.; While corrupted your Haste is increased by $442726s1% and spending Soul Shards on damaging spells grants $s2 additional stack of Wither.
+     malevolence = {
+         id = 442726,
+         cast = 0.0,
+         cooldown = 60.0,
+         gcd = "global",
+ 
+         spend = 0.010,
+         spendType = 'mana',
+ 
+         talent = "malevolence",
+-        startsCombat = true,
++        startsCombat = false,
+ 
+         -- Effects:
+         -- #0: { 'type': APPLY_AURA, 'subtype': MELEE_SLOW, 'attributes': ['Suppress Points Stacking'], 'points': 8.0, 'target': TARGET_UNIT_CASTER, }
+         -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 1.0, 'target': TARGET_UNIT_CASTER, }
+         -- #2: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 1.0, 'target': TARGET_UNIT_CASTER, }
+-        -- #3: { 'type': APPLY_AREA_AURA_ENEMY, 'subtype': MOD_ATTACK_POWER_OF_ARMOR, 'trigger_spell': 445731, 'radius': 100.0, 'target': TARGET_SRC_CASTER, 'target2': TARGET_UNIT_SRC_AREA_ENEMY, }
+     },
+ 
+     -- Horrifies an enemy target into fleeing, incapacitating for $6789d and healing you for $108396m1% of maximum health.
+     mortal_coil = {
+         id = 6789,
+         cast = 0.0,
+         cooldown = 45.0,
+         gcd = "global",
+ 
+         spend = 0.020,
+@@ -1281,58 +1296,61 @@
+ 
+         startsCombat = false,
+ 
+         -- Effects:
+         -- #0: { 'type': APPLY_AURA, 'subtype': REFLECT_SPELLS, 'amplitude': 1.0, 'points': 100.0, 'target': TARGET_UNIT_CASTER, }
+     },
+ 
+     -- Unleash wicked magic upon your target's soul, dealing $o Shadow damage over $d.; Deals $s2% increased damage, up to ${$s2*$s3}%, per damage over time effect you have active on the target.
+     oblivion = {
+         id = 417537,
+-        cast = 3.0,
+-        channeled = true,
++        cast = 0.0,
+         cooldown = 45.0,
+         gcd = "global",
+ 
+         spend = 20,
+         spendType = 'soul_shards',
+ 
+         talent = "oblivion",
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 1.0, 'sp_bonus': 4.02325, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 1.0, 'sp_bonus': 4.023250103, 'variance': 0.05000000075, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 10.0, }
+         -- #2: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 3.0, }
++
++        -- Affected by:
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+     },
+ 
+     -- Places a phantom singularity above the target, which consumes the life of all enemies within $205246A2 yards, dealing ${8*$205246s2} damage over $d, healing you for ${$205246e2*100}% of the damage done.
+     phantom_singularity = {
+         id = 205179,
+         cast = 0.0,
+         cooldown = 45.0,
+         gcd = "global",
+ 
+         spend = 0.010,
+         spendType = 'mana',
+ 
+         talent = "phantom_singularity",
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_LEECH, 'amplitude': 0.25, 'tick_time': 2.0, 'sp_bonus': 0.27225, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_LEECH, 'amplitude': 0.25, 'tick_time': 2.0, 'sp_bonus': 0.27224999666, 'pvp_multiplier': 1.39999997616, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DUMMY, 'tick_time': 2.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+     },
+ 
+     -- Consume all Tormented Souls collected by Ulthalesh, increasing your damage by $216708s1% and doubling the effect of all of Ulthalesh's other traits for $216708d per soul consumed.; Ulthalesh collects Tormented Souls from each target you kill and occasionally escaped souls it previously collected.
+     reap_souls = {
+         id = 216698,
+         color = 'artifact',
+         cast = 0.0,
+         cooldown = 5.0,
+@@ -1340,40 +1358,38 @@
+ 
+         startsCombat = false,
+ 
+         -- Effects:
+         -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_CASTER, }
+     },
+ 
+     -- Begins a ritual that sacrifices a random participant to summon a doomguard. Requires the caster and 4 additional party members to complete the ritual.
+     ritual_of_doom = {
+         id = 342601,
+-        cast = 180.0,
+-        channeled = true,
++        cast = 0.0,
+         cooldown = 3600.0,
+         gcd = "global",
+ 
+         spend = 10,
+         spendType = 'soul_shards',
+ 
+         startsCombat = false,
+ 
+         -- Effects:
+         -- #0: { 'type': DUMMY, 'subtype': NONE, 'attributes': ["Don't Fail Spell On Targeting Failure"], 'target': TARGET_UNIT_CASTER, }
+         -- #1: { 'type': TRANS_DOOR, 'subtype': NONE, 'points': 1.0, 'value': 177193, 'schools': ['physical', 'nature', 'shadow'], 'radius': 5.0, 'target': TARGET_DEST_CASTER_FRONT, }
+     },
+ 
+     -- Begins a ritual to create a summoning portal, requiring the caster and 2 allies to complete. This portal can be used to summon party and raid members.
+     ritual_of_summoning = {
+         id = 698,
+-        cast = 120.0,
+-        channeled = true,
++        cast = 0.0,
+         cooldown = 120.0,
+         gcd = "global",
+ 
+         spend = 0.050,
+         spendType = 'mana',
+ 
+         startsCombat = false,
+ 
+         -- Effects:
+         -- #0: { 'type': TRANS_DOOR, 'subtype': NONE, 'value': 194108, 'schools': ['fire', 'nature', 'frost', 'shadow'], 'radius': 0.0, 'target': TARGET_DEST_CASTER_FRONT, }
+@@ -1416,32 +1432,33 @@
+         cast = 2.0,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         spend = 0.015,
+         spendType = 'mana',
+ 
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 0.702, 'pvp_multiplier': 1.9, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 0.70200002193, 'pvp_multiplier': 2.47000002861, 'variance': 0.05000000075, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- affliction_warlock[137043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #13: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 51.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #13: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 28.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': 18.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- sargerei_technique[405955] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- dark_virtuosity[405327] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- drain_soul[388667] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 198590, 'value': 686, 'schools': ['holy', 'fire', 'nature', 'shadow'], 'value1': 2, 'target': TARGET_UNIT_CASTER, }
+         -- improved_shadow_bolt[453080] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- improved_shadow_bolt[453080] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 40.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+-        -- necrolyte_teachings[449620] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- necrolyte_teachings[449620] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.5, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- summoners_embrace[453105] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- summoners_embrace[453105] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- nightfall[264571] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- demonology_warlock[137044] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- demonology_warlock[137044] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- demonology_warlock[137044] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 60.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- infirmity[458219] #0: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'points': 10.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
+@@ -1509,21 +1526,21 @@
+         cast = 0.0,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         spend = 0.010,
+         spendType = 'mana',
+ 
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_LEECH, 'amplitude': 0.3, 'tick_time': 3.0, 'sp_bonus': 0.165, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #0: { 'type': APPLY_AURA, 'subtype': PERIODIC_LEECH, 'amplitude': 0.30000001192, 'tick_time': 3.0, 'sp_bonus': 0.16500000656, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- affliction_warlock[137043] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- summoners_embrace[453105] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- summoners_embrace[453105] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
+@@ -1562,28 +1579,29 @@
+         gcd = "global",
+ 
+         spend = 0.005,
+         spendType = 'mana',
+ 
+         talent = "soul_rot",
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+-        -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'attributes': ['Add Target (Dest) Combat Reach to AOE', 'Always AOE Line of Sight'], 'tick_time': 2.0, 'sp_bonus': 0.3025, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
++        -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'attributes': ['Add Target (Dest) Combat Reach to AOE', 'Always AOE Line of Sight'], 'tick_time': 2.0, 'sp_bonus': 0.48399999738, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+         -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #3: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- deadwind_harvester[216708] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': PROC_CHANCE, }
+     },
+ 
+     -- Wither away all life force of your current target and up to $s3 additional targets nearby, causing your primary target to suffer ${$o2*(1+$m4/10)} Nature damage and secondary targets to suffer $o2 Nature damage over $d.; For the next $d, casting Drain Life will cause you to also Drain Life from any enemy affected by your Soul Rot, and Drain Life will not consume any mana.
+     soul_rot_325640 = {
+         id = 325640,
+         color = 'night_fae',
+         cast = 1.5,
+@@ -1598,26 +1616,73 @@
+         -- Effects:
+         -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'attributes': ['Add Target (Dest) Combat Reach to AOE', 'Always AOE Line of Sight'], 'tick_time': 2.0, 'sp_bonus': 0.25, 'radius': 8.0, 'target': TARGET_DEST_TARGET_ENEMY, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+         -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #3: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- deadwind_harvester[216708] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 100.0, 'target': TARGET_UNIT_CASTER, 'modifies': PROC_CHANCE, }
+         from = "affected_by_mastery",
+     },
+ 
++    -- Copies your damage over time effects and Haunt from the target, preserving their duration.; Your next use of Soul Swap within $86211d will exhale a copy damage of the effects onto a new target.
++    soul_swap = {
++        id = 386951,
++        cast = 0.0,
++        cooldown = 30.0,
++        gcd = "global",
++
++        spend = 10,
++        spendType = 'soul_shards',
++
++        startsCombat = true,
++
++        -- Effects:
++        -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
++
++        -- Affected by:
++        -- soul_swap[86211] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 86213, 'target': TARGET_UNIT_CASTER, }
++    },
++
++    -- [86121] Inhales your damage over time effects from the target, preserving their duration.; Your next use of Soul Swap within $86211d will exhale those damage over time effects onto the new target and deal $m1% of the target's total health in Shadow damage.
++    soul_swap_86211 = {
++        id = 86211,
++        color = 'pvp_talent',
++        cast = 0.0,
++        cooldown = 0.0,
++        gcd = "global",
++
++        startsCombat = false,
++
++        -- Effects:
++        -- #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 86213, 'target': TARGET_UNIT_CASTER, }
++
++        -- Affected by:
++        -- sargerei_technique[405955] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 8.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- dark_virtuosity[405327] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- dark_virtuosity[405327] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- necrolyte_teachings[449620] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.5, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- necrolyte_teachings[449620] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.5, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
++        -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
++        -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- nightfall[264571] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
++        -- nightfall[264571] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'attributes': ['Suppress Points Stacking'], 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
++        from = "from_description",
++    },
++
+     -- Consumes a Soul Shard, unlocking the hidden power of your spells.; Demonic Circle: Teleport: Increases your movement speed by $387633s1% and makes you immune to snares and roots for $387633d.; Demonic Gateway: Can be cast instantly.; Drain Life: Gain an absorb shield equal to the amount of healing done for $387630d. This shield cannot exceed $387630s1% of your maximum health.; Health Funnel: Restores $387626s1% more health and reduces the damage taken by your pet by ${$abs($387641s1)}% for $387641d.; Healthstone: Increases the healing of your Healthstone by $387626s2% and increases your maximum health by $387636s1% for $387636d.
+     soulburn = {
+         id = 385899,
+         cast = 0.0,
+         cooldown = 6.0,
+         gcd = "none",
+ 
+         spend = 10,
+         spendType = 'soul_shards',
+ 
+@@ -1663,35 +1728,39 @@
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': APPLY_AURA, 'subtype': MOD_CHARM, 'points_per_level': 1.0, 'points': 22.0, 'value': 1, 'schools': ['physical'], 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': APPLY_AURA, 'subtype': MOD_DAMAGE_PERCENT_DONE, 'value': 127, 'schools': ['physical', 'holy', 'fire', 'nature', 'frost', 'shadow', 'arcane'], 'target': TARGET_UNIT_TARGET_ENEMY, }
+     },
+ 
+     -- Summons a Darkglare from the Twisting Nether that extends the duration of your damage over time effects on all enemies by $s2 sec.; The Darkglare will serve you for $d, blasting its target for $205231s1 Shadow damage, increased by $s3% for every damage over time effect you have active on their current target.
+     summon_darkglare = {
+         id = 205180,
+-        cast = 0.0,
++        cast = 20.0,
++        channeled = true,
+         cooldown = 120.0,
+         gcd = "global",
+ 
+         spend = 0.020,
+         spendType = 'mana',
+ 
+         talent = "summon_darkglare",
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': SUMMON, 'subtype': NONE, 'points': 1.0, 'value': 103673, 'schools': ['physical', 'nature', 'frost', 'shadow', 'arcane'], 'value1': 3766, 'radius': 3.0, 'target': TARGET_DEST_CASTER_RIGHT, }
+         -- #1: { 'type': SCRIPT_EFFECT, 'subtype': NONE, 'points': 8.0, 'radius': 3.0, 'target': TARGET_DEST_CASTER_RIGHT, 'target2': TARGET_UNIT_DEST_AREA_ENEMY, }
+         -- #2: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 25.0, 'target': TARGET_UNIT_CASTER, }
+         -- #3: { 'type': APPLY_AURA, 'subtype': DUMMY, 'points': 20.0, 'target': TARGET_UNIT_CASTER, }
++
++        -- Affected by:
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+     },
+ 
+     -- Summons a Felhunter under your command, able to disrupt the spell casts of your enemies.
+     summon_felhunter = {
+         id = 691,
+         color = 'summon',
+         cast = 6.0,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+@@ -1767,21 +1836,22 @@
+ 
+         -- Affected by:
+         -- fel_domination[333889] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -90.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- fel_domination[333889] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
+     },
+ 
+     -- Thal'kiel drains $s2% of the life from your demon servants and unleashes a blast of Shadow damage at your current target equal to the life he stole. 
+     thalkiels_consumption = {
+         id = 211714,
+         color = 'artifact',
+-        cast = 2.0,
++        cast = 0.0,
++        channeled = true,
+         cooldown = 45.0,
+         gcd = "global",
+ 
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': DAMAGE_FROM_MAX_HEALTH_PCT, 'subtype': NONE, 'points': 8.0, 'radius': 100.0, 'target': TARGET_UNIT_CASTER_AND_SUMMONS, }
+     },
+ 
+@@ -1834,38 +1904,39 @@
+         gcd = "global",
+ 
+         spend = 0.010,
+         spendType = 'mana',
+ 
+         talent = "unstable_affliction",
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+-        -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 2.0, 'sp_bonus': 0.30613, 'pvp_multiplier': 1.4, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 2.0, 'sp_bonus': 0.44388800859, 'pvp_multiplier': 1.95000004768, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[334315] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+         -- contagion[453096] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- malediction[453087] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- perpetual_unstability[459376] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavius_gambit[416615] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavius_gambit[416615] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- rampant_afflictions[335052] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 342938, 'value': 316099, 'schools': ['physical', 'holy', 'arcane'], 'target': TARGET_UNIT_CASTER, }
+-        -- rampant_afflictions[335052] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- rampant_afflictions[335052] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+     },
+ 
+     -- Afflicts the target with $233490o1 Shadow damage over $233490d. You may afflict a target with up to $s2 Unstable Afflictions at once.; You deal $s3% increased damage to targets affected by your Unstable Affliction.; If dispelled, deals ${$233490s1*$s1/100} damage to the dispeller and silences them for $196364d.$?a231791[; Refunds $231791m1 Soul $LShard:Shards; if the target dies while afflicted.][]
+     unstable_affliction_30108 = {
+         id = 30108,
+         cast = 1.5,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         spend = 10,
+@@ -1885,55 +1956,56 @@
+         -- contagion[453096] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- malediction[453087] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- perpetual_unstability[459376] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavius_gambit[416615] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavius_gambit[416615] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- rampant_afflictions[335052] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 342938, 'value': 316099, 'schools': ['physical', 'holy', 'arcane'], 'target': TARGET_UNIT_CASTER, }
+-        -- rampant_afflictions[335052] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- rampant_afflictions[335052] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         from = "affected_by_mastery",
+     },
+ 
+     -- Afflicts up to $335052s3 targets with $o2 Shadow damage over $d. ; If dispelled, deals ${$s1*$SP/100} damage to the dispeller and silences them for $196364d.; Generates $231791m1 Soul $LShard:Shards; if the target dies while afflicted.
+     unstable_affliction_342938 = {
+         id = 342938,
+         cast = 1.5,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         spend = 0.010,
+         spendType = 'mana',
+ 
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+-        -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 2.0, 'sp_bonus': 0.30613, 'pvp_multiplier': 1.15702, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #1: { 'type': APPLY_AURA, 'subtype': PERIODIC_DAMAGE, 'tick_time': 2.0, 'sp_bonus': 0.44388800859, 'pvp_multiplier': 1.95000004768, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[334315] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
+         -- contagion[453096] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- malediction[453087] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- perpetual_unstability[459376] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -20.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavius_gambit[416615] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xavius_gambit[416615] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- rampant_afflictions[335052] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 342938, 'value': 316099, 'schools': ['physical', 'holy', 'arcane'], 'target': TARGET_UNIT_CASTER, }
+-        -- rampant_afflictions[335052] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -50.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- rampant_afflictions[335052] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -60.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         from = "affected_by_mastery",
+     },
+ 
+     -- Unleashes a vile explosion at the target location, dealing $386931o1 Shadow damage over $386931d to $s2 enemies within $a1 yds and applies Agony and Curse of Exhaustion to them.
+     vile_taint = {
+         id = 278350,
+         cast = 1.5,
+         cooldown = 30.0,
+         gcd = "global",
+ 
+@@ -1943,64 +2015,66 @@
+         talent = "vile_taint",
+         startsCombat = true,
+ 
+         -- Effects:
+         -- #0: { 'type': DUMMY, 'subtype': NONE, 'radius': 10.0, 'target': TARGET_UNIT_DEST_AREA_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+     },
+ 
+     -- Bestows a vile malediction upon the target, burning the sinew and muscle of its host, dealing $s1 Shadowflame damage immediately and an additional $445474o1 Shadowflame damage over $445474d.$?s137046[; Periodic damage generates 1 Soul Shard Fragment and has a $s2% chance to generate an additional 1 on critical strikes.; Replaces Immolate.][; Replaces Corruption.]
+     wither = {
+         id = 445468,
+         cast = 0.0,
+         cooldown = 0.0,
+         gcd = "global",
+ 
+         spend = 0.015,
+         spendType = 'mana',
+ 
+         talent = "wither",
+         startsCombat = true,
+ 
+         -- Effects:
+-        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 0.138, 'variance': 0.05, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- #0: { 'type': SCHOOL_DAMAGE, 'subtype': NONE, 'sp_bonus': 0.15870000422, 'variance': 0.05000000075, 'target': TARGET_UNIT_TARGET_ENEMY, }
+         -- #1: { 'type': DUMMY, 'subtype': NONE, }
+         -- #2: { 'type': TRIGGER_SPELL, 'subtype': NONE, 'trigger_spell': 445474, 'target': TARGET_UNIT_TARGET_ENEMY, }
+ 
+         -- Affected by:
+         -- mastery_potent_afflictions[77215] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- mastery_potent_afflictions[77215] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 2.5, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -30.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+-        -- affliction_warlock[137043] #14: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 26.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 22.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #5: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'pvp_multiplier': 0.0, 'points': -7.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
++        -- affliction_warlock[137043] #7: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 35.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xavian_teachings[317031] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -100.0, 'target': TARGET_UNIT_CASTER, 'modifies': CAST_TIME, }
+         -- socrethars_guile[405936] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- absolute_corruption[196103] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- bleakheart_tactics[440051] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- contagion[453096] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- creeping_death[264000] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -15.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- kindled_malice[405330] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- kindled_malice[405330] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- malediction[453087] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 5.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- mark_of_perotharn[440045] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': SHOULD_NEVER_SEE_15, }
+         -- mark_of_xavius[440046] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 25.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- sacrolashs_dark_strike[386986] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 15.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- sataiels_volition[449637] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': AURA_PERIOD, }
+         -- siphon_life[452999] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- siphon_life[452999] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- unstable_affliction[316099] #3: { 'type': APPLY_AURA, 'subtype': MOD_SPELL_DAMAGE_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
++        -- xalans_cruelty[440040] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- xalans_cruelty[440040] #2: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_cruelty[440040] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xalans_ferocity[440044] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
+         -- xalans_ferocity[440044] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
+         -- xalans_ferocity[440044] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 10.0, 'target': TARGET_UNIT_CASTER, 'modifies': CRIT_CHANCE, }
+         -- wither[445465] #0: { 'type': APPLY_AURA, 'subtype': OVERRIDE_ACTIONBAR_SPELLS, 'spell': 445468, 'value1': 3, 'target': TARGET_UNIT_CASTER, }
+         -- wither[445465] #1: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
+     },
+ 
+ } )
+\ No newline at end of file
