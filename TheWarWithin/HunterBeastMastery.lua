@@ -490,12 +490,12 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1
     },
-    -- This probably isn't needed? We'll see.
+    --[[ This probably isn't needed? We'll see. Keep it here in case.
     bleak_arrows = {
             id = 467718,
             duration = 60.0,
             max_stack = 1   
-    },
+    },--]]
     -- Talent: Bleeding for $w1 Physical damage every $t1 sec.  Taking $s2% increased damage from the Hunter's pet.
     -- https://wowhead.com/beta/spell=321538
     bloodshed = {
@@ -1271,9 +1271,7 @@ spec:RegisterHook( "reset_precast", function()
         end
     end
 
-    if covenant.kyrian then
-        if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
-    end
+    if covenant.kyrian and now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
 
     -- if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then reduceCooldown( "barbed_shot", barbed_shot_grace_period ) end
 end )
@@ -1319,24 +1317,6 @@ spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
 
 -- Abilities
 spec:RegisterAbilities( {
-    -- BM does not currently have arcane shot
-    -- A quick shot that causes $sw2 Arcane damage.$?s260393[    Arcane Shot has a $260393h% chance to reduce the cooldown of Rapid Fire by ${$260393m1/10}.1 sec.][]
-    --[[arcane_shot = {
-        id = 185358,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-        school = "arcane",
-
-        spend = 40,
-        spendType = "focus",
-
-        startsCombat = true,
-
-        handler = function ()
-        end,
-    },--]]
-
     -- Increases your movement speed by $s1% for $d, and then by $186258s1% for another $186258d$?a445701[, and then by $445701s1% for another $445701s2 sec][].$?a459455[; You cannot be slowed below $s2% of your normal movement speed.][]
     aspect_of_the_cheetah = {
         id = 186257,
@@ -1606,7 +1586,7 @@ spec:RegisterAbilities( {
             end
 
             if talent.barbed_scales.enabled then
-                gainChargeTime("barbed_shot", 2)
+                gainChargeTime( "barbed_shot", 2 )
             end
 
             if talent.killer_cobra.enabled and buff.bestial_wrath.up then setCooldown( "kill_command", 0 ) end
@@ -1991,12 +1971,11 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        cycle = function()
-            if talent.killer_instinct.enabled and target.health_pct > 35 then return 1
-                else if talent.a_murder_of_crows.enabled then return "a_murder_of_crows"
+        cycle = function() -- todo: excecute cycling?
+            -- if talent.killer_instinct.enabled and target.health_pct > 35 then return 1
+                if talent.a_murder_of_crows.enabled then return "a_murder_of_crows"
                     else return nil
                     end
-                end
             end,
 
 
@@ -2026,7 +2005,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "wild_instincts", nil, buff.wild_instincts.stack + 1 )
             end
 
-            if talent.covering_fire.enabled then buff.beast_cleave.expires = buff.beast_cleave.expires + 1 end
+            if talent.covering_fire.enabled and buff.beast_cleave.up then buff.beast_cleave.expires = buff.beast_cleave.expires + 1 end
 
             --- Legacy / PvP Stuff
             if legendary.flamewakers_cobra_sting.enabled then removeBuff( "flamewakers_cobra_sting" ) end
@@ -2128,7 +2107,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyBuff( "beast_cleave", 6 )
+            applyBuff( "beast_cleave" )
 
             if talent.scattered_prey.enabled then
                 if buff.scattered_prey.up then
