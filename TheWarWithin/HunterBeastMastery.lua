@@ -300,6 +300,7 @@ spec:RegisterPvpTalents( {
     wild_kingdom        = 5441, -- (356707) Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
 } )
 
+local barbed_shot_duration = 12 + ( talent.savagery.enabled and 2 or 0 )
 
 -- Auras
 spec:RegisterAuras( {
@@ -374,7 +375,14 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=217200
     barbed_shot = {
         id = 246152,
-        duration = function() return 8 + ( talent.savagery.enabled and 2 or 0 ) end,
+        duration = function()
+            -- Recalculate duration only if it has changed
+            local current_duration = 12 + ( talent.savagery.enabled and 2 or 0 )
+            if current_duration ~= barbed_shot_duration then
+                barbed_shot_duration = current_duration
+            end
+            return barbed_shot_duration
+        end,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -382,7 +390,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_2 = {
         id = 246851,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -390,7 +398,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_3 = {
         id = 246852,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -398,7 +406,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_4 = {
         id = 246853,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -406,7 +414,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_5 = {
         id = 246854,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -414,7 +422,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_6 = {
         id = 284255,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -422,7 +430,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_7 = {
         id = 284257,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -430,7 +438,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_8 = {
         id = 284258,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -438,7 +446,7 @@ spec:RegisterAuras( {
     },
     barbed_shot_dot = {
         id = 217200,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         tick_time = 2,
         mechanic = "bleed",
         type = "Ranged",
@@ -731,7 +739,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=272790
     frenzy = {
         id = 272790,
-        duration = function () return azerite.feeding_frenzy.enabled and 9 or spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         max_stack = 3,
         generate = function ()
             local fr = buff.frenzy
@@ -1047,7 +1055,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=257946
     thrill_of_the_hunt = {
         id = 257946,
-        duration = function () return spec.auras.barbed_shot.duration end,
+        duration = barbed_shot_duration,
         max_stack = 3,
         copy = 312365
     },
@@ -1220,29 +1228,31 @@ local CallOfTheWildCDR = setfenv( function()
     gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge/2)
 end, state )
 
+local last_cotw_tick = nil
 
 spec:RegisterHook( "reset_precast", function()
     if debuff.tar_trap.up then
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30
     end
 
-    if talent.bloody_frenzy.enabled and buff.call_of_the_wild.up then
-        applyBuff( "beast_cleave", max( buff.beast_cleave.remains, buff.call_of_the_wild.remains ) )
-    end
-
     if buff.nesingwarys_apparatus.up then
         state:QueueAuraExpiration( "nesingwarys_apparatus", ExpireNesingwarysTrappingApparatus, buff.nesingwarys_apparatus.expires )
     end
 
+    -- Handle Call of the Wild (updated version with last_cotw_tick caching)
     if buff.call_of_the_wild.up then
         local tick, expires = buff.call_of_the_wild.applied, buff.call_of_the_wild.expires
 
         for i = 1, 5 do
             tick = tick + 4
-            if tick > query_time and tick < expires then
+
+            -- Only queue the event if it's a new tick and within the valid range
+            if tick > query_time and tick < expires and tick ~= last_cotw_tick then
                 state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, tick, "AURA_TICK" )
+                last_cotw_tick = tick  -- Update the last processed tick
             end
         end
+    else last_cotw_tick = nil -- reset after buff goes away to prep for next cast
     end
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
