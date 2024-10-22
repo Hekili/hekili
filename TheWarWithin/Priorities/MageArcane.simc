@@ -54,28 +54,29 @@ actions.cd_opener+=/arcane_missiles,if=prev_gcd.1.evocation|prev_gcd.1.arcane_or
 actions.cd_opener+=/arcane_surge,if=cooldown.touch_of_the_magi.remains<(action.arcane_surge.execute_time+(gcd.max*(buff.arcane_charge.stack=4)))
 
 actions.spellslinger_aoe+=/supernova,if=buff.unerring_proficiency.stack=30
+# With Shifting Shards we can use Shifting Power whenever basically favoring cooldowns slightly, without it though we want to use it outside of cooldown
+actions.spellslinger_aoe+=/shifting_power,if=((buff.arcane_surge.down&buff.siphon_storm.down&debuff.touch_of_the_magi.down&cooldown.evocation.remains>15&cooldown.touch_of_the_magi.remains>10)&(cooldown.arcane_orb.remains&action.arcane_orb.charges=0)&fight_remains>10)|(prev_gcd.1.arcane_barrage&(buff.arcane_surge.up|debuff.touch_of_the_magi.up|cooldown.evocation.remains<20)&talent.shifting_shards)
 actions.spellslinger_aoe+=/cancel_buff,name=presence_of_mind,use_off_gcd=1,if=settings.cancel_pom&(debuff.magis_spark_arcane_blast.up)
-# Use Shifting Power whenever as long as you'll get some cooldown reduction on your cds, especially if you get a Time Anomaly proc, this usually works out to just using it off cooldown
-actions.spellslinger_aoe+=/shifting_power,if=(prev_gcd.1.arcane_barrage&(buff.arcane_surge.up|debuff.touch_of_the_magi.up|cooldown.evocation.remains<20)&talent.shifting_shards)
-actions.spellslinger_aoe+=/arcane_orb,if=buff.arcane_charge.stack<2
-# Blast in AOE for Magi's Spark
-actions.spellslinger_aoe+=/arcane_blast,if=(debuff.magis_spark_arcane_blast.up)
-actions.spellslinger_aoe+=/arcane_barrage,if=(talent.arcane_tempo&buff.arcane_tempo.remains<gcd.max)|((buff.intuition.up&(buff.arcane_charge.stack=4|!talent.high_voltage))&buff.nether_precision.up)|(buff.nether_precision.up&action.arcane_blast.executing)
+actions.spellslinger_aoe+=/arcane_orb,if=buff.arcane_charge.stack<3
 # Clearcasting is exclusively spent on Arcane Missiles in AOE and always interrupted after the global cooldown ends except for Aether Attunement
-actions.spellslinger_aoe+=/arcane_missiles,if=buff.clearcasting.up&((talent.high_voltage&buff.arcane_charge.stack<4)|buff.nether_precision.down),interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1
-# Only use Presence of Mind at low charges, use these to get to 4 Charges, but cancelaura the buff if you need to queue Arcane Barrage
+actions.spellslinger_aoe+=/arcane_barrage,if=buff.aether_attunement.up&talent.high_voltage&buff.clearcasting.react&buff.arcane_charge.stack>1
+actions.spellslinger_aoe+=/arcane_missiles,if=buff.clearcasting.react&((talent.high_voltage&buff.arcane_charge.stack<4)|buff.nether_precision.down),interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1
+# Only use Presence of Mind at low charges, use these to get to 4 Charges quicker
 actions.spellslinger_aoe+=/presence_of_mind,if=buff.arcane_charge.stack=3|buff.arcane_charge.stack=2
-actions.spellslinger_aoe+=/arcane_barrage,if=(buff.arcane_charge.stack=4)
-actions.spellslinger_aoe+=/arcane_explosion
+actions.spellslinger_aoe+=/presence_of_mind,if=buff.arcane_charge.stack=3|buff.arcane_charge.stack=2
+actions.spellslinger_aoe+=/arcane_barrage,if=buff.arcane_charge.stack=4
+actions.spellslinger_aoe+=/arcane_explosion,if=(talent.reverberate|buff.arcane_charge.stack<1)
+actions.spellslinger_aoe+=/arcane_blast
+actions.spellslinger_aoe+=/arcane_barrage
 
-actions.spellslinger+=/shifting_power,if=((buff.arcane_surge.down&buff.siphon_storm.down&debuff.touch_of_the_magi.down&cooldown.evocation.remains>15&cooldown.touch_of_the_magi.remains>10)&(cooldown.arcane_orb.remains&action.arcane_orb.charges=0)&fight_remains>10)|(prev_gcd.1.arcane_barrage&(buff.arcane_surge.up|debuff.touch_of_the_magi.up|cooldown.evocation.remains<20))
+actions.spellslinger+=/shifting_power,if=((buff.arcane_surge.down&buff.siphon_storm.down&debuff.touch_of_the_magi.down&cooldown.evocation.remains>15&cooldown.touch_of_the_magi.remains>10)&(cooldown.arcane_orb.remains&action.arcane_orb.charges=0)&fight_remains>10)|(prev_gcd.1.arcane_barrage&talent.shifting_shards&(buff.arcane_surge.up|debuff.touch_of_the_magi.up|cooldown.evocation.remains<20))
 # In single target, use Presence of Mind at the very end of Touch of the Magi, then cancelaura the buff to start the cooldown, wait is to simulate the delay of hitting Presence of Mind after another spell cast
 actions.spellslinger+=/cancel_buff,name=presence_of_mind,use_off_gcd=1,if=settings.cancel_pom&prev_gcd.1.arcane_blast&buff.presence_of_mind.stack=1
 actions.spellslinger+=/presence_of_mind,if=debuff.touch_of_the_magi.remains<=gcd.max&buff.nether_precision.up&active_enemies<variable.aoe_target_count&!talent.unerring_proficiency
 ## actions.spellslinger+=/wait,sec=0.05,if=buff.presence_of_mind.up&prev_gcd.1.arcane_blast,line_cd=15
 actions.spellslinger+=/supernova,if=debuff.touch_of_the_magi.remains<=gcd.max&buff.unerring_proficiency.stack=30
-# Always queue Arcane Barrage on the second stack of Nether Precision
-actions.spellslinger+=/arcane_barrage,if=(buff.nether_precision.stack=2)|(cooldown.touch_of_the_magi.ready)|(talent.arcane_tempo&buff.arcane_tempo.remains<gcd.max)
+# Barrage if you have Touch ready, Tempo is about to expire or you have a Charge refunder with Nether Precision or execute, lastly, if you have an orb charge and don't have Nether Precision or Clearcasting
+actions.spellslinger+=/arcane_barrage,if=(cooldown.touch_of_the_magi.ready)|(talent.arcane_tempo&buff.arcane_tempo.remains<gcd.max)|((buff.aethervision.stack=2|buff.intuition.react)&(buff.nether_precision.up|(target.health.pct<35&talent.arcane_bombardment&buff.clearcasting.react=0)|(mana.pct<70&talent.enlightened&buff.clearcasting.react=0&buff.arcane_surge.down)))|(action.arcane_orb.charges>0&buff.arcane_charge.stack=4&buff.clearcasting.stack=0&buff.nether_precision.down&talent.orb_barrage)
 # Missiles if you dont have Nether Precision or if you have 3 stacks to prevent munching, always clip off GCD unless you have Aether Attunement
 actions.spellslinger+=/arcane_missiles,if=(buff.clearcasting.up&buff.nether_precision.down)|buff.clearcasting.stack=3,interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1
 actions.spellslinger+=/arcane_orb,if=buff.arcane_charge.stack<2
