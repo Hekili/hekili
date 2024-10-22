@@ -691,6 +691,17 @@ local kingsbaneReady = false
 
 spec:RegisterHook( "reset_precast", function ()
 
+
+        -- Supercharged Combo Point handling
+        local charged = 0
+        if talent.supercharger.enabled then
+            for _, point in pairs( GetUnitChargedPowerPoints( "player" ) ) do
+                charged = charged + 1
+            end
+
+         if charged > 0 then applyBuff( "supercharged_combo_points", nil, charged ) end
+        end
+        
     if covenant.night_fae and debuff.sepsis.up then
             state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
         end

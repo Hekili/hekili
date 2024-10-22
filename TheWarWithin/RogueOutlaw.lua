@@ -831,6 +831,17 @@ end, state )
 
 
 spec:RegisterHook( "reset_precast", function()
+
+        -- Supercharged Combo Point handling
+        local charged = 0
+        if talent.supercharger.enabled then
+            for _, point in pairs( GetUnitChargedPowerPoints( "player" ) ) do
+                charged = charged + 1
+            end
+
+         if charged > 0 then applyBuff( "supercharged_combo_points", nil, charged ) end
+        end
+
     if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
 
     if buff.adrenaline_rush.up and talent.improved_adrenaline_rush.enabled then

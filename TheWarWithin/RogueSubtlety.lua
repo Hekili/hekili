@@ -711,6 +711,17 @@ end )
 
 
 spec:RegisterHook( "reset_precast", function( amt, resource )
+
+    -- Supercharged Combo Point handling
+    local charged = 0
+    if talent.supercharger.enabled then
+        for _, point in pairs( GetUnitChargedPowerPoints( "player" ) ) do
+            charged = charged + 1
+        end
+
+     if charged > 0 then applyBuff( "supercharged_combo_points", nil, charged ) end
+    end
+
     if talent.danse_macabre.enabled then
         wipe( danse_macabre_tracker )
         if buff.shadow_dance.up then
