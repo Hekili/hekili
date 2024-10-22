@@ -863,7 +863,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
         if subtype == "SPELL_SUMMON" then
             if spellID == 262627 or spellID == 426516 then
                 actual_spirits[ destGUID ] = {
-                    expires = GetTime() + 15,
+                    expires = GetTime() + ( talent.flowing_spirits.enabled and 8 or 15 ),
                     alpha_expires = 0
                 }
 
@@ -1635,6 +1635,7 @@ spec:RegisterAbilities( {
 
         talent = "feral_spirit",
         startsCombat = false,
+        notalent = "flowing_spirits",
 
         toggle = "cooldowns",
 
