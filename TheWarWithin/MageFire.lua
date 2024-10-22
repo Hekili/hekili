@@ -1389,7 +1389,6 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = false,
-        notalent = "frostfire_bolt",
         velocity = 45,
 
         usable = function ()
