@@ -391,7 +391,8 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if unfurling_darkness_triggered > 0 and now - unfurling_darkness_triggered < 15 then
-        applyBuff( "unfurling_darkness_icd", now - unfurling_darkness_triggered )
+        applyBuff( "unfurling_darkness_cd", now - unfurling_darkness_triggered )
+        applyDebuff( "unfurling_darkness_icd", now - unfurling_darkness_triggered )
     end
 
     if pet.mindbender.active then
@@ -2221,6 +2222,7 @@ spec:RegisterAbilities( {
                     removeBuff( "unfurling_darkness" )
                 elseif debuff.unfurling_darkness_icd.down then
                     applyBuff( "unfurling_darkness" )
+                    applyBuff( "unfurling_darkness_cd" )
                     applyDebuff( "player", "unfurling_darkness_icd" )
                 end
             end
