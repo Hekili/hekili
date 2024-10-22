@@ -1978,6 +1978,12 @@ spec:RegisterAbilities( {
                     end
             end,
 
+    -- fake execute cycling example to use
+    --[[indicator = function()
+            if active_enemies == 1 or target.health_pct < 35 or not settings.cycle then return end
+            if Hekili:GetNumTargetsBelowHealthPct( 35, false, max( settings.cycle_min, offset + delay ) ) > 0 then return "|TInterface\\Addons\\Hekili\\Textures\\Cycle:0|t" end
+        end )--]]
+
 
         spend = 30,
         spendType = "focus",
