@@ -1467,7 +1467,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "ignite" )
         end,
 
-        copy = { 133, "frostfire_bolt", 431044 , 468655}
+        copy = { 133, "frostfire_bolt", 431044 , 468655 }
     },
 
     -- Talent: Calls down a pillar of fire, burning all enemies within the area for 526 Fire damage and reducing their movement speed by 20% for 8 sec.
@@ -1561,11 +1561,6 @@ spec:RegisterAbilities( {
             end
 
         end,
-    },
-
-    frostfire_bolt_468655 = {
-        id = 468655
-        -- todo more stuff
     },
 
     invisibility = {

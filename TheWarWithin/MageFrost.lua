@@ -1185,10 +1185,6 @@ spec:RegisterAbilities( {
 
         copy = { 116, 228597, "frostfire_bolt", 431044 }
     },
-    frostfire_bolt_468655 = {
-        id = 468655
-        -- todo more stuff
-    },
     -- Launches an orb of swirling ice up to 40 yards forward which deals up to 5,687 Frost damage to all enemies it passes through. Deals reduced damage beyond 8 targets. Grants 1 charge of Fingers of Frost when it first damages an enemy. While Frozen Orb is active, you gain Fingers of Frost every 2 sec. Enemies damaged by the Frozen Orb are slowed by 40% for 3 sec.
     frozen_orb = {
         id = 84714,
