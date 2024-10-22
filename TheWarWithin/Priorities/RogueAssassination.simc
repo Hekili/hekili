@@ -95,7 +95,7 @@ actions.direct+=/fan_of_knives,if=active_dot.deadly_poison_dot<spell_targets.fan
 # Ambush on Blindside/Subterfuge. Do not use Ambush from stealth during Kingsbane & Deathmark.
 actions.direct+=/ambush,if=variable.use_filler&(buff.blindside.up|stealthed.rogue)&(!dot.kingsbane.ticking|debuff.deathmark.down|buff.blindside.up)
 # Tab-Mutilate to apply Deadly Poison at 2 targets
-actions.direct+=/mutilate,cycle_targets=1,variable.use_filler&spell_targets.fan_of_knives=2
+actions.direct+=/mutilate,cycle_targets=1,if=variable.use_filler&spell_targets.fan_of_knives=2
 # Fallback Mutilate (without breaking Envenom pooling)
 actions.direct+=/mutilate,if=variable.use_filler
 
