@@ -261,44 +261,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-    echoing_reprimand_2 = {
-        id = 323558,
-        duration = 45,
-        max_stack = 6,
-    },
-    echoing_reprimand_3 = {
-        id = 323559,
-        duration = 45,
-        max_stack = 6,
-    },
-    echoing_reprimand_4 = {
-        id = 323560,
-        duration = 45,
-        max_stack = 6,
-        copy = 354835,
-    },
-    echoing_reprimand_5 = {
-        id = 354838,
-        duration = 45,
-        max_stack = 6,
-    },
-    echoing_reprimand = {
-        alias = { "echoing_reprimand_2", "echoing_reprimand_3", "echoing_reprimand_4", "echoing_reprimand_5" },
-        aliasMode = "first",
-        aliasType = "buff",
-        meta = {
-            stack = function ()
-                if combo_points.current > 1 and combo_points.current < 6 and buff[ "echoing_reprimand_" .. combo_points.current ].up then return combo_points.current end
-
-                if buff.echoing_reprimand_2.up then return 2 end
-                if buff.echoing_reprimand_3.up then return 3 end
-                if buff.echoing_reprimand_4.up then return 4 end
-                if buff.echoing_reprimand_5.up then return 5 end
-
-                return 0
-            end
-        }
-    },
     escalating_blade = {
         id = 441786,
         duration = 3600,
@@ -399,12 +361,6 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1,
     },
-    shadow_dance = {
-        id = 185313,
-        duration = 6,
-        max_stack = 1,
-        copy = 185422
-    },
     sharpened_sabers = {
         id = 252285,
         duration = 15,
@@ -442,7 +398,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=385907
     take_em_by_surprise = {
         id = 385907,
-        duration = 3600,
+        duration = function() return combat and 10 * talent.take_em_by_surprise.rank + 3 * talent.subterfuge.rank or 3600 end,
         max_stack = 1
     },
     -- Talent: Threat redirected from Rogue.
@@ -492,6 +448,13 @@ spec:RegisterAuras( {
     rtb_buff_2 = {
         duration = 30,
     },
+    supercharged_combo_points = {
+        -- todo: Find a way to find a true buff / ID for this as a failsafe? Currently fully emulated.
+        duration = 3600,
+        max_stack = function() return combo_points.max end,
+        copy = { "supercharge", "supercharged", "supercharger" }
+    },
+
     -- Roll the dice of fate, providing a random combat enhancement for 30 sec.
     roll_the_bones = {
         alias = rtb_buff_list,
@@ -789,10 +752,13 @@ end )
 
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
-    if not talent.echoing_reprimand.enabled and not covenant.kyrian then return c end
-    if c < 2 or c > 5 then return c end
-    if buff[ "echoing_reprimand_" .. c ].up then return 7 end
-    return c
+
+    if talent.supercharger.enabled and buff.supercharged_combo_points.remains then
+        if talent.forced_induction.enabled then return c + 3
+        else return c + 2
+        end
+    else return c
+    end
 end )
 
 
@@ -819,7 +785,7 @@ spec:RegisterHook( "runHandler", function( ability )
         removeBuff( "shadowmeld" )
         removeBuff( "vanish" )
     end
-    if buff.cold_blood.up and ( ability == "ambush" or not talent.inevitability.enabled ) and ( not a or a.startsCombat ) then
+    if buff.cold_blood.up and ( ability == "ambush" or not talent.inevitable_end.enabled ) and ( not a or a.startsCombat ) then
         removeStack( "cold_blood" )
     end
 
@@ -870,6 +836,17 @@ end, state )
 
 
 spec:RegisterHook( "reset_precast", function()
+
+        -- Supercharged Combo Point handling
+        local charged = 0
+        if talent.supercharger.enabled then
+            for _, point in pairs( GetUnitChargedPowerPoints( "player" ) ) do
+                charged = charged + 1
+            end
+
+         if charged > 0 then applyBuff( "supercharged_combo_points", nil, charged ) end
+        end
+
     if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
 
     if buff.adrenaline_rush.up and talent.improved_adrenaline_rush.enabled then
@@ -1005,8 +982,8 @@ spec:RegisterAbilities( {
                 applyBuff( "greenskins_wickers" )
             end
 
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
             spend( combo_points.current, "combo_points" )
+            removeStack( "supercharged_combo_points" )
         end,
     },
 
@@ -1074,6 +1051,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             spend( combo_points.current, "combo_points" )
+            removeStack( "supercharged_combo_points" )
         end,
     },
 
@@ -1111,7 +1089,6 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo points" end,
         handler = function ()
             removeBuff( "brutal_opportunist" )
-            removeBuff( "echoing_reprimand_" .. combo_points.current )
             removeBuff( "storm_of_steel" )
 
             if talent.alacrity.enabled and combo_points.current > 4 then
@@ -1124,6 +1101,7 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_2pc > 0 then applyBuff( "vicious_followup" ) end
 
             spend( combo_points.current, "combo_points" )
+            removeStack( "supercharged_combo_points" )
 
             if buff.coup_de_grace.up then
                 if debuff.fazed.up then addStack( "flawless_form", nil, 5 ) end
@@ -1175,7 +1153,7 @@ spec:RegisterAbilities( {
     keep_it_rolling = {
         id = 381989,
         cast = 0,
-        cooldown = 420,
+        cooldown = 360,
         gcd = "off",
         school = "physical",
 
@@ -1210,6 +1188,7 @@ spec:RegisterAbilities( {
             setCooldown( "global_cooldown", 0.4 * combo_points.current )
             applyBuff( "killing_spree" )
             spend( combo_points.current, "combo_points" )
+            removeStack( "supercharged_combo_points" )
 
             if talent.flawless_form.enabled then addStack( "flawless_form" ) end
         end,
@@ -1294,6 +1273,8 @@ spec:RegisterAbilities( {
             if pvptalent.take_your_cut.enabled then
                 applyBuff( "take_your_cut" )
             end
+
+            if talent.supercharger.enabled then addStack( "supercharged_combo_points", nil, talent.supercharger.rank ) end
         end,
     },
 
