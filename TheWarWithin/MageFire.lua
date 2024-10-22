@@ -121,7 +121,6 @@ spec:RegisterTalents( {
     wildfire                  = { 101001, 383489, 1 }, -- Your critical strike damage is increased by 3%. When you activate Combustion, you gain 2% additional critical strike damage, and up to 4 nearby allies gain 1% critical strike for 10 sec.
 
     -- Sunfury
-    combustion                = { 100995, 190319, 1 }, -- Engulfs you in flames for $d, increasing your spells' critical strike chance by $s1%$?a383967[ and granting you Mastery equal to $s3% of your Critical Strike stat][]. Castable while casting other spells.$?a383489[; When you activate Combustion, you gain $383489s3% Critical Strike damage, and up to $383493I nearby allies gain $383489s4% Critical Strike for $383493d.][]
     codex_of_the_sunstriders  = {  94643, 449382, 1 }, -- Over its duration, your Arcane Phoenix will consume each of your Spellfire Spheres to cast an exceptional spell. Upon consuming a Spellfire Sphere, your Arcane Phoenix will grant you Lingering Embers.  Lingering Embers
     glorious_incandescence    = { 94645, 449394, 1 }, -- Consuming Burden of Power causes your next cast of $?c1[Arcane Barrage to deal $451073s2% increased damage, grant $s4 Arcane Charges, and][Fire Blast to strike up to ${$451073s3-1}  additional targets, and] call down a storm of $s1 Meteorites on its target.$?c1[][; Each Meteorite's impact reduces the cooldown of Fire Blast by ${$s2/1000}.1 sec.]
     gravity_lapse             = {  94651, 458513, 1 }, -- Your Supernova becomes Gravity Lapse. Gravity Lapse
@@ -417,7 +416,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     frostfire_bolt = {
-        id = 4468655,
+        id = 468655,
         duration = 8,
         max_stack = 1
     },
@@ -897,7 +896,7 @@ spec:RegisterAuras( {
 spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
 
 local TriggerHyperthermia = setfenv( function()
-    applyBuff( "Hyperthermia", 2 + ( buff.lingering_embers.stacks * 1 ) )
+    applyBuff( "hyperthermia", 2 + ( buff.lingering_embers.stacks ) )
 end, state )
 
 spec:RegisterHook( "reset_precast", function ()

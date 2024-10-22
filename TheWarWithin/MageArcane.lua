@@ -88,7 +88,6 @@ spec:RegisterTalents( {
     -- Arcane
     aether_attunement          = { 102476, 453600, 1 }, -- Every 3 times you consume Clearcasting, gain Aether Attunement. Aether Attunement: Your next Arcane Missiles deals 100% increased damage to your primary target and fires at up to 4 nearby enemies dealing 50% increased damage.
     aethervision               = { 111111, 467633, 1 }, -- 
-
     amplification              = { 102445, 236628, 1 }, -- Arcane Missiles fires 3 additional missiles.
     arcane_bombardment         = { 102465, 384581, 1 }, -- Arcane Barrage deals an additional 100% damage against targets below 35% health.
     arcane_debilitation        = { 102463, 453598, 2 }, -- Damaging a target with Arcane Missiles increases the damage they take from Arcane Missiles, Arcane Barrage, and Arcane Blast by 0.0% for 6 sec. Multiple instances may overlap.
@@ -143,7 +142,7 @@ spec:RegisterTalents( {
     slippery_slinging          = {  94659, 444752, 1 }, -- You have 40% increased movement speed during Alter Time and Evocation.
     spellfrost_teachings       = {  94655, 444986, 1 }, -- Direct damage from Arcane Splinters has a 2% chance to launch an Arcane Orb and increase all damage dealt by Arcane Orb by 10% for 10 sec.
     splintering_orbs           = { 94661, 444256, 1 }, -- Enemies damaged by your $?c1[Arcane Orb][Frozen Orb] conjure $?c1[$s4 Arcane][$s5 Frost] $LSplinter:Splinters;, up to $?c1[$s1][$s6].; $?c1[Arcane Orb][Frozen Orb] damage is increased by $s2%.
-    splintering_sorcery        = { 94664, 443739, 1 }, -- [443763] Conjure raw Arcane magic into a sharp projectile that deals $s1 Arcane damage.; Arcane Splinters embed themselves into their target, dealing $444735o1 Arcane damage over $444735d. This effect stacks.
+    splintering_sorcery        = {  94664, 443739, 1, "spellslinger" }, -- [443763] Conjure raw Arcane magic into a sharp projectile that deals $s1 Arcane damage.; Arcane Splinters embed themselves into their target, dealing $444735o1 Arcane damage over $444735d. This effect stacks.
     splinterstorm              = { 94654, 443742, 1 }, -- Whenever you have $s1 or more active Embedded $?c1[Arcane][Frost] Splinters, you automatically cast a Splinterstorm at your target.; $@spellicon443742$@spellname443742:; Shatter all Embedded $?c1[Arcane][Frost] Splinters, dealing their remaining periodic damage instantly.; Conjure $?c1[an Arcane][a Frost] Splinter for each Splinter shattered, then unleash them all in a devastating barrage, dealing $?c1[$443763s1 Arcane][$443722s1 Frost] damage to your target for each Splinter in the Splinterstorm.; Splinterstorm has a $?c1[$s4% chance to grant Clearcasting][$s5% chance to grant Brain Freeze].
     unerring_proficiency       = {  94658, 444974, 1 }, -- Each time you conjure an Arcane Splinter, increase the damage of your next Supernova by 16%. Stacks up to 30 times.
     volatile_magic             = {  94658, 444968, 1 }, -- Whenever an Embedded Arcane Splinter is removed, it explodes, dealing 1,185 Arcane damage to nearby enemies. Deals reduced damage beyond 5 targets.
