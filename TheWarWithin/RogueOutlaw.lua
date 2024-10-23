@@ -955,7 +955,6 @@ spec:RegisterAbilities( {
         texture = 135610,
 
         usable = function()
-            if not boss and buff.stealth.up and not buff.vanish.up then return false, "bte subterfuge bug workaround" end
             if settings.crackshot_lock and talent.crackshot.enabled and not stealthed.all then return false, "userpref requires stealth" end
             return combo_points.current > 0, "requires combo points"
         end,
