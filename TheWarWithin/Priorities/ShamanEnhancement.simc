@@ -41,7 +41,7 @@ actions+=/call_action_list,name=funnel,strict=1,if=active_enemies>1&toggle.funne
 actions.single+=/windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt&!talent.elemental_spirits.enabled
 actions.single+=/primordial_wave,if=!dot.flame_shock.ticking&talent.molten_assault.enabled&(raid_event.adds.in>action.primordial_wave.cooldown|raid_event.adds.in<6)
 actions.single+=/feral_spirit
-actions.single+=/elemental_blast,if=buff.tempest.stack<buff.tempest.max_stack&buff.maelstrom_weapon.stack>=5&talent.elemental_spirits.enabled&feral_spirit.active>=2&feral_spirit.remains<=2*gcd
+actions.single+=/elemental_blast,if=buff.tempest.stack<buff.tempest.max_stack&buff.maelstrom_weapon.stack>=5&talent.elemental_spirits.enabled&feral_spirit.active>=2&(time_to_max_charges<2*gcd.max|feral_spirit.remains<=2*gcd)
 actions.single+=/tempest,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack|(buff.tempest.stack=buff.tempest.max_stack&(tempest_mael_count>30|buff.awakening_storms.stack=2)&buff.maelstrom_weapon.stack>=5)
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&talent.elemental_spirits.enabled&feral_spirit.active>=6&(charges_fractional>=1.8|buff.ascendance.up)
 actions.single+=/windstrike,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_lightning_bolt
@@ -107,7 +107,7 @@ actions.aoe+=/lightning_bolt,cycle_targets=1,if=(!talent.tempest.enabled|(tempes
 actions.aoe+=/lava_lash,cycle_targets=1,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/chain_lightning,cycle_targets=1,if=buff.arc_discharge.up&buff.maelstrom_weapon.stack>=5
-actions.aoe+=/elemental_blast,cycle_targets=1,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(time_to_max_charges<2*gcd.max|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
+actions.aoe+=/elemental_blast,cycle_targets=1,if=,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(time_to_max_charges<2*gcd.max|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
 actions.aoe+=/chain_lightning,cycle_targets=1,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
 actions.aoe+=/feral_spirit
 actions.aoe+=/doom_winds
