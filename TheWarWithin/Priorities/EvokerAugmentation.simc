@@ -30,7 +30,7 @@ actions+=/unravel
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
 actions+=/variable,name=eons_remains,op=setif,value=cooldown.breath_of_eons.remains
 actions+=/variable,name=pool_for_id,if=talent.imminent_destruction,default=0,op=set,value=(variable.eons_remains<8)&essence.deficit>=1&!buff.essence_burst.up
-actions+=/prescience,cycle_targets=1,if=(solo&buff.prescience.remains<1|group&active_dot.prescience<2)&(full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold|boss&fight_remains<=30)|variable.eons_remains<=8|talent.anachronism&buff.imminent_destruction.up&essence<1&!cooldown.fire_breath.up&!cooldown.upheaval.up
+actions+=/prescience,cycle_targets=1,if=(solo&buff.prescience.remains<1|group&active_dot.prescience<2)&((full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold|boss&fight_remains<=30)|variable.eons_remains<=8|talent.anachronism&buff.imminent_destruction.up&essence<1&!cooldown.fire_breath.up&!cooldown.upheaval.up)
 actions+=/hover,use_off_gcd=1,if=gcd.remains>=0.5&(!raid_event.movement.exists&(trinket.1.is.ovinaxs_mercurial_egg|trinket.2.is.ovinaxs_mercurial_egg)|raid_event.movement.in<=6)
 actions+=/potion,if=variable.eons_remains<=0|boss&fight_remains<=30
 actions+=/call_action_list,name=ebon_logic,if=active_dot.ebon_might=0|(buff.ebon_might_self.remains-action.ebon_might.cast_time)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold
@@ -62,7 +62,7 @@ actions.fb+=/fire_breath,empower_to=2,cycle_targets=1,if=fight_remains>12&(buff.
 actions.fb+=/fire_breath,empower_to=1,cycle_targets=1,if=fight_remains>16&(buff.ebon_might_self.remains>cast_time&(!talent.molten_embers|cooldown.upheaval.remains<=(20+4*talent.blast_furnace-6*0))|empowering.fire_breath)
 actions.fb+=/fire_breath,empower_to=4,cycle_targets=1,if=fight_remains>4&talent.font_of_magic&(buff.ebon_might_self.remains>cast_time)|empowering.fire_breath
 
-actions.filler+=/living_flame,if=(buff.ancient_flame.up|mana>=200000|!talent.dream_of_spring|variable.spam_heal=0)&(active_enemies=1|talent.pupil_of_alexstrasza)
+actions.filler+=/living_flame,if=(buff.ancient_flame.up|mana>=200000|!talent.dream_of_spring|variable.spam_heal=0)&(active_enemies=1|talent.pupil_of_alexstrasza|buff.leaping_flames.up)
 actions.filler+=/emerald_blossom,if=!buff.ebon_might_self.up&talent.ancient_flame&talent.scarlet_adaptation&!talent.dream_of_spring&!buff.ancient_flame.up&active_enemies=1
 actions.filler+=/verdant_embrace,if=!buff.ebon_might_self.up&talent.ancient_flame&talent.scarlet_adaptation&!buff.ancient_flame.up&(!talent.dream_of_spring|mana>=200000)&active_enemies=1
 actions.filler+=/azure_strike
@@ -88,5 +88,5 @@ actions.opener_filler+=/variable,name=opener_delay,value=variable.opener_delay>?
 actions.opener_filler+=/variable,name=opener_delay,value=variable.opener_delay-1
 actions.opener_filler+=/variable,name=opener_cds_detected,value=cooldown.breath_of_eons.remains>0|action.breath_of_eons.time_since<time
 actions.opener_filler+=/eruption,if=variable.opener_delay>=3
-actions.opener_filler+=/living_flame,if=active_enemies=1|talent.pupil_of_alexstrasza
+actions.opener_filler+=/living_flame,if=active_enemies=1|talent.pupil_of_alexstrasza|buff.leaping_flames.up
 actions.opener_filler+=/azure_strike
