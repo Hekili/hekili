@@ -600,7 +600,7 @@ spec:RegisterAuras( {
     vicious_hunt = {
         id = 431917,
         duration = 20,
-        max_stack = function() return 1 + talent.pack_assault.enabled and 1 or 0 end,
+        max_stack = function() return talent.pack_assault.enabled and 2 or 1 end,
     },
     -- Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
     wild_kingdom = {
@@ -1099,10 +1099,10 @@ spec:RegisterAbilities( {
 
             if talent.vicious_hunt.enabled then
                 if buff.vicious_hunt.down then
-                    addStack( "vicious_hunt", 20, 1 + talent.pack_assault.enabled )
+                    addStack( "vicious_hunt", 20, talent.pack_assault.enabled and 2 or 1 )
                 else
                     removeStack( "vicious_hunt" )
-                    if talent.pack_coordination.enabled then addStack( "pack_coordination", 20, 1 + talent.pack_assault.enabled ) end
+                    if talent.pack_coordination.enabled then addStack( "pack_coordination", 20, talent.pack_assault.enabled and 2 or 1) end
                 end
             end
             
