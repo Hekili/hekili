@@ -9,7 +9,7 @@ local Hekili = _G[ addon ]
 
 local class = Hekili.Class
 local state = Hekili.State
-
+local GetUnitChargedPowerPoints = GetUnitChargedPowerPoints
 local PTR = ns.PTR
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 local strformat = string.format
@@ -838,9 +838,10 @@ end, state )
 spec:RegisterHook( "reset_precast", function()
 
     -- Supercharged Combo Point handling
-    local charged = 0
-    if talent.supercharger.enabled then
-        for _, point in pairs( GetUnitChargedPowerPoints( "player" ) ) do
+    local cPoints = GetUnitChargedPowerPoints( "player" )
+    if talent.supercharger.enabled and cPoints then
+        local charged = 0
+        for _, point in pairs( cPoints ) do
             charged = charged + 1
         end
         if charged > 0 then applyBuff( "supercharged_combo_points", nil, charged ) end
