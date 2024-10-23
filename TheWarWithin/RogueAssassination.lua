@@ -702,7 +702,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if covenant.night_fae and debuff.sepsis.up then
-            state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
+        state:QueueAuraExpiration( "sepsis", ExpireSepsis, debuff.sepsis.expires )
     end
 
     if set_bonus.tier30_4pc > 0 and debuff.deathmark.up then

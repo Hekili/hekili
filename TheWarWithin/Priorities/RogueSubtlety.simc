@@ -20,8 +20,7 @@ actions+=/call_action_list,name=items
 actions+=/run_action_list,name=stealthed,strict=1,if=stealthed.all
 # Check if you should use dance, vanish or shadowmeld to enter stealth
 actions+=/call_action_list,name=stealth_cds
-actions+=/call_action_list,name=finish,if=combo_points>=cp_max_spend&!buff.darkest_night.up
-actions+=/call_action_list,name=finish,if=(combo_points.deficit<=1+talent.deathstalkers_mark|fight_remains<=1&combo_points>=3)&!buff.darkest_night.up
+actions+=/call_action_list,name=finish,if=(combo_points>=cp_max_spend&!buff.darkest_night.up)|((combo_points.deficit<=1+talent.deathstalkers_mark|fight_remains<=1&combo_points>=3)&!buff.darkest_night.up)
 actions+=/call_action_list,name=build,if=energy.deficit<=20+talent.vigor.rank*25+talent.thistle_tea*20+talent.shadowcraft*20
 actions+=/arcane_torrent,if=energy.deficit>=15+energy.regen
 actions+=/arcane_pulse
