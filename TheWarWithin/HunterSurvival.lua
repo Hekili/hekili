@@ -600,7 +600,7 @@ spec:RegisterAuras( {
     vicious_hunt = {
         id = 431917,
         duration = 20,
-        max_stack = function() return 1 + talent.pack_assault.enabled and 1 or 0 end,
+        max_stack = function() return talent.pack_assault.enabled and 2 or 1 end,
     },
     -- Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
     wild_kingdom = {
