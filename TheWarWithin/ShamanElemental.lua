@@ -27,12 +27,12 @@ spec:RegisterTalents( {
     brimming_with_life          = { 103582, 381689, 1 }, -- Maximum health increased by 10%, and while you are at full health, Reincarnation cools down 75% faster.
     call_of_the_elements        = { 103592, 383011, 1 }, -- Reduces the cooldown of Totemic Recall by 60 sec.
     capacitor_totem             = { 103579, 192058, 1 }, -- Summons a totem at the target location that gathers electrical energy from the surrounding air and explodes after 2 sec, stunning all enemies within 9 yards for 3 sec.
-    chain_heal                  = { 103588,   1064, 1 }, -- Heals the friendly target for 126,227, then jumps up to 15 yards to heal the 3 most injured nearby allies. Healing is reduced by 30% with each jump.
-    chain_lightning             = { 103583, 188443, 1 }, -- Hurls a lightning bolt at the enemy, dealing 76,543 Nature damage and then jumping to additional nearby enemies. Affects 5 total targets. Generates 2 Maelstrom per target hit.
+    chain_heal                  = { 103588,   1064, 1 }, -- Heals the friendly target for 126,071, then jumps up to 15 yards to heal the 3 most injured nearby allies. Healing is reduced by 30% with each jump.
+    chain_lightning             = { 103583, 188443, 1 }, -- Hurls a lightning bolt at the enemy, dealing 82,563 Nature damage and then jumping to additional nearby enemies. Affects 5 total targets. Generates 2 Maelstrom per target hit.
     cleanse_spirit              = { 103608,  51886, 1 }, -- Removes all Curse effects from a friendly target.
     creation_core               = { 103592, 383012, 1 }, -- Totemic Recall affects an additional totem.
     earth_elemental             = { 103585, 198103, 1 }, -- Calls forth a Greater Earth Elemental to protect you and your allies for 1.2 min. While this elemental is active, your maximum health is increased by 15%.
-    earth_shield                = { 103596,    974, 1 }, -- Protects the target with an earthen shield, increasing your healing on them by 20% and healing them for 77,201 when they take damage. This heal can only occur once every 3 sec. Maximum 9 charges. Earth Shield can only be placed on one target at a time. Only one Elemental Shield can be active on the Shaman.
+    earth_shield                = { 103596,    974, 1 }, -- Protects the target with an earthen shield, increasing your healing on them by 20% and healing them for 77,106 when they take damage. This heal can only occur once every 3 sec. Maximum 9 charges. Earth Shield can only be placed on one target at a time. Only one Elemental Shield can be active on the Shaman.
     earthgrab_totem             = { 103617,  51485, 1 }, -- Summons a totem at the target location for 30 sec. The totem pulses every 2 sec, rooting all enemies within 9 yards for 8 sec. Enemies previously rooted by the totem instead suffer 50% movement speed reduction.
     elemental_orbit             = { 103602, 383010, 1 }, -- Increases the number of Elemental Shields you can have active on yourself by 1. You can have Earth Shield on yourself and one ally at the same time.
     elemental_resistance        = { 103601, 462368, 1 }, -- Healing from Healing Stream Totem reduces Fire, Frost, and Nature damage taken by 6% for 3 sec.
@@ -40,16 +40,16 @@ spec:RegisterTalents( {
     encasing_cold               = { 103619, 462762, 1 }, -- Frost Shock snares its targets by an additional 10% and its duration is increased by 2 sec.
     enhanced_imbues             = { 103606, 462796, 1 }, -- The effects of your weapon and shield imbues are increased by 30%.
     fire_and_ice                = { 103605, 382886, 1 }, -- Increases all Fire and Frost damage you deal by 3%.
-    frost_shock                 = { 103604, 196840, 1 }, -- Chills the target with frost, causing 69,949 Frost damage and reducing the target's movement speed by 50% for 6 sec. Generates 3 Maelstrom.
+    frost_shock                 = { 103604, 196840, 1 }, -- Chills the target with frost, causing 69,863 Frost damage and reducing the target's movement speed by 50% for 6 sec. Generates 3 Maelstrom.
     graceful_spirit             = { 103626, 192088, 1 }, -- Reduces the cooldown of Spiritwalker's Grace by 30 sec and increases your movement speed by 20% while it is active.
     greater_purge               = { 103624, 378773, 1 }, -- Purges the enemy target, removing 2 beneficial Magic effects.
     guardians_cudgel            = { 103618, 381819, 1 }, -- When Capacitor Totem fades or is destroyed, another Capacitor Totem is automatically dropped in the same place.
     gust_of_wind                = { 103591, 192063, 1 }, -- A gust of wind hurls you forward.
-    healing_stream_totem        = { 103590,   5394, 1 }, -- Summons a totem at your feet for 18 sec that heals an injured party or raid member within 46 yards for 29,586 every 1.7 sec. If you already know Healing Stream Totem, instead gain 1 additional charge of Healing Stream Totem.
+    healing_stream_totem        = { 103590,   5394, 1 }, -- Summons a totem at your feet for 18 sec that heals an injured party or raid member within 46 yards for 29,550 every 1.7 sec. If you already know Healing Stream Totem, instead gain 1 additional charge of Healing Stream Totem.
     hex                         = { 103623,  51514, 1 }, -- Transforms the enemy into a frog for 1 min. While hexed, the victim is incapacitated, and cannot attack or cast spells. Damage may cancel the effect. Limit 1. Only works on Humanoids and Beasts.
     jet_stream                  = { 103607, 462817, 1 }, -- Wind Rush Totem's movement speed bonus is increased by 10% and now removes snares.
-    lava_burst                  = { 103598,  51505, 1 }, -- Hurls molten lava at the target, dealing 90,091 Fire damage. Lava Burst will always critically strike if the target is affected by Flame Shock. Generates 8 Maelstrom.
-    lightning_lasso             = { 103589, 305483, 1 }, -- Grips the target in lightning, stunning and dealing 306,005 Nature damage over 5 sec while the target is lassoed. Can move while channeling.
+    lava_burst                  = { 103598,  51505, 1 }, -- Hurls molten lava at the target, dealing 89,979 Fire damage. Lava Burst will always critically strike if the target is affected by Flame Shock. Generates 8 Maelstrom.
+    lightning_lasso             = { 103589, 305483, 1 }, -- Grips the target in lightning, stunning and dealing 330,076 Nature damage over 5 sec while the target is lassoed. Can move while channeling.
     mana_spring                 = { 103587, 381930, 1 }, -- Your Lava Burst casts restore 1,750 mana to you and 4 allies nearest to you within 40 yards. Allies can only benefit from one Shaman's Mana Spring effect at a time, prioritizing healers.
     natures_fury                = { 103622, 381655, 1 }, -- Increases the critical strike chance of your Nature spells and abilities by 4%.
     natures_guardian            = { 103613,  30884, 1 }, -- When your health is brought below 35%, you instantly heal for 20% of your maximum health. Cannot occur more than once every 45 sec.
@@ -65,10 +65,10 @@ spec:RegisterTalents( {
     spiritwalkers_aegis         = { 103626, 378077, 1 }, -- When you cast Spiritwalker's Grace, you become immune to Silence and Interrupt effects for 5 sec.
     spiritwalkers_grace         = { 103584,  79206, 1 }, -- Calls upon the guidance of the spirits for 15 sec, permitting movement while casting Shaman spells. Castable while casting.
     static_charge               = { 103618, 265046, 1 }, -- Reduces the cooldown of Capacitor Totem by 5 sec for each enemy it stuns, up to a maximum reduction of 20 sec.
-    stone_bulwark_totem         = { 103629, 108270, 1 }, -- Summons a totem at your feet that grants you an absorb shield preventing 1.5 million damage for 15 sec, and an additional 157,373 every 5 sec for 30 sec.
+    stone_bulwark_totem         = { 103629, 108270, 1 }, -- Summons a totem at your feet that grants you an absorb shield preventing 1.5 million damage for 15 sec, and an additional 157,179 every 5 sec for 30 sec.
     thunderous_paws             = { 103581, 378075, 1 }, -- Ghost Wolf removes snares and increases your movement speed by an additional 25% for the first 3 sec. May only occur once every 20 sec.
     thundershock                = { 103621, 378779, 1 }, -- Thunderstorm knocks enemies up instead of away and its cooldown is reduced by 5 sec.
-    thunderstorm                = { 103603,  51490, 1 }, -- Calls down a bolt of lightning, dealing 6,961 Nature damage to all enemies within 10 yards, reducing their movement speed by 40% for 5 sec, and knocking them away from the Shaman. Usable while stunned.
+    thunderstorm                = { 103603,  51490, 1 }, -- Calls down a bolt of lightning, dealing 7,509 Nature damage to all enemies within 10 yards, reducing their movement speed by 40% for 5 sec, and knocking them away from the Shaman. Usable while stunned.
     totemic_focus               = { 103625, 382201, 1 }, -- Increases the radius of your totem effects by 15%. Increases the duration of your Earthbind and Earthgrab Totems by 10 sec. Increases the duration of your Healing Stream, Tremor, Poison Cleansing, and Wind Rush Totems by 3.0 sec.
     totemic_projection          = { 103586, 108287, 1 }, -- Relocates your active totems to the specified location.
     totemic_recall              = { 103595, 108285, 1 }, -- Resets the cooldown of your most recently used totem with a base cooldown shorter than 3 minutes.
@@ -85,16 +85,16 @@ spec:RegisterTalents( {
     ascendance                  = {  80989, 114050, 1 }, -- Transform into a Flame Ascendant for 15 sec, instantly casting a Flame Shock and a 100% effectiveness Lava Burst at up to 6 nearby enemies. While ascended, Elemental Overload damage is increased by 150% and spells affected by your Mastery: Elemental Overload cause 1 additional Elemental Overload.
     charged_conduit             = {  80991, 468625, 1 }, -- Increases the duration of Lightning Rod by 4 sec and its damage bonus by 25%.
     deeply_rooted_elements      = {  80992, 378270, 1 }, -- Casting Earth Shock, Elemental Blast, or Earthquake have a 7% chance to activate Ascendance for 6.0 sec.  Ascendance Transform into a Flame Ascendant for 15 sec, instantly casting a Flame Shock and a 100% effectiveness Lava Burst at up to 6 nearby enemies. While ascended, Elemental Overload damage is increased by 150% and spells affected by your Mastery: Elemental Overload cause 1 additional Elemental Overload.
-    earth_shock                 = {  80984,   8042, 1 }, -- Instantly shocks the target with concussive force, causing 306,886 Nature damage.
-    earthen_rage                = { 103634, 170374, 1 }, -- Your damaging spells incite the earth around you to come to your aid for 6 sec, repeatedly dealing 14,456 Nature damage to your most recently attacked target.
-    earthquake                  = {  80985,  61882, 1 }, -- Causes the earth within 8 yards of the target location to tremble and break, dealing 162,128 Physical damage over 6 sec and has a 5% chance to knock the enemy down. Multiple uses of Earthquake may overlap. This spell is cast at a selected location.
-    earthquake_2                = {  80985, 462620, 1 }, -- Causes the earth within 8 yards of your target to tremble and break, dealing 162,128 Physical damage over 6 sec and has a 5% chance to knock the enemy down. Multiple uses of Earthquake may overlap. This spell is cast at your target.
+    earth_shock                 = {  80984,   8042, 1 }, -- Instantly shocks the target with concussive force, causing 331,027 Nature damage.
+    earthen_rage                = { 103634, 170374, 1 }, -- Your damaging spells incite the earth around you to come to your aid for 6 sec, repeatedly dealing 15,592 Nature damage to your most recently attacked target.
+    earthquake                  = {  80985,  61882, 1 }, -- Causes the earth within 8 yards of the target location to tremble and break, dealing 161,927 Physical damage over 6 sec and has a 5% chance to knock the enemy down. Multiple uses of Earthquake may overlap. This spell is cast at a selected location.
+    earthquake_2                = {  80985, 462620, 1 }, -- Causes the earth within 8 yards of your target to tremble and break, dealing 161,927 Physical damage over 6 sec and has a 5% chance to knock the enemy down. Multiple uses of Earthquake may overlap. This spell is cast at your target.
     earthshatter                = {  80995, 468626, 1 }, -- Increases Earth Shock and Earthquake damage by 8% and the stat bonuses granted by Elemental Blast by 25%.
     echo_chamber                = {  81013, 382032, 1 }, -- Increases the damage dealt by your Elemental Overloads by 40%.
     echo_of_the_elementals      = {  81008, 462864, 1 }, -- When your Storm Elemental or Fire Elemental expires, it leaves behind a lesser Elemental to continue attacking your enemies for 12 sec.
     echo_of_the_elements        = {  80999, 333919, 1 }, -- Lava Burst has an additional charge.
     echoes_of_great_sundering   = { 103641, 384087, 1 }, -- After casting Earth Shock, your next Earthquake deals 120% additional damage. After casting Elemental Blast, your next Earthquake deals 140% additional damage.
-    elemental_blast             = {  80984, 117014, 1 }, -- Harnesses the raw power of the elements, dealing 392,038 Elemental damage and increasing your Critical Strike or Haste by 6% or Mastery by 11% for 10 sec.
+    elemental_blast             = {  80984, 117014, 1 }, -- Harnesses the raw power of the elements, dealing 422,877 Elemental damage and increasing your Critical Strike or Haste by 6% or Mastery by 11% for 10 sec.
     elemental_equilibrium       = {  80993, 378271, 1 }, -- Dealing direct Fire, Frost, and Nature damage within 10 sec will increase all damage dealt by 10% for 10 sec. This can only occur once every 30 sec.
     elemental_fury              = {  80983,  60188, 1 }, -- Your damaging critical strikes deal 275% damage instead of the usual 200%.
     elemental_unity             = { 103630, 462866, 1 }, -- While a Storm Elemental is active, your Nature damage dealt is increased by 10%. While a Fire Elemental is active, your Fire damage dealt is increased by 10%.
@@ -109,11 +109,11 @@ spec:RegisterTalents( {
     fury_of_the_storms          = {  80998, 191717, 1 }, -- Casting Stormkeeper summons a powerful Lightning Elemental to fight by your side for 12 sec.
     fusion_of_elements          = { 103638, 462840, 1 }, -- After casting Icefury, the next time you cast a damaging Nature and Fire spell, you additionally cast an Elemental Blast at your target at 60% effectiveness.
     herald_of_the_storms        = {  80998, 468571, 1 }, -- Casting Lightning Bolt, Tempest, or Chain Lightning reduces the cooldown of Stormkeeper by 2.0 sec.
-    icefury                     = {  80997, 462816, 1 }, -- Casting Lightning Bolt, Tempest, Lava Burst, or Chain Lightning has a chance to replace your next Frost Shock with Icefury, stacking up to 2 times.  Icefury Hurls frigid ice at the target, dealing 204,085 Frost damage and causing your next Frost Shock to deal 150% increased damage, damage 4 additional targets, and generate 7 additional Maelstrom. Generates 12 Maelstrom.
+    icefury                     = {  80997, 462816, 1 }, -- Casting Lightning Bolt, Tempest, Lava Burst, or Chain Lightning has a chance to replace your next Frost Shock with Icefury, stacking up to 2 times.  Icefury Hurls frigid ice at the target, dealing 203,832 Frost damage and causing your next Frost Shock to deal 150% increased damage, damage 4 additional targets, and generate 7 additional Maelstrom. Generates 12 Maelstrom.
     improved_flametongue_weapon = {  81009, 382027, 1 }, -- Imbuing your weapon with Flametongue increases your Fire spell damage by 6.5% for 1 |4hour:hrs;.
     lightning_capacitor         = { 103631, 462862, 1 }, -- While Lightning Shield is active, your Nature damage dealt is increased by 8%.
     lightning_rod               = {  81012, 210689, 1 }, -- Tempest, Earth Shock, Elemental Blast, and Earthquake make your target a Lightning Rod for 8 sec. Lightning Rods take 20% of all damage you deal with Tempest, Lightning Bolt, and Chain Lightning.
-    liquid_magma_totem          = { 103637, 192222, 1 }, -- Summons a totem at the target location that erupts dealing 44,621 Fire damage and applying Flame Shock to 3 enemies within 9 yards. Continues hurling liquid magma at a random nearby target every 0.8 sec for 6 sec, dealing 21,105 Fire damage to all enemies within 9 yards. Generates 8 Maelstrom.
+    liquid_magma_totem          = { 103637, 192222, 1 }, -- Summons a totem at the target location that erupts dealing 44,565 Fire damage and applying Flame Shock to 3 enemies within 9 yards. Continues hurling liquid magma at a random nearby target every 0.8 sec for 6 sec, dealing 21,079 Fire damage to all enemies within 9 yards. Generates 8 Maelstrom.
     magma_chamber               = {  81007, 381932, 1 }, -- Flame Shock damage increases the damage of your next Earth Shock, Elemental Blast, or Earthquake by 1.5%, stacking up to 10 times.
     master_of_the_elements      = {  81004,  16166, 1 }, -- Casting Lava Burst increases the damage or healing of your next Nature, Physical, or Frost spell by 15%.
     mountains_will_fall         = {  81002, 381726, 1 }, -- Earth Shock, Elemental Blast, and Earthquake can trigger your Mastery: Elemental Overload at 50% effectiveness. Overloaded Earthquakes do not knock enemies down.
@@ -121,7 +121,7 @@ spec:RegisterTalents( {
     preeminence                 = { 103640, 462443, 1 }, -- Your haste is increased by 25% while Ascendance is active and its duration is increased by 3 sec.
     primal_elementalist         = { 103632, 117013, 1 }, -- Your Earth, Fire, and Storm Elementals are drawn from primal elementals 80% more powerful than regular elementals, with additional abilities, and you gain direct control over them.
     primordial_fury             = { 103639, 378193, 1 }, -- Elemental Fury increases critical strike damage by an additional 25%.
-    primordial_wave             = {  81014, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing 28,415 Elemental damage, applying Flame Shock to them, and granting you Lava Surge. Your next Lava Burst will also hit all targets affected by your Flame Shock for 50% of normal damage. Generates 3 Maelstrom.
+    primordial_wave             = {  81014, 375982, 1 }, -- Blast your target with a Primordial Wave, dealing 30,650 Elemental damage, applying Flame Shock to them, and granting you Lava Surge. Your next Lava Burst will also hit all targets affected by your Flame Shock for 50% of normal damage. Generates 3 Maelstrom.
     searing_flames              = {  81005, 381782, 1 }, -- Flame Shock damage has a chance to generate 2 Maelstrom.
     splintered_elements         = {  80978, 382042, 1 }, -- Primordial Wave grants you 10% Haste plus 4% for each additional Lava Burst generated by Primordial Wave for 12 sec.
     storm_elemental             = {  80981, 192249, 1 }, -- Calls forth a Greater Storm Elemental to hurl gusts of wind at your enemies for 24 sec. While the Storm Elemental is active, casting Lightning Bolt, Tempest, or Chain Lightning increases your haste by 4%, stacking up to 4 times.
@@ -129,7 +129,7 @@ spec:RegisterTalents( {
     stormkeeper                 = {  80988, 191634, 1 }, -- Charge yourself with lightning, causing your next 2 Lightning Bolts to deal 150% more damage, and also causes your next 2 Lightning Bolts or Chain Lightnings to be instant cast and trigger an Elemental Overload on every target.
     surge_of_power              = {  81000, 262303, 1 }, -- Earth Shock, Elemental Blast, and Earthquake enhance your next spell cast within 15 sec: Flame Shock: The next cast also applies Flame Shock to 1 additional target within 8 yards of the target. Lightning Bolt or Tempest: Your next cast will cause 1 additional Elemental Overload. Chain Lightning: Your next cast will chain to 1 additional target. Lava Burst: Reduces the cooldown of your Fire and Storm Elemental by 4.0 sec. Frost Shock: Freezes the target in place for 6 sec.
     swelling_maelstrom          = {  81016, 381707, 1 }, -- Increases your maximum Maelstrom by 50. Increases Earth Shock, Elemental Blast, and Earthquake damage by 5%.
-    thunderstrike_ward          = { 103636, 462757, 1 }, -- Imbue your shield with the element of Lightning for 1 |4hour:hrs;, giving Lightning Bolt, Tempest, and Chain Lightning a chance to call down 2 Thunderstrikes on your target for 42,709 Nature damage.
+    thunderstrike_ward          = { 103636, 462757, 1 }, -- Imbue your shield with the element of Lightning for 1 |4hour:hrs;, giving Lightning Bolt, Tempest, and Chain Lightning a chance to call down 2 Thunderstrikes on your target for 46,069 Nature damage.
 
     -- Totemic
     amplification_core          = {  94874, 445029, 1 }, -- While Surging Totem is active, your damage and healing done is increased by 3%.
@@ -141,16 +141,16 @@ spec:RegisterTalents( {
     pulse_capacitor             = {  94866, 445032, 1 }, -- Increases the healing done by Surging Totem by 25%.
     reactivity                  = {  94872, 445035, 1 }, -- Your Healing Stream Totems now also heals a second ally at 50% effectiveness. Cloudburst Totem stores 25% additional healing.
     supportive_imbuements       = {  94866, 445033, 1 }, -- Learn a new weapon imbue, Tidecaller's Guard.  Tidecaller's Guard Imbue your shield with the element of Water for 1 |4hour:hrs;. Your healing done is increased by 2.0% and the duration of your Healing Stream Totem and Cloudburst Totem is increased by 3.0 sec.
-    surging_totem               = {  94877, 444995, 1, "totemic" }, -- Summons a totem at the target location that creates a Tremor immediately and every 5.1 sec for 38,608 Flamestrike damage. Damage reduced beyond 5 targets. Lasts 24 sec.
+    surging_totem               = {  94877, 444995, 1, "totemic" }, -- Summons a totem at the target location that creates a Tremor immediately and every 5.1 sec for 38,479 Flamestrike damage. Damage reduced beyond 5 targets. Lasts 24 sec.
     swift_recall                = {  94859, 445027, 1 }, -- Successfully removing a harmful effect with Tremor Totem or Poison Cleansing Totem, or controlling an enemy with Capacitor Totem or Earthgrab Totem reduces the cooldown of the totem used by 5 sec. Cannot occur more than once every 20 sec per totem.
     totemic_coordination        = {  94881, 445036, 1 }, -- Chain Heals from Lively Totem and Totemic Rebound are 25% more effective.
-    totemic_rebound             = {  94890, 445025, 1 }, -- Chain Heal now jumps to a nearby totem within 23 yards once it reaches its max targets, causing the totem to cast Chain Heal on an injured ally within 30 yards for 65,572. Jumps to 2 nearby targets within 23 yards.
-    whirling_elements           = {  94879, 445024, 1 }, -- Elemental motes orbit around your Surging Totem. Your abilities consume the motes for enhanced effects. Water: Air: The cast time of your next healing spell is reduced by 40%. Earth: Your next Chain Heal applies Earthliving at 150% effectiveness to all targets hit.
+    totemic_rebound             = {  94890, 445025, 1 }, -- Chain Heal now jumps to a nearby totem within 23 yards once it reaches its max targets, causing the totem to cast Chain Heal on an injured ally within 30 yards for 65,491. Jumps to 2 nearby targets within 23 yards.
+    whirling_elements           = {  94879, 445024, 1 }, -- Elemental motes orbit around your Surging Totem. Your abilities consume the motes for enhanced effects. Water: Your next Healing Wave or Healing Surge also heals an ally inside of your Healing Rain at 100% effectiveness. Air: The cast time of your next healing spell is reduced by 40%. Earth: Your next Chain Heal applies Earthliving at 150% effectiveness to all targets hit.
     wind_barrier                = {  94891, 445031, 1 }, -- If you have a totem active, your totem grants you a shield absorbing 338,696 damage for 30 sec every 30 sec.
 
     -- Stormbringer
     arc_discharge               = {  94885, 455096, 1 }, -- Tempest causes your next 2 Chain Lightning or Lightning Bolt spells to be instant cast and deal 40% increased damage.
-    awakening_storms            = {  94867, 455129, 1 }, -- Lightning Bolt and Chain Lightning have a chance to strike your target for 91,899 Nature damage. Every 3 times this occurs, your next Lightning Bolt is replaced by Tempest.
+    awakening_storms            = {  94867, 455129, 1 }, -- Lightning Bolt and Chain Lightning have a chance to strike your target for 99,128 Nature damage. Every 3 times this occurs, your next Lightning Bolt is replaced by Tempest.
     conductive_energy           = {  94868, 455123, 1 }, -- Lightning Rod targets now also take 20% of the damage that Tempest deals, and Tempest also applies Lightning Rod effect.
     electroshock                = {  94863, 454022, 1 }, -- Tempest increases your movement speed by 20% for 5 sec.
     lightning_conduit           = {  94863, 467778, 1 }, -- You have a chance to get struck by lightning, increasing your movement speed by 50% for 5 sec. The effectiveness is increased to 100% in outdoor areas. You call down a Thunderstorm when you Reincarnate.
@@ -168,9 +168,9 @@ spec:RegisterTalents( {
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    burrow              = 5574, -- (409293) Burrow beneath the ground, becoming unattackable, removing movement impairing effects, and increasing your movement speed by 50% for 5 sec. When the effect ends, enemies within 6 yards are knocked in the air and take 288,519 Physical damage.
+    burrow              = 5574, -- (409293) Burrow beneath the ground, becoming unattackable, removing movement impairing effects, and increasing your movement speed by 50% for 5 sec. When the effect ends, enemies within 6 yards are knocked in the air and take 288,161 Physical damage.
     counterstrike_totem = 3490, -- (204331) Summons a totem at your feet for 15 sec. Whenever enemies within 23 yards of the totem deal direct damage, the totem will deal 100% of the damage dealt back to attacker.
-    electrocute         = 5659, -- (206642) When you successfully Purge a beneficial effect, the enemy suffers 52,458 Nature damage over 3 sec.
+    electrocute         = 5659, -- (206642) When you successfully Purge a beneficial effect, the enemy suffers 52,393 Nature damage over 3 sec.
     grounding_totem     = 3620, -- (204336) Summons a totem at your feet that will redirect all harmful spells cast within 34 yards on a nearby party or raid member to itself. Will not redirect area of effect spells. Lasts 3 sec.
     shamanism           = 5660, -- (193876) Your Bloodlust spell now has a 60 sec. cooldown, but increases Haste by 20%, and only affects you and your friendly target when cast for 10 sec. In addition, Bloodlust is no longer affected by Sated.
     static_field_totem  =  727, -- (355580) Summons a totem with 4% of your health at the target location for 6 sec that forms a circuit of electricity that enemies cannot pass through.
@@ -2047,7 +2047,7 @@ spec:RegisterAbilities( {
 
     -- Sears the target with fire, causing $s1 Fire damage and then an additional $o2 Fire damage over $d.    Flame Shock can be applied to a maximum of $I targets.
     flame_shock = {
-        id = 188389,
+        id = 470411,
         cast = 0,
         cooldown = function () return talent.flames_of_the_cauldron.enabled and 4.5 or 6 end,
         gcd = "spell",
@@ -2082,6 +2082,8 @@ spec:RegisterAbilities( {
 
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
+
+        copy = 188389
     },
 
     -- Imbue your $?s33757[off-hand ][]weapon with the element of Fire for $319778d, causing each of your attacks to deal ${$max(($<coeff>*$AP),1)} additional Fire damage$?s382027[ and increasing the damage of your Fire spells by $382028s1%][].
