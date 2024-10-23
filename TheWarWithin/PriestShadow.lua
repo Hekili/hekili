@@ -374,10 +374,7 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "shadowform" )
     end
 
-    if unfurling_darkness_triggered > 0 and now - unfurling_darkness_triggered < 15 then
-        applyBuff( "unfurling_darkness_cd", now - unfurling_darkness_triggered )
-        applyDebuff( "player", "unfurling_darkness_icd", now - unfurling_darkness_triggered )
-    end
+    if debuff.unfurling_darkness_cd.up then applyBuff( "unfurling_darkness_cd", debuff.unfurling_darkness_cd.remains ) end
 
     if pet.mindbender.active then
         applyBuff( "mindbender", pet.mindbender.remains )
@@ -898,11 +895,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
-    unfurling_darkness_icd = {
+    unfurling_darkness_cd = {
         id = 341291,
         duration = 15,
         max_stack = 1,
-        copy = "unfurling_darkness_cd"
+        copy = "unfurling_darkness_icd"
     },
     -- Suffering $w1 damage every $t1 sec. When damaged, the attacker is healed for $325118m1.
     -- https://wowhead.com/beta/spell=325203
@@ -2204,7 +2201,7 @@ spec:RegisterAbilities( {
             if talent.unfurling_darkness.enabled then
                 if buff.unfurling_darkness.up then
                     removeBuff( "unfurling_darkness" )
-                elseif debuff.unfurling_darkness_icd.down then
+                elseif buff.unfurling_darkness_cd.down then
                     applyBuff( "unfurling_darkness" )
                     applyBuff( "unfurling_darkness_cd" )
                     applyDebuff( "player", "unfurling_darkness_icd" )
