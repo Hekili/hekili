@@ -1002,7 +1002,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         toggle = "cooldowns",
 
-        usable = covenant.kyrian,
+        usable = function() return covenant.kyrian end,
 
         cp_gain = function ()
             if buff.shadow_blades.up then return 7 end
