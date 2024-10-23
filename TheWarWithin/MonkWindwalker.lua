@@ -202,19 +202,19 @@ spec:RegisterTalents( {
 
 
 -- PvP Talents
-spec:RegisterPvpTalents( {
-    absolute_serenity   = 5641, -- (455945) Celestial Conduit now prevents incapacitate, disorient, snare, and root effects for its duration.
+spec:RegisterPvpTalents( { 
+    absolute_serenity   = 5641, -- (455945) 
     grapple_weapon      = 3052, -- (233759) You fire off a rope spear, grappling the target's weapons and shield, returning them to you for 5 sec.
-    perpetual_paralysis = 5448, -- (357495) Paralysis range reduced by 5 yards, but spreads to 2 new enemies when removed.
-    predestination      = 3744, -- (345829) Killing a player with Touch of Death reduces the remaining cooldown of Touch of Karma by 60 sec.
-    reverse_harm        =  852, -- (342928) Increases the healing done by Expel Harm by 30%.
-    ride_the_wind       =   77, -- (201372) Flying Serpent Kick clears all snares from you when used and forms a path of wind in its wake, causing all allies who stand in it to have 30% increased movement speed and to be immune to movement slowing effects.
-    rising_dragon_sweep = 5643, -- (460276) Whirling Dragon Punch knocks enemies up into the air and causes them to fall slowly until they reach the ground.
-    rodeo               = 5644, -- (355917) Every 3 sec while Clash is off cooldown, your next Clash can be reactivated immediately to wildly Clash an additional enemy. This effect can stack up to 3 times.
-    stormspirit_strikes = 5610, -- (411098) Striking more than one enemy with Fists of Fury summons a Storm Spirit to focus your secondary target for 25 sec, which will mimic any of your attacks that do not also strike the target for 25% of normal damage.
+    perpetual_paralysis = 5448, -- (357495) 
+    predestination      = 3744, -- (345829) 
+    reverse_harm        =  852, -- (342928) 
+    ride_the_wind       =   77, -- (201372) 
+    rising_dragon_sweep = 5643, -- (460276) 
+    rodeo               = 5644, -- (355917) 
+    stormspirit_strikes = 5610, -- (411098) 
     tigereye_brew       =  675, -- (247483) Consumes up to 10 stacks of Tigereye Brew to empower your Physical abilities with wind for 2 sec per stack consumed. Damage of your strikes are reduced, but bypass armor. For each 3 Chi you consume, you gain a stack of Tigereye Brew.
-    turbo_fists         = 3745, -- (287681) Fists of Fury now reduces all targets movement speed by 90%, and you Parry all attacks while channelling Fists of Fury.
-    wind_waker          = 3737, -- (357633) Your movement enhancing abilities increases Windwalking on allies by 10%, stacking 2 additional times. Movement impairing effects are removed at 3 stacks.
+    turbo_fists         = 3745, -- (287681) 
+    wind_waker          = 3737, -- (357633) 
 } )
 
 
