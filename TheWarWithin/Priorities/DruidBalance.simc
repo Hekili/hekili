@@ -5,8 +5,8 @@ actions.precombat+=/variable,name=on_use_trinket,value=0
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=(trinket.1.has_proc&trinket.1.cooldown.duration|trinket.1.is.spymasters_web|trinket.1.is.signet_of_the_priory)&!trinket.1.is.arakara_sacbrood
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=((trinket.2.has_proc&trinket.2.cooldown.duration|trinket.2.is.spymasters_web|trinket.2.is.signet_of_the_priory)*2&!trinket.2.is.arakara_sacbrood)
 ## Regrowth to stack for Keeper of the Grove...
-actions.precombat+=/regrowth,line_cd=15,if=hero_tree.keeper_of_the_grove&!talent.stellar_flare
-actions.precombat+=/wrath,line_cd=15,if=!prev.1.wrath
+actions.precombat+=/regrowth,if=hero_tree.keeper_of_the_grove&!talent.stellar_flare&active_dot.regrowth=0
+actions.precombat+=/wrath,if=!prev.1.wrath
 actions.precombat+=/wrath,if=prev.1.wrath&!(prev.2.wrath|prev.3.wrath|prev.4.wrath)
 actions.precombat+=/starfire,if=!talent.stellar_flare&hero_tree.elunes_chosen
 actions.precombat+=/stellar_flare
@@ -15,7 +15,7 @@ actions+=/solar_beam
 actions+=/variable,name=passive_asp,value=6%spell_haste+talent.natures_balance+talent.orbit_breaker*dot.moonfire.ticking*(buff.orbit_breaker.stack>(27-2*buff.solstice.up))*24
 actions+=/variable,name=ca_effective_cd,value=cooldown.ca_inc.remains<?cooldown.force_of_nature.remains
 actions+=/variable,name=last_ca_inc,value=boss&fight_remains<cooldown.ca_inc.duration+variable.ca_effective_cd
-actions+=/variable,name=cd_condition,value=(fight_remains<(15+5*talent.incarnation_chosen_of_elune)*(1+talent.greater_alignment*0.4)|target.time_to_die>10&(!hero_tree.keeper_of_the_grove|(buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>25)))&cooldown.ca_inc.ready
+actions+=/variable,name=cd_condition,value=(fight_remains<(15+5*talent.incarnation_chosen_of_elune)*(1-talent.whirling_stars*0.2)|fight_remains>10&(!hero_tree.keeper_of_the_grove|(buff.harmony_of_the_grove.up&cooldown.convoke_the_spirits.remains<60&(!talent.new_moon|cooldown.new_moon.charges_fractional>=2)))&(!talent.whirling_stars|!talent.convoke_the_spirits|talent.whirling_stars&cooldown.convoke_the_spirits.remains<gcd.max*2|cooldown.convoke_the_spirits.remains>cooldown.ca_inc.full_recharge_time))&cooldown.ca_inc.ready&!buff.ca_inc.up
 actions+=/use_item,name=aberrant_spellforge
 ## actions+=/do_treacherous_transmitter_task,if=cooldown.ca_inc.remains>10
 actions+=/use_item,name=spymasters_web,if=variable.cd_condition&(buff.spymasters_report.stack>29|fight_remains<cooldown.ca_inc.duration)|boss&fight_remains<20
