@@ -1099,10 +1099,10 @@ spec:RegisterAbilities( {
 
             if talent.vicious_hunt.enabled then
                 if buff.vicious_hunt.down then
-                    addStack( "vicious_hunt", 20, 1 + talent.pack_assault.enabled )
+                    addStack( "vicious_hunt", 20, talent.pack_assault.enabled and 2 or 1 )
                 else
                     removeStack( "vicious_hunt" )
-                    if talent.pack_coordination.enabled then addStack( "pack_coordination", 20, 1 + talent.pack_assault.enabled ) end
+                    if talent.pack_coordination.enabled then addStack( "pack_coordination", 20, talent.pack_assault.enabled and 2 or 1) end
                 end
             end
             
