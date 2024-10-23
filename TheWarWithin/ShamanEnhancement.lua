@@ -1706,8 +1706,7 @@ spec:RegisterAbilities( {
 
     -- Sears the target with fire, causing $s1 Fire damage and then an additional $o2 Fire damage over $d.    Flame Shock can be applied to a maximum of $I targets.
     flame_shock = {
-        id = function() return buff.voltaic_blaze.up and 470057 or 188389 end,
-        known = 188389,
+        id = 470411,
         cast = 0,
         cooldown = 6,
         hasteCD = true,
@@ -1727,7 +1726,7 @@ spec:RegisterAbilities( {
             if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
-        copy = { 470411, "voltaic_blaze", 470057 }
+        copy = { 188389, 470411, "voltaic_blaze", 470057 }
     },
 
     -- Imbue your $?s33757[off-hand ][]weapon with the element of Fire for $319778d, causing each of your attacks to deal ${$max(($<coeff>*$AP),1)} additional Fire damage$?s382027[ and increasing the damage of your Fire spells by $382028s1%][].

@@ -64,7 +64,7 @@ actions.single+=/lava_burst,if=!talent.thorims_invocation.enabled&buff.maelstrom
 actions.single+=/primordial_wave,if=raid_event.adds.in>action.primordial_wave.cooldown|raid_event.adds.in<6
 actions.single+=/elemental_blast,if=buff.maelstrom_weapon.stack>=5&feral_spirit.active>=4&talent.ascendance.enabled&(charges_fractional>=1.8|(buff.icy_edge.stack+buff.molten_weapon.stack>=4))
 actions.single+=/lightning_bolt,if=((buff.maelstrom_weapon.stack>=8)|(talent.static_accumulation.enabled&buff.maelstrom_weapon.stack>=5))&buff.primordial_wave.down&talent.ascendance.enabled&talent.tempest.enabled
-actions.single+=/doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled&talent.ascendance.enabled&talent.tempest.enabled
+actions.single+=/doom_winds,if=talent.elemental_spirits.enabled&talent.ascendance.enabled&talent.tempest.enabled
 actions.single+=/lava_lash,if=talent.tempest.enabled&(buff.hot_hand.up|(talent.molten_assault.enabled&talent.elemental_spirits.enabled&!talent.deeply_rooted_elements.enabled&dot.flame_shock.remains<=3))
 actions.single+=/stormstrike,if=talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormsurge.up))
 actions.single+=/stormstrike,if=talent.elemental_spirits.enabled&(buff.doom_winds.up|talent.deeply_rooted_elements.enabled|(talent.stormblast.enabled&buff.stormbringer.up))
@@ -76,7 +76,7 @@ actions.single+=/flame_shock,if=!ticking&!talent.tempest.enabled
 actions.single+=/windstrike,if=(talent.totemic_rebound.enabled&time_since_tr>=3.5)|(talent.awakening_storms.enabled&time_since_as>=3.5)
 actions.single+=/stormstrike,if=(talent.totemic_rebound.enabled&time_since_tr>=3.5)|(talent.awakening_storms.enabled&time_since_as>=3.5)
 actions.single+=/lava_lash,if=talent.lively_totems.enabled&(action.lava_lash.time_since>=3.5)
-actions.single+=/doom_winds,if=raid_event.adds.in>=action.doom_winds.cooldown&talent.elemental_spirits.enabled
+actions.single+=/doom_winds,if=talent.elemental_spirits.enabled
 actions.single+=/lava_lash,if=talent.elemental_assault.enabled&talent.tempest.enabled&talent.molten_assault.enabled&talent.deeply_rooted_elements.enabled&dot.flame_shock.ticking
 actions.single+=/ice_strike,if=talent.elemental_assault.enabled&talent.swirling_maelstrom.enabled
 actions.single+=/lava_lash,if=talent.elemental_assault.enabled&talent.tempest.enabled&talent.molten_assault.enabled&dot.flame_shock.ticking
