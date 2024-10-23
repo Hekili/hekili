@@ -1247,7 +1247,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             removeBuff( "the_emperors_capacitor" )
-            if buff.jade_empowerment.up then removeBuff( "jade_empowerment" ) end
+            if buff.jade_empowerment.up then removeStack( "jade_empowerment" ) end
             applyDebuff( "target", "crackling_jade_lightning" )
         end,
     },

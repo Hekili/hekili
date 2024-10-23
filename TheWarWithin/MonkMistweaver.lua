@@ -244,6 +244,11 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    dance_of_chiji = {
+        id = 438443,
+        duration = 15,
+        max_stack = 1
+    },
     -- Your dodge chance is increased by $w1% until you dodge an attack.
     dance_of_the_wind = {
         id = 432180,
@@ -1110,6 +1115,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "spinning_crane_kick" )
+            if buff.dance_of_chiji.up then removeBuff( "dance_of_chiji" ) end
             if pet.chiji.up then
                 addStack( "invoke_chiji" )
                 gust_of_mist.count = min( 10, gust_of_mist.count + 1 )
@@ -1130,7 +1136,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             addStack( "thunder_focus_tea", nil, talent.focused_thunder.enabled and 2 or 1 )
-            if talent.jade_empowerment.enabled then applyBuff( "jade_empowerment" ) end
+            if talent.jade_empowerment.enabled then addStack( "jade_empowerment" ) end
             if talent.jadefire_teachings.enabled then applyBuff( "jadefire_teachings" ) end
             if talent.refreshing_jade_wind.enabled then applyBuff( "refreshing_jade_wind" ) end
             if set_bonus.tier30_4pc > 0 or set_bonus.tier31_4pc > 0 then applyBuff( "soulfang_vitality" ) end
