@@ -33,9 +33,9 @@ actions+=/run_action_list,name=slayer_am_st,strict=1,if=talent.slayers_dominance
 actions+=/run_action_list,name=slayer_ra_mt,strict=1,if=talent.slayers_dominance&talent.reckless_abandon&active_enemies>1
 actions+=/run_action_list,name=slayer_am_mt,strict=1,if=talent.slayers_dominance&talent.anger_management&active_enemies>1
 actions+=/run_action_list,name=thane_ra_st,strict=1,if=talent.lightning_strikes&talent.reckless_abandon&active_enemies=1
-actions+=/run_action_list,name=thane_am_st,strict=1,if=talent.lightning_strikes&talent.anger_management&active_enemies=1
+actions+=/run_action_list,name=thane_am_st,strict=1,if=(talent.lightning_strikes&talent.anger_management|!talent.slayers_dominance&!talent.lightning_strikes|!talent.reckless_abandon&!talent.reckless_abandon)&active_enemies=1
 actions+=/run_action_list,name=thane_ra_mt,strict=1,if=talent.lightning_strikes&talent.reckless_abandon&active_enemies>1
-actions+=/run_action_list,name=thane_am_mt,strict=1,if=talent.lightning_strikes&talent.anger_management&active_enemies>1
+actions+=/run_action_list,name=thane_am_mt,strict=1,if=(talent.lightning_strikes&talent.anger_management|!talent.slayers_dominance&!talent.lightning_strikes|!talent.reckless_abandon&!talent.reckless_abandon)&active_enemies>1
 
 actions.slayer_am_st+=/recklessness,if=(!talent.anger_management&cooldown.avatar.remains<1&talent.titans_torment)|talent.anger_management|!talent.titans_torment
 actions.slayer_am_st+=/avatar,if=(talent.titans_torment&(buff.enrage.up|talent.titanic_rage)&(debuff.champions_might.up|!talent.champions_might))|!talent.titans_torment
@@ -227,7 +227,7 @@ actions.thane_ra_mt+=/execute
 actions.thane_ra_mt+=/whirlwind
 
 # Trinkets
-actions.trinkets+=/do_treacherous_transmitter_task
+## actions.trinkets+=/do_treacherous_transmitter_task
 actions.trinkets+=/use_item,name=treacherous_transmitter,if=variable.adds_remain|variable.st_planning
 # Trinkets The trinket with the highest estimated value, will be used first and paired with Avatar.
 actions.trinkets+=/use_item,slot=trinket1,if=variable.trinket_1_buffs&!variable.trinket_1_manual&(!buff.avatar.up&trinket.1.cast_time>0|!trinket.1.cast_time>0)&((talent.titans_torment&cooldown.avatar.ready)|(buff.avatar.up&!talent.titans_torment))&(variable.trinket_2_exclude|!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|trinket.1.proc.any_dps.duration>=fight_remains&boss
