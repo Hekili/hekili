@@ -41,7 +41,7 @@ spec:RegisterTalents( {
     blast_furnace                   = {  93309, 375510, 1 }, -- Fire Breath's damage over time lasts 4 sec longer.
     bountiful_bloom                 = {  93291, 370886, 1 }, -- Emerald Blossom heals 2 additional allies.
     cauterizing_flame               = {  93294, 374251, 1 }, -- Cauterize an ally's wounds, removing all Bleed, Poison, Curse, and Disease effects. Heals for 41,237 upon removing any effect.
-    clobbering_sweep                = {  93296, 375443, 1 }, -- Tail Swipe's cooldown is reduced by 45 sec.
+    clobbering_sweep                = { 103844, 375443, 1 }, -- Tail Swipe's cooldown is reduced by 2 min.
     draconic_legacy                 = {  93300, 376166, 1 }, -- Your Stamina is increased by 6%.
     enkindled                       = {  93295, 375554, 2 }, -- Living Flame deals 3% more damage and healing.
     expunge                         = {  93306, 365585, 1 }, -- Expunge toxins affecting an ally, removing all Poison effects.
@@ -50,7 +50,7 @@ spec:RegisterTalents( {
     fire_within                     = {  93345, 375577, 1 }, -- Renewing Blaze's cooldown is reduced by 30 sec.
     foci_of_life                    = {  93345, 375574, 1 }, -- Renewing Blaze restores you more quickly, causing damage you take to be healed back over 4 sec.
     forger_of_mountains             = {  93270, 375528, 1 }, -- Landslide's cooldown is reduced by 30 sec, and it can withstand 200% more damage before breaking.
-    heavy_wingbeats                 = {  93296, 368838, 1 }, -- Wing Buffet's cooldown is reduced by 45 sec.
+    heavy_wingbeats                 = { 103843, 368838, 1 }, -- Wing Buffet's cooldown is reduced by 2 min.
     inherent_resistance             = {  93355, 375544, 2 }, -- Magic damage taken reduced by 4%.
     innate_magic                    = {  93302, 375520, 2 }, -- Essence regenerates 5% faster.
     instinctive_arcana              = {  93310, 376164, 2 }, -- Your Magic damage done is increased by 2%.
@@ -62,8 +62,7 @@ spec:RegisterTalents( {
     obsidian_scales                 = {  93304, 363916, 1 }, -- Reinforce your scales, reducing damage taken by 30%. Lasts 12 sec.
     oppressing_roar                 = {  93298, 372048, 1 }, -- Let out a bone-shaking roar at enemies in a cone in front of you, increasing the duration of crowd controls that affect them by 50% in the next 10 sec.
     overawe                         = {  93297, 374346, 1 }, -- Oppressing Roar removes 1 Enrage effect from each enemy, and its cooldown is reduced by 30 sec.
-    panacea                         = {  93348, 387761, 1 }, -- Emerald Blossom and Verdant Embrace instantly heal you for 17,172 when cast.
-    permeating_chill                = {  93303, 370897, 1 }, -- Your damaging Blue spells reduce the target's movement speed by 50% for 3 sec.
+    panacea                         = {  93348, 387761, 1 }, -- Emerald Blossom and Verdant Embrace instantly heal you for 14,727 when cast.
     potent_mana                     = {  93715, 418101, 1 }, -- Source of Magic increases the target's healing and damage done by 3%.
     protracted_talons               = {  93307, 369909, 1 }, -- Azure Strike damages 1 additional enemy.
     quell                           = {  93311, 351338, 1 }, -- Interrupt an enemy's spellcasting and prevent any spell from that school of magic from being cast for 4 sec.
@@ -80,8 +79,8 @@ spec:RegisterTalents( {
     time_spiral                     = {  93351, 374968, 1 }, -- Bend time, allowing you and your allies within 40 yds to cast their major movement ability once in the next 10 sec, even if it is on cooldown.
     tip_the_scales                  = {  93350, 370553, 1 }, -- Compress time to make your next empowered spell cast instantly at its maximum empower level.
     twin_guardian                   = {  93287, 370888, 1 }, -- Rescue protects you and your ally from harm, absorbing damage equal to 30% of your maximum health for 5 sec.
-    unravel                         = {  93308, 368432, 1 }, -- Sunder an enemy's protective magic, dealing 80,259 Spellfrost damage to absorb shields.
-    verdant_embrace                 = {  93341, 360995, 1 }, -- Fly to an ally and heal them for 57,424, or heal yourself for the same amount.
+    unravel                         = {  93308, 368432, 1 }, -- Sunder an enemy's protective magic, dealing 106,038 Spellfrost damage to absorb shields.
+    verdant_embrace                 = {  93341, 360995, 1 }, -- Fly to an ally and heal them for 59,098, or heal yourself for the same amount.
     walloping_blow                  = {  93286, 387341, 1 }, -- Wing Buffet and Tail Swipe knock enemies further and daze them, reducing movement speed by 70% for 4 sec.
     zephyr                          = {  93346, 374227, 1 }, -- Conjure an updraft to lift you and your 4 nearest allies within 20 yds into the air, reducing damage taken from area-of-effect attacks by 20% and increasing movement speed by 30% for 8 sec.
 
@@ -89,10 +88,10 @@ spec:RegisterTalents( {
     call_of_ysera                   = {  93250, 373834, 1 }, -- Verdant Embrace increases the healing of your next Dream Breath by 40%, or your next Living Flame by 100%.
     cycle_of_life                   = {  93266, 371832, 1 }, -- Every 3 Emerald Blossoms leaves behind a tiny sprout which gathers 10% of your healing over 8 sec. The sprout then heals allies within 30 yds, divided evenly among targets.
     delay_harm                      = {  93335, 376207, 1 }, -- Time Dilation delays 70% of damage taken.
-    dream_breath                    = {  93240, 355936, 1 }, -- Inhale, gathering the power of the Dream. Release to exhale, healing 5 injured allies in a 30 yd cone in front of you for 74,610. I: Heals 13,715 instantly and 60,894 over 16 sec. II: Heals 28,939 instantly and 45,670 over 12 sec. III: Heals 44,163 instantly and 30,447 over 8 sec.
-    dream_flight                    = {  93267, 359816, 1 }, -- Take in a deep breath and fly to the targeted location, healing all allies in your path for 32,970 immediately, and 25,855 over 15 sec. Healing increased by 100% when not in a raid. Removes all root effects. You are immune to movement impairing and loss of control effects while flying.
+    dream_breath                    = {  93240, 355936, 1 }, -- Inhale, gathering the power of the Dream. Release to exhale, healing 5 injured allies in a 30 yd cone in front of you for 70,800. I: Heals 11,763 instantly and 59,037 over 16 sec. II: Heals 26,522 instantly and 44,277 over 12 sec. III: Heals 41,281 instantly and 29,518 over 8 sec.
+    dream_flight                    = {  93267, 359816, 1 }, -- Take in a deep breath and fly to the targeted location, healing all allies in your path for 28,276 immediately, and 22,174 over 15 sec. Healing increased by 100% when not in a raid. Removes all root effects. You are immune to movement impairing and loss of control effects while flying.
     dreamwalker                     = {  93244, 377082, 1 }, -- You are able to move while communing with the Dream.
-    echo                            = {  93339, 364343, 1 }, -- Wrap an ally with temporal energy, healing them for 14,986 and causing your next non-Echo healing spell to cast an additional time on that ally at 105% of normal healing.
+    echo                            = {  93339, 364343, 1 }, -- Wrap an ally with temporal energy, healing them for 14,138 and causing your next non-Echo healing spell to cast an additional time on that ally at 105% of normal healing.
     emerald_communion               = {  93245, 370960, 1 }, -- Commune with the Emerald Dream, restoring 20% health and 2% mana every 0.8 sec for 4.0 sec. Overhealing is transferred to an injured ally within 40 yds. Castable while stunned, disoriented, incapacitated, or silenced.
     empath                          = {  93242, 376138, 1 }, -- Spiritbloom increases your Essence regeneration rate by 100% for 8 sec.
     energy_loop                     = {  93261, 372233, 1 }, -- Disintegrate deals 35% more damage and generates 7,200 mana over its duration.
@@ -102,13 +101,13 @@ spec:RegisterTalents( {
     exhilarating_burst              = {  93246, 377100, 2 }, -- Each time you gain Essence Burst, your critical heals are 230% effective instead of the usual 200% for 10 sec.
     field_of_dreams                 = {  93248, 370062, 1 }, -- Gain a 30% chance for one of your Fluttering Seedlings to grow into a new Emerald Blossom.
     flow_state                      = {  93256, 385696, 2 }, -- Empower spells cause time to flow 10% faster for you, increasing movement speed, cooldown recharge rate, and cast speed. Lasts 10 sec.
-    fluttering_seedlings            = {  93247, 359793, 2 }, -- Emerald Blossom sends out flying seedlings when it bursts, healing 2 allies up to 40 yds away for 9,703.
+    fluttering_seedlings            = {  93247, 359793, 2 }, -- Emerald Blossom sends out flying seedlings when it bursts, healing 2 allies up to 40 yds away for 9,154.
     font_of_magic                   = {  93252, 375783, 1 }, -- Your empower spells' maximum level is increased by 1.
     golden_hour                     = {  93255, 378196, 1 }, -- Reversion instantly heals the target for 15% of damage taken in the last 5 sec.
     grace_period                    = {  93265, 376239, 1 }, -- Your healing is increased by 10% on targets with your Reversion.
     just_in_time                    = {  93335, 376204, 1 }, -- Time Dilation's cooldown is reduced by 2 sec each time you cast an Essence ability.
     lifebind                        = {  93253, 373270, 1 }, -- Verdant Embrace temporarily bonds your life with an ally, causing your healing on either partner to heal the other for 40% of the amount. Lasts 5 sec.
-    lifeforce_mender                = {  93236, 376179, 2 }, -- Living Flame and Fire Breath deal additional damage and healing equal to 1% of your maximum health.
+    lifeforce_mender                = {  93236, 376179, 2 }, -- Living Flame and Fire Breath deal additional damage and healing equal to 1.0% of your maximum health.
     lifegivers_flame                = {  93237, 371426, 1 }, -- Fire Breath heals 5 nearby injured allies for 80% of damage done to up to 5 targets, split evenly among them.
     lifespark                       = {  99804, 443177, 1 }, -- Reversion healing has a chance to cause your next Living Flame to cast instantly and deal 50% increased healing or damage. Stacks up to 2 charges.
     nozdormus_teachings             = {  93258, 376237, 1 }, -- Temporal Anomaly reduces the cooldowns of your empower spells by 5 sec.
@@ -117,11 +116,11 @@ spec:RegisterTalents( {
     punctuality                     = {  93260, 371270, 1 }, -- Reversion has 2 charges.
     renewing_breath                 = {  93268, 371257, 2 }, -- Dream Breath healing is increased by 15%.
     resonating_sphere               = {  93258, 376236, 1 }, -- Temporal Anomaly applies Echo at 30% effectiveness to the first 5 allies it passes through.
-    reversion                       = {  93338, 366155, 1 }, -- Reverse an ally's injuries, instantly healing them for 15% of damage taken in the last 5 sec and an additional 32,154 over 12 sec. When Reversion critically heals, its duration is extended by 2 sec, up to a maximum of 12 sec.
+    reversion                       = {  93338, 366155, 1 }, -- Reverse an ally's injuries, instantly healing them for 15% of damage taken in the last 5 sec and an additional 30,334 over 12 sec. When Reversion critically heals, its duration is extended by 2 sec, up to a maximum of 12 sec.
     rewind                          = {  93337, 363534, 1 }, -- Rewind 33% of damage taken in the last 5 seconds by all allies within 40 yds. Always heals for at least 20,994. Healing increased by 100% when not in a raid.
     rush_of_vitality                = {  93244, 377086, 1 }, -- Emerald Communion increases your maximum health by 20% for 15 sec.
     spark_of_insight                = {  93269, 377099, 1 }, -- Consuming a full Temporal Compression grants you Essence Burst.
-    spiritbloom                     = {  93243, 367226, 1 }, -- Divert spiritual energy, healing an ally for 69,857. Splits to injured allies within 30 yds when empowered. I: Heals one ally. II: Heals a second ally. III: Heals a third ally.
+    spiritbloom                     = {  93243, 367226, 1 }, -- Divert spiritual energy, healing an ally for 71,894. Splits to injured allies within 30 yds when empowered. I: Heals one ally. II: Heals a second ally. III: Heals a third ally.
     spiritual_clarity               = {  93242, 376150, 1 }, -- Spiritbloom's cooldown is reduced by 10 sec.
     stasis                          = {  93262, 370537, 1 }, -- Causes your next 3 helpful spells to be duplicated and stored in a time lock. You may reactivate Stasis any time within 30 sec to quickly unleash their magic.
     temporal_anomaly                = {  93257, 373861, 1 }, -- Send forward a vortex of temporal energy, absorbing 16,494 damage on you and any allies in its path. Absorption is reduced beyond 5 targets.
@@ -129,7 +128,7 @@ spec:RegisterTalents( {
     temporal_compression            = {  93241, 362874, 1 }, -- Each cast of a Bronze spell causes your next empower spell to reach maximum level in 10% less time, stacking up to 4 times.
     time_dilation                   = {  93336, 357170, 1 }, -- Stretch time around an ally for the next 8 sec, causing 50% of damage they would take to instead be dealt over 8 sec.
     time_lord                       = {  93254, 372527, 2 }, -- Echo replicates 50% more healing.
-    time_of_need                    = {  93259, 368412, 1 }, -- When you or an ally fall below 30% health, a version of yourself enters your timeline and heals them for 57,424. Your alternate self continues healing for 8 sec before returning to their timeline. May only occur once every 60 sec.
+    time_of_need                    = {  93259, 368412, 1 }, -- When you or an ally fall below 30% health, a version of yourself enters your timeline and heals them for 59,098. Your alternate self continues healing for 8 sec before returning to their timeline. May only occur once every 60 sec.
     timeless_magic                  = {  93263, 376240, 2 }, -- Reversion, Time Dilation, Echo, and Temporal Anomaly last 15% longer and cost 15% less mana.
     titans_gift                     = {  99803, 443264, 1 }, -- Essence Burst increases the effectiveness of your next Essence ability by 25%.
 
@@ -150,36 +149,36 @@ spec:RegisterTalents( {
     warp                            = {  94948, 429483, 1 }, -- Hover now causes you to briefly warp out of existence and appear at your destination. Hover's cooldown is also reduced by 5 sec. Hover continues to allow Evoker spells to be cast while moving.
 
     -- Flameshaper
-    burning_adrenaline              = { 94946, 444020, 1 }, -- Engulf quickens your pulse, reducing the cast time of your next spell by $444019s1%. Stacks up to $444019u charges.
-    conduit_of_flame                = { 94949, 444843, 1 }, -- Critical strike chance against targets $?c1[above][below] $s2% health increased by $s1%.
-    consume_flame                   = { 94922, 444088, 1 }, -- Engulf consumes $s1 sec of $?c1[Fire Breath][Dream Breath] from the target, detonating it and $?c1[damaging][healing] all nearby targets equal to $s3% of the amount consumed, reduced beyond $s2 targets.
-    draconic_instincts              = { 94931, 445958, 1 }, -- Your wounds have a small chance to cauterize, healing you for $s1% of damage taken. Occurs more often from attacks that deal high damage.
-    engulf                          = { 94950, 443328, 1, "flameshaper" }, -- Engulf your target in dragonflame, damaging them for $443329s1 Fire or healing them for $443330s1. For each of your periodic effects on the target, effectiveness is increased by $s1%.
-    enkindle                        = { 94956, 444016, 1 }, -- Essence abilities are enhanced with Flame, dealing $s1% of healing or damage done as Fire over 8 sec.
-    expanded_lungs                  = { 94923, 444845, 1 }, -- Fire Breath's damage over time is increased by $s1%. Dream Breath's heal over time is increased by $s1%.
-    fan_the_flames                  = { 94923, 444318, 1 }, -- Casting Engulf reignites all active Enkindles, increasing their remaining damage or healing over time by $s1%.
-    lifecinders                     = { 94931, 444322, 1 }, -- Renewing Blaze also applies to your target or $s1 nearby injured $Lally:allies; at $s2% value.
-    red_hot                         = { 94945, 444081, 1 }, -- Engulf gains $s2 additional charge and deals $s1% increased damage and healing.
-    shape_of_flame                  = { 94937, 445074, 1 }, -- Tail Swipe and Wing Buffet scorch enemies and blind them with ash, causing their next attack within $445134d to miss.
-    titanic_precision               = { 94920, 445625, 1 }, -- Living Flame and Azure Strike have $s1 extra chance to trigger Essence Burst when they critically strike.
-    trailblazer                     = { 94937, 444849, 1 }, -- $?c1[Hover and Deep Breath][Hover, Deep Breath, and Dream Flight] travel $s1% faster, and Hover travels $s1% further.
-    traveling_flame                 = { 99857, 444140, 1 }, -- Engulf increases the duration of $?c1[Fire Breath][Fire Breath or Dream Breath] by $s1 sec and causes it to spread to a target within $?c1[$s2][$s3] yds.
+    burning_adrenaline              = {  94946, 444020, 1 }, -- Engulf quickens your pulse, reducing the cast time of your next spell by $444019s1%. Stacks up to $444019u charges.
+    conduit_of_flame                = {  94949, 444843, 1 }, -- Critical strike chance against targets $?c1[above][below] $s2% health increased by $s1%.
+    consume_flame                   = {  94922, 444088, 1 }, -- Engulf consumes $s1 sec of $?c1[Fire Breath][Dream Breath] from the target, detonating it and $?c1[damaging][healing] all nearby targets equal to $s3% of the amount consumed, reduced beyond $s2 targets.
+    draconic_instincts              = {  94931, 445958, 1 }, -- Your wounds have a small chance to cauterize, healing you for $s1% of damage taken. Occurs more often from attacks that deal high damage.
+    engulf                          = {  94950, 443328, 1, "flameshaper" }, -- Engulf your target in dragonflame, damaging them for $443329s1 Fire or healing them for $443330s1. For each of your periodic effects on the target, effectiveness is increased by $s1%.
+    enkindle                        = {  94956, 444016, 1 }, -- Essence abilities are enhanced with Flame, dealing $s1% of healing or damage done as Fire over 8 sec.
+    expanded_lungs                  = {  94923, 444845, 1 }, -- Fire Breath's damage over time is increased by $s1%. Dream Breath's heal over time is increased by $s1%.
+    fan_the_flames                  = {  94923, 444318, 1 }, -- Casting Engulf reignites all active Enkindles, increasing their remaining damage or healing over time by $s1%.
+    lifecinders                     = {  94931, 444322, 1 }, -- Renewing Blaze also applies to your target or $s1 nearby injured $Lally:allies; at $s2% value.
+    red_hot                         = {  94945, 444081, 1 }, -- Engulf gains $s2 additional charge and deals $s1% increased damage and healing.
+    shape_of_flame                  = {  94937, 445074, 1 }, -- Tail Swipe and Wing Buffet scorch enemies and blind them with ash, causing their next attack within $445134d to miss.
+    titanic_precision               = {  94920, 445625, 1 }, -- Living Flame and Azure Strike have $s1 extra chance to trigger Essence Burst when they critically strike.
+    trailblazer                     = {  94937, 444849, 1 }, -- $?c1[Hover and Deep Breath][Hover, Deep Breath, and Dream Flight] travel $s1% faster, and Hover travels $s1% further.
+    traveling_flame                 = {  99857, 444140, 1 }, -- Engulf increases the duration of $?c1[Fire Breath][Fire Breath or Dream Breath] by $s1 sec and causes it to spread to a target within $?c1[$s2][$s3] yds.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
     chrono_loop          = 5455, -- (383005) Trap the enemy in a time loop for 5 sec. Afterwards, they are returned to their previous location and health. Cannot reduce an enemy's health below 20%.
-    divide_and_conquer   = 5595, -- (384689)
-    dream_catcher        = 5598, -- (410962)
-    dream_projection     = 5454, -- (377509) Summon a flying projection of yourself that heals allies you pass through for 27,475. Detonating your projection dispels all nearby allies of Magical effects, and heals for 136,004 over 20 sec.
-    dreamwalkers_embrace = 5616, -- (415651)
+    divide_and_conquer   = 5595, -- (384689) Deep Breath forms curtains of fire, preventing line of sight to enemies outside its walls and burning enemies who walk through them for 84,830 Fire damage. Lasts 6 sec.
+    dream_catcher        = 5598, -- (410962) Sleep Walk no longer has a cooldown, but its cast time is increased by 0.2 sec.
+    dream_projection     = 5454, -- (377509) Summon a flying projection of yourself that heals allies you pass through for 23,564. Detonating your projection dispels all nearby allies of Magical effects, and heals for 116,641 over 20 sec.
+    dreamwalkers_embrace = 5616, -- (415651) Verdant Embrace tethers you to an ally, increasing movement speed by 40% and slowing and siphoning 14,727 life from enemies who come in contact with the tether. The tether lasts up to 10 sec or until you move more than 30 yards away from your ally.
     nullifying_shroud    = 5468, -- (378464) Wreathe yourself in arcane energy, preventing the next 3 full loss of control effects against you. Lasts 30 sec.
-    obsidian_mettle      = 5459, -- (378444)
-    scouring_flame       = 5461, -- (378438)
+    obsidian_mettle      = 5459, -- (378444) While Obsidian Scales is active you gain immunity to interrupt, silence, and pushback effects.
+    scouring_flame       = 5461, -- (378438) Fire Breath burns away 1 beneficial Magic effect per empower level from all targets.
     swoop_up             = 5465, -- (370388) Grab an enemy and fly with them to the target location.
     time_stop            = 5463, -- (378441) Freeze an ally's timestream for 5 sec. While frozen in time they are invulnerable, cannot act, and auras do not progress. You may reactivate Time Stop to end this effect early.
-    unburdened_flight    = 5470, -- (378437)
+    unburdened_flight    = 5470, -- (378437) Hover makes you immune to movement speed reduction effects.
 } )
 
 
