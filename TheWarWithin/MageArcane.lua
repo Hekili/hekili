@@ -52,7 +52,7 @@ spec:RegisterTalents( {
     ice_block                  = {  62122,  45438, 1 }, -- Encases you in a block of ice, protecting you from all attacks and damage for 10 sec, but during that time you cannot attack, move, or cast spells. While inside Ice Block, you heal for 40% of your maximum health over the duration. Causes Hypothermia, preventing you from recasting Ice Block for 30 sec.
     ice_cold                   = {  62085, 414659, 1 }, -- Ice Block now reduces all damage taken by 70% for 6 sec but no longer grants Immunity, prevents movement, attacks, or casting spells. Does not incur the Global Cooldown.
     ice_floes                  = {  62105, 108839, 1 }, -- Makes your next Mage spell with a cast time shorter than 10 sec castable while moving. Unaffected by the global cooldown and castable while casting.
-    ice_nova                   = {  62088, 157997, 1 }, -- Causes a whirl of icy wind around the enemy, dealing 15,430 Frost damage to the target and reduced damage to all other enemies within 8 yds, and freezing them in place for 2 sec.
+    ice_nova                   = { 62088, 157997, 1 }, -- Causes a whirl of icy wind around the enemy, dealing $s1 Frost damage to the target and all other enemies within $a2 yds, freezing them in place for $d. Damage reduced beyond $s3 targets.
     ice_ward                   = {  62086, 205036, 1 }, -- Frost Nova now has 2 charges.
     improved_frost_nova        = {  62108, 343183, 1 }, -- Frost Nova duration is increased by 2 sec.
     incantation_of_swiftness   = {  62112, 382293, 2 }, -- Greater Invisibility increases your movement speed by 40% for 6 sec.
@@ -87,6 +87,7 @@ spec:RegisterTalents( {
 
     -- Arcane
     aether_attunement          = { 102476, 453600, 1 }, -- Every 3 times you consume Clearcasting, gain Aether Attunement. Aether Attunement: Your next Arcane Missiles deals 100% increased damage to your primary target and fires at up to 4 nearby enemies dealing 50% increased damage.
+    aethervision               = { 111111, 467633, 1 }, -- 
     amplification              = { 102445, 236628, 1 }, -- Arcane Missiles fires 3 additional missiles.
     arcane_bombardment         = { 102465, 384581, 1 }, -- Arcane Barrage deals an additional 100% damage against targets below 35% health.
     arcane_debilitation        = { 102463, 453598, 2 }, -- Damaging a target with Arcane Missiles increases the damage they take from Arcane Missiles, Arcane Barrage, and Arcane Blast by 0.0% for 6 sec. Multiple instances may overlap.
@@ -98,13 +99,13 @@ spec:RegisterTalents( {
     arcane_tempo               = { 102436, 383980, 1 }, -- Consuming Arcane Charges increases your Haste by 2% for 12 sec, stacks up to 5 times.
     arcing_cleave              = { 102458, 231564, 1 }, -- For each Arcane Charge, Arcane Barrage hits 1 additional nearby target for 40% damage.
     big_brained                = { 102446, 461261, 1 }, -- Gaining Clearcasting increases your Intellect by 1% for 8 sec. Multiple instances may overlap.
-    charged_orb                = { 102466, 384651, 1 }, -- Arcane Orb gains 1 additional charge.
+    charged_orb                = { 102466, 384651, 1 }, -- Arcane Orb gains $s1 additional charge. Arcane Orb damage increased by $s2%.
     concentrated_power         = { 102461, 414379, 1 }, -- Arcane Missiles channels 20% faster. Clearcasting makes Arcane Explosion echo for 40% damage.
     concentration              = { 102438, 384374, 1 }, -- Arcane Blast has a small chance to make your next cast of Arcane Blast free.
-    consortiums_bauble         = { 102448, 461260, 1 }, -- Reduces Arcane Blast's mana cost by 3% and increases its damage by 3%.
+    consortiums_bauble         = { 102475, 461260, 1 }, -- Reduces Arcane Blast's mana cost by $s1% and increases its damage by $s2%.
     dematerialize              = { 102456, 461456, 1 }, -- Spells empowered by Nether Precision cause their target to suffer an additional 8% of the damage dealt over 6 sec.
     energized_familiar         = { 102462, 452997, 1 }, -- During Arcane Surge, your Familiar fires 4 bolts instead of 1. Damage from your Arcane Familiar has a small chance to grant you up to 2% of your maximum mana.
-    energy_reconstitution      = { 102454, 461457, 1 }, -- Damage from Dematerialize has a small chance to summon an Arcane Explosion at its target's location at 50% effectiveness. Arcane Explosions summoned from Energy Reconstitution do not generate Arcane Charges.
+    energy_reconstitution      = { 102454, 461457, 1 }, -- Damage from Dematerialize has a small chance to summon an Arcane Explosion at its target's location at $s1% effectiveness.; Arcane Explosions summoned from Energy Reconstitution do not generate Arcane Charges.
     enlightened                = { 102470, 321387, 1 }, -- Arcane damage dealt while above 70% mana is increased by 6%, Mana Regen while below 70% is increased by 20%.
     eureka                     = { 102455, 452198, 1 }, -- When a spell consumes Clearcasting, its damage is increased by 10%.
     evocation                  = { 102459,  12051, 1 }, -- Increases your mana regeneration by 1,500% for 2.6 sec and grants Clearcasting. While channeling Evocation, your Intellect is increased by 2% every 0.4 sec. Lasts 20 sec.
@@ -113,7 +114,7 @@ spec:RegisterTalents( {
     impetus                    = { 102480, 383676, 1 }, -- Arcane Blast has a 10% chance to generate an additional Arcane Charge. If you were to gain an Arcane Charge while at maximum charges instead gain 10% Arcane damage for 10 sec.
     improved_clearcasting      = { 102471, 321420, 1 }, -- Clearcasting can stack up to 2 additional times.
     improved_touch_of_the_magi = { 102452, 453002, 1 }, -- Your Touch of the Magi now accumulates 25% of the damage you deal.
-    leydrinker                 = { 102474, 452196, 1 }, -- Consuming Nether Precision has a 20% chance to make your next Arcane Blast or Arcane Barrage echo, repeating its damage at 60% effectiveness to the primary target and up to four nearby enemies.
+    leydrinker                 = { 102474, 452196, 1 }, -- Consuming Nether Precision has a $s1% chance to make your next Arcane Blast echo, repeating its damage at $s2% effectiveness to the primary target and up to four nearby enemies.; Casting Touch of the Magi grants Leydrinker.
     leysight                   = { 102477, 452187, 1 }, -- Nether Precision damage bonus increased to 30%.
     magis_spark                = { 102435, 454016, 1 }, -- Your Touch of the Magi now also conjures a spark, causing the damage from your next Arcane Barrage, Arcane Blast, and Arcane Missiles to echo for 100% of their damage. Upon receiving damage from all three spells, the spark explodes, dealing 47,407 Arcane damage to all nearby enemies.
     nether_munitions           = { 102435, 450206, 1 }, -- When your Touch of the Magi detonates, it increases the damage all affected targets take from you by 8% for 12 sec.
@@ -122,12 +123,11 @@ spec:RegisterTalents( {
     presence_of_mind           = { 102460, 205025, 1 }, -- Causes your next 2 Arcane Blasts to be instant cast.
     prodigious_savant          = { 102450, 384612, 2 }, -- Arcane Charges further increase Mastery effectiveness of Arcane Blast and Arcane Barrage by 20%.
     resonance                  = { 102437, 205028, 1 }, -- Arcane Barrage deals 10% increased damage per target it hits.
-    resonant_orbs              = { 102453, 461453, 1 }, -- Arcane Orb damage increased by 10%.
     reverberate                = { 102441, 281482, 1 }, -- If Arcane Explosion hits at least 3 targets, it has a 50% chance to generate an extra Arcane Charge.
     slipstream                 = { 102469, 236457, 1 }, -- Arcane Missiles can now be channeled while moving. Evocation can be channeled while moving.
-    static_cloud               = { 102475, 461257, 1 }, -- Each time you cast Arcane Explosion, its damage increases by 25%. Bonus resets after reaching 100% damage.
+    static_cloud               = { 102453, 461257, 1 }, -- Each time you cast Arcane Explosion, its damage increases by $461515s1%.; Bonus resets after reaching ${$461515s1*$461515u}% damage.
     surging_urge               = { 102440, 457521, 1 }, -- Arcane Surge damage increased by 5% per Arcane Charge.
-    time_loop                  = { 102451, 452924, 1 }, -- When you apply a stack of Arcane Debilitation, you have a 10% chance to apply another stack of Arcane Debilitation. This effect can trigger off of itself.
+    time_loop                  = { 102451, 452924, 1 }, -- Arcane Debilitation's duration is increased by ${$s2/1000} sec.; When you apply a stack of Arcane Debilitation, you have a $s1% chance to apply another stack of Arcane Debilitation.; This effect can trigger off of itself.
     touch_of_the_magi          = { 102468, 321507, 1 }, -- Applies Touch of the Magi to your current target, accumulating 25% of the damage you deal to the target for 12 sec, and then exploding for that amount of Arcane damage to the target and reduced damage to all nearby enemies. Generates 4 Arcane Charges.
 
     -- Spellslinger
@@ -138,25 +138,26 @@ spec:RegisterTalents( {
     phantasmal_image           = {  94660, 444784, 1 }, -- Your Mirror Image summons one extra clone. Mirror Image now reduces all damage taken by an additional 5%.
     reactive_barrier           = {  94660, 444827, 1 }, -- Your Prismatic Barrier can absorb up to 50% more damage based on your missing Health. Max effectiveness when under 50% health.
     shifting_shards            = {  94657, 444675, 1 }, -- Shifting Power fires a barrage of 8 Arcane Splinters at random enemies within 40 yds over its duration.
+    signature_spell            = { 94657, 470021, 1 }, -- $?c1[When your Magi's Spark explodes, you conjure $s1 Arcane Splinters][Consuming Winter's Chill with Glacial Spike conjures $s2 additional Frost Splinters].
     slippery_slinging          = {  94659, 444752, 1 }, -- You have 40% increased movement speed during Alter Time and Evocation.
     spellfrost_teachings       = {  94655, 444986, 1 }, -- Direct damage from Arcane Splinters has a 2% chance to launch an Arcane Orb and increase all damage dealt by Arcane Orb by 10% for 10 sec.
-    splintering_orbs           = {  94661, 444256, 1 }, -- The first enemy damaged by your Arcane Orb conjures 4 Arcane Splinters. Arcane Orb damage is increased by 10%.
-    splintering_sorcery        = {  94664, 443739, 1, "spellslinger" }, -- When you consume Nether Precision, conjure 2 Arcane Splinters that fire at your target. Arcane Splinter:
-    splinterstorm              = {  94654, 443742, 1 }, -- Whenever you have 8 or more active Embedded Arcane Splinters, you automatically cast a Splinterstorm at your target. Splinterstorm: Shatter all Embedded Arcane Splinters, dealing their remaining periodic damage instantly. Conjure an Arcane Splinter for each Splinter shattered, then unleash them all in a devastating barrage, dealing 4,149 Arcane damage to your target for each Splinter in the Splinterstorm. Splinterstorm has a 20% chance to grant you Clearcasting.
+    splintering_orbs           = { 94661, 444256, 1 }, -- Enemies damaged by your $?c1[Arcane Orb][Frozen Orb] conjure $?c1[$s4 Arcane][$s5 Frost] $LSplinter:Splinters;, up to $?c1[$s1][$s6].; $?c1[Arcane Orb][Frozen Orb] damage is increased by $s2%.
+    splintering_sorcery        = {  94664, 443739, 1, "spellslinger" }, -- [443763] Conjure raw Arcane magic into a sharp projectile that deals $s1 Arcane damage.; Arcane Splinters embed themselves into their target, dealing $444735o1 Arcane damage over $444735d. This effect stacks.
+    splinterstorm              = { 94654, 443742, 1 }, -- Whenever you have $s1 or more active Embedded $?c1[Arcane][Frost] Splinters, you automatically cast a Splinterstorm at your target.; $@spellicon443742$@spellname443742:; Shatter all Embedded $?c1[Arcane][Frost] Splinters, dealing their remaining periodic damage instantly.; Conjure $?c1[an Arcane][a Frost] Splinter for each Splinter shattered, then unleash them all in a devastating barrage, dealing $?c1[$443763s1 Arcane][$443722s1 Frost] damage to your target for each Splinter in the Splinterstorm.; Splinterstorm has a $?c1[$s4% chance to grant Clearcasting][$s5% chance to grant Brain Freeze].
     unerring_proficiency       = {  94658, 444974, 1 }, -- Each time you conjure an Arcane Splinter, increase the damage of your next Supernova by 16%. Stacks up to 30 times.
     volatile_magic             = {  94658, 444968, 1 }, -- Whenever an Embedded Arcane Splinter is removed, it explodes, dealing 1,185 Arcane damage to nearby enemies. Deals reduced damage beyond 5 targets.
 
     -- Sunfury
-    burden_of_power            = {  94644, 451035, 1 }, -- Conjuring a Spellfire Sphere increases the damage of your next Arcane Blast by 15% or your next Arcane Barrage by 30%.
+    burden_of_power            = { 94644, 451035, 1 }, -- Conjuring a Spellfire Sphere increases the damage of your next $?c1[Arcane Blast by $451049s2%][Pyroblast by $451049s1% or your next Flamestrike by $451049s3%].
     codex_of_the_sunstriders   = {  94643, 449382, 1 }, -- Over its duration, your Arcane Phoenix will consume each of your Spellfire Spheres to cast an exceptional spell. Upon consuming a Spellfire Sphere, your Arcane Phoenix will grant you Lingering Embers.  Lingering Embers
-    glorious_incandescence     = {  94645, 449394, 1 }, -- Consuming Burden of Power causes your next cast of Arcane Barrage to grant 4 Arcane Charges and call down a storm of 4 Meteorites on its target.
+    glorious_incandescence     = { 94645, 449394, 1 }, -- Consuming Burden of Power causes your next cast of $?c1[Arcane Barrage to deal $451073s2% increased damage, grant $s4 Arcane Charges, and][Fire Blast to strike up to ${$451073s3-1}  additional targets, and] call down a storm of $s1 Meteorites on its target.$?c1[][; Each Meteorite's impact reduces the cooldown of Fire Blast by ${$s2/1000}.1 sec.]
     gravity_lapse              = {  94651, 458513, 1 }, -- Your Supernova becomes Gravity Lapse. Gravity Lapse
-    ignite_the_future          = {  94648, 449558, 1 }, -- Generating a Spellfire Sphere while your Phoenix is active causes it to cast an exceptional spell.
+    ignite_the_future          = { 94648, 449558, 1 }, -- Generating a Spellfire Sphere while your Phoenix is active causes it to cast an exceptional spell.; Mana Cascade can now stack up to $s2 times.
     invocation_arcane_phoenix  = {  94652, 448658, 1 }, -- When you cast Arcane Surge, summon an Arcane Phoenix to aid you in battle.  Arcane Phoenix Your Arcane Phoenix aids you for the duration of your Arcane Surge, casting random Arcane and Fire spells.
     lessons_in_debilitation    = {  94651, 449627, 1 }, -- Your Arcane Phoenix will Spellsteal when it is summoned and when it expires.
-    mana_cascade               = {  94653, 449293, 1 }, -- Casting Arcane Blast or Arcane Barrage grants you 1.0% Haste for 10 sec. Stacks up to 10 times. Multiple instances may overlap.
+    mana_cascade               = { 94653, 449293, 1 }, -- $?c1[Casting Arcane Blast or Arcane Barrage][Consuming Hot Streak] grants you $?c1[${$449322s2/10}.1][${$449314s2/10}.1]% Haste for $449322d1. Stacks up to $449314u times. Multiple instances may overlap.
     memory_of_alar             = {  94646, 449619, 1 }, -- While under the effects of a casted Arcane Surge, you gain twice as many stacks of Mana Addiction. When your Arcane Phoenix expires, it empowers you, granting Arcane Soul for 3 sec, plus an additional 0.5 sec for each exceptional spell it had cast. Arcane Soul:
-    merely_a_setback           = {  94649, 449330, 1 }, -- Your Prismatic Barrier now grants 5% avoidance while active and 5% leech for 5 seconds when it breaks or expires.
+    merely_a_setback           = { 94649, 449330, 1 }, -- Your $?c1[Prismatic Barrier][Blazing Barrier] now grants $s1% avoidance while active and $449331s1% leech for $449331d when it breaks or expires.
     rondurmancy                = {  94648, 449596, 1 }, -- Spellfire Spheres can now stack up to 5 times.
     savor_the_moment           = {  94650, 449412, 1 }, -- When you cast Arcane Surge, its duration is extended by 0.5 sec for each Spellfire Sphere you have, up to 2.5 sec.
     spellfire_spheres          = {  94647, 448601, 1, "sunfury" }, -- Every 6 times you cast Arcane Blast or Arcane Barrage, conjure a Spellfire Sphere. While you're out of combat, you will slowly conjure Spellfire Spheres over time.  Spellfire Sphere Increases your spell damage by 2%. Stacks up to 3 times.
@@ -189,6 +190,11 @@ spec:RegisterAuras( {
         id = 458388,
         duration = 180,
         max_stack = 3
+    },
+    aethervision = {
+        id = 467634,
+        duration = 10,
+        max_stack = 2
     },
     -- Talent: Altering Time. Returning to past location and health when duration expires.
     -- https://wowhead.com/beta/spell=342246
@@ -225,8 +231,8 @@ spec:RegisterAuras( {
     },
     arcane_debilitation = {
         id = 453599,
-        duration = 20,
-        max_stack = 5
+        duration = function () return 6 + (talent.time_loop.enabled and 2 or 0) end,
+        max_stack = 15
     },
     -- Talent: Maximum mana increased by $s1%.
     -- https://wowhead.com/beta/spell=210126
@@ -275,7 +281,7 @@ spec:RegisterAuras( {
     },
     arcane_soul = {
         id = 451038,
-        duration = function () return 2+ ( buff.lingering_embers.stacks * 0.5 ) end,
+        duration = function () return 2 + ( buff.lingering_embers.stacks * 1 ) end,
         max_stack = 1
     },
     -- Talent: Spell damage increased by $w1% and Mana Regeneration increase $w3%.
@@ -404,7 +410,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     gravity_lapse = {
-        id = 449700,
+        id = 473291,
         duration = 3,
         max_stack = 1
     },
@@ -486,6 +492,11 @@ spec:RegisterAuras( {
     magis_spark_arcane_missiles = {
         duration = 12,
         max_stack = 1
+    },
+    mana_cascade = {
+        id = 449322,
+        duration = 10,
+        max_stack = function () return 10 + talent.ignite_the_future.enabled and 5 or 0 end
     },
     mass_polymorph = {
         id = 383121,
@@ -683,7 +694,7 @@ spec:RegisterAuras( {
     next_blast_spheres = {
         id = 449400,
         duration = 30,
-        max_stack = 6,
+        max_stack = 5,
     }
 	
 } )
@@ -1203,17 +1214,19 @@ spec:RegisterAbilities( {
         -- velocity = 24,
         handler = function ()
             gain( 0.02 * mana.modmax * arcane_charges.current, "mana" )
-            
-            if buff.burden_of_power.up then
-                removeBuff( "burden_of_power" )
-                gain( 4, "arcane_charges")
-            end
 
             spend( arcane_charges.current, "arcane_charges" )
             removeBuff( "arcane_harmony" )
-            
             removeBuff( "bursting_energy" )
-            removeBuff( "leydrinker" )
+
+            if talent.spellfire_spheres.enabled then
+                if buff.next_blast_spheres.stacks == 5 then
+                    removeBuff( "next_blast_spheres" )
+                    addStack( "spellfire_spheres" )
+                    applyBuff( "burden_of_power" )
+                else addStack( "next_blast_spheres" )
+                end
+            end
 
             if buff.glorious_incandescence.up then
                 gain( 4, "arcane_charges")
@@ -1228,6 +1241,11 @@ spec:RegisterAbilities( {
             if buff.intuition.up then
                 gain( 4, "arcane_charges" )
                 removeBuff( "intuition" )
+            end
+
+            if buff.aethervision.up then
+                gain( 2*buff.aethervision.stacks, "arcane_charges" )
+                removeBuff( "aethervision" )
             end
 
             if buff.nether_precision.up then
@@ -1254,8 +1272,8 @@ spec:RegisterAbilities( {
 
         spend = function ()
             -- More mana trickery to achieve the correct rotation
-           -- if prev_gcd[1].touch_of_the_magi or buff.concentration.up then return 0 end
-            local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( 1 - 0.03 * talent.consortiums_bauble.rank )
+           if buff.concentration.up then return 0 end
+            local mult = 0.0275 * ( 1 + arcane_charges.current ) * ( talent.consortiums_bauble.enabled and 0.95 or 1 )
             -- if azerite.equipoise.enabled and mana.pct < 70 then return ( mana.modmax * mult ) - 190 end
             return mana.modmax * mult, "mana"
         end,
@@ -1269,27 +1287,27 @@ spec:RegisterAbilities( {
                 if buff.presence_of_mind.down then setCooldown( "presence_of_mind", 60 ) end
             end
 
-            removeStack( "concentration" )
+            removeBuff( "concentration" )
             removeBuff( "leydrinker" )
-            
-            if buff.next_blast_spheres.stacks == 6 then
-                removeBuff ( "next_blast_spheres" )
-                addStack ( "spellfire_spheres" )
-                applyBuff ( "burden_of_power" )
-            elseif buff.next_blast_spheres.up then
-                addStack ( "next_blast_spheres" )
-            else
-                applyBuff ( "next_blast_spheres" )
+
+            if talent.spellfire_spheres.enabled then
+                if buff.next_blast_spheres.stacks == 5 then
+                    removeBuff( "next_blast_spheres" )
+                    addStack( "spellfire_spheres" )
+                    applyBuff( "burden_of_power" )
+                else addStack( "next_blast_spheres" )
+                end
             end
 
             if buff.burden_of_power.up then
-                removeBuff ( "burden_of_power" )
-                applyBuff ( "glorious_incandescence" )
+                removeBuff( "burden_of_power" )
+                applyBuff( "glorious_incandescence" )
             end
 
             if buff.nether_precision.up then
                 removeStack( "nether_precision" )
                 if talent.dematerialize.enabled then applyDebuff( "target", "dematerialize" ) end
+                if talent.aethervision.enabled then addStack( "aethervision" ) end
             end
 
             if debuff.magis_spark_arcane_blast.up then
@@ -1324,29 +1342,26 @@ spec:RegisterAbilities( {
         handler = function ()
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
             else
-                if buff.concentration.up then removeBuff( "concentration" )
-                else
-                    if buff.clearcasting.up then
-                        if buff.expanded_potential.up then removeBuff( "expanded_potential" )
-                        else removeStack( "clearcasting" ) end
-                        if talent.aether_attunement.enabled then
-                            if buff.aether_attunement_stack.stack == 2 then
-                                removeBuff( "aether_attunement_stack" )
-                                applyBuff( "aether_attunement" )
-                            else
-                                addStack( "aether_attunement_stack" )
-                            end
+                if buff.clearcasting.up then
+                    if buff.expanded_potential.up then removeBuff( "expanded_potential" )
+                    else removeStack( "clearcasting" ) end
+                    if talent.aether_attunement.enabled then
+                        if buff.aether_attunement_stack.stack == 2 then
+                            removeBuff( "aether_attunement_stack" )
+                            applyBuff( "aether_attunement" )
+                        else
+                            addStack( "aether_attunement_stack" )
                         end
-                        if talent.arcane_debilitation.enabled then addStack( "arcane_debilitation" ) end
-                        if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
-                        if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
-                        if set_bonus.tier31_4pc > 0 then
-                            if buff.arcane_battery.stack == 2 then
-                                removeBuff( "arcane_battery" )
-                                applyBuff( "arcane_artillery" )
-                            else
-                                addStack( "arcane_battery" )
-                            end
+                    end
+                    if talent.arcane_debilitation.enabled then addStack( "arcane_debilitation" ) end
+                    if conduit.nether_precision.enabled or talent.nether_precision.enabled then addStack( "nether_precision", nil, 2 ) end
+                    if set_bonus.tier31_2pc > 0 then addStack( "forethought" ) end
+                    if set_bonus.tier31_4pc > 0 then
+                        if buff.arcane_battery.stack == 2 then
+                            removeBuff( "arcane_battery" )
+                            applyBuff( "arcane_artillery" )
+                        else
+                            addStack( "arcane_battery" )
                         end
                     end
                 end
@@ -1446,8 +1461,6 @@ spec:RegisterAbilities( {
             end
 
             if buff.clearcasting.up then
-                if buff.concentration.up then removeBuff( "concentration" )
-                else
                     if buff.expanded_potential.up then removeBuff( "expanded_potential" )
                     else removeStack( "clearcasting" ) end
                     if buff.aether_attunement_stack.stack == 2 then
@@ -1467,7 +1480,7 @@ spec:RegisterAbilities( {
                             addStack( "arcane_battery" )
                         end
                     end
-                end
+
                 if talent.amplification.enabled then applyBuff( "clearcasting_channel" ) end
                 if legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 ) end
             end
@@ -2105,6 +2118,7 @@ spec:RegisterAbilities( {
             end
 
             applyDebuff( "target", "supernova" )
+            removeBuff( "unerring_proficiency" )
         end,
 
         copy = { 157980, "gravity_lapse", 449700 }
@@ -2173,6 +2187,9 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "magis_spark_arcane_blast" )
                 applyDebuff( "target", "magis_spark_arcane_missiles" )
             end
+            if talent.leydrinker.enabled then
+                applyBuff( "leydrinker" )
+            end
             gain( 4, "arcane_charges" )
         end,
     },
@@ -2215,4 +2232,4 @@ spec:RegisterSetting( "cancel_pom", false, {
     width = "full"
 } )
 
-spec:RegisterPack( "Arcane", 20240928, [[Hekili:T31EVTTXY(plbbGrQ1XrpStIlKmqo52790GB7PakN75)effjLfpMIuLpSJVWqF2pZS7YL7BsBl3M(aOi2MC5S7o7843m7SBxoE5NxUikOkE5pnz0KZgDXK3F64rtE)O3TCr1D7JxUyFq41bxb)swWo4F)qryqg5X3LMheHFEzEDri8OTvv7l)U38MRsQ2wV(0W8DVPmzxDAqvsEwyrWMk8VdFZYfRRtsR(HSLRn13VBYyGM7Jdx(tVDcq1KOOyAtJldxUaB6RhDXRNm5KdRWF((V7WQfj7(4Hv17rQD4th(utJgpcE5NVno46dRY3hNfxi(2rJPKy0u2pTtQ3)6jxy9LVJoi(824dR(xbfW)aCGKSLlstkRkrwuyKpT7H)4Ni884SG1PXrl)BWllsQIlscwUyWHv7lIVX)QWOthFAaHv7VoOOawaoSY7WkObbHi7u5LNMK5Vjn5QTv(fX7csYkpSA2CysD65hwD)9hwHuu)ndBi666nBAizzDbqW690pmmppnk)2m53Yj1LhwnDeHqdPT34uG8rK(sSJc3gG0QScKWGb1HvNbuz5I6Yy)8nBqkG8kYYErYECwVCXNZRd3cRLBoSQcz3)yWvjWcszC0Hv3Uno7WkQa6Hv)Tg2wcmm3Le9Ak)b(wybkb((7YRpS6Fxxw189nF5c6OnilI1OO8SxbTABWnXKbztd)izcuEcBSCBqc0kMiFCj7Pvj7Wbb8MQGRjpn)WQFPoUM0f5qBGXdiUNMc)9Mk8Vyts68HmcydPKm8JjVE5cQGaOMI)jWX8bs5Vd4hlRafkRYyKvayjQmolez0(7sYIGL7wc2iALguwH0AQvAvfKgNvD6wGX6FtEAfkjYAypwTr9d8frlxmEKY68)SeMU)JI1hwTbxVOFCPWchDX4Vd98Hv)F0UMUoaSS4BYdjgD4p5htkltsrcqi3pftz7)CrCysPydLKb0yj5fRrgYzwziDOTmJOFGQg7c(YHvFdO80OeY)sTLtxF(5enMMrjFEJdYZvhKBdqtsJ1Mu7y8MLlaXR4II69v(jBGf3KWR9rP3lfmE4rxsj8p)GQQ6S4DOiao0LiWUDXrjOTDShBzqc2g4JwQHdDRgi3wGKxLMVoifPhm7EB3lbDYiLTKsxQI)sCyDvSpvR9B1y4dCjupNAcJ(FA8zshSe1Oar9nb1PvCNbnTmmVgNUeRbItVgf6M2rAqzvCGARSRQ(cqT4xQt2Vpo60Y93Td0THoY)241s(akt2VnpZVSkVyh3ha8YxGMVik78LnjnDBc(br3j6DOxdbPxjoi2i7Gd99GoF8Sn2Lxg2N3OAyx)1ORqCEr6LOyYl1fS4Ta7RBI9bp97sqRnxcIetKgfeNqL()76ORqfhJAQUXd06m9MaOvWxDkdAJGp4o(sDMjOs8(r0pVcLPbR6G4v12t3hwrE7ugsIwjHg)e57auireZaCrcSL2wn7nybxYSYRTRHNhxCDs2vUno8xm0(YqtZZJ83uxChYqF3FXqFQm0njfXeMkYpF)FXpFQ8Zaa9AzvrqQFya4SeyQxyLPAThvWDOGirNFnzeNJWxjWryEsKFvrs21Xv(nJ)2Hkgqdmu2vQgld9liO)dt2Kesceb8LguI(oGE4UtqNoeSc04yOHRCleEzRl3sCYdaOLN90O1L5HIaiKFE)eaDZUA8DsWgcss(7ZVnUaG4FnrgWOxAoZ1JlJrW2GAl(L7rcv2kIn8qBeRp)cZgWJueVpVOseUhf(HoWKjNjfv868YstTKitrw)utkaD9JezfWrGihHUpimSiMj(ZwiT2GN6kkBGZX11c7tCWFwFNEQXJsNEj72hxSjoSYpOmmolcuQVZhCKxVRDg6Qngq9loojGpLMfMqN2VjGkYA6eOcOriiLMxxcgacYk3LubJiHGZT1aP1No4YVtgITHg1BXmvOV0PraGFcgCv(uLVC5yFn9sPal60wOO3br1FkUzMYMRydmOtFjvNEizAPcHMoT2fe5)l1XXzLam9msMg5ZktV74nPidkvyO0b1M4GI1fmf24WT5cye0F1rEiPcKJXNaZSPrbqNwLJbEY5rkp)ipySJcYLCSEEQOj6Jqsvmas(B)Em2Ab)M8K(qj4Hvy6ArhUa2QiiuIdRYP5Fd(iufUXZbMoQ8KqmJj8a3bmi(0)WhPI4KrbZgnRW(uoFBEHXq8v9H3sdtXvoqyniip2NQJ4tYHaj1fm)COb0QAz3OEIocT6XfWjalQHvK0WAFQkmFOjMa85FfMEOCYIYe757(zyauN1e0Ye75a9zFUt6)PIPSrryvkTnveiQHiqe9CcX(qmpyPPGBqt5fsysMVF5cm5UvTuOrkH8BSbRQatBoPwmXuIKqYALOP1WpUWn5nX8HPgWT8dtJdUHN4ytjOP7EFGZmOYIbHIC0myGM0mr7b53Hjd0VmbI4Gyc6C3GkAbbo(CtDBR7BL(S9fD0Hgaa00BIlcTwwuDp2n)K7m(Q0ampU5GtG1brnygB9vNCvgSiZy27lsYlUtPjwGOQsifN(sV0ckkLwzhPOsdHFgE9Ty6THfUOuios43f5CwJPZqYL6MxkIT5Rc25tJr1it31QJidv4X(r51a3XhmHcr7Ak7sDZrHOLKiUX(3NBtfg90DYsfXXXde)li64CNkPKTTanUvMxegxCNuYY5UTTYwy4AVq0rWUKII8c)KDA(p0J(3K1wTe3R7CQzh)Sen6tmCntXbQHfWXOuC7TQAD131oQpWzo9TfusVs3FpSi71VT2dB9Ognl90j0(o1ztEDkB8iKCSYTjBQqPpskyuGb)FJ7a6ckZdGaVG12dR(zSXiO307e285xvasJz54UKNfHVNSR2XBW1y6gXhKDNs2OiRY4WKPHQUDZIiQGhN6JTvFN)nUIcwgWHB5PSpDF(UggZa(AgYClbRKbfx7lkC3GeGfYPXuJqAyRSH2wL3M9NXCAPIpFgFNanbMQDYyvetQwn4BazZykJU)R7B2(6MeSzAy0YR1wfmG0YLMJPn7uqIuBq12WjnsVwIJb0tEn5xM0SjR9ihDMtlalvFdfYwOl0McIo9QygWVUaDNaKctGe2LTYtQqcZlwlLih(cPostSP8QCa04hjmhgkNqs9DFNT8)ONbEUwOVKiOBAXJQbypghjZoF4F89kfLto8MDj))4GJuvgBQZYIXQGPIzKjmVKzIPmh3o(8BIlcW6KbOfg8Erst90SdqdbTQgTvjuEiFuyU6U2rOLfuqgROtOCGdRiPi0ecAHCvyLXnJip7z1GnvY7fDSUXtIIPfU5ubfTLasPtiX(jtlohqQIMuyeK6EkqJ5Lry7MqahAB7Z7WGX66IO4m0AeXnfpCiYlVknhq)caUGOGGrumcMimwUnaiR6eMx3gnXw1zsfC8ATcMJ4ga)hFAvFndRfUrmx1DziBSOYyF7HlFi9Wen1DTglJDXHyHrJhcIHmZgcw6nrSznvPeNVlsdJM3S2TwKiCIqIwcj90kd3adIFj(geVs7VjO8hGLR3DuJhGBra4xSqvMrubmvKybPL5cwXIQlikh8Qgd4iqJakKMJph)nr9TWG90KkkRBTVipeZgztLjYQ)p0gj3aKAqssZ62YBJcBdR2WBPDjGhNSkIXCaQtcd(W8SiI2d218YSQX072aQXyEHCHGcz1NiPf)pF8)cxBRyGdvmU(bgZ7dCNuA2mT4iAqNs(IYvwK(NkPN2h3I2SGpLRhTuOe6SvOBkYOMkToPYyZzHa4uXzQU(OwBCc7AQBGH23n9woAbQwTg8jxzYFLno6yxJQZ04HXFzFAEj5jYzZV55uLySKYJyIMBskkRADIRiAoQnIzJX)QeATPKXAllUAP)2zSPeUeODuqsuayeytsycSoCN4Y8iHO6QHqRZYVj43WqS6v8vUJ5XCqxYf5UKBgP8ZAnIjTcw38EPozKsyb8yLlbXLiXTjPNXttkvzTOOB96O5o4vie2Rif(bbwBZigT2hvt6sXTEkmcnqhtksea97Dcc0eIaUY(mbjYhYY3fGVh9Nq2Cl0dsDzn9RUnV4Ae1nAYg1yAk9Dk8ocq7nTdg3bh6g0Rr4Oobr3BjllQSYyaObWZqSYcUapOaVcM(lqk3jkw5WpRI3Tp3Qld6BTHdQntdkqwBbF1fajKeDfLapyxZooLt7H924zgmlTQOjck2bIzaKIv3HsRxkbAa8W4VeMccM3qaDac(4gAMluD(T4D4lY0OwsbqDLcOzqwJiOfQZxrvU4SiAhgJyFiIkgXUyY1)ZvrYRJSrcP(tcpZzYq5TaXA4JaXYthUIdejkbZssrjjp5)mRL08e8JjeXGk0I7TCa9NWAlmvj)iNz5e)LZepgpe4SuNEb1fbmHgCqly0nlg5ZcNIhLtCuNON6sF3PkMrGlcyKCGi5pGzkFqh5CtZEMuA24Hj75iN7mBM)2dzXoEKNf4GskC)qgEW2YUknUjPRN0H(hrZbW)ChXel9TMo8E8IWXIAhQNbAhfT5eKYRoP582LWsbyZ5UJ1UiGw3r7RTjvmOzMgRuVdQNepYog2diXpPTp4369gWr5d5jc5WymknJ5h52l8iNDp2WLCc90mFZso56rUQuZ8Wtggzpt(1hyWFm7xIcHIOCugJj)HOyHtruBqlBxMWi3p8CcOZeY3mpDZA9KYrYL2QPSrht7g1ZiWa3vNfUfeaoPfTxyAYEw0lKKsvNbDEz3PJ6xtiDgZxLyzXBdiMTnaqqM3kwn7hBhNqeTg)277zotUO)Pmb(uWjbrER5saa6(BdkYqRTlxqot9j7WYUNHo)v8AM8vyaZ)sDsbQnrdLoOUcIbMa7hZGj4L)0dF6)nb1cM(DasV8mO3iV(vgqr)kQSMPx1O2cnzW4Vm8u8W)BySXkIUJYiJdgqzyPvHeTJjk9o3m9AwiA3lvfcR3aB9WBF27H39S3dV)zVhix(eg6cTAovPhSwtQ9TdoIZHjw6cwrfRqxLsnUVe7OXqMm(5UdM8S1bgTNWlHTJIfLaXkGqxKirR6i6PoJH6DtB(BTI46Rq9J2C4ylRzpccACnIvhApSvOZE21CT3dpnzal09r7h95KQw8e(eP6fMPQWUHPqud7twxYukBK0dt4YI6VYoDOQIAEFquN8UD9tcIXSiRu0p9KQpXfklGiE0uTZLQJYYKPqCvgMUciVN6ap6fSdF6hiZFKyV9G0zNcNAyEaGXewS20xvEk3j23o)nmAZpnlh(KPw1KyItWKznxn7eNKVFo5iUCcdU98jpwYGeHut5ZV4KKnZFHjdHh(0l)7qOr3juXixhhVNfkngWzZHXViVID6zH5xq)MC0VvESmW5rzzO3aBhHL7VxoBNQhFLzNF)9op2kxo(CrYlEuv4020XurIWAzXePAF4f2o2fYChRNLI7V355Oq41wodfIeq68ti8clNfaHwyVc4fAK5twrp4rwpYakIq)2YLE88GHEDXQ7hxQphjegVA8yZKS5EBWjjjMngyhMRx3h2dl6gIN3dZTqmfmIMVApg)9yE54Waz8RBVC1GEuVd5Fe0uXRZkXN3E9vj(u69ZezEyraZBG(EqHgMgOnX9CCI)ho0QeCthOEdMaDH0(dD50PJ8mnwgouCgPCxpHtTbM3GnpN7GMNCU7VC(ePUP9YpI0d6BjbPF8uohYaxyG12kpDN9(r3FVwT2pBky0)fwJl5(7nZlr2V1(12kVmFT9Yj6pjty(Lh0FsMVYxUp)HEs)Yx(YdR(HSBYXdWW3)f4vzbPLA3XpTLOYhQRQ3LHfywcUzQLBZRXcFmKeTbTMUy7Pz7h)jStAzVjKUZpM1BK9cM6mGSFYa68n1LmBXdSAm2YSfze94t4MQh2)r3ACFDqFRGbYY6D7OEFTmoECKnGWDrY2DTiC55qFCy1X6ACsubGFLr5ycE)9MyN3FVSq(eqi)fDFxDyOVzyYLwbDPkAB8qD5z8wHYGp0M9BJJOsjXPdhECuJ180lE3on)SrEYo8NC2iufhVys8uzW2zEwqq)W5IdDfE1SZEWdm7G(Ke9vUmLSh8i5LpWXGda1MIaTHKVZZ(lTVcjBlik33wecvbLxFIqzXmFmoGmJ7S)Zvd3HseGUDQy24VrTSRCyKvtx4YPNp0(qt)Iq6PnYS3tAxVrpxDK89w0XRxASJq3kBICHbPnItHJ(DnKuCvkxdn0znFFXXbMcSOU)A1moFc96VHk(Rg)XaRvo03Ym5Y2jWHEVWMH8EmKyNrDXrYtGActqjs2RrO8spgM7lnxpB)P8YOVntbCHqGNPbCs3UQbVGmwS3akjvES()Joy28rNc(6fQvhYtg6ziuB0OT78FoDKtK82QBMzNjdJvIpGlfNughcdRrN7aqNhU68A20wh1j)eLoJCAspHD55pF85Mz)nmUMSdrg771V4)jIYFvCF77CEKxSwWaG4g14yvPLjnYmXLYMLtrJzdy1J33mDOx3bh02CXCFByE1ueDkcgcaO1fxi8cHIwB(dUM1oXqjRHQKkfsg8iszYnFSZ5aHr1VGMMPOxt5XIx7(FlNZnW2c78ZgIXo3oMu9EbdnE5FYL9Tx7OZNoYjTcBRzAwCYkQr6w2muWWEd6(monSvB8pChPm3lxsL0Ex(gmBA3rH27m(PjJg6zExWh6CmlBzYQvikIWUpvA9PV4wZ7NSupiyly2bg2)xjBRsLO8mMwkjJBKwjE228CO72gyUOvCiWEYNyO(1h2eUUH35Patq(8QrvN(6)aM1NvkrhfeUHsTe7nyWdZ54qwmpgl94H)67GbwP(Q(GD5CrsZJGdlcZNY48ME3K(iliQ16WjzFif)SJzZFQzJZ22ilZrr3X(B5S0b6byRlhpYqvriCsWuSsiCkWMdFPCQ(aAzmcGNpNpuRu)P8mwzvK7ib5YWYi6HWZCWqu9MXwhuMuY76GmnBoZrPv3BkBV7mRjxHNmftizLJ)uzGRfcQ55pmwSWWmgTPQvcre3pq2shyZHz2r9WnzDoyZ(Q5th28jOPIUoryyBECqRit8FxCCQ6IHkcEzGr0loGIW8wQF(NMp9xFukUNN9iwGoK8sDzvuw8KLgYN5l0tOpg)2w1kX7MA0Va4kznUVbjribRssjblUhj8wszDvWq9gW0yljxswKeHgejcQIod(9cCdnqdkadAUN)gAAgEK8UnOprbAUIi6HBWH0s(uWZ0zdnoB(1XT4zkE44D)X152lzX797YRQstRogCP5iMbVo83PvlAdo)1dM8ndSUv767h5SPNpCipJlbI1ATRyy1VQ3KC(Qd6VXnQAvrlG()sa89qE6fmDXQ69agpwJ1(YXQSTXuF7hPBLthl7D6qYZOvlVbMYrJjhXKzoeffnjx)r86xSNkvDQtPFFNY4NwVRtzVx5EoDiQLiSvrsg8v2LilwxBTW3dkDz3uAI9u016M2OyJG2NGiijBww(OzthkN(eX7Huo0zvYQSI0jMDfO3F9EVA6q60DgdPMSg4yzRHfAyHBQqqnMo0u2t74uyj)Pa72jQd7l5ot5MUxTP0Q44rFht6yvHNWnXCUx0EebTpqNnwFGEMlRtkXsyX61Yfb1vBZlwUybn)oqR)ybitsUFgw(F(d]] )
+spec:RegisterPack( "Arcane", 20241022, [[Hekili:T31EVnUrs(pldgansB84Oh2ZJaldKDUC3MbxYgaL92)tuTiPS5Aksf(WE8bd9zFRQFX(jjLT8KjBgGbJTfB2D1vxp(vvxDRLtw(RlxerQIx(Zthp9SjJNo90jVB20jlxuD)U4Ll2rcVHCf8lzKTW))9fHKm6hFFAojcF7Y86Iq4JUUQAx539TF7vjvxxV(0W8TFBzY26usvsEwybztf(3HF7YfRRtsR(XSLRDo0JFp0N7Idx(ZVzk0RjrrXSMgxgUCb20xp(9VE60t2Vc)57(U9RwKS9d7xvVd7T9FC)hfnAYy4H)6DXKB2VkFxCwCH6thpH1fJNX)P)U6DVE679(W3YiIF9649R(NKc4)aoqs2YfPjLvLilkmkGn8WF8ZuwECgzDAC0Y)k8WIKQ4IeYYfd3VAxr8TbxfgD6KtjuwDWAsrbSaSF1G9RGgqcr2PXdpnjlytAYvxxfueVLKKvUF1fZHj1PNVF1dpSFf2J2pzKOtxxVzJOllRlGoSEh7fdZZtJYVlt)PYU6Y9RMnM2rJyT35uG(s0XsDGcVMG9vzfiHbe1(vNb9YYf1LXb5B2G9aYRwWMWG4yED41WtcQUooyl5QeMerrYo2Z)v85WY8M9RQWvIFcAcSwvghTF1DxhNTFft2D)Q)QGJMaZGTjrVMX6G3fw7sG3)(869R(x1LvI3x8MlytesweVrr5zVcA11KBJP0VOHFGo3kpHtl3rsGwX1gIl5FAvYwKiGNurUH(P57x9B1X10HihAdqpGMqAk83BQW)IpjzZhkfWjPKm8LPpEzfOq5vgJUcalrLXzHiJoyBsweSC3WOfIwPKYkSVM5TVQiPXzvNEnW9cUnpTcLe5nShR2O(b(GOLlMm2A4ZlwBSa)pkH55FVy9(vBWfkwhwQSIXwf(Ba1SF1)hJCylaaVk(28qQHi5N8tjLLjPyhq7UFoMXV)LI4WKs1gQT4JmKZ8Yq6qB5cQ(bQASL8P9R(lGYJqju(MwI5T96Nt1yeCo5CejYZnjYRjOjPjwm6TC(WYfGmuCrr9UQGKnWIBs4nbOi6LkgpgWwsP8QasvvDw8wueajDToy724Oe02ooInmifBdsQLz4W2QbvcOPlVknFnjf7py29MUxc6KrQBjLTuf)P4W6Q4aMQ53yXWh2Mq9CMjm2)S4ZLCXNkuSEdPoTs6mq0YW8AC6sv5vNEcfAr7OnOSkMy2k)QQVaub(T6KD7IJoTC39BbDByGcUlETMpGYKDxNNfuwLxSv6daE4lqBuuLD5YMMMUpbFs09QEh6fjO9ivIyJUdo03d68zGpAxFzyxUq1WV(RtxH48IokrX0hAlyjBbow3ghaE63MGwwUeejMQrfupnLb)R6ORqfhNAQTJhOXz6TeOvWBDkhAJIp4oEtBMjOs8UXSxVcLPbR6G4v11NUlSI(0zCKenscc)e5BbuiruZasrcSL(wn7nyH2Kz1xBxdFECXnjzx1UXHVYq7ldnnppkytDX9id9TFLH(uzOBskIPmvKF(UVYpFQ8tcGETSQGKgesaNLat99gmvrlX4ja272sZ4fksYUjUIIWomztsifSp4kJuIMUbw99NG28PUQzXkWcj4oi6UgpELEG3Op3mq4yG9XELz6yjVxUMJ8I8KOGkgHhi4u4Khaq7E2RZf7ROw7KRWljffiiZeSl)U4cam)n0vBN(JLtUbsPjkkguViOCh2rLnctJ23eB6ZVyRdKhfX7YlQub2XaAydbz6zAX)UoVS0vlPRPIKOySOGRFMjfqS(rJTc4uqaIqRjHHfXCSIpXfso9kbU1GRtLMp7aMv(ivC6zgpQy6LSDxCXM4WQaszyCweOwFFa4kVERtm9QejfAP2uWf2ZEt9Tqj4eWezTmReW4ecsV51LGIjjRCBsfq1gRpDWLFRogAhn6qKU8rs40We6R0CkGGcAAvatPmhdvrp6HondP6cqvZNboMRN1waaouNVKPopsm1CrM40YecTyATLef8B1XXzLaq9mAUgpIZkbv5yuqIYegQekqmPyDbxnjo868NdAYEqqsYeiNKpbMFtJiqtRYXqpp(0JXiGeJFuqTjMBNNkw28ODPjganh()agBTIJBzcEyD4(vy6Arp(a2QiiuI9RYzjzdEjuDs4pbt9uEsiMXezG7agKa2FeG9I6KXaZglRWbmUstEHXq8n9H30hUIRCOYkdjpoGP(eqZHan1fCVFOHTQADNRduDp61pm4OcwQdR0sdR9uvz(WsmbGe4km9q50fLP(Z39ZabuNjcAzQ)CG(Sp3PJ)m1u2yiSQL2MkkWXqeEIDoH4ViMhS0uW9KR8cPmjZ3TCbMC3QMEqiLq)noXAkW0KtQftDLijSB92PP1WpEVBgmq(ahjimnMCBCdZTfkXrcA6E0h2Agu5XGWWt6gUGintSrq)zyYadktGioOMGoVDyhnqdNCURHTX7UXy28Gogqh4deJMkNTXYIP7XU5Ns)0xLsW84MdgUxtIeqkBCJNCvgSYXz27ksYlU3OjEGfA2rg4b0EOhengTYpcoJgc)m8M7W0BdlCrPqCKWVRY5AlsltV6DZlvH98fb78PXOeY0DT6OYqv(4GO8AG7eaMqHWTDLDPU5Oq0sADUZXpqAtfOE2ozzI44aaX)cQsS0RrkDFjqlBL5fHXf3RLnCPFzVZBfmTTax)9Qoc2MuuKxeKS1Y)HD0)USeBL4EBNtID8ZkA0odrQpb05koqlSaTqLQBVvvJREh7OU4nkVoztfUirtqHbCW)BCx)wW6eak4cEB3V6xWgJG)sVxzNwFvbSOLLJBjCwe(C6w4gVbNRSDDMKDVN0cn0AJJm2zbFrn1RnDOh(fg0VnyeB9yH(TDQoAEM5SjVoLtpJCbkPb)e4slnaFv795VHDbk)4kr5P82VlFRyuhkziiLxcgcjf3eOk)kC2Zd40zYrOnSHXBTB4nP9zISVmHGFHCZ(y7Po3yKzF5cmvZm17IRwTAi3asbbNX2)1DITQwK2nx0yd33fPzI0std57)7)GrXsKdpzBY)pAMJUP5BQZYIXQtOIRpeMxY1gkZXDqn)24ccw)cqFHXBvKiQZHTGdmOv1OALYU3)baOybAVMQk22w7ZkxdsgVMayBf7(v08(0mP9TBTZpJTv2RRlIIZqwc1gbvkEGpM8aDg8LthmCO3CmoWkFgxm78rp8GrFC2ObUGk30ZQvxbJYcv4ryEUcRGUDOjE08I1cXOl4sqSbpxRj8YO4YXJgH9IN93hM7ha5mWhx)YjoyHU4tp8Wl8YyDWcrk3UJvMl3Ywczl9tF4b6JUknhqybUDbK2a(My0Hvigka)5Gp(6eU9uKjZ7rhcgWW7AwmWVWHho3CCzWfKDdx12vhdvjqQVOvxsgQn0QxIyPQLrvsxAwQqowfzjIPXCKTxaMX6gShURqizwJS5duJVJ5UtmHCRnVxaJkv7pJwmq8QzbT6dGNtQUNovxJfzfDEdRW51ObnOTHPaaw6K)75f)Z3lL4T44nLjJbdYsCq3RUR5MhpOQBEI6NR6d2OyuaxqV21aXxNyUN6rD90sT7iRBipLIJVCksmY4H2QM0RcIVk(wK338Bkw8jyTZDpZJb4(cGgfRu5x0vuxfUfjTmxX1vuDbBzMssawpQmdb6H0C8ZXFtvTjKSJL8pDvKDf5HywdfLjiVy8qhJCVoHwvsIHnefHEBdtuH(PknXRbkfCyd5bM4BRWg0RTbRbW0wsgr2bVDSAheNrREfyzkYBz(zaS1bIKzABxwFNM(X90hRihcc43izf(uqvGZ7AmLZXMLAxkZxOOmRTb5(n7YkWSUMkSAUYv8UAQGn1)ilgh0e5Dm5Fiio6mbJJfwxu0KcZZIOIZOEG0GGa8hyeMchuAbbJGIx5Q0w8)8H)lC(vXJKYaE3tXkSFZSEfEA2yQ2eFMjxxEsv7QuQVF2JFK1zzx2Qn3FeB7v(K7MzloB1MPcnntTEC7kM1EGiElGb(Gf)PDP5L0prFtDeFoZhbEYcI4cBBskkRAcmWqyBSXSNV6wGUGwdbTu5cOIVv3jTnZpRjLkM(gPjCXixotpGTnWA)wA94fqNcGKubnXvG3SnjHjWcX9QRZkvIDz9U4IS8BjTftFR5y5FslvMMuRSayCrOfh0Abg6gnvywPEPbkWAszcURlGDKnKBZzUXL5ybIFK6rkftGdwwo5OPfAb1d)kc6fhO7i4gIHsh0rdFm0UYKOywKQIU7p8zSXXMBOeeOu(0z8F6Uk9M7hUPqhPur)uQyZ5eUQ9YDSoXjURvIPsIuKmwHayjv4sbtJRCVqoAPIQx5HQZCd5VwKB3DIZic7oUr3OXnIeey0XFkmTUemLHAEGvgudkx5Sq0aEGh3OiSYuaUEPc0aCHqfbaZDuZQmgrweBaJrGe00k5ciGjJXrkkuLkA3lTh0c(z5OgGRqr)Y4uv0ncOEXv8jSDMoAwpaPgDWriAPpyKrdAc4P2S)fElzgS)PeQOwfg(2DYWbpH3wG4O)aS3Fvm3W)zYtKfEaRGLa9n35PJ8XfA7JA)3k4j)W6ApwcVMhAFpLogOLAbG3Nf0sTJu6RU)FcU)7YV8NjecJ8Ir95BhQEsB1KH5VFmdpXOzxHjZKLENt6WAi1blOqEp1Pk7PUovSYcFJr9K6cc)PinYSyc0vHmUEo)(eXbzfriqBe)aTYBxe0x3ZgRRtQ4i6DrRm8aMhXv6U03fEPFp3lTwk3UbQz72ziwcA(G2oUN8S7XgT3JcgzZwfQhQnxgKMzkqg6xJ3UlNjerwtJydLLa7)jyYDZTsa8hK7S3g(wVZobgwj(L9Y8JWjmqOQhn0qd6HqBPYEgsHUQTLjE6BvGYg(l6rk5mZKeNzwH8dVOXyp1xwdB2LBfiKTMtzRes3ZuSEesYCBOVLUFEIPH2FFpWVd9rgzGTf3Kx6QV8KLwBcQPfJBXcKeOaFcdeG8IEqp62w3zmLy0u2wWUeXn0vMrDfeEd3Ip6GJgm426SWRHP0jnX8HBNgAMFdppV1zWGxEmYWRZSTRUBz(cjXx6DvSa(CgGwxPJ1)5QSv8Z21app4)31tuZVV)GMHxfquqXLtVLwg)(PVB5I7ifzi(NLlOx6jjBXtlfp49xjlQ9xH2SHWTkq5vw9GqQRY3sOzfGVLTNU)J)VjykfM9DG918my0Op(vocz9vmHqxpsOyanz4Kpn6u82zXbTXRY5JcLjrFAqwwLWwdnX6VZD3F2Mon6y)2wnhH38SpcV9zFeE3Z(iqVDGCmewhkaJrW7HgOVdWrCom1ZqWp1hg9RXzbPVD2rJHmDYZ9am9zBaCAprwJXhflke1kaZwKiX6Gu0tDgh1RS183Bfn3xH6hT5WjEwZEeDOZ1iEHcFyRqNb00)idIjc7jSbm3Lq35Z18xROWSVwrHFHwrHVQlShpAuwFUqd4zeuIf00kHDuI90A5tKx4Z(OsUYn6vhzrVPtPg02KNMMFhnHAy26O7GoMSe2TthUfC0eWjSrXoiR06SH1oA12SjVotR1rryJJivK1KY4VdmFIftOQ4TplQgLDWHzA1NlA98fB6GYD2Knz(ppI3EGt)e71JSGsNRuh2QKpKAhJvjpWFCLSsJbOTuR2tzbUnhAE1CBoslHChwVEmm15zeEsM680NkzwYOpDKZPVGSj9JBfWYEJ(iGYVlxaI1xNxSCXc51p7hWRFwmN7GudEqczVt5Ps87FZ8VLVcjpP17)ORwj2eGtW9OyU5obCs(U50JF9j8mnmF6JTBWoHEEhN)(ts2mxb9sdMU9F8L)na)X9kvj9nXX74mtmjCIlkQI8k(f)cm)i9BYXExDAzyRhZAaqJVJxTjsrZJw9facTwps1xo5C1Ux9yul7BxhHATo2AhdXETp8cFhjyDUJ3Z57dp06z8v5XEoFVQDG2z7v5bEojPkTW)PZuPrUp1V9Gh590UAic97lx6XZdgnOlwD)4s954kZ5vtM4UlfxQzT2LuZgIG(CeH)GUpNYE0nuplYUBbrj7ZQMVAUbQ6X8QLdQUZ3U5s(fgr7bu(sqtvVQvv)8MRwv1pLD3HsNhEeW4rYzChKcrXznXh4Zkhj6EmSZogaZBxpyi0kxJlNnB8ax0YOrQZiJ7HuCQn092JnO1cAXm675t1gMMlMt6iyxFe0XzGXDKdg8T32QpDV4DJF4HdpEF38sAu)(gxFR8681MloZ)KmHLxSL)jz(QFXt(F0t6x(YxUF1pMDBoEsT)HpbpkJKwADby2u8UFFDv92mS(9tWc(O868A80yesJ1KD5zYR9NMx(J4G0WEtOdxqmF0OvIfZzanBQa68n1LCBXd9Am2ZSfze94vKMQh1FQBnUx3OVvWazz92TmVVEOJhx3sOCxSB7U0aV8Cym2V6yDhNQQaiVpvBzc(WdUyNp8GUq(uqi)fDF7Y5yS5yY1wbBtv0h9WC5rdU08Em1HpurXairuzSNrJgDCuJT80REBKo)SXd0D4p9SXOkoEP5nWKb7N55bb9HZfh1w4vxC2bty(b9Pj6BCvG6p4r6dpqAOfa1UIav0LVDG)h6Ffs3wquEGVieQiL3CIsrPoFcsqUXD2)5QJ7utkq3ovmf(BmRc6wmYAPlC5SZh5N0SVynFAuM)rY66Y85AG0VhmpEJIWoclLDu5chsBuNch97btT4QmUIezZAzjbHeMbSOUFBZTB4e2vZit83m(JHERs3VHBYLxeeJg8cFgY7bjXV3OuPKNqVPmb16YErH6l9yyUV0DDF)NYVnKAYuGuie4zwaNSTR6WliNfpyiRln(y7VeUUy(4tbF9kfsi9teB7RMJk0OD75)C24wrY7BhYV4mDySA8bCP4KY4qGSgFEla6gGRoVMpTTrDIz5btxu0fq)m58t4FXonFY5Uz)cgNi7quAFN5zJOEhvu(lIV3NADEKxSwXaGD9m4CvPHjn2DNRLnRwfnUyiVCm(lZgnO7GdAAUAUVDmVe1IRHGHcaABXfkVqPIANFWfu7joQNwuL0OgAHpIwGTZN06CGYO6xqtxyOxZ4XQFLq9nso3qFlSZpBeg7Cdnz69cin5rTqk77)CAmF2yQwWFOok9Tp71onwutT(s9OBCpDKrYw3SNEOEC5KXo2hlLIFAGUyIsnpnhEt9GZG(YPnBPRe3EcA5mW1A4wthll(lJ9IFuRRjHnN7nE2wmmgB7F0XzGBWWUpu8Tth6gu9A8CgvL4l)JTEFMRQq2DBu8OvQC9HCuT57BeAPscDdaHhbJZJPXOp)UlazNN3dxERmAlvRwK0NpJZ6C9SPFjmm(KID5zSpDK8CGtDmWLZuk8j)e6ft6LTf2jYTpnSjGkxn(REY09K52TZZGdUruf4)uE8O9kjEK8F7y1f1wysVwXNX0Q94vXJfOUohZxmNJWUVLm)fEZ3Jm)oUaxRhsSbHBfvS75pqlEyyoda204HAqahiBP7Wf(Z1zX2lt227uBfWgRgmOLEVv9GQbVr7qzlole093vbOIZtiWVpNaaOVehO6lE74b21nQ)3DGBhAJKNqcph(dVWbfNtg7dKRyWCctCGDHPYCe8hIJ5CxcOQOUhAZEeBhPBa0Crlhm0zF(Xw3(8SRa78G1SxO38Lk8N5VOhGXyYBaXNy8UrLLgBX3DpuZQyMxYIijryhwLKsVhH3HD810slSGh9iJ2XkZhVCIPjJNePK3r(wo8hfyNwGhnqckUSWh5AgEKGZmSp5JWDv50dCpwN8oiqxNZMpp4GoZasJC4pUOzEjpVj)H87fcxRoD5N6RNNtHl9VEEo)s58CYsH1X5B8bx6e91B9aNM0hil6zvrbxOueZi685z6BYHwMFw560nYtFYW2o0e40u)mHlq5ohD2R9axBuFsf6JasMA4G)N033cTSYQgWNlnvrweFeQ(Gs(WduxUVXFzJFZWh)SrJ6b553gKFnW(aR7nsR)6I8dDeXcTFb6vpDTQkeYWMhz0TgoH7mEDJOa)Y9BZGdXsKZDDXVnk)lTZAsNr)2TgqgRp2HEUcBSvuZ(LtADdmgzDkvyBG4J)lpGwwkFsBGHfHEwBg5mIf2Jrq6T41Y)9]] )

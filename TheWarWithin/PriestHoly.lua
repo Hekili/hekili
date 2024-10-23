@@ -23,17 +23,17 @@ spec:RegisterTalents( {
     binding_heals              = {  82678, 368275, 1 }, -- 20% of Heal or Flash Heal healing on other targets also heals you.
     blessed_recovery           = {  82720, 390767, 1 }, -- After being struck by a melee or ranged critical hit, heal 20% of the damage taken over 6 sec.
     body_and_soul              = {  82706,  64129, 1 }, -- Power Word: Shield and Leap of Faith increase your target's movement speed by 40% for 3 sec.
-    cauterizing_shadows        = {  82687, 459990, 1 }, -- When your Shadow Word: Pain expires or is refreshed with less than 5 sec remaining, a nearby ally within 40 yards is healed for 24,230.
-    crystalline_reflection     = {  82681, 373457, 2 }, -- Power Word: Shield instantly heals the target for 4,116 and reflects 10% of damage absorbed.
+    cauterizing_shadows        = {  82687, 459990, 1 }, -- When your Shadow Word: Pain expires or is refreshed with less than 5 sec remaining, a nearby ally within 40 yards is healed for 30,400.
+    crystalline_reflection     = {  82681, 373457, 2 }, -- Power Word: Shield instantly heals the target for 5,165 and reflects 10% of damage absorbed.
     death_and_madness          = {  82711, 321291, 1 }, -- If your Shadow Word: Death fails to kill a target at or below 20% health, its cooldown is reset. Cannot occur more than once every 10 sec.
     dispel_magic               = {  82715,    528, 1 }, -- Dispels Magic on the enemy target, removing 1 beneficial Magic effect.
-    divine_star                = {  82682, 110744, 1 }, -- Throw a Divine Star forward 27 yds, healing allies in its path for 6,502 and dealing 8,617 Holy damage to enemies. After reaching its destination, the Divine Star returns to you, healing allies and damaging enemies in its path again. Healing reduced beyond 6 targets.
+    divine_star                = {  82682, 110744, 1 }, -- Throw a Divine Star forward 27 yds, healing allies in its path for 8,157 and dealing 10,812 Holy damage to enemies. After reaching its destination, the Divine Star returns to you, healing allies and damaging enemies in its path again. Healing reduced beyond 6 targets.
     dominate_mind              = {  82710, 205364, 1 }, -- Controls a mind up to 1 level above yours for 30 sec while still controlling your own mind. Does not work versus Demonic, Mechanical, or Undead beings or players. This spell shares diminishing returns with other disorienting effects.
-    essence_devourer           = {  82674, 415479, 1 }, -- Attacks from your Shadowfiend siphon life from enemies, healing a nearby injured ally for 18,172.
+    essence_devourer           = {  82674, 415479, 1 }, -- Attacks from your Shadowfiend siphon life from enemies, healing a nearby injured ally for 22,800.
     focused_mending            = {  82719, 372354, 1 }, -- Prayer of Mending does 45% increased healing to the initial target.
-    from_darkness_comes_light  = {  82707, 390615, 1 }, -- Each time Shadow Word: Pain deals damage, the healing of your next Flash Heal is increased by 3%, up to a maximum of 60%.
-    halo                       = {  82682, 120517, 1 }, -- Creates a ring of Holy energy around you that quickly expands to a 30 yd radius, healing allies for 17,067 and dealing 22,190 Holy damage to enemies. Healing reduced beyond 6 targets.
-    holy_nova                  = {  82701, 132157, 1 }, -- An explosion of holy light around you deals up to 30,248 Holy damage to enemies and up to 15,265 healing to allies within 12 yds, reduced if there are more than 5 targets.
+    from_darkness_comes_light  = {  82707, 390615, 1 }, -- Each time Shadow Word: Pain or Holy Fire deals damage, the healing of your next Flash Heal is increased by 3%, up to a maximum of 60%.
+    halo                       = {  82682, 120517, 1 }, -- Creates a ring of Holy energy around you that quickly expands to a 30 yd radius, healing allies for 21,413 and dealing 27,842 Holy damage to enemies. Healing reduced beyond 6 targets.
+    holy_nova                  = {  82701, 132157, 1 }, -- An explosion of holy light around you deals up to 39,534 Holy damage to enemies and up to 19,950 healing to allies within 12 yds, reduced if there are more than 5 targets.
     improved_fade              = {  82686, 390670, 2 }, -- Reduces the cooldown of Fade by 5 sec.
     improved_flash_heal        = {  82714, 393870, 1 }, -- Increases healing done by Flash Heal by 15%.
     improved_purify            = {  82705, 390632, 1 }, -- Purify additionally removes all Disease effects.
@@ -49,16 +49,16 @@ spec:RegisterTalents( {
     phantasm                   = {  82556, 108942, 1 }, -- Activating Fade removes all snare effects.
     phantom_reach              = {  82673, 459559, 1 }, -- Increases the range of most spells by 15%.
     power_infusion             = {  82694,  10060, 1 }, -- Infuses the target with power for 15 sec, increasing haste by 20%. Can only be cast on players.
-    power_word_life            = {  82676, 373481, 1 }, -- A word of holy power that heals the target for 128,528. Only usable if the target is below 35% health.
-    prayer_of_mending          = {  82718,  33076, 1 }, -- Places a ward on an ally that heals them for 7,863 the next time they take damage, and then jumps to another ally within 30 yds. Jumps up to 6 times and lasts 30 sec after each jump.
+    power_word_life            = {  82676, 373481, 1 }, -- A word of holy power that heals the target for 161,256. Only usable if the target is below 35% health.
+    prayer_of_mending          = {  82718,  33076, 1 }, -- Places a ward on an ally that heals them for 9,859 the next time they take damage, and then jumps to another ally within 30 yds. Jumps up to 6 times and lasts 30 sec after each jump.
     protective_light           = {  82707, 193063, 1 }, -- Casting Flash Heal on yourself reduces all damage you take by 10% for 10 sec.
     psychic_voice              = {  82695, 196704, 1 }, -- Reduces the cooldown of Psychic Scream by 15 sec.
-    renew                      = {  82717,    139, 1 }, -- Fill the target with faith in the light, healing for 24,188 over 15 sec.
+    renew                      = {  82717,    139, 1 }, -- Fill the target with faith in the light, healing for 31,139 over 15 sec.
     rhapsody                   = {  82700, 390622, 1 }, -- Every 1 sec, the damage of your next Holy Nova is increased by 20% and its healing is increased by 20%. Stacks up to 20 times.
     sanguine_teachings         = {  82691, 373218, 1 }, -- Increases your Leech by 2%.
     sanlayn                    = {  82690, 199855, 1 }, --  Sanguine Teachings Sanguine Teachings grants an additional 2% Leech.  Vampiric Embrace Reduces the cooldown of Vampiric Embrace by 30 sec, increases its healing done by 25%.
     shackle_undead             = {  82693,   9484, 1 }, -- Shackles the target undead enemy for 50 sec, preventing all actions and movement. Damage will cancel the effect. Limit 1.
-    shadow_word_death          = {  82712,  32379, 1 }, -- A word of dark binding that inflicts 13,080 Shadow damage to your target. If your target is not killed by Shadow Word: Death, you take backlash damage equal to 5% of your maximum health. Damage increased by 150% to targets below 20% health.
+    shadow_word_death          = {  82712,  32379, 1 }, -- A word of dark binding that inflicts 16,412 Shadow damage to your target. If your target is not killed by Shadow Word: Death, you take backlash damage equal to 5% of your maximum health. Damage increased by 150% to targets below 20% health.
     shadowfiend                = {  82713,  34433, 1 }, -- Summons a shadowy fiend to attack the target for 15 sec. Generates 0.5% Mana each time the Shadowfiend attacks.
     sheer_terror               = {  82708, 390919, 1 }, -- Increases the amount of damage required to break your Psychic Scream by 75%.
     spell_warding              = {  82720, 390667, 1 }, -- Reduces all magic damage taken by 3%.
@@ -82,14 +82,14 @@ spec:RegisterTalents( {
     benediction                = {  82641, 193157, 1 }, -- Your Prayer of Mending has a 12% chance to leave a Renew on each target it heals.
     burning_vehemence          = {  82607, 372307, 1 }, -- Increases the damage of Holy Fire by 30%. Holy Fire deals 75% of its initial damage to all nearby enemies within 12 yards of your target. Damage reduced beyond 5 targets.
     censure                    = {  82619, 200199, 1 }, -- Holy Word: Chastise stuns the target for 4 sec and is not broken by damage.
-    circle_of_healing          = {  82624, 204883, 1 }, -- Heals the target and 4 injured allies within 30 yards of the target for 16,144.
-    cosmic_ripple              = {  82630, 238136, 1 }, -- When Holy Word: Serenity or Holy Word: Sanctify finish their cooldown, you emit a burst of light that heals up to 5 injured targets within 40 yards for 4,954.
+    circle_of_healing          = {  82624, 204883, 1 }, -- Heals the target and 4 injured allies within 30 yards of the target for 20,254.
+    cosmic_ripple              = {  82630, 238136, 1 }, -- When Holy Word: Serenity or Holy Word: Sanctify finish their cooldown, you emit a burst of light that heals up to 5 injured targets within 40 yards for 6,216.
     crisis_management          = {  82627, 390954, 2 }, -- Increases the critical strike chance of Flash Heal and Heal by 8%.
     desperate_times            = {  82609, 391381, 2 }, -- Increases healing by 10% on friendly targets at or below 50% health.
-    divine_hymn                = {  82621,  64843, 1 }, -- Heals all party or raid members within 40 yards for 141,566 over 6.6 sec. Each heal increases all targets' healing taken by 4% for 15 sec, stacking. Healing reduced beyond 5 targets.
+    divine_hymn                = {  82621,  64843, 1 }, -- Heals all party or raid members within 40 yards for 177,615 over 6.4 sec. Each heal increases all targets' healing taken by 4% for 15 sec, stacking. Healing reduced beyond 5 targets.
     divine_image               = {  82554, 392988, 1 }, -- When you use a Holy Word spell, you summon an image of a Naaru at your side. For 9 sec, whenever you cast a healing or damaging spell, the Naaru will cast a similar spell. If an image has already been summoned, that image is empowered instead.
     divine_service             = {  82642, 391233, 1 }, -- Prayer of Mending heals 4% more for each bounce remaining.
-    divine_word                = {  82605, 372760, 1 }, -- The effectiveness of your next Holy Word: Serenity, Sanctify, or Chastise is increased by 30% and grants a corresponding Divine Favor for 15 sec. Chastise: Increases your damage by 20% and refunds 15 sec from the cooldown of Holy Word: Chastise. Sanctify: Blesses the target area, healing up to 5 allies for 67,029 over 15 sec. Serenity: Flash Heal, Heal, and Renew heal for 30% more and cost 20% less mana.
+    divine_word                = {  82605, 372760, 1 }, -- The effectiveness of your next Holy Word: Serenity, Sanctify, or Chastise is increased by 30% and grants a corresponding Divine Favor for 15 sec. Chastise: Increases your damage by 20% and refunds 15 sec from the cooldown of Holy Word: Chastise. Sanctify: Blesses the target area, healing up to 5 allies for 86,726 over 15 sec. Serenity: Flash Heal, Heal, and Renew heal for 30% more and cost 20% less mana.
     empyreal_blaze             = {  82640, 372616, 1 }, -- Holy Word: Chastise causes your next 2 casts of Holy Fire to be instant, cost no mana, and incur no cooldown. Refreshing Holy Fire on a target now extends its duration by 7 sec.
     enlightenment              = {  82618, 193155, 1 }, -- You regenerate mana 10% faster.
     epiphany                   = {  82606, 414553, 2 }, -- Your Holy Words have a 25% chance to reset the cooldown of Prayer of Mending.
@@ -99,19 +99,19 @@ spec:RegisterTalents( {
     guardian_spirit            = {  82637,  47788, 1 }, -- Calls upon a guardian spirit to watch over the friendly target for 10 sec, increasing healing received by 60%. If the target would die, the Spirit sacrifices itself and restores the target to 40% health. Castable while stunned. Cannot save the target from massive damage.
     guardians_of_the_light     = {  82636, 196437, 1 }, -- Guardian Spirit also grants you 100% of its effects when used on an ally.
     healing_chorus             = {  82625, 390881, 1 }, -- Your Renew healing increases the healing done by your next Circle of Healing by 3%, stacking up to 20 times.
-    holy_mending               = {  82641, 391154, 1 }, -- When Prayer of Mending jumps to a target affected by your Renew, that target is instantly healed for 3,675.
-    holy_word_chastise         = {  82639,  88625, 1 }, -- Chastises the target for 37,810 Holy damage and incapacitates them for 4 sec. Cooldown reduced by 4 sec when you cast Smite.
-    holy_word_salvation        = {  82610, 265202, 1 }, -- Heals all allies within 40 yards for 12,977, and applies Renew and 2 stacks of Prayer of Mending to each of them. Cooldown reduced by 15 sec when you cast Holy Word: Serenity or Holy Word: Sanctify.
-    holy_word_sanctify         = {  82631,  34861, 1 }, -- Releases miraculous light at a target location, healing up to 5 allies within 10 yds for 36,137. Cooldown reduced by 6 sec when you cast Prayer of Healing and by 2 sec when you cast Renew.
-    holy_word_serenity         = {  82638,   2050, 1 }, -- Perform a miracle, healing an ally for 128,900. Cooldown reduced by 6 sec when you cast Heal or Flash Heal.
+    holy_mending               = {  82641, 391154, 1 }, -- When Prayer of Mending jumps to a target affected by your Renew, that target is instantly healed for 4,611.
+    holy_word_chastise         = {  82639,  88625, 1 }, -- Chastises the target for 47,440 Holy damage and incapacitates them for 4 sec. Cooldown reduced by 4 sec when you cast Smite.
+    holy_word_salvation        = {  82610, 265202, 1 }, -- Heals all allies within 40 yards for 16,281, and applies Renew and 2 stacks of Prayer of Mending to each of them. Cooldown reduced by 15 sec when you cast Holy Word: Serenity or Holy Word: Sanctify.
+    holy_word_sanctify         = {  82631,  34861, 1 }, -- Releases miraculous light at a target location, healing up to 5 allies within 10 yds for 45,339. Cooldown reduced by 6 sec when you cast Prayer of Healing and by 2 sec when you cast Renew.
+    holy_word_serenity         = {  82638,   2050, 1 }, -- Perform a miracle, healing an ally for 161,723. Cooldown reduced by 6 sec when you cast Heal or Flash Heal.
     light_of_the_naaru         = {  82629, 196985, 2 }, -- The cooldowns of your Holy Words are reduced by an additional 10% when you cast the relevant spells.
     lightweaver                = {  82603, 390992, 1 }, -- Flash Heal reduces the cast time of your next Heal within 20 sec by 30% and increases its healing done by 25%. Stacks up to 2 times.
-    lightwell                  = {  82603, 372835, 1 }, -- Creates a Holy Lightwell. Every 1 sec the Lightwell will attempt to heal a nearby party or raid member within 40 yards that is lower than 50% health for 18,627 and apply a Renew to them for 6 sec. Lightwell lasts for 2 min or until it heals 15 times. Cooldown reduced by 3 sec when you cast Holy Word: Serenity or Holy Word: Sanctify.
+    lightwell                  = {  82603, 372835, 1 }, -- Creates a Holy Lightwell. Every 1 sec the Lightwell will attempt to heal a nearby party or raid member within 40 yards that is lower than 50% health for 23,370 and apply a Renew to them for 6 sec. Lightwell lasts for 2 min or until it heals 15 times. Cooldown reduced by 3 sec when you cast Holy Word: Serenity or Holy Word: Sanctify.
     miracle_worker             = {  82612, 235587, 1 }, -- Holy Word: Serenity and Holy Word: Sanctify gain an additional charge.
     orison                     = {  82626, 390947, 1 }, -- Circle of Healing heals 1 additional ally and its cooldown is reduced by 3 sec.
     pontifex                   = {  82628, 390980, 1 }, -- Flash Heal, Heal, Prayer of Healing, and Circle of Healing increase the healing done by your next Holy Word spell by 6%, stacking up to 5 times. Lasts 30 sec.
     prayer_circle              = {  82625, 321377, 1 }, -- Circle of Healing reduces the cast time and cost of your Prayer of Healing by 20% for 8 sec.
-    prayer_of_healing          = {  82632,    596, 1 }, -- A powerful prayer that heals the target and the 4 nearest allies within 40 yards for 13,419.
+    prayer_of_healing          = {  82632,    596, 1 }, -- A powerful prayer that heals the target and the 4 nearest allies within 40 yards for 16,836.
     prayerful_litany           = {  82623, 391209, 1 }, -- Prayer of Healing heals for 100% more to the most injured ally it affects.
     prayers_of_the_virtuous    = {  82616, 390977, 2 }, -- Prayer of Mending jumps 1 additional time.
     prismatic_echoes           = {  82614, 390967, 2 }, -- Increases the healing done by your Mastery: Echo of Light by 6%.
@@ -121,7 +121,7 @@ spec:RegisterTalents( {
     revitalizing_prayers       = {  82633, 391208, 1 }, -- Prayer of Healing has a 25% chance to apply a 6 second Renew to allies it heals.
     sanctified_prayers         = {  82633, 196489, 1 }, -- Holy Word: Sanctify increases the healing done by Prayer of Healing by 15% for 15 sec.
     say_your_prayers           = {  82615, 391186, 1 }, -- Prayer of Mending has a 15% chance to not consume a charge when it jumps to a new target.
-    symbol_of_hope             = {  82617,  64901, 1 }, -- Bolster the morale of raid members within 40 yds. They each recover 30 sec of cooldown of a major defensive ability, and regain 10% of their missing mana, over 3.3 sec.
+    symbol_of_hope             = {  82617,  64901, 1 }, -- Bolster the morale of raid members within 40 yds. They each recover 30 sec of cooldown of a major defensive ability, and regain 10% of their missing mana, over 3.2 sec.
     trail_of_light             = {  82634, 200128, 1 }, -- When you cast Heal or Flash Heal, 25% of the healing is replicated to the previous target you healed with Heal or Flash Heal.
     voice_of_harmony           = {  82611, 390994, 2 }, -- Circle of Healing reduces the cooldown of Holy Word: Sanctify by 4 sec. Prayer of Mending reduces the cooldown of Holy Word: Serenity by 4 sec. Holy Fire and Holy Nova reduce the cooldown of Holy Word: Chastise by 4 sec.
 
@@ -136,7 +136,7 @@ spec:RegisterTalents( {
     miraculous_recovery        = {  94679, 440674, 1 }, -- Reduces the cooldown of Power Word: Life by 3 sec and allows it to be usable on targets below 50% health.
     perfect_vision             = {  94700, 440661, 1 }, -- Reduces the cooldown of Premonition by 15 sec.
     preemptive_care            = {  94674, 440671, 1 }, -- Increases the duration of Renew by 6 sec.
-    premonition                = {  94683, 428924, 1, "oracle" }, -- Gain access to a spell that gives you an advantage against your fate. Premonition rotates to the next spell when cast.  Premonition of Insight Reduces the cooldown of your next 3 spell casts by 7 sec.  Premonition of Piety Increases your healing done by 15% and causes 70% of overhealing on players to be redistributed to up to 4 nearby allies for 15 sec.  Premonition of Solace Your next single target healing spell grants your target a shield that absorbs 240,286 damage and reduces their damage taken by 15% for 15 sec.
+    premonition                = {  94683, 428924, 1, "oracle" }, -- Gain access to a spell that gives you an advantage against your fate. Premonition rotates to the next spell when cast.  Premonition of Insight Reduces the cooldown of your next 3 spell casts by 7 sec.  Premonition of Piety Increases your healing done by 15% and causes 70% of overhealing on players to be redistributed to up to 4 nearby allies for 15 sec.  Premonition of Solace Your next single target healing spell grants your target a shield that absorbs 301,473 damage and reduces their damage taken by 15% for 15 sec.
     preventive_measures        = {  94698, 440662, 1 }, -- Increases the healing done by Prayer of Mending by 25%. All damage dealt by Smite, Holy Fire and Holy Nova increased by 25%.
     prophets_will              = {  94690, 433905, 1 }, -- Your Flash Heal, Heal, and Holy Word: Serenity are 30% more effective when cast on yourself.
     save_the_day               = {  94675, 440669, 1 }, -- For 6 sec after casting Leap of Faith you may cast it a second time for free, ignoring its cooldown.
@@ -155,26 +155,26 @@ spec:RegisterTalents( {
     power_surge                = {  94697, 453109, 1, "archon" }, -- Casting Halo also causes you to create a Halo around you at 100% effectiveness every 5 sec for 10 sec. Additionally, the radius of Halo is increased by 10 yards.
     resonant_energy            = {  94681, 453845, 1 }, -- Allies healed by your Halo receive 2% increased healing from you for 8 sec, stacking up to 5 times.
     shock_pulse                = {  94686, 453852, 1 }, -- Halo damage reduces enemy movement speed by 5% for 5 sec, stacking up to 5 times.
-    sustained_potency          = {  94678, 454001, 1 }, -- Creating a Halo extends the duration of Apotheosis by 1 sec. If Apotheosis is not active, up to 6 seconds is stored and applied the next time you gain Apotheosis.
+    sustained_potency          = {  94678, 454001, 1 }, -- Creating a Halo extends the duration of Apotheosis by 1 sec. If Apotheosis is not active, up to 6 seconds is stored. While out of combat or affected by a loss of control effect, the duration of Apotheosis is paused for up to 20 sec.
     word_of_supremacy          = {  94680, 453726, 1 }, -- Power Word: Fortitude grants you an additional 5% stamina.
 } )
 
 
 -- PvP Talents
 spec:RegisterPvpTalents( {
-    absolute_faith         = 1927, -- (408853) Leap of Faith also pulls the spirit of the 3 furthest allies within 40 yards and shields you and the affected allies for 73,514.
+    absolute_faith         = 1927, -- (408853) Leap of Faith also pulls the spirit of the 3 furthest allies within 40 yards and shields you and the affected allies for 92,238.
     catharsis              = 5485, -- (391297) 15% of all damage you take is stored. The stored amount cannot exceed 12% of your maximum health. The initial damage of your next Shadow Word: Pain deals this stored damage to your target.
     divine_ascension       = 5366, -- (328530) You ascend into the air out of harm's way. While floating, your spell range is increased by 50%, but you are only able to cast Holy spells.
     greater_heal           =  112, -- (289666) An exceptional spell that heals an ally for 40% of their maximum health, ignoring healing reduction effects.
     holy_ward              =  101, -- (213610) Wards the friendly target against the next full loss of control effect.
     improved_mass_dispel   = 5634, -- (426438) Reduces the cooldown of Mass Dispel by 60 sec.
-    mindgames              = 5639, -- (375901) Assault an enemy's mind, dealing 29,405 Shadow damage and briefly reversing their perception of reality. For 7 sec, the next 73,513 damage they deal will heal their target, and the next 73,513 healing they deal will damage their target.
+    mindgames              = 5639, -- (375901) Assault an enemy's mind, dealing 36,895 Shadow damage and briefly reversing their perception of reality. For 7 sec, the next 92,237 damage they deal will heal their target, and the next 92,237 healing they deal will damage their target.
     phase_shift            = 5569, -- (408557) Step into the shadows when you cast Fade, avoiding all attacks and spells for 1 sec. Interrupt effects are not affected by Phase Shift.
     purification           = 5479, -- (196439) Purify now has a maximum of 2 charges. Removing harmful effects with Purify grants your target an absorption shield equal to 5% of their maximum health. Lasts 8 sec.
     ray_of_hope            =  127, -- (197268) For the next 6 sec, all damage and healing dealt to the target is delayed until Ray of Hope ends. All healing that is delayed by Ray of Hope is increased by 50%.
-    sanctified_ground      =  108, -- (357481) Holy Word: Sanctify blesses the ground with divine light, causing all allies who stand within to be immune to all silence and interrupt effects. Lasts for 5 sec.
-    seraphic_crescendo     = 5620, -- (419110) Reduces the cooldown of Divine Hymn by 60 sec and causes it to channel 50% faster. Additionally, the healing bonus from Divine Hymn now lasts an additional 10 sec.
-    spirit_of_the_redeemer =  124, -- (215982) Your Spirit of Redemption is now an active ability with a 2 minute cooldown, but the duration is reduced by 9 sec and you will no longer enter Spirit of Redemption upon dying.
+    sanctified_ground      =  108, -- (357481)
+    seraphic_crescendo     = 5620, -- (419110)
+    spirit_of_the_redeemer =  124, -- (215982)
     thoughtsteal           = 5365, -- (316262) Peer into the mind of the enemy, attempting to steal a known spell. If stolen, the victim cannot cast that spell for 20 sec. Can only be used on Humanoids with mana. If you're unable to find a spell to steal, the cooldown of Thoughtsteal is reset.
 } )
 

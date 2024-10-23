@@ -574,7 +574,7 @@ spec:RegisterAuras( {
     },
     ravage = {
         id = 441602,
-        duration = 15,
+        duration = 20,
         max_stack = 1
     },
     -- Heals $w2 every $t2 sec.
