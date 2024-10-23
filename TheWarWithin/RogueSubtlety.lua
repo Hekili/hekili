@@ -333,7 +333,7 @@ spec:RegisterAuras( {
     },
     shadow_dance = {
         id = 185422,
-        duration = function() return 6 + talent.improved_shadow_dance.rank * 2 + buff.first_dance.up and 4 or 0 end,
+        duration = function() return 6 + ( talent.improved_shadow_dance.rank * 2 ) + ( buff.first_dance.up and 4 or 0 ) end,
         max_stack = 1,
         copy = 185313
     },
