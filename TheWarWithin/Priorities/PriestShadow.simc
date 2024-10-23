@@ -137,8 +137,8 @@ actions.filler+=/shadow_word_pain,cycle_targets=1,if=set_bonus.tier31_4pc
 # Use Shadow Word: Pain while moving as a low-priority action without T31 4pc
 actions.filler+=/shadow_word_pain,cycle_targets=1,if=!set_bonus.tier31_4pc
 
-actions.empowered_filler+=/mind_spike_insanity,cycle_targets=1
-actions.empowered_filler+=/mind_flay_insanity,cycle_targets=1
+actions.empowered_filler+=/mind_spike_insanity,cycle_targets=1,if=buff.mind_spike_insanity.up
+actions.empowered_filler+=/mind_flay_insanity,cycle_targets=1,if=buff.mind_flay_insanity.up
 
 ## Use Halo to acquire Twist of Fate if an ally can be healed for it and it is not currently up.
 ## actions.heal_for_tof+=/halo
