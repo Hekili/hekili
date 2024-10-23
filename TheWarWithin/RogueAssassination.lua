@@ -2888,7 +2888,7 @@ spec:RegisterSetting( "priority_rotation", false, {
     width = "full"
 } )
 
-spec:RegisterSetting( "envenom_pool_5_points", true, {
+--[[spec:RegisterSetting( "envenom_pool_5_points", true, {
     name = "Pool for |T132287:0|t Envenom at 5 Combo Points",
     desc = "If checked, pooling Energy for |T132287:0|t Envenom may be recommended over |T132304:0|t Mutilate filler at 5+ Combo Points.\n\n" ..
         "The default priority would pool at 6+ Combo Points, but guides recommend pooling at 5+.",
@@ -2896,7 +2896,7 @@ spec:RegisterSetting( "envenom_pool_5_points", true, {
     width = "full"
 } )
 
---[[spec:RegisterStateExpr( "envenom_at_5cp", function ()
+spec:RegisterStateExpr( "envenom_at_5cp", function ()
     if buff.darkest_night.up then return 0 end -- Bypass with Darkest Night to ensure pooling to CP cap.
     return settings.envenom_pool_5_points and 1 or 0
 end )--]]
