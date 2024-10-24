@@ -1069,7 +1069,13 @@ spec:RegisterAbilities( {
 
         talent = "bloodthirst",
         texture = 136012,
-        nobuff = "reckless_abandon_bloodbath",
+        nobuff = function()
+            if talent.unhinged.enabled then
+                if buff.bladestorm.up then return "bladestorm" end
+                if buff.ravager.up then return "ravager" end
+            end
+            return "reckless_abandon_bloodbath"
+        end,
         startsCombat = true,
         bind = "bloodbath",
 
