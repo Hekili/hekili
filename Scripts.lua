@@ -221,7 +221,7 @@ local function HandleDeprecatedOperators( str, opStr, prefix  )
                 local char = right:sub(i, i)
 
                 if char == "(" then
-                    i = i + right:sub( i ):match("^(%b())" ):len()
+                    i = i + right:sub( i ):match( "^(%b())" ):len()
                 elseif mathBreak[char] or char == ")" then
                     eos = i - 1
                     break

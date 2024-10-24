@@ -4576,8 +4576,6 @@ do
 
             local value
 
-            state.variable[ var ] = defaultValue
-
             local data = db[ var ]
             local parent = state.scriptID
             local which_mod = "value"
@@ -4589,7 +4587,11 @@ do
                 local scriptID = entry.id
                 local currPath = entry.fullPath .. ":" .. now
 
-                value = state.variable[ var ]
+                value = rawget( state.variable, var )
+                if value == nil then
+                    state.variable[ var ] = defaultValue
+                    value = defaultValue
+                end
 
                 -- Check the requirements/exclusions in the APL stack.
                 if pathState[ currPath ] == nil then
