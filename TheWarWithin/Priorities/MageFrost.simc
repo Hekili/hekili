@@ -1,4 +1,3 @@
-actions.precombat+=/variable,name=time_to_coc,condition=talent.frostfire_bolt.enabled,value=10,value_else=23
 actions.precombat+=/arcane_intellect
 actions.precombat+=/mirror_image
 actions.precombat+=/blizzard,if=active_enemies>=2&talent.ice_caller&!talent.fractured_frost|active_enemies>=4
