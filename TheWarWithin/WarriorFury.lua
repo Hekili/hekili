@@ -986,6 +986,13 @@ spec:RegisterAbilities( {
         buff = "reckless_abandon_bloodbath",
         bind = "bloodthirst",
 
+        nobuff = function()
+            if talent.unhinged.enabled then
+                if buff.bladestorm.up then return "bladestorm" end
+                if buff.ravager.up then return "ravager" end
+            end
+        end,
+
         critical = function()
             return stat.crit
             + ( 15 * buff.bloodcraze.stack )
@@ -993,6 +1000,7 @@ spec:RegisterAbilities( {
             + ( 20 * buff.recklessness.stack )
             + ( talent.crushing_force.enabled and talent.crushing_force.rank * 2 or 0 )
         end,
+
         handler = function()
             removeStack( "whirlwind" )
             if buff.enrage.up and talent.deft_experience.enabled then
