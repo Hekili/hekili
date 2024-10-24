@@ -1259,7 +1259,6 @@ spec:RegisterAbilities( {
                 applyBuff( "take_your_cut" )
             end
 
-            if talent.supercharger.enabled then addStack( "supercharged_combo_points", nil, talent.supercharger.rank ) end
         end,
     },
 
