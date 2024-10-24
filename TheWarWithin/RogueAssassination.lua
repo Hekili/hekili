@@ -15,23 +15,7 @@ local orderedPairs = ns.orderedPairs
 
 local spec = Hekili:NewSpecialization( 259 )
 
-spec:RegisterResource( Enum.PowerType.ComboPoints, nil, nil, {
-    percent = function( t )
-        return max( 0, 100 * state.effective_combo_points / state.combo_points.max )
-    end,
-
-    deficit = function( t )
-        return max( 0, state.combo_points.max - state.effective_combo_points )
-    end,
-
-    deficit_percent = function( t )
-        return 100 * max( 0, state.combo_points.max - state.effective_combo_points ) / state.combo_points.max
-    end,
-
-    deficit_pct = function( t )
-        return 100 * max( 0, state.combo_points.max - state.effective_combo_points ) / state.combo_points.max
-    end
-} )
+spec:RegisterResource( Enum.PowerType.ComboPoints )
 
 spec:RegisterResource( Enum.PowerType.Energy, {
     garrote_vim = {
@@ -257,12 +241,11 @@ end )
 spec:RegisterStateExpr( "effective_combo_points", function ()
     local c = combo_points.current or 0
 
-    if talent.supercharger.enabled and buff.supercharged_combo_points.up then
-        if talent.forced_induction.enabled then return c + 3
-        else return c + 2
-        end
-    else return c
+    if buff.supercharged_combo_points.up then
+        c = c + ( talent.forced_induction.enabled and 3 or 2 )
     end
+
+    return c
 end )
 
 
