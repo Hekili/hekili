@@ -105,7 +105,7 @@ actions.aoe+=/lightning_bolt,cycle_targets=1,if=(!talent.tempest.enabled|(tempes
 actions.aoe+=/lava_lash,cycle_targets=1,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
 actions.aoe+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
 actions.aoe+=/chain_lightning,cycle_targets=1,if=buff.arc_discharge.up&buff.maelstrom_weapon.stack>=5
-actions.aoe+=/elemental_blast,cycle_targets=1,if=,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(time_to_max_charges<2*gcd.max|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
+actions.aoe+=/elemental_blast,cycle_targets=1,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(time_to_max_charges<2*gcd.max|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
 actions.aoe+=/chain_lightning,cycle_targets=1,if=buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack
 actions.aoe+=/feral_spirit
 actions.aoe+=/doom_winds
