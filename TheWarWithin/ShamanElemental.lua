@@ -885,14 +885,6 @@ local death_events = {
 local summon = {}
 local wipe = table.wipe
 
-local vesper_heal = 0
-local vesper_damage = 0
-local vesper_used = 0
-
-local vesper_expires = 0
-local vesper_guid
-local vesper_last_proc = 0
-
 local recall_totems = {
     capacitor_totem = 1,
     earthbind_totem = 1,
@@ -984,8 +976,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
     if death_events[ subtype ] then
         if destGUID == summon.guid then
             wipe( summon )
-        elseif destGUID == vesper_guid then
-            vesper_guid = nil
         end
         return
     end
@@ -1005,15 +995,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 summon.extends = elem[3]
             end
 
-            if spellID == 324386 then
-                vesper_guid = destGUID
-                vesper_expires = GetTime() + 30
-
-                vesper_heal = 3
-                vesper_damage = 3
-                vesper_used = 0
-            end
-
         --[[ Tier 28
         elseif summon.extends and state.set_bonus.tier28_4pc > 0 and subtype == "SPELL_ENERGIZE" and ( spellID == 51505 or spellID == 285466 ) then
             summon.expires = summon.expires + 1.5
@@ -1026,27 +1007,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             elseif subtype == "SPELL_AURA_APPLIED" and stormkeeperCastStart == 0 then
                 stormkeeperLastProc = GetTime()
             end
-
-        -- Vesper Totem heal
-        elseif spellID == 324522 then
-            local now = GetTime()
-
-            if vesper_last_proc + 0.75 < now then
-                vesper_last_proc = now
-                vesper_used = vesper_used + 1
-                vesper_heal = vesper_heal - 1
-            end
-
-        -- Vesper Totem damage; only fires on SPELL_DAMAGE...
-        elseif spellID == 324520 then
-            local now = GetTime()
-
-            if vesper_last_proc + 0.75 < now then
-                vesper_last_proc = now
-                vesper_used = vesper_used + 1
-                vesper_damage = vesper_damage - 1
-            end
-
         end
 
         if ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) and state.talent.elemental_equilibrium.enabled then
@@ -1057,31 +1017,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
     end
 end )
 
-spec:RegisterStateExpr( "vesper_totem_heal_charges", function()
-    return vesper_heal
-end )
-
-spec:RegisterStateExpr( "vesper_totem_dmg_charges", function ()
-    return vesper_damage
-end )
-
-spec:RegisterStateExpr( "vesper_totem_used_charges", function ()
-    return vesper_used
-end )
-
-spec:RegisterStateFunction( "trigger_vesper_heal", function ()
-    if vesper_totem_heal_charges > 0 then
-        vesper_totem_heal_charges = vesper_totem_heal_charges - 1
-        vesper_totem_used_charges = vesper_totem_used_charges + 1
-    end
-end )
-
-spec:RegisterStateFunction( "trigger_vesper_damage", function ()
-    if vesper_totem_dmg_charges > 0 then
-        vesper_totem_dmg_charges = vesper_totem_dmg_charges - 1
-        vesper_totem_used_charges = vesper_totem_used_charges + 1
-    end
-end )
 
 spec:RegisterStateExpr( "last_ee_fire", function ()
     return fireDamage
@@ -1120,9 +1055,6 @@ end )
 spec:RegisterTotem( "liquid_magma_totem", 971079 )
 spec:RegisterTotem( "tremor_totem", 136108 )
 spec:RegisterTotem( "wind_rush_totem", 538576 )
-
-spec:RegisterTotem( "vesper_totem", 3565451 )
-
 
 spec:RegisterStateTable( "fire_elemental", setmetatable( { onReset = function( self ) self.cast_time = nil end }, {
     __index = function( t, k )
@@ -1276,23 +1208,8 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "master_of_the_elements" )
     end
 
-    if vesper_expires > 0 and now > vesper_expires then
-        vesper_expires = 0
-        vesper_heal = 0
-        vesper_damage = 0
-        vesper_used = 0
-    end
-
-    vesper_totem_heal_charges = nil
-    vesper_totem_dmg_charges = nil
-    vesper_totem_used_charges = nil
-
     recall_totem_1 = nil
     recall_totem_2 = nil
-
-    if totem.vesper_totem.up then
-        applyBuff( "vesper_totem", totem.vesper_totem.remains )
-    end
 
     rawset( state.pet, "earth_elemental", talent.primal_elementalist.enabled and state.pet.primal_earth_elemental or state.pet.greater_earth_elemental )
     rawset( state.pet, "fire_elemental",  talent.primal_elementalist.enabled and state.pet.primal_fire_elemental  or state.pet.greater_fire_elemental  )
@@ -1568,7 +1485,6 @@ spec:RegisterAbilities( {
                 applyBuff( "chains_of_devastation_cl" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
         end,
     },
 
@@ -1639,7 +1555,6 @@ spec:RegisterAbilities( {
                 addStack( "seismic_accumulation" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
@@ -1735,7 +1650,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "earth_shield", nil, class.auras.earth_shield.max_stack )
             if not talent.elemental_orbit.enabled then removeBuff( "lightning_shield" ) end
-            if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
         end,
     },
 
@@ -1799,7 +1713,6 @@ spec:RegisterAbilities( {
                 applyBuff( "elemental_mastery" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
@@ -1899,7 +1812,6 @@ spec:RegisterAbilities( {
                 applyBuff( "elemental_mastery" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
         copy = { 61882, 462620 }
@@ -1982,7 +1894,6 @@ spec:RegisterAbilities( {
 
             if talent.lightning_rod.enabled then applyDebuff( "target", "lightning_rod" ) end
             if talent.further_beyond.enabled and buff.ascendance.up then buff.ascendance.expires = buff.ascendance.expires + 3.5 end
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
@@ -2063,7 +1974,6 @@ spec:RegisterAbilities( {
             -- TODO: should also gain on every tick of damage.
             if talent.searing_flames.enabled then gain( talent.searing_flames.rank, "maelstrom" ) end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
         copy = 188389
@@ -2132,7 +2042,6 @@ spec:RegisterAbilities( {
                 applyBuff( "flux_melting" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
@@ -2234,7 +2143,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "healing_stream_totem" )
-            if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
             if conduit.swirling_currents.enabled or talent.swirling_currents.enabled then applyBuff( "swirling_currents" ) end
             if time > 0 and talent.inundate.enabled then gain( 8, "maelstrom" ) end
         end,
@@ -2262,7 +2170,6 @@ spec:RegisterAbilities( {
             if buff.surging_currents.up then removeBuff( "surging_currents" ) end
             removeBuff( "echoing_shock" )
 
-            if buff.vesper_totem.up and vesper_totem_heal_charges > 0 then trigger_vesper_heal() end
             if buff.swirling_currents.up then removeStack( "swirling_currents" ) end
         end,
     },
@@ -2317,7 +2224,6 @@ spec:RegisterAbilities( {
                 applyBuff( "fusion_of_elements_nature" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
@@ -2405,7 +2311,6 @@ spec:RegisterAbilities( {
                 addStack( "seismic_accumulation" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
         impact = function ()
@@ -2477,7 +2382,6 @@ spec:RegisterAbilities( {
                 addStack( "seismic_accumulation" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
         bind = "tempest",
@@ -2550,7 +2454,6 @@ spec:RegisterAbilities( {
                 addStack( "seismic_accumulation" )
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
         bind = "lightning_bolt"
@@ -2576,7 +2479,6 @@ spec:RegisterAbilities( {
                 class.abilities.elemental_blast.handler()
             end
 
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
 
         copy = 305485
@@ -2624,7 +2526,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "flame_shock" )
             active_dot.flame_shock = min( active_enemies, active_dot.flame_shock + 2 )
             gain( 8, "maelstrom" )
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
@@ -2701,10 +2602,6 @@ spec:RegisterAbilities( {
 
         notalent = "stormstrike",
         startsCombat = true,
-
-        handler = function ()
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
-        end,
     },
 
     -- Talent: Blast your target with a Primordial Wave, dealing $375984s1 Shadow damage and apply Flame Shock to them.; Your next $?a137040[Lava Burst]?a137041[Lightning Bolt][Healing Wave] will also hit all targets affected by your $?a137040|a137041[Flame Shock][Riptide] for $?a137039[$s2%]?a137040[$s3%][$s4%] of normal $?a137039[healing][damage].$?s384405[; Primordial Wave generates $s5 stacks of Maelstrom Weapon.][]
@@ -2897,8 +2794,6 @@ spec:RegisterAbilities( {
                 removeBuff( "fusion_of_elements_nature" )
                 class.abilities.elemental_blast.handler()
             end
-
-            if buff.vesper_totem.up and vesper_totem_dmg_charges > 0 then trigger_vesper_damage() end
         end,
     },
 
