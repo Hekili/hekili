@@ -1080,7 +1080,7 @@ local function extendBuff( aura, duration)
 
     local b = state.buff[ aura ]
 
-    if duration < 0 and b.remains < duration then --duration decrease will remove buff
+    if duration < 0 and b.remains < ( duration * -1 ) then --duration decrease will remove buff
             removeBuff( aura )
     else b.expires = b.expires + duration
     end
