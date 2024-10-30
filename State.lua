@@ -1067,22 +1067,17 @@ end
 state.removeBuff = removeBuff
 
 -- Extend buff function, defaults to 1 second if no value supplied, breaks out if supplied a 0
-local function extendBuff( aura, duration)
+local function extendBuff( aura, duration )
 
-    if duration == 0 then
-        Error( "Attempted to extend a buff '%s'.\n\n%s by 0 seconds", aura or "nil", debugstack() )
-        return
-    end
-
-    local a = class.auras[ aura ]
-
-    duration = duration or 1
+    if duration == 0 then return end -- dont waste time checking buffs to add 0 to it
+    duration = duration or 1 -- default to +1 second if no value is supplied
 
     local b = state.buff[ aura ]
 
-    if duration < 0 and b.remains < ( duration * -1 ) then --duration decrease will remove buff
+    if duration + b.remains <= 0 then --duration decrease will remove buff
             removeBuff( aura )
     else b.expires = b.expires + duration
+
     end
 
 end
