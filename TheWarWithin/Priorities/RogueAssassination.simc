@@ -26,7 +26,7 @@ actions+=/variable,name=clip_envenom,value=buff.envenom.up&buff.envenom.remains<
 actions+=/variable,name=upper_limit_energy,value=70-30*talent.sanguine_blades-10*talent.vicious_venoms.rank
 actions+=/variable,name=avoid_tea,value=energy>40+50+5*talent.vicious_venoms.rank
 actions+=/variable,name=cd_soon,value=cooldown.kingsbane.remains<6&!cooldown.kingsbane.ready
-actions+=/variable,name=not_pooling,value=variable.in_cooldowns|!variable.cd_soon&variable.avoid_tea&buff.darkest_night.up|!variable.cd_soon&variable.avoid_tea&variable.clip_envenom|energy.percent>variable.upper_limit_energy|fight_remains<=20
+actions+=/variable,name=not_pooling,value=variable.in_cooldowns|!variable.cd_soon&variable.avoid_tea&buff.darkest_night.up|!variable.cd_soon&variable.avoid_tea&variable.clip_envenom|energy.percent>=variable.upper_limit_energy|fight_remains<=20
 actions+=/call_action_list,name=stealthed,strict=1,if=stealthed.rogue|stealthed.improved_garrote|master_assassin_remains>0
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=core_dot
@@ -143,7 +143,7 @@ actions.stealthed+=/shiv,if=talent.kingsbane&dot.kingsbane.ticking&debuff.shiv.r
 # Envenom to maintain the buff during Subterfuge
 actions.stealthed+=/envenom,if=effective_combo_points>=variable.effective_spend_cp&dot.kingsbane.ticking&buff.envenom.remains<=3&(debuff.deathstalkers_mark.up|buff.cold_blood.up)
 # Envenom during Master Assassin in single target
-actions.stealthed+=/envenom,if=effective_combo_points>=variable.effective_spend_cp&buff.master_assassin_aura.up&variable.single_target&(debuff.deathstalkers_mark.up|buff.cold_blood.up)
+actions.stealthed+=/envenom,if=effective_combo_points>=variable.effective_spend_cp&buff.master_assassin_aura.up&active_enemies=1&(debuff.deathstalkers_mark.up|buff.cold_blood.up)
 # Rupture during Indiscriminate Carnage
 actions.stealthed+=/rupture,cycle_targets=1,if=effective_combo_points>=variable.effective_spend_cp&buff.indiscriminate_carnage.up&(refreshable|!settings.cycle)&(!variable.regen_saturated|!variable.scent_saturation|!dot.rupture.ticking)&target.time_to_die>15
 # Improved Garrote: Apply or Refresh with buffed Garrotes, accounting for Indiscriminate Carnage

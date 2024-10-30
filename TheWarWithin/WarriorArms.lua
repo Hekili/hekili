@@ -600,7 +600,6 @@ local TriggerCollateralDamage = setfenv( function()
 end, state )
 
 local marked_for_execution_stacks = {}
-local marked_for_execution_virtual = {}
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical_swing, _, _, critical_spell )
     if sourceGUID == state.GUID then
@@ -697,13 +696,17 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     for k, v in pairs( marked_for_execution_stacks ) do
-        marked_for_execution_virtual[ k ] = v
-
         if k == target.unit then
             applyDebuff( "target", "marked_for_execution", nil, v )
         else
             active_dot.marked_for_execution = active_dot.marked_for_execution + 1
         end
+    end
+
+    -- Will need to revisit this if `cancel_buff` is added to the APL.
+    if buff.bladestorm.up then
+        -- channelSpell( "bladestorm", buff.bladestorm.expires - class.auras.bladestorm.duration, class.auras.bladestorm.duration, class.abilities.bladestorm.id )
+        setCooldown( "global_cooldown", buff.bladestorm.remains )
     end
 end )
 

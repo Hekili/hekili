@@ -542,7 +542,7 @@ me:RegisterAuras( {
     essence_of_the_blood_queen = {
         id = 433925,
         duration = 20.0,
-        max_stack = function() return 1 + ( talent.frenzied_bloodthirst.enabled and 2 or 0 ) end,
+        max_stack = function() return 5 + ( talent.frenzied_bloodthirst.enabled and 2 or 0 ) end,
     },
     festering_scythe = {
         id = 458123,
@@ -1126,9 +1126,8 @@ local ExpireRunicCorruption = setfenv( function()
 end, state )
 
 
-local TriggerERW = setfenv( function()
-    gain( 1, "runes" )
-    gain( 5, "runic_power" )
+local TriggerInflictionOfSorrow = setfenv( function ()
+    applyBuff( "infliction_of_sorrow" )
 end, state )
 
 me:RegisterHook( "reset_precast", function ()
@@ -1221,13 +1220,8 @@ me:RegisterHook( "reset_precast", function ()
         end
     end
 
-    if buff.empower_rune_weapon.up then
-        local expires = buff.empower_rune_weapon.expires
-
-        while expires >= query_time do
-            state:QueueAuraExpiration( "empower_rune_weapon", TriggerERW, expires )
-            expires = expires - 5
-        end
+    if talent.infliction_of_sorrow.enabled and buff.gift_of_the_sanlayn.up then
+        state:QueueAuraExpiration( "gift_of_the_sanlayn", TriggerInflictionOfSorrow, buff.gift_of_the_sanlayn.expires )
     end
 
     if Hekili.ActiveDebug then Hekili:Debug( "Pet is %s.", pet.alive and "alive" or "dead" ) end
@@ -1502,7 +1496,6 @@ me:RegisterAbilities( {
 
                 if talent.infliction_of_sorrow.enabled and dot.virulent_plague.ticking then
                     dot.virulent_plague.expires = dot.virulent_plague.expires + 3
-                    applyBuff( "infliction_of_sorrow" ) -- TODO: Apply on Gift of the San'layn expiry?
                 end
 
                 removeBuff( "vampiric_strike" )
@@ -1831,33 +1824,6 @@ me:RegisterAbilities( {
         end,
 
         bind = { "defile", "any_dnd" },
-    },
-
-    -- Talent: Empower your rune weapon, gaining $s3% Haste and generating $s1 $LRune:Runes;...
-    empower_rune_weapon = {
-        id = 47568,
-        cast = 0,
-        charges = function()
-            if spec.frost and talent.empower_rune_weapon.enabled then return 2 end
-        end,
-        cooldown = 120,
-        recharge = function()
-            if spec.frost and talent.empower_rune_weapon.enabled then return ( level > 55 and 105 or 120 ) end
-        end,
-        gcd = "off",
-
-        talent = "empower_rune_weapon",
-        startsCombat = false,
-
-        handler = function ()
-            applyBuff( "empower_rune_weapon" )
-            gain( 1, "runes" )
-            gain( 5, "runic_power" )
-            state:QueueAuraExpiration( "empower_rune_weapon", TriggerERW, query_time + 5 )
-            state:QueueAuraExpiration( "empower_rune_weapon", TriggerERW, query_time + 10 )
-            state:QueueAuraExpiration( "empower_rune_weapon", TriggerERW, query_time + 15 )
-            state:QueueAuraExpiration( "empower_rune_weapon", TriggerERW, query_time + 20 )
-        end,
     },
 
     -- Talent: Causes each of your Virulent Plagues to flare up, dealing $212739s1 Shadow da...
