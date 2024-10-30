@@ -1066,6 +1066,27 @@ local function removeBuff( aura )
 end
 state.removeBuff = removeBuff
 
+-- Extend buff function, defaults to 1 second if no value supplied, breaks out if supplied a 0
+local function extendBuff( aura, duration)
+
+    if duration == 0 then
+        Error( "Attempted to extend a buff '%s'.\n\n%s by 0 seconds", aura or "nil", debugstack() )
+        return
+    end
+
+    local a = class.auras[ aura ]
+
+    duration = duration or 1
+
+    local b = state.buff[ aura ]
+
+    if duration < 0 and b.remains < duration then --duration decrease will remove buff
+            removeBuff( aura )
+    else b.expires = b.expires + duration
+    end
+
+end
+state.extendBuff = extendBuff
 
 -- Apply stacks of a buff to the current game state.
 -- Wraps around Buff() to check for an existing buff.
