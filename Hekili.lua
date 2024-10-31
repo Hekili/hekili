@@ -380,7 +380,7 @@ function Hekili:SaveDebugSnapshot( dispName )
 
     -- Limit screenshot to once per login.
     if snapped then
-        if Hekili.DB.profile.screenshot and not hasScreenshotted then
+        if Hekili.DB.profile.screenshot and ( not hasScreenshotted or Hekili.ManualSnapshot ) then
             Screenshot()
             hasScreenshotted = true
         end

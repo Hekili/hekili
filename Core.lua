@@ -506,26 +506,44 @@ function Hekili:CheckChannel( ability, prio )
     local tick_time = a.tick_time or aura.tick_time
     local remains = state.channel_remains
 
-    if channel == ability then
-        if prio <= remains + 0.01 then
+    local act = state.this_action
+    state.this_action = channel
+
+    local gcd = state.cooldown.global_cooldown.ready
+
+    local last_tick = state.buff.casting.duration % tick_time
+    if last_tick == 0 then last_tick = tick_time end
+    last_tick = remains <= last_tick
+
+    if ability == nil or channel == ability then
+
+        --[[ if prio <= remains + 0.01 then
             if self.ActiveDebug then self:Debug( "CC: ...looks like chaining, not breaking channel.", ability ) end
-            return false
-        end
-        if modifiers.early_chain_if then
-            local eci = state.cooldown.global_cooldown.ready and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 ) and modifiers.early_chain_if()
-            if self.ActiveDebug then self:Debug( "CC: early_chain_if returns %s...", tostring( eci ) ) end
-            return eci
-        end
-        if modifiers.chain then
-            local chain = state.cooldown.global_cooldown.ready and ( remains < tick_time ) and modifiers.chain()
-            if self.ActiveDebug then self:Debug( "CC: chain returns %s...", tostring( chain ) ) end
-            return chain
+            state.this_action = act
+            return true
+        end ]]
+
+        if modifiers.early_chain_if and modifiers.early_chain_if() then
+            local timing = last_tick or ( state.query_time - state.buff.casting.applied ) % tick_time < 0.25
+
+            if self.ActiveDebug then self:Debug( "CC: Early Chain - GCD: %s, Timing: %s", tostringall( gcd, timing ) ) end
+            if gcd and timing then
+                state.this_action = act
+                return true
+            end
         end
 
-        if self.ActiveDebug then self:Debug( "CC: channel == ability, not breaking." ) end
-        return false
+        if modifiers.chain and modifiers.chain() then
+            local timing = last_tick
+            if self.ActiveDebug then self:Debug( "CC: Chain - GCD: %s, Timing: %s", tostringall( gcd, timing ) ) end
+            if gcd and timing then
+                state.this_action = act
+                return true
+            end
+        end
+    end
 
-    else
+    if channel ~= ability then
         -- If interrupt_global is flagged, we interrupt for any potential cast.  Don't bother with additional testing.
         -- REVISIT THIS:  Interrupt Global allows entries from any action list rather than just the current (sub) list.
         -- That means interrupt / interrupt_if should narrow their scope to the current APL (at some point, anyway).
@@ -534,31 +552,30 @@ function Hekili:CheckChannel( ability, prio )
             return true
         end ]]
 
-        local act = state.this_action
-        state.this_action = channel
-
         -- We are concerned with chain and early_chain_if.
+
         if modifiers.interrupt_if and modifiers.interrupt_if() then
-            local imm = modifiers.interrupt_immediate and modifiers.interrupt_immediate() or nil
-            local val = state.cooldown.global_cooldown.ready and ( imm or remains < tick_time or ( state.query_time - state.buff.casting.applied ) % tick_time < 0.25 )
-            if self.ActiveDebug then
-                self:Debug( "CC:  Interrupt_If is %s.", tostring( val ) )
+            local timing = last_tick or ( state.query_time - state.buff.casting.applied ) % tick_time < 0.25
+            local imm = modifiers.interrupt_immediate and modifiers.interrupt_immediate()
+            if self.ActiveDebug then self:Debug( "CC: Interrupt_If - GCD: %s, Immediate: %s, Timing: %s.", tostringall( gcd, imm, timing ) ) end
+            if imm or gcd and timing then
+                state.this_action = act
+                return true
             end
-            state.this_action = act
-            return val
         end
 
         if modifiers.interrupt and modifiers.interrupt() then
-            local val = state.cooldown.global_cooldown.ready and ( remains < tick_time or ( ( remains - state.delay ) / tick_time ) % 1 <= 0.5 )
-            if self.ActiveDebug then self:Debug( "CC:  Interrupt is %s.", tostring( val ) ) end
-            state.this_action = act
-            return val
+            local timing = last_tick or ( state.query_time - state.buff.casting.applied ) % tick_time < 0.25
+            if self.ActiveDebug then self:Debug( "CC: Interrupt - GCD: %s, Timing: %s.", tostringall( gcd, timing ) ) end
+            if val then
+                state.this_action = act
+                return true
+            end
         end
-
-        state.this_action = act
     end
 
-    if self.ActiveDebug then self:Debug( "CC:  No result; defaulting to false." ) end
+    if self.ActiveDebug then self:Debug( "CC: No conditions met to chain/interrupt channel." ) end
+    state.this_action = act
     return false
 end
 

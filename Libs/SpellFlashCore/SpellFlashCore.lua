@@ -318,6 +318,8 @@ local function RegisterFrames()
     local LAB = {
         original = LibStub:GetLibrary("LibActionButton-1.0", true),
         elvui = LibStub:GetLibrary("LibActionButton-1.0-ElvUI", true),
+        NDui = LibStub:GetLibrary("LibActionButton-1.0-NDui", true),
+        UI = LibStub:GetLibrary("LibActionButton-1.0-UI", true)
     }
 
     for _, lib in pairs(LAB) do

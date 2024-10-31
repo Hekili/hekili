@@ -355,10 +355,6 @@ local ExpireDoom = setfenv( function()
     gain( 1, "soul_shards" )
 end, state )
 
-local ExpireNetherPortal = setfenv( function()
-    summon_demon( "pit_lord", 10 )
-end, state )
-
 spec:RegisterStateFunction( "SoulStrikeIfNotCapped", function()
     if soul_shard < 5 then
         class.abilities.soul_strike.handler()
@@ -641,21 +637,38 @@ spec:RegisterHook( "spend", function( amt, resource )
             if buff.art_mother.up then
                 summon_demon( "mother_of_chaos", 6 )
                 removeBuff( "art_mother" )
-                if talent.secrets_of_the_coven.enabled then applyBuff( "infernal_bolt" ) end
+                if talent.secrets_of_the_coven.enabled then
+                    applyBuff( "infernal_bolt" )
+                    buff.infernal_bolt.applied = buff.infernal_bolt.applied + 0.25
+                    buff.infernal_bolt.expires = buff.infernal_bolt.expires + 0.25
+                end
             end
 
             if buff.art_pit_lord.up then
                 summon_demon( "pit_lord", 5 )
                 removeBuff( "art_pit_lord" )
-                if talent.ruination.enabled then applyBuff( "ruination" ) end
+                if talent.ruination.enabled then
+                    applyBuff( "ruination" )
+                    buff.ruination.applied = buff.ruination.applied + 0.25
+                    buff.ruination.expires = buff.ruination.expires + 0.25
+                end
             end
 
             if talent.diabolic_ritual.enabled then
                 if buff.diabolic_ritual.down then applyBuff( "diabolic_ritual" )
                 else
-                    if buff.ritual_overlord.up then buff.ritual_overlord.expires = buff.ritual_overlord.expires - amt; if buff.ritual_overlord.down then applyBuff( "art_overlord" ) end end
-                    if buff.ritual_mother  .up then buff.ritual_mother  .expires = buff.ritual_mother  .expires - amt; if buff.ritual_mother  .down then applyBuff( "art_mother"   ) end end
-                    if buff.ritual_pit_lord.up then buff.ritual_pit_lord.expires = buff.ritual_pit_lord.expires - amt; if buff.ritual_pit_lord.down then applyBuff( "art_pit_lord" ) end end
+                    if buff.ritual_overlord.up then
+                        buff.ritual_overlord.expires = buff.ritual_overlord.expires - amt
+                        if buff.ritual_overlord.down then applyBuff( "art_overlord" ) end
+                    end
+                    if buff.ritual_mother.up then
+                        buff.ritual_mother.expires = buff.ritual_mother.expires - amt
+                        if buff.ritual_mother.down then applyBuff( "art_mother" ) end
+                    end
+                    if buff.ritual_pit_lord.up then
+                        buff.ritual_pit_lord.expires = buff.ritual_pit_lord.expires - amt
+                        if buff.ritual_pit_lord.down then applyBuff( "art_pit_lord" ) end
+                    end
                 end
             end
 
@@ -671,10 +684,16 @@ end )
 
 
 spec:RegisterHook( "advance_end", function( time )
-    if buff.art_mother.expires > query_time - time and buff.art_mother.down then
-        summon_demon( "mother_of_chaos", 6 )
-        removeBuff( "art_mother" )
-        if talent.secrets_of_the_coven.enabled then applyBuff( "infernal_bolt" ) end
+    if buff.ritual_overlord.expires > query_time - time and buff.ritual_overlord.down then
+        applyBuff( "art_overlord" )
+    end
+
+    if buff.ritual_mother.expires > query_time - time and buff.ritual_mother.down then
+        applyBuff( "art_mother" )
+    end
+
+    if buff.ritual_pit_lord.expires > query_time - time and buff.ritual_pit_lord.down then
+        applyBuff( "art_pit_lord" )
     end
 end )
 
@@ -1075,16 +1094,19 @@ spec:RegisterAuras( {
         id = 431944,
         duration = 20.0,
         max_stack = 1,
+        copy = "ritual_overlord"
     },
     diabolic_ritual_mother_of_chaos = {
         id = 432815,
         duration = 20.0,
         max_stack = 1,
+        copy = { "ritual_mother_of_chaos", "ritual_mother" }
     },
     diabolic_ritual_pit_lord = {
         id = 432816,
         duration = 20.0,
         max_stack = 1,
+        copy = "ritual_pit_lord"
     },
     diabolic_ritual = {
         alias = { "diabolic_ritual_overlord", "diabolic_ritual_mother_of_chaos", "diabolic_ritual_pit_lord" },
@@ -1941,6 +1963,7 @@ spec:RegisterAbilities( {
         spend = 1,
         spendType = "soul_shards",
 
+        texture = 535592,
         startsCombat = true,
         nobuff = "ruination",
 
@@ -1976,6 +1999,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "shadowflame",
 
+        texture = 135800,
         startsCombat = true,
         buff = "ruination",
 
