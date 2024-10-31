@@ -756,7 +756,7 @@ local HekiliSpecMixin = {
                     if name then
                         if not a.name or a.name == a.key then a.name = name end
                         if not a.link or a.link == a.key then a.link = link end
-                        a.texture = a.texture or texture
+                        if not a.funcs.texture then a.texture = a.texture or texture end
 
                         if a.suffix then
                             a.actualName = name
@@ -2846,21 +2846,23 @@ all:RegisterAbilities( {
         cooldown = function () return time > 0 and 3600 or 60 end,
         gcd = "off",
 
-        item = 5512,
+        item = function() return talent.pact_of_gluttony.enabled and 224464 or 5512 end,
+        items = { 224464, 5512 },
         bagItem = true,
 
         startsCombat = false,
-        texture = 538745,
+        texture = function() return talent.pact_of_gluttony.enabled and 538744 or 538745 end,
 
         usable = function ()
-            if GetItemCount( 5512 ) == 0 then return false, "requires healthstone in bags"
-            elseif not IsUsableItem( 5512 ) then return false, "healthstone on CD"
+            local item = talent.pact_of_gluttony.enabled and 224464 or 5512
+            if GetItemCount( item ) == 0 then return false, "requires healthstone in bags"
+            elseif not IsUsableItem( item ) then return false, "healthstone on CD"
             elseif health.current >= health.max then return false, "must be damaged" end
             return true
         end,
 
         readyTime = function ()
-            local start, duration = GetItemCooldown( 5512 )
+            local start, duration = GetItemCooldown( talent.pact_of_gluttony.enabled and 224464 or 5512 )
             return max( 0, start + duration - query_time )
         end,
 

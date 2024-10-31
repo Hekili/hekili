@@ -44,7 +44,6 @@ actions.st+=/call_of_the_wild
 actions.st+=/bloodshed
 actions.st+=/bestial_wrath
 actions.st+=/kill_command,if=cooldown.kill_command.full_recharge_time<1.25*gcd
-actions.st+=/multishot,if=buff.beast_cleave.remains<gcd*1.25&talent.bleak_powder&(buff.deathblow.up|(cooldown.black_arrow.remains<gcd&(target.health.pct<20|target.health.pct>81)))
 actions.st+=/black_arrow
 actions.st+=/kill_command
 actions.st+=/dire_beast

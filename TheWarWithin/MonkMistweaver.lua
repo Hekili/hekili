@@ -518,6 +518,11 @@ spec:RegisterAuras( {
     strength_of_spirit = {
         id = 387276,
     },
+    strength_of_the_black_ox = {
+        id = 443112,
+        duration = 30,
+        max_stack = 1
+    },
     summon_black_ox_statue = { -- TODO: Is a totem.
         id = 115315,
         duration = 900,

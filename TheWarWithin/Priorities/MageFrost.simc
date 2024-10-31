@@ -9,10 +9,10 @@ actions.precombat+=/frostbolt,if=active_enemies<=3
 actions+=/counterspell
 actions+=/call_action_list,name=cds
 actions+=/run_action_list,name=aoe_ff,strict=1,if=talent.frostfire_bolt&active_enemies>=4
-actions+=/run_action_list,name=aoe_ss,strict=1,if=talent.splinterstorm&active_enemies>=3|(!talent.frostfire_bolt&!talent.splinterstorm)
+actions+=/run_action_list,name=aoe_ss,strict=1,if=!talent.frostfire_bolt&active_enemies>=3
 actions+=/run_action_list,name=cleave_ff,strict=1,if=talent.frostfire_bolt&active_enemies>=2&active_enemies<=3
-actions+=/run_action_list,name=cleave_ss,strict=1,if=talent.splinterstorm&active_enemies=2
-actions+=/call_action_list,name=st_aoebuild,strict=1,if=talent.splinterstorm&!(talent.cold_front&talent.slick_ice&talent.deaths_chill&talent.frozen_touch)|talent.frostfire_bolt&!(talent.deep_shatter&talent.slick_ice&talent.deaths_chill)
+actions+=/run_action_list,name=cleave_ss,strict=1,if=!talent.frostfire_bolt&active_enemies=2
+actions+=/call_action_list,name=st_aoebuild,strict=1,if=!talent.frostfire_bolt&!(talent.cold_front&talent.slick_ice&talent.deaths_chill&talent.frozen_touch)|talent.frostfire_bolt&!(talent.deep_shatter&talent.slick_ice&talent.deaths_chill)
 actions+=/call_action_list,name=st_ff,strict=1,if=talent.frostfire_bolt
 actions+=/call_action_list,name=st_ss,strict=1,if=!talent.frostfire_bolt
 

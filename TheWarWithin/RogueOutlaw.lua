@@ -1500,6 +1500,16 @@ spec:RegisterSetting( "allow_shadowmeld", false, {
     end,
 } )
 
+spec:RegisterSetting( "vanish_charges_reserved", 0, {
+    name = strformat( "Reserve %s Charges", Hekili:GetSpellLinkWithTexture( 1856 ) ),
+    desc = strformat( "If set above zero, %s will not be recommended if it would leave you with fewer (fractional) charges.", Hekili:GetSpellLinkWithTexture( 1856 ) ),
+    type = "range",
+    min = 0,
+    max = 2,
+    step = 0.1,
+    width = "full"
+} )
+
 spec:RegisterSetting( "solo_vanish", true, {
     name = strformat( "%s: Solo", Hekili:GetSpellLinkWithTexture( 1856 ) ),
     desc = strformat( "If unchecked, %s will not be recommended if you are playing alone, to avoid resetting combat.",
