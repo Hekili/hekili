@@ -1078,7 +1078,7 @@ local function auraDuration( unit, aura, duration )
     local b = state.buff[ aura ]
     if not b then
         local d = state.debuff[ aura ]
-        if not d then
+        if not d then -- you supplied an oopsie
             Error( "Attempted to extend/shorten a nameless aura '%s'.\n\n%s", aura or "nil", debugstack() )
             return false
         else -- it's a debuff
