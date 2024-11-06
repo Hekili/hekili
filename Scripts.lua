@@ -519,8 +519,10 @@ do
         { "^!?time_to_hpg[<=]=?(.-)$" , "time_to_hpg-%1"       }, -- Retribution Paladin
         { "^!?consecration.up"        , "consecration.remains" }, -- Prot        Paladin
 
-        { "^!?contagion<=?(.-)"  , "contagion-%1"           }, -- Affliction Warlock
-        { "^time_to_imps%.(.+)$" , "time_to_imps[%1]"       }, -- Demo       Warlock
+        { "^!?contagion<=?(.-)"  , "contagion-%1"                 }, -- Affliction Warlock
+        { "^time_to_imps%.(.+)$" , "time_to_imps[%1]"             }, -- Demo Warlock
+        { "^!?diabolic_ritual$"  , "buff.diabolic_ritual.remains" }, -- Warlocks
+        { "^!?demonic_art$"      , "buff.demonic_art.remains"     },
 
         { "^active_bt_triggers$"       , "time_to_bt_triggers(0)"    }, -- Feral Druid w/ Bloodtalons.
         { "^active_bt_triggers<?=0$"   , "time_to_bt_triggers(0)"    }, -- Feral Druid w/ Bloodtalons.
@@ -532,6 +534,7 @@ do
 
         { "^!?fiery_brand_dot_primary_remains$", "fiery_brand_dot_primary_remains" }, -- Vengeance
         { "^!?fiery_brand_dot_primary_ticking$", "fiery_brand_dot_primary_remains" }, -- Vengeance
+
 
         { "^!?variable%.([a-z0-9_]+)$", "safenum(variable.%1)"                        },
         { "^!?variable%.([a-z0-9_]+)<=?(.-)$", "0.01+%2-safenum(variable.%1)"         },

@@ -1501,7 +1501,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 6,
 
-    potion = "spectral_agility",
+    potion = "tempered_potion",
 
     package = "Marksmanship",
 } )
@@ -1511,7 +1511,7 @@ local beastMastery = class.specs[ 253 ]
 
 spec:RegisterSetting( "pet_healing", 0, {
     name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
-    desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage.  Setting to |cFFFFD1000|r disables this feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
+    desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage. Setting to |cFFFFD1000|r disables this feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
     icon = 132179,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
@@ -1522,20 +1522,20 @@ spec:RegisterSetting( "pet_healing", 0, {
 } )
 
 spec:RegisterSetting( "mark_any", false, {
-    name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
+    name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ), 
     desc = strformat( "If checked, %s may be recommended for any target rather than only bosses.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "trueshot_rapid_fire", true, {
-    name = strformat( "%s Indicator during %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ) ),
-    desc = strformat( "If checked, when %s is recommended during %s, a %s indicator will also be shown.  This icon means that you should attempt to queue %s during the cast, in case %s's cooldown is reset by %s / %s.  Otherwise, use the next recommended ability in the queue.",
+    name = strformat( "%s Indicator During %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ) ),
+    desc = strformat( "If checked, when %s is recommended during %s, a %s indicator will also be shown. This icon means that you should attempt to queue %s during the cast, in case %s's cooldown is reset by %s / %s. Otherwise, use the next recommended ability in the queue.",
         Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
-        spec.abilities.rapid_fire.name,
-        spec.abilities.aimed_shot.name,
+        Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ),
         Hekili:GetSpellLinkWithTexture( spec.talents.improved_deathblow[ 2 ] ),
         Hekili:GetSpellLinkWithTexture( spec.talents.surging_shots[ 2 ] ) ),
     type = "toggle",

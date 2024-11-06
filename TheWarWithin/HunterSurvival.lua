@@ -1363,14 +1363,16 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 8,
 
-    potion = "spectral_agility",
+    potion = "tempered_potion",
 
     package = "Survival"
 } )
 
+local beastMastery = class.specs[ 253 ]
+
 spec:RegisterSetting( "pet_healing", 0, {
-    name = "|T132179:0|t Mend Pet below %hp",
-    desc = "If set above zero, the addon will recommend |T132179:0|t Mend Pet when your pet falls below this HP %. Leave at 0 to disable the feature.",
+    name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
+    desc = strformat( "If set above zero, %s will be recommended when your pet falls below this health percentage. Set to 0 to disable the feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
     icon = 132179,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
@@ -1381,23 +1383,22 @@ spec:RegisterSetting( "pet_healing", 0, {
 } )
 
 spec:RegisterSetting( "use_harpoon", true, {
-    name = "|T1376040:0|t Use Harpoon",
-    desc = "If checked, the addon will recommend |T1376040:0|t Harpoon when you are out of range and Harpoon is available.",
+    name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.abilities.harpoon.id ) ),
+    desc = strformat( "If checked, %s will be recommended when you are out of range and it is available.", Hekili:GetSpellLinkWithTexture( spec.abilities.harpoon.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "allow_focus_overcap", false, {
     name = "Allow Focus Overcap",
-    desc = "The default priority tries to avoid overcapping Focus by default.  In simulations, this helps to avoid wasting Focus.  In actual gameplay, this can " ..
-        "result in trying to use Focus spenders when other important buttons (Wildfire Bomb, Kill Command) are available to push.  On average, enabling this feature " ..
-        "appears to be DPS neutral vs. the default setting, but has higher variance.  Your mileage may vary.\n\n" ..
-        "The default setting is |cFFFFD100unchecked|r.",
+    desc = "The default priority tries to avoid overcapping Focus by default. In simulations, this helps to avoid wasting Focus. However, in actual gameplay, this can " ..
+        "result in using Focus spenders when other important abilities (Wildfire Bomb, Kill Command) are available. On average, enabling this feature appears to be DPS neutral " ..
+        "but has higher variance. Your experience may vary.\n\nThe default setting is |cFFFFD100unchecked|r.",
     type = "toggle",
     width = "full"
 } )
 
-local beastMastery = class.specs[ 253 ]
+
 
 spec:RegisterSetting( "mark_any", false, {
     name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
@@ -1405,17 +1406,6 @@ spec:RegisterSetting( "mark_any", false, {
     type = "toggle",
     width = "full"
 } )
-
---[[ TODO: If this approach isn't sufficient, I'll need to check for pet Basic Attack abilities being set to manual.
-spec:RegisterSetting( "manual_kill_shot", false, {
-    name = strformat( "%s: %s Macro", Hekili:GetSpellLinkWithTexture( spec.auras.coordinated_assault.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.kill_shot.id ) ),
-    desc = strformat( "During |W%s|w, some guides recommend using a macro to manually control your pet's attacks to empower |W%s|w.  These macros prevent the |W%s|w empowerment "
-        .. "from occurring naturally, which will prevent |W%s|w from being recommended.\n\n"
-        .. "Enabling this option will allow |W%s|w to be recommended during %s without the empowerment buff active.", spec.auras.coordinated_assault.name, spec.abilities.kill_shot.name,
-        spec.auras.coordinated_assault_empower.name, spec.abilities.kill_shot.name, spec.abilities.kill_shot.name, spec.auras.coordinated_assault.name ),
-    type = "toggle",
-    width = 1.49
-} ) ]]
 
 spec:RegisterStateExpr( "coordinated_assault_kill_shot", function()
     return false -- ( settings.manual_kill_shot or false ) and buff.coordinated_assault.up

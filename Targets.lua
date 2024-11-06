@@ -813,11 +813,12 @@ ns.compositeDebuffCount = function( ... )
     return n
 end
 
-ns.conditionalDebuffCount = function(req1, req2, ...)
+ns.conditionalDebuffCount = function(req1, req2, req3, ...)
     local n = 0
 
     req1 = class.auras[req1] and class.auras[req1].id
     req2 = class.auras[req2] and class.auras[req2].id
+    req3 = class.auras[req3] and class.auras[req3].id
 
     for i = 1, select("#", ...) do
         local debuff = select(i, ...)
@@ -826,9 +827,7 @@ ns.conditionalDebuffCount = function(req1, req2, ...)
 
         if debuff then
             for unit in pairs(debuff) do
-                local reqExp =
-                    (req1 and debuffs[req1] and debuffs[req1][unit]) or (req2 and debuffs[req2] and debuffs[req2][unit])
-                if reqExp then
+                if (req1 and debuffs[req1] and debuffs[req1][unit]) or (req2 and debuffs[req2] and debuffs[req2][unit]) or (req3 and debuffs[req3] and debuffs[req3][unit]) then
                     n = n + 1
                 end
             end

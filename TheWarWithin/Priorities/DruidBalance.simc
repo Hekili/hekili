@@ -68,7 +68,7 @@ actions.aoe+=/wrath
 
 actions.st+=/wrath,if=variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time&!variable.cd_condition
 actions.st+=/starfire,if=!variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time&!variable.cd_condition
-actions.st+=/sunfire,cycle_targets=1,if=refreshable&remains<3
+actions.st+=/sunfire,cycle_targets=1,if=remains<3|refreshable&(hero_tree.keeper_of_the_grove&cooldown.force_of_nature.ready|!hero_tree.keeper_of_the_grove&variable.cd_condition)
 actions.st+=/moonfire,cycle_targets=1,if=refreshable&remains<3&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
 actions.st+=/call_action_list,name=pre_cd
 actions.st+=/celestial_alignment,if=variable.cd_condition

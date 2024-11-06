@@ -892,6 +892,31 @@ all:RegisterAbilities( {
             }
         }
     },
+
+    -- Anniversary
+    burst_of_knowledge = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 231424,
+        toggle = "cooldowns",
+
+        proc = "primary",
+        self_buff = "burst_of_knowledge",
+
+        handler = function()
+            applyBuff( "burst_of_knowledge" )
+        end,
+
+        auras = {
+            burst_of_knowledge = {
+                id = 469925,
+                duration = 20,
+                max_stack = 20
+            }
+        }
+    }
 } )
 
 all:RegisterGear( "scroll_of_momentum", 226539 )

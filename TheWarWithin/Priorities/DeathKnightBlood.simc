@@ -10,6 +10,11 @@ actions+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(variable.damage_t
 actions+=/use_item,slot=main_hand,if=!equipped.fyralath_the_dreamrender&(variable.trinket_1_buffs|trinket.1.cooldown.remains)&(variable.trinket_2_buffs|trinket.2.cooldown.remains)
 actions+=/use_item,slot=trinket1,if=variable.trinket_1_buffs&(buff.dancing_rune_weapon.up|!talent.dancing_rune_weapon|cooldown.dancing_rune_weapon.remains>20)&(trinket.2.cooldown.remains|!trinket.2.has_cooldown|variable.trinket_2_buffs)
 actions+=/use_item,slot=trinket2,if=variable.trinket_2_buffs&(buff.dancing_rune_weapon.up|!talent.dancing_rune_weapon|cooldown.dancing_rune_weapon.remains>20)&(trinket.1.cooldown.remains|!trinket.1.has_cooldown|variable.trinket_1_buffs)
+# Use Icebound Fortitude if you're taking sufficient damage and you don't have Dancing Rune Weapon or Vampiric Blood up.
+actions+=/icebound_fortitude,if=tanking&incoming_damage_5s>=ibf_damage&!(buff.dancing_rune_weapon.up|buff.vampiric_blood.up)
+actions+=/vampiric_blood,if=tanking&incoming_damage_5s>=vb_damage&!(buff.dancing_rune_weapon.up|buff.icebound_fortitude.up)
+# Use Rune Tap if you're taking sufficient damage and you don't have Dancing Rune Weapon, Vampiric Blood, or Icebound Fortitude up.
+actions+=/rune_tap,if=tanking&incoming_damage_5s>=rt_damage&!(buff.dancing_rune_weapon.up|buff.vampiric_blood.up|buff.icebound_fortitude.up)
 actions+=/run_action_list,name=deathbringer,strict=1,if=hero_tree.deathbringer
 actions+=/run_action_list,name=sanlayn,strict=1,if=!hero_tree.deathbringer
 

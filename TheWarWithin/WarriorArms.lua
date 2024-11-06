@@ -602,15 +602,23 @@ end, state )
 local marked_for_execution_stacks = {}
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical_swing, _, _, critical_spell )
-    if sourceGUID == state.GUID then
-        if subtype == "SPELL_CAST_SUCCESS" then
-            if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
-                last_cs_target = destGUID
-            end
-        elseif subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID then
-            if spellID == 445579 then -- Slayer's Strike occurred
-                marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
-            end
+    if sourceGUID ~= state.GUID then return end
+
+    if subtype == "SPELL_CAST_SUCCESS" then
+        if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
+            last_cs_target = destGUID
+        end
+    elseif subtype == "SPELL_DAMAGE" then
+        if spellID == 445579 then -- Slayer's Strike occurred
+            marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
+            return
+        end
+
+        local ability = class.abilities[ spellID ]
+        if not ability then return end
+
+        if ability.key == "execute" and state.talent.slayers_dominance.enabled then
+            marked_for_execution_stacks[ destGUID ] = nil
         end
     end
 end )
@@ -694,6 +702,8 @@ spec:RegisterHook( "reset_precast", function ()
     if talent.collateral_damage.enabled and buff.sweeping_strikes.up then
         state:QueueAuraExpiration( "sweeping_strikes_collateral_dmg", TriggerCollateralDamage, buff.sweeping_strikes.expires )
     end
+
+    active_dot.marked_for_execution = 0
 
     for k, v in pairs( marked_for_execution_stacks ) do
         if k == target.unit then

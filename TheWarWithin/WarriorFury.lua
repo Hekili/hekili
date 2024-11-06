@@ -633,17 +633,10 @@ local rageSpent = 0
 local gloryRage = 0
 
 local fresh_meat_actual = {}
-local fresh_meat_virtual = {}
 
 local last_rampage_target = nil
 
 local marked_for_execution_stacks = {}
-local marked_for_execution_virtual = {}
-
-local TriggerColdSteelHotBlood = setfenv( function()
-    applyDebuff( "target", "gushing_wound" )
-    gain( 4, "rage" )
-end, state )
 
 local RemoveFrenzy = setfenv( function()
     removeBuff( "frenzy" )
@@ -655,34 +648,38 @@ end, state )
 
 spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, critical )
 
-    if sourceGUID == state.GUID then
-        if subtype == "SPELL_CAST_SUCCESS" then
-            local ability = class.abilities[ spellID ]
+    if sourceGUID ~= state.GUID then return end
 
-            if not ability then return end
-            if ability.key == "rampage" and last_rampage_target ~= destGUID and state.talent.frenzy.enabled then
-                RemoveFrenzy()
-                last_rampage_target = destGUID
-            end
+    if subtype == "SPELL_CAST_SUCCESS" then
+        local ability = class.abilities[ spellID ]
 
-        elseif subtype == "SPELL_DAMAGE" and UnitGUID( "target" ) == destGUID then
-            if spellID == 445579 then -- Slayer's Strike occurred
-                marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
-                return
-            end
-
-            local ability = class.abilities[ spellID ]
-            if not ability then return end
-
-            if ( ability.key == "bloodthirst" or ability.key == "bloodbath" ) and state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
-                fresh_meat_actual[ destGUID ] = true
-            end
-        elseif state.talent.thunder_blast.enabled and spellID == 435615 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
-            Hekili:ForceUpdate( "THUNDERBLAST_CHANGED", true )
-            --Will pickup thunder_blast stacks
-        elseif state.talent.burst_of_power.enabled and spellID == 437121 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
-            Hekili:ForceUpdate( "BURSTOFPOWER_CHANGED", true )
+        if not ability then return end
+        if ability.key == "rampage" and last_rampage_target ~= destGUID and state.talent.frenzy.enabled then
+            RemoveFrenzy()
+            last_rampage_target = destGUID
         end
+
+    elseif subtype == "SPELL_DAMAGE" then
+        if spellID == 445579 then -- Slayer's Strike occurred
+            marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
+            return
+        end
+
+        local ability = class.abilities[ spellID ]
+        if not ability then return end
+
+        if ( ability.key == "bloodthirst" or ability.key == "bloodbath" ) and state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
+            fresh_meat_actual[ destGUID ] = true
+        end
+
+        if ability.key == "execute" and state.talent.slayers_dominance.enabled then
+            marked_for_execution_stacks[ destGUID ] = nil
+        end
+    elseif state.talent.thunder_blast.enabled and spellID == 435615 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+        Hekili:ForceUpdate( "THUNDERBLAST_CHANGED", true )
+        --Will pickup thunder_blast stacks
+    elseif state.talent.burst_of_power.enabled and spellID == 437121 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+        Hekili:ForceUpdate( "BURSTOFPOWER_CHANGED", true )
     end
 end )
 
@@ -762,12 +759,9 @@ spec:RegisterHook( "reset_precast", function ()
         state:QueueAuraExpiration( "recklessness", WillOfTheBerserker, buff.recklessness.expires )
     end
 
-    wipe( fresh_meat_virtual )
     active_dot.hit_by_fresh_meat = 0
 
     for k, v in pairs( fresh_meat_actual ) do
-        fresh_meat_virtual[ k ] = v
-
         if k == target.unit then
             applyDebuff( "target", "hit_by_fresh_meat" )
         else
@@ -775,9 +769,9 @@ spec:RegisterHook( "reset_precast", function ()
         end
     end
 
-    for k, v in pairs( marked_for_execution_stacks ) do
-        marked_for_execution_virtual[ k ] = v
+    active_dot.marked_for_execution = 0
 
+    for k, v in pairs( marked_for_execution_stacks ) do
         if k == target.unit then
             applyDebuff( "target", "marked_for_execution", nil, v )
         else

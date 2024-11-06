@@ -7,7 +7,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_sta
 actions.precombat+=/variable,name=effective_spend_cp,value=cp_max_spend-2<?5*talent.hand_of_fate
 # Pre-cast Slice and Dice if possible
 actions.precombat+=/stealth
-actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable&!buff.indiscriminate_carnage.up
+## actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable&!buff.indiscriminate_carnage.up
 
 # Restealth if possible (no vulnerable enemies in combat)
 actions+=/stealth
@@ -145,9 +145,9 @@ actions.stealthed+=/envenom,if=effective_combo_points>=variable.effective_spend_
 # Envenom during Master Assassin in single target
 actions.stealthed+=/envenom,if=effective_combo_points>=variable.effective_spend_cp&buff.master_assassin_aura.up&active_enemies=1&(debuff.deathstalkers_mark.up|buff.cold_blood.up)
 # Rupture during Indiscriminate Carnage
-actions.stealthed+=/rupture,cycle_targets=1,if=effective_combo_points>=variable.effective_spend_cp&buff.indiscriminate_carnage.up&(refreshable|!settings.cycle)&(!variable.regen_saturated|!variable.scent_saturation|!dot.rupture.ticking)&target.time_to_die>15
+actions.stealthed+=/rupture,cycle_targets=1,if=effective_combo_points>=variable.effective_spend_cp&buff.indiscriminate_carnage_any.up&(refreshable|!settings.cycle)&(!variable.regen_saturated|!variable.scent_saturation|!dot.rupture.ticking)&target.time_to_die>15
 # Improved Garrote: Apply or Refresh with buffed Garrotes, accounting for Indiscriminate Carnage
-actions.stealthed+=/garrote,cycle_targets=1,if=stealthed.improved_garrote&(remains<12|pmultiplier<=1|(buff.indiscriminate_carnage.up&active_dot.garrote<cycle_enemies|(active_dot.garrote<active_enemies&!settings.cycle)))&active_enemies>1&target.time_to_die-remains>2
+actions.stealthed+=/garrote,cycle_targets=1,if=(remains<12|pmultiplier<=1|((buff.indiscriminate_carnage_any.up&((active_dot.garrote<cycle_enemies)|(active_dot.garrote<active_enemies&!settings.cycle)))))&active_enemies>1&target.time_to_die-remains>2
 actions.stealthed+=/garrote,if=stealthed.improved_garrote&(pmultiplier<=1|remains<12|active_enemies>1&buff.master_assassin_aura.up&buff.master_assassin_aura.remains<3)&combo_points.deficit>=1+2*talent.shrouded_suffocation
 
 

@@ -1810,7 +1810,7 @@ function Hekili.Update( initial )
                     if class.file == "DEATHKNIGHT" then
                         state:SetConstraint( 0, min( state.delayMax, max( 0.01 + state.rune.cooldown * 2, 10 ) ) )
                     else
-                        state:SetConstraint( 0, min( state.delayMax, 10 ) )
+                        state:SetConstraint( 0, min( state.delayMax, state.spec.assassination and 15 or 10 ) )
                     end
 
                     if hadProj and debug then Hekili:Debug( "[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end

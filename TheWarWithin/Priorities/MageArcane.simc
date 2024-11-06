@@ -55,7 +55,7 @@ actions.cd_opener+=/arcane_blast,if=buff.presence_of_mind.up
 # Use Orb for Charges on the opener if you have High Voltage as the Missiles will generate the remaining Charge you need
 actions.cd_opener+=/arcane_orb,if=talent.high_voltage
 actions.cd_opener+=/evocation,if=cooldown.arcane_surge.remains<(gcd.max*3)&cooldown.touch_of_the_magi.remains<(gcd.max*5)
-actions.cd_opener+=/arcane_missiles,if=prev_gcd.1.evocation|prev_gcd.1.arcane_orb,interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1,line_cd=30
+actions.cd_opener+=/arcane_missiles,if=((prev_gcd.1.evocation|prev_gcd.1.arcane_surge)&buff.nether_precision.down)|variable.opener,interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1,line_cd=30
 actions.cd_opener+=/arcane_surge,if=cooldown.touch_of_the_magi.remains<(action.arcane_surge.execute_time+(gcd.max*(buff.arcane_charge.stack=4)))
 
 actions.spellslinger+=/shifting_power,if=((buff.arcane_surge.down&buff.siphon_storm.down&debuff.touch_of_the_magi.down&cooldown.touch_of_the_magi.true_remains>(12+6*gcd.max))|(prev_gcd.1.arcane_barrage&talent.shifting_shards&(buff.arcane_surge.up|debuff.touch_of_the_magi.up|cooldown.evocation.true_remains<20)))&fight_remains>10
@@ -64,14 +64,14 @@ actions.spellslinger+=/cancel_buff,name=presence_of_mind,use_off_gcd=1,if=prev_g
 actions.spellslinger+=/presence_of_mind,if=debuff.touch_of_the_magi.remains<=gcd.max&buff.nether_precision.up&active_enemies<variable.aoe_target_count&!talent.unerring_proficiency
 ## actions.spellslinger+=/wait,sec=0.05,if=time-action.presence_of_mind.last_used<0.015,line_cd=15
 actions.spellslinger+=/supernova,if=debuff.touch_of_the_magi.remains<=gcd.max&buff.unerring_proficiency.stack=30
-actions.spellslinger+=/arcane_blast,if=((debuff.magis_spark_arcane_blast.up|buff.leydrinker.up)&!prev_gcd.1.arcane_blast&buff.nether_precision.up)
+actions.spellslinger+=/arcane_blast,if=((debuff.magis_spark_arcane_blast.up|(buff.leydrinker.up&buff.arcane_charge.stack=4))&!prev_gcd.1.arcane_blast&buff.nether_precision.up)
 # Barrage if you have Touch ready, Tempo is about to expire or you have a Charge refunder with Nether Precision or execute, lastly, if you have an orb charge and don't have Nether Precision or Clearcasting
 actions.spellslinger+=/arcane_barrage,if=(variable.touch_ready)|(talent.arcane_tempo&buff.arcane_tempo.up&buff.arcane_tempo.remains<gcd.max)|((buff.aethervision.stack=2|buff.intuition.up)&(buff.nether_precision.up|(target.health.pct<35&talent.arcane_bombardment&buff.clearcasting.down)|(mana.pct<70&talent.enlightened&buff.clearcasting.down&buff.arcane_surge.down)))|(action.arcane_orb.charges>0&buff.arcane_charge.stack=4&buff.clearcasting.stack=0&buff.nether_precision.down&talent.orb_barrage)
 # AOE conditions for Barrage allow for Orb to enable Barrage when Nether Precision is up, Aether Attunement with High Voltage
-actions.spellslinger+=/arcane_barrage,if=((buff.arcane_charge.stack=4&buff.nether_precision.up&active_enemies>1&(cooldown.arcane_orb.remains<gcd.max|action.arcane_orb.charges>0))|(buff.aether_attunement.up&talent.high_voltage&buff.clearcasting.up&buff.arcane_charge.stack>1&((target.health.pct<35&active_enemies=2)|active_enemies>2)))&talent.arcing_cleave
+actions.spellslinger+=/arcane_barrage,if=((buff.arcane_charge.stack=4&buff.nether_precision.up&active_enemies>1&(cooldown.arcane_orb.remains<gcd.max|action.arcane_orb.charges>0))|(buff.arcane_charge.stack=4&talent.reverberate&active_enemies>2)|(buff.aether_attunement.up&talent.high_voltage&buff.clearcasting.up&buff.arcane_charge.stack>1&((target.health.pct<35&active_enemies=2)|active_enemies>2)))&talent.arcing_cleave
 # Missiles if you dont have Nether Precision or if you have 3 stacks to prevent munching, always clip off GCD unless you have Aether Attunement
 actions.spellslinger+=/arcane_missiles,if=(buff.clearcasting.up&buff.nether_precision.down),interrupt_if=tick_time>gcd.remains&buff.aether_attunement.down,interrupt_immediate=1,interrupt_global=1,chain=1
-actions.spellslinger+=/arcane_orb,if=buff.arcane_charge.stack<4
+actions.spellslinger+=/arcane_orb,if=buff.arcane_charge.stack<((5-active_enemies)<?1)
 actions.spellslinger+=/arcane_explosion,if=(talent.reverberate|buff.arcane_charge.stack<1)&active_enemies>=4
 actions.spellslinger+=/arcane_blast
 actions.spellslinger+=/arcane_barrage
