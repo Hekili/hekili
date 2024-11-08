@@ -46,7 +46,7 @@ ns.PTR = buildNum > 110000
 
 ns.Patrons = "|cFFFFD100Current Status|r\n\n"
     .. "All existing specializations are currently supported, though healer priorities are experimental and focused on rotational DPS only.\n\n"
-    .. "If you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reporting|r link below and submit all the necessary information to have your issue investigated.\n\n"
+    .. "If you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reports|r link below and submit all the necessary information to have your issue investigated.\n\n"
     .. "Please do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"
 
 do

@@ -48,7 +48,7 @@ body:
         Please supply your character information by completing the following steps.
         * Log into your WoW character.
         * Type `/hekili` and press Enter.
-        * Open the Issue Reporting section (left panel).
+        * Open the `Snapshots (Troubleshooting)` section (left panel).
         * Copy all of the text from the text box.
         * Paste the text to Pastebin.
         * Provide the Pastebin link here.

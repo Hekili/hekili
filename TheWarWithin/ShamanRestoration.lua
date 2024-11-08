@@ -549,7 +549,7 @@ spec:RegisterAbilities( {
 
     -- Sears the target with fire, causing 3,099 Fire damage and then an additional 19,919 Fire damage over 18 sec. Flame Shock can be applied to a maximum of 6 targets.
     flame_shock = {
-        id = 188389,
+        id = 470411,
         cast = 0,
         cooldown = 6,
         gcd = "spell",

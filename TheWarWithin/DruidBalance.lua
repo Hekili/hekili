@@ -301,6 +301,11 @@ spec:RegisterAuras( {
         duration = 12.0,
         max_stack = 1,
     },
+    blooming_infusion_regrowth = {
+        id = 429438,
+        duration = 12.0,
+        max_stack = 1,
+    },
     -- Autoattack damage increased by $w4%.  Immune to Polymorph effects.  Movement speed increased by $113636s1% and falling damage reduced.
     -- https://wowhead.com/beta/spell=768
     cat_form = {
@@ -2578,7 +2583,7 @@ spec:RegisterAbilities( {
     -- Heals a friendly target for $s1 and another ${$o2*$<mult>} over $d.$?s231032[ Initial heal has a $231032s1% increased chance for a critical effect if the target is already affected by Regrowth.][]$?s24858|s197625[ Usable while in Moonkin Form.][]$?s33891[    |C0033AA11Tree of Life: Instant cast.|R][]
     regrowth = {
         id = 8936,
-        cast = 1.5,
+        cast = function() return buff.blooming_infusion_regrowth.up and 0 or 1.5 end,
         cooldown = 0,
         gcd = "spell",
         school = "nature",

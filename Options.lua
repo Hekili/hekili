@@ -9972,7 +9972,7 @@ do
                         type = "description",
                         name = function ()
                             return "|cFF00CCFFTHANK YOU TO OUR SUPPORTERS!|r\n\n" .. ns.Patrons .. "\n\n" ..
-                                "Please see the |cFFFFD100Issue Reporting (Snapshots)|r link for information about reporting bugs.\n\n"
+                                "Please see the |cFFFFD100Snapshots (Troubleshooting)|r link for information about reporting bugs.\n\n"
                         end,
                         fontSize = "medium",
                         order = 6,
@@ -10104,7 +10104,7 @@ do
                                 "1. My keybinds aren't showing up right\n- |cFF00CCFFThis can happen with macros or stealth bars sometimes. You can manually tell the addon what keybind to use in the|r |cFFFFD100Abilities|r |cFF00CCFFsection. Find the spell from the dropdown and use the|r |cFFFFD100Override Keybind|r |cFF00CCFFbox. Same can be done with trinkets under|r |cFFFFD100Gear and Items|r.\n\n" .. 
                                 "2. I don't recognize this spell! What is it?\n- |cFF00CCFFIf you're a Frost Mage it may be your Water Elemental pet spell, Freeze. Otherwise, it's probably a trinket. You can press |cFFFFD100alt-shift-p|r to pause the addon and hover over the icon to see what it is!|r\n\n" .. 
                                 "3. How do I disable a certain ability or trinket?\n- |cFF00CCFFHead over to |cFFFFD100Abilities|r or |cFFFFD100Gear and Items|r, find it in the dropdown list, and disable it.\n\n|r" .. 
-                                "\nI made it to the bottom but I still have an issue!\n- |cFF00CCFFHead on over to|r |cFFFFD100Issue Reporting|r |cFF00CCFFfor more detailed instructions.",
+                                "\nI made it to the bottom but I still have an issue!\n- |cFF00CCFFHead on over to|r |cFFFFD100Snapshots (Troubleshooting)|r |cFF00CCFFfor more detailed instructions.",
                                 order = 4.1,
                                 fontSize = "medium",
                                 width = "full",
@@ -10121,7 +10121,7 @@ do
                     },
                     a5 = {
                         type = "description",
-                        name = "You can submit questions, concerns, and ideas via the link found in the |cFFFFD100Issue Reporting|r section.\n\n" ..
+                        name = "You can submit questions, concerns, and ideas via the link found in the |cFFFFD100Snapshots (Troubleshooting)|r section.\n\n" ..
                             "If you disagree with the addon's recommendations, the |cFFFFD100Snapshot|r feature allows you to capture a log of the addon's decision-making taken at the exact moment specific recommendations are shown.  " ..
                             "When you submit your question, be sure to take a snapshot (not a screenshot!), place the text on Pastebin, and include the link when you submit your issue ticket.",
                         order = 5.1,

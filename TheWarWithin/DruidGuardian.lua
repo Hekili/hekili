@@ -51,7 +51,7 @@ spec:RegisterResource( Enum.PowerType.Rage, {
         end,
 
         interval = function () return class.auras.thrash_bear.tick_time end,
-        value = function () return 2 * state.active_dot.thrash_bear end,
+        value = function () return min( 15, 3 * state.active_dot.thrash_bear ) end,
     }
 } )
 spec:RegisterResource( Enum.PowerType.LunarPower )
@@ -489,7 +489,7 @@ spec:RegisterAuras( {
     ironfur = {
         id = 192081,
         duration = function() return 7 + ( buff.guardian_of_elune.up and 3 or 0 ) + ( talent.ursocs_endurance.enabled and 2 or 0 ) end,
-        max_stack = 5,
+        max_stack = 20,
     },
     -- Agility increased by $w1% and armor granted by Ironfur increased by $w2%.
     killing_strikes = {
@@ -575,6 +575,11 @@ spec:RegisterAuras( {
     ravage = {
         id = 441602,
         duration = 20,
+        max_stack = 1
+    },
+    -- fake buff for killing strikes "next mangle after entering combat grants ravage"
+    ravage_upon_combat = {
+        duration = 3600,
         max_stack = 1
     },
     -- Heals $w2 every $t2 sec.
@@ -703,7 +708,7 @@ spec:RegisterAuras( {
         id = 192090,
         duration = function () return mod_circle_dot( 15 ) * haste end,
         tick_time = function () return mod_circle_dot( 3 ) * haste end,
-        max_stack = function () return 3 + talent.untamed_savagery.rank end,
+        max_stack = function () return 3 + talent.flashing_claws.rank end,
         copy = "thrash"
     },
     -- Talent: Increased movement speed by $s1% while in Cat Form, reducing gradually over time.
@@ -1038,7 +1043,6 @@ spec:RegisterHook( "reset_precast", function ()
     eclipse.reset() -- from Balance.
 end )
 
-
 spec:RegisterHook( "runHandler", function( ability )
     local a = class.abilities[ ability ]
 
@@ -1051,6 +1055,12 @@ spec:RegisterHook( "runHandler", function( ability )
     end
 end )
 
+-- local ursocRageSpend
+
+spec:RegisterHook( "runHandler_startCombat", function()
+    if talent.killing_strikes.enabled then applyBuff( "ravage_upon_combat") end
+    -- ursocRageSpend = 0 -- reset upon entering combat
+end )
 
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" and amt > 0 then
@@ -1061,6 +1071,14 @@ spec:RegisterHook( "spend", function( amt, resource )
                 buff.after_the_wildfire.v1 = buff.after_the_wildfire.v1 + 200
             end
         end
+        --[[ To be revisited using warrior Anger Management as an example
+        if talent.ursocs_guidance.enabled then
+            ursocRageSpend = ursocRageSpend + amt
+            if ursocRageSpend >= 25 then
+                reduceCooldown( "incarnation", floor( ursocRageSpend / 25 ) )
+                ursocRageSpend = ursocRageSpend % 25
+            end
+        end--]]
     end
 end )
 
@@ -1175,6 +1193,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "berserk" )
+            if talent.berserk_persistence.enabled then setCooldown( "frenzied_regeneration", 0 ) end
         end,
 
         copy = "berserk_bear"
@@ -1316,9 +1335,9 @@ spec:RegisterAbilities( {
     frenzied_regeneration = {
         id = 22842,
         cast = 0,
-        charges = function () return talent.innate_resolve.enabled and 2 or nil end,
-        cooldown = function () return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.1 * talent.reinvigoration.rank ) end,
-        recharge = function () return talent.innate_resolve.enabled and ( 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) ) or nil end,
+        charges = function () if talent.innate_resolve.enabled then return 2 end end,
+        cooldown = function () return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.1 * talent.reinvigoration.rank ) * haste end,
+        recharge = function () if talent.innate_resolve.enabled then return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.1 * talent.reinvigoration.rank ) * haste end end,
         gcd = "spell",
         school = "physical",
 
@@ -1446,6 +1465,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "incarnation" )
+            if talent.berserk_persistence.enabled then setCooldown( "frenzied_regeneration", 0 ) end
         end,
 
         copy = { "incarnation_guardian_of_ursoc", "Incarnation" }
@@ -1478,7 +1498,7 @@ spec:RegisterAbilities( {
         icd = function() return 7 / ( max_ironfur or 1 ) end,
         school = "nature",
 
-        spend = function () return ( buff.berserk_bear.up and talent.berserk_persistence.enabled and 20 or 40 ) * ( buff.gory_fur.up and 0.85 or 1 ) end,
+        spend = function () return ( buff.berserk_bear.up and talent.berserk_persistence.enabled and 20 or 40 ) * ( buff.gory_fur.up and 0.75 or 1 ) end,
         spendType = "rage",
 
         talent = "ironfur",
@@ -1500,7 +1520,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            applyBuff( "ironfur" )
+            addStack( "ironfur", 1 )
             removeBuff( "gory_fur" )
             removeBuff( "guardian_of_elune" )
             if set_bonus.tier30_4pc > 0 then addStack( "indomitable_guardian" ) end
@@ -1565,21 +1585,28 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            
+            -- Regular talents
             if talent.fluid_form.enabled and buff.bear_form.down then shift( "bear_form" ) end
-            if talent.wildpower_surge.enabled then addStack( "feline_potential_counter" ) end
-
-            removeBuff( "vicious_cycle_mangle" )
-            addStack( "vicious_cycle_maul" )
+            if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
+            if talent.vicious_cycle.enabled then
+                removeBuff( "vicious_cycle_mangle" )
+                addStack( "vicious_cycle_maul" )
+            end
             if talent.guardian_of_elune.enabled then applyBuff( "guardian_of_elune" ) end
 
             if buff.gore.up then
-                gain( 4, "rage" )
                 removeBuff( "gore" )
-
                 if set_bonus.tier29_4pc > 0 then applyBuff( "bloody_healing" ) end
             end
 
-            if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
+            -- Hero talents
+            if talent.wildpower_surge.enabled then addStack( "feline_potential_counter" ) end
+            if talent.killing_strikes.enabled and buff.ravage_upon_combat.up then
+                applyBuff( "ravage" )
+                removeBuff( "ravage_upon_combat" )
+            end
+            -- Legacy / PvP
             if conduit.savage_combatant.enabled then addStack( "savage_combatant", nil, 1 ) end
         end,
     },
@@ -1626,19 +1653,33 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            addStack( "vicious_cycle_mangle" )
-            removeBuff( "savage_combatant" )
-            removeBuff( "vicious_cycle_maul" )
-            removeBuff( "ravage" )
 
+            -- Interactions for both Maul and Ravage
+            if talent.vicious_cycle.enabled then
+                removeBuff( "vicious_cycle_maul" )
+                addStack( "vicious_cycle_mangle" )
+            end
+            if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
+            if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
             if buff.tooth_and_claw.up then
                 removeStack( "tooth_and_claw" )
                 applyDebuff( "target", "tooth_and_claw_debuff" )
             end
+
+            -- Ravage specific interactions
+            if talent.ravage.enabled and buff.ravage.up then
+                removeBuff( "ravage" )
+                if talent.dreadful_wound.enabled then applyDebuff( "target", "dreadful_wound" ) end
+                if talent.ruthless_aggression.enabled then applyBuff( "ruthless_aggression" ) end
+                if talent.killing_strikes.enabled then applyBuff( "killing_strikes" ) end
+
+            end
+
+            -- Legacy / PvP         
+            if conduit.savage_combatant.enabled then removeBuff( "savage_combatant" ) end
             if set_bonus.tier30_4pc > 0 then addStack( "indomitable_guardian" ) end
-            if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
-            if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
             if pvptalent.sharpened_claws.enabled or essence.conflict_and_strife.major then applyBuff( "sharpened_claws" ) end
+
         end,
 
         copy = { 6807, "ravage", 441605}
@@ -1686,6 +1727,8 @@ spec:RegisterAbilities( {
             if talent.twin_moonfire.enabled then
                 active_dot.moonfire = min( true_active_enemies, active_dot.moonfire + 1 )
             end
+
+            if talent.lunation.enabled then reduceCooldown( "lunar_beam", 3 ) end
         end,
 
         copy = 155625
@@ -1700,8 +1743,8 @@ spec:RegisterAbilities( {
         school = "physical",
 
         talent = "moonkin_form",
-        startsCombat = false,
         noform = "moonkin_form",
+        startsCombat = false,
 
         handler = function ()
             shift( "moonkin_form" )
@@ -1730,27 +1773,26 @@ spec:RegisterAbilities( {
     pulverize = {
         id = 80313,
         cast = 0,
-        cooldown = function() return 45 - 5 * talent.tear_down_the_mighty.rank end,
+        cooldown = function() return 45 - 10 * talent.tear_down_the_mighty.rank end,
         gcd = "spell",
         school = "physical",
 
         talent = "pulverize",
+        form = "bear_form",
         startsCombat = true,
 
-        form = "bear_form",
+        cycle = "thrash_bear",
+        cycle_to = true,
 
         usable = function ()
             if debuff.thrash_bear.stack < 2 then return false, "target has fewer than 2 thrash stacks" end
             return true
         end,
 
-        cycle = "thrash_bear",
-        cycle_to = true,
-
         handler = function ()
             if debuff.thrash_bear.count > 2 then debuff.thrash_bear.count = debuff.thrash_bear.count - 2
             else removeDebuff( "target", "thrash_bear" ) end
-            applyBuff( "pulverize" )
+            applyDebuff( "target", "pulverize" )
         end,
     },
 
@@ -1790,8 +1832,8 @@ spec:RegisterAbilities( {
         spendType = "rage",
 
         talent = "raze",
-        startsCombat = true,
         form = "bear_form",
+        startsCombat = true,
 
         usable = function ()
             if action.raze.spend > 0 and ( settings.maul_rage or 0 ) > 0 and rage.current - action.raze.spend < ( settings.maul_rage or 0 ) then return false, "not enough additional rage" end
@@ -1799,17 +1841,26 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
-            addStack( "vicious_cycle_mangle" )
-            removeBuff( "savage_combatant" )
-            removeBuff( "vicious_cycle_maul" )
+
+            if talent.vicious_cycle.enabled then
+                addStack( "vicious_cycle_mangle" )
+                removeBuff( "vicious_cycle_maul" )
+            end
             if buff.tooth_and_claw.up then
                 removeStack( "tooth_and_claw" )
                 applyDebuff( "target", "tooth_and_claw_debuff" )
             end
-            if set_bonus.tier30_4pc > 0 then addStack( "indomitable_guardian" ) end
+
+            if talent.aggravate_wounds.enabled and debuff.dreadful_wound.up then
+                debuff.dreadful_wound.expires = debuff.dreadful_wound.expires + 0.6
+            end
             if talent.infected_wounds.enabled then applyDebuff( "target", "infected_wounds" ) end
             if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
+
+            -- Legacy / PvP
             if pvptalent.sharpened_claws.enabled or essence.conflict_and_strife.major then applyBuff( "sharpened_claws" ) end
+            if set_bonus.tier30_4pc > 0 then addStack( "indomitable_guardian" ) end
+            if conduit.savage_combatant.enabled then removeBuff( "savage_combatant" ) end
         end,
     },
 
@@ -2058,13 +2109,15 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "totem",
         school = "physical",
+        form = "bear_form",
 
         startsCombat = true,
 
         handler = function ()
+            if talent.aggravate_wounds.enabled and debuff.dreadful_wound.up then
+                debuff.dreadful_wound.expires = debuff.dreadful_wound.expires + 0.6
+            end
         end,
-
-        form = "bear_form",
 
         copy = { "swipe", 213764 },
         bind = { "swipe_bear", "swipe_cat", "swipe" }
@@ -2076,30 +2129,38 @@ spec:RegisterAbilities( {
         known = 106832,
         suffix = "(Bear)",
         cast = 0,
-        cooldown = function () return ( buff.berserk_bear.up and talent.berserk_ravage.enabled and 0 or 6 ) * haste end,
+        cooldown = function () return 6 * ( buff.berserk_bear.up and talent.berserk_ravage.enabled and 0.5 or 1 ) * haste end,
         gcd = "spell",
-        school = "physical",
+        school = function() return talent.lunar_calling.enabled and "arcane" or "physical" end,
 
         spend = function() return -5 * ( buff.furious_regeneration.up and 1.15 or 1 ) end,
         spendType = "rage",
 
         talent = "thrash",
-        startsCombat = true,
-
         form = "bear_form",
-        bind = "thrash",
+        startsCombat = true,
 
         handler = function ()
             applyDebuff( "target", "thrash_bear", 15, debuff.thrash_bear.count + 1 )
             active_dot.thrash_bear = active_enemies
 
             if talent.ursocs_fury.enabled then applyBuff( "ursocs_fury" ) end
+            if talent.aggravate_wounds.enabled and debuff.dreadful_wound.up then
+                debuff.dreadful_wound.expires = debuff.dreadful_wound.expires + 0.6
+            end
+            if talent.earthwarden.enabled then addStack( "earthwarden", nil, ( min( 3, active_enemies ) ) ) end
+
+            if talent.bloody_frenzy.enabled then gain( min( 15, 3 * active_enemies ), rage ) end
+
             if legendary.ursocs_fury_remembered.enabled then
                 applyBuff( "ursocs_fury_remembered" )
             end
 
-            if talent.earthwarden.enabled then addStack( "earthwarden", nil, 1 ) end
+            if talent.lunation.enabled and talent.lunar_calling.enabled then reduceCooldown( "lunar_beam", 3 ) end
+
         end,
+
+        bind = "thrash",
     },
 
     -- Talent: Shift into Cat Form and increase your movement speed by $s1%, reducing gradually over $d.
@@ -2207,15 +2268,37 @@ spec:RegisterOptions( {
     cycle = false,
 
     nameplates = true,
-    nameplateRange = 10,
+    nameplateRange = 8,
     rangeFilter = false,
 
     damage = true,
     damageExpiration = 6,
 
-    potion = "spectral_agility",
+    potion = "tempered_potion",
 
     package = "Guardian",
+} )
+
+spec:RegisterSetting( "catweave_bear", false, {
+    name = strformat( "Weave %s and %s", Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ) ),
+    desc = strformat( "If checked, shifting between %s and %s may be recommended based on whether you're actively tanking and other conditions. These swaps may occur "
+        .. "very frequently.\n\n"
+        .. "If unchecked, |W%s|w and |W%s|w abilities will be recommended based on your selected form, but swapping between forms will not be recommended.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ),
+        spec.abilities.cat_form.name, spec.abilities.bear_form.name ),
+    type = "toggle",
+    width = "full",
+} )
+
+spec:RegisterSetting( "maul_anyway", true, {
+    name = strformat( "Use %s and %s in %s Build", Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
+    desc = strformat( "If checked, %s and %s are recommended more frequently even if you have talented %s or %s.\n\n"
+        .. "This differs from the default SimulationCraft priority as of February 2023.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.layered_mane[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ) ),
+    type = "toggle",
+    width = "full",
 } )
 
 spec:RegisterSetting( "maul_rage", 20, {
@@ -2228,18 +2311,50 @@ spec:RegisterSetting( "maul_rage", 20, {
     min = 0,
     max = 60,
     step = 0.1,
-    width = "full"
+    width = 1.5
 } )
 
-spec:RegisterSetting( "maul_anyway", true, {
-    name = strformat( "Use %s and %s in %s Build", Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
-    desc = strformat( "If checked, %s and %s are recommended more frequently even if you have talented %s or %s.\n\n"
-        .. "This differs from the default SimulationCraft priority as of February 2023.", Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ), Hekili:GetSpellLinkWithTexture( spec.talents.layered_mane[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ) ),
-    type = "toggle",
-    width = "full",
+spec:RegisterSetting( "vigil_damage", 50, {
+    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( class.specs[ 102 ].abilities.natures_vigil.id ) ),
+    desc = strformat( "If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage.\n\n"
+        .. "By default, |W%s|w also requires the |cFFFFD100Defensives|r toggle to be active.",
+        class.specs[ 102 ].abilities.natures_vigil.name, class.specs[ 102 ].abilities.natures_vigil.name ),
+    type = "range",
+    min = 1,
+    max = 100,
+    step = 1,
+    width = 1.5
 } )
+
+spec:RegisterSetting( "ironfur_damage_threshold", 5, {
+    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
+    desc = strformat( "If set above zero, %s will not be recommended for mitigation purposes unless you've taken this much damage in the past 5 seconds (as a percentage "
+        .. "of your total health).\n\n"
+        .. "This value is halved when playing solo.\n\n"
+        .. "Taking %s and %s will result in |W%s|w recommendations for offensive purposes.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ), Hekili:GetSpellLinkWithTexture( spec.talents.thorns_of_iron[2] ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ), spec.abilities.ironfur.name ),
+    type = "range",
+    min = 0,
+    max = 200,
+    step = 0.1,
+    width = 1.5
+} )
+
+spec:RegisterSetting( "max_ironfur", 1, {
+    name = strformat( "%s Maximum Stacks", Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
+    desc = strformat( "When set above zero, %s will not be recommended for mitigation purposes if you already have this many stacks.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
+    type = "range",
+    min = 0,
+    max = 14,
+    step = 1,
+    width = 1.5
+} )
+
+spec:RegisterStateExpr( "max_ironfur", function()
+    return settings.max_ironfur or 1
+end )
 
 --[[ spec:RegisterSetting( "mangle_more", false, {
     name = "Use |T132135:0|t Mangle More in Multi-Target",
@@ -2249,45 +2364,6 @@ spec:RegisterSetting( "maul_anyway", true, {
     width = "full",
 } ) ]]
 
-spec:RegisterSetting( "vigil_damage", 50, {
-    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( class.specs[ 102 ].abilities.natures_vigil.id ) ),
-    desc = strformat( "If set below 100%%, %s may only be recommended if your health has dropped below the specified percentage.\n\n"
-        .. "By default, |W%s|w also requires the |cFFFFD100Defensives|r toggle to be active.", class.specs[ 102 ].abilities.natures_vigil.name, class.specs[ 102 ].abilities.natures_vigil.name ),
-    type = "range",
-    min = 1,
-    max = 100,
-    step = 1,
-    width = "full"
-} )
-
-spec:RegisterSetting( "ironfur_damage_threshold", 5, {
-    name = strformat( "%s Damage Threshold", Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
-    desc = strformat( "If set above zero, %s will not be recommended for mitigation purposes unless you've taken this much damage in the past 5 seconds (as a percentage "
-        .. "of your total health).\n\n"
-        .. "This value is halved when playing solo.\n\n"
-        .. "Taking %s and %s will result in |W%s|w recommendations for offensive purposes.", Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ),
-        Hekili:GetSpellLinkWithTexture( spec.talents.thorns_of_iron[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ), spec.abilities.ironfur.name ),
-    type = "range",
-    min = 0,
-    max = 200,
-    step = 0.1,
-    width = "full"
-} )
-
-spec:RegisterSetting( "max_ironfur", 1, {
-    name = strformat( "%s Maximum Stacks", Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
-    desc = strformat( "When set above zero, %s will not be recommended for mitigation purposes if you already have this many stacks.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
-    type = "range",
-    min = 1,
-    max = 14,
-    step = 1,
-    width = "full"
-} )
-
-    spec:RegisterStateExpr( "max_ironfur", function()
-        return settings.max_ironfur or 1
-    end )
 
 --[[ spec:RegisterSetting( "shift_for_convoke", false, {
     name = "|T3636839:0|t Powershift for Convoke the Spirits",
@@ -2296,25 +2372,5 @@ spec:RegisterSetting( "max_ironfur", 1, {
     type = "toggle",
     width = "full"
 } ) ]]
-
-spec:RegisterSetting( "catweave_bear", false, {
-    name = strformat( "Weave %s and %s", Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ) ),
-    desc = strformat( "If checked, shifting between %s and %s may be recommended based on whether you're actively tanking and other conditions.  These swaps may occur "
-        .. "very frequently.\n\n"
-        .. "If unchecked, |W%s|w and |W%s|w abilities will be recommended based on your selected form, but swapping between forms will not be recommended.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.cat_form.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.bear_form.id ),
-        spec.abilities.cat_form.name, spec.abilities.bear_form.name ),
-    type = "toggle",
-    width = "full",
-} )
-
---[[ Retired 2023-02-21
-spec:RegisterSetting( "owlweave_bear", false, {
-    name = "|T136036:0|t Attempt Owlweaving (Experimental)",
-    desc = "If checked, the addon will use the experimental |cFFFFD100owlweave|r priority included in the default priority pack.",
-    type = "toggle",
-    width = "full"
-} ) ]]
-
 
 spec:RegisterPack( "Guardian", 20241011, [[Hekili:vZ1wpkoUs4Fl8ccMPhMKa0xwb8WEK2JM5HDLoSs7Becbde1HeuIt3B3cLF7NY25IJVKyO7P3zLwTZqID566xv2UMSYE1FUA5wpmA1V7y5mX2Y2EK1d2tg7SAj(LtOvlp55)O3E4Ve5De())3mVKTbErKx8syS3wcbsJZs8HxEaJpL(lF9R7dWhY2mYp(4xtdoMf6HdIJ8t82Hj)2)RRwUjlie)TOvBuV6Rw6LHpeNSA5YGJ)hGWbB3IyJgL6VAjz0FX26l22)s(6Fl4VZx)TK4ODzj5RXErpgeTpFT)bK)J5Fp)70bB9WxCid()HEcLG)6oyoCVYEk8QFf5bZ)3ItoMVook8L81b7YxhfNVEh9zbP5R98XbpHQN69FXzYn5Rj)jHeeUnFD2jImvpO7(IZy4L)5bu(6)ISg)fOFcavyyqkoLOapgGd2t1sWV(DQrbf5TjeTD1VUAPFsagLe4bMKsHRF(6E5RFYdEkmQrb7CjA0T0xeebkEyuUB9ocwo3PaFVaEmtdv(u8Heu6H4I5SjB3UrfJyuc6OxqemRz5RhNV(t5Rp4LccK0atXGZbDytblMpL)xw8YvyWOQvqoG8cXhgDYhtN(TCZpbTpj(z8bcbgFDeic9Sxiz(tmst2cT2be71a0wxGRaYMWSraLNEnu(UPTzGSgzZu2SjD07VR5JnEjpMcKLS03QDPPgN0SKNcEYl0fmHyyPWPJ2g)CuT1RKw1pwuby1oB6mvlFkV4ahJbodITA31MYAjEpbR0OStugGfS5c69Jbi2IBxVuh9YcB3jBabniefHhbSAc2nEh41JCFgcugvmHYiPIXLeCQ(ndZxF(SHKGY97qHbri3tXyycbGsWpolc4LY4K5GQvPGrIZQfmPvsvKqLwigI2csqsQsIg3LaCvQnhu(FeXnWVYhf7LShHhHdocGcXUBdqmnTtLgaMtcAhbUGS8gmPH6KY7kMmvJcGeVqeZipCwcssV)Za)orW)qlldQ)x8dbAtxNuIJERWpn4VcEEBmWGhs8sp4smE8ORnuBHWiiHL(HEpNcHmrmxlhgH0tLjMqf7UOYyrvstcXRsk9r5iK5qN(XqUjaGcyna7PiAineHoH4Yqb2W75qjtGeQHeMPibuhqL8XiQXAVJqGYxeMfbJhM0rEIcJ6EdGGibYNIFgL4cyK7rYOh(E4gXRkHuOVSWnVxx0UMZ9JJEk(rethEkaypcU8V)aV0TbLKIsEuq0ST4hdGO7LeXsckmo9i7vbYSAhQjH7(IIjjM3SK0y)6usvM)2hpVJajTvHQPW6sfiMdmJWSaDIhfDgtSkrgR1LkuvQGMmqwiMk1mtHr8DIvmC0IRgxaQIqmQnT1uRQfRkbUBDZqjFpiYLUU6l7ZGQeamkh5QeS1Jfxkl44y8bxVOTuOSsiVfvyIQgeFPYWW(C(69(BjLevQYvuIodLTZ6Bs8Efr5C94LseyUqUcgILVxibuugwqay2weUuSKEULg8s3IuPrkSk9e2QqXJR8aNAvWN1i(QvvwniNQKbLUDv0(bR2Pxb45pp8V6QhSVtRHVMC8rcmuwriL28anoj7yEVkvdUcPrd(4LHg68pgRBMtKDPrTSiisH(e6MIHnmUh2vKAIAB3nvnJKFeQ4wJ4muNoSbop3zdyRVOP3lV7EMXIFuQZ)DYo6nGp0zgvZlPTV6nfxA4VkLrp22yi7PVX2T4eNDOKy)G4Su3naVtpnbRpoPQxlcwVwKnHQqF34NRslRt1cQDQ(u)(c6e65PaMTHLCKujh3jPmwP4SqL3nffrQ4NY6RC0xLlLl2hN0wTM22xurV6SpINv0SYZkY0T4D0lAFitG0x(CBLOmqN2K3xtrXsQp8eHYMVAt5qfgm9LYBwrbZiLj7yUTO6C76PjIRePX7r0iXtEsBax15NKfSLrnjBA6Hee90)C0VhG)He53Iyr0tuPQJJNrCnnG0Crb6REUnGNMhwXpKTekP6Q21gpO1R6or0pogtSK0FkykJ0wdvCnb6R3SduXwW(Uw(Rdi1RXwOsKBTcTlNX73YECRfQlJZnGMxBcKUeizf2y9f)jLDAEJl9u4Kug36PHQSolncWej)fftSq4sJZclZaaWJOuCd9Sg9tJ4y2giGyX7VxBaiRMhntBChtZmUDOke9X6lutvTd6no6UlTtzHpb07vK6ZJz8e(JcNNOnpk8X6twZkO0lKqe)QkeBuyO092vOU2ajO3gIstDjx5xyW(dyfoYL3giHn0ND9IRzOY(wSRBTz)7jC0JaH4502tJtFlqZK9VqnH3XwmXkQQWlGTy8mY7j65Vnx4StzvymwFra)7sh015FAMAPQEYX6tg2AbUWwP5VkwTQad4LI9howFokvROF8XnXqzRbrywy(K3mJiFgat0NgOe7cqgKVgVkpehloDE5qPuU18cD61OaMRo)qNUDKbDXlrZBtj95GtOkG0jM06fMVufB4tnuOsmomPFW2bjVXRk7TKko9XSWq3naeTa6StJrrQ9cjIFRj9aoji6regCDsdJXC)glFt)cZXryooK5OpnXaDh5YfCqdCPqHD5r(tS89HxocYne5Y(HlPP0yTMMlRL)4AonCXnIRGejzrAPqHdd8WtjisiSNSb7OhiO8n9IcZg3YgdEePiC98lJ0P)TI1TSGsfrWKUlmkLSGKJ0uf2CckicC(8rBjDtqDU2N8cZaV2WuybSk(5QL2Q8CmIjRrMuWMNscoc7oN03jxq(JUoZOweH26yokrVIwPQw(v2AtT0pibhrcxANbNbqfSb1Ld0(qrDPK3qBYuRhCGi4NHOhqJNUA53oEkobty)jmiP4O810gZCu(3joSX7cigm2Rshv5b)55Fv0Nn)7QgvPr)gI9EEPp5nuT(C7BQngZTUjy38wDq73QZPjRFT7wxCGcFV(Av)9B3NtnNj5oWT6A9Z63t2dtn5RCeOKf8LMBD(Cp9HoFVImWKRtG04P0eg8pjlf5c(RhVHaWpVmNqNJWHFemaAcxoqfU)5ZgH5pKNKIi6mJFnuo)yfGUzdLS2CAeAYyQlFwiHrlQgT4c663mx(cBP5P0up4AS1dpFUZPzWzCo)wbME2yzHTOuJBASDqiIPubWxHs)bdg0ROw1(Y9B4cBhGZhWTzgndAOiFDxvuNYUpKq1FqR8Kk9VMLwsJXTRyIsIBnboqztfoBAnOIuljo358z1ZAsBZYw3SgxlqkBBrzbQrlfYGNOD8rFt2)4I7LPxrZfQ0fsA01DCO0Ru0Ux8HuAWH7lU9o1Hke0KAOYoX0lLnoylPxYHEj9ofQqQSmyGbaFeJq)lRDbxCR1WcqvPMeCyFc3SyIv)bLYFlDwhjWYaEScdxaz)Yxmdgvjnv4mx1MDVF5AUOedZCuy7FfvZnQUcHf2fmL6RoyM9N37dsT0Xip3U70sc4vcJFEf2KYgPt2hN1DeQsx0tx3M1VhtHx1NzmZ3uR(LinYcMvXKuFAqNptPWdwQMjev)XXjAvqefIGJYGbLHcQmKgH2oUQ6y9n0II41UIoD(HZs6Tx21jS01pyft32w987E6VxkKwCemqlmugs5Q9w619Y9(j2)STykuKnpIZA0wtQdqQk5(xIS0trhyjZFWaEZmvpLCvpLSvvw7RCTUafq7YDrUpTrt6U1Z5JLsTX5AW3VtkYttUpTQm1fD3KOqABByHaMSvRz3A8Pd0PIbQusuYlnMsj0e3ptvHexGAv2OrVefcZzscGzZN6yIkc2nApjpYEQAQiz3Xwoqdj16JOpeo)nWJc(N8u9sicRyuvbwL7Q4nuQPG4bLjwh89AZnM)(Uu15Z)bVqALj9f(RmwvtKPPRM2qBZ0l6z2bMXaQQ4LWuMS6AM7LbaPJXU4nY0sCMQ0zsSXev70LlOuF3Cilru)vc0ZS7VxYXZ2M71Jv86UxXopwkrqEPXx1jiIBLRnkR)4dRs2QOZp6xu3a3bjwiGT0XhVDKDQ(fkFwcPUxJD8kCVTTC()iAplS4ol(sE6R4(3vOeV8uQ)az)22qRHYtr9SAsOx3sdYSVz0xUEErcZ3NelMCTRtvVlWo4twyNyRpWSfowYZUQzb4pys1ggHiYjCN(OYjuDhaMqofN6eFO5fXz2dLdy5VMK6Byzo32xlpaLEs5e6hi9v2yHUVulSvw4R0YSXFI(1zP5lloADv8fX)S4tScH1Q)2Fm7w9JN(fvX0HR8JMcVAWeIWFq5kM3DtvP5Sgz)P6pljAOS83OKQGvnF7ukm58F3uAidwQ5fNPFI)BKYgVu02)iI)BOu6jKp5FJ9tOxu9Q))]] )
