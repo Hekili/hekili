@@ -1963,9 +1963,10 @@ spec:RegisterAbilities( {
     kill_command = {
         id = 34026,
         cast = 0,
-        charges = function() return talent.alpha_predator.enabled and 2 or nil end,
-        cooldown = function () return 7.5 * haste end,
-        recharge = function() return talent.alpha_predator.enabled and ( 7.5 * haste ) or nil end,
+        charges = function() if talent.alpha_predator.enabled then return 2 end end,
+        cooldown = 7.5,
+        recharge = function() if talent.alpha_predator.enabled then return 7.5 * haste end end,
+        hasteCD = true,
         icd = 0.5,
         gcd = "spell",
         school = "physical",

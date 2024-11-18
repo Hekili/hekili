@@ -2402,7 +2402,7 @@ spec:RegisterOptions( {
     damageDots = true,
     damageExpiration = 6,
 
-    potion = "spectral_intellect",
+    potion = "tempered_potion",
 
     package = "Affliction",
 } )

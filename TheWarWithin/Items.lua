@@ -916,6 +916,30 @@ all:RegisterAbilities( {
                 max_stack = 20
             }
         }
+    },
+
+    living_flame_trinket = {
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+
+        item = 155947,
+        toggle = "cooldowns",
+
+        proc = "primary",
+        self_buff = "living_flame_buff",
+
+        handler = function ()
+            applyBuff( "living_flame_buff" )
+        end,
+
+        auras = {
+            living_flame_buff = {
+                id = 64712,
+                duration = 20,
+                max_stack = 1
+            }
+        }
     }
 } )
 

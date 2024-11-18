@@ -473,6 +473,40 @@ local holy_schools = {
     holyfire = true
 }
 
+
+local entropic_rift_expires = 0
+local er_extensions = 0
+
+spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, _, _, _, _, _, _, _, spellID )
+    if sourceGUID ~= GUID then return end
+
+    if ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) and spellID == 450193 then
+        entropic_rift_expires = GetTime() + 8 -- Assuming it will re-refresh from VT ticks and be caught by SPELL_AURA_REFRESH.
+        er_extensions = 0
+        return
+
+    elseif state.talent.darkening_horizon.enabled and subtype == "SPELL_CAST_SUCCESS" and er_extensions < 3 and spellID == 450405 and entropic_rift_expires > GetTime() then
+        entropic_rift_expires = entropic_rift_expires + 1
+        er_extensions = er_extensions + 1
+    end
+
+end, false )
+
+spec:RegisterStateExpr( "rift_extensions", function()
+    return er_extensions
+end )
+
+
+spec:RegisterHook( "reset_precast", function ()
+    if buff.voidheart.up then
+        applyBuff( "entropic_rift", buff.voidheart.remains )
+    elseif entropic_rift_expires > query_time then
+        applyBuff( "entropic_rift", entropic_rift_expires - query_time )
+    end
+
+    rift_extensions = nil
+end )
+
 spec:RegisterHook( "runHandler", function( action )
     if talent.twilight_equilibrium.enabled then
         local ability = class.abilities[ action ]
@@ -705,6 +739,10 @@ spec:RegisterAbilities( {
         texture = 136224,
 
         handler = function ()
+            if talent.entropic_rift.enabled then
+                applyBuff( "entropic_rift" )
+                if talent.voidheart.enabled then applyBuff( "voidheart" ) end
+            end
             if talent.void_summoner.enabled then
                 reduceCooldown( "mindbender", 2 )
             end
@@ -1016,7 +1054,8 @@ spec:RegisterAbilities( {
     },
 
     smite = {
-        id = function() return state.spec.discipline and talent.void_blast.enabled and buff.entropic_void.up and 450983 or 585 end,
+        id = function() return state.spec.discipline and talent.void_blast.enabled and buff.entropic_rift.up and 450215 or 585 end,
+        known = 585,
         cast = 1.5,
         cooldown = 0,
         gcd = "spell",
@@ -1027,6 +1066,9 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
+        texture = function()
+            return buff.entropic_rift.up and 4914668 or 135924
+        end,
 
         handler = function ()
             if talent.train_of_thought.enabled then
@@ -1041,9 +1083,15 @@ spec:RegisterAbilities( {
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
             end
+
+            if talent.darkening_horizon.enabled and rift_extensions < 3 then
+                buff.entropic_rift.expires = buff.entropic_rift.expires + 1
+                if buff.voidheart.up then buff.voidheart.expires = buff.voidheart.expires + 1 end
+                rift_extensions = rift_extensions + 1
+            end
         end,
 
-        copy = { 585, "void_blast", 450405, 450983 }
+        copy = { 585, "void_blast", 450215, 450405, 450983 }
     },
 
     -- Ascend into the air and unleash a massive barrage of Penance bolts, causing $<penancedamage> Holy damage to enemies or $<penancehealing> healing to allies over $421434d.; While ascended, gain a shield for $s1% of your health. In addition, you are unaffected by knockbacks or crowd control effects.
@@ -1090,7 +1138,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 8,
 
-    potion = "potion_of_spectral_intellect",
+    potion = "tempered_potion",
 
     package = "Discipline",
 

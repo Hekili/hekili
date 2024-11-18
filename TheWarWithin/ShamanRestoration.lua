@@ -1112,7 +1112,7 @@ spec:RegisterOptions( {
     damageDots = true,
     damageExpiration = 8,
 
-    potion = "potion_of_spectral_intellect",
+    potion = "tempered_potion",
 
     package = "Restoration Shaman",
 } )

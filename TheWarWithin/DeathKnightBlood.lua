@@ -178,12 +178,22 @@ spec:RegisterResource( Enum.PowerType.RunicPower, {
 } )
 
 local spendHook = function( amt, resource )
+    -- Runic Power
     if amt > 0 and resource == "runic_power" then
-        if talent.red_thirst.enabled then cooldown.vampiric_blood.expires = max( 0, cooldown.vampiric_blood.expires - amt / 10 ) end
+        if talent.red_thirst.enabled then reduceCooldown( "vampiric_blood", floor( amt / 5 ) ) end -- it seems to reduce it by intervals of 5, not 10
         if talent.icy_talons.enabled then addStack( "icy_talons", nil, 1 ) end
-    elseif resource == "rune" and amt > 0 and active_dot.shackle_the_unworthy > 0 then
-        reduceCooldown( "shackle_the_unworthy", 4 * amt )
     end
+    -- Runes
+    if resource == "rune" and amt > 0 then
+        if active_dot.shackle_the_unworthy > 0 then
+            reduceCooldown( "shackle_the_unworthy", 4 * amt )
+        end
+
+        if talent.rune_carved_plates.enabled then
+            addStack( "rune_carved_plates" )
+        end
+    end
+    
 end
 
 spec:RegisterHook( "spend", spendHook )
@@ -534,7 +544,10 @@ spec:RegisterAuras( {
         id = 81256,
         duration = function () return ( pvptalent.last_dance.enabled and 6 or 8 ) + ( talent.everlasting_bond.enabled and 6 or 0 ) end,
         type = "Magic",
-        max_stack = 1
+        max_stack = 1,
+        active_weapons = function() return 
+            buff.dancing_rune_weapon.up and 1 + talent.everlasting_bond.rank or 0
+        end
     },
     -- Taunted.
     -- https://wowhead.com/beta/spell=56222
@@ -597,7 +610,7 @@ spec:RegisterAuras( {
     },
     exterminate = {
         id = 441416,
-        duration = 3600,
+        duration = 30,
         max_stack = function () return talent.reapers_onslaught.enabled and 1 or 2 end,
         copy = { 447954, "exterminate_painful_death" }
     },
@@ -612,8 +625,8 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=55095
     frost_fever = {
         id = 55095,
-        duration = function() return 24 * ( spec.frost and talent.wither_away.enabled and 0.5 or 1 ) end,
-        tick_time = function() return 3 * ( spec.frost and talent.wither_away.enabled and 0.5 or 1 ) end,
+        duration = function() return 24 * ( state.spec.frost and talent.wither_away.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( state.spec.frost and talent.wither_away.enabled and 0.5 or 1 ) end,
         max_stack = 1
     },
     -- Absorbs damage.
@@ -716,7 +729,7 @@ spec:RegisterAuras( {
     incite_terror = {
         id = 458478,
         duration = 15.0,
-        max_stack = 1,
+        max_stack = 5,
     },
     infliction_of_sorrow = {
         id = 460049,
@@ -777,6 +790,16 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
+    ossified_vitriol = {
+        id = 458745,
+        duration = 8,
+        max_stack = 5
+    },
+    ossuary = {
+        id = 219788,
+        duration = 3600,
+        max_stack = 1
+    },
     -- Grants the ability to walk across water.
     -- https://wowhead.com/beta/spell=3714
     path_of_frost = {
@@ -810,7 +833,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     reaper_of_souls = {
-        id = 440002,
+        id = 469172,
         duration = 12,
         max_stack = 1
     },
@@ -986,7 +1009,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=55233
     vampiric_blood = {
         id = 55233,
-        duration = function () return ( level > 55 and 12 or 10 ) + ( legendary.vampiric_aura.enabled and 3 or 0 ) + ( talent.improved_vampiric_blood.enabled and 2 or 0 ) end,
+        duration = function () return 10 + ( talent.improved_vampiric_blood.rank * 2 ) + ( legendary.vampiric_aura.enabled and 3 or 0 ) end,
         max_stack = 1
     },
     -- Movement speed increased by $w1%.
@@ -1156,6 +1179,7 @@ end, state )
 
 local BonestormShield = setfenv( function()
     addStack( "bone_shield" )
+    gain( min( 0.1, 0.02 * active_enemies ) * health.max, "health" )
 end, state )
 
 
@@ -1346,18 +1370,18 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "blood_plague" )
             active_dot.blood_plague = active_enemies
 
-            if buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
-
             if talent.bind_in_darkness.enabled and debuff.reapers_mark.up then applyDebuff( "target", "reapers_mark", nil, debuff.reapers_mark.stack + 2 ) end
 
             if talent.hemostasis.enabled then
-                applyBuff( "hemostasis", 15, min( 5, active_enemies ) )
+                addStack( "hemostasis", nil, min( 5, active_enemies ) )
             end
 
-            if debuff.ashen_decay.up and set_bonus.tier31_4pc > 0 then
+            if set_bonus.tier31_4pc > 0 and debuff.ashen_decay.up then
                 debuff.ashen_decay.expires = debuff.ashen_decay.expires + 1
             end
 
+
+            -- Legacy
             if legendary.superstrain.enabled then
                 applyDebuff( "target", "frost_fever" )
                 active_dot.frost_fever = active_enemies
@@ -1365,7 +1389,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "virulent_plague" )
                 active_dot.virulent_plague = active_enemies
             end
-
+            if set_bonus.tier30_4pc > 0 and buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
             if conduit.debilitating_malady.enabled then
                 addStack( "debilitating_malady", nil, 1 )
             end
@@ -1485,6 +1509,7 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( 2, "runes" )
             applyBuff( "consumption" )
+            if talent.carnage.enabled then applyBuff( "blood_shield" ) end
         end,
     },
 
@@ -1530,6 +1555,7 @@ spec:RegisterAbilities( {
                 else removeBuff( "piledriver" ) end
             end
 
+            -- legacy
             if azerite.eternal_rune_weapon.enabled then applyBuff( "dancing_rune_weapon" ) end
             if legendary.crimson_rune_weapon.enabled then addStack( "bone_shield", nil, buff.dancing_rune_weapon.up and 10 or 5 ) end
         end,
@@ -1595,7 +1621,10 @@ spec:RegisterAbilities( {
             if buff.crimson_scourge.up then
                 if talent.perseverance_of_the_ebon_blade.enabled then applyBuff( "perseverance_of_the_ebon_blade" ) end
                 removeBuff( "crimson_scourge" )
-                if talent.relish_in_blood.enabled then gain( 10, "runic_power" ) end
+                if talent.relish_in_blood.enabled then
+                    gain( 10, "runic_power" ) 
+                    gain( 0.25 * buff.bone_shield.stack, "health" )
+                end
             end
 
             if legendary.phearomones.enabled and buff.death_and_decay.down then
@@ -1720,19 +1749,15 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "blood_draw" )
-            removeBuff( "heartrend" )
-            applyBuff( "blood_shield" ) -- gain absorb shield
-            if buff.coagulating_blood.up then
-                gain( 0.01 * buff.coagulating_blood.stack * health.max * ( 1.2 * buff.haemostasis.stack ) * ( 1.08 * buff.hemostasis.stack ), "health" )
-                removeBuff( "coagulating_blood" )
-            end
-            removeBuff( "haemostasis" )
-            removeBuff( "hemostasis" )
 
-            -- TODO: Calculate real health gain from Death Strike to trigger Bryndaor's Might legendary.
-            if talent.coagulopathy.enabled then applyBuff( "coagulopathy" ) end
+            applyBuff( "blood_shield" ) -- gain absorb shield
+            gain( health.max * max( 0.074,  0.01 * buff.coagulating_blood.stack * 0.25 ) * ( talent.voracious.enabled and 1.15 or 1 ) * ( talent.improved_death_strike.enabled and 1.05 or 1 ) * ( talent.hemostasis.enabled and ( 1.08 * buff.hemostasis.stack ) or 1 ), "health" )
+            removeBuff( "coagulating_blood" )
+
+            if talent.hemostasis.enabled then removeBuff( "hemostasis" ) end
+            if talent.coagulopathy.enabled then addStack( "coagulopathy" ) end
             if talent.voracious.enabled then applyBuff( "voracious" ) end
+            if talent.heartrend.enabled then removeBuff( "heartrend" ) end
         end,
     },
 
@@ -1776,8 +1801,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            local RWStrikes = 1 + buff.dancing_rune_weapon.active_weapons -- the 1 is your actual spell hit
             applyDebuff( "target", "blood_plague" )
-            addStack( "bone_shield", nil, buff.dancing_rune_weapon.up and 4 or 2 )
+            addStack( "bone_shield", nil, ( 2 * RWStrikes ) )
 
             if set_bonus.tww1_4pc > 0 then
                 if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
@@ -1821,13 +1847,15 @@ spec:RegisterAbilities( {
         max_targets = function () return buff.death_and_decay.up and talent.cleaving_strikes.enabled and 5 or 2 end,
 
         handler = function ()
+            local strikes = 1 + buff.dancing_rune_weapon.active_weapons
             if talent.heartbreaker.enabled then
-                gain( 2 * min( action.heart_strike.max_targets, true_active_enemies - 1 ) + ( 3 * buff.dancing_rune_weapon.stack ), "runic_power" )
+                gain( 15 + ( talent.heartbreaker.enabled and ( 2 * min( action.heart_strike.max_targets, true_active_enemies ) ) or 0 ) + 3 * buff.dancing_rune_weapon.active_weapons, "runic_power" )
             end
 
+            -- San'Layn stuff
             if buff.vampiric_strike.up or buff.gift_of_the_sanlayn.up then
-                gain( 0.01 * health.max, "health" )
-                applyBuff( "essence_of_the_blood_queen" ) -- TODO: mod haste
+                gain( 0.02 * health.max, "health" )
+                addStack( "essence_of_the_blood_queen" ) -- TODO: mod haste
 
                 if talent.infliction_of_sorrow.enabled and dot.blood_plague.ticking then
                     dot.blood_plague.expires = dot.blood_plague.expires + 3
@@ -1840,32 +1868,28 @@ spec:RegisterAbilities( {
 
             end
 
-            if buff.infliction_of_sorrow.up then
+            if talent.infliction_of_sorrow.enabled and buff.infliction_of_sorrow.up then
                 removeDebuff( "target", "blood_plague" )
                 removeBuff( "infliction_of_sorrow" )
             end
+            if talent.incite_terror.enabled then applyDebuff( "target", "incite_terror", nil, min( debuff.incite_terror.stack + 1, debuff.incite_terror.max_stack ) ) end
 
+            -- PvP
             if pvptalent.blood_for_blood.enabled then
                 health.current = health.current - 0.03 * health.max
-            end
+            end 
 
-            if buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
-
-            if buff.ashen_decay_proc.up then
+            --- Legacy
+            if set_bonus.tier31_4pc > 0 and debuff.ashen_decay.up and set_bonus.tier31_4pc > 0 then debuff.ashen_decay.expires = debuff.ashen_decay.expires + 1 end
+            if azerite.deep_cuts.enabled then applyDebuff( "target", "deep_cuts" ) end
+            if legendary.gorefiends_domination.enabled and cooldown.vampiric_blood.remains > 0 then gainChargeTime( "vampiric_blood", 2 ) end
+            if set_bonus.tier31_4pc > 0 and buff.ashen_decay_proc.up then
                 applyDebuff( "target", "ashen_decay" )
                 removeBuff( "ashen_decay_proc" )
             end
-
-            if debuff.ashen_decay.up and set_bonus.tier31_4pc > 0 then -- TODO: Check if refresh is before reapplication.
-                debuff.ashen_decay.expires = debuff.ashen_decay.expires + 1
-            end
-
-            if azerite.deep_cuts.enabled then applyDebuff( "target", "deep_cuts" ) end
-
-            if legendary.gorefiends_domination.enabled and cooldown.vampiric_blood.remains > 0 then
-                gainChargeTime( "vampiric_blood", 2 )
-            end
+            if set_bonus.tier30_4pc > 0 and  buff.vampiric_strength.up then buff.vampiric_strength.expires = buff.vampiric_strength.expires + 0.5 end
         end,
+
 
         bind = "vampiric_strike",
         copy = { 206930, "vampiric_strike", 433895 }
@@ -1938,26 +1962,29 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 2,
+        spend = function() return talent.exterminate.enabled and buff.exterminate.up and 1 or 2 end,
         spendType = "runes",
 
         talent = "marrowrend",
         startsCombat = true,
 
         handler = function ()
-            if buff.killing_machine.up  then removeStack( "killing_machine" ) end
+            local RWStrikes = 1 + buff.dancing_rune_weapon.active_weapons -- the 1 is your actual spell hit
+            addStack( "bone_shield", 30, buff.bone_shield.stack + 3 * RWStrikes )
 
-            addStack( "bone_shield", 30, buff.bone_shield.stack + ( buff.dancing_rune_weapon.up and 6 or 3 ) )
-
-            if buff.exterminate.stack == 1 then
-                applyDebuff( "target", spec.blood and "blood_plague" or "frost_fever" )
+            if talent.exterminate.enabled and buff.exterminate.up then
+                removeStack( "exterminate" )
+                applyDebuff( "target", "blood_plague" )
             end
-            if buff.exterminate.up then removeStack( "exterminate" ) end
+
+            if talent.ossified_vitriol.enabled then removeBuff( "ossified_vitriol" ) end
 
             if set_bonus.tww1_4pc > 0 then
                 if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
                 else removeBuff( "piledriver" ) end
             end
+
+            -- Legacy
 
             if azerite.bones_of_the_damned.enabled then applyBuff( "bones_of_the_damned" ) end
         end,
@@ -2112,9 +2139,9 @@ spec:RegisterAbilities( {
     rune_tap = {
         id = 194679,
         cast = 0,
-        charges = function () return level > 43 and 2 or nil end,
+        charges = function () if level > 43 then return 2 end end,
         cooldown = 25,
-        recharge = function () return level > 43 and 25 or nil end,
+        recharge = function () if level > 43 then return 25 end end,
         gcd = "off",
 
         spend = 1,
@@ -2213,22 +2240,11 @@ spec:RegisterAbilities( {
         handler = function ()
             local bs = min( 5, buff.bone_shield.stack )
 
-            removeStack( "bone_shield", bs )
+
             if talent.insatiable_blade.enabled then reduceCooldown( "dancing_rune_weapon", bs * 5 ) end
+            if talent.blood_tap.enabled then  gainChargeTime( "blood_tap", bs * 2 ) end
+            removeStack( "bone_shield", bs )
             gain( 6 * bs, "runic_power" )
-
-            -- This is the only predictable Bone Shield consumption that I have noted.
-            if cooldown.dancing_rune_weapon.remains > 0 then
-                cooldown.dancing_rune_weapon.expires = cooldown.dancing_rune_weapon.expires - ( 3 * bs )
-            end
-
-            if cooldown.blood_tap.charges_fractional < cooldown.blood_tap.max_charges then
-                gainChargeTime( "blood_tap", 2 * bs )
-            end
-
-            if set_bonus.tier21_2pc == 1 then
-                cooldown.dancing_rune_weapon.expires = max( 0, cooldown.dancing_rune_weapon.expires - ( 3 * bs ) )
-            end
 
             if set_bonus.tww1_4pc > 0 then
                 if buff.bone_shield.up then applyBuff( "piledriver", nil, buff.bone_shield.stack )
@@ -2236,6 +2252,12 @@ spec:RegisterAbilities( {
             end
 
             applyBuff( "tombstone" )
+
+            -- Legacy
+            if set_bonus.tier21_2pc == 1 then
+                cooldown.dancing_rune_weapon.expires = max( 0, cooldown.dancing_rune_weapon.expires - ( 3 * bs ) )
+            end
+
         end,
     },
 
@@ -2293,7 +2315,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 8,
 
-    potion = "potion_of_phantom_fire",
+    potion = "tempered_potion",
 
     package = "Blood",
 } )

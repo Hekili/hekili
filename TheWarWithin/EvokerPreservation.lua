@@ -1019,7 +1019,7 @@ spec:RegisterOptions( {
     damageOnScreen = true,
     damageRange = 30,
 
-    potion = "potion_of_spectral_intellect",
+    potion = "tempered_potion",
 
     package = "Preservation",
 } )

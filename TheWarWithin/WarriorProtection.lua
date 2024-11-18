@@ -942,8 +942,9 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 132337,
 
-        usable = function () return target.minR > 8 and ( query_time - action.charge.lastCast > gcd.execute ), "target too close" end,
+        usable = function () return target.minR > 10 and ( query_time - action.charge.lastCast > gcd.execute ), "target too close" end,
         handler = function ()
+            setDistance( 5 )
             applyDebuff( "target", "charge" )
             if legendary.reprisal.enabled then
                 applyBuff( "shield_block", 4 )
@@ -2029,7 +2030,6 @@ spec:RegisterSetting( "last_stand_amount", 25, {
     max = 200,
     step = 1,
     width = "full",
-    disabled = function() return state.settings.last_stand_offensively end,
 } )
 
 spec:RegisterSetting( "last_stand_health", 70, {
@@ -2040,7 +2040,6 @@ spec:RegisterSetting( "last_stand_health", 70, {
     max = 100,
     step = 1,
     width = "full",
-    disabled = function() return state.settings.last_stand_offensively end,
 } )
 
 spec:RegisterSetting( "spell_block_amount", 25, {
@@ -2096,7 +2095,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 8,
 
-    potion = "potion_of_spectral_strength",
+    potion = "tempered_potion",
 
     package = "Protection Warrior",
 } )

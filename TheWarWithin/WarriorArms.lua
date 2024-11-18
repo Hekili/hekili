@@ -599,8 +599,6 @@ local TriggerCollateralDamage = setfenv( function()
     collateralDmgStacks = 0
 end, state )
 
-local marked_for_execution_stacks = {}
-
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, _, _, _, critical_swing, _, _, critical_spell )
     if sourceGUID ~= state.GUID then return end
 
@@ -608,30 +606,9 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
         if ( spellName == class.abilities.colossus_smash.name or spellName == class.abilities.warbreaker.name ) then
             last_cs_target = destGUID
         end
-    elseif subtype == "SPELL_DAMAGE" then
-        if spellID == 445579 then -- Slayer's Strike occurred
-            marked_for_execution_stacks[ destGUID ] = min( ( marked_for_execution_stacks[ destGUID ] or 0 ) + 1, 3 )
-            return
-        end
-
-        local ability = class.abilities[ spellID ]
-        if not ability then return end
-
-        if ability.key == "execute" and state.talent.slayers_dominance.enabled then
-            marked_for_execution_stacks[ destGUID ] = nil
-        end
     end
 end )
 
-local wipe = table.wipe
-
-spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
-    wipe( marked_for_execution_stacks )
-end )
-
-spec:RegisterHook( "UNIT_ELIMINATED", function( id )
-    marked_for_execution_stacks[ id ] = nil
-end )
 
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
@@ -701,16 +678,6 @@ spec:RegisterHook( "reset_precast", function ()
 
     if talent.collateral_damage.enabled and buff.sweeping_strikes.up then
         state:QueueAuraExpiration( "sweeping_strikes_collateral_dmg", TriggerCollateralDamage, buff.sweeping_strikes.expires )
-    end
-
-    active_dot.marked_for_execution = 0
-
-    for k, v in pairs( marked_for_execution_stacks ) do
-        if k == target.unit then
-            applyDebuff( "target", "marked_for_execution", nil, v )
-        else
-            active_dot.marked_for_execution = active_dot.marked_for_execution + 1
-        end
     end
 
     -- Will need to revisit this if `cancel_buff` is added to the APL.
@@ -1072,7 +1039,7 @@ spec:RegisterAbilities( {
     execute = {
         id = function () return talent.massacre.enabled and 281000 or 163201 end,
         known = 163201,
-        copy = { 163201, 281000 },
+        copy = { 163201, 281000, 260798 },
         noOverride = 317485,
         cast = 0,
         cooldown = function () return ( talent.improved_execute.enabled and 0 or 6 ) end,
@@ -1831,7 +1798,7 @@ spec:RegisterOptions( {
     damageDots = false,
     damageExpiration = 8,
 
-    potion = "spectral_strength",
+    potion = "tempered_potion",
 
     package = "Arms",
 } )

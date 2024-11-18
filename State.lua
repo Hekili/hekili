@@ -837,12 +837,7 @@ do
             return
         end
 
-        local aura = ability.cycle
-
-        if not aura then
-            -- Fallback check, is there an aura with the same name as the ability?
-            aura = class.auras[ ability.key ] and ability.key
-        end
+        local aura = ability.cycle or ability.aura or ability.key
 
         if not aura and not quiet then
             debug( " - no aura identified for target-cycling and no aura matching " .. ability.key .. " found in ability / spec module; target cycling disabled." )
@@ -873,8 +868,8 @@ do
             if not quiet then
                 debug( " - we will use the ability on a different target, if available, until %s expires at %.2f [+%.2f].", cycle.aura, cycle.expires, cycle.expires - state.query_time )
             end
-        elseif cDebuff.down and ability.cycle_to and state.active_dot[ aura ] > 0 and state.query_time < state.now + ( 2 * state.gcd.max ) then
-            cycle.expires = state.query_time + ( 2 * state.gcd.max ) -- Assume the aura is available for 2 GCDs (don't forecast a slow target swap).
+        elseif cDebuff.down and ability.cycle_to and state.active_dot[ aura ] > 0 and state.query_time < state.now + ( 3 * state.gcd.max ) then
+            cycle.expires = state.query_time + ( 2 * state.gcd.max ) -- Assume the aura is available for 3 GCDs (don't forecast a slow target swap).
             cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
             cycle.maxTTD  = ability.max_ttd
 
@@ -5754,10 +5749,15 @@ do
                 buff.key = key
                 buff.id = spellID
                 buff.name = name
-                buff.count = count > 0 and count or 1
-                buff.expires = expires
-                -- buff.duration = duration
+                if buff.count and buff.count > 0 then
+                    buff.count = buff.count + ( count > 0 and count or 1 )
+                    buff.expires = max( buff.expires, expires )
+                else
+                    buff.count = count > 0 and count or 1
+                    buff.expires = expires
+                end
                 buff.applied = expires - duration
+                -- buff.duration = duration
                 buff.caster = caster
                 buff.timeMod = timeMod
                 buff.v1 = v1
@@ -6497,7 +6497,12 @@ do
     local firstTime = true
 
     function state.reset( dispName, full )
-        full = full or state.offset > 0
+        local started = debugprofilestop()
+
+        dispName = dispName or "Primary"
+        local displayFrame = _G[ "HekiliDisplay" .. dispName ]
+
+        full = dispName == "Primary" or state.offset > 0
 
         ClearMarks( firstTime )
         firstTime = nil
@@ -6511,7 +6516,6 @@ do
         state.resetting = true
 
         ns.callHook( "reset_preauras" )
-        Hekili:Yield( "Reset Pre-Auras" )
 
         if state.target.updated then
             ScrapeUnitAuras( "target" )
@@ -6537,10 +6541,10 @@ do
             if dispName == 'Primary' then
                 if mode == "single" or mode == "dual" or mode == "reactive" then state.max_targets = 1
                 elseif mode == "aoe" then state.min_targets = spec and spec.aoe or 3 end
-                -- if state.empowerment.active then state.filter = "empowerment" end
+                state.filter = "none"
             elseif dispName == 'AOE' then
                 state.min_targets = spec and spec.aoe or 3
-                -- if state.empowerment.active then state.filter = "empowerment" end
+                state.filter = "none"
             elseif dispName == 'Cooldowns' then state.filter = "cooldowns"
             elseif dispName == 'Interrupts' then state.filter = "interrupts"
             elseif dispName == 'Defensives' then state.filter = "defensives"
@@ -6552,6 +6556,18 @@ do
         -- Trying again to have partial resets for the low-impact (single icon displays).
         if not full then
             state.resetting = false
+
+            displayFrame.resetShortLast = debugprofilestop() - started
+
+            if displayFrame.resetShortN then
+                displayFrame.resetShortMean = ( displayFrame.resetShortMean * displayFrame.resetShortN + displayFrame.resetShortLast ) / ( displayFrame.resetShortN + 1 )
+                displayFrame.resetShortN = displayFrame.resetShortN + 1
+            else
+                displayFrame.resetShortMean = displayFrame.resetShortLast
+                displayFrame.resetShortN = 1
+            end
+
+            displayFrame.resetTypeLast = "short"
             return
         end
 
@@ -6560,10 +6576,10 @@ do
             if rawget( state[ k ], "onReset" ) then state[ k ].onReset( state[ k ] ) end
         end
 
-        Hekili:Yield( "Reset Post-States" )
+        -- Hekili:Yield( "Reset Post-States" )
 
         for i = 1, 5 do
-            local _, _, start, duration, icon = GetTotemInfo(i)
+            local _, _, start, duration, icon = GetTotemInfo( i )
 
             if icon and class.totems[ icon ] then
                 summonPet( class.totems[ icon ], start + duration - state.now )
@@ -6587,7 +6603,7 @@ do
 
         local foundResource = false
 
-        Hekili:Yield( "Reset Pre-Powers" )
+        -- Hekili:Yield( "Reset Pre-Powers" )
 
         for k, power in pairs( class.resources ) do
             local res = rawget( state, k )
@@ -6629,10 +6645,21 @@ do
 
         if not foundResource then
             state.resetting = false
+            displayFrame.resetAbortLast = debugprofilestop() - started
+
+            if displayFrame.resetAbortN then
+                displayFrame.resetAbortMean = ( displayFrame.resetAbortMean * displayFrame.resetAbortN + displayFrame.resetAbortLast ) / ( displayFrame.resetAbortN + 1 )
+                displayFrame.resetAbortN = displayFrame.resetAbortN + 1
+            else
+                displayFrame.resetAbortMean = displayFrame.resetAbortLast
+                displayFrame.resetAbortN = 1
+            end
+
+            displayFrame.resetTypeLast = "abort"
             return false, "no available resources"
         end
 
-        Hekili:Yield( "Reset Post-Powers" )
+        -- Hekili:Yield( "Reset Post-Powers" )
 
         -- Setting this here because the metatable would pull from UnitPower.
         if not state.health.initialized then
@@ -6707,9 +6734,9 @@ do
 
         state.empowerment.active = state.empowerment.hold > state.now
 
-        Hekili:Yield( "Reset Pre-Cast Hook" )
+        -- Hekili:Yield( "Reset Pre-Cast Hook" )
         ns.callHook( "reset_precast" )
-        Hekili:Yield( "Reset Pre-Casting" )
+        -- Hekili:Yield( "Reset Pre-Casting" )
 
         if state.empowerment.active then
             local timeDiff = state.now - state.empowerment.start
@@ -6809,9 +6836,21 @@ do
             end
         end
 
-        Hekili:Yield( "Reset Post-Casting" )
+        -- Hekili:Yield( "Reset Post-Casting" )
 
         state.resetting = false
+
+        displayFrame.resetFullLast = debugprofilestop() - started
+
+        if displayFrame.resetFullN then
+            displayFrame.resetFullMean = ( displayFrame.resetFullMean * displayFrame.resetFullN + displayFrame.resetFullLast ) / ( displayFrame.resetFullN + 1 )
+            displayFrame.resetFullN = displayFrame.resetFullN + 1
+        else
+            displayFrame.resetFullMean = displayFrame.resetFullLast
+            displayFrame.resetFullN = 1
+        end
+
+        displayFrame.resetTypeLast = "full"
         return true
     end
 end
@@ -7212,23 +7251,11 @@ do
 
         spell = ability.key
 
-        if self.holds[ spell ] then return true, "on hold" end
-
         local profile = Hekili.DB.profile
         local spec = rawget( profile.specs, state.spec.id )
         if not spec then return true end
 
-        if ability.disabled then return true, "disabled per ability function" end
-
         local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
-
-        if option.disabled then return true, "preference" end
-        if option.boss and not state.boss then return true, "boss-only" end
-        if option.targetMin > 0 and self.active_enemies < option.targetMin then
-            return true, "active_enemies[" .. self.active_enemies .. "] is less than ability's minimum targets [" .. option.targetMin .. "]"
-        elseif option.targetMax > 0 and self.active_enemies > option.targetMax then
-            return true, "active_enemies[" .. self.active_enemies .. "] is more than ability's maximum targets [" .. option.targetMax .. "]"
-        end
 
         if not strict then
             local toggle = option.toggle
@@ -7241,9 +7268,20 @@ do
             if ability.id < -100 or ability.id > 0 or toggleSpells[ spell ] then
                 if self.empowerment.active and self.empowerment.spell and spell ~= self.empowerment.spell then return true, "empowerment: " .. self.empowerment.spell end
                 if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display"
-                elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false
-                end
+                elseif ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false end
             end
+        end
+
+        if ability.disabled then return true, "disabled per ability function" end
+
+        if self.holds[ spell ] then return true, "on hold" end
+
+        if option.disabled then return true, "preference" end
+        if option.boss and not state.boss then return true, "boss-only" end
+        if option.targetMin > 0 and self.active_enemies < option.targetMin then
+            return true, "active_enemies[" .. self.active_enemies .. "] is less than ability's minimum targets [" .. option.targetMin .. "]"
+        elseif option.targetMax > 0 and self.active_enemies > option.targetMax then
+            return true, "active_enemies[" .. self.active_enemies .. "] is more than ability's maximum targets [" .. option.targetMax .. "]"
         end
 
         return false

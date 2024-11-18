@@ -1,3 +1,4 @@
+
 -- DruidFeral.lua
 -- July 2024
 
@@ -1243,12 +1244,14 @@ spec:RegisterAuras( {
     bt_swipe = {
         duration = 4,
         max_stack = 1,
-        generate = bt_generator
+        generate = bt_generator,
+        copy = "bt_swipe_cat"
     },
     bt_thrash = {
         duration = 4,
         max_stack = 1,
-        generate = bt_generator
+        generate = bt_generator,
+        copy = "bt_thrash_cat"
     },
     bt_triggers = {
         alias = { "bt_brutal_slash", "bt_moonfire", "bt_rake", "bt_shred", "bt_swipe", "bt_thrash" },
@@ -1848,6 +1851,7 @@ spec:RegisterAbilities( {
             if talent.ravage.enabled then removeBuff( "ravage" ) end
             if talent.bloodtalons.enabled then removeStack( "bloodtalons" ) end
             if talent.sabertooth.enabled then applyDebuff( "target", "sabertooth" ) end
+            if state.spec.restoration and talent.master_shapeshifter.enabled and combo_points.current == 5 then gain( 175000, "mana" ) end
 
             if buff.apex_predator.up or buff.apex_predators_craving.up then
                 applyBuff( "predatory_swiftness" )
@@ -1875,9 +1879,9 @@ spec:RegisterAbilities( {
     frenzied_regeneration = {
         id = 22842,
         cast = 0,
-        charges = function () return talent.innate_resolve.enabled and 2 or nil end,
+        charges = function () if talent.innate_resolve.enabled then return 2 end end,
         cooldown = function () return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.2 * talent.reinvigoration.rank ) end,
-        recharge = function () return talent.innate_resolve.enabled and ( 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) ) or nil end,
+        recharge = function () if talent.innate_resolve.enabled then return ( 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) ) end end,
         gcd = "spell",
         school = "physical",
 
@@ -2037,6 +2041,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "maim", combo_points.current )
+            if state.spec.restoration and talent.master_shapeshifter.enabled and combo_points.current == 5 then gain( 175000, "mana" ) end
             spend( combo_points.current, "combo_points" )
 
             removeBuff( "iron_jaws" )
@@ -2491,6 +2496,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "rip" )
             debuff.rip.pmultiplier = persistent_multiplier
+            if state.spec.restoration and talent.master_shapeshifter.enabled and combo_points.current == 5 then gain( 175000, "mana" ) end
             spend( combo_points.current, "combo_points" )
 
             if talent.bloodtalons.enabled then removeStack( "bloodtalons" ) end
@@ -2599,6 +2605,29 @@ spec:RegisterAbilities( {
         end,
     },
 
+    starsurge = {
+        id = 197626,
+        cast = 0,
+        cooldown = function() return 10 - ( 4 * talent.starlight_conduit.rank ) end,
+        gcd = "spell",
+
+        spend = function () return ( talent.starlight_conduit.enabled and 0.003 or 0.006 ) end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135730,
+        talent = "starsurge",
+
+        handler = function ()
+            gain( 0.3 * health.max, "health" )
+            if talent.master_shapeshifter.enabled then gain( 43750, "mana" ) end
+            if talent.call_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid.down then
+                applyBuff( "heart_of_the_wild", 15 )
+                applyDebuff( "player", "oath_of_the_elder_druid" )
+            end
+        end,
+    },
+
     -- Talent: Shift into Bear Form and let loose a wild roar, increasing the movement speed of all friendly players within $A1 yards by $s1% for $d.
     stampeding_roar = {
         id = 106898,
@@ -2673,7 +2702,7 @@ spec:RegisterAbilities( {
             gain( talent.berserk.enabled and 2 or 1 + ( allow_crit_prediction and crit_pct_current * active_enemies >= 230 and 1 or 0 ), "combo_points" )
 
             if talent.bloodtalons.enabled then
-                applyBuff( "bt_swipe_cat" )
+                applyBuff( "bt_swipe" )
                 check_bloodtalons()
             end
 

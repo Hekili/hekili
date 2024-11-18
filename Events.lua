@@ -1201,7 +1201,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( eve
         local ability = class.abilities[ spellID ]
 
         if ability then
-            Hekili:ForceUpdate( event, true )
+            Hekili:ForceUpdate( event )
             if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
         end
     end
@@ -1215,6 +1215,8 @@ RegisterUnitEvent( "UNIT_SPELLCAST_START", "player", "target", function( event, 
             Hekili:ForceUpdate( event )
             if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
         end
+
+        Hekili:ForceUpdate( event, true )
     end
 end )
 
@@ -1254,7 +1256,7 @@ do
         empowerment.finish = 0
         empowerment.hold = 0
 
-        Hekili:ForceUpdate( event, true )
+        Hekili:ForceUpdate( event )
     end )
 end
 
@@ -1325,6 +1327,7 @@ RegisterUnitEvent( "UNIT_SPELLCAST_DELAYED", "player", nil, function( event, uni
                 state:QueueEvent( ability.impactSpell or ability.key, finish / 1000, 0.05 + travel, "PROJECTILE_IMPACT", target, true )
             end
         end
+
         Hekili:ForceUpdate( event )
     end
 end )
@@ -1332,6 +1335,8 @@ end )
 
 -- TODO:  This should be changed to stash this information and then commit it on next UNIT_SPELLCAST_START or UNIT_SPELLCAST_SUCCEEDED.
 RegisterEvent( "UNIT_SPELLCAST_SENT", function ( event, unit, target_name, castID, spellID )
+    Hekili:ForceUpdate( event )
+
     if target_name and UnitGUID( target_name ) then
         state.cast_target = UnitGUID( target_name )
         return
@@ -1381,9 +1386,10 @@ local spell_names = setmetatable( {}, {
 } )
 
 
-local lastPowerUpdate = 0
+local lastPower = {}
 
 local function UNIT_POWER_FREQUENT( event, unit, power )
+
     if power == "FOCUS" and rawget( state, "focus" ) then
         local now = GetTime()
         local elapsed = now - ( state.focus.last_tick or 0 )
@@ -1407,13 +1413,19 @@ local function UNIT_POWER_FREQUENT( event, unit, power )
             power_tick_data.energy_ticks = power_tick_data.energy_ticks + 1
             state.energy.last_tick = now
         end
-
     end
-    -- Hekili:ForceUpdate( event )
-end
-Hekili:ProfileCPU( "UNIT_POWER_UPDATE", UNIT_POWER_FREQUENT )
 
-RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, UNIT_POWER_FREQUENT )
+    local newPower = UnitPower( "player", Enum.PowerType[ power ] )
+
+    if lastPower[ power ] and newPower < lastPower[ power ] then
+        Hekili:ForceUpdate( event, true )
+    end
+
+    lastPower[ power ] = newPower
+end
+Hekili:ProfileCPU( "UNIT_POWER_FREQUENT", UNIT_POWER_FREQUENT )
+
+RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, UNIT_POWER_FREQUENT )
 
 
 local autoAuraKey = setmetatable( {}, {
@@ -1470,7 +1482,6 @@ do
         local isPlayer = ( unit == "player" )
         instanceDB = isPlayer and playerInstances or targetInstances
 
-
         if data.isFullUpdate then
             wipe( instanceDB )
 
@@ -1478,7 +1489,7 @@ do
             ForEachAura( unit, "HARMFUL", nil, StoreInstanceInfo, true )
 
             state[ unit ].updated = true
-            Hekili:ForceUpdate( event )
+            Hekili:ForceUpdate( "UNIT_AURA_FULL", true )
             return
         end
 
@@ -1526,7 +1537,7 @@ do
 
         state[ unit ].updated = true
 
-        if forceUpdateNeeded then Hekili:ForceUpdate( event ) end
+        if forceUpdateNeeded then Hekili:ForceUpdate( "UNIT_AURA_ITER" ) end
     end )
 
     RegisterEvent( "PLAYER_TARGET_CHANGED", function( event )

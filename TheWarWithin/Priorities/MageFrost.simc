@@ -36,23 +36,24 @@ actions.aoe_ff+=/frostbolt
 actions.aoe_ff+=/call_action_list,name=movement
 
 actions.aoe_ss+=/cone_of_cold,if=talent.coldest_snap&cooldown.frozen_orb.remains&(prev_gcd.1.comet_storm|prev_gcd.1.frozen_orb&cooldown.comet_storm.remains)&(!talent.deaths_chill|buff.icy_veins.remains<8|buff.deaths_chill.stack>=12)
+actions.aoe_ss+=/cone_of_cold,if=talent.coldest_snap&cooldown.frozen_orb.remains&(prev_gcd.1.comet_storm|prev_gcd.1.frozen_orb&cooldown.comet_storm.remains>5)&(!talent.deaths_chill|buff.icy_veins.remains<8|buff.deaths_chill.stack>=12)
 actions.aoe_ss+=/freeze,if=freezable&debuff.frozen.down&prev_gcd.1.glacial_spike
 actions.aoe_ss+=/flurry,if=remaining_winters_chill=0&prev_gcd.1.glacial_spike
-actions.aoe_ss+=/frozen_orb,if=
+actions.aoe_ss+=/ice_nova,if=active_enemies<5&freezable&prev_gcd.1.glacial_spike&remaining_winters_chill=0&debuff.winters_chill.down|active_enemies>=5&action.cone_of_cold.time_since<6&time-action.cone_of_cold.last_used>6-gcd.max
+actions.aoe_ss+=/frozen_orb
 actions.aoe_ss+=/frostbolt,if=talent.deaths_chill&buff.icy_veins.remains>8&(buff.deaths_chill.stack<9|buff.deaths_chill.stack=9&!action.frostbolt.in_flight)
 actions.aoe_ss+=/comet_storm
 actions.aoe_ss+=/blizzard
-actions.aoe_ss+=/shifting_power,if=cooldown.icy_veins.true_remains>10
-actions.aoe_ss+=/glacial_spike,if=buff.icicles.stack=5&(cooldown.flurry.up|remaining_winters_chill)
-actions.aoe_ss+=/ice_lance,if=buff.fingers_of_frost.up
+actions.aoe_ss+=/shifting_power,if=cooldown.icy_veins.remains>10&(fight_remains+10>cooldown.icy_veins.remains)
+actions.aoe_ss+=/glacial_spike,if=buff.icicles.react=5&(cooldown.flurry.up|remaining_winters_chill|active_enemies<5&freezable&cooldown.ice_nova.ready&!buff.fingers_of_frost.up)
+actions.aoe_ss+=/ice_lance,if=buff.fingers_of_frost.up&!prev_gcd.1.glacial_spike|remaining_winters_chill
 actions.aoe_ss+=/flurry,if=remaining_winters_chill=0
-actions.aoe_ss+=/ice_nova,if=freezable|active_enemies>=8
 actions.aoe_ss+=/frostbolt
 actions.aoe_ss+=/call_action_list,name=movement
 
 actions.cds+=/use_item,name=imperfect_ascendancy_serum,if=buff.icy_veins.remains>19|boss&fight_remains<25
 actions.cds+=/use_item,name=treacherous_transmitter,if=equipped.spymasters_web&(boss&fight_remains<50|cooldown.icy_veins.remains<12)|!equipped.spymasters_web&(boss&fight_remains<30|prev_off_gcd.icy_veins)
-## actions.cds+=/do_treacherous_transmitter_task,use_off_gcd=1,if=fight_remains<18|(buff.cryptic_instructions.remains<?buff.realigning_nexus_convergence_divergence.remains<?buff.errant_manaforge_emission.remains)<(action.shifting_power.execute_time+1*talent.ray_of_frost)
+#actions.cds+=/do_treacherous_transmitter_task,if=fight_remains<18|(buff.cryptic_instructions.remains<?buff.realigning_nexus_convergence_divergence.remains<?buff.errant_manaforge_emission.remains)<(action.shifting_power.execute_time+1*talent.ray_of_frost)
 actions.cds+=/use_item,name=burst_of_knowledge,if=buff.icy_veins.remains<21|boss&fight_remains<25
 actions.cds+=/use_item,name=spymasters_web,if=boss&fight_remains<22|buff.icy_veins.remains<19&(boss&fight_remains<105|buff.spymasters_report.stack>=32)&(buff.icy_veins.remains>15|equipped.treacherous_transmitter&buff.icy_veins.remains>9)
 actions.cds+=/potion,if=boss&fight_remains<35|buff.icy_veins.remains>10&(fight_remains>315|cooldown.icy_veins.remains+12>fight_remains)

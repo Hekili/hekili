@@ -1337,8 +1337,7 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function () if talent.innate_resolve.enabled then return 2 end end,
         cooldown = function () return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.1 * talent.reinvigoration.rank ) * haste end,
-        recharge = function () if talent.innate_resolve.enabled then return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.1 * talent.reinvigoration.rank ) * haste end end,
-        gcd = "spell",
+        recharge = function () if talent.innate_resolve.enabled then return 36 * ( buff.berserk.up and talent.berserk_persistence.enabled and 0 or 1 ) * ( 1 - 0.1 * talent.reinvigoration.rank ) end end, gcd = "spell",
         school = "physical",
 
         spend = function()
@@ -1524,6 +1523,7 @@ spec:RegisterAbilities( {
             removeBuff( "gory_fur" )
             removeBuff( "guardian_of_elune" )
             if set_bonus.tier30_4pc > 0 then addStack( "indomitable_guardian" ) end
+            if state.spec.restoration and talent.master_shapeshifter.enabled then gain( 43750, "mana" ) end
         end,
     },
 
@@ -1992,6 +1992,29 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeDebuff( "target", "dispellable_enrage" )
+        end,
+    },
+
+    starsurge = {
+        id = 197626,
+        cast = 0,
+        cooldown = function() return 10 - ( 4 * talent.starlight_conduit.rank ) end,
+        gcd = "spell",
+
+        spend = function () return ( talent.starlight_conduit.enabled and 0.003 or 0.006 ) end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135730,
+        talent = "starsurge",
+
+        handler = function ()
+            gain( 0.3 * health.max, "health" )
+            if talent.master_shapeshifter.enabled then gain( 43750, "mana" ) end
+            if talent.call_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid.down then
+                applyBuff( "heart_of_the_wild", 15 )
+                applyDebuff( "player", "oath_of_the_elder_druid" )
+            end
         end,
     },
 

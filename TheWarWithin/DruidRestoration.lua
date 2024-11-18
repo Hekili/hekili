@@ -8,6 +8,7 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 105 )
+local strformat = string.format
 
 spec:RegisterResource( Enum.PowerType.Mana )
 spec:RegisterResource( Enum.PowerType.Energy )
@@ -202,7 +203,7 @@ spec:RegisterAuras( {
         max_stack = 12
     },
     call_of_the_elder_druid = {
-        id = 338643,
+        id = 426790,
         duration = 60,
         max_stack = 1,
         copy = "oath_of_the_elder_druid"
@@ -210,12 +211,16 @@ spec:RegisterAuras( {
     cenarion_ward = {
         id = 102351,
         duration = 30,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     cenarion_ward_hot = {
         id = 102352,
         duration = 8,
         tick_time = function() return mod_liveliness_hot( 2 ) end,
+        dot = "buff",
+        friendly = true,
         max_stack = 1
     },
     -- [393381] During Incarnation: Tree of Life, you summon a Grove Guardian every $393418t sec. The cooldown of Incarnation: Tree of Life is reduced by ${$s1/-1000}.1 sec when Grove Guardians fade.
@@ -230,15 +235,18 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    cultivation = {
+        id = 200389,
+        duration = 6,
+        dot = "buff",
+        friendly = true,
+        max_stack = 1
+    },
     efflorescence = {
-        id = 81262,
+        id = 145205,
         duration = 30,
         tick_time = function() return mod_liveliness_hot( 2 ) end,
-        pandemic = true,
         max_stack = 1,
-
-        -- Affected by:
-        -- disentanglement[233673] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -40.0, 'target': TARGET_UNIT_CASTER, 'modifies': POWER_COST, }
     },
     flourish = {
         id = 197721,
@@ -248,7 +256,7 @@ spec:RegisterAuras( {
     grove_guardians = {
         id = 102693,
         duration = 15,
-        max_stack = 3,
+        max_stack = 5,
         generate = function( t )
             local expires = action.grove_guardians.lastCast + 15
 
@@ -276,40 +284,50 @@ spec:RegisterAuras( {
     harmony_of_the_grove = {
         id = 428737,
         duration = 15,
+        max_stack = 3
+    },
+    -- The actual incarn buff
+    incarnation = {
+        id = 117679,
+        duration = 30,
         max_stack = 1
     },
+    -- This is the form
     incarnation_tree_of_life = {
         id = 33891,
-        duration = 30,
+        duration = 3600,
         max_stack = 1,
-        copy = "incarnation"
+        copy = "tree_of_life_form"
     },
     ironbark = {
         id = 102342,
         duration = function() return talent.regenerative_heartwood.enabled and 16 or 12 end,
         max_stack = 1
     },
+    -- talent = double lifebloom. Both spellID and actual buff spellID change.
     lifebloom = {
         id = 33763,
         duration = 15,
-        tick_time = function() return mod_liveliness_hot( 1 ) end,
+        tick_time = function() return haste * mod_liveliness_hot( 1 ) end,
         max_stack = 1,
         dot = "buff",
-        copy = 290754
+        friendly = true,
     },
     lifebloom_2 = {
         id = 188550,
         duration = 15,
-        tick_time = function() return mod_liveliness_hot( 1 ) end,
+        tick_time = function() return haste * mod_liveliness_hot( 1 ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true,
+        copy = "lifebloom"
     },
     natures_swiftness = {
         id = 132158,
         duration = 3600,
         max_stack = 1,
         onRemove = function()
-            setCooldown( "natures_swiftness", 60 )
+            setCooldown( "natures_swiftness", spec.abilities.natures_swiftness.cooldown )
         end,
     },
     natures_vigil = {
@@ -323,22 +341,33 @@ spec:RegisterAuras( {
         duration = 60,
         max_stack = 1,
     },
+    reforestation = {
+        id = 392360,
+        duration = 3600,
+        max_stack = 3,
+    },
     regrowth = {
         id = 8936,
         duration = function() return 12 + 3 * talent.thriving_vegetation.rank end,
-        tick_time = function() return mod_liveliness_hot( 2 ) end,
+        tick_time = function() return haste * mod_liveliness_hot( 2 ) end,
+        dot = "buff",
+        friendly = true,
         max_stack = 1
     },
     rejuvenation = {
         id = 774,
-        duration = 12,
-        tick_time = function() return mod_liveliness_hot( 3 ) end,
+        duration = function() return 12 + 3 * talent.improved_rejuvenation.rank end,
+        tick_time = function() return haste * mod_liveliness_hot( 3 ) end,
+        dot = "buff",
+        friendly = true,
         max_stack = 1
     },
     rejuvenation_germination = {
         id = 155777,
-        duration = 12,
-        tick_time = function() return mod_liveliness_hot( 3 ) end,
+        duration = function () return spec.auras.rejuvenation.duration end,
+        tick_time = function() return haste * mod_liveliness_hot( 3 ) end,
+        dot = "buff",
+        friendly = true,
         max_stack = 1
     },
     renewing_bloom = {
@@ -347,25 +376,68 @@ spec:RegisterAuras( {
         tick_time = function() return mod_liveliness_hot( 1 ) end,
         max_stack = 1
     },
+    soul_of_the_forest = {
+        id = 114108,
+        duration = 15,
+        max_stack = 1,
+    },
+    spring_blossoms = {
+        id = 207386,
+        duration = 6,
+        dot = "buff",
+        friendly = true,
+        max_stack = 1,
+    },
     tranquility = {
         id = 740,
         duration = function() return 8 * haste end,
-        max_stack = 1,
+        generate = function( t )
+            if buff.casting.up and buff.casting.v1 == 740 then
+                t.applied  = buff.casting.applied
+                t.duration = buff.casting.duration
+                t.expires  = buff.casting.expires
+                t.stack    = 1
+                t.caster   = "player"    
+                return
+            end
+
+            t.applied  = 0
+            t.duration = spec.auras.tranquility.duration
+            t.expires  = 0
+            t.stack    = 0
+            t.caster   = "nobody"
+        end,
+        tick_time = function() return ( 8 * haste ) / 5 end,  -- Interval between each tick based on haste
+        max_stack = 1
     },
     tranquility_hot = {
         id = 157982,
         duration = 8,
         tick_time = function() return mod_liveliness_hot( 2 ) end,
-        max_stack = 1
+        max_stack = 5
     },
     wild_growth = {
         id = 48438,
         duration = 7,
         tick_time = function() return mod_liveliness_hot( 1 ) end,
+        dot = "buff",
+        friendly = true,
         max_stack = 1
+    },
+    wild_synthesis = {
+        id = 400534,
+        duration = 3600,
+        max_stack = 3
     },
 } )
 
+spec:RegisterPet( "treants",
+    54983,
+    "grove_guardians",
+    15,
+    54983 )
+
+spec:RegisterTotem( "treants", 54983 )
 
 spec:RegisterStateFunction( "break_stealth", function ()
     removeBuff( "shadowmeld" )
@@ -379,6 +451,7 @@ end )
 spec:RegisterStateFunction( "unshift", function()
     if conduit.tireless_pursuit.enabled and ( buff.cat_form.up or buff.travel_form.up ) then applyBuff( "tireless_pursuit" ) end
 
+    removeBuff( "tree_of_life_form" )
     removeBuff( "cat_form" )
     removeBuff( "bear_form" )
     removeBuff( "travel_form" )
@@ -392,6 +465,7 @@ end )
 spec:RegisterStateFunction( "shift", function( form )
     if conduit.tireless_pursuit.enabled and ( buff.cat_form.up or buff.travel_form.up ) then applyBuff( "tireless_pursuit" ) end
 
+    removeBuff( "tree_of_life_form" )
     removeBuff( "cat_form" )
     removeBuff( "bear_form" )
     removeBuff( "travel_form" )
@@ -405,7 +479,7 @@ spec:RegisterStateFunction( "shift", function( form )
         applyBuff( "celestial_guardian" )
     end
 
-    if talent.call_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid.down then
+    if form == "bear_form" or form == "cat_form" and talent.call_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid.down then
         applyBuff( "heart_of_the_wild", 15 )
         applyDebuff( "player", "oath_of_the_elder_druid" )
     end
@@ -424,14 +498,6 @@ spec:RegisterHook( "runHandler", function( ability )
     end
 end )
 
-spec:RegisterStateExpr( "lunar_eclipse", function ()
-    return eclipse.wrath_counter
-end )
-
-spec:RegisterStateExpr( "solar_eclipse", function ()
-    return eclipse.starfire_counter
-end )
-
 
 -- Tier 30
 spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
@@ -442,6 +508,67 @@ spec:RegisterGear( "tier31", 207252, 207253, 207254, 207255, 207257, 217193, 217
 -- (2) You and your Grove Guardian's Nourishes now heal $s1 additional allies within $423618r yds at $s2% effectiveness.
 -- (4) Consuming Clearcasting now causes your Regrowth to also cast Nourish onto a nearby injured ally at $s1% effectiveness, preferring those with your heal over time effects.
 
+local TranquilityTickHandler = setfenv( function()
+
+    addStack( "tranquility_hot" )
+    if talent.dreamstate.enabled then
+        for ability, _ in pairs( class.abilities ) do
+            reduceCooldown( ability, 4 )
+        end
+    end
+
+end, state )
+
+local ComboPointPeriodic = setfenv( function()
+    gain( 1, "combo_points" )
+end, state )
+
+local TreantSpawnPeriodic = setfenv( function()
+    summonPet( "treants", 15 )
+    addStack( "grove_guardians" ) -- Just for tracking.
+    if talent.harmony_of_the_grove.enabled then addStack( "harmony_of_the_grove" ) end
+end, state )
+
+
+spec:RegisterHook( "reset_precast", function ()
+
+    if buff.casting.up and buff.casting.v1 == 740 then
+
+        local tickInterval = spec.auras.tranquility.tick_time
+        local tick, expires = buff.casting.applied, buff.casting.expires
+
+        for i = 1, 4 do
+            tick = tick + tickInterval
+            if tick > query_time and tick < expires then
+                state:QueueAuraEvent( "tranquility_tick", TranquilityTickHandler, tick, "AURA_TICK" )
+            end
+        end
+
+    end
+
+    if buff.heart_of_the_wild.up then
+        local tick, expires = buff.heart_of_the_wild.applied, buff.heart_of_the_wild.expires
+        for i = 2, expires - query_time, 2 do
+            tick = query_time + i
+            if tick < expires then
+                state:QueueAuraEvent( "incarnation_combo_point_perodic", ComboPointPeriodic, tick, "AURA_TICK" )
+            end
+        end
+    end
+
+    if buff.incarnation.up then
+        local tick, expires = buff.incarnation.applied, buff.incarnation.expires
+        for i = 10, expires - query_time, 10 do
+            tick = query_time + i
+            if tick < expires then
+                state:QueueAuraEvent( "tree_of_life_treant_spawn", TreantSpawnPeriodic, tick, "AURA_TICK" )
+            end
+        end
+    end
+
+
+
+end )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -460,7 +587,7 @@ spec:RegisterAbilities( {
         texture = 132137,
 
         handler = function ()
-            applyBuff( "cenarion_ward" )
+            active_dot.cenarion_ward = active_dot.cenarion_ward + 1
         end,
     },
 
@@ -479,6 +606,7 @@ spec:RegisterAbilities( {
         texture = 134222,
 
         handler = function ()
+            applyBuff( "efflorescence" )
         end,
     },
 
@@ -496,6 +624,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            applyBuff( "flourish" )
             if buff.cenarion_ward.up then buff.cenarion_ward.expires = buff.cenarion_ward.expires + 8 end
             if buff.grove_tending.up then buff.grove_tending.expires = buff.grove_tending.expires + 8 end
             if buff.lifebloom_2.up then buff.lifebloom_2.expires = buff.lifebloom_2.expires + 8 end
@@ -513,7 +642,7 @@ spec:RegisterAbilities( {
     grove_guardians = {
         id = 102693,
         cast = 0.0,
-        cooldown = 20,
+        cooldown = function () return 20 - 3 * talent.early_spring.rank end,
         recharge = 20,
         charges = 3,
         icd = 0.5,
@@ -525,15 +654,10 @@ spec:RegisterAbilities( {
         talent = "grove_guardians",
         startsCombat = false,
 
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_UNIT_TARGET_ALLY, }
-        -- #1: { 'type': SUMMON, 'subtype': NONE, 'points': 1.0, 'value': 54983, 'schools': ['physical', 'holy', 'fire', 'arcane'], 'value1': 5734, 'target': TARGET_DEST_CASTER, }
-
         handler = function()
-            class.abilities.swiftmend.handler()
-            if talent.wild_synthesis.enabled then class.abilities.wild_growth.handler() end
-            applyBuff( "grove_guardians" ) -- Just for tracking.
-            if talent.harmony_of_the_grove.enabled then applyBuff( "harmony_of_the_grove" ) end
+            summonPet( "treants", 15 )
+            addStack( "grove_guardians" ) -- Just for tracking.
+            if talent.harmony_of_the_grove.enabled then addStack( "harmony_of_the_grove" ) end
         end,
     },
 
@@ -541,7 +665,7 @@ spec:RegisterAbilities( {
     incarnation = {
         id = 33891,
         cast = 0,
-        cooldown = 180,
+        cooldown = function() return buff.tree_of_life_form.up and 0 or 180 end,
         gcd = "spell",
 
         talent = "incarnation",
@@ -551,7 +675,14 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff( "incarnation_tree_of_life" )
+            if buff.incarnation.down then
+                applyBuff( "incarnation" )
+                if talent.cenarius_guidance.enabled then for i = 10, 30, 10 do
+                        state:QueueAuraEvent( "tree_of_life_treant_spawn", TreantSpawnPeriodic, queryTime + i , "AURA_TICK" )
+                    end
+                end
+            end
+            shift( "incarnation_tree_of_life" )
         end,
 
         copy = "incarnation_tree_of_life"
@@ -601,7 +732,7 @@ spec:RegisterAbilities( {
     ironbark = {
         id = 102342,
         cast = 0,
-        cooldown = 90,
+        cooldown = function() return 90 - ( talent.improved_ironbark.enabled and 20 or 0 ) end,
         gcd = "off",
 
         talent = "ironbark",
@@ -617,7 +748,7 @@ spec:RegisterAbilities( {
 
     -- Heals the target for 7,866 over 15 sec. When Lifebloom expires or is dispelled, the target is instantly healed for 4,004. May be active on one target at a time. Lifebloom counts for 2 stacks of Mastery: Harmony.
     lifebloom = {
-        id = 188550,
+        id = function() return talent.undergrowth.enabled and 188550 or 33763 end,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -630,9 +761,10 @@ spec:RegisterAbilities( {
         texture = 134206,
 
         handler = function ()
-            if active_dot.lifebloom_2 > 0 then applyBuff( "lifebloom" )
-            elseif active_dot.lifebloom > 0 then applyBuff( "lifebloom_2" ) end
+            active_dot.lifebloom = min( active_dot.lifebloom + 1, 1 + ( 1 * talent.undergrowth.rank ) )
         end,
+
+        copy = { 188550, 33763 }
     },
 
     -- Cures harmful effects on the friendly target, removing all Magic, Curse, and Poison effects.
@@ -668,7 +800,7 @@ spec:RegisterAbilities( {
         id = 132158,
         cast = 0,
         charges = function() if talent.twinleaf.enabled then return 2 end end,
-        cooldown = 60,
+        cooldown = function() return 60 - 12 * talent.passing_seasons.rank end,
         recharge = function() if talent.twinleaf.enabled then return 60 end end,
         gcd = "off",
 
@@ -686,7 +818,7 @@ spec:RegisterAbilities( {
     -- Heals a friendly target for 6,471. Receives triple bonus from Mastery: Harmony.
     nourish = {
         id = 50464,
-        cast = 2,
+        cast = function() return 2 * haste * ( talent.wild_synthesis.enabled and ( 1 - 0.34 * buff.wild_synthesis.stack ) or 1 ) end,
         cooldown = 0,
         gcd = "spell",
 
@@ -698,6 +830,7 @@ spec:RegisterAbilities( {
         texture = 236162,
 
         handler = function ()
+            removeBuff( "wild_synthesis" )
         end,
     },
 
@@ -728,20 +861,24 @@ spec:RegisterAbilities( {
     -- Heals a friendly target for 4,267 and another 1,284 over 12 sec. Tree of Life: Instant cast.
     regrowth = {
         id = 8936,
-        cast = function() return ( buff.incarnation.up or buff.clearcasting.up ) and 0 or 1.5 * ( talent.wildwood_roots.enabled and ( 1 - 0.05 * buff.abundance.stack ) or 0 ) end,
+        cast = function() return ( buff.tree_of_life_form or buff.blooming_infusion_regrowth.up ) and 0 or 1.5 * ( talent.wildwood_roots.enabled and ( 1 - 0.05 * buff.abundance.stack ) or 1 ) * haste end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.10,
+        spend = function() return buff.clearcasting.up and 0 or 0.10 * ( talent.abundance.enabled and ( 1 - 0.08 * buff.abundance.stack ) or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
         texture = 136085,
 
         handler = function ()
-            removeBuff( "abundance" )
+            removeBuff( "natures_swiftness" )
             removeBuff( "clearcasting" )
-            applyBuff( "regrowth" )
+            active_dot.regrowth = active_dot.regrowth + 1 + ( talent.power_of_the_archdruid.enabled and buff.power_of_the_archdruid.up and 2 or 0 )
+            if talent.soul_of_the_forest.enabled then removeBuff( "soul_of_the_forest" ) end
+            if talent.forestwalk.enabled then applyBuff( "forestwalk" ) end
+            if talent.wild_synthesis.enabled then addStack( "wild_synthesis" ) end
+            if talent.blooming_infusion.enabled then removeBuff( "blooming_infusion_regrowth" ) end
         end,
     },
 
@@ -752,7 +889,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return ( buff.incarnation.up and 0.7 or 1 ) * 0.021 end,
+        spend = function() return ( buff.tree_of_life_form.up and 0.7 or 1 ) * 0.021 end,
         spendType = "mana",
 
         talent = "rejuvenation",
@@ -760,7 +897,18 @@ spec:RegisterAbilities( {
         texture = 136081,
 
         handler = function ()
-            applyBuff( "rejuvenation" )
+            -- Main Rejuv buff
+            if talent.germination.enabled then
+                if buff.rejuvenation.down or buff.rejuvenation.remains < buff.rejuvenation_germination.remains then 
+                    applyBuff( "rejuvenation" )
+
+                elseif buff.germination.remains < buff.rejuvenation.remains then applyBuff( "rejuvenation_germination" )
+                end
+            else applyBuff( "rejuvenation" )
+            end
+
+            if talent.soul_of_the_forest.enabled then removeBuff( "soul_of_the_forest" ) end
+            active_dot.rejuvenation = active_dot.rejuvenation + 1 + ( talent.power_of_the_archdruid.enabled and buff.power_of_the_archdruid.up and 2 or 0 )
         end,
     },
 
@@ -782,13 +930,68 @@ spec:RegisterAbilities( {
         end,
     },
 
+    starfire = {
+        id = 197628,
+        cast = function ()
+            if buff.blooming_infusion.up then return 0 end
+            return haste * 2.25
+        end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135753,
+        talent = "starfire",
+
+
+        handler = function ()
+            if buff.moonkin_form.down and buff.treant_form.down and buff.tree_of_life_form.down then
+                if talent.fluid_form.enabled then
+                    shift( "moonkin_form" )
+                else unshift()
+                end
+            end
+
+            if talent.blooming_infusion.enabled then removeBuff( "blooming_infusion" ) end
+
+            if talent.master_shapeshifter.enabled then gain( 43750, "mana" ) end
+        end,
+
+    },
+
+    starsurge = {
+        id = 197626,
+        cast = 0,
+        cooldown = function() return 10 - ( 4 * talent.starlight_conduit.rank ) end,
+        gcd = "spell",
+
+        spend = function () return ( talent.starlight_conduit.enabled and 0.003 or 0.006 ) end,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 135730,
+        talent = "starsurge",
+
+        handler = function ()
+            gain( 0.3 * health.max, "health" )
+            if talent.master_shapeshifter.enabled then gain( 43750, "mana" ) end
+            if talent.call_of_the_elder_druid.enabled and debuff.oath_of_the_elder_druid.down then
+                applyBuff( "heart_of_the_wild", 15 )
+                applyDebuff( "player", "oath_of_the_elder_druid" )
+            end
+        end,
+    },
+
     -- Consumes a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for 10,011. Swiftmend heals the target for 3,672 over 9 sec.
     swiftmend = {
         id = 18562,
         cast = 0,
-        charges = function() return talent.prosperity.enabled and 2 or nil end,
+        charges = function() if talent.prosperity.enabled then return 2 end end,
         cooldown = 15,
-        recharge = function() return talent.prosperity.enabled and 15 or nil end,
+        recharge = function() if talent.prosperity.enabled then return 15 end end,
         gcd = "spell",
 
         spend = 0.10,
@@ -817,6 +1020,17 @@ spec:RegisterAbilities( {
                 elseif buff.renewing_bloom.up then removeBuff( "renewing_bloom" )
                 else removeBuff( "rejuvenation" ) end
             end
+
+            if talent.reforestation.enabled then
+                if buff.reforestation.stack == 3 then
+                    removeBuff( "reforestation" )
+                    applyBuff( "incarnation", ( 10 + 3 * talent.potent_enchantments.rank ) )
+                    shift( "tree_of_life_form" )
+                else addStack( "reforestation" )
+                end
+            end
+
+            if talent.soul_of_the_forest.enabled then applyBuff( "soul_of_the_forest" ) end
         end,
     },
 
@@ -843,7 +1057,7 @@ spec:RegisterAbilities( {
     -- Heals all allies within 40 yards for 8,560 over 6.6 sec. Each heal heals the target for another 199 over 8 sec, stacking. Healing increased by 100% when not in a raid.
     tranquility = {
         id = 740,
-        cast = function() return 8 * haste end,
+        cast = 8,
         channeled = true,
         cooldown = 180,
         gcd = "spell",
@@ -858,7 +1072,16 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         start = function()
-            applyBuff( "tranquility" )
+            TranquilityTickHandler()
+
+            local tickTime = query_time
+            -- Schedule the next 4 ticks of Tranquility.
+            for i = 1, 4 do
+                tickTime = tickTime + spec.auras.tranquility.tick_time
+                if tickTime <= query_time + spec.auras.tranquility.duration then
+                    state:QueueAuraEvent( "tranquility_tick", TranquilityTickHandler, tickTime, "AURA_TICK" )
+                end
+            end
         end,
     },
 
@@ -877,8 +1100,48 @@ spec:RegisterAbilities( {
         texture = 236153,
 
         handler = function ()
-            applyBuff( "wild_growth" )
+            if talent.soul_of_the_forest.enabled then removeBuff( "soul_of_the_forest" ) end
+            active_dot.wild_growth = active_dot.wild_growth + 5 + ( talent.improved_wild_growth.enabled and 1 or 0 ) + ( buff.tree_of_life_form.up and 2 or 0 )
+
         end,
+    },
+
+    wrath = {
+        id = 5176,
+        cast = function ()
+            if buff.blooming_infusion.up or buff.tree_of_life_form.up then return 0 end
+            return haste * 1.5
+        end,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0.002,
+        spendType = "mana",
+
+        startsCombat = true,
+        texture = 535045,
+
+        velocity = 20,
+
+        energize_amount = function() return action.wrath.spend * -1 end,
+
+        handler = function ()
+
+            if buff.moonkin_form.down and buff.treant_form.down and buff.tree_of_life_form.down then
+                if talent.fluid_form.enabled then
+                    shift( "moonkin_form" )
+                else unshift()
+                end
+            end
+
+            if talent.blooming_infusion.enabled then removeBuff( "blooming_infusion" ) end
+            removeBuff( "gathering_starstuff" )
+
+            removeBuff( "dawning_sun" )
+            if talent.master_shapeshifter.enabled then gain( 43750, "mana" ) end
+        end,
+
+        copy = { "solar_wrath", 5176 }
     },
 } )
 
@@ -892,10 +1155,10 @@ spec:RegisterOptions( {
     aoe = 3,
     cycle = false,
 
-    nameplates = true,
-    nameplateRange = 10,
-    rangeFilter = false,
+    nameplates = false,
 
+    rangeFilter = false,
+    healing_mode = false,
     damage = true,
     damageDots = true,
     damageExpiration = 6,
@@ -903,12 +1166,26 @@ spec:RegisterOptions( {
     package = "Restoration Druid",
 } )
 
-
 spec:RegisterSetting( "experimental_msg", nil, {
     type = "description",
-    name = "|cFFFF0000WARNING|r:  Healer support in this addon is focused on DPS output only.  This is more useful for solo content or downtime when your healing output is less critical in a group/encounter.  Use at your own risk.",
+    name = strformat( "Restoration Druid supports healing maintenance by recommending key abilities. It will suggest maintaining %s, keeping at least one %s active, maintaining %s, using %s after a %s, and alerting you when %s can activate %s.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.lifebloom.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.rejuvenation.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.efflorescence.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.wild_growth.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.swiftmend.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.swiftmend.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.incarnation.id ) ),
+    width = "full",
+    fontSize = "medium"
+} )
+
+spec:RegisterSetting( "healing_mode", false, {
+    name = "Healing Helper Mode",
+    desc = "If checked, healing abilities may be recommended using the default priority package.",
+    type = "toggle",
     width = "full",
 } )
 
 
-spec:RegisterPack( "Restoration Druid", 20240908, [[Hekili:1IvAVnUnt4FlglGGDoCLptsHT)q7lkAdqx8I6fy)MoSeTfHLLuPKsAam0V9oK6IIhwoztbA3KypCoFMhoCSMy9nRT(UziRVo1C6CZNmFCm8llNn3AB2BjiRTjUEhDpa)sK7j4F)luAwmXndhhv48)i5yFQiVfg76tvvACoXdeZA7UCCy2FezTtL(NT4rq2eKN1xNyUWABa23hvklk1ZA7VJCdrKcNecoMGZWO0chxccS4)F797J9Ytr(foXrHVnU45INPQ(EZNU3CYDfo0F(4px489ae4Iy4))v3ScNFlMCc(w)4chp6FNfGJoK2E6hUFMjCQVfaw57UGT)oMkI12qCAwklnH27MhMb)6xzPnxpAwaIJJ5HH27CtdS2IIC3fI8T(fRmiI5LAhIKIihbJki1mQuTFYwpiGreSR12bfo7Y3VFCcj(1WX5jfogfo1FyAGRF8RNqH(W30AMi3SCck1(f8bCiv9Z)uvFaYLKzhV3olaz)ko0NAIfFQMaQT2W5pLsv9YpvvNeZ(jO3h0Q3ma5fLnM4EenUsGcNZNRumaDS3dijMAtZiyVmkAOXcK8i7YF3MIBkrp2LToWzPM(X3JPB1CTLPQ4jTQyyLFkvNyziAy4fhhc5MifIqqNCXrqR2McNLMfo3x4md(XnqZsPN5b2KGZtTpa99UrEczObnckR7gbhXfsXrVeFeXeknbdbbRMpXui8AA0YJ2Jji(4LG2dO9aQOmaqMl5akBCg(eO2yBFmIfnlQ(sMZHpbyMxq(2v6Rnx79MxiCoMosP1vQ3mrJ3CkoUF3rWpMmvJrMQTIsn3liBue6eJgCvHZJCPeqpP5GQyArKk5hpX9a7lv4dpOjq0t3a09anzL4JPoo1NktlCDyQqUDJxwOqT1cE(1xHlLeiGZk75Q5Rv6vY0fC(sl3sZhLMtVPY290U80GoUgTTTH1xxZzt3NcSFB)hKFNBk2tP6eTDvLsVhFiiZUJEw2d5TomdbNi47W)1b1qniajihEJveFYKHvAn(AOWAYCnd2H9IpTl2ojghLbF96MUsbixJcUTWz68sZmS7h3vta)0CwS2rtgDpYCThCJWbh1KnP5ESh9kBM66Ey4ytz6uax)kobzZMW4gMeJu3Oi2Nau72rO)P7TjjaAbQMvdvP4M2AbZciW4huZ(H7X7ggTkSmsvheI3oFb(grWZf5QhvFzEcb9I9bp)XtAU5TgnjYjTUHgPhAETLeXzc60y)Ei5nvKq5WfROIO2f0pBWa5bqywHRbCHzDUXpUAkcrx9If5z9iYQAOsvcU87uFZ(fgw5s3FQcLiDfAn4OP3SIHGdSuvYfiKGetE9txGMtZXpQQqvF0sa1ORanEPk9sn3tkoJtBoGZk1POEJd5wpvtUOFOI2MhfDw0jo6mDDhm4iDdJO)EWRclRgmjnIZ1XBknwsTK7rKypCmms7oW74Dsj2(zAjTwX(YYHRvEfxtGTUmYuIi(pHBFznLWf787sCgcv)qCeknTxkZj6FFMikQjd2nhTs7W502i5Nb10DXmVok7p(aVLoJQbEBOD(qVIqKz)kXT6FPhxZYstnjwUesab5xosmWVqLu9GX01Vat(vEOTrUjPbXagH4I9lBAPGbOpNAHDiiiqL2LcK2HoW4NCJ8zCL3dp3oJrqJtP3jfHgZX(7sokokAN9LipSANz7VWAtU6NrR)TkxufSxfWYLq28fejL(P1R3cQMV6sIO7wYA7FCkjMKrtzZkXuugB2(Kgx8mtr7XHak9lfoF(56INlTy64Mk(TR)jX8UAPKs(QfRozEhE)Av7nr5HyPpTNO5mGKTlwJ)tBxKg)N2zVxuTpOZl4mgO4HEp)LVuxwOQqy3n3r3AZAitaCHhUonA4txiAjNcq4g5BxFCkFQTN)6PM8oTuA(6mdVkA2w27)OLBd79FoL5jakCx5(WwprtX98zPB95061ILOIk)sy6PgQD)bNp3)wV2S08(zM303MUoFEqF74AuhmC5Td315sHYue3nsgY3gTzHrFpKHZm1tk2RD4mamjnVJwp8g9iDV)B1JFor0dgc69brhGPyqrQ3v0MjvqiLB3KtvSDbXXLqXCuGlGNOAxgExP36oGQ)uCxpI6tz77WRzfpRMB2cKUWIDgD(CNv6SA(sPGcNOQumCixX485YPf28KPrTMwpXCKXq(zgwVOd8OsWBNo)85H1)bV83mFfN81k(25ccTHtOrJOHD572m4fBZ0B18kQBMosmK7mM0D1tsTEIOCTt5(HaR6gzEZurdDHwIH91LpYyGI3vAmSBRYAa63dDGuAIb37lW55dmn0udwnXuu5801de51nQGBlmngQAxe6tTZ0(vREWq5EhKc7lrfoupxOrnUeq7YBsOPTP(L33aV6wmDvk66jJ0ut1LDL6PRXtGhRyBak9fjvONoNILgkYWBiveLsSxzj)J2T29P4QQEDimMPOBA1m6n9Dy0QCR1Y(1pe7WsJHAXWTTQYVKwkP2GcKRtqiYhmRumqa)BKFhKs9XjjDpTXGRDwK3zrN9UuQlvvNwAkeZ0BX5gtFC1a1meoDAt7u0FNJGb0AhxNGoa3Jdfen)eEjxEwqmXA7F6E0naFeZEkN1)(d]] )
+spec:RegisterPack( "Restoration Druid", 20241110, [[Hekili:1MvFVTnVr8plbdqZoV4j53sYGTb626aEkW6aECbE(pjlBrhZzzjd9sYcGH(SV7ifLiPiTDs7aABAepE8UF3R8OVN)p8xgfwq8)(q3HJ988ChmC0WrJ9xw8(rI)YJHB2h(c8Fscpa)7VtYlsZclOPjvR(hzL0iKK3JtdJqoLNwMTbiZF56sACXVL4V2e7hozeq7rYg)V75oXF5oAueHtljFJ)sK2h88EWZ9VwTA57z0T)58Qv7iHX0KxQwDinIuTkV84X0SIQVv9ng9Up)GR39vRWF(eSV)yhbKrk83)Eyr1Q)zA2by1O0QvBWFVyhWR82D)4dJWt7h7aw)hHzW)qrs8xgtZlYrLd2g8JVZGmss46ysK)Fd(CgTGKrdrDE72b57cJsF7ajoAq5XQvNovTI99JzPVfR(P8suTdcpSUmFhSK)YWniY6VmlCpXVaanRNvpqnstJHJkzWM0Kxt3tck2rcYpsbAYhKroestauBw1QXU8d9gqRdJjjfg3r9XuTQpN6T0x2veOWNPTsiymYkcs3YyXB04iuChPjUnQd9OMSd)jJSnJaOfqm)ajjKSxEVA1IQvpdsSdsI4WNxTYZLjAoSnVj9W60GJP0Kcyzy1jSvkOhaLkniIsy8PHb3vTA4y(X0t9ZQC6wqlz6QcNCu3YyRBCH2g73GMi2t3SN5)6OVzyBdz8eIjIJdkcZEHawK83OhjbmV1Bzu0hqX33eteuGoJaSpwd23MMfKq(Vf4Yn2GJG3cynRJqH1MyXyvSllmFhESY2mfRfI0mjyGoG)iBrv1OLHCn1Ssm1I4KxMSLMr08FUsXzIWLbG)JzKxdEzt0aVbGOeaG0bH3eEwVscahWduc3FYJB2QJxOhGW3xjrb1sJuWIzT5rBrcyG95GvnfWZ1aGk5xmdjXSi8K1Ch3uN)radSSsokbGtCfytuAXauQhOlQN1ip6cKmt4QudW81uGvbKjKsuNE2cSEin9Q8s0r3HcNJMyZ6mesol1MCTesaWukQdcbNUdEYKHsSvUdv)RWB8Cw6PMn0GdGnlT0PiGOlQhDd9WZWEvp7bpgISGZ7jbe01huYQNd6yEjOMSt3EDWRYx2SZKNE5QRlVPNE6wbLBjzPBOPL5bRbPtwi7KTFK1KwZylIONLsCnk2CUMz0J4)l52NksjC2iF1eNXG1hAAJKNFXuME6vaS7I1GGQy0SM2a0ZAJHrcbqYhteDXoEBPSnua6kbmUWyie4XM0oNV8IfGspZ(v63QN8SvFKcwM6AbyLaKDzeSDVcwxGyl5MAlUPIh5)u(k8Dr83r()5hHj7nyIzvBK2bVch)EbqxK89(VtW23ji8bmXqBYIZoMULSoon9G0b)L4431ktiD2n7GFWnTVDoQ4fryzHAwqKgQ2axMebimCdGc1ACDuRq8VOeEMUPnPvljXBVwTYO8IxK4tjXVdoy54PBOruHet2Unof8f3qsWBhQWJ)fuiQieVM2xrQ81VpLYEzI55AEfcP3wCGKej7Q97F9R2XMmcxlz9Fl9D8onbMxs1bTViTxl4b5hqrUGrrl8jqD1LHFUzplb)inOPilmjN3zaGrWfxlYiKZ1RSKmRXQVe)w47qKmsr1kHAfUfGeiFUeOP06a29tZASa(iY2WY427b3G77lHscRHcbYcMi0uq1Ac4QKHnAPrLURE367TxFwQ5bL7A3EmGLPeW3GxPVqJn5x2Y(CsrbohGb1zYcWzli3UaOv8FjaNdaFAab8zHis(zWD8Nt(nE3A7vh)mhrzoja2)HCtxw5NJ1htz)8S3areNG3ROj8OzUis9YHncMr3OwAlRmXQrPUAU9ADgoAlThAVT6E1cAhdvZ8DAMntxsA69UUA7dqGVlR5BXWzGZmJcTr(sjnkeZ6ParTTn0L3YzQB0PUZ6Xyh9)Q635Z1tJTs4MUz3LVwNLdXEAgdnP9KTlJyRk3Nh4E0AJIwue75B0U)i8F4x6RTZCREUQ6BZn)MkNb)n4UIAP4ly1kWggnpFuL6qqU5J57sHRkKfsJ4cd6VIfdbvEnRYiV9t8(eRjVWcvctIyxz(bi5sb7E60CC0ejKbsUkHz71ZAQu(PBE1RTk0vN0WELMZYcw(vgwcO5Rqvs8RSrM7(Sl4i(wywcwMYF5VDah6nczJ5EmyliSrupO6BmgTLgd(G)PQv)6X6QVXpX8bnw87M)x0XDZu1b8ntMamVNUDUPQeg3ed(SUJM9au22NI8xB7lr(RkTrGC)gLAHo3yyE)sBxV3H7XcuZRBAazNXEpK5qhi7Jlen15)4BLxh)JVpTQZC1gmR3ZRKp3ZIH60PodYrbnVo)cK0Uf8WD1ZAIVtNUC56ftDFyK7TxQe9Pt3CPIZ9v8h51mUxjlphIKQD40TUXIjoxA20shJOk6fphPdWBOIGkkbIBrTs1SN(1Orp6OX3h1fagJXihJf5w4v7czSTmjwXkIjLxa95qhxWFc5Ex37A(kIaQ)v9NVtNFgdF7DnVA3SXUTosN5T66F6KYR0nB80okf9OjtrVEsgJtN4daAXZUocon3ZTVtp5XanFII7rnH3nC8Pt9e)Im93oEMe9cgF3ynIwiru)(OAZhfVJmzlgENLbJF7W(6QSYKVUxmCS5E601o4YpLZQTPGUyO(bDMqIExkkVVZngEQaNEQHkZbx)lKoOdmXC3VKIlNpW1XInyMNRoZLtxFJEEDNA3TjUo9m98s2H2rwxA2JogFkPoQ95sf2ZEUqhHFj4T39XHAcBepMYTUdEshU4Ko3RVfBQn0TtmTWFcKydpWJrzPdlSNoh9L6PNH3PJrSdWELM8pB0Q6RRyY6PKWyKHOPzJWk9kz0QfR5DLRFQSdtD6z1hUnuT7JJ0buB8c6ANavuwzMzOHa5N94dKu6s5K6uN25MRTxKpOrN9udOivBNM6QPZyvC4QokViqltQBSgt2jnYwjOuFAUZ8AyNys8M4wZyZzjnK4vZcZ863gfPUYqhwWH8tf4yFO79BeiXG2)KcuNJfBc5IhS205nD2kdOVP)PUJTNXpJJ02exBM7SUgjMx)DsFtAU33zXY2FHNZ5MophDmmz(5Jyc(1naDtAIKWjYyRmx9LHLf7sZWxczF4o6EkBka()V]] )

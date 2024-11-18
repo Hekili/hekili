@@ -413,12 +413,10 @@ do
 
                             if not excluded and checkPlates then
                                 local _, maxR = RC:GetRange( unit )
-                                excluded = maxR == nil or maxR > checkPlates
-
-                                range = maxR or range
+                                excluded = maxR ~= nil and maxR > checkPlates
 
                                 if debugging and excluded then
-                                    details = format( "%s\n    - Excluded by range (%d > %d).", details, range, checkPlates )
+                                    details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )
                                 end
                             end
 
@@ -482,9 +480,7 @@ do
 
                                 if not excluded and checkPlates then
                                     local _, maxR = RC:GetRange( unit )
-                                    excluded = maxR == nil or maxR > checkPlates
-
-                                    range = maxR or range
+                                    excluded = maxR ~= nil and maxR > checkPlates
 
                                     if debugging and excluded then
                                         details = format( "%s\n    - Excluded by range (%d > %d).", details, maxR, checkPlates )

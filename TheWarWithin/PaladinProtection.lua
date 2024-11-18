@@ -1926,7 +1926,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 8,
 
-    potion = "phantom_fire",
+    potion = "tempered_potion",
 
     package = "Protection Paladin",
 } )

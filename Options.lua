@@ -86,7 +86,7 @@ local oneTimeFixes = {
         if s then s.enhancedRecheck = true end
     end, ]]
 
-    updateMaxRefreshToNewSpecOptions_20220222 = function( p )
+    --[[ updateMaxRefreshToNewSpecOptions_20220222 = function( p )
         for id, spec in pairs( p.specs ) do
             if spec.settings.maxRefresh then
                 spec.settings.combatRefresh = 1 / spec.settings.maxRefresh
@@ -94,7 +94,7 @@ local oneTimeFixes = {
                 spec.settings.maxRefresh = nil
             end
         end
-    end,
+    end, ]]
 
     forceEnableAllClassesOnceDueToBug_20220225 = function( p )
         for id, spec in pairs( p.specs ) do
@@ -156,7 +156,18 @@ local oneTimeFixes = {
             havoc.date = 20240727
             havoc.version = 20240727
         end
-    end
+    end,
+
+    removeOldThrottles_20241115 = function( p )
+        for id, spec in pairs( p.specs ) do
+            spec.throttleRefresh = nil
+            spec.combatRefresh   = nil
+            spec.regularRefresh  = nil
+
+            spec.throttleTime    = nil
+            spec.maxTime         = nil
+        end
+    end,
 }
 
 
@@ -562,7 +573,7 @@ do
                 },
 
                 specs = {
-                    ['**'] = specTemplate
+                    -- ['**'] = specTemplate
                 },
 
                 packs = {
@@ -5855,95 +5866,188 @@ found = true end
                             name = "Performance",
                             order = 10,
                             args = {
-                                throttleRefresh = {
-                                    type = "toggle",
-                                    name = "Set Update Period",
-                                    desc = "If checked, you may specify how frequently new recommendations can be generated, in- and out-of-combat.\n\n"
-                                        .. "More frequent updates can utilize more CPU time, but increase responsiveness. After certain critical combat "
-                                        .. "events, recommendations will always update earlier, regardless of these settings.",
-                                    order = 1,
+                                --[[ forecastingSection = {
+                                    type = "header",
+                                    name = "Forecasting",
+                                    order = 0.1,
                                     width = "full",
                                 },
 
-                                regularRefresh = {
-                                    type = "range",
-                                    name = "Out-of-Combat Period",
-                                    desc = "When out-of-combat, each display will update its recommendations as frequently as you specify. "
-                                        .. "Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\n"
-                                        .. "Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\n"
-                                        .. "Default value:  |cffffd1000.5|rs.",
-                                    order = 1.1,
-                                    width = 1.5,
-                                    min = 0.05,
-                                    max = 1,
-                                    step = 0.05,
-                                    hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
-                                },
+                                forecastingDescription = {
+                                    type = "description",
+                                    name = function ()
+                                        local flame_shock = Hekili:GetSpellLinkWithTexture( 470411 )
 
-                                combatRefresh = {
-                                    type = "range",
-                                    name = "In-Combat Period",
-                                    desc = "When in-combat, each display will update its recommendations as frequently as you specify.\n\n"
-                                    .. "Specifying a lower number means updates are generated more frequently, potentially using more CPU time.\n\n"
-                                    .. "Some critical events, like generating resources, will force an update to occur earlier, regardless of this setting.\n\n"
-                                    .. "Default value:  |cffffd1000.25|rs.",
-                                    order = 1.2,
-                                    width = 1.5,
-                                    min = 0.05,
-                                    max = 0.5,
-                                    step = 0.05,
-                                    hidden = function () return self.DB.profile.specs[ id ].throttleRefresh == false end,
-                                },
-
-                                throttleTime = {
-                                    type = "toggle",
-                                    name = "Set Update Time",
-                                    desc = "By default, calculations can take 80% of your frametime or 50ms, whichever is lower.  If recommendations take more "
-                                        .. "than the alotted time, then the work will be split across multiple frames to reduce impact to your framerate.\n\n"
-                                        .. "If you choose to |cffffd100Set Update Time|r, you can specify the |cffffd100Maximum Update Time|r used per frame.",
-                                    order = 2.1,
-                                    width = "full",
-                                },
-
-                                maxTime = {
-                                    type = "range",
-                                    name = "Maximum Update Time (ms)",
-                                    desc = "Specify the maximum amount of time (in milliseconds) that can be used |cffffd100per frame|r when updating.  " ..
-                                        "If set to |cffffd1000|r, then there is no maximum regardless of your frame rate.\n\n" ..
-                                        "|cffffd100Examples|r\n" ..
-                                        "|W- 60 FPS: 1 second / 60 frames = |cffffd10016.7|rms|w\n" ..
-                                        "|W- 100 FPS: 1 second / 100 frames = |cffffd10010|rms|w\n\n" ..
-                                        "If you set this value too low, it can take longer to update and may feel less responsive.\n\n" ..
-                                        "If set too high (or to zero), updates may resolve more quickly but with possible impact to your FPS.\n\n" ..
-                                        "The default value is |cffffd10020|rms.",
-                                    order = 2.2,
-                                    min = 0,
-                                    max = 100,
-                                    step = 1,
-                                    width = 1.5,
-                                    hidden = function ()
-                                        return not self.DB.profile.specs[ id ].throttleTime
+                                    return format( "%sForecasting|r enables recommendations that are timed more precisely, when the conditions for using an ability are not immediately met.\n\n"
+                                    .. "For example, if %s is used when %s is not active on your target, but your target has 1 second remaining, forecasting allows a recommendation of %s with a 1 second delay.\n\n"
+                                    .. "If a lower priority ability is available sooner, it will be recommended instead.\n\n", BlizzBlue, flame_shock, flame_shock, flame_shock )
                                     end,
+                                    order = 0.11,
+                                    width = "full",
+                                    fontSize = "small"
                                 },
 
-                                --[[ gcdSync = {
-                                    type = "toggle",
-                                    name = "Start after Global Cooldown",
-                                    desc = "If checked, the addon's first recommendation will be delayed to the start of the GCD in your Primary and AOE displays.  This can reduce flickering if trinkets or off-GCD abilities are appearing briefly during the global cooldown, " ..
-                                        "but will cause abilities intended to be used while the GCD is active (i.e., Recklessness) to bounce backward in the queue.",
+                                throttleForecastingCount = {
+                                    type = "range",
+                                    name = NewFeature .. " Maximum Forecasting Steps",
+                                    desc = function () return format( "When generating recommendations, priority entries whose criteria are not met may be retested based on calculated delays.\n\n"
+                                    .. "This forecasting enables recommendations to be timed more precisely, such as waiting for resource gains or auras to become refreshable, but can increase processing time.\n\n"
+                                    .. "If set above zero, the forecasting window is limited to the specified number of steps, which may reduce processing time but |cffff0000may result in fewer/no recommendation(s) being generated|r.\n\n"
+                                    .. "This value is disabled |cFFFFD100(0)|r by default, allowing any number of forecasting steps.\n\n"
+                                    .. "%sRecommended: 0 (disabled)|r\n\n", BlizzBlue )
+                                    end,
+                                    order = 0.12,
                                     width = "full",
-                                    order = 4,
+                                    min = 0,
+                                    max = 10,
+                                    step = 1
+                                },
+
+                                throttleForecastingTime = {
+                                    type = "range",
+                                    name = NewFeature .. " Maximum Forecasting Time (sec)",
+                                    desc = function () return format( "When generating recommendations, priority entries whose criteria are not met may be retested based on calculated delays.\n\n"
+                                    .. "This forecasting enables recommendations to be timed more precisely, such as waiting for resource gains or auras to become refreshable, but can increase processing time.\n\n"
+                                    .. "If set above zero, the forecasting window is limited to the specified time in seconds, which may reduce processing time but |cffff0000may result in fewer/no recommendation(s) being generated|r.\n\n"
+                                    .. "This value is disabled |cFFFFD100(0)|r by default, allowing forecasting up to 10 seconds in the future.\n\n"
+                                    .. "%sRecommended: 0 (disabled)|r", BlizzBlue )
+                                    end,
+                                    order = 0.13,
+                                    width = "full",
+                                    min = 0,
+                                    max = 10,
+                                    step = 0.1
+                                },
+
+                                throttleForecastingAuto = {
+                                    type = "toggle",
+                                    name = NewFeature .. " Autotune Forecasting",
+                                    desc = "When enabled, the engine will tune its Forecasting Steps and Forecasting Time based on whether the forecasting has successfully improved recommendations.",
+                                    order = 0.14,
+                                    width = "full",
+                                },
+
+                                throttlingSection = {
+                                    type = "header",
+                                    name = "Throttling",
+                                    order = 0.2,
+                                    width = "full",
+                                },
+
+                                throttlingDescription = {
+                                    type = "description",
+                                    name = function () return format( "%sThrottling|r limits the amount of processing time used to generate recommendation.\n\n"
+                                    .. "These limits can help expedite recommendations or reduce the impact on CPU usage or FPS.\n\n", BlizzBlue )
+                                    end,
+                                    order = 0.21,
+                                    width = "full",
+                                    fontSize = "small"
+                                },
+
+                                throttleFrames = {
+                                    type = "range",
+                                    name = function () return format( "%s Target Minimum FPS (Actual FPS: %d)", NewFeature, GetFramerate() ) end,
+                                    desc = function () return format( "By default, up to |cffffd10015ms|r per frame may be used to generate recommendations.\n\n"
+                                    .. "This value is roughly equivalent to a Target Minimum FPS value of |cffffd10060|r.\n\n"
+                                    .. "Reducing this setting will allow |cffffd100more|r processing time per frame, improving responsiveness but potentially reducing FPS.\n\n"
+                                    .. "Increasing this setting will allow |cffffd100less|r processing time per frame, potentially improving FPS but reducing responsiveness.\n\n"
+                                    .. "%sRecommended: 0 or 60 (default)|r", BlizzBlue )
+                                    end,
+                                    order = 0.22,
+                                    width = "full",
+                                    min = 0,
+                                    max = 200,
+                                    step = 1
+                                },
+
+                                throttleMinimum = {
+                                    type = "range",
+                                    name = NewFeature .. " Minimum Time Allowance (ms)",
+                                    desc = function ()
+                                        local fps = GetFramerate()
+                                        local currentFrameTime = fps > 0 and ( 1000 / fps ) or 0
+                                        local warning = currentFrameTime > 0 and format( "At your current (%d) FPS, values above |cffffd100%d|r may impact your framerate.\n\n", fps, currentFrameTime ) or ""
+
+                                        return format( "By default, at least |cffffd1005ms|r may be used to generate recommendations.\n\n" .. warning
+                                    .. "Increasing this setting may generate recommendations in fewer frames, improving responsiveness but potentially reducing FPS.\n\n"
+                                    .. "Reducing this setting may generate recommendations over more frames, potentially improving FPS but reducing responsiveness.\n\n"
+                                    .. "%sRecommended: 5ms (default)|r", BlizzBlue )
+                                    end,
+                                    order = 0.23,
+                                    width = "full",
+                                    min = 5,
+                                    max = 200,
+                                    step = 1
+                                },
+
+                                throttleMaximum = {
+                                    type = "range",
+                                    name = NewFeature .. " Maximum Time Allowance (ms)",
+                                    desc = function ()
+                                        local fps = GetFramerate()
+                                        local currentFrameTime = fps > 0 and ( 1000 / fps ) or 0
+                                        local warning = currentFrameTime > 0 and format( "At your current (%d) FPS, values above |cffffd100%d|r may impact your framerate.\n\n", fps, currentFrameTime ) or ""
+
+                                        return format( "By default, up to |cffffd10015ms|r may be used to generate recommendations.\n\n" .. warning
+                                    .. "Increasing this setting may generate recommendations in fewer frames, increasing responsiveness but potentially reducing FPS.\n\n"
+                                    .. "Reducing this setting may generate recommendations over more frames, reducing responsiveness but decreasing impact to FPS.\n\n"
+                                    .. "%sRecommended: 15ms (default)|r", BlizzBlue )
+                                    end,
+                                    order = 0.24,
+                                    width = "full",
+                                    min = 5,
+                                    max = 200,
+                                    step = 1
+                                },
+
+                                throttlePercent = {
+                                    type = "range",
+                                    name = NewFeature .. " Maximum Frame Time %",
+                                    desc = function ()
+                                        local fps = GetFramerate()
+                                        local currentFrameTime = fps > 0 and ( 1000 / fps ) or 0
+                                        local cap = self.DB.profile.specs[ id ].throttleMaximum or 0
+                                        local warning = ""
+
+
+                                        if cap > 0 then
+                                            warning = format( "At your current |cFFFFD100Maximum Time Allowance|r, processing time would be limited to %d per frame.\n\n", fps, cap )
+                                        elseif currentFrameTime > 0 then
+                                            warning = format( "At your current (%d) FPS, processing time would be limited to %d per frame.\n\n", fps, currentFrameTime )
+                                        end
+
+                                        return format( "By default, up to |cffffd10090%%|r may be used to generate recommendations.\n\n" .. warning
+                                    .. "Increasing this setting may generate recommendations in fewer frames, increasing responsiveness but potentially reducing FPS.\n\n"
+                                    .. "Reducing this setting may generate recommendations over more frames, reducing responsiveness but decreasing impact to FPS.\n\n"
+                                    .. "%sRecommended: 90%% (default)|r", BlizzBlue )
+                                    end,
+                                    order = 0.25,
+                                    width = "full",
+                                    min = 0,
+                                    max = 1,
+                                    step = 0.01,
+                                    isPercent = true
                                 }, ]]
 
-                                --[[ enhancedRecheck = {
-                                    type = "toggle",
-                                    name = "Enhanced Recheck",
-                                    desc = "When the addon cannot recommend an ability at the present time, it rechecks action conditions at a few points in the future.  "
-                                        .. "If checked, this feature will enable the addon to do additional checking on entries that use the 'variable' feature.  "
-                                        .. "This may use slightly more CPU, but can reduce the likelihood that the addon will fail to make a recommendation.",
+                                placeboBar = {
+                                    type = "range",
+                                    name = "Not a Placebo",
+                                    desc = "This adjusts the VROOOM of your current specialization.",
+                                    order = 100,
                                     width = "full",
-                                    order = 5,
-                                }, ]]
+                                    min = 3,
+                                    max = 20,
+                                    step = 1
+                                },
+
+                                vroom = {
+                                    type = "header",
+                                    name = function()
+                                        return format( "VR%sM!", string.rep( "O", self.DB.profile.specs[ id ].placeboBar or 5 ) )
+                                    end,
+                                    order = 101,
+                                    width = "full"
+                                },
                             }
                         }
                     },
@@ -11708,13 +11812,8 @@ do
                     local ability = str:trim()
 
                     if ability and ( ability == "use_item" or class.abilities[ ability ] ) then
-                        if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast" end
-                        -- Stub abilities that are replaced sometimes.
-                        if ability == "any_dnd" or ability == "wound_spender" or ability == "summon_pet" or ability == "apply_poison" or ability == "trinket1" or ablity == "trinket2" or ability == "raptor_bite" or ability == "mongoose_strike" then
-                            result.action = ability
-                        else
-                            result.action = class.abilities[ ability ] and class.abilities[ ability ].key or ability
-                        end
+                        if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast"
+                        else result.action = ability end
                     elseif not ignore_actions[ ability ] then
                         insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
                         result.action = ability

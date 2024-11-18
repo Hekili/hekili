@@ -1511,9 +1511,9 @@ spec:RegisterAbilities( {
     arcane_orb = {
         id = 153626,
         cast = 0,
-        charges = function() return talent.charged_orb.enabled and 2 or nil end,
+        charges = function() if talent.charged_orb.enabled then return 2 end end,
         cooldown = 20,
-        recharge = function() return talent.charged_orb.enabled and 20 or nil end,
+        recharge = function() if talent.charged_orb.enabled then return 20 end end,
         gcd = "spell",
         school = "arcane",
 
@@ -1578,9 +1578,9 @@ spec:RegisterAbilities( {
     blink = {
         id = function () return talent.shimmer.enabled and 212653 or 1953 end,
         cast = 0,
-        charges = function () return talent.shimmer.enabled and 2 or nil end,
+        charges = function () if talent.shimmer.enabled then return 2 end end,
         cooldown = function () return ( talent.shimmer.enabled and 25 or 15 ) - conduit.flow_of_time.mod * 0.001 - ( 2 * talent.flow_of_time.rank ) end,
-        recharge = function () return ( talent.shimmer.enabled and ( 25 - conduit.flow_of_time.mod * 0.001 - talent.flow_of_time.rank * 2 ) or nil ) end,
+        recharge = function () if talent.shimmer.enabled then return ( 25 - conduit.flow_of_time.mod * 0.001 - talent.flow_of_time.rank * 2 ) end end,
         gcd = "off",
         icd = 6,
 
@@ -1642,7 +1642,7 @@ spec:RegisterAbilities( {
     -- Talent: Increases your mana regeneration by 750% for 5.3 sec.
     evocation = {
         id = 12051,
-        cast = function () return 2.8 * haste end,
+        cast = 3,
         charges = 1,
         cooldown = 90,
         recharge = 90,
@@ -1709,9 +1709,9 @@ spec:RegisterAbilities( {
     frost_nova = {
         id = 122,
         cast = 0,
-        charges = function () return talent.ice_ward.enabled and 2 or nil end,
+        charges = function () if talent.ice_ward.enabled then return 2 end end,
         cooldown = 30,
-        recharge = function () return talent.ice_ward.enabled and 30 or nil end,
+        recharge = function () if talent.ice_ward.enabled then return 30 end end,
         gcd = "spell",
         school = "frost",
 

@@ -2380,7 +2380,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 8,
 
-    potion = "spectral_strength",
+    potion = "tempered_potion",
 
     package = "Retribution",
 } )

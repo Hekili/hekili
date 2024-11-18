@@ -7,7 +7,7 @@ actions.precombat+=/prowl,if=talent.rake.enabled
 actions+=/skull_bash
 actions+=/berserking
 actions+=/natures_vigil,if=!buff.prowl.up&!buff.shadowmeld.up
-## actions+=/run_action_list,name=healing,if=!buff.prowl.up&!buff.shadowmeld.up&druid.time_spend_healing,line_cd=20
+actions+=/call_action_list,name=healing,if=settings.healing_mode
 actions+=/heart_of_the_wild,if=!buff.prowl.up&!buff.shadowmeld.up
 actions+=/use_items,if=!buff.prowl.up&!buff.shadowmeld.up
 actions+=/potion,if=!buff.prowl.up&!buff.shadowmeld.up
@@ -41,4 +41,15 @@ actions.cat+=/sunfire,cycle_targets=1,if=refreshable&target.time_to_die>5&active
 actions.cat+=/pool_resource,for_next=1
 actions.cat+=/shred,if=energy>60&combo_points<5
 
-## actions.healing+=/strict_sequence,name=healregrowthregrowthregrowthregrowth
+# On the tank
+actions.healing+=/rejuvenation,if=active_dot.rejuvenation<1
+# On an ally
+actions.healing+=/lifebloom,if=(active_dot.lifebloom<1)|(active_dot.lifebloom<2&buff.lifebloom.up&talent.undergrowth.enabled)
+# On yourself
+actions.healing+=/lifebloom,if=(active_dot.lifebloom<2&buff.lifebloom.down&talent.undergrowth.enabled)
+# Maintain Efflo
+actions.healing+=/efflorescence,if=buff.efflorescence.down
+# transform into tree
+actions.healing+=/swiftmend,if=(active_dot.regrowth+active_dot.wild_growth+active_dot.rejuvenation)>1&talent.reforestation.enabled&buff.reforestation.stack=3
+# Always wild growth after swiftmend
+actions.healing+=/wild_growth,if=prev.1.swiftmend

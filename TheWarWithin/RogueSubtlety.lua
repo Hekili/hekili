@@ -1213,9 +1213,9 @@ spec:RegisterAbilities( {
     shadow_dance = {
         id = 185313,
         cast = 0,
-        charges = function () if talent.double_dance.enabled then return 2 or nil end end,
+        charges = function () if talent.double_dance.enabled then return 2 end end,
         cooldown = 60,
-        recharge = function () if talent.double_dance.enabled then return 60 or nil end end,
+        recharge = function () if talent.double_dance.enabled then return 60 end end,
         gcd = "off",
 
         startsCombat = false,
@@ -1316,13 +1316,9 @@ spec:RegisterAbilities( {
     shiv = {
         id = 5938,
         cast = 0,
-        charges = function()
-            if talent.lightweight_shiv.enabled then return 2 end
-        end,
+        charges = function() if talent.lightweight_shiv.enabled then return 2 end end,
         cooldown = 25,
-        recharge = function()
-            if talent.lightweight_shiv.enabled then return 25 end
-        end,
+        recharge = function() if talent.lightweight_shiv.enabled then return 25 end end,
         gcd = "totem",
         school = "physical",
 

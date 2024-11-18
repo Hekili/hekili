@@ -1908,7 +1908,7 @@ spec:RegisterAbilities( {
     -- Talent: Draw power from the Night Fae, dealing 2,168 Nature damage over 3.6 sec to enemies within 18 yds. While channeling, your Mage ability cooldowns are reduced by 12 sec over 3.6 sec.
     shifting_power = {
         id = function() return talent.shifting_power.enabled and 382440 or 314791 end,
-        cast = function() return 4 * haste end,
+        cast = 4,
         channeled = true,
         cooldown = 60,
         gcd = "spell",

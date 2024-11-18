@@ -2406,7 +2406,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 6,
 
-    potion = "potion_of_spectral_intellect",
+    potion = "tempered_potion",
 
     package = "Shadow",
 } )

@@ -1892,7 +1892,7 @@ spec:RegisterOptions( {
     damageOnScreen = true,
     damageExpiration = 8,
 
-    potion = "spectral_intellect",
+    potion = "tempered_potion",
 
     package = "Devastation",
 } )

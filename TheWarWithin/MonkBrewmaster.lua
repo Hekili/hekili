@@ -1960,7 +1960,7 @@ spec:RegisterOptions( {
     damageDots = false,
     damageExpiration = 8,
 
-    potion = "phantom_fire",
+    potion = "tempered_potion",
 
     package = "Brewmaster"
 } )

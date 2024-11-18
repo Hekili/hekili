@@ -2037,7 +2037,7 @@ spec:RegisterAbilities( {
     -- Talent: Tosses the enemy target into the air, disorienting them but making them invulnerable for up to $d. Only one target can be affected by your Cyclone at a time.
     cyclone = {
         id = 33786,
-        cast = function() return 1.7 * ( buff.heart_of_the_wild.up and 0.7 or 1 ) end,
+        cast = function() return 1.7 * ( buff.heart_of_the_wild.up and 0.7 or 1 ) * haste end,
         cooldown = 0,
         gcd = "spell",
         school = "nature",
@@ -2074,7 +2074,7 @@ spec:RegisterAbilities( {
     -- Roots the target in place for $d. Damage may cancel the effect.$?s33891[    |C0033AA11Tree of Life: Instant cast.|R][]
     entangling_roots = {
         id = 339,
-        cast = function () return pvptalent.owlkin_adept.enabled and buff.owlkin_frenzy.up and 0.85 or 1.7 end,
+        cast = function () return pvptalent.owlkin_adept.enabled and buff.owlkin_frenzy.up and 0.85 or 1.7 * haste end,
         cooldown = 0,
         gcd = "spell",
 
@@ -2086,6 +2086,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "entangling_roots" )
+            removeBuff( "natures_swiftness" )
         end,
     },
 
@@ -2255,7 +2256,7 @@ spec:RegisterAbilities( {
     -- Talent: Forces the enemy target to sleep for up to $d.  Any damage will awaken the target.  Only one target can be forced to hibernate at a time.  Only works on Beasts and Dragonkin.
     hibernate = {
         id = 2637,
-        cast = function() return 1.5 * ( buff.heart_of_the_wild.up and 0.7 or 1 ) end,
+        cast = function() return 1.5 * ( buff.heart_of_the_wild.up and 0.7 or 1 ) * haste end,
         cooldown = 0,
         gcd = "spell",
         school = "nature",
@@ -2580,10 +2581,23 @@ spec:RegisterAbilities( {
         copy = 102547
     },
 
+    rebirth ={
+        id = 20484,
+        cast = function() return buff.natures_swiftness.up and 0 or 2 * haste end,
+        cooldown = 0,
+        gcd = "spell",
+
+        -- readyTime = there is a brez available .. API for this?
+
+        handler = function ()
+            removeBuff( "natures_swiftness" )
+        end
+    },
+
     -- Heals a friendly target for $s1 and another ${$o2*$<mult>} over $d.$?s231032[ Initial heal has a $231032s1% increased chance for a critical effect if the target is already affected by Regrowth.][]$?s24858|s197625[ Usable while in Moonkin Form.][]$?s33891[    |C0033AA11Tree of Life: Instant cast.|R][]
     regrowth = {
         id = 8936,
-        cast = function() return buff.blooming_infusion_regrowth.up and 0 or 1.5 end,
+        cast = function() return buff.blooming_infusion_regrowth.up and 0 or 1.5 * haste end,
         cooldown = 0,
         gcd = "spell",
         school = "nature",
@@ -2874,7 +2888,7 @@ spec:RegisterAbilities( {
 
 
     starsurge = {
-        id = function() return state.spec.balance and 78674 or 197626 end,
+        id = 78674,
         cast = 0,
         cooldown = function() return state.spec.balance and 0 or ( talent.starlight_conduit.enabled and 6 or 10 ) end,
         gcd = "spell",
@@ -3349,7 +3363,7 @@ spec:RegisterOptions( {
     damageDots = true,
     damageExpiration = 6,
 
-    potion = "spectral_intellect",
+    potion = "tempered_potion",
 
     package = "Balance",
 } )
