@@ -7,7 +7,9 @@ actions.precombat+=/variable,name=is_vt_possible,default=0,op=reset
 actions.precombat+=/variable,name=pooling_mindblasts,default=0,op=reset
 actions.precombat+=/arcane_torrent
 ## actions.precombat+=/use_item,name=aberrant_spellforge
-actions.precombat+=/halo,if=boss&active_enemies<=4&(fight_remains>=120|active_enemies<=2)
+actions.precombat+=/renew,if=talent.twist_of_fate&!buff.twist_of_fate.up
+actions.precombat+=/prayer_of_mending,if=talent.twist_of_fate&!buff.twist_of_fate.up
+actions.precombat+=/halo,if=talent.halo&(boss|target.time_to_die>120|active_enemies<=2)
 actions.precombat+=/shadow_crash,if=spell_targets.shadow_crash<=8&(!set_bonus.tier31_4pc|spell_targets.shadow_crash>1)
 actions.precombat+=/vampiric_touch,if=(!talent.whispering_shadows|!action.shadow_crash.in_flight)&(!talent.shadow_crash.enabled|spell_targets.shadow_crash>8|!boss|set_bonus.tier31_4pc&spell_targets.shadow_crash=1)
 
