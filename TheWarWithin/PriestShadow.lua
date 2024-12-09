@@ -508,7 +508,33 @@ spec:RegisterAuras( {
     dark_ascension = {
         id = 391109,
         duration = 20,
-        max_stack = 1
+        max_stack = 1,
+        meta = {
+            -- Specify which damage types are affected
+            damage_increase = function(spell)
+                if talent.perfected_form.enabled then
+                    return 0.32 -- With Archon: 20% base + 12% from Perfected Form
+                end
+                -- Base DA only affects non-periodic damage
+                if not spell.tick_time then 
+                    return 0.20
+                end
+                return 0
+            end
+        },
+        affected_spells = {
+            -- List spells NOT affected unless Perfected Form is talented
+            [589] = false,   -- Shadow Word: Pain
+            [34914] = false, -- Vampiric Touch
+            [335467] = false, -- Devouring Plague
+            [263165] = false, -- Void Torrent
+            [391403] = false, -- Mind Flay: Insanity
+            [15407] = false,  -- Mind Flay
+            -- Idol procs
+            [373281] = false, -- Echoing Void (N'Zoth)
+            [373273] = false, -- Thing from Beyond (Yogg)
+            [373310] = false  -- Y'Shaarj
+        }
     },
     -- Talent: Periodic Shadow damage increased by $w1%.
     -- https://wowhead.com/beta/spell=391099
