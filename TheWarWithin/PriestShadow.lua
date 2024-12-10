@@ -939,6 +939,11 @@ spec:RegisterAuras( {
         duration = 8,
         max_stack = 1
     },
+    twist_of_fate_can_trigger_on_ally_heal = {
+        id = 390621,
+        duration = 10,
+        max_stack = 1
+    },
     -- Absorbing $w3 damage.
     ultimate_penitence = {
         id = 421453,
