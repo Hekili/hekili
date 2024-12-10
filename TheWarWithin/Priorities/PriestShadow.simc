@@ -53,9 +53,9 @@ actions.main+=/mind_blast,cycle_targets=1,if=talent.void_eruption&buff.voidform.
 # Use Voidbolt on the enemy with the largest time to die. We do no care about dots because Voidbolt is only accessible inside voidform which guarantees maximum effect
 actions.main+=/void_bolt,cycle_targets=1,if=insanity.deficit>16&cooldown.void_bolt.remains<=0.1
 # Do not overcap on insanity
-actions.main+=/devouring_plague,cycle_targets=1,if=active_dot.devouring_plague<=1&dot.devouring_plague.remains<=gcd.max&(!talent.void_eruption|cooldown.void_eruption.remains>=gcd.max*3)|insanity.deficit<=16
+actions.main+=/devouring_plague,cycle_targets=1,if=active_dot.devouring_plague<=1&dot.devouring_plague.remains<=gcd.max&(!talent.void_eruption|cooldown.void_eruption.remains>=gcd.max*3)|insanity.deficit<=16|buff.voidform.up&insanity>=50
 # Cast Void Torrent at very high priority if Voidweaver
-actions.main+=/void_torrent,cycle_targets=1,if=(dot.devouring_plague.ticking|talent.void_eruption&cooldown.void_eruption.up)&talent.entropic_rift&!variable.holding_crash
+actions.main+=/void_torrent,cycle_targets=1,if=(dot.devouring_plague.ticking|talent.void_eruption&cooldown.void_eruption.up)&talent.entropic_rift&!variable.holding_crash&(!buff.voidform.up|insanity<=50)
 # Snipe SWDs with Depth of Shadows to spawn pets. Prefer targets with Devouring Plague on them.
 actions.main+=/shadow_word_death,cycle_targets=1,if=talent.depth_of_shadows&(target.health.pct<=20|buff.deathspeaker.up&talent.deathspeaker)&talent.inescapable_torment
 # Use Mind Blasts if using Inescapable Torment and you are capping charges or it will expire soon. Do not use if pooling Mindblast.
