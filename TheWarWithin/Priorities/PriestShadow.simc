@@ -100,6 +100,8 @@ actions.cds+=/fireblood,if=buff.power_infusion.up|boss&fight_remains<=8
 actions.cds+=/berserking,if=buff.power_infusion.up|boss&fight_remains<=12
 actions.cds+=/blood_fury,if=buff.power_infusion.up|boss&fight_remains<=15
 actions.cds+=/ancestral_call,if=buff.power_infusion.up|boss&fight_remains<=15
+actions.cds+=/lights_judgment,if=spell_targets.lights_judgment>=2|boss&fight_remains<=10
+actions.cds+=/arcane_torrent,if=time==0
 # Sync Power Infusion with Voidform or Dark Ascension
 actions.cds+=/power_infusion,if=buff.voidform.up|buff.dark_ascension.up
 ## Use <a href='https://www.wowhead.com/spell=10060/power-infusion'>Power Infusion</a> while <a href='https://www.wowhead.com/spell=194249/voidform'>Voidform</a> or <a href='https://www.wowhead.com/spell=391109/dark-ascension'>Dark Ascension</a> is active. Chain directly after your own <a href='https://www.wowhead.com/spell=10060/power-infusion'>Power Infusion</a>.
@@ -145,6 +147,8 @@ actions.filler+=/shadow_word_death,cycle_targets=1
 actions.filler+=/shadow_word_pain,cycle_targets=1,if=set_bonus.tier31_4pc
 # Use Shadow Word: Pain while moving as a low-priority action without T31 4pc
 actions.filler+=/shadow_word_pain,cycle_targets=1,if=!set_bonus.tier31_4pc
+# Move low priority racials to filler list
+actions.filler+=/lights_judgment,if=spell_targets.lights_judgment=1
 
 actions.empowered_filler+=/mind_spike_insanity,cycle_targets=1,if=buff.mind_spike_insanity.up
 actions.empowered_filler+=/mind_flay_insanity,cycle_targets=1,if=buff.mind_flay_insanity.up
@@ -157,5 +161,23 @@ actions.empowered_filler+=/mind_flay_insanity,cycle_targets=1,if=buff.mind_flay_
 ## actions.heal_for_tof+=/holy_nova,if=buff.rhapsody.stack=20&talent.rhapsody
 
 actions.trinkets+=/use_item,use_off_gcd=1,name=aberrant_spellforge,if=gcd.remains>0&buff.aberrant_spellforge.stack<=4
-actions.trinkets+=/use_item,name=spymasters_web,if=(buff.power_infusion.up&buff.spymasters_report.stack>=40&fight_remains>240)|(buff.power_infusion.up&buff.bloodlust.up&buff.spymasters_report.stack>=10)|buff.power_infusion.up&(fight_remains<120)|(fight_remains<=20|buff.dark_ascension.up&fight_remains<=60|buff.entropic_rift.up&talent.entropic_rift&fight_remains<=30)&!buff.spymasters_web.up
-actions.trinkets+=/use_items,if=(buff.voidform.up|buff.power_infusion.up|buff.dark_ascension.up|(cooldown.void_eruption.remains>10&trinket.cooldown.duration<=60))|boss&fight_remains<20
+# High Speaker's Accretion before burst windows
+actions.trinkets+=/use_item,name=high_speakers_accretion,if=(cooldown.void_eruption.remains<=10|cooldown.dark_ascension.remains<=10)&active_enemies>1
+
+# Spymaster's Web optimization
+actions.trinkets+=/use_item,name=spymasters_web,if=fight_remains<=20|((buff.power_infusion.up|buff.dark_ascension.up|buff.voidform.up)&((buff.spymasters_report.stack>=40&fight_remains>240)|(buff.bloodlust.up&buff.spymasters_report.stack>=10)|fight_remains<120))
+
+# Mereldar's Toll
+actions.trinkets+=/use_item,name=mereldars_toll
+
+# Mad Queen's Mandate on low HP targets
+actions.trinkets+=/use_item,name=mad_queens_mandate,target_if=min:target.health.pct
+
+# Ovi'nax's Mercurial Egg at good stacks
+actions.trinkets+=/use_item,name=ovinaxs_mercurial_egg,if=buff.mercurial_aspect_primary.stack>=20&buff.mercurial_aspect_secondary.stack>=10
+
+# Treacherous Transmitter
+actions.trinkets+=/use_item,name=treacherous_transmitter
+
+# Default trinket behavior
+actions.trinkets+=/use_items,if=(buff.voidform.up|buff.power_infusion.up|buff.dark_ascension.up)|trinket.cooldown.duration<=60|boss&fight_remains<20
