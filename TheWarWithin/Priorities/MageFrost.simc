@@ -68,14 +68,14 @@ actions.cleave_ff+=/comet_storm,if=prev_gcd.1.flurry
 actions.cleave_ff+=/frostfire_bolt,if=talent.deaths_chill&buff.icy_veins.remains>9&(buff.deaths_chill.stack<6|buff.deaths_chill.stack=6&!action.frostfire_bolt.in_flight)
 actions.cleave_ff+=/freeze,if=freezable&prev_gcd.1.glacial_spike
 actions.cleave_ff+=/ice_nova,if=freezable&prev_gcd.1.glacial_spike&remaining_winters_chill=0&debuff.winters_chill.down&!prev_off_gcd.freeze
-actions.cleave_ff+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&(prev_gcd.1.glacial_spike|buff.icicles.stack>=3)&!prev_off_gcd.freeze
+actions.cleave_ff+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&(prev_gcd.1.glacial_spike|buff.icicles.stack>=3|!talent.glacial_spike&prev_gcd.1.frostfire_bolt)&!prev_off_gcd.freeze
 actions.cleave_ff+=/flurry,cycle_targets=1,if=prev_gcd.1.glacial_spike&!prev_off_gcd.freeze
 actions.cleave_ff+=/glacial_spike,if=buff.icicles.stacks=5
 actions.cleave_ff+=/ray_of_frost,cycle_targets=1,if=remaining_winters_chill
 actions.cleave_ff+=/frostfire_bolt,if=buff.frostfire_empowerment.up&!buff.excess_frost.up&!buff.excess_fire.up
 actions.cleave_ff+=/frozen_orb,if=!buff.fingers_of_frost.up
 actions.cleave_ff+=/shifting_power,if=cooldown.icy_veins.remains>10&cooldown.frozen_orb.remains>10&(!talent.comet_storm|cooldown.comet_storm.remains>10)&(!talent.ray_of_frost|cooldown.ray_of_frost.remains>10)&(fight_remains+10>cooldown.icy_veins.remains)
-actions.cleave_ff+=/ice_lance,cycle_targets=1,if=buff.fingers_of_frost.up&!prev_gcd.1.glacial_spike|remaining_winters_chill&!variable.boltspam
+actions.cleave_ff+=/ice_lance,cycle_targets=1,if=buff.fingers_of_frost.up&(!prev_gcd.1.glacial_spike|remaining_winters_chill=0&debuff.winters_chill.down)|remaining_winters_chill&!variable.boltspam
 actions.cleave_ff+=/frostfire_bolt
 actions.cleave_ff+=/call_action_list,name=movement
 
@@ -102,14 +102,14 @@ actions.movement+=/fire_blast
 actions.movement+=/ice_lance
 
 actions.st_ff+=/comet_storm,if=prev_gcd.1.flurry
-actions.st_ff+=/flurry,if=variable.boltspam&buff.icicles.stack<5&remaining_winters_chill=0
-actions.st_ff+=/flurry,if=!variable.boltspam&buff.icicles.stack<5&remaining_winters_chill=0&debuff.winters_chill.down&(prev_gcd.1.frostfire_bolt|prev_gcd.1.glacial_spike)
+actions.st_ff+=/flurry,if=variable.boltspam&cooldown_react&(buff.icicles.stack<5|!talent.glacial_spike)&remaining_winters_chill=0
+actions.st_ff+=/flurry,if=!variable.boltspam&cooldown_react&(buff.icicles.stack<5|!talent.glacial_spike)&remaining_winters_chill=0&debuff.winters_chill.down&(prev_gcd.1.frostfire_bolt|prev_gcd.1.glacial_spike)
 actions.st_ff+=/ice_lance,if=variable.boltspam&buff.excess_fire.up&!buff.brain_freeze.up
 actions.st_ff+=/glacial_spike,if=buff.icicles.stack=5
 actions.st_ff+=/ray_of_frost,if=remaining_winters_chill&(!variable.boltspam|buff.icy_veins.remains<15)
 actions.st_ff+=/frozen_orb,if=variable.boltspam&buff.icy_veins.down|!variable.boltspam&!buff.fingers_of_frost.up
 actions.st_ff+=/shifting_power,if=(buff.icy_veins.down|!variable.boltspam)&cooldown.icy_veins.remains>10&cooldown.frozen_orb.remains>10&(!talent.comet_storm|cooldown.comet_storm.remains>10)&(!talent.ray_of_frost|cooldown.ray_of_frost.remains>10)&(fight_remains+10>cooldown.icy_veins.remains)
-actions.st_ff+=/ice_lance,if=!variable.boltspam&(buff.fingers_of_frost.up&!prev_gcd.1.glacial_spike|remaining_winters_chill)
+actions.st_ff+=/ice_lance,if=!variable.boltspam&(buff.fingers_of_frost.up&remaining_winters_chill=0&debuff.winters_chill.down|remaining_winters_chill)
 actions.st_ff+=/frostfire_bolt
 actions.st_ff+=/call_action_list,name=movement
 
