@@ -58,7 +58,8 @@ actions.slayer_am_st+=/bladestorm,if=buff.enrage.up&(cooldown.recklessness.remai
 actions.slayer_am_st+=/storm_bolt,if=buff.bladestorm.up
 actions.slayer_am_st+=/onslaught,if=talent.tenderize&buff.brutal_finish.up
 actions.slayer_am_st+=/rampage,if=!buff.enrage.up
-actions.slayer_am_st+=/raging_blow,if=buff.opportunist.up
+actions.slayer_am_st+=/raging_blow,if=buff.opportunist.up|buff.furious_bloodthirst.down
+actions.slayer_am_st+=/bloodthirst,if=buff.furious_bloodthirst.up
 actions.slayer_am_st+=/bloodthirst,if=target.health.pct<35&talent.vicious_contempt&buff.bloodcraze.stack>=2
 actions.slayer_am_st+=/rampage,if=action.raging_blow.charges<=1&rage>=115
 actions.slayer_am_st+=/bloodthirst,if=buff.bloodcraze.stack>3|crit_pct_current>=85
@@ -70,6 +71,8 @@ actions.slayer_am_st+=/onslaught,if=talent.tenderize
 actions.slayer_am_st+=/whirlwind,if=talent.meat_cleaver
 actions.slayer_am_st+=/slam
 actions.slayer_am_st+=/storm_bolt,if=buff.bladestorm.up
+actions.slayer_am_st+=/bloodthirst,if=buff.furious_bloodthirst.up
+actions.slayer_am_st+=/raging_blow,if=buff.furious_bloodthirst.down
 
 actions.slayer_ra_st+=/recklessness,if=cooldown.avatar.remains<1&talent.titans_torment|!talent.titans_torment
 actions.slayer_ra_st+=/rampage,if=!buff.enrage.up
@@ -89,13 +92,15 @@ actions.slayer_ra_st+=/bloodbath,if=target.health.pct<35&talent.vicious_contempt
 actions.slayer_ra_st+=/rampage,if=rage>=115
 actions.slayer_ra_st+=/raging_blow
 actions.slayer_ra_st+=/bloodbath
+actions.slayer_ra_st+=/bloodthirst,if=buff.furious_bloodthirst.up
 actions.slayer_ra_st+=/rampage
-actions.slayer_ra_st+=/bloodthirst
 actions.slayer_ra_st+=/execute
 actions.slayer_ra_st+=/onslaught
 actions.slayer_ra_st+=/whirlwind,if=talent.meat_cleaver
 actions.slayer_ra_st+=/slam
 actions.slayer_ra_st+=/storm_bolt,if=buff.bladestorm.up
+actions.slayer_ra_st+=/bloodthirst,if=buff.furious_bloodthirst.up
+actions.slayer_ra_st+=/raging_blow,if=buff.furious_bloodthirst.down
 
 actions.slayer_am_mt+=/recklessness
 actions.slayer_am_mt+=/avatar,if=(talent.titans_torment&(buff.enrage.up|talent.titanic_rage)&(debuff.champions_might.up|!talent.champions_might))|!talent.titans_torment
