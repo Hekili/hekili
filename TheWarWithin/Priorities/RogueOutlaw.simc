@@ -106,7 +106,7 @@ actions.stealth_cds=vanish,if=!talent.killing_spree&!cooldown.between_the_eyes.r
 # Vanish if Adrenaline Rush is about to run out unless remaining cooldown on adrenaline rush is less than 10 sec or available
 actions.stealth_cds+=/vanish,if=buff.adrenaline_rush.remains<3&cooldown.adrenaline_rush.remains>10
 # Supercharger builds that do not use killing spree should vanish with the supercharger buff up
-actions.stealth_cds+=/vanish,if=!talent.killing_spree&buff.supercharge_1.up
+actions.stealth_cds+=/vanish,if=!talent.killing_spree&buff.supercharge.up
 # Killing spree builds can vanish any time killing spree is on cd, preferably with at least 15s left on the cd
 actions.stealth_cds+=/vanish,if=cooldown.killing_spree.remains>15
 # Vanish if about to cap on vanish charges
