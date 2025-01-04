@@ -56,7 +56,7 @@ actions+=/summon_vilefiend,if=cooldown.summon_demonic_tyrant.remains>30
 actions+=/demonbolt,cycle_targets=1,if=(!debuff.doom.up|!action.demonbolt.in_flight&debuff.doom.remains<=2)&buff.demonic_core.up&(((!talent.soul_strike|cooldown.soul_strike.remains>gcd.max*2&talent.fel_invocation)&soul_shard<4)|soul_shard<(4-(active_enemies>2)))&!prev_gcd.1.demonbolt&talent.doom&cooldown.summon_demonic_tyrant.remains>15
 actions+=/demonbolt,if=buff.demonic_core.stack>=3&soul_shard<=3&!variable.pool_cores_for_tyrant
 actions+=/power_siphon,if=buff.demonic_core.stack<3&cooldown.summon_demonic_tyrant.remains>25&!buff.demonic_power.up
-actions+=/demonic_strength,if=active_enemies>1
+actions+=/demonic_strength,if=active_enemies>1|!talent.demonic_strength.enabled
 actions+=/bilescourge_bombers,if=active_enemies>1
 actions+=/guillotine,if=active_enemies>1&(cooldown.demonic_strength.remains|!talent.demonic_strength)
 actions+=/ruination
