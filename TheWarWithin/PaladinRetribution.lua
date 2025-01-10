@@ -404,23 +404,9 @@ spec:RegisterAuras( {
     },
     divine_hammer = {
         id = 198034,
-        duration = 12,
-        max_stack = 1,
-        generate = function( dh )
-            local last = action.divine_hammer.lastCast
-
-            if last and last + 12 > query_time then
-                dh.count = 1
-                dh.expires = last + 12
-                dh.applied = last
-                dh.caster = "player"
-                return
-            end
-            dh.count = 0
-            dh.expires = 0
-            dh.applied = 0
-            dh.caster = "nobody"
-        end
+        duration = 8,
+        tick_time = 2,
+        max_stack = 1
     },
     -- Movement speed reduced by ${$s3*-1}%.
     divine_hammer_snare = {
@@ -989,6 +975,7 @@ spec:RegisterHook( "spend", function( amt, resource )
             reduceCooldown( "blessing_of_sacrifice", 1 )
             reduceCooldown( "blessing_of_spellwarding", 1 )
         end
+        if buff.divine_hammer.up then buff.divine_hammer.up.expires =  buff.divine_hammer.up.expires + ( amt * 0.5 ) end
     end
 end )
 
@@ -1081,18 +1068,33 @@ end )
 
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
 
+-- Current Expansion
+spec:RegisterGear( "tww2", 229244, 229242, 229243, 229245, 229247 )
+spec:RegisterAuras( {
+   -- 2-set
+    winning_streak = {
+        id = 1216828,
+        duration = 30,
+        max_stack = 10
+    },
+    all_in = {
+        id = 1216837,
+        duration = 4,
+        max_stack = 1
+    },
 
+    -- TODO: Incorporate free spends?
+
+} )
+
+-- Legacy
 spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194, 217198, 217200, 217196, 217197, 217199 )
 spec:RegisterAura( "echoes_of_wrath", {
     id = 423590,
     duration = 12,
     max_stack = 1
 } )
-
-
--- Tier 30
 spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
-
 spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
 
 
@@ -1499,15 +1501,21 @@ spec:RegisterAbilities( {
     divine_hammer = {
         id = 198034,
         cast = 0,
-        cooldown = 120,
+        cooldown = 60,
         gcd = "spell",
+
+        spend = function ()
+            if buff.divine_purpose.up then return 0 end
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+        end,
+        spendType = "holy_power",
 
         talent = "divine_hammer",
         startsCombat = false,
         texture = 626003,
 
         handler = function ()
-            applyBuff( "divine_hammer" ) -- TODO: Tick down Holy Power.
+            applyBuff( "divine_hammer" )
         end,
     },
 
@@ -2350,7 +2358,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            spend( 0.1 * mana.max, "mana" )
+            spend( 0.15 * mana.max, "mana" )
             removeBuff( "recompense" )
             if buff.divine_purpose.up then removeBuff( "divine_purpose" )
             else
