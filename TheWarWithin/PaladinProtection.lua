@@ -798,6 +798,27 @@ spec:RegisterAuras( {
 } )
 
 
+-- Current Expansion
+spec:RegisterGear( "tww2", 229244, 229242, 229243, 229245, 229247 )
+spec:RegisterAuras( {
+   -- 2-set
+    set_placeholder_2 = {
+        id = 1216828,
+        duration = 30,
+        max_stack = 10
+    },
+    set_placeholder_4 = {
+        id = 1216837,
+        duration = 4,
+        max_stack = 1
+    },
+
+
+
+} )
+
+-- Legacy
+
 spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194 )
 spec:RegisterAuras( {
     sanctification = { -- TODO: Explore reset of stacks when empowered Consecration expires.

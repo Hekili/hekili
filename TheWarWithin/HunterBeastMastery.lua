@@ -1212,6 +1212,24 @@ spec:RegisterAuras( {
     }
 } )
 
+
+--- The War Within
+spec:RegisterGear( "tww1", 212018, 212019, 212020, 212021, 212023 )
+spec:RegisterGear( "tww2", 229271, 229272, 229274, 229270, 229273 )
+spec:RegisterAuras( {
+   -- 2-set
+    jackpot = {
+
+    },
+    potent_mutagen = {
+        id = 1218003,
+        duration = 10,
+        max_stack = 1
+    },
+
+} )
+
+-- Legacy
 --- Shadowlands
 local ExpireNesingwarysTrappingApparatus = setfenv( function()
     focus.regen = focus.regen * 0.5
@@ -1227,8 +1245,7 @@ spec:RegisterAura( "lethal_command", {
     max_stack = 1
 } )
 
---- The War Within
-spec:RegisterGear( "tww1", 212018, 212019, 212020, 212021, 212023 )
+
 
 spec:RegisterStateExpr( "barbed_shot_grace_period", function ()
     return ( settings.barbed_shot_grace_period or 0 ) * gcd.max
