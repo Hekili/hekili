@@ -778,11 +778,10 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    -- Critical damage dealt increased by $s1%.
-    howl_of_the_pack = {
-        id = 462515,
-        duration = 8.0,
-        max_stack = 3,
+    howl_of_the_pack_leader = {
+        id = 471877,
+        duration = 30,
+        max_stack = 1,
     },
     -- Talent: Your Kill Shot strikes $s1 more targets and deals $s3% more damage.
     --[[hunters_prey = {
