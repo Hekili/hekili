@@ -1464,7 +1464,7 @@ all:RegisterAuras( {
     },
 
     bloodlust = {
-        alias = { "ancient_hysteria", "bloodlust_actual", "drums_of_deathly_ferocity", "fury_of_the_aspects", "heroism", "netherwinds", "primal_rage", "time_warp" },
+        alias = { "ancient_hysteria", "bloodlust_actual", "drums_of_deathly_ferocity", "fury_of_the_aspects", "heroism", "netherwinds", "primal_rage", "time_warp", "harriers_cry" },
         aliasMode = "first",
         aliasType = "buff",
         duration = 3600,
@@ -1504,6 +1504,13 @@ all:RegisterAuras( {
         duration = 40,
         max_stack = 1,
         shared = "player",
+    },
+
+    harriers_cry = {
+        id = 466904,
+        duration = 40,
+        max_stack = 1,
+        shared = "player"
     },
 
     mark_of_the_wild = {
