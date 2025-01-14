@@ -1,5 +1,12 @@
 -- MageFrost.lua
--- October 2024
+-- January 2025
+
+--[[ 11.1 TODO List 
+- Implement tier set effects
+    - Frostbolt Volley handler?
+
+--]]
+
 
 if UnitClassBase( "player" ) ~= "MAGE" then return end
 
@@ -84,7 +91,7 @@ spec:RegisterTalents( {
     flurry                    = {  62178,  44614, 1 }, -- Unleash a flurry of ice, striking the target 3 times for a total of 22,244 Frost damage. Each hit reduces the target's movement speed by 80% for 1 sec, has a 25% chance to activate Glacial Assault, and applies Winter's Chill to the target. Winter's Chill causes the target to take damage from your spells as if it were frozen.
     fractured_frost           = {  62151, 378448, 1 }, -- While Icy Veins is active, your Frostbolts hit up to 2 additional targets and their damage is increased by 15%.
     freezing_rain             = {  62150, 270233, 1 }, -- Frozen Orb makes Blizzard instant cast and increases its damage done by 60% for 12 sec.
-    freezing_winds            = {  62184, 382103, 1 }, -- While Frozen Orb is active, you gain Fingers of Frost every 3 sec.
+    freezing_winds            = {  62184, 1216953, 1 }, -- While Frozen Orb is active, you gain Fingers of Frost every 3 sec.
     frostbite                 = {  81467, 378756, 1 }, -- Gives your Chill effects a 10% chance to freeze the target for 4 sec.
     frozen_orb                = {  62177,  84714, 1 }, -- Launches an orb of swirling ice up to 40 yds forward which deals up to 48,384 Frost damage to all enemies it passes through over 15 sec. Deals reduced damage beyond 8 targets. Grants 1 charge of Fingers of Frost when it first damages an enemy. While Frozen Orb is active, you gain Fingers of Frost every 3 sec. Enemies damaged by the Frozen Orb are slowed by 40% for 3 sec.
     frozen_touch              = {  62180, 205030, 1 }, -- Frostbolt grants you Fingers of Frost 25% more often and Brain Freeze 20% more often.
@@ -328,12 +335,6 @@ spec:RegisterAuras( {
         id = 270232,
         duration = 12,
         max_stack = 1
-    },
-    freezing_winds = {
-        id = 382106,
-        duration = function() return spec.auras.frozen_orb.duration end,
-        max_stack = 1,
-        copy = 327478
     },
     frigid_empowerment = {
         id = 417488,
@@ -711,7 +712,7 @@ spec:RegisterStateTable( "frost_info", {
 } )
 
 
-local brain_freeze_removed = 0
+-- local brain_freeze_removed = 0
 
 local lastCometCast = 0
 local lastAutoComet = 0
@@ -725,9 +726,9 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
 
             --[[ if spellID == 44614 then
                 frost_info.real_brain_freeze = FindUnitBuffByID( "player", 190446 ) ~= nil
-            end ]]
+            end 
         elseif subtype == "SPELL_AURA_REMOVED" and spellID == 190446 then
-            brain_freeze_removed = GetTime()
+            brain_freeze_removed = GetTime()]]
         end
 
         if state.talent.glacial_spike.enabled and ( spellID == 205473 or spellID == 199844 ) and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
@@ -855,12 +856,25 @@ spec:RegisterStateTable( "incanters_flow", {
 spec:RegisterStateExpr( "bf_flurry", function () return false end )
 spec:RegisterStateExpr( "comet_storm_remains", function () return buff.active_comet_storm.remains end )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229346, 229344, 229342, 229343, 229341 )
+spec:RegisterAuras( {
+   -- 2-set
+    jackpot = {
+        -- spells have a chance to proc a jackpot that generates a frostbolt valley hitting a primary target and spreading to surrounding mobs (until 8). Casting Icy Veins always procs it
+    },
+   --[[ 4-set
+    jackpot = {
+        -- Icy veins procs it at 100% effectiveness every 10 sec for 30s
+        -- 1216914
+    }, ]]--
 
+} )
+
+-- Dragonflight
 
 spec:RegisterGear( "tier31", 207288, 207289, 207290, 207291, 207293, 217232, 217234, 217235, 217231, 217233 )
-
 spec:RegisterGear( "tier30", 202554, 202552, 202551, 202550, 202549 )
-
 spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
 spec:RegisterAura( "touch_of_ice", {
     id = 394994,
@@ -869,8 +883,9 @@ spec:RegisterAura( "touch_of_ice", {
 } )
 
 
-local FreezingWinds = setfenv( function()
-    addStack( "fingers_of_frost" )
+local BrainFreeze = setfenv( function()
+    if talent.perpetual_winter.enabled then gainCharges( "flurry", 1 ) else setCooldown( "flurry", 0 ) end
+    applyBuff( "brain_freeze" )
 end, state )
 
 
@@ -895,17 +910,6 @@ spec:RegisterHook( "reset_precast", function ()
     local remaining_pet = class.auras.icy_veins.duration - action.icy_veins.time_since
     if remaining_pet > 0 then
         summonPet( "water_elemental", remaining_pet )
-    end
-
-    if buff.freezing_winds.up then
-        local tick, expires = buff.freezing_winds.applied, buff.freezing_winds.expires
-
-        for i = 1, ( talent.everlasting_frost.enabled and 4 or 3 ) do
-            tick = tick + 3
-            if tick > query_time and tick < expires then
-                state:QueueAuraEvent( "freezing_winds", FreezingWinds, tick, "AURA_TICK" )
-            end
-        end
     end
 
     if  active_dot.glacial_spike > 0 and debuff.glacial_spike.down or
@@ -1076,8 +1080,6 @@ spec:RegisterAbilities( {
                     spec.abilities.ice_nova.handler()
                     reduceCooldown( "comet_storm", 5 )
                 end
-
-                if buff.frost_mastery.up and buff.frost_mastery.stacks == 5 then applyBuff( "excess_frost" ) end
             end
 
             applyDebuff( "target", "flurry" )
@@ -1153,10 +1155,12 @@ spec:RegisterAbilities( {
             if action.frostbolt.cast_time > 0 then removeStack( "ice_floes" ) end
 
             if buff.frostfire_empowerment.up then
-                applyBuff( "frost_mastery", nil, 6 )
-                if talent.excess_frost.enabled then applyBuff( "excess_frost" ) end
-                applyBuff( "fire_mastery", nil, 6 )
-                if talent.excess_fire.enabled then applyBuff( "excess_fire" ) end
+                if talent.flash_freezeburn.enabled then
+                    applyBuff( "frost_mastery", 14, 6 )
+                    applyBuff( "excess_frost" )
+                    applyBuff( "fire_mastery", 14, 6 )
+                    applyBuff( "excess_fire" )
+                end
                 removeBuff( "frostfire_empowerment" )
             end
 
@@ -1234,10 +1238,12 @@ spec:RegisterAbilities( {
             if action.frostfire_bolt.cast_time > 0 then removeStack( "ice_floes" ) end
 
             if buff.frostfire_empowerment.up then
-                applyBuff( "frost_mastery", nil, 6 )
-                if talent.excess_frost.enabled then applyBuff( "excess_frost" ) end
-                applyBuff( "fire_mastery", nil, 6 )
-                if talent.excess_fire.enabled then applyBuff( "excess_fire" ) end
+                if talent.flash_freezeburn.enabled then
+                    applyBuff( "frost_mastery", 14, 6 )
+                    applyBuff( "excess_frost" )
+                    applyBuff( "fire_mastery", 14, 6 )
+                    applyBuff( "excess_fire" )
+                end
                 removeBuff( "frostfire_empowerment" )
             end
 
@@ -1305,15 +1311,6 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "frozen_orb" )
             if talent.freezing_rain.enabled then applyBuff( "freezing_rain" ) end
-            if talent.freezing_winds.enabled then
-                applyBuff( "freezing_winds" )
-                state:QueueAuraEvent( "freezing_winds", FreezingWinds, query_time + 3, "AURA_TICK" )
-                state:QueueAuraEvent( "freezing_winds", FreezingWinds, query_time + 6, "AURA_TICK" )
-                state:QueueAuraEvent( "freezing_winds", FreezingWinds, query_time + 9, "AURA_TICK" )
-                if talent.everlasting_frost.enabled then
-                    state:QueueAuraEvent( "freezing_winds", FreezingWinds, query_time + 12, "AURA_TICK" )
-                end
-            end
             if talent.permafrost_lances.enabled then applyBuff( "permafrost_lances" ) end
         end,
 
@@ -1447,12 +1444,10 @@ spec:RegisterAbilities( {
             if talent.frostfire_mastery.enabled then
                 if buff.excess_fire.up then
                     removeBuff( "excess_fire" )
-                    applyBuff( "brain_freeze" )
-                    if talent.perpetual_winter.enabled then gainCharges( "flurry", 1 ) else setCooldown( "flurry", 0 ) end
-                    if buff.frost_mastery.up and buff.frost_mastery.stacks == 5 then applyBuff( "excess_frost" ) end
+                    applyBuff( "excess_frost" )
+                    BrainFreeze()
                 end
             end
-
             removeDebuffStack( "target", "winters_chill" )
         end,
 
@@ -1709,7 +1704,7 @@ spec:RegisterAbilities( {
             return pet.water_elemental.alive, "requires a living water elemental"
         end,
         handler = function()
-            addStack( "brain_freeze" )
+            BrainFreeze()
             gainCharges( "flurry", 1 )
         end
     }
