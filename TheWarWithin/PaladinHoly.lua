@@ -1318,7 +1318,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.18 * ( buff.divine_favor.up and 0.5 or 1 ) * ( buff.infusion_of_light.up and 0.7 or 1 ) end,
+        spend = function() return 0.06 * ( buff.divine_favor.up and 0.5 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,

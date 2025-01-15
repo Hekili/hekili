@@ -1436,6 +1436,8 @@ spec:RegisterAbilities( {
             if talent.lights_guidance.enabled then
                 applyBuff( "hammer_of_light_ready" )
             end
+
+            if talent.undisputed_ruling.enabled then gain( 3, "holy_power" ) end
         end,
 
         bind = "hammer_of_light"
