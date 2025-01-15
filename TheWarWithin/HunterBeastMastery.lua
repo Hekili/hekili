@@ -155,153 +155,166 @@ spec:RegisterResource( Enum.PowerType.Focus, {
 spec:RegisterTalents( {
     -- Hunter
     binding_shackles        = { 102388, 321468, 1 }, -- Targets stunned by Binding Shot, knocked back by High Explosive Trap, knocked up by Implosive Trap, incapacitated by Scatter Shot, or stunned by Intimidation deal 10% less damage to you for 8 sec after the effect ends.
-    binding_shot            = { 102386, 109248, 1 }, -- Fires a magical projectile, tethering the enemy and any other enemies within 5 yds for 10 sec, stunning them for 3 sec if they move more than 5 yds from the arrow. Targets stunned by Binding Shot deal 10% less damage to you for 8 sec after the effect ends.
+    binding_shot            = { 102386, 109248, 1 }, -- Fires a magical projectile, tethering the enemy and any other enemies within 5 yds for 10 sec, stunning them for 4 sec if they move more than 5 yds from the arrow. Targets stunned by Binding Shot deal 10% less damage to you for 8 sec after the effect ends.
     blackrock_munitions     = { 102392, 462036, 1 }, -- The damage of Explosive Shot is increased by 8%.
     born_to_be_wild         = { 102416, 266921, 1 }, -- Reduces the cooldowns of Aspect of the Cheetah, and Aspect of the Turtle by 30 sec.
-    bursting_shot           = { 102421, 186387, 1 }, -- Fires an explosion of bolts at all enemies in front of you, knocking them back, snaring them by 50% for 6 sec, and dealing 481 Physical damage.
+    bursting_shot           = { 102421, 186387, 1 }, -- Fires an explosion of bolts at all enemies in front of you, knocking them back, snaring them by 50% for 6 sec, and dealing 4,466 Physical damage.
     camouflage              = { 102414, 199483, 1 }, -- You and your pet blend into the surroundings and gain stealth for 1 min. While camouflaged, you will heal for 2% of maximum health every 1 sec.
+    catch_out               = {  94990, 451516, 1 }, -- When a target affected by Sentinel deals damage to you, they are rooted for 3 sec. May only occur every 1 min per target.
     concussive_shot         = { 102407,   5116, 1 }, -- Dazes the target, slowing movement speed by 50% for 6 sec. Cobra Shot will increase the duration of Concussive Shot on the target by 3.0 sec.
     counter_shot            = { 102292, 147362, 1 }, -- Interrupts spellcasting, preventing any spell in that school from being cast for 3 sec.
+    crescent_steel          = {  94980, 451530, 1 }, -- Targets you damage below 20% health gain a stack of Sentinel every 3 sec.
     deathblow               = { 102410, 343248, 1 }, -- Kill Command has a 10% chance to grant Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     devilsaur_tranquilizer  = { 102415, 459991, 1 }, -- If Tranquilizing Shot removes only an Enrage effect, its cooldown is reduced by 5 sec.
     disruptive_rounds       = { 102395, 343244, 1 }, -- When Tranquilizing Shot successfully dispels an effect or Counter Shot interrupts a cast, gain 10 Focus.
+    dont_look_back          = {  94989, 450373, 1 }, -- Each time Sentinel deals damage to an enemy you gain an absorb shield equal to 1.0% of your maximum health, up to 10%.
     emergency_salve         = { 102389, 459517, 1 }, -- Feign Death and Aspect of the Turtle removes poison and disease effects from you.
     entrapment              = { 102403, 393344, 1 }, -- When Tar Trap is activated, all enemies in its area are rooted for 4 sec. Damage taken may break this root.
-    explosive_shot          = { 102420, 212431, 1 }, -- Fires an explosive shot at your target. After 3 sec, the shot will explode, dealing 28,688 Fire damage to all enemies within 8 yds. Deals reduced damage beyond 5 targets.
+    explosive_shot          = { 102420, 212431, 1 }, -- Fires an explosive shot at your target. After 3 sec, the shot will explode, dealing 246,472 Fire damage to all enemies within 8 yds. Deals reduced damage beyond 5 targets.
+    extrapolated_shots      = {  94973, 450374, 1 }, -- When you apply Sentinel to a target not affected by Sentinel, you apply 1 additional stack.
+    eyes_closed             = {  94970, 450381, 1 }, -- For 8 sec after activating Coordinated Assault, all abilities are guaranteed to apply Sentinel.
     ghillie_suit            = { 102385, 459466, 1 }, -- You take 20% reduced damage while Camouflage is active. This effect persists for 3 sec after you leave Camouflage.
-    high_explosive_trap     = { 102739, 236776, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 4,845 Fire damage and knocking all enemies away. Limit 1. Trap will exist for 1 min. Targets knocked back by High Explosive Trap deal 10% less damage to you for 8 sec after being knocked back.
+    high_explosive_trap     = { 102739, 236776, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 44,960 Fire damage and knocking all enemies away. Limit 1. Trap will exist for 1 min. Targets knocked back by High Explosive Trap deal 10% less damage to you for 8 sec after being knocked back.
     hunters_avoidance       = { 102423, 384799, 1 }, -- Damage taken from area of effect attacks reduced by 5%.
-    implosive_trap          = { 102739, 462031, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 4,845 Fire damage and knocking all enemies up. Limit 1. Trap will exist for 1 min. Targets knocked up by Implosive Trap deal 10% less damage to you for 8 sec after being knocked up.
+    implosive_trap          = { 102739, 462031, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 44,960 Fire damage and knocking all enemies up. Limit 1. Trap will exist for 1 min. Targets knocked up by Implosive Trap deal 10% less damage to you for 8 sec after being knocked up.
     improved_traps          = { 102418, 343247, 1 }, -- The cooldown of Tar Trap, High Explosive Trap, Implosive Trap, and Freezing Trap is reduced by 5.0 sec.
     intimidation            = { 102397,  19577, 1 }, -- Commands your pet to intimidate the target, stunning it for 5 sec. Targets stunned by Intimidation deal 10% less damage to you for 8 sec after the effect ends.
+    invigorating_pulse      = {  94971, 450379, 1 }, -- Each time Sentinel deals damage to an enemy it has an up to 15% chance to generate 5 Focus. Chances decrease with each additional Sentinel currently imploding applied to enemies.
     keen_eyesight           = { 102409, 378004, 2 }, -- Critical strike chance increased by 2%.
-    kill_shot               = { 102378,  53351, 1 }, -- You attempt to finish off a wounded target, dealing 35,332 Physical damage. Only usable on enemies with less than 20% health. Kill Shot deals 10% increased critical damage.
-    kindling_flare          = { 102425, 459506, 1 }, -- Stealthed enemies revealed by Flare remain revealed for 3 sec after exiting the flare.
+    kill_shot               = { 102378,  53351, 1 }, -- You attempt to finish off a wounded target, dealing 273,203 Physical damage. Only usable on enemies with less than 20% health
+    kindling_flare          = { 102425, 459506, 1 }, -- Flare's radius is increased by 50%.
     kodo_tranquilizer       = { 102415, 459983, 1 }, -- Tranquilizing Shot removes up to 1 additional Magic effect from up to 2 nearby targets.
     lone_survivor           = { 102391, 388039, 1 }, -- Reduce the cooldown of Survival of the Fittest by 30 sec, and increase its duration by 2.0 sec. Reduce the cooldown of Counter Shot and Muzzle by 2 sec.
+    lunar_storm             = {  94978, 450385, 1 }, -- Every 30 sec your next Wildfire Bomb launches a celestial arrow that conjures a 12 yd radius Lunar Storm at the target's location dealing 84,698 Arcane damage. For the next 12 sec, a random enemy affected by Sentinel within your Lunar Storm gets struck for 79,404 Arcane damage every 0.4 sec. Any target struck by this effect takes 10% increased damage from you and your pet for 8 sec. 
     misdirection            = { 102419,  34477, 1 }, -- Misdirects all threat you cause to the targeted party or raid member, beginning with your next attack within 30 sec and lasting for 8 sec.
     moment_of_opportunity   = { 102426, 459488, 1 }, -- When a trap triggers, you gain 30% movement speed for 3 sec. Can only occur every 1 min.
     natural_mending         = { 102401, 270581, 1 }, -- Every 10 Focus you spend reduces the remaining cooldown on Exhilaration by 1.0 sec.
-    no_hard_feelings        = { 102412, 459546, 1 }, -- When Misdirection targets your pet, it reduces the damage they take by 50% for 5 sec.
+    no_hard_feelings        = { 102412, 459546, 1 }, -- When Misdirection targets your pet, it reduces the damage they take by 50% for 5 sec. The cooldown of Misdirection is reduced by 5 sec.
+    overwatch               = {  94980, 450384, 1 }, -- All Sentinel debuffs implode when a target affected by more than 3 stacks of your Sentinel falls below 20% health. This effect can only occur once every 15 sec per target.
     padded_armor            = { 102406, 459450, 1 }, -- Survival of the Fittest gains an additional charge.
     pathfinding             = { 102404, 378002, 1 }, -- Movement speed increased by 4%.
     posthaste               = { 102411, 109215, 1 }, -- Disengage also frees you from all movement impairing effects and increases your movement speed by 50% for 4 sec.
     quick_load              = { 102413, 378771, 1 }, -- When you fall below 40% health, Bursting Shot and Scatter Shot have their cooldown immediately reset. This can only occur once every 25 sec.
     rejuvenating_wind       = { 102381, 385539, 1 }, -- Maximum health increased by 8%, and Exhilaration now also heals you for an additional 12.0% of your maximum health over 8 sec.
+    release_and_reload      = {  94958, 450376, 1 }, -- When you apply Sentinel on a target, you have a 15% chance to apply a second stack.
     roar_of_sacrifice       = { 102405,  53480, 1 }, -- Instructs your pet to protect a friendly target from critical strikes, making attacks against that target unable to be critical strikes, but 10% of all damage taken by that target is also taken by the pet. Lasts 12 sec.
     scare_beast             = { 102382,   1513, 1 }, -- Scares a beast, causing it to run in fear for up to 20 sec. Damage caused may interrupt the effect. Only one beast can be feared at a time.
-    scatter_shot            = { 102421, 213691, 1 }, -- A short-range shot that deals 377 damage, removes all harmful damage over time effects, and incapacitates the target for 4 sec. Any damage caused will remove the effect. Turns off your attack when used. Targets incapacitated by Scatter Shot deal 10% less damage to you for 8 sec after the effect ends.
+    scatter_shot            = { 102421, 213691, 1 }, -- A short-range shot that deals 3,499 damage, removes all harmful damage over time effects, and incapacitates the target for 4 sec. Any damage caused will remove the effect. Turns off your attack when used. Targets incapacitated by Scatter Shot deal 10% less damage to you for 8 sec after the effect ends.
     scouts_instincts        = { 102424, 459455, 1 }, -- You cannot be slowed below 80% of your normal movement speed while Aspect of the Cheetah is active.
     scrappy                 = { 102408, 459533, 1 }, -- Casting Kill Command reduces the cooldown of Intimidation and Binding Shot by 0.5 sec.
+    sentinel                = {  94976, 450369, 1 }, -- Your attacks have a chance to apply Sentinel on the target, stacking up to 10 times. While Sentinel stacks are higher than 3, applying Sentinel has a chance to trigger an implosion, causing a stack to be consumed on the target every sec to deal 66,318 Arcane damage. 
+    sentinel_precision      = {  94981, 450375, 1 }, -- Raptor Strike, Mongoose Bite and Wildfire Bomb deal 10% increased damage. 
+    sentinel_watch          = {  94970, 451546, 1 }, -- Whenever a Sentinel deals damage, the cooldown of Coordinated Assault is reduced by 1 sec, up to 15 sec.
     serrated_tips           = { 102384, 459502, 1 }, -- You gain 5% more critical strike from critical strike sources.
-    specialized_arsenal     = { 102390, 459542, 1 }, -- Kill Command deals 10% increased damage.
+    sideline                = {  94990, 450378, 1 }, -- When Sentinel starts dealing damage, the target is snared by 40% for 3 sec.
+    specialized_arsenal     = { 102390, 459542, 1 }, -- Kill Command deals 10% increased damage. 
     survival_of_the_fittest = { 102422, 264735, 1 }, -- Reduces all damage you and your pet take by 30% for 8 sec.
+    symphonic_arsenal       = {  94965, 450383, 1 }, -- Multi-Shot and Butchery discharge arcane energy from all targets affected by your Sentinel, dealing 76,228 Arcane damage to up to 5 targets within 8 yds of your Sentinel targets.
     tar_trap                = { 102393, 187698, 1 }, -- Hurls a tar trap to the target location that creates a 8 yd radius pool of tar around itself for 30 sec when the first enemy approaches. All enemies have 50% reduced movement speed while in the area of effect. Limit 1. Trap will exist for 1 min.
     tarcoated_bindings      = { 102417, 459460, 1 }, -- Binding Shot's stun duration is increased by 1 sec.
-    territorial_instincts   = { 102394, 459507, 1 }, -- Casting Intimidation without a pet now summons one from your stables to intimidate the target. Additionally, the cooldown of Intimidation is reduced by 5 sec.
+    territorial_instincts   = { 102394, 459507, 1 }, -- The cooldown of Intimidation is reduced by 10 sec.
     trailblazer             = { 102400, 199921, 1 }, -- Your movement speed is increased by 30% anytime you have not attacked for 3 sec.
     tranquilizing_shot      = { 102380,  19801, 1 }, -- Removes 1 Enrage and 1 Magic effect from an enemy target. Successfully dispelling an effect generates 10 Focus.
     trigger_finger          = { 102396, 459534, 2 }, -- You and your pet have 5.0% increased attack speed. This effect is increased by 100% if you do not have an active pet.
     unnatural_causes        = { 102387, 459527, 1 }, -- Your damage over time effects deal 10% increased damage. This effect is increased by 50% on targets below 20% health.
-    wilderness_medicine     = { 102383, 343242, 1 }, -- Mend Pet heals for an additional 25% of your pet's health over its duration, and has a 25% chance to dispel a magic effect each time it heals your pet.
-
-    -- Dark Ranger
-    a_murder_of_crows       = { 102352, 459760, 1 }, -- Every 5 casts of Kill Command summons a Murder of Crows. A Murder of Crows
+    wilderness_medicine     = { 102383, 343242, 1 }, -- Natural Mending now reduces the cooldown of Exhilaration by an additional 0.5 sec. Mend Pet heals for an additional 25% of your pet's health over its duration, and has a 25% chance to dispel a magic effect each time it heals your pet.
+    
+    -- Beast Mastery
+    a_murder_of_crows       = { 102352, 459760, 1 }, -- Every 5 casts of Kill Command summons a Murder of Crows. A Murder of Crows Summons a flock of crows to attack your target, dealing 439,278 Physical damage over 15 sec.
     alpha_predator          = { 102368, 269737, 1 }, -- Kill Command now has 2 charges, and deals 15% increased damage.
     animal_companion        = { 102361, 267116, 1 }, -- Your Call Pet additionally summons the pet from the bonus slot in your stable. This pet will obey your Kill Command, but cannot use pet family abilities.
     aspect_of_the_beast     = { 102351, 191384, 1 }, -- Increases the damage and healing of your pet's abilities by 30%. Increases the effectiveness of your pet's Predator's Thirst, Endurance Training, and Pathfinding passives by 50%.
     barbed_scales           = { 102356, 469880, 1 }, -- Casting Cobra Shot reduces the cooldown of Barbed Shot by 2 sec.
-    barbed_shot             = { 102377, 217200, 1 }, -- Fire a shot that tears through your enemy, causing them to bleed for 47,694 damage over 14 sec and increases your critical strike chance by 2% for 14 sec, stacking up to 3 times. Sends your pet into a frenzy, increasing attack speed by 30% for 14 sec, stacking up to 3 times. Generates 20 Focus over 8 sec.
+    barbed_shot             = { 102377, 217200, 1 }, -- Fire a shot that tears through your enemy, causing them to bleed for 331,912 damage over 14 sec and increases your critical strike chance by 2% for 14 sec, stacking up to 3 times. Sends your pet into a frenzy, increasing attack speed by 30% for 14 sec, stacking up to 3 times. Generates 20 Focus over 8 sec.
     barbed_wrath            = { 102373, 231548, 1 }, -- Barbed Shot reduces the cooldown of Bestial Wrath by 12.0 sec.
-    barrage                 = { 102335, 120360, 1 }, -- Rapidly fires a spray of shots for 2.5 sec, dealing an average of 14,057 Physical damage to all nearby enemies in front of you. Usable while moving. Deals reduced damage beyond 8 targets. Grants Beast Cleave.
-    basilisk_collar         = { 102367, 459571, 2 }, -- Each damage over time effect on a target increases the damage they receive from your pet's attacks by 2%.
-    beast_cleave            = { 102341, 115939, 1 }, -- After you Multi-Shot, your pet's melee attacks also strike all nearby enemies for 90% of the damageand Kill Command strikes all nearby enemies for 90% of the damage for the next 6.0 sec. Deals reduced damage beyond 8 targets.
-    bestial_wrath           = { 102340,  19574, 1 }, -- Sends you and your pet into a rage, instantly dealing 16,755 Physical damage to its target, and increasing all damage you both deal by 25% for 15 sec. Removes all crowd control effects from your pet.
-    bloodshed               = { 102362, 321530, 1 }, -- Command your pet to tear into your target, causing your target to bleed for 13,962 over 18 sec and take 15% increased damage from your pet for 18 sec.
+    barrage                 = { 102335, 120360, 1 }, -- Rapidly fires a spray of shots for 2.6 sec, dealing an average of 260,871 Physical damage to all nearby enemies in front of you. Usable while moving. Deals reduced damage beyond 8 targets. Grants Beast Cleave.
+    beast_cleave            = { 102341, 115939, 1 }, -- After you Multi-Shot, your pet's melee attacks also strike all nearby enemies for 90% of the damage and Kill Command strikes all nearby enemies for 90% of the damage for the next 6.0 sec. Deals reduced damage beyond 8 targets.
+    bestial_wrath           = { 102340,  19574, 1 }, -- Sends you and your pet into a rage, instantly dealing 174,110 Physical damage to its target, and increasing all damage you both deal by 25% for 15 sec. Removes all crowd control effects from your pet. Bestial Wrath's remaining cooldown is reduced by 12 sec each time you use Barbed Shot.
+    bloodshed               = { 102362, 321530, 1 }, -- Command your pet to tear into your target, causing your target to bleed for 145,092 over 18 sec and take 15% increased damage from your pet for 18 sec.
     bloody_frenzy           = { 102339, 407412, 1 }, -- While Call of the Wild is active, your pets have the effects of Beast Cleave, and each time Call of the Wild summons a pet, all of your pets Stomp.
     brutal_companion        = { 102350, 386870, 1 }, -- When Barbed Shot causes Frenzy to stack up to 3, your pet will immediately use its special attack and deal 50% bonus damage.
     call_of_the_wild        = { 102336, 359844, 1 }, -- You sound the call of the wild, summoning 2 of your active pets for 20 sec. During this time, a random pet from your stable will appear every 4 sec to assault your target for 6 sec. Each time Call of the Wild summons a pet, the cooldown of Barbed Shot and Kill Command are reduced by 50%.
-    cobra_senses            = { 102344, 378244, 1 }, -- Cobra Shot Focus cost reduced by 5. Cobra Shot damage increased by 35%.
-    cobra_shot              = { 102354, 193455, 1 }, -- A quick shot causing 14,285 Physical damage. Reduces the cooldown of Kill Command by 1 sec.
+    cobra_senses            = { 102344, 378244, 1 }, -- Cobra Shot Focus cost reduced by 5. Cobra Shot damage increased by 35%. 
+    cobra_shot              = { 102354, 193455, 1 }, -- A quick shot causing 132,553 Physical damage. Reduces the cooldown of Kill Command by 1 sec.
     dire_beast              = { 102376, 120679, 1 }, -- Summons a powerful wild beast that attacks the target and roars, increasing your Haste by 5% for 8 sec. Generates 20 Focus.
-    dire_command            = { 102365, 378743, 1 }, -- Kill Command has a 30% chance to also summon a Dire Beast to attack your target for 8 sec.
-    dire_frenzy             = { 102337, 385810, 1 }, -- Dire Beast lasts an additional 2 sec and deals 60% increased damage.
-    explosive_venom         = { 102370, 459693, 1 }, -- Every 5 casts of Explosive Shot or Multi-Shot will apply Serpent Sting to targets hit.
+    dire_cleave             = { 102337, 1217524, 1 }, -- When summoned, Dire Beasts gain Beast Cleave at 100% effectiveness for 8.0 sec.
+    dire_command            = { 102365, 378743, 1 }, -- Kill Command has a 20% chance to also summon a Dire Beast to attack your target for 8 sec.
+    dire_frenzy             = { 102367, 385810, 2 }, -- Dire Beast lasts an additional 1 sec and deals 30% increased damage.
+    explosive_venom         = { 102370, 459693, 1 }, -- Every 3 casts of Explosive Shot or Multi-Shot will apply Serpent Sting to targets hit.
     go_for_the_throat       = { 102357, 459550, 1 }, -- Kill Command deals increased critical strike damage equal to 100% of your critical strike chance.
     hunters_prey            = { 102360, 378210, 1 }, -- Kill Shot will strike 1 additional target and deal 10% increased damage for each of your active pets. Stacks up to 5 times.
-    huntmasters_call        = { 102349, 459730, 1 }, -- Every 3 casts of Dire Beast sounds the Horn of Valor, summoning either Hati or Fenryr to battle. Hati Increases the damage of all your pets by 8%. Fenryr Pounces your primary target, inflicting a heavy bleed that deals 29,751 damage over 8 sec and grants you 8% Haste.
+    huntmasters_call        = { 102349, 459730, 1 }, -- Every 3 casts of Dire Beast sounds the Horn of Valor, summoning either Hati or Fenryr to battle. Hati Increases the damage of all your pets by 8%. Fenryr Pounces your primary target, inflicting a heavy bleed that deals 276,054 damage over 8 sec and grants you 8% Haste.
     kill_cleave             = { 102355, 378207, 1 }, -- While Beast Cleave is active, Kill Command now also strikes nearby enemies for 90% of damage dealt. Deals reduced damage beyond 8 targets.
-    kill_command            = { 102346,  34026, 1 }, -- Give the command to kill, causing your pet to savagely deal 12,926 Physical damage to the enemy.
+    kill_command            = { 102346,  34026, 1 }, -- Give the command to kill, causing your pet to savagely deal 127,922 Physical damage to the enemy.
     killer_cobra            = { 102375, 199532, 1 }, -- While Bestial Wrath is active, Cobra Shot resets the cooldown on Kill Command.
     killer_instinct         = { 102364, 273887, 2 }, -- Kill Command deals 50% increased damage against enemies below 35% health.
-    laceration              = { 102369, 459552, 1 }, -- When your pet attacks critically strike, they cause their target to bleed for 8% of the damage dealt over 6 sec.
+    laceration              = { 102369, 459552, 1 }, -- When your pet attacks critically strike, they cause their target to bleed for 8% of the damage dealt over 6 sec. 
     master_handler          = { 102372, 424558, 1 }, -- Each time Barbed Shot deals damage, the cooldown of Kill Command is reduced by 0.50 sec.
-    multishot               = { 102363,   2643, 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 3,450 Physical damage and triggering Beast Cleave. Deals reduced damage beyond 5 targets.
+    multishot               = { 102363,   2643, 1 }, -- Fires several missiles, hitting all nearby enemies within 8 yds of your current target for 64,032 Physical damage and triggering Beast Cleave. Deals reduced damage beyond 5 targets.
     pack_tactics            = { 102374, 321014, 1 }, -- Passive Focus generation increased by 125%.
     piercing_fangs          = { 102371, 392053, 1 }, -- While Bestial Wrath is active, your pet's critical damage dealt is increased by 35%.
+    poisoned_barbs          = { 102358, 1217535, 1 }, -- Direct damage from Barbed Shot has a 30% chance to explode on impact, dealing 94,109 Nature damage to nearby enemies. Damage reduced beyond 8 targets.
     savagery                = { 102353, 424557, 1 }, -- Kill Command damage is increased by 10%. Barbed Shot lasts 2.0 sec longer.
     scent_of_blood          = { 102342, 193532, 2 }, -- Activating Bestial Wrath grants 1 charge of Barbed Shot.
     serpentine_rhythm       = { 102359, 468701, 1 }, -- Casting Cobra Shot increases its damage by 25%. Stacks up to 4 times. Upon reaching 4 stacks, the bonus is removed and you gain 8% increased pet damage for 8 sec.
     shower_of_blood         = { 102366, 459729, 1 }, -- Bloodshed now hits 2 additional nearby targets.
     snakeskin_quiver        = { 102344, 468695, 1 }, -- Your auto shot has a 15% chance to also fire a Cobra Shot at your target.
-    stomp                   = { 102347, 199530, 1 }, -- When you cast Barbed Shot, your pet stomps the ground, dealing 3,955 Physical damage to all nearby enemies.
+    solitary_companion      = { 102361, 474746, 1 }, -- Your pet damage is increased by 35% and your pet is 10% larger.
+    stomp                   = { 102347, 199530, 1 }, -- When you cast Barbed Shot, your pet stomps the ground, dealing 55,764 Physical damage to its primary target and 55,764 Physical damage to all other nearby enemies.
     thrill_of_the_hunt      = { 102345, 257944, 1 }, -- Barbed Shot increases your critical strike chance by 2% for 14 sec, stacking up to 3 times.
     training_expert         = { 102348, 378209, 1 }, -- All pet damage dealt increased by 5%.
-    venomous_bite           = { 102366, 459667, 1 }, -- Bloodshed's pet damage bonus increased by100% and Kill Command deals 20% increased damage to the target.
-    venoms_bite             = { 102358, 459565, 1 }, -- Kill Shot applies Serpent Sting for 18 sec.  Serpent Sting Fire a shot that poisons your target, causing them to take 2,068 Nature damage instantly and an additional 13,426 Nature damage over 18 sec.
+    venomous_bite           = { 102366, 459667, 1 }, -- Bloodshed's pet damage bonus increased by 100% and Kill Command deals 20% increased damage to the target.
     war_orders              = { 102343, 393933, 1 }, -- Barbed Shot deals 10% increased damage, and applying Barbed Shot has a 50% chance to reset the cooldown of Kill Command.
     wild_call               = { 102338, 185789, 1 }, -- Your auto shot critical strikes have a 20% chance to reset the cooldown of Barbed Shot.
     wild_instincts          = { 102339, 378442, 1 }, -- While Call of the Wild is active, each time you Kill Command, your Kill Command target takes 3% increased damage from all of your pets, stacking up to 10 times.
-
-    -- Pack Leader
-    beast_of_opportunity    = {  94979, 445700, 1 }, -- Bestial Wrath calls on the pack, summoning a pet from your stable for 6 sec.
-    cornered_prey           = {  94984, 445702, 1 }, -- Disengage increases the range of all your attacks by 5 yds for 5 sec.
-    covering_fire           = {  94969, 445715, 1 }, -- Kill Command increases the duration of Beast Cleave by 1 sec.
-    cull_the_herd           = {  94967, 445717, 1 }, -- Kill Shot deals an additional 30% damage over 6 sec and increases the bleed damage you and your pet deal to the target by 25%.
-    den_recovery            = {  94972, 445710, 1 }, -- Aspect of the Turtle, Survival of the Fittest, and Mend Pet heal the target for 20% of maximum health over 4 sec. Duration increased by 1 sec when healing a target under 50% maximum health.
-    frenzied_tear           = {  94988, 445696, 1 }, -- Your pet's Basic Attack has a 20% chance to reset the cooldown and cause Kill Command to strike a second time for 30% of normal damage.
-    furious_assault         = {  94979, 445699, 1 }, -- Consuming Frenzied Tear has a 50% chance to reset the cooldown of Barbed Shot and deal 30% more damage.
-    howl_of_the_pack        = {  94992, 445707, 1 }, -- Your pet's Basic Attack critical strikes increase your critical strike damage by 5% for 8 sec stacking up to 3 times.
-    pack_assault            = {  94966, 445721, 1 }, -- Vicious Hunt and Pack Coordination now stack and apply twice, and are always active during Call of the Wild.
-    pack_coordination       = {  94985, 445505, 1 }, -- Attacking with Vicious Hunt instructs your pet to strike with their Basic Attack along side your next Barbed Shot.
-    scattered_prey          = {  94969, 445768, 1 }, -- Multi-Shot increases the damage of your next Multi-Shot by 25%.
-    tireless_hunt           = {  94984, 445701, 1 }, -- Aspect of the Cheetah now increases movement speed by 15% for another 8 sec.
-    vicious_hunt            = {  94991, 445404, 1, "pack_leader" }, -- Kill Command prepares you to viciously attack in coordination with your pet, dealing an additional 24,341 Physical damage with your next Kill Command.
-    wild_attacks            = {  94962, 445708, 1 }, -- Every third pet Basic Attack is a guaranteed critical strike, with damage further increased by critical strike chance.
-
+    
     -- Dark Ranger
-    banshees_mark           = {  94957, 467902, 1 }, -- Murder of Crows now deals Shadow damage. Black Arrow's initial damage has a 25% chance to summon a Murder of Crows on your target.  A Murder of Crows
+    banshees_mark           = {  94957, 467902, 1 }, -- Murder of Crows now deals Shadow damage. Black Arrow's initial damage has a 25% chance to summon a Murder of Crows on your target.  A Murder of Crows Summons a flock of crows to attack your target, dealing 439,278 Physical damage over 15 sec.
     black_arrow             = {  94987, 466932, 1, "dark_ranger" }, -- Your Kill Shot is replaced with Black Arrow.  Black Arrow You attempt to finish off a wounded target, dealing 28,333 Shadow damage and 2,324 Shadow damage over 10 sec. Only usable on enemies above 80% health or below 20% health.
     bleak_arrows            = {  94961, 467749, 1 }, -- Your auto shot now deals Shadow damage, allowing it to bypass armor. Your auto shot has a 20% chance to grant Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
-    bleak_powder            = {  94974, 467911, 1 }, -- Casting Black Arrow while Beast Cleave is active causes Black Arrow to explode upon hitting a target, dealing 24,299 Shadow damage to nearby enemies.
+    bleak_powder            = {  94974, 467911, 1 }, -- Casting Black Arrow while Beast Cleave is active causes Black Arrow to explode upon hitting its target, dealing 474,311 Shadow damage to other nearby enemies.
     dark_chains             = {  94960, 430712, 1 }, -- While in combat, Disengage will chain the closest target to the ground, causing them to move 40% slower until they move 8 yards away.
     ebon_bowstring          = {  94986, 467897, 1 }, -- Casting Black Arrow has a 15% chance to grant Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     embrace_the_shadows     = {  94959, 430704, 1 }, -- You heal for 15% of all Shadow damage dealt by you or your pets.
     phantom_pain            = {  94986, 467941, 1 }, -- When Kill Command damages a target affected by Black Arrow, 8% of the damage dealt is replicated to each other unit affected by Black Arrow.
-    shadow_dagger           = {  94960, 467741, 1 }, -- While in combat, Disengage releases a fan of shadow daggers, dealing 42 shadow damage per second and reducing affected target's movement speed by 30% for 6 sec.
+    shadow_dagger           = {  94960, 467741, 1 }, -- While in combat, Disengage releases a fan of shadow daggers, dealing 392 Shadow damage per second and reducing affected target's movement speed by 30% for 6 sec.
     shadow_hounds           = {  94983, 430707, 1 }, -- Each time Black Arrow deals damage, you have a small chance to manifest a Dark Hound to charge to your target and deal Shadow damage for 8 sec. Whenever you summon a Dire Beast, you have a 25% chance to also summon a Shadow Hound.
-    shadow_surge            = {  94982, 467936, 1 }, -- Periodic damage from Black Arrow has a small chance to erupt in a burst of darkness, dealing 13,692 Shadow damage to all enemies near the target. Damage reduced beyond 8 targets.
+    shadow_surge            = {  94982, 467936, 1 }, -- Periodic damage from Black Arrow has a small chance to erupt in a burst of darkness, dealing 63,523 Shadow damage to all enemies near the target. Damage reduced beyond 8 targets.
     smoke_screen            = {  94959, 430709, 1 }, -- Exhilaration grants you 3 sec of Survival of the Fittest. Survival of the Fittest activates Exhilaration at 50% effectiveness.
     soul_drinker            = {  94983, 469638, 1 }, -- When an enemy affected by Black Arrow dies, you have a 10% chance to gain Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     the_bell_tolls          = {  94968, 467644, 1 }, -- Black Arrow is now usable on enemies with greater than 80% health or less than 20% health.
-    withering_fire          = {  94993, 466990, 1 }, -- Every 3 casts of Bestial Wrath, you surrender to darkness for 12 sec If you would gain Deathblow while under the effects of Withering Fire, you instead instantly fire a Black Arrow at your target and 2 additional Black Arrows at nearby targets at 50% effectiveness.
+    withering_fire          = {  94993, 466990, 1 }, -- Every 3 casts of Bestial Wrath, you surrender to darkness for 12 sec, granting you Deathblow and enabling you to cast Black Arrow regardless of your enemy's health. Casting Black Arrow while under the effects of Withering Fire causes you to additionally fire a barrage of 2 additional Black Arrows at nearby targets at 50% effectiveness.
+    
+    -- Pack Leader
+    better_together         = {  94962, 472357, 1 }, -- Howl of the Pack Leader's cooldown is reduced to 25 sec. Your pets gain an extra 5% of your attack power.
+    dire_summons            = {  94992, 472352, 1 }, -- Kill Command reduces the cooldown of Howl of the Pack Leader by 1.0 sec. Cobra Shot reduces the cooldown of Howl of the Pack Leader by 1.0 sec.
+    envenomed_fangs         = {  94972, 472524, 1 }, -- Initial damage from your Bear will consume Serpent Sting from up to 8 nearby targets, dealing 100% of its remaining damage instantly.
+    fury_of_the_wyvern      = {  94984, 472550, 1 }, -- Your pet's attacks increase your Wyvern's damage bonus by 1%, up to 10%. Casting Kill Command extends the duration of your Wyvern by 1.0 sec, up to 10 additional sec.
+    hogstrider              = {  94988, 472639, 1 }, --  Each time your Boar deal damage, the damage of your next Cobra Shot is increased by 25% and Cobra Shot strikes 1 additional target. Stacks up to 4 times.
+    horsehair_tether        = {  94979, 472729, 1 }, -- When an enemy is stunned by Binding Shot, it is dragged to Binding Shot's center.
+    howl_of_the_pack_leader = {  94991, 471876, 1, "pack_leader" }, -- Every 25 sec, your next Kill Command summons the aid of a Beast.  Bear A Bear leaps into the fray, rending the flesh of your enemies, dealing 508,191 damage over 10 sec to up to 8 nearby enemies.  Wyvern A Wyvern descends from the skies, letting out a battle cry that increases the damage of you and your pets by 10% for 15 sec.  Boar A Boar charges through your target 3 times, dealing 493,017 physical damage to the primary target and 197,207 damage to up to 8 nearby enemies.
+    lead_from_the_front     = {  94966, 472741, 1 }, -- Casting Bestial Wrath causes your next Kill Command to summon a Beast and increases the damage dealt by your Beasts by 25% for 12 sec.
+    no_mercy                = {  94969, 472660, 1 }, -- Damage from your Kill Shot sends your pets into a rage, causing all active pets within 20 yds and your Bear to pounce to the target and attack it.
+    pack_mentality          = {  94985, 472358, 1 }, -- Howl of the Pack Leader increases the damage of your Kill Command by 50%. Summoning a Beast reduces the cooldown of Barbed Shot by 18.0 sec.
+    shell_cover             = {  94967, 472707, 1 }, -- When dropping below 40% health, summon the aid of a Turtle, reducing the damage you take by 10% for 6 sec. This effect can only occur once every 2 min.
+    slicked_shoes           = {  94979, 472719, 1 }, -- When Disengage removes a movement impairing effect, its cooldown is reduced by 4 sec.
+    ursine_fury             = {  94972, 472476, 1 }, -- Your Bear's periodic damage has a 10% chance to reduce the cooldown of Kill Command by 1.0 sec.
 } )
-
 
 -- PvP Talents
-spec:RegisterPvpTalents( {
-    chimaeral_sting     = 3604, -- (356719) Stings the target, dealing 12,678 Nature damage and initiating a series of venoms. Each lasts 3 sec and applies the next effect after the previous one ends.  Scorpid Venom: 90% reduced movement speed.  Spider Venom: Silenced.  Viper Venom: 20% reduced damage and healing.
-    diamond_ice         = 5534, -- (203340)
-    dire_beast_basilisk =  825, -- (205691) Summons a slow moving basilisk near the target for 30 sec that attacks the target for heavy damage.
+spec:RegisterPvpTalents( { 
+    chimaeral_sting     = 3604, -- (356719) Stings the target, dealing 117,636 Nature damage and initiating a series of venoms. Each lasts 3 sec and applies the next effect after the previous one ends.  Scorpid Venom: 90% reduced movement speed.  Spider Venom: Silenced.  Viper Venom: 20% reduced damage and healing.
+    diamond_ice         = 5534, -- (203340) Victims of Freezing Trap can no longer be damaged or healed. Freezing Trap is now undispellable, but has a 5 sec duration.
+    dire_beast_basilisk =  825, -- (1218223) Call of the Wild additionally summons a slow moving basilisk near your target for 30 sec that attacks the target for heavy damage.
     dire_beast_hawk     =  824, -- (208652) Summons a hawk to circle the target area, attacking all targets within 10 yards over the next 10 sec.
-    hunting_pack        = 3730, -- (203235)
-    interlope           = 1214, -- (248518) Misdirection now causes the next 3 hostile spells cast on your target within 10 sec to be redirected to your pet, but its cooldown is increased by 15 sec. Your pet must be within 20 yards of the target for spells to be redirected.
-    kindred_beasts      = 5444, -- (356962)
-    survival_tactics    = 3599, -- (202746)
-    the_beast_within    =  693, -- (356976)
+    explosive_powder    = 5689, -- (1218150) Bursting Shot now also knocks you back and snares enemies by an additional 20%.
+    hunting_pack        = 3730, -- (203235) Aspect of the Cheetah has 50% reduced cooldown and grants its effects to allies within 15 yds.
+    interlope           = 1214, -- (248518) Misdirection now causes the next 3 hostile spells cast on your target within 10 sec to be redirected to your pet, but its cooldown is increased by 15 sec. Your pet must be within 20 yards of the target for spells to be redirected. 
+    kindred_beasts      = 5444, -- (356962) 
+    survival_tactics    = 3599, -- (202746) Feign Death reduces damage taken by 90% for 2 sec.
+    the_beast_within    =  693, -- (356976) 
     wild_kingdom        = 5441, -- (356707) Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
 } )
-
 
 -- Auras
 spec:RegisterAuras( {
