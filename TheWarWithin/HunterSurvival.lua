@@ -763,21 +763,33 @@ local HowlOfThePackLeaderHandler = setfenv( function()
 
 end, state )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229271, 229272, 229274, 229270, 229273 )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/spell=1218033
+    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
+    jackpot = {
+        id = 1218033,
+        duration = 10,
+        max_stack = 1,
+    },
 
+} )
+
+-- Dragonflight
 spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391, 217183, 217185, 217181, 217182, 217184 )
 spec:RegisterAura( "bestial_barrage", {
     id = 394388,
     duration = 15,
     max_stack = 1
 } )
-
 spec:RegisterGear( "tier30", 202482, 202480, 202479, 202478, 202477 )
 spec:RegisterAura( "shredded_armor", {
     id = 410167,
     duration = 8,
     max_stack = 1
 } )
-
 spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221 )
 spec:RegisterAuras( {
     fury_strikes = {

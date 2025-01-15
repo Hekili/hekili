@@ -690,13 +690,21 @@ spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, uni
 end )
 
 
--- Tier 31
+-- The War Within
+spec:RegisterGear( "tww2", 229290, 229288, 229289, 229287, 229292 )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/spell=1218439
+    -- Winning Streak!  
+    winning_streak = {
+        id = 1217078,
+        duration = 3600,
+        max_stack = 10,
+    },
+} )
+
+-- Dragonflight
 spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207239, 217208, 217210, 217206, 217207, 217209 )
--- 422908: Rogue Outlaw 10.2 Class Set 4pc
--- TODO: Roll the Bones additionally refreshes a random Roll the Bones combat enhancement buff you currently possess.
-
-
--- Tier 30
 spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )
 spec:RegisterAuras( {
     soulrip = {
@@ -710,8 +718,6 @@ spec:RegisterAuras( {
         max_stack = 1
     }
 } )
-
--- Tier Set
 spec:RegisterGear( "tier29", 200372, 200374, 200369, 200371, 200373 )
 spec:RegisterAuras( {
     vicious_followup = {

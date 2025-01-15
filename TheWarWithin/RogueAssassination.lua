@@ -697,6 +697,25 @@ local ExpireSepsis = setfenv( function ()
     end
 end, state )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229290, 229288, 229289, 229287, 229292 )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/spell=1218439
+    -- Winning Streak!  
+    winning_streak = {
+        id = 1218439,
+        duration = 3600,
+        max_stack = 10,
+    },
+    -- 4-set
+    cashout = {
+        id = 1219264,
+        duration = 4,
+        max_stack = 1,
+    },
+} )
+
 
 -- Tier 31
 spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207239, 217208, 217210, 217206, 217207, 217209 )
