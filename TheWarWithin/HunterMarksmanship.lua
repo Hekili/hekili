@@ -1298,7 +1298,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
         hidden = true,
-        readyTime = buff.lunar_storm_cooldown.expires
+        readyTime = buff.lunar_storm_cooldown.down
     },
 
     -- Talent: Fires several missiles, hitting your current target and all enemies within $A1 yards for $s1 Physical damage. Deals reduced damage beyond $2643s1 targets.$?s260393[    Multi-Shot has a $260393h% chance to reduce the cooldown of Rapid Fire by ${$260393m1/10}.1 sec.][]

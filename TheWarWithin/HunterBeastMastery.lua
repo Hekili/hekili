@@ -791,9 +791,31 @@ spec:RegisterAuras( {
         duration = 3,
         max_stack = 1,
     },
-    howl_of_the_pack_leader = {
+    -- https://www.wowhead.com/spell=472640
+    -- Hogstrider Your next Cobra Shot strikes X additional targets and its damage is increased by 100%.  
+    hogstrider = {
+        id = 472640,
+        duration = 20,
+        max_stack = 4,
+    },
+    howl_of_the_pack_leader_cooldown = {
         id = 471877,
-        duration = 30,
+        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        max_stack = 1,
+    },
+    howl_of_the_pack_leader_bear = {
+        id = 472325,
+        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        max_stack = 1,
+    },
+    howl_of_the_pack_leader_pig = {
+        id = 472324,
+        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        max_stack = 1,
+    },
+    howl_of_the_pack_leader_wyvern = {
+        id = 471878,
+        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
         max_stack = 1,
     },
     -- Talent: Your Kill Shot strikes $s1 more targets and deals $s3% more damage.
@@ -819,6 +841,13 @@ spec:RegisterAuras( {
         id = 259277,
         duration = 8,
         max_stack = 1
+    },
+    -- https://www.wowhead.com/spell=472743
+    -- Lead From the Front The damage of your Pack Leader Beasts is increased by 25%.  
+    lead_from_the_front = {
+        id = 472743,
+        duration = 12,
+        max_stack = 1,
     },
     -- Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=263423
@@ -954,12 +983,6 @@ spec:RegisterAuras( {
         id = 213691,
         duration = 4,
         type = "Ranged",
-        max_stack = 1
-    },
-
-    scattered_prey = {
-        id = 461886,
-        duration = 20,
         max_stack = 1
     },
 
@@ -1276,6 +1299,30 @@ local CallOfTheWildCDR = setfenv( function()
     gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge/2)
 end, state )
 
+local HowlOfThePackLeaderHandler = setfenv( function()
+    
+    local bwSummon = ( buff.howl_of_the_pack_leader_bear.up or buff.howl_of_the_pack_leader_pig.up or buff.howl_of_the_pack_leader_wyvern.up )
+
+    if buff.howl_of_the_pack_leader_cooldown.up then
+        if bwSummon then -- Bestial Wrath version
+           removeBuff( "howl_of_the_pack_leader_bear" )
+           removeBuff( "howl_of_the_pack_leader_pig" )
+           removeBuff( "howl_of_the_pack_leader_wyvern" )
+           reduceCooldown( "howl_of_the_pack_leader", 1 )
+           reduceCooldown( "barbed_shot", 18 )
+        else -- no summons at all
+            reduceCooldown( "howl_of_the_pack_leader", 1 )
+        end
+    else -- Regular summon
+        setCooldown( "howl_of_the_pack_leader", spec.abilities.howl_of_the_pack_leader.cooldown )
+        applyBuff( "howl_of_the_pack_leader_cooldown" )
+        removeBuff( "howl_of_the_pack_leader_bear" )
+        removeBuff( "howl_of_the_pack_leader_pig" )
+        removeBuff( "howl_of_the_pack_leader_wyvern" )
+        reduceCooldown( "barbed_shot", 18 )
+    end
+
+end, state )
 
 spec:RegisterHook( "reset_precast", function()
     if debuff.tar_trap.up then
@@ -1431,7 +1478,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = 60,
+        spend = 40,
         spendType = "focus",
 
         talent = "barrage",
@@ -1604,6 +1651,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+
+            if talent.dire_summons.enabled then reduceCooldown( "howl_of_the_pack_leader", 1 ) end
 
             if talent.serpentine_rhythm.enabled then
                 if buff.serpentine_rhythm.stacks == 3 then
@@ -1928,6 +1977,17 @@ spec:RegisterAbilities( {
         end,
     },
 
+    howl_of_the_pack_leader = {
+        cast = 0,
+        cooldown = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        gcd = "off",
+        hidden = true,
+        handler = function ()
+
+        end,
+
+    },
+
     -- Apply Hunter's Mark to the target, causing the target to always be seen and tracked by the Hunter.; Hunter's Mark increases all damage dealt to targets above $s3% health by $428402s1%. Only one Hunter's Mark damage increase can be applied to a target at a time.; Hunter's Mark can only be applied to one target at a time. When applying Hunter's Mark in combat, the ability goes on cooldown for ${$s5/1000} sec.
     hunters_mark = {
         id = 257284,
@@ -2026,6 +2086,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
 
+            if talent.howl_of_the_pack_leader.enabled then HowlOfThePackLeaderHandler() end
 
             if talent.a_murder_of_crows.enabled then
                 if buff.a_murder_of_crows_stack.stack == 4 then
@@ -2039,8 +2100,6 @@ spec:RegisterAbilities( {
             if talent.wild_instincts.enabled and buff.call_of_the_wild.up then
                 applyDebuff( "target", "wild_instincts", nil, buff.wild_instincts.stack + 1 )
             end
-
-            if talent.covering_fire.enabled and buff.beast_cleave.up then buff.beast_cleave.expires = buff.beast_cleave.expires + 1 end
 
             --- Legacy / PvP Stuff
             if legendary.flamewakers_cobra_sting.enabled then removeBuff( "flamewakers_cobra_sting" ) end
@@ -2143,13 +2202,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "beast_cleave" )
-
-            if talent.scattered_prey.enabled then
-                if buff.scattered_prey.up then
-                    removeBuff( "scattered_prey" )
-                else applyBuff( "scattered_prey" )
-                end
-            end
 
             -- Legacy / PvP Stuff
             if set_bonus.tier30_4pc > 0 then reduceCooldown( "bestial_wrath", 1 ) end

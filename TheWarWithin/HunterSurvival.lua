@@ -305,7 +305,7 @@ spec:RegisterAuras( {
     },
     -- Bleeding for $w1 damage every $t1 sec.
     cull_the_herd = {
-        id = 449233,
+        id = 1217430,
         duration = 6.0,
         tick_time = 2.0,
         max_stack = 1,
@@ -381,10 +381,12 @@ spec:RegisterAuras( {
         duration = 360,
         max_stack = 1
     },
-    furious_assault = {
-        id = 448814,
+    -- https://www.wowhead.com/spell=1217377
+    -- Frenzy Strikes Attack speed increased by 25%.  
+    frenzy_strikes = {
+        id = 1217377,
         duration = 12,
-        max_stack = 1
+        max_stack = 1,
     },
     -- Talent: Rooted.
     -- https://wowhead.com/beta/spell=190925
@@ -395,11 +397,25 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = 190927
     },
-    -- Critical damage dealt increased by $s1%.
-    howl_of_the_pack = {
-        id = 462515,
-        duration = 8.0,
-        max_stack = 3,
+    howl_of_the_pack_leader_cooldown = {
+        id = 471877,
+        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        max_stack = 1,
+    },
+    howl_of_the_pack_leader_bear = {
+        id = 472325,
+        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        max_stack = 1,
+    },
+    howl_of_the_pack_leader_pig = {
+        id = 472324,
+        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        max_stack = 1,
+    },
+    howl_of_the_pack_leader_wyvern = {
+        id = 471878,
+        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        max_stack = 1,
     },
     -- The next hostile spell cast on the target will cause hostile spells for the next 3 sec. to be redirected to your pet. Your pet must be within 10 yards of the target for spells to be redirected.
     interlope = {
@@ -437,6 +453,17 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 10,
         copy = 273286
+    },
+    -- Damage taken from $@auracaster and their pets increased by $w1%.
+    lunar_storm = {
+        id = 450884,
+        duration = 8.0,
+        max_stack = 1,
+    },
+    lunar_storm_cooldown = {
+        id = 451803,
+        duration = 30,
+        max_stack = 1,
     },
     masters_call = {
         id = 54216,
@@ -491,12 +518,6 @@ spec:RegisterAuras( {
         duration = 3600,
         tick_time = 1.0,
         max_stack = 1,
-    },
-
-    pack_coordination = {
-        id = 445695,
-        duration = 20,
-        max_stack = 2,
     },
 
     pathfinding = {
@@ -611,11 +632,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    vicious_hunt = {
-        id = 431917,
-        duration = 20,
-        max_stack = function() return talent.pack_assault.enabled and 2 or 1 end,
-    },
     -- Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
     wild_kingdom = {
         id = 356707,
@@ -720,6 +736,33 @@ local TriggerBombardier = setfenv( function()
     applyBuff( "bombardier", nil, 2 )
 end, state )
 
+local HowlOfThePackLeaderHandler = setfenv( function()
+    
+    local bwSummon = ( buff.howl_of_the_pack_leader_bear.up or buff.howl_of_the_pack_leader_pig.up or buff.howl_of_the_pack_leader_wyvern.up )
+
+    if buff.howl_of_the_pack_leader_cooldown.up then
+        if bwSummon then -- Bestial Wrath version
+           removeBuff( "howl_of_the_pack_leader_bear" )
+           removeBuff( "howl_of_the_pack_leader_pig" )
+           removeBuff( "howl_of_the_pack_leader_wyvern" )
+           reduceCooldown( "howl_of_the_pack_leader", 1 )
+           reduceCooldown( "wildfire_bomb", 18 )
+           addStack( "tip_of_the_spear" )
+        else -- no summons at all
+            reduceCooldown( "howl_of_the_pack_leader", 1 )
+        end
+    else -- Regular summon
+        setCooldown( "howl_of_the_pack_leader", spec.abilities.howl_of_the_pack_leader.cooldown )
+        applyBuff( "howl_of_the_pack_leader_cooldown" )
+        removeBuff( "howl_of_the_pack_leader_bear" )
+        removeBuff( "howl_of_the_pack_leader_pig" )
+        removeBuff( "howl_of_the_pack_leader_wyvern" )
+        reduceCooldown( "wildfire_bomb", 18 )
+        addStack( "tip_of_the_spear" )
+    end
+
+end, state )
+
 
 spec:RegisterGear( "tier29", 200390, 200392, 200387, 200389, 200391, 217183, 217185, 217181, 217182, 217184 )
 spec:RegisterAura( "bestial_barrage", {
@@ -751,17 +794,8 @@ spec:RegisterAuras( {
 
 
 
-local lunar_storm_expires = 0
-
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
 
-    if sourceGUID == state.GUID then
-        if ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
-            if spellID == 450978 then
-                lunar_storm_expires = GetTime() + 13.7
-            end
-        end
-    end
 end )
 
 
@@ -783,8 +817,6 @@ spec:RegisterHook( "reset_precast", function()
     end
 
     if now - action.resonating_arrow.lastCast < 6 then applyBuff( "resonating_arrow", 10 - ( now - action.resonating_arrow.lastCast ) ) end
-
-    if lunar_storm_expires > query_time then setCooldown( "lunar_storm", lunar_storm_expires - query_time ) end
 
     if buff.coordinated_assault.up and talent.relentless_primal_ferocity.enabled then
         applyBuff( "relentless_primal_ferocity", buff.coordinated_assault.remains )
@@ -1111,14 +1143,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "deadly_duo" )
 
-            if talent.vicious_hunt.enabled then
-                if buff.vicious_hunt.down then
-                    addStack( "vicious_hunt", 20, talent.pack_assault.enabled and 2 or 1 )
-                else
-                    removeStack( "vicious_hunt" )
-                    if talent.pack_coordination.enabled then addStack( "pack_coordination", 20, talent.pack_assault.enabled and 2 or 1) end
-                end
-            end
+            if talent.howl_of_the_pack_leader.enabled then HowlOfThePackLeaderHandler() end
             
             if buff.sulfurlined_pockets_ready.up then
                 buff.sulfurlined_pockets_ready.v1 = 259489
@@ -1172,7 +1197,22 @@ spec:RegisterAbilities( {
             removeBuff( "deathblow" )
         end,
     },
+    howl_of_the_pack_leader = {
+        cast = 0,
+        cooldown = function() return 30 - ( 5 * talent.better_together.rank ) end,
+        gcd = "off",
+        hidden = true,
+        handler = function ()
 
+        end,
+    },
+    lunar_storm = {
+        cast = 0,
+        cooldown = 30,
+        gcd = "off",
+        hidden = true,
+        readyTime = buff.lunar_storm_cooldown.down
+    },
     masters_call = {
         id = 272682,
         cast = 0,
@@ -1214,7 +1254,6 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function()
-            if buff.furious_assault.up then return 0 end
             return 30 - ( buff.bestial_barrage.up and 10 or 0 )
         end,
         spendType = "focus",
@@ -1244,7 +1283,6 @@ spec:RegisterAbilities( {
         school = "physical",
 
         spend = function()
-            if buff.furious_assault.up then return 0 end
             return 30 - ( buff.bestial_barrage.up and 10 or 0 )
         end,
         spendType = "focus",
@@ -1259,10 +1297,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
 
-            if buff.furious_assault.up then removeBuff( "furious_assault" ) end
-            removeStack( "tip_of_the_spear" )
+            if talent.dire_summons.enabled then reduceCooldown( "howl_of_the_pack_leader", 1 ) end
 
-            if talent.pack_coordination.enabled then removeStack( "pack_coordination" ) end
+            removeStack( "tip_of_the_spear" )
 
             if talent.vipers_venom.enabled then
                 if talent.contagious_reagents.enabled and debuff.serpent_sting.up then
@@ -1336,8 +1373,8 @@ spec:RegisterAbilities( {
                 gainCharges( 1, "wildfire_bomb" )
             end
             if talent.lunar_storm.enabled and cooldown.lunar_storm.ready then
-                setCooldown( "lunar_storm", 13.7 )
                 applyDebuff( "target", "lunar_storm" )
+                applyBuff( "lunar_storm_cooldown" )
             end
         end,
 
