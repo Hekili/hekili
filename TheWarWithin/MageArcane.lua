@@ -1269,9 +1269,9 @@ spec:RegisterAbilities( {
                 end
             end
 
-            if buff.burden_of_power.up then
-                removeBuff( "burden_of_power" )
-                if talent.glorious_incandescence.enabled then gain( 4, "arcane_charges") end
+            if buff.glorious_incandescence.up then
+                gain( 4, "arcane_charges")
+                removeBuff( "glorious_incandescence" )
             end
 
             if buff.arcane_soul.up then
@@ -1289,10 +1289,10 @@ spec:RegisterAbilities( {
                 removeBuff( "aethervision" )
             end
 
-            if buff.nether_precision.up then
+            --[[if buff.nether_precision.up then
                 removeStack( "nether_precision" )
                 if talent.dematerialize.enabled then applyDebuff( "target", "dematerialize" ) end
-            end
+            end--]]
 
             if debuff.magis_spark_arcane_barrage.up then
                 removeDebuff( "target", "magis_spark_arcane_barrage" )
@@ -1342,7 +1342,7 @@ spec:RegisterAbilities( {
 
             if buff.burden_of_power.up then
                 removeBuff( "burden_of_power" )
-                if talent.glorious_incandescence.enabled then gain( 4, "arcane_charges") end
+                applyBuff( "glorious_incandescence" )
             end
 
             if buff.nether_precision.up then

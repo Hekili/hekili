@@ -596,7 +596,7 @@ spec:RegisterAuras( {
     },
     winters_chill = {
         id = 228358,
-        duration = 6,
+        duration = 8,
         type = "Magic",
         max_stack = 2,
     },
