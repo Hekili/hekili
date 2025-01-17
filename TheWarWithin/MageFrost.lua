@@ -1,6 +1,9 @@
 -- MageFrost.lua
 -- January 2025
 
+-- 11.1 TODO:
+    -- Ice Lances empowered by Fingers of Frost no longer consume Winter’s Chill.
+
 if UnitClassBase( "player" ) ~= "MAGE" then return end
 
 local addon, ns = ...
