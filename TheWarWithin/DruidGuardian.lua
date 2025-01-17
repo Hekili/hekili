@@ -67,19 +67,19 @@ spec:RegisterTalents( {
     blooming_infusion             = {  94601, 429433, 1 }, -- Every 5 Regrowths you cast makes your next Wrath, Starfire, or Entangling Roots instant and increases damage it deals by 100%. Every 5 Starsurges you cast makes your next Regrowth or Entangling roots instant.
     bond_with_nature              = {  94625, 439929, 1 }, -- Healing you receive is increased by 4%.
     bounteous_bloom               = {  94591, 429215, 1 }, -- Your Grove Guardians' healing is increased by 30%.
-    bursting_growth               = {  94630, 440120, 1 }, -- When Bloodseeker Vines expire or you use Ferocious Bite on their target they explode in thorns, dealing 30,806 physical damage to nearby enemies. Damage reduced above 5 targets. When Symbiotic Blooms expire or you cast Rejuvenation on their target flowers grow around their target, healing them and up to 3 nearby allies for 5,747.
+    bursting_growth               = {  94630, 440120, 1 }, -- When Bloodseeker Vines expire or you use Ferocious Bite on their target they explode in thorns, dealing 32,449 physical damage to nearby enemies. Damage reduced above 5 targets. When Symbiotic Blooms expire or you cast Rejuvenation on their target flowers grow around their target, healing them and up to 3 nearby allies for 6,054.
     cenarius_might                = {  94604, 455797, 1 }, -- Casting Swiftmend increases your Haste by 10% for 6 sec.
     circle_of_the_heavens         = { 104078, 474541, 1 }, -- Magical damage dealt by your spells increased by 5%.
     circle_of_the_wild            = { 104078, 474530, 1 }, -- Physical damage dealt by your abilities increased by 5%.
     control_of_the_dream          = {  94592, 434249, 1 }, -- Time elapsed while your major abilities are available to be used or at maximum charges is subtracted from that ability's cooldown after the next time you use it, up to 15 seconds. Affects Force of Nature, Celestial Alignment, and Convoke the Spirits.
     cyclone                       = {  82229,  33786, 1 }, -- Tosses the enemy target into the air, disorienting them but making them invulnerable for up to 5 sec. Only one target can be affected by your Cyclone at a time.
-    dream_surge                   = {  94600, 433831, 1 }, -- Grove Guardians causes your next targeted heal to create 2 Dream Petals near the target, healing up to 3 nearby allies for 34,484. Stacks up to 3 charges.
-    durability_of_nature          = {  94605, 429227, 1 }, -- Your Grove Guardians' Nourish and Swiftmend spells also apply a Minor Cenarion Ward that heals the target for 62,783 over 6.8 sec the next time they take damage.
+    dream_surge                   = {  94600, 433831, 1 }, -- Grove Guardians causes your next targeted heal to create 2 Dream Petals near the target, healing up to 3 nearby allies for 36,323. Stacks up to 3 charges.
+    durability_of_nature          = {  94605, 429227, 1 }, -- Your Grove Guardians' Nourish and Swiftmend spells also apply a Minor Cenarion Ward that heals the target for 66,132 over 6.8 sec the next time they take damage.
     early_spring                  = {  94591, 428937, 1 }, -- Grove Guardians cooldown reduced by 3 sec.
     entangling_vortex             = {  94622, 439895, 1 }, -- Enemies pulled into Ursol's Vortex are rooted in place for 3 sec. Damage may cancel the effect.
     expansiveness                 = {  94602, 429399, 1 }, -- Your maximum mana is increased by 5%.
     feline_swiftness              = {  82236, 131768, 1 }, -- Increases your movement speed by 15%.
-    flower_walk                   = {  94622, 439901, 1 }, -- During Barkskin your movement speed is increased by 10% and every second flowers grow beneath your feet that heal up to 3 nearby injured allies for 5,580.
+    flower_walk                   = {  94622, 439901, 1 }, -- During Barkskin your movement speed is increased by 10% and every second flowers grow beneath your feet that heal up to 3 nearby injured allies for 5,877.
     fluid_form                    = {  82246, 449193, 1 }, -- Shred, Rake, and Skull Bash can be used in any form and shift you into Cat Form, if necessary. Mangle can be used in any form and shifts you into Bear Form. Wrath and Starfire shift you into Moonkin Form, if known.
     forestwalk                    = {  82243, 400129, 1 }, -- Casting Regrowth increases your movement speed and healing received by 8% for 6 sec.
     frenzied_regeneration         = {  82220,  22842, 1 }, -- Heals you for 20% health over 3 sec, and increases healing received by 20%.
@@ -94,8 +94,7 @@ spec:RegisterTalents( {
     implant                       = {  94628, 440118, 1 }, -- Your Swiftmend causes a Symbiotic Bloom to grow on the target for 6 sec.
     improved_barkskin             = { 104085, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_stampeding_roar      = {  82230, 288826, 1 }, -- Cooldown reduced by 60 sec.
-    improved_sunfire              = {  93714, 231050, 1 }, -- Sunfire now applies its damage over time effect to all enemies within 8 yards.
-    incapacitating_roar           = {  82237,     99, 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage will cancel the effect.
+    incapacitating_roar           = {  82237,     99, 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage may cancel the effect.
     incessant_tempest             = { 104079, 400140, 1 }, -- Reduces the cooldown of Typhoon by 5 sec.
     innervate                     = { 100175,  29166, 1 }, -- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 8 sec.
     instincts_of_the_claw         = { 104081, 449184, 1 }, -- Ferocious Bite and Maul damage increased by 8%.
@@ -104,12 +103,13 @@ spec:RegisterTalents( {
     lethal_preservation           = {  94624, 455461, 1 }, -- When you remove an effect with Soothe or Remove Corruption, gain a combo point and heal for 4% of your maximum health. If you are at full health an injured party or raid member will be healed instead.
     lingering_healing             = {  82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec. Regrowth's duration is increased by 3 sec when cast on yourself.
     lore_of_the_grove             = { 104080, 449185, 1 }, -- Moonfire and Sunfire damage increased by 10%.
-    lycaras_meditation            = {  92229, 474728, 1 }, -- You retain Lycara's Teachings' bonus from your most recent form for 5 sec after shifting out of it.
+    lycaras_meditation            = {  92229, 474728, 1 }, -- You retain Lycara's Teachings' bonus from your most recent shapeshift form for 5 sec after shifting out of it.
     lycaras_teachings             = {  82233, 378988, 2 }, -- You gain 3% of a stat while in each form: No Form: Haste Cat Form: Critical Strike Bear Form: Versatility Moonkin Form: Mastery
-    maim                          = {  82221,  22570, 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 4,929 damage, 1 sec 2 points: 9,858 damage, 2 sec 3 points: 14,787 damage, 3 sec 4 points: 19,716 damage, 4 sec 5 points: 24,645 damage, 5 sec
+    maim                          = {  82221,  22570, 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 5,191 damage, 1 sec 2 points: 10,383 damage, 2 sec 3 points: 15,575 damage, 3 sec 4 points: 20,767 damage, 4 sec 5 points: 25,959 damage, 5 sec
     mass_entanglement             = {  82207, 102359, 1 }, -- Roots the target and all enemies within 12 yards in place for 10 sec. Damage may interrupt the effect. Usable in all shapeshift forms.
-    matted_fur                    = { 100177, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 90,820 damage for 8 sec.
+    matted_fur                    = { 100177, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 95,665 damage for 8 sec.
     mighty_bash                   = {  82237,   5211, 1 }, -- Invokes the spirit of Ursoc to stun the target for 4 sec. Usable in all shapeshift forms.
+    moonkin_form                  = {  82208,  24858, 1 }, -- Shapeshift into Moonkin Form, increasing the damage of your spells by 10% and your armor by 125%, and granting protection from Polymorph effects. The act of shapeshifting frees you from movement impairing effects.
     natural_recovery              = {  82206, 377796, 1 }, -- Healing you receive is increased by 4%.
     natures_vigil                 = {  82244, 124974, 1 }, -- For 15 sec, all single-target damage also heals a nearby friendly target for 20% of the damage done.
     nurturing_instinct            = {  82214,  33873, 2 }, -- Magical damage and healing increased by 6%.
@@ -120,25 +120,25 @@ spec:RegisterTalents( {
     power_of_the_dream            = {  94592, 434220, 1 }, -- Healing spells cast with Dream Surge generate an additional Dream Petal.
     primal_fury                   = {  82224, 159286, 1 }, -- While in Cat Form, when you critically strike with an attack that generates a combo point, you gain an additional combo point. Damage over time cannot trigger this effect. Mangle critical strike damage increased by 20%.
     protective_growth             = {  94593, 433748, 1 }, -- Your Regrowth protects you, reducing damage you take by 8% while your Regrowth is on you.
-    rake                          = {  82199,   1822, 1 }, -- Rake the target for 9,962 Bleed damage and an additional 56,135 Bleed damage over 11.3 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
-    rejuvenation                  = {  82217,    774, 1 }, -- Heals the target for 61,146 over 12.8 sec.
+    rake                          = {  82199,   1822, 1 }, -- Rake the target for 10,494 Bleed damage and an additional 59,129 Bleed damage over 11.3 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
+    rejuvenation                  = {  82217,    774, 1 }, -- Heals the target for 64,407 over 12.8 sec.
     remove_corruption             = {  82241,   2782, 1 }, -- Nullifies corrupting effects on the friendly target, removing all Curse and Poison effects.
     renewal                       = {  82232, 108238, 1 }, -- Instantly heals you for 30% of maximum health. Usable in all shapeshift forms.
     resilient_flourishing         = {  94631, 439880, 1 }, -- Bloodseeker Vines and Symbiotic Blooms last 2 additional sec. When a target afflicted by Bloodseeker Vines dies, the vines jump to a valid nearby target for their remaining duration.
-    rip                           = {  82222,   1079, 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 44,278 over 6 sec 2 points: 66,417 over 9 sec 3 points: 88,557 over 12 sec 4 points: 110,696 over 15 sec 5 points: 132,835 over 18 sec
+    rip                           = {  82222,   1079, 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 46,640 over 6 sec 2 points: 69,960 over 9 sec 3 points: 93,281 over 12 sec 4 points: 116,601 over 15 sec 5 points: 139,921 over 18 sec
     root_network                  = {  94631, 439882, 1 }, -- Each active Bloodseeker Vine increases the damage your abilities deal by 2%. Each active Symbiotic Bloom increases the healing of your spells by 2%.
     skull_bash                    = {  82242, 106839, 1 }, -- You charge and bash the target's skull, interrupting spellcasting and preventing any spell in that school from being cast for 3 sec.
     soothe                        = {  82229,   2908, 1 }, -- Soothes the target, dispelling all enrage effects.
     stampeding_roar               = {  82234, 106898, 1 }, -- Shift into Bear Form and let loose a wild roar, increasing the movement speed of all friendly players within 15 yards by 60% for 8 sec.
-    starfire                      = {  91044, 197628, 1 }, -- Call down a burst of energy, causing 53,450 Arcane damage to the target, and 28,662 Arcane damage to all other enemies within 5 yards. Deals reduced damage beyond 8 targets.
+    starfire                      = {  91044, 197628, 1 }, -- Call down a burst of energy, causing 56,302 Arcane damage to the target, and 30,191 Arcane damage to all other enemies within 5 yards. Deals reduced damage beyond 8 targets.
     starlight_conduit             = { 100223, 451211, 1 }, -- Wrath, Starsurge, and Starfire damage increased by 5%. Starsurge's cooldown is reduced by 4 sec and its mana cost is reduced by 50%.
-    starsurge                     = {  82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing 60,376 Astral damage.
+    starsurge                     = {  82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing 63,596 Astral damage.
     strategic_infusion            = {  94623, 439890, 1 }, -- Attacking from Prowl increases the chance for Shred, Rake, and Swipe to critically strike by 8% for 6 sec. Casting Regrowth increases the chance for your periodic heals to critically heal by 8% for 10 sec.
-    sunfire                       = {  82208,  93402, 1 }, -- A quick beam of solar light burns the enemy for 6,092 Nature damage and then an additional 53,072 Nature damage over 13.5 sec.
+    sunfire                       = {  93714,  93402, 1 }, -- A quick beam of solar light burns the enemy for 6,417 Nature damage and then an additional 55,903 Nature damage over 13.5 sec.
     symbiotic_relationship        = { 100173, 474750, 1 }, -- Form a bond with an ally. Your self-healing also heals your bonded ally for 10% of the amount healed. Your healing to your bonded ally also heals you for 8% of the amount healed.
     thick_hide                    = {  82228,  16931, 1 }, -- Reduces all damage taken by 4%.
     thrash                        = {  82223, 106832, 1 }, -- Thrash all nearby enemies, dealing immediate physical damage and periodic bleed damage. Damage varies by shapeshift form.
-    thriving_growth               = {  94626, 439528, 1 }, -- Rip and Rake damage has a chance to cause Bloodseeker Vines to grow on the victim, dealing 37,429 Bleed damage over 4.5 sec. Wild Growth, Regrowth, and Efflorescence healing has a chance to cause Symbiotic Blooms to grow on the target, healing for 34,484 over 5.1 sec. Multiple instances of these can overlap.
+    thriving_growth               = {  94626, 439528, 1 }, -- Rip and Rake damage has a chance to cause Bloodseeker Vines to grow on the victim, dealing 39,426 Bleed damage over 4.5 sec. Wild Growth, Regrowth, and Efflorescence healing has a chance to cause Symbiotic Blooms to grow on the target, healing for 36,323 over 5.1 sec. Multiple instances of these can overlap.
     tiger_dash                    = {  82198, 252216, 1 }, -- Shift into Cat Form and increase your movement speed by 200%, reducing gradually over 5 sec.
     treants_of_the_moon           = {  94599, 428544, 1 }, -- Your Grove Guardians cast Moonfire on nearby targets about once every 6 sec.
     twin_sprouts                  = {  94628, 440117, 1 }, -- When Bloodseeker Vines or Symbiotic Blooms grow, they have a 20% chance to cause another growth of the same type to immediately grow on a valid nearby target.
@@ -150,19 +150,19 @@ spec:RegisterTalents( {
     vigorous_creepers             = {  94627, 440119, 1 }, -- Bloodseeker Vines increase the damage your abilities deal to affected enemies by 5%. Symbiotic Blooms increase the healing your spells do to affected targets by 20%.
     wellhoned_instincts           = {  82235, 377847, 1 }, -- When you fall below 40% health, you cast Frenzied Regeneration, up to once every 90 sec.
     wild_charge                   = {  82198, 102401, 1 }, -- Fly to a nearby ally's position.
-    wild_growth                   = {  82205,  48438, 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 39,576 over 6.0 sec. Healing starts high and declines over the duration.
+    wild_growth                   = {  82205,  48438, 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 41,687 over 6.0 sec. Healing starts high and declines over the duration.
     wildstalkers_power            = {  94621, 439926, 1 }, -- Rip and Ferocious Bite damage increased by 5%. Rejuvenation healing increased by 10%.
     
     -- Guardian
-    after_the_wildfire            = {  82140, 371905, 1 }, -- Every 300 Rage you spend causes a burst of restorative energy, healing allies within 12 yds for 154,914.
+    after_the_wildfire            = {  82140, 371905, 1 }, -- Every 300 Rage you spend causes a burst of restorative energy, healing allies within 12 yds for 154,920.
     berserk_persistence           = {  82144,  50334, 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
     berserk_ravage                = {  82149,  50334, 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
     berserk_unchecked_aggression  = {  82155,  50334, 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
     blood_frenzy                  = {  82142, 203962, 1 }, -- Thrash also generates 3 Rage each time it deals damage, on up to 5 targets.
-    brambles                      = {  82161, 203953, 1 }, -- Sharp brambles protect you, absorbing and reflecting up to 1,936 damage from each attack. While Barkskin is active, the brambles also deal 1,534 Nature damage to all nearby enemies every 1 sec.
+    brambles                      = {  82161, 203953, 1 }, -- Sharp brambles protect you, absorbing and reflecting up to 1,936 damage from each attack. While Barkskin is active, the brambles also deal 1,616 Nature damage to all nearby enemies every 1 sec.
     bristling_fur                 = {  82161, 155835, 1 }, -- Bristle your fur, causing you to generate Rage based on damage taken for 8 sec.
     circle_of_life_and_death      = {  82137, 391969, 1 }, -- Your damage over time effects deal their damage in 25% less time, and your healing over time effects in 15% less time.
-    convoke_the_spirits           = {  82136, 391528, 1 }, -- Call upon the spirits for an eruption of energy, channeling a rapid flurry of 12 Druid spells and abilities over 3 sec. You will cast Ferocious Bite, Shred, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
+    convoke_the_spirits           = {  82136, 391528, 1 }, -- Call upon the spirits for an eruption of energy, channeling a rapid flurry of 12 Druid spells and abilities over 3 sec. You will cast Mangle, Ironfur, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
     dream_of_cenarius             = {  92227, 372119, 1 }, -- When you take non-periodic damage, you have a chance equal to your critical strike to cause your next Regrowth to heal for an additional 130%, and to be instant, free, and castable in all forms for 30 sec. This effect cannot occur more than once every 20 sec.
     earthwarden                   = {  82156, 203974, 1 }, -- When you deal direct damage with Thrash, you gain a charge of Earthwarden, reducing the damage of the next auto attack you take by 25%. Earthwarden may have up to 3 charges.
     elunes_favored                = {  82134, 370586, 1 }, -- While in Bear Form, you deal 10% increased Arcane damage, and are healed for 25% of all Arcane damage done.
@@ -176,13 +176,13 @@ spec:RegisterTalents( {
     incarnation_guardian_of_ursoc = {  82136, 102558, 1 }, -- An improved Bear Form that grants the benefits of Berserk, causes Mangle to hit up to 3 targets, and increases maximum health by 30%. Lasts 30 sec. You may freely shapeshift in and out of this improved Bear Form for its duration.
     infected_wounds               = {  82162, 345208, 1 }, -- Mangle and Maul cause an Infected Wound in the target, reducing their movement speed by 50% for 12 sec.
     innate_resolve                = {  82160, 377811, 1 }, -- Frenzied Regeneration's healing is increased by up to 120% based on your missing health. Frenzied Regeneration has 1 additional charge.
-    lunar_beam                    = {  92587, 204066, 1 }, -- Summons a beam of lunar light at your location, increasing your mastery by 30%, dealing 89,116 Arcane damage, and healing you for 571,994 over 11 sec.
+    lunar_beam                    = {  92587, 204066, 1 }, -- Summons a beam of lunar light at your location, increasing your mastery by 30%, dealing 93,869 Arcane damage, and healing you for 572,016 over 11 sec.
     mangle                        = {  82131, 231064, 1 }, -- Mangle deals 20% additional damage against bleeding targets.
-    maul                          = {  82127,   6807, 1 }, -- Maul the target for 70,079 Physical damage.
+    maul                          = {  82127,   6807, 1 }, -- Maul the target for 73,818 Physical damage.
     moonless_night                = {  92586, 400278, 1 }, -- Your direct damage melee abilities against enemies afflicted by Moonfire cause them to burn for an additional 20% Arcane damage.
-    pulverize                     = {  82153,  80313, 1 }, -- A devastating blow that consumes 2 stacks of your Thrash on the target to deal 79,429 Physical damage and reduce the damage they deal to you by 35% for 8 sec.
-    rage_of_the_sleeper           = {  82141, 200851, 1 }, -- Unleashes the rage of Ursoc for 8 sec, preventing 20% of all damage you take, increasing your damage done by 15%, granting you 20% leech, and reflecting 13,732 Nature damage back at your attackers.
-    raze                          = {  92588, 400254, 1 }, -- Strike with the might of Ursoc, dealing 37,695 Physical damage to all enemies in front of you. Damage increased by 100% when striking a single target, and reduced beyond 5 targets.
+    pulverize                     = {  82153,  80313, 1 }, -- A devastating blow that consumes 2 stacks of your Thrash on the target to deal 83,666 Physical damage and reduce the damage they deal to you by 35% for 8 sec.
+    rage_of_the_sleeper           = {  82141, 200851, 1 }, -- Unleashes the rage of Ursoc for 8 sec, preventing 20% of all damage you take, increasing your damage done by 15%, granting you 20% leech, and reflecting 14,464 Nature damage back at your attackers.
+    raze                          = {  92588, 400254, 1 }, -- Strike with the might of Ursoc, dealing 73,817 Physical damage to your target and39,705 to all other enemies in front of you. Damage reduced beyond 5 targets.
     reinforced_fur                = {  82139, 393618, 1 }, -- Ironfur increases armor by an additional 15% and Barkskin reduces damage taken by an additional 10%.
     reinvigoration                = {  82157, 372945, 2 }, -- Frenzied Regeneration heals over 1.0 additional sec and casts Rejuvenation and Regrowth on you at 100% effectiveness.
     rend_and_tear                 = {  82152, 204053, 1 }, -- Each stack of Thrash reduces the target's damage to you by 2% and increases your damage to them by 2%.
@@ -205,7 +205,7 @@ spec:RegisterTalents( {
     aggravate_wounds              = {  94616, 441829, 1 }, -- Every Maul, Raze, Mangle, Thrash, or Swipe you cast extends the duration of your Dreadful Wounds by 0.6 sec, up to 8 additional sec.
     bestial_strength              = {  94611, 441841, 1 }, -- Maul and Raze damage increased by 20%.
     claw_rampage                  = {  94613, 441835, 1 }, -- During Berserk, Mangle, Swipe, and Thrash have a 25% chance to make your next Maul become Ravage.
-    dreadful_wound                = {  94620, 441809, 1 }, -- Ravage also inflicts a Bleed that causes 22,242 damage over 6.0 sec and saps its victims' strength, reducing damage they deal to you by 10%. Dreadful Wound is not affected by Circle of Life and Death. 
+    dreadful_wound                = {  94620, 441809, 1 }, -- Ravage also inflicts a Bleed that causes 23,428 damage over 6.0 sec and saps its victims' strength, reducing damage they deal to you by 10%. Dreadful Wound is not affected by Circle of Life and Death. 
     empowered_shapeshifting       = {  94612, 441689, 1 }, -- Frenzied Regeneration can be cast in Cat Form for 40 Energy. Bear Form reduces magic damage you take by 4%. Shred and Swipe damage increased by 6%. Mangle damage increased by 15%.
     fount_of_strength             = {  94618, 441675, 1 }, -- Your maximum Energy and Rage are increased by 20. Frenzied Regeneration also increases your maximum health by 10%.
     killing_strikes               = {  94619, 441824, 1 }, -- Ravage increases your Agility by 8% and the armor granted by Ironfur by 20% for 8 sec. Your first Mangle after entering combat makes your next Maul become Ravage.
@@ -221,8 +221,7 @@ spec:RegisterTalents( {
     arcane_affinity               = {  94586, 429540, 1 }, -- All Arcane damage from your spells and abilities is increased by 3%.
     astral_insight                = {  94585, 429536, 1 }, -- Incarnation: Guardian of Ursoc increases Arcane damage from spells and abilities by 10% while active. Increases the duration and number of spells cast by Convoke the Spirits by 25%.
     atmospheric_exposure          = {  94607, 429532, 1 }, -- Enemies damaged by Lunar Beam or Fury of Elune take 6% increased damage from you for 6 sec.
-    boundless_moonlight           = { 94608, 424058, 1, "elunes_chosen" }, --  Lunar Beam Lunar Beam now causes you to leech life equal to 10% of all damage dealt to enemies within the beam.  Fury of Elune Fury of Elune now ends with a flash of energy, blasting nearby enemies for 73,265 Astral damage.
-    elunes_grace                  = {  94597, 443046, 1 }, -- Using Wild Charge while in Bear Form or Moonkin Form incurs a 3 sec shorter cooldown.
+    boundless_moonlight           = { 94608, 424058, 1, "elunes_chosen" }, --  Lunar Beam Lunar Beam now causes you to leech life equal to 10% of all damage dealt to enemies within the beam.  Fury of Elune Fury of Elune now ends with a flash of energy, blasting nearby enemies for 73,265 Astral damage    elunes_grace                  = {  94597, 443046, 1 }, -- Using Wild Charge while in Bear Form or Moonkin Form incurs a 3 sec shorter cooldown.
     glistening_fur                = {  94594, 429533, 1 }, -- Bear Form and Moonkin Form reduce Arcane damage taken by 6% and all other magic damage taken by 3%.
     lunar_amplification           = {  94596, 429529, 1 }, -- Each non-Arcane damaging ability you use increases the damage of your next Arcane damaging ability by 3%, stacking up to 3 times.
     lunar_calling                 = {  94590, 429523, 1 }, -- Thrash now deals Arcane damage and its damage is increased by 12%.
@@ -232,25 +231,8 @@ spec:RegisterTalents( {
     moondust                      = {  94597, 429538, 1 }, -- Enemies affected by Moonfire are slowed by 20%.
     stellar_command               = {  94590, 429668, 1 }, -- Increases the damage of Lunar Beam by 30% and Fury of Elune by 15%.
     the_eternal_moon              = {  94587, 424113, 1 }, -- Further increases the power of Boundless Moonlight.  Lunar Beam Lunar Beam increases Mastery by an additional 10%, deals 30% increased damage, and lasts 3 sec longer.  Fury of Elune The flash of energy now generates 6 Rage and its damage is increased by 50%.
-    the_light_of_elune            = {  94585, 428655, 1 }, -- Moonfire damage has a chance to call down a Fury of Elune to follow your target for 3 sec.  Fury of Elune Calls down a beam of pure celestial energy, dealing 33,277 Astral damage over 3 sec within its area. Generates 18 Rage over its duration.
+    the_light_of_elune            = {  94585, 428655, 1 }, -- Moonfire damage has a chance to call down a Fury of Elune to follow your target for 3 sec.  Fury of Elune Calls down a beam of pure celestial energy, dealing 35,052 Astral damage over 3 sec within its area. Generates 18 Rage over its duration.
 } )
-
--- PvP Talents
-spec:RegisterPvpTalents( { 
-    alpha_challenge     =  842, -- (207017) You focus the assault on this target, increasing their damage taken by 3% for 6 sec. Each unique player that attacks the target increases the damage taken by an additional 3%, stacking up to 5 times. Your melee attacks refresh the duration of Focused Assault.
-    charging_bash       =  194, -- (228431) 
-    demoralizing_roar   =   52, -- (201664) Demoralizes all enemies within 10 yards, reducing the damage they do by 20% for 8 sec.
-    den_mother          =   51, -- (236180) 
-    emerald_slumber     =  197, -- (329042) Embrace the Emerald Dream, causing you to enter a deep slumber for 8 sec. While sleeping, all other cooldowns recover 400% faster, and allies within 40 yds are healed for 15,491 every 1 sec. Direct damage taken may awaken you.
-    entangling_claws    =  195, -- (202226) 
-    freedom_of_the_herd = 3750, -- (213200) Your Stampeding Roar clears all roots and snares from yourself and allies.
-    grove_protection    = 5410, -- (354654) Summon a grove to protect allies in the area for 10 sec, reducing damage taken by 50% from enemies outside the grove.
-    malornes_swiftness  = 1237, -- (236147) 
-    master_shapeshifter =   49, -- (236144) 
-    overrun             =  196, -- (202246) Charge to an enemy, stunning them for 3 sec and knocking back their allies within 15 yards.
-    tireless_pursuit    = 5648, -- (377801) For 3 sec after leaving Cat Form or Travel Form, you retain up to 40% movement speed.
-} )
-
 
 local mod_circle_hot = setfenv( function( x )
     return x * ( legendary.circle_of_life_and_death.enabled and 0.85 or 1 ) * ( talent.circle_of_life_and_death.enabled and 0.85 or 1 )
@@ -336,7 +318,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=33786
     cyclone = {
         id = 33786,
-        duration = 6,
+        duration = 5,
         mechanic = "banish",
         type = "Magic",
         max_stack = 1
@@ -409,7 +391,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=22842
     frenzied_regeneration = {
         id = 22842,
-        duration = 3,
+        duration = function() return 3 + ( talent.reinvigoration.rank) end,
         max_stack = 1
     },
     -- Movement speed reduced by $s2%. Suffering $w1 Nature damage every $t1 sec.
@@ -903,6 +885,7 @@ spec:RegisterAuras( {
         id = 340556,
         duration = function ()
             if conduit.wellhoned_instincts.enabled then return conduit.wellhoned_instincts.mod end
+            if talent.perfectlyhoned_instincts.enabled then return 60 end
             return 90
         end,
         max_stack = 1
@@ -965,6 +948,19 @@ spec:RegisterStateExpr( "ironfur_damage_threshold", function ()
     return ( settings.ironfur_damage_threshold or 0 ) / 100 * ( health.max )
 end )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229310, 229308, 229306, 229307, 229305  )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/spell=1218033
+    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
+    --[[jackpot = {
+        id = 1218033,
+        duration = 10,
+        max_stack = 1,
+    },--]]
+
+} )
 
 -- Tier 29
 spec:RegisterGear( "tier29", 200351, 200353, 200354, 200355, 200356 )
@@ -1396,6 +1392,10 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "frenzied_regeneration" )
             gain( health.max * 0.08, "health" )
+            if talent.reinvigoration.enabled then
+                applyBuff( "rejuvenation" )
+                applyBuff( "regrowth" )
+            end
         end,
     },
 
@@ -2357,10 +2357,10 @@ spec:RegisterSetting( "catweave_bear", false, {
 spec:RegisterSetting( "maul_anyway", true, {
     name = strformat( "Use %s and %s in %s Build", Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.ironfur.id ) ),
-    desc = strformat( "If checked, %s and %s are recommended more frequently even if you have talented %s or %s.\n\n"
+    desc = strformat( "If checked, %s and %s are recommended more frequently even if you have talented %s.\n\n"
         .. "This differs from the default SimulationCraft priority as of February 2023.",
         Hekili:GetSpellLinkWithTexture( spec.abilities.maul.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.raze.id ),
-        Hekili:GetSpellLinkWithTexture( spec.talents.layered_mane[2] ), Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ) ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.reinforced_fur[2] ) ),
     type = "toggle",
     width = "full",
 } )

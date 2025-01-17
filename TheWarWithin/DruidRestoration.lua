@@ -1,5 +1,5 @@
 -- DruidRestoration.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "DRUID" then return end
 
@@ -41,8 +41,7 @@ spec:RegisterTalents( {
     improved_barkskin           = { 104085, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_natures_cure       = { 104084, 392378, 1 }, -- Nature's Cure additionally removes all Curse and Poison effects.
     improved_stampeding_roar    = {  82230, 288826, 1 }, -- Cooldown reduced by 60 sec.
-    improved_sunfire            = {  93714, 231050, 1 }, -- Sunfire now applies its damage over time effect to all enemies within 8 yards.
-    incapacitating_roar         = {  82237,     99, 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage will cancel the effect.
+    incapacitating_roar         = {  82237,     99, 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage may cancel the effect.
     incessant_tempest           = { 104079, 400140, 1 }, -- Reduces the cooldown of Typhoon by 5 sec.
     innervate                   = { 100175,  29166, 1 }, -- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 8 sec.
     instincts_of_the_claw       = { 104081, 449184, 1 }, -- Ferocious Bite and Maul damage increased by 8%.
@@ -51,12 +50,13 @@ spec:RegisterTalents( {
     killing_strikes             = {  94619, 441824, 1 }, -- Ravage increases your Agility by 8% and the armor granted by Ironfur by 20% for 8 sec. Your first Mangle after entering combat makes your next Maul become Ravage.
     lingering_healing           = {  82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec. Regrowth's duration is increased by 3 sec when cast on yourself.
     lore_of_the_grove           = { 104080, 449185, 1 }, -- Moonfire and Sunfire damage increased by 10%.
-    lycaras_meditation          = {  92229, 474728, 1 }, -- You retain Lycara's Teachings' bonus from your most recent form for 5 sec after shifting out of it.
+    lycaras_meditation          = {  92229, 474728, 1 }, -- You retain Lycara's Teachings' bonus from your most recent shapeshift form for 5 sec after shifting out of it.
     lycaras_teachings           = {  82233, 378988, 2 }, -- You gain 3% of a stat while in each form: No Form: Haste Cat Form: Critical Strike Bear Form: Versatility Moonkin Form: Mastery
     maim                        = {  82221,  22570, 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 5,118 damage, 1 sec 2 points: 10,236 damage, 2 sec 3 points: 15,354 damage, 3 sec 4 points: 20,472 damage, 4 sec 5 points: 25,590 damage, 5 sec
     mass_entanglement           = {  82207, 102359, 1 }, -- Roots the target and all enemies within 12 yards in place for 10 sec. Damage may interrupt the effect. Usable in all shapeshift forms.
     matted_fur                  = { 100177, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 60,657 damage for 8 sec.
     mighty_bash                 = {  82237,   5211, 1 }, -- Invokes the spirit of Ursoc to stun the target for 4 sec. Usable in all shapeshift forms.
+    moonkin_form                = {  82208,  24858, 1 }, -- Shapeshift into Moonkin Form, increasing the damage of your spells by 10% and your armor by 125%, and granting protection from Polymorph effects. The act of shapeshifting frees you from movement impairing effects.
     natural_recovery            = {  82206, 377796, 1 }, -- Healing you receive is increased by 4%.
     natures_vigil               = {  82244, 124974, 1 }, -- For 15 sec, all single-target healing also damages a nearby enemy target for 20% of the healing done.
     nurturing_instinct          = {  82214,  33873, 2 }, -- Magical damage and healing increased by 6%.
@@ -65,7 +65,7 @@ spec:RegisterTalents( {
     perfectlyhoned_instincts    = { 104082, 1213597, 1 }, -- Well-Honed Instincts can trigger up to once every 60 sec.
     primal_fury                 = {  82224, 159286, 1 }, -- While in Cat Form, when you critically strike with an attack that generates a combo point, you gain an additional combo point. Damage over time cannot trigger this effect. Mangle critical strike damage increased by 20%.
     rake                        = {  82199,   1822, 1 }, -- Rake the target for 8,415 Bleed damage and an additional 58,726 Bleed damage over 15 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
-    ravage                      = {  94609, 441583, 1 }, -- Your auto-attacks have a chance to make your next Ferocious Bite become Ravage. Ravage Finishing move that slashes through your target in a wide arc, dealing Physical damage per combo point to your target and consuming up to 25 additional Energy to increase that damage by up to 100%. Hits all other enemies in front of you for reduced damage per combo point spent. 1 point: 32,993 damage, 12,731 in an arc 2 points: 65,987 damage, 25,462 in an arc 3 points: 98,981 damage, 38,193 in an arc 4 points: 131,974 damage, 50,925 in an arc 5 points: 164,968 damage, 63,656 in an arc
+    ravage                      = {  94609, 441583, 1 }, -- Your auto-attacks have a chance to make your next Ferocious Bite become Ravage. Ravage 
     rejuvenation                = {  82217,    774, 1 }, -- Heals the target for 87,702 over 15 sec. Tree of Life: Healing increased by 40% and Mana cost reduced by 30%.
     renewal                     = {  82232, 108238, 1 }, -- Instantly heals you for 30% of maximum health. Usable in all shapeshift forms.
     rip                         = {  82222,   1079, 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 90,849 over 8 sec 2 points: 136,273 over 12 sec 3 points: 181,698 over 16 sec 4 points: 227,122 over 20 sec 5 points: 272,547 over 24 sec
@@ -77,7 +77,7 @@ spec:RegisterTalents( {
     starlight_conduit           = { 100223, 451211, 1 }, -- Wrath, Starsurge, and Starfire damage increased by 5%. Starsurge's cooldown is reduced by 4 sec and its mana cost is reduced by 50%.
     starsurge                   = {  82200, 197626, 1 }, -- Launch a surge of stellar energies at the target, dealing 68,334 Astral damage.
     strike_for_the_heart        = {  94614, 441845, 1 }, -- Shred, Swipe, and Mangle's critical strike chance and critical strike damage are increased by 15%. 
-    sunfire                     = {  82208,  93402, 1 }, -- A quick beam of solar light burns the enemy for 3,390 Nature damage and then an additional 31,320 Nature damage over 18 sec.
+    sunfire                     = {  93714,  93402, 1 }, -- A quick beam of solar light burns the enemy for 3,390 Nature damage and then an additional 31,320 Nature damage over 18 sec.
     symbiotic_relationship      = { 100173, 474750, 1 }, -- Form a bond with an ally. Your self-healing also heals your bonded ally for 10% of the amount healed. Your healing to your bonded ally also heals you for 8% of the amount healed.
     tear_down_the_mighty        = {  94614, 441846, 1 }, -- The cooldown of Pulverize is reduced by 10 sec.
     thick_hide                  = {  82228,  16931, 1 }, -- Reduces all damage taken by 4%.
@@ -191,17 +191,16 @@ spec:RegisterTalents( {
 -- PvP Talents
 spec:RegisterPvpTalents( { 
     ancient_of_lore    = 5668, -- (473909) Shapeshift into an Ancient of Lore, preventing all crowd control effects, reducing damage taken by 20%, and granting you access to Blossom Burst and Mass Blooming. Reduces movement speed. Lasts 12 sec.  Blossom Burst:  Mass Blooming: 
-    deep_roots         =  700, -- (233755) Increases the amount of damage required to cancel your Entangling Roots by 75%.
+    deep_roots         =  700, -- (233755) 
     disentanglement    =   59, -- (233673) 
     early_spring       = 1215, -- (203624) 
     entangling_bark    =  692, -- (247543) Ironbark now also grants the target Nature's Grasp, rooting the first 3 melee attackers for 6 sec.
     forest_guardian    = 5687, -- (1217474) 
     high_winds         =  838, -- (200931) Increases the range of Cyclone, Typhoon, and Entangling Roots by 5 yds.
-    malornes_swiftness = 5514, -- (236147) Your Travel Form movement speed while within a Battleground or Arena is increased by 20% and you always move at 100% movement speed while in Travel Form.
-    thorns             =  697, -- (1217017) Casting Barkskin or Ironbark sprouts thorns on you for until canceled. When victim to melee attacks, thorns deals 23,741 Nature damage back to the attacker. Attackers also have their movement speed reduced by 50% for 4 sec.
-    tireless_pursuit   = 5649, -- (377801) For 3 sec after leaving Cat Form or Travel Form, you retain up to 40% movement speed.
+    malornes_swiftness = 5514, -- (236147) 
+    thorns             =  697, -- (1217017) 
+    tireless_pursuit   = 5649, -- (377801) 
 } )
-
 
 local mod_liveliness_hot = setfenv( function( dur )
     if not talent.liveliness.enabled then return dur end
@@ -400,6 +399,13 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
+    symbiotic_relationship = {
+        id = 474754,
+        duration = 3600,
+        dot = "buff",
+        friendly = true,
+        max_stack = 1,
+    },
     spring_blossoms = {
         id = 207386,
         duration = 6,
@@ -517,6 +523,19 @@ spec:RegisterHook( "runHandler", function( ability )
     end
 end )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229310, 229308, 229306, 229307, 229305  )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/spell=1218033
+    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
+    --[[jackpot = {
+        id = 1218033,
+        duration = 10,
+        max_stack = 1,
+    },--]]
+
+} )
 
 -- Tier 30
 spec:RegisterGear( "tier30", 202518, 202516, 202515, 202514, 202513 )
@@ -992,15 +1011,16 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.moonkin_form.down and buff.treant_form.down and buff.tree_of_life_form.down then
-                if talent.fluid_form.enabled then
-                    shift( "moonkin_form" )
-                else unshift()
-                end
+                if talent.fluid_form.enabled and not buff.moonkin_form.up then unshift() end
             end
 
             if talent.blooming_infusion.enabled then removeBuff( "blooming_infusion" ) end
 
             if talent.master_shapeshifter.enabled then gain( 43750, "mana" ) end
+        end,
+
+        finish = function ()
+            if talent.fluid_form.enabled and buff.moonkin_form.down then shift( "moonkin_form" ) end
         end,
 
     },
@@ -1097,6 +1117,25 @@ spec:RegisterAbilities( {
         copy = { 106785, 213771, 213764 },
     }, ]]
 
+    -- Form a bond with an ally. Your self-healing also heals your bonded ally for 10% of the amount healed. Your healing to your bonded ally also heals you for 8% of the amount healed.
+    symbiotic_relationship = {
+        id = 474750,
+        cast = 2.5,
+        cooldown = 0,
+        gcd = "spell",
+        
+        spend = 0.02,
+        spendType = "mana",
+        
+        talent = "symbiotic_relationship",
+        startsCombat = false,
+        texture = 1408837,
+        
+        handler = function ()
+            applyBuff( "symbiotic_relationship" )
+        end,
+    },
+
     -- Heals all allies within 40 yards for 8,560 over 6.6 sec. Each heal heals the target for another 199 over 8 sec, stacking. Healing increased by 100% when not in a raid.
     tranquility = {
         id = 740,
@@ -1171,10 +1210,7 @@ spec:RegisterAbilities( {
         handler = function ()
 
             if buff.moonkin_form.down and buff.treant_form.down and buff.tree_of_life_form.down then
-                if talent.fluid_form.enabled then
-                    shift( "moonkin_form" )
-                else unshift()
-                end
+                if talent.fluid_form.enabled and not buff.moonkin_form.up then unshift() end
             end
 
             if talent.blooming_infusion.enabled then removeBuff( "blooming_infusion" ) end
@@ -1182,6 +1218,10 @@ spec:RegisterAbilities( {
 
             removeBuff( "dawning_sun" )
             if talent.master_shapeshifter.enabled then gain( 43750, "mana" ) end
+        end,
+
+        finish = function ()
+            if talent.fluid_form.enabled and buff.moonkin_form.down then shift( "moonkin_form" ) end
         end,
 
         copy = { "solar_wrath", 5176 }
