@@ -143,8 +143,8 @@ all:RegisterAbilities( {
                 id = 443407,
                 duration = 15,
                 max_stack = 1
-            },
-        },
+            }
+        }
     },
 
     oppressive_orators_larynx = {
@@ -642,7 +642,7 @@ all:RegisterAbilities( {
                 alias = { "reckless_incubation_haste", "reckless_incubation_mastery", "reckless_incubation_crit", "reckless_incubation_vers" },
                 aliasMode = "first",
                 aliasType = "buff",
-                duration = 3600,
+                duration = 3600
             }
         }
     },
@@ -679,7 +679,7 @@ all:RegisterAbilities( {
         item = 223509,
         toggle = "cooldowns",
 
-        proc = "damage",
+        proc = "damage"
     },
 
     sikrans_endless_arsenal = {
@@ -818,7 +818,7 @@ all:RegisterAbilities( {
                 id = 450719,
                 duration = 20,
                 max_stack = 1
-            },
+            }
         }
     },
 
