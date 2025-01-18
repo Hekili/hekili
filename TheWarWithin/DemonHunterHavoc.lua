@@ -1,5 +1,5 @@
 -- DemonHunterHavoc.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "DEMONHUNTER" then return end
 
@@ -2120,7 +2120,7 @@ spec:RegisterAbilities( {
     spectral_sight = {
         id = 188501,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - ( 5 * talent.lost_in_darkness.rank ) end,
         gcd = "spell",
         school = "physical",
 
