@@ -1870,10 +1870,10 @@ spec:RegisterAbilities( {
 
         texture = 132369,
 
-        usable = function ()
+        readyTime = function ()
             if action.taunt.known and action.heroic_throw.known and settings.check_ww_range and not ( action.taunt.in_range and not action.heroic_throw.in_range ) then return false, "target is outside of whirlwind range" end
-            if active_enemies == 1 and buff.meat_cleaver.up then return false, "meat cleaver already active" end
-            return true
+            if active_enemies == 1 and buff.meat_cleaver.up then return buff.meat_cleaver.remains end
+            return 0
         end,
 
         handler = function ()
