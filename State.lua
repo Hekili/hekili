@@ -1213,7 +1213,8 @@ local function timeToInterrupt()
     local casting = state.debuff.casting
     if casting.down or casting.v2 == 1 then return 3600 end
     if casting.v3 == 1 then return 0 end
-    return max( 0, casting.remains - Hekili.DB.profile.toggles.interrupts.castRemainingThreshold or 0.25 )
+    local threshold = Hekili.DB.profile.toggles.interrupts.castRemainingThreshold or 0.25
+    return max( 0, casting.remains - threshold )
 end
 state.timeToInterrupt = timeToInterrupt
 
