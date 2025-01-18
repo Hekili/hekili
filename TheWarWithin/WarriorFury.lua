@@ -1872,12 +1872,16 @@ spec:RegisterAbilities( {
 
         usable = function ()
             if action.taunt.known and action.heroic_throw.known and settings.check_ww_range and not ( action.taunt.in_range and not action.heroic_throw.in_range ) then return false, "target is outside of whirlwind range" end
+            if active_enemies == 1 and buff.meat_cleaver.up then return false, "meat cleaver already active" end
             return true
         end,
 
         handler = function ()
-            if talent.improved_whirlwind.enabled then
-                applyBuff( "meat_cleaver", nil, talent.meat_cleaver.enabled and 4 or 2 )
+            if talent.improved_whirlwind.enabled or talent.meat_cleaver.enabled then
+                -- Only apply if buff is down or about to expire
+                if buff.meat_cleaver.down or buff.meat_cleaver.remains < gcd.max then
+                    applyBuff( "meat_cleaver", nil, talent.meat_cleaver.enabled and 4 or 2 )
+                end
             end
         end,
     },
