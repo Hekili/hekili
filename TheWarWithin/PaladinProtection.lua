@@ -798,23 +798,16 @@ spec:RegisterAuras( {
 } )
 
 
--- Current Expansion
+-- The War Within
 spec:RegisterGear( "tww2", 229244, 229242, 229243, 229245, 229247 )
 spec:RegisterAuras( {
-   -- 2-set
-    set_placeholder_2 = {
-        id = 1216828,
-        duration = 30,
-        max_stack = 10
+    -- https://www.wowhead.com/ptr-2/spell=1218114/luck-of-the-draw
+    -- Each time you take damage you have a chance to activate Luck of the Draw! causing you to cast Guardian of Ancient Kings for 4.0 sec. Your damage done is increased by 15% for 10 sec after Luck of the Draw! activates.
+    luck_of_the_draw = {
+    id = 1218114,
+    duration = 10,
+    max_stack = 1
     },
-    set_placeholder_4 = {
-        id = 1216837,
-        duration = 4,
-        max_stack = 1
-    },
-
-
-
 } )
 
 -- Legacy
@@ -1808,7 +1801,10 @@ spec:RegisterAbilities( {
                 end
             end
 
-
+            if set_bonus.tww2 >= 4 and buff.luck_of_the_draw.up then
+                gain( 1, "holy_power" )
+                buff.luck_of_the_draw.expires = buff.luck_of_the_draw.expires + 0.5
+            end
 
             applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
             last_shield = query_time
