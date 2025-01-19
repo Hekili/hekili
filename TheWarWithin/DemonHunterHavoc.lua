@@ -10,6 +10,7 @@ local class, state = Hekili.Class, Hekili.State
 local strformat, wipe = string.format, table.wipe
 local GetSpellInfo = ns.GetUnpackedSpellInfo
 local IsSpellOverlayed = IsSpellOverlayed
+local GetSpellCastCount = C_Spell.GetSpellCastCount
 local spec = Hekili:NewSpecialization( 577 )
 
 spec:RegisterResource( Enum.PowerType.Fury, {
@@ -694,9 +695,6 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     reavers_glaive = {
-        id = 444686,
-        duration = 15,
-        max_stack = 2
     },
     restless_hunter = {
         id = 390212,
@@ -953,7 +951,7 @@ spec:RegisterStateFunction( "create_sigil", function( sigil )
 end )
 
 spec:RegisterStateExpr( "soul_fragments", function ()
-    return buff.soul_fragments.stack
+    return GetSpellCastCount(232893) -- only works with Reaver hero tree
 end )
 
 spec:RegisterStateTable( "fragments", {
@@ -1111,6 +1109,31 @@ spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266, 217228, 217
 -- (2) Blade Dance automatically triggers Throw Glaive on your primary target for $s3% damage and each slash has a $s2% chance to Throw Glaive an enemy for $s1% damage.
 -- (4) Throw Glaive reduces the remaining cooldown of The Hunt by ${$s1/1000}.1 sec, and The Hunt's damage over time effect lasts ${$s2/1000} sec longer.
 
+spec:RegisterGear( "tww2", 229316, 229314, 229319, 229317, 229315 )
+spec:RegisterAuras( {
+    -- 2-set
+    -- Winning Streak! Increase the DPS of Blade Dance and Chaos Strike by 3% stacking pu to 10 times. Blade Dance and Chaos Strike have 15% chance of removing Winning Streak! .
+    winning_streak = {
+        id = 1217011,
+        duration = 3600,
+        max_stack = 10
+        },
+    --4-set
+    -- Winning Streak persists for 7s after being cancelled. Entering Demon Form sacrifices all Winning Streak! stacks to gain 0% (?) Crit Strike Chance per stack consumed. Lasts 15s
+    necessary_sacrifice = {
+    id = 1217055,
+    duration = 15,
+    max_stack = 10
+    },
+    -- https://www.wowhead.com/spell=1220706
+    -- Winning Streak! Ending a Winning Streak! Blade Dance and Chaos Strike damage increased by 6%.
+    winning_streak_temporary = {
+        id = 1220706,
+        duration = 7,
+        max_stack = 10
+    },
+
+} )
 
 spec:RegisterGear( "tww1", 212068, 212066, 212065, 212064, 212063 )
 spec:RegisterAura( "blade_rhapsody", {
@@ -1178,7 +1201,7 @@ spec:RegisterHook( "reset_precast", function ()
 
     meta_cd_multiplier = 1 / ( 1 + rps )
 
-    if IsActiveSpell( 442294 ) then
+    if IsSpellKnownOrOverridesKnown( 442294 ) then
         applyBuff( "reavers_glaive" )
         if Hekili.ActiveDebug then Hekili:Debug( "Applied Reaver's Glaive." ) end
     end
@@ -1290,9 +1313,6 @@ do
     end )
 end
 
--- SimC documentation reflects that there are still the following expressions, which appear unused:
--- greater_soul_fragments, lesser_soul_fragments, blade_dance_worth_using, death_sweep_worth_using
--- They are not implemented becuase that documentation is from mid-2016.
 
 local TriggerDemonic = setfenv( function( )
 
@@ -1374,7 +1394,12 @@ spec:RegisterAbilities( {
             if set_bonus.tww1 >= 2 then removeBuff( "blade_rhapsody") end
 
             -- Hero Talents
-            removeBuff( "glaive_flurry" )
+            if buff.glaive_flurry.up then
+                removeBuff( "glaive_flurry" )
+                if talent.thrill_of_the_fight.enabled and buff.rending_strike.down then
+                    applyBuff( "thrill_of_the_fight" )
+                end
+            end
         end,
 
         copy = "blade_dance1"
@@ -1448,6 +1473,9 @@ spec:RegisterAbilities( {
             if buff.rending_strike.up then
                 applyDebuff( "target", "reavers_mark" )
                 removeBuff( "rending_strike" )
+                if talent.thrill_of_the_fight.enabled and buff.glaive_flurry.down then
+                    applyBuff( "thrill_of_the_fight" )
+                end
             end
             removeBuff( "warblades_hunger" )
 
@@ -1742,8 +1770,8 @@ spec:RegisterAbilities( {
         handler = function ()
             setDistance( 5 )
             setCooldown( "global_cooldown", 0.25 )
+
             if buff.unbound_chaos.up then removeBuff( "unbound_chaos" ) end
-            if cooldown.vengeful_retreat.remains < 1 then setCooldown( "vengeful_retreat", 1 ) end
             if buff.inertia_prep_buff.up then
                 removeBuff( "inertia_prep_buff" )
                 applyBuff( "inertia_damage_buff" )
@@ -1770,6 +1798,19 @@ spec:RegisterAbilities( {
 
         handler = function ()
             setDistance( 5 )
+            if buff.unbound_chaos.up then removeBuff( "unbound_chaos" ) end
+            if buff.inertia_prep_buff.up then
+                removeBuff( "inertia_prep_buff" )
+                applyBuff( "inertia_damage_buff" )
+            end
+            if talent.warblades_hunger.enabled then
+                if buff.art_of_the_glaive.stack + soul_fragments >= 6 then
+                    applyBuff( "reavers_glaive" )
+                else
+                    addStack( "art_of_the_glaive", soul_fragments )
+                end
+                addStack( "warblades_hunger", soul_fragments )
+            end
         end,
     },
 
@@ -2021,6 +2062,7 @@ spec:RegisterAbilities( {
             end
             if talent.flames_of_fury.enabled then gain( talent.flames_of_fury.rank * active_enemies, "fury" ) end
             if talent.student_of_suffering.enabled then applyBuff( "student_of_suffering" ) end
+
         end,
 
         bind = "sigil_of_flame"
@@ -2116,6 +2158,9 @@ spec:RegisterAbilities( {
             end
             if talent.unbound_chaos.enabled then applyBuff( "unbound_chaos" ) end
 
+            -- Hero Talents
+            if talent.art_of_the_glaive.enabled then applyBuff( "reavers_glaive" ) end
+
             -- Legacy
             if legendary.blazing_slaughter.enabled then
                 applyBuff( "immolation_aura" )
@@ -2159,6 +2204,32 @@ spec:RegisterAbilities( {
         bind = "reavers_glaive"
     },
 
+    reavers_glaive = {
+        id = 442294,
+        cast = 0,
+        charges = function () return talent.champion_of_the_glaive.enabled and 2 or nil end,
+        cooldown = 9,
+        recharge = function () return talent.champion_of_the_glaive.enabled and 9 or nil end,
+        gcd = "spell",
+        school = "physical",
+        known = 442290,
+
+        spend = function() return talent.keen_engagement.enabled and -20 or nil end,
+        spendType = function() return talent.keen_engagement.enabled and "fury" or nil end,
+
+        startsCombat = true,
+        buff = "reavers_glaive",
+
+        handler = function ()
+            removeBuff( "reavers_glaive" )
+            if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
+            applyBuff( "rending_strike" )
+            applyBuff( "glaive_flurry" )
+        end,
+
+        bind = "throw_glaive"
+    },
+
     -- Taunts the target to attack you.
     torment = {
         id = 185245,
@@ -2197,20 +2268,15 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+
+            -- Standard effects/Talents
             applyBuff( "vengeful_retreat_movement" )
             if cooldown.fel_rush.remains < 1 then setCooldown( "fel_rush", 1 ) end
-            applyDebuff( "target", "vengeful_retreat" )
-            applyDebuff( "target", "vengeful_retreat_snare" )
-            --[[ Assume that we retreated away.
-            setDistance( 15 )]]--
-
-            if talent.evasive_action.enabled then
-                if buff.evasive_action.down then applyBuff( "evasive_action" )
-                else
-                    removeBuff( "evasive_action" )
-                    setCooldown( "vengeful_retreat", 0 )
-                end
+            if talent.vengeful_bonds.enabled then
+                applyDebuff( "target", "vengeful_retreat" )
+                applyDebuff( "target", "vengeful_retreat_snare" )
             end
+
             if talent.tactical_retreat.enabled then applyBuff( "tactical_retreat" ) end
             if talent.exergy.enabled then
                 applyBuff( "exergy", min( 30, buff.exergy.remains + 20 ) )
@@ -2218,6 +2284,18 @@ spec:RegisterAbilities( {
                 applyBuff( "inertia_prep_buff" )
             end
             if talent.unbound_chaos.enabled then applyBuff( "unbound_chaos" ) end
+
+            -- Hero Talents
+            if talent.unhindered_assault.enabled then setCooldown( "felblade", 0 ) end
+            if talent.evasive_action.enabled then
+                if buff.evasive_action.down then applyBuff( "evasive_action" )
+                else
+                    removeBuff( "evasive_action" )
+                    setCooldown( "vengeful_retreat", 0 )
+                end
+            end
+
+            -- PvP
             if pvptalent.glimpse.enabled then applyBuff( "glimpse" ) end
         end,
     }
