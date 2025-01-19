@@ -92,7 +92,7 @@ spec:RegisterTalents( {
     vengeful_bonds            = {  90930, 320635, 1 }, -- Vengeful Retreat reduces the movement speed of all nearby enemies by 70% for 3 sec.
     vengeful_retreat          = {  90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 3,600 Physical damage.
     will_of_the_illidari      = {  91000, 389695, 1 }, -- Increases maximum health by 5%.
-    
+
     -- Vengeance
     agonizing_flames          = {  90971, 207548, 1 }, -- Immolation Aura increases your movement speed by 10% and its duration is increased by 50%.
     ascending_flame           = {  90960, 428603, 1 }, -- Sigil of Flame's initial damage is increased by 50%. Multiple applications of Sigil of Flame may overlap.
@@ -139,7 +139,7 @@ spec:RegisterTalents( {
     void_reaver               = {  90977, 268175, 1 }, -- Frailty now also reduces all damage you take from afflicted targets by 3%. Enemies struck by Soul Cleave are afflicted with Frailty for 6 sec.
     volatile_flameblood       = {  90986, 390808, 1 }, -- Immolation Aura generates 5-10 Fury when it deals critical damage. This effect may only occur once per 1 sec.
     vulnerability             = {  90981, 389976, 2 }, -- Frailty now also increases all damage you deal to afflicted targets by 2%.
-    
+
     -- Aldrachi Reaver
     aldrachi_tactics          = {  94914, 442683, 1 }, -- The second enhanced ability in a pattern shatters an additional Soul Fragment.
     army_unto_oneself         = {  94896, 442714, 1 }, -- Felblade surrounds you with a Blade Ward, reducing damage taken by 10% for 5 sec.
@@ -155,7 +155,7 @@ spec:RegisterTalents( {
     unhindered_assault        = {  94911, 444931, 1 }, -- Vengeful Retreat resets the cooldown of Felblade.
     warblades_hunger          = {  94906, 442502, 1 }, -- Consuming a Soul Fragment causes your next Fracture to deal 7,627 additional Physical damage.
     wounded_quarry            = {  94897, 442806, 1 }, -- Expose weaknesses in the target of your Reaver's Mark, causing your Physical damage to any enemy to also deal 30% of the damage dealt to your marked target as Chaos. 
-    
+
     -- Fel-Scarred
     burning_blades            = {  94905, 452408, 1 }, -- Your blades burn with Fel energy, causing your Soul Cleave, Throw Glaive, and auto-attacks to deal an additional 35% damage as Fire over 6 sec.
     demonic_intensity         = {  94901, 452415, 1 }, -- Activating Metamorphosis greatly empowers Fel Devastation, Immolation Aura, and Sigil of Flame. Demonsurge damage is increased by 10% for each time it previously triggered while your demon form is active.
@@ -268,20 +268,12 @@ spec:RegisterAuras( {
     demonsurge_hardcast = {
         id = 452489,
     },
-    demonsurge_spirit_burst = {
-    },
-    demonsurge_soul_sunder = {
-
-    },
-    demonsurge_fel_desolation = {
-
-    },
-    demonsurge_consuming_fire = {
-
-    },
-    demonsurge_sigil_of_doom = {
-
-    },
+    -- Fake Buffs
+    demonsurge_spirit_burst = {},
+    demonsurge_soul_sunder = {},
+    demonsurge_fel_desolation = {},
+    demonsurge_consuming_fire = {},
+    demonsurge_sigil_of_doom = {},
 
     -- Vengeful Retreat may be cast again.
     evasive_action = {
@@ -419,9 +411,6 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     reavers_glaive = {
-        id = 444764,
-        duration = 15,
-        max_stack = 2
     },
     reavers_mark = {
         id = 442624,
@@ -658,7 +647,6 @@ spec:RegisterAuras( {
     },
 } )
 
-
 local sigils = setmetatable( {}, {
     __index = function( t, k )
         t[ k ] = 0
@@ -681,14 +669,13 @@ spec:RegisterStateExpr( "soul_fragments", function ()
     return buff.soul_fragments.stack
 end )
 
-spec:RegisterStateExpr( "last_metamorphosis", function ()
+--[[spec:RegisterStateExpr( "last_metamorphosis", function ()
     return action.metamorphosis.lastCast
-end )
+end )--]]
 
 spec:RegisterStateExpr( "last_infernal_strike", function ()
     return action.infernal_strike.lastCast
 end )
-
 
 local activation_time = function ()
     return talent.quickened_sigils.enabled and 1 or 2
@@ -753,11 +740,10 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sour
     end
 end, false )
 
-
 local sigil_types = { "chains", "flame", "misery", "silence" }
 
 spec:RegisterHook( "reset_precast", function ()
-    last_metamorphosis = nil
+    -- last_metamorphosis = nil
     last_infernal_strike = nil
 
     for i, sigil in ipairs( sigil_types ) do
@@ -786,12 +772,6 @@ spec:RegisterHook( "reset_precast", function ()
         sigils.elysian_decree = 0
     end
 
-    if talent.abyssal_strike.enabled then
-        -- Infernal Strike is also a trigger for Sigil of Flame.
-        local activation = ( action.infernal_strike.lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
-        if activation > now and activation > sigils[ sigil ] then sigils.flame = activation end
-    end
-
     if fragments.realTime > 0 and fragments.realTime < now then
         fragments.real = 0
         fragments.realTime = 0
@@ -812,27 +792,21 @@ spec:RegisterHook( "reset_precast", function ()
         addStack( "soul_fragments", nil, fragments.real )
     end
 
-    if IsActiveSpell( 442294 ) then applyBuff( "reavers_glaive" ) end
+    if IsSpellKnownOrOverridesKnown( 442294 ) then applyBuff( "reavers_glaive" ) end
 
     if talent.demonsurge.enabled and buff.metamorphosis.up then
-        if talent.demonic.enabled and action.fel_devastation.lastCast >= buff.metamorphosis.applied then applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-        if action.metamorphosis.lastCast >= buff.metamorphosis.applied then applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains ) end
-        if action.soul_sunder.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains ) end
-        if action.spirit_burst.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains ) end
-
+        if IsSpellOverlayed( 452436 ) then applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains ) end
+        if IsSpellOverlayed( 452437 ) then applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains ) end
         if talent.demonic_intensity.enabled then
-
-            if action.fel_desolation.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_fel_desolation", buff.metamorphosis.remains ) end
-            if action.consuming_fire.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_consuming_fire", buff.metamorphosis.remains ) end
-            if action.sigil_of_doom.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_sigil_of_doom", buff.metamorphosis.remains ) end
-
-            setCooldown( "fel_devastation", max( cooldown.fel_devastation.remains, cooldown.fel_desolation.remains, buff.metamorphosis.remains ) ) -- To support cooldown.eye_beam.up checks in SimC priority.
+            if IsSpellOverlayed( 452486 ) then applyBuff( "demonsurge_fel_desolation", buff.metamorphosis.remains ) end
+            if IsSpellOverlayed( 452487 ) then applyBuff( "demonsurge_consuming_fire", buff.metamorphosis.remains ) end
+            if IsSpellOverlayed( 452490 ) then applyBuff( "demonsurge_sigil_of_doom", buff.metamorphosis.remains ) end
+            -- setCooldown( "fel_devastation", max( cooldown.fel_devastation.remains, cooldown.fel_desolation.remains, buff.metamorphosis.remains ) ) -- To support cooldown.eye_beam.up checks in SimC priority.
         end
-
         if Hekili.ActiveDebug then
             Hekili:Debug( "Demon Surge status:\n" ..
-                " - Hardcast " .. ( buff.demonsurge_hardcast.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
-                " - Demonic " .. ( buff.demonsurge_demonic.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
+                -- " - Hardcast " .. ( buff.demonsurge_hardcast.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
+                -- " - Demonic " .. ( buff.demonsurge_demonic.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Consuming Fire " .. ( buff.demonsurge_consuming_fire.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Fel Desolation " .. ( buff.demonsurge_fel_desolation.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Sigil of Doom " .. ( buff.demonsurge_sigil_of_doom.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
@@ -846,7 +820,6 @@ spec:RegisterHook( "reset_precast", function ()
     fury_spent = nil
 end )
 
-
 spec:RegisterHook( "spend", function( amt, resource )
     if set_bonus.tier31_4pc == 0 or amt < 0 or resource ~= "fury" then return end
 
@@ -856,7 +829,6 @@ spec:RegisterHook( "spend", function( amt, resource )
         fury_spent = fury_spent % 40
     end
 end )
-
 
 spec:RegisterHook( "advance_end", function( time )
     if query_time - time < sigils.flame and query_time >= sigils.flame then
@@ -871,7 +843,6 @@ spec:RegisterHook( "advance_end", function( time )
     end
 end )
 
-
 -- approach that actually calculated time remaining of fiery_brand via combat log. last modified 1/27/2023.
 spec:RegisterStateExpr( "fiery_brand_dot_primary_expires", function()
     return action.fiery_brand.lastCast + bonus_time_from_immo_aura + class.auras.fiery_brand.duration
@@ -885,7 +856,7 @@ spec:RegisterStateExpr( "fiery_brand_dot_primary_ticking", function()
     return fiery_brand_dot_primary_remains > 0
 end )
 
-
+--[[
 -- Incoming Souls calculation added to APL in August 2023.
 spec:RegisterVariable( "incoming_souls", function()
     -- actions+=/variable,name=incoming_souls,op=reset
@@ -920,8 +891,7 @@ spec:RegisterVariable( "incoming_souls", function()
     if talent.soul_carver.enabled and cooldown.soul_carver.true_remains > 57 then souls = souls + ( 3 - ( cooldown.soul_carver.duration - ceil( cooldown.soul_carver.remains ) ) ) end
 
     return souls
-end )
-
+end )--]]
 
 -- The War Within
 spec:RegisterGear( "tww2", 229316, 229314, 229319, 229317, 229315 )
@@ -956,7 +926,6 @@ spec:RegisterAura( "fiery_resolve", {
     max_stack = 5
 } )
 
-
 local furySpent = 0
 
 local FURY = Enum.PowerType.Fury
@@ -987,15 +956,19 @@ spec:RegisterGear( "class", 139715, 139716, 139717, 139718, 139719, 139720, 1397
 spec:RegisterGear( "convergence_of_fates", 140806 )
 
 local ConsumeSoulFragments = setfenv( function( amt )
-
     if talent.soul_furnace.enabled then
-        addStack( "soul_furnace_stack", nil, amt )
-        if buff.soul_furnace_stack.stack == 10 then
-            removeBuff( "soul_furnace_stack" )
+        local overflow = buff.soul_furnace_stack.stack + amt
+        if overflow >= 10 then
             applyBuff( "soul_furnace" )
+            overflow = overflow - 10
+            if overflow > 0 then -- stacks carry over past 10 to start a new stack
+                applyBuff( "soul_furnace_stack", nil, overflow )
+            end
+        else
+            addStack( "soul_furnace_stack", nil, amt )
         end
     end
-
+    -- Reaver Tree
     if talent.art_of_the_glaive.enabled then
         addStack( "art_of_the_glaive", nil, amt )
         if  buff.art_of_the_glaive.stack == 20 then
@@ -1003,17 +976,33 @@ local ConsumeSoulFragments = setfenv( function( amt )
             applyBuff( "reavers_glaive" )
         end
     end
-
     if talent.warblades_hunger.enabled then
         addStack( "warblades_hunger", nil, amt )
     end
+
     gainChargeTime( "demon_spikes", ( 0.25 * talent.feed_the_demon.rank * amt ) )
     buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - amt )
-    
 end, state )
 
-
 local sigilList = { "sigil_of_Flame", "sigil_of_misery", "sigil_of_spite", "sigil_of_silence", "sigil_of_chains", "sigil_of_doom" }
+
+local TriggerDemonic = setfenv( function( )
+    if buff.metamorphosis.up then
+        buff.metamorphosis.duration = buff.metamorphosis.duration + 7
+        buff.metamorphosis.expires = buff.metamorphosis.expires + 7
+    else
+        applyBuff( "metamorphosis", 7 )
+        if talent.inner_demon.enabled then
+            applyBuff( "inner_demon" )
+        end
+        stat.haste = stat.haste + 10
+        -- Fel-Scarred
+        if talent.demonsurge.enabled then
+            applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
+            applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
+        end
+    end
+end, state )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -1119,7 +1108,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     demonic_trample = {
         id = 205629,
         cast = 0,
@@ -1185,40 +1173,7 @@ spec:RegisterAbilities( {
 
         start = function ()
             applyBuff( "fel_devastation" )
-
-            if talent.demonic.enabled then
-                if buff.metamorphosis.up then
-                    buff.metamorphosis.duration = buff.metamorphosis.duration + 7
-                    buff.metamorphosis.expires = buff.metamorphosis.expires + 7
-
-                    if talent.demonsurge.enabled then
-                        if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
-
-                        applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-                    end
-                else
-                    applyBuff( "metamorphosis", 7 )
-                    buff.metamorphosis.duration = 7
-
-                    if talent.demonsurge.enabled then
-                        applyBuff( "demonsurge_demonic", buff.metamorphosis.remains )
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
-
-                        applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-                    end
-
-                end
-            end
-
-
-            -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
-            if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
-                debuff.sinful_brand.expires = debuff.sinful_brand.expires + 0.75
-            end
+            if talent.demonic.enabled then TriggerDemonic() end
         end,
 
         finish = function ()
@@ -1252,41 +1207,13 @@ spec:RegisterAbilities( {
 
         start = function ()
             applyBuff( "fel_devastation" )
-            removeBuff( "demonsurge_fel_desolation" )
-            if talent.demonic_intensity.enabled then addStack( "demonsurge" ) end
 
-            if talent.demonic.enabled then
-                if buff.metamorphosis.up then
-                    buff.metamorphosis.duration = buff.metamorphosis.duration + 7
-                    buff.metamorphosis.expires = buff.metamorphosis.expires + 7
-
-                    if talent.demonsurge.enabled then
-                        if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains ) end
-
-                        applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-                    end
-                else
-                    applyBuff( "metamorphosis", 7 )
-                    buff.metamorphosis.duration = 7
-
-                    if talent.demonsurge.enabled then
-                        applyBuff( "demonsurge_demonic", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
-
-                        applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-                    end
-                end
+            if talent.demonic_intensity.enabled and buff.demonsurge_fel_Desolation.up then
+                addStack( "demonsurge" )
+                removeBuff( "demonsurge_fel_desolation" )
             end
 
-            -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
-            if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
-                debuff.sinful_brand.expires = debuff.sinful_brand.expires + 0.75
-            end
+            if talent.demonic.enabled then TriggerDemonic() end
         end,
 
         finish = function ()
@@ -1374,7 +1301,6 @@ spec:RegisterAbilities( {
 
         end,
     },
-
 
     illidans_grasp = {
         id = function () return debuff.illidans_grasp.up and 208173 or 205630 end,
@@ -1515,16 +1441,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
 
-            if buff.metamorphosis.up then 
-                applyBuff( "metamorphosis", buff.metamorphosis.remains + spec.auras.metamorphosis.duration )
-            else
-                applyBuff( "metamorphosis" )
-            end
+            applyBuff( "metamorphosis", buff.metamorphosis.remains + 15 )
             gain( health.max * 0.4, "health" )
 
             if talent.demonsurge.enabled then
-                applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
-                if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires end
                 applyBuff( "demonsurge_soul_cleave", buff.metamorphosis.remains )
                 applyBuff( "demonsurge_spirit_bomb", buff.metamorphosis.remains )
             end
@@ -1538,22 +1458,13 @@ spec:RegisterAbilities( {
             if talent.violent_transformation.enabled then
                 setCooldown( "sigil_of_flame", 0 )
                 setCooldown( "fel_devastation", 0 )
-
-                if talent.demonic_intensity.enabled then
-                    setCooldown( "sigil_of_doom", 0 )
-                    setCooldown( "fel_desolation", 0 )
-                end
+                setCooldown( "sigil_of_doom", 0 )
+                setCooldown( "fel_desolation", 0 )
             end
 
-            if action.sinful_brand.known then
-                applyDebuff( "target", "sinful_brand" )
-                active_dot.sinful_brand = active_enemies
-            end
-
-            last_metamorphosis = query_time
+            -- last_metamorphosis = query_time
         end,
     },
-
 
     reverse_magic = {
         id = 205604,
@@ -1723,8 +1634,6 @@ spec:RegisterAbilities( {
 
         copy = { 207684, 389813 }
     },
-
-
 
     sigil_of_silence = {
         id = function () return talent.precise_sigils.enabled and 389809 or 202137 end,
@@ -1913,7 +1822,7 @@ spec:RegisterAbilities( {
 
         end,
 
-        
+
         bind = "spirit_burst"
     },
 
@@ -1942,7 +1851,6 @@ spec:RegisterAbilities( {
         bind = "spirit_bomb"
     },
 
-
     -- Talent / Covenant (Night Fae): Charge to your target, striking them for $370966s1 $@spelldesc395042 damage, rooting them in place for $370970d and inflicting $370969o1 $@spelldesc395042 damage over $370969d to up to $370967s2 enemies in your path.     The pursuit invigorates your soul, healing you for $?c1[$370968s1%][$370968s2%] of the damage you deal to your Hunt target for $370966d.
     the_hunt = {
         id = function() return talent.the_hunt.enabled and 370965 or 323639 end,
@@ -1964,11 +1872,13 @@ spec:RegisterAbilities( {
                 applyBuff( "immolation_aura" )
                 applyBuff( "blazing_slaughter" )
             end
+            -- Hero Talents
+            if talent.art_of_the_glaive.enabled then applyBuff( "reavers_glaive" ) end
+
         end,
 
         copy = { 370965, 323639 }
     },
-
 
     reavers_glaive = {
         id = 442294,
@@ -1980,6 +1890,7 @@ spec:RegisterAbilities( {
             end,
         gcd = "spell",
         school = "physical",
+        known = 442290,
 
         spend = function() return talent.keen_engagement.enabled and -20 or nil end,
         spendType = function() return talent.keen_engagement.enabled and "fury" or nil end,
@@ -2038,7 +1949,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "torment" )
         end,
     },
-
 
     tormentor = {
         id = 207029,
