@@ -2033,6 +2033,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "celestial_alignment" )
+            if set_bonus.tww2 >= 2 then summonTotem( "wild_mushroom" ) end
             stat.haste = stat.haste + 0.1
 
             eclipse.trigger_both( 20 )
@@ -2352,6 +2353,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             shift( "moonkin_form" )
+            if set_bonus.tww2 >= 2 then summonTotem( "wild_mushroom" ) end
 
             applyBuff( "incarnation" )
             stat.crit = stat.crit + 0.10

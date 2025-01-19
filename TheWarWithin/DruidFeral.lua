@@ -1500,14 +1500,20 @@ end )
 -- The War Within
 spec:RegisterGear( "tww2", 229310, 229308, 229306, 229307, 229305  )
 spec:RegisterAuras( {
-    -- 2-set
-    -- https://www.wowhead.com/spell=1218033
-    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
-    --[[jackpot = {
-        id = 1218033,
-        duration = 10,
-        max_stack = 1,
-    },--]]
+    -- https://www.wowhead.com/ptr-2/spell=1217236/winning-streak
+    -- Your spells and abilities have a chance to activate a Winning Streak! increasing the damage of your Ferocious Bite, Rip, and Primal Wrath by 3% stacking up to 10 times. Ferocious Bite, Rip, and Primal Wrath have a 15% chance to remove Winning Streak!
+    winning_streak = {
+    id = 1217236,
+    duration = 10,
+    max_stack = 10,
+    },
+
+    big_winner = {
+    -- https://www.wowhead.com/ptr-2/spell=1217245/big-winner
+    id = 1217245,
+    duration = 6,
+    max_stack = 1,
+    },
 
 } )
 
@@ -1898,6 +1904,7 @@ spec:RegisterAbilities( {
                 applyBuff( "predatory_swiftness" )
                 removeBuff( "apex_predator" )
                 removeBuff( "apex_predators_craving" )
+                if set_bonus.tww2 >= 4 then applyBuff( "big_winner" ) end
             else
                 spend( min( 5, combo_points.current ), "combo_points" )
             end

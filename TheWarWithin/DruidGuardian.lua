@@ -952,15 +952,22 @@ end )
 spec:RegisterGear( "tww2", 229310, 229308, 229306, 229307, 229305  )
 spec:RegisterAuras( {
     -- 2-set
-    -- https://www.wowhead.com/spell=1218033
-    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
-    --[[jackpot = {
-        id = 1218033,
-        duration = 10,
-        max_stack = 1,
-    },--]]
+    -- https://www.wowhead.com/ptr-2/spell=1218553/luck-of-the-draw
+    -- Each time you take damage you have a chance to activate Luck of the Draw! causing you to cast Survival Instincts for 4.0 sec. Your damage done is increased by 15% for 8 sec after Luck of the Draw! activates.
+    luck_of_the_draw = {
+    id = 1218553,
+    duration = 8,
+    max_stack = 1,
+    },
+    stacked_deck = {
+    -- https://www.wowhead.com/ptr-2/spell=1218537/stacked-deck
+    --After you gain Luck of the Draw! your next 10 Druid abilities cast another Druid ability at 125% effectiveness.
+    id = 1218537,
+    duration = 20,
+    max_stack = 10,
+    },
 
-} )
+    } )
 
 -- Tier 29
 spec:RegisterGear( "tier29", 200351, 200353, 200354, 200355, 200356 )
