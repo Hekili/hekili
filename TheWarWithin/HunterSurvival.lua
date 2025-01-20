@@ -698,6 +698,80 @@ spec:RegisterAuras( {
     }
 } )
 
+-- Pets
+spec:RegisterPets({
+    -- Howl of the Pack Leader
+    wyvern = {
+        id = 234170,
+        spell = "kill_command",
+        duration = 15,
+    },
+    --[[ Not yet detectable in combatlogs?
+    boar = {
+
+    },
+    bear = {
+
+    }--]]
+} )
+
+local pack_leader__buff_cycle = {
+    "howl_of_the_pack_leader_wyvern",
+    "howl_of_the_pack_leader_pig",
+    "howl_of_the_pack_leader_bear",
+}
+
+local pack_leader_buff_current = 1
+
+local function HowlOfThePackLeaderHandler( isCoordinatedAssault )
+    -- Track the number of summons triggered.
+    local summonCount = 0
+
+    if isCoordinatedAssault then
+        -- Scenario 1: Coordinated Assault grants the next buff without triggering summons.
+        applyBuff( pack_leader__buff_cycle[ pack_leader_buff_current ] )
+        pack_leader_buff_current = ( pack_leader_buff_current % #pack_leader__buff_cycle ) + 1 -- Advance to the next buff.
+        -- No cooldown reduction happens here.
+        applyBuff( "lead_from_the_front" )
+    else
+        -- Scenario 2: Triggered by Kill Command (summoning is possible).
+        if buff.howl_of_the_pack_leader_cooldown.up then
+            -- Scenario 2A: Cooldown buff is active.
+            -- Consume all active buffs (summoning them) and reduce the cooldown buff.
+            for _, buffName in ipairs( pack_leader__buff_cycle ) do
+                if buff[ buffName ].up then
+                    removeBuff( buffName )
+                    summonCount = summonCount + 1
+                    -- Refresh Mongoose Fury if summoning the pig.
+                    if buffName == "howl_of_the_pack_leader_pig" and talent.hogstrider.enabled then
+                        applyBuff( "mongoose_fury", spec.auras.mongoose_fury.duration, buff.mongoose_fury.stack )
+                    end
+                end
+            end
+            if talent.dire_summons.enabled then 
+                reduceCooldown( "howl_of_the_pack_leader", 1 )
+            end
+        else
+            -- Scenario 2B: Cooldown buff is not active.
+            -- Consume all active buffs (summoning them) and apply a new cooldown buff.
+            for _, buffName in ipairs( pack_leader__buff_cycle ) do
+                if buff[ buffName ].up then
+                    removeBuff( buffName )
+                    summonCount = summonCount + 1
+                    -- Refresh Mongoose Fury if summoning the pig.
+                    if buffName == "howl_of_the_pack_leader_pig" and talent.hogstrider.enabled then
+                        applyBuff( "mongoose_fury", spec.auras.mongoose_fury.duration, buff.mongoose_fury.stack )
+                    end
+                end
+            end
+            applyBuff( "howl_of_the_pack_leader_cooldown" )
+        end
+        -- Apply the Wildfire Bomb cooldown reduction based on the number of summons.
+        if talent.pack_mentality.enabled then reduceCooldown( "wildfire_bomb", 18 * summonCount ) end
+        if summonCount > 0 then addStack( "tip_of_the_spear" ) end
+    end
+end
+
 
 spec:RegisterHook( "runHandler", function( action, pool )
     if buff.camouflage.up and action ~= "camouflage" then removeBuff( "camouflage" ) end
@@ -734,33 +808,6 @@ end, state )
 local TriggerBombardier = setfenv( function()
     setCooldown( "explosive_shot", 0 )
     applyBuff( "bombardier", nil, 2 )
-end, state )
-
-local HowlOfThePackLeaderHandler = setfenv( function()
-    
-    local bwSummon = ( buff.howl_of_the_pack_leader_bear.up or buff.howl_of_the_pack_leader_pig.up or buff.howl_of_the_pack_leader_wyvern.up )
-
-    if buff.howl_of_the_pack_leader_cooldown.up then
-        if bwSummon then -- Bestial Wrath version
-           removeBuff( "howl_of_the_pack_leader_bear" )
-           removeBuff( "howl_of_the_pack_leader_pig" )
-           removeBuff( "howl_of_the_pack_leader_wyvern" )
-           reduceCooldown( "howl_of_the_pack_leader", 1 )
-           reduceCooldown( "wildfire_bomb", 18 )
-           addStack( "tip_of_the_spear" )
-        else -- no summons at all
-            reduceCooldown( "howl_of_the_pack_leader", 1 )
-        end
-    else -- Regular summon
-        setCooldown( "howl_of_the_pack_leader", spec.abilities.howl_of_the_pack_leader.cooldown )
-        applyBuff( "howl_of_the_pack_leader_cooldown" )
-        removeBuff( "howl_of_the_pack_leader_bear" )
-        removeBuff( "howl_of_the_pack_leader_pig" )
-        removeBuff( "howl_of_the_pack_leader_wyvern" )
-        reduceCooldown( "wildfire_bomb", 18 )
-        addStack( "tip_of_the_spear" )
-    end
-
 end, state )
 
 -- The War Within
@@ -807,7 +854,19 @@ spec:RegisterAuras( {
 
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-
+    if sourceGUID == GUID then
+        -- Keep the cycle synced to real game data if we lose it somehow
+        if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" then
+            -- Check if one of the summon buffs is applied and sync the index.
+            for index, buffName in ipairs( pack_leader__buff_cycle ) do
+                if spellID == spec.auras[ buffName ].id then
+                    -- Align the cycle to the buff AFTER the currently applied one.
+                    pack_leader_buff_current = ( index % #pack_leader__buff_cycle ) + 1
+                    break
+                end
+            end
+        end
+    end
 end )
 
 
@@ -1021,6 +1080,7 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
+            -- Standard effects / talents
             applyBuff( "coordinated_assault" )
             if talent.bombardier.enabled then
                 setCooldown( "wildfire_bomb", 0 )
@@ -1028,6 +1088,9 @@ spec:RegisterAbilities( {
             if talent.relentless_primal_ferocity.enabled then
                 applyBuff( "relentless_primal_ferocity", buff.coordinated_assault.remains )
             end
+
+            -- Hero Talents
+            if talent.lead_from_the_front.enabled then HowlOfThePackLeaderHandler( true ) end
         end,
     },
 
@@ -1155,7 +1218,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "deadly_duo" )
 
-            if talent.howl_of_the_pack_leader.enabled then HowlOfThePackLeaderHandler() end
+            if talent.howl_of_the_pack_leader.enabled then HowlOfThePackLeaderHandler( false ) end
             
             if buff.sulfurlined_pockets_ready.up then
                 buff.sulfurlined_pockets_ready.v1 = 259489

@@ -597,14 +597,6 @@ spec:RegisterAuras( {
         type = "Ranged",
         max_stack = 1
     },
-    -- Bleeding for $w1 damage every $t1 sec.
-    cull_the_herd = {
-        id = 449233,
-        duration = 6.0,
-        tick_time = 2.0,
-        max_stack = 1,
-    },
-
     deathblow = {
         id = 378770,
         duration = 12,
@@ -1012,6 +1004,11 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
+    solitary_companion = {
+        id = 474751,
+        duration = 3600,
+        max_stack = 1
+    },
     -- Heals $w2 every $t2 sec for $d.
     -- https://wowhead.com/beta/spell=90361
     spirit_mend = {
@@ -1247,6 +1244,22 @@ spec:RegisterAuras( {
     }
 } )
 
+-- Pets
+spec:RegisterPets({
+    -- Howl of the Pack Leader
+    wyvern = {
+        id = 234170,
+        spell = "kill_command",
+        duration = 15,
+    },
+    --[[ Not yet detectable in combatlogs?
+    boar = {
+
+    },
+    bear = {
+
+    }--]]
+} )
 
 --- The War Within
 spec:RegisterGear( "tww1", 212018, 212019, 212020, 212021, 212023 )
@@ -1299,30 +1312,53 @@ local CallOfTheWildCDR = setfenv( function()
     gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge/2)
 end, state )
 
-local HowlOfThePackLeaderHandler = setfenv( function()
-    
-    local bwSummon = ( buff.howl_of_the_pack_leader_bear.up or buff.howl_of_the_pack_leader_pig.up or buff.howl_of_the_pack_leader_wyvern.up )
+local pack_leader__buff_cycle = {
+    "howl_of_the_pack_leader_wyvern",
+    "howl_of_the_pack_leader_pig",
+    "howl_of_the_pack_leader_bear",
+}
 
-    if buff.howl_of_the_pack_leader_cooldown.up then
-        if bwSummon then -- Bestial Wrath version
-           removeBuff( "howl_of_the_pack_leader_bear" )
-           removeBuff( "howl_of_the_pack_leader_pig" )
-           removeBuff( "howl_of_the_pack_leader_wyvern" )
-           reduceCooldown( "howl_of_the_pack_leader", 1 )
-           reduceCooldown( "barbed_shot", 18 )
-        else -- no summons at all
-            reduceCooldown( "howl_of_the_pack_leader", 1 )
+local pack_leader_buff_current = 1
+
+local function HowlOfThePackLeaderHandler( isBestialWrath )
+    -- Track the number of summons triggered.
+    local summonCount = 0
+
+    if isBestialWrath then
+        -- Scenario 1: Bestial Wrath grants the next buff without triggering summons.
+        applyBuff( pack_leader__buff_cycle[ pack_leader_buff_current ] )
+        pack_leader_buff_current = ( pack_leader_buff_current % #pack_leader__buff_cycle ) + 1 -- Advance to the next buff.
+        applyBuff( "lead_from_the_front" )
+    else
+        -- Scenario 2: Triggered by Kill Command (summoning is possible).
+        if buff.howl_of_the_pack_leader_cooldown.up then
+            -- Scenario 2A: Cooldown buff is active.
+            -- Consume all active buffs (summoning them) and reduce the cooldown buff.
+            for _, buffName in ipairs( pack_leader__buff_cycle ) do
+                if buff[ buffName ].up then
+                    removeBuff( buffName )
+                    summonCount = summonCount + 1
+                end
+            end
+            if talent.dire_summons.enabled then 
+                reduceCooldown( "howl_of_the_pack_leader", 1 )
+            end
+        else
+            -- Scenario 2B: Cooldown buff is not active.
+            -- Consume all active buffs (summoning them) and apply a new cooldown buff.
+            for _, buffName in ipairs( pack_leader__buff_cycle ) do
+                if buff[ buffName ].up then
+                    removeBuff( buffName )
+                    summonCount = summonCount + 1
+                end
+            end
+            applyBuff( "howl_of_the_pack_leader_cooldown" )
         end
-    else -- Regular summon
-        setCooldown( "howl_of_the_pack_leader", spec.abilities.howl_of_the_pack_leader.cooldown )
-        applyBuff( "howl_of_the_pack_leader_cooldown" )
-        removeBuff( "howl_of_the_pack_leader_bear" )
-        removeBuff( "howl_of_the_pack_leader_pig" )
-        removeBuff( "howl_of_the_pack_leader_wyvern" )
-        reduceCooldown( "barbed_shot", 18 )
-    end
 
-end, state )
+        -- Apply the Barbed Shot cooldown reduction based on the number of summons.
+        if talent.pack_mentality.enabled then reduceCooldown( "barbed_shot", 18 * summonCount ) end
+    end
+end
 
 spec:RegisterHook( "reset_precast", function()
     if debuff.tar_trap.up then
@@ -1351,7 +1387,6 @@ spec:RegisterHook( "reset_precast", function()
     if barbed_shot_grace_period > 0 and cooldown.barbed_shot.remains > 0 then reduceCooldown( "barbed_shot", barbed_shot_grace_period ) end
 end )
 
-
 local trapUnits = { "target", "focus" }
 local trappableClassifications = {
     rare = true,
@@ -1370,25 +1405,38 @@ for i = 1, 40 do
 end
 
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if subtype == "SPELL_CAST_SUCCESS" and sourceGUID == GUID and spellID == 187698 and legendary.soulforge_embers.enabled then
-        -- Capture all boss/elite targets present at this time as valid trapped targets.
-        table.wipe( tar_trap_targets )
-
-        for _, unit in ipairs( trapUnits ) do
-            if UnitExists( unit ) and UnitCanAttack( "player", unit ) and not trappableClassifications[ UnitClassification( unit ) ] then
-                tar_trap_targets[ UnitGUID( unit ) ] = true
+    if sourceGUID == GUID then
+        -- Keep the cycle synced to real game data if we lose it somehow
+        if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" then
+            -- Check if one of the summon buffs is applied and sync the index.
+            for index, buffName in ipairs( pack_leader__buff_cycle ) do
+                if spellID == spec.auras[ buffName ].id then
+                    -- Align the cycle to the buff AFTER the currently applied one.
+                    pack_leader_buff_current = ( index % #pack_leader__buff_cycle ) + 1
+                    break
+                end
             end
         end
     end
-end, false )
 
+    --[[
+    if subtype == "SPELL_CAST_SUCCESS" and sourceGUID == GUID and spellID == 187698 and legendary.soulforge_embers.enabled then
+        -- Capture all boss/elite targets present at this time as valid trapped targets.
+        table.wipe(tar_trap_targets)
+
+        for _, unit in ipairs(trapUnits) do
+            if UnitExists(unit) and UnitCanAttack("player", unit) and not trappableClassifications[UnitClassification(unit)] then
+                tar_trap_targets[UnitGUID(unit)] = true
+            end
+        end
+    end--]]
+end, false )
 
 spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
     __index = function( t, k )
         return state.debuff.tar_trap[ k ]
     end
 } ) )
-
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -1504,19 +1552,25 @@ spec:RegisterAbilities( {
         nobuff = function () return settings.avoid_bw_overlap and "bestial_wrath" or nil, "avoid_bw_overlap is checked and bestial_wrath is up" end,
 
         handler = function ()
+            -- Base Functionality / Talents
             applyBuff( "bestial_wrath" )
+            if talent.scent_of_blood.enabled then 
+                gainCharges( "barbed_shot", talent.scent_of_blood.rank )
+            end
+
+            -- Hero Talents
             if talent.withering_fire.enabled then
                 if buff.withering_fire_counter.stacks < 2 then
                     addStack( "withering_fire_counter" )
                 else
                     removeBuff ( "withering_fire_counter" )
                     applyBuff ( "withering_fire" )
+                    applyBuff( "deathblow" )
                 end
             end
 
-            if talent.scent_of_blood.enabled then 
-                gainCharges( "barbed_shot", talent.scent_of_blood.rank ) 
-            end
+            if talent.lead_from_the_front.enabled then HowlOfThePackLeaderHandler( true ) end
+
             -- Legacy / PvP Stuff
             if set_bonus.tier31_2pc > 0 then
                 applyBuff( "dire_beast", 15 )
@@ -2036,7 +2090,7 @@ spec:RegisterAbilities( {
     intimidation = {
         id = 19577,
         cast = 0,
-        cooldown = function() return 60 - 5 * talent.territorial_instincts.rank end,
+        cooldown = function() return 60 - 10 * talent.territorial_instincts.rank end,
         gcd = "spell",
         school = "nature",
 
@@ -2086,7 +2140,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
 
-            if talent.howl_of_the_pack_leader.enabled then HowlOfThePackLeaderHandler() end
+            if talent.howl_of_the_pack_leader.enabled then HowlOfThePackLeaderHandler( false ) end
 
             if talent.a_murder_of_crows.enabled then
                 if buff.a_murder_of_crows_stack.stack == 4 then
@@ -2123,13 +2177,13 @@ spec:RegisterAbilities( {
         notalent = "black_arrow",
         startsCombat = true,
 
-        cycle = function() return talent.venoms_bite.enabled and "serpent_sting" or nil end,
+        -- cycle = function() return talent.venoms_bite.enabled and "serpent_sting" or nil end,
 
-        usable = function () return buff.deathblow.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20 or buff.flayers_mark.up, "requires flayers_mark or target health below 20 percent" end,
+        usable = function () return buff.deathblow.up or buff.withering_fire.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20 or buff.flayers_mark.up, "requires flayers_mark or target health below 20 percent" end,
         
         handler = function ()
             removeBuff( "deathblow" )
-            if talent.venoms_bite.enabled then applyDebuff( "target", "serpent_sting" ) end
+            -- if talent.venoms_bite.enabled then applyDebuff( "target", "serpent_sting" ) end
 
             --- Legacy / PvP Stuff
             if covenant.venthyr then

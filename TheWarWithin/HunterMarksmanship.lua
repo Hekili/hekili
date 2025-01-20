@@ -1093,7 +1093,7 @@ spec:RegisterAbilities( {
         talent = "black_arrow",
         startsCombat = true,
 
-        usable = function () return buff.deathblow.up or buff.flayers_mark.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark or target health below 20 percent or above 80 percent" end,
+        usable = function () return buff.deathblow.up  or buff.withering_fire.up or buff.flayers_mark.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark or target health below 20 percent or above 80 percent" end,
         handler = function ()
             applyDebuff( "target", "black_arrow" )
             spec.abilities.kill_shot.handler()
@@ -1429,7 +1429,10 @@ spec:RegisterAbilities( {
             reduceCooldown( "rapid_fire", cooldown.rapid_fire.remains * 0.6 )
             applyBuff( "trueshot" )
 
-            if talent.withering_fire.enabled then applyBuff ( "withering_fire" ) end
+            if talent.withering_fire.enabled then
+                applyBuff ( "withering_fire" )
+                applyBuff( "deathblow" )
+            end
             if talent.feathered_frenzy.enabled then applyDebuff( "target", "spotters_mark" ) end
 
         end,
