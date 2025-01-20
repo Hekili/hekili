@@ -355,11 +355,11 @@ spec:RegisterAuras( {
         -- spearhead[378957] #2: { 'type': APPLY_AURA, 'subtype': MOD_CRITICAL_DAMAGE_TAKEN_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
     },
     -- Your Kill Command hits $s1 targets.
-    exposed_flank = {
+    --[[exposed_flank = {
         id = 459864,
         duration = 10.0,
         max_stack = 1,
-    },
+    },--]]
     -- All abilities are guaranteed to apply Sentinel.
     eyes_closed = {
         id = 451180,
@@ -1044,9 +1044,9 @@ spec:RegisterAbilities( {
             if talent.scattered_prey.enabled then applyBuff( "scattered_prey" ) end
             removeStack( "tip_of_the_spear" )
 
-            if talent.frenzy_strikes.enabled then
+            --[[if talent.frenzy_strikes.enabled then
                 gainChargeTime( "wildfire_bomb", min( 5, true_active_enemies ) * 3 )
-            end
+            end--]]
 
             if talent.merciless_blows.enabled then applyDebuff( "target", "merciless_blows" ) end
 
@@ -1144,6 +1144,7 @@ spec:RegisterAbilities( {
 
         handler = function()
             addStack( "tip_of_the_spear" )
+            if talent.merciless_blows.enabled then applyDebuff( "target", "merciless_blows" ) end
         end,
     },
 
@@ -1241,7 +1242,7 @@ spec:RegisterAbilities( {
             end
 
             if talent.tip_of_the_spear.enabled then
-                addStack( "tip_of_the_spear", nil, talent.relentless_primal_ferocity.enabled and buff.coordinated_assault.up and 3 or buff.exposed_flank.up and max( 3, true_active_enemies ) or 1 )
+                addStack( "tip_of_the_spear", nil, talent.relentless_primal_ferocity.enabled and buff.coordinated_assault.up and 3 or 1 )
                 if set_bonus.tww1 >=4 and buff.generous_tip.up then
                     removeBuff( "generous_tip" )
                     addStack( "tip_of_the_spear", nil, 3 )

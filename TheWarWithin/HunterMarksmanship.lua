@@ -931,7 +931,7 @@ spec:RegisterAbilities( {
         recharge = function () return haste * 12 * ( buff.trueshot.up and 0.4 or 1 ) - ( 1 * talent.ammo_conservation.rank ) end,
         gcd = "spell",
         school = "physical",
-        cycle = function() return talent.serpentstalkers_trickery.enabled and "serpent_sting" or nil end,
+        -- cycle = function() return talent.serpentstalkers_trickery.enabled and "serpent_sting" or nil end,
         maxTargets = function() return ( buff.trick_shots.up or buff.volley.up and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
 
         spend = function ()
@@ -1001,12 +1001,12 @@ spec:RegisterAbilities( {
         school = "arcane",
         maxTargets = function() return ( buff.trick_shots.up or buff.volley.up and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
 
-        spend = function () return ( 40 - ( talent.crack_shot.enabled and 20 or 0 ) ) * ( buff.precise_shots.up and 0.3 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
+        spend = function () return  40  * ( buff.precise_shots.up and 0.3 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
 
         startsCombat = true,
 
-        notalent = "chimaera_shot",
+        -- notalent = "chimaera_shot",
 
         handler = function ()
 
@@ -1140,14 +1140,14 @@ spec:RegisterAbilities( {
     },
 
     -- Talent: A two-headed shot that hits your primary target for $344120sw1 Nature damage and another nearby target for ${$344121sw1*($s1/100)} Frost damage.$?s260393[    Chimaera Shot has a $260393h% chance to reduce the cooldown of Rapid Fire by ${$260393m1/10}.1 sec.][]
-    chimaera_shot = {
+    --[[chimaera_shot = {
         id = 342049,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
         school = "nature",
 
-        spend = function () return ( 40 - ( talent.crack_shot.enabled and 20 or 0 ) ) * ( buff.precise_shots.up and 0.3 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
+        spend = function () return 40 * ( buff.precise_shots.up and 0.3 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
 
         talent = "chimaera_shot",
@@ -1162,7 +1162,7 @@ spec:RegisterAbilities( {
             end
 
         end,
-    },
+    },--]]
 
     -- Stings the target, dealing $s1 Nature damage and initiating a series of venoms. Each lasts $356723d and applies the next effect after the previous one ends.; $@spellicon356723 $@spellname356723:; $356723s1% reduced movement speed.; $@spellicon356727 $@spellname356727:; Silenced.; $@spellicon356730 $@spellname356730:; $356730s1% reduced damage and healing.
     chimaeral_sting = {
@@ -1313,7 +1313,7 @@ spec:RegisterAbilities( {
         spend = function () return 30 * ( buff.precise_shots.up and 0.3 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
 
-        talent = "multishot",
+        -- talent = "multishot",
         startsCombat = true,
 
         handler = function ()
