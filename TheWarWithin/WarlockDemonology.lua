@@ -366,22 +366,23 @@ spec:RegisterStateFunction( "SoulStrikeIfNotCapped", function()
     end
 end )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229325, 229323, 229328, 229326, 229324 )
 
--- Tier 29
+-- Dragonflight
+
 spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
 spec:RegisterAura( "blazing_meteor", {
     id = 394215,
     duration = 6,
     max_stack = 1
 } )
-
 spec:RegisterGear( "tier30", 202534, 202533, 202532, 202536, 202531 )
 spec:RegisterAura( "rite_of_ruvaraad", {
     id = 409725,
     duration = 17,
     max_stack = 1
 } )
-
 spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275, 217212, 217214, 217215, 217211, 217213 )
 spec:RegisterAuras( {
     doom_brand = {
@@ -1985,6 +1986,10 @@ spec:RegisterAbilities( {
             if talent.dread_calling.enabled then
                 addStack( "dread_calling", nil, 1 + extra_shards )
             end
+
+            --[[if set_bonus.tww2 >= 4 then
+                Dreadbite()
+            end--]]
         end,
 
         bind = "ruination"
@@ -2192,7 +2197,7 @@ spec:RegisterAbilities( {
             applyBuff( "demonic_power", 15 )
 
             extend_demons()
-
+            if set_bonus.tww2 >= 2 then summon_demon( "dreadstalkers", 12, 2 ) end
             if talent.soulbound_tyrant.enabled then
                 gain( ceil( 2.5 * talent.soulbound_tyrant.rank ), "soul_shards" )
             end

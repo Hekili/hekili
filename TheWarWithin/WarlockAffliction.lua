@@ -868,7 +868,27 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
     end
 end, false )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229325, 229323, 229328, 229326, 229324 )
+spec:RegisterAuras( {
+-- 2-set
+-- https://www.wowhead.com/ptr-2/spell=1219034/jackpot
+-- Your spells and abilities have a chance to hit a Jackpot! that increases your haste by 12% for 12 sec. Casting Summon Darkglare always hits a Jackpot! 
+    jackpot = {
+        id = 1219034,
+        duration = 12,
+        max_stack = 1
+    },
+-- https://www.wowhead.com/ptr-2/spell=1219036/warlock-affliction-11-1-class-set-4pc
+    tww2_set_haste_buff = {
+        id = 1219034,
+        duration = 12,
+        max_stack = 1
+    },
 
+} )
+
+-- Dragonflight
 spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275, 217212, 217214, 217215, 217211, 217213 )
 -- (4) Soul Rot grants 3 Umbrafire Kindling which increase the damage of your next Malefic Rapture to deal 50% or your next Seed of Corruption by 60%. Additionally, Umbrafire Kindling causes Malefic Rapture to extend the duration of your damage over time effects and Haunt by 2 sec.
 spec:RegisterAura( "umbrafire_kindling", {
@@ -876,15 +896,12 @@ spec:RegisterAura( "umbrafire_kindling", {
     duration = 20,
     max_stack = 3
 } )
-
-
 spec:RegisterGear( "tier30", 202534, 202533, 202532, 202536, 202531 )
 spec:RegisterAura( "infirmity", {
     id = 409765,
     duration = 16, -- spelldata says 2 sec, but applies for 16 seconds from PS and 10 seconds from VT.
     max_stack = 1
 } )
-
 -- Tier 29
 spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337 )
 spec:RegisterAuras( {
@@ -899,7 +916,6 @@ spec:RegisterAuras( {
         max_stack = 5
     }
 } )
-
 -- Tier 28
 spec:RegisterGear( "tier28", 188884, 188887, 188888, 188889, 188890 )
 spec:RegisterSetBonuses( "tier28_2pc", 364437, "tier28_4pc", 363953 )
@@ -910,6 +926,8 @@ spec:RegisterAura( "calamitous_crescendo", {
     duration = 10,
     max_stack = 1,
 } )
+
+-- Legacy
 
 spec:RegisterGear( "tier21", 152174, 152177, 152172, 152176, 152173, 152175 )
 spec:RegisterGear( "tier20", 147183, 147186, 147181, 147185, 147182, 147184 )
@@ -2133,6 +2151,7 @@ spec:RegisterAbilities( {
             if debuff.scouring_tithe.up then debuff.scouring_tithe.expires = debuff.scouring_tithe.expires + 8 end
             if debuff.siphon_life.up then debuff.siphon_life.expires = debuff.siphon_life.expires + 8 end
             if debuff.unstable_affliction.up then debuff.unstable_affliction.expires = debuff.unstable_affliction.expires + 8 end
+            if set_bonus.tww2 >= 2 then applyBuff( "jackpot" ) end
         end,
     },
 
@@ -2332,6 +2351,8 @@ spec:RegisterAbilities( {
             if azerite.dreadful_calling.enabled then
                 gainChargeTime( "summon_darkglare", 1 )
             end
+
+            if buff.jackpot.up then active_dot.unstable_affliction = min( active_enemies, active_dot.unstable_affliction +3 ) end
         end,
 
         copy = { 342938, 316099 },

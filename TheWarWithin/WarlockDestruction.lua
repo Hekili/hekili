@@ -1212,7 +1212,20 @@ end )
 spec:RegisterStateExpr( "soul_shard", function () return soul_shards.current end )
 
 
+-- The War Within
+spec:RegisterGear( "tww2", 229325, 229323, 229328, 229326, 229324 )
+spec:RegisterAuras( {
+-- 2-set
+-- https://www.wowhead.com/ptr-2/spell=1217798/jackpot
+-- Hitting a Jackpot! increases your Mastery by 3% and your spells gain maximum benefit from Mastery: Chaotic Energies for 10 sec. 
+    jackpot = {
+        id = 1217798,
+        duration = 10,
+        max_stack = 1,
+    },
+} )
 
+-- Dragonflight
 -- Tier 29
 spec:RegisterGear( "tier29", 200336, 200338, 200333, 200335, 200337, 217212, 217214, 217215, 217211, 217213 )
 spec:RegisterAura( "chaos_maelstrom", {
@@ -1220,22 +1233,18 @@ spec:RegisterAura( "chaos_maelstrom", {
     duration = 10,
     max_stack = 1
 } )
-
 spec:RegisterGear( "tier30", 202534, 202533, 202532, 202536, 202531 )
 spec:RegisterAura( "umbrafire_embers", {
     id = 409652,
     duration = 13,
     max_stack = 8
 } )
-
 spec:RegisterGear( "tier31", 207270, 207271, 207272, 207273, 207275 )
 spec:RegisterAura( "searing_bolt", {
     id = 423886,
     duration = 10,
     max_stack = 1
 } )
-
-
 
 local SUMMON_DEMON_TEXT
 
@@ -1981,6 +1990,7 @@ spec:RegisterAbilities( {
             summonPet( "infernal", 30 )
             if talent.rain_of_chaos.enabled then applyBuff( "rain_of_chaos" ) end
             if talent.crashing_chaos.enabled then applyBuff( "crashing_chaos", nil, 8 ) end
+            if set_bonus.tww2 >= 2 then applyBuff( "jackpot" ) end
         end,
     },
 
