@@ -2227,7 +2227,7 @@ spec:RegisterAbilities( {
     misdirection = {
         id = 34477,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - ( 5 * talent.no_hard_feelings.rank ) end,
         gcd = "off",
         school = "physical",
 

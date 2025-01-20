@@ -814,11 +814,19 @@ end, state )
 spec:RegisterGear( "tww2", 229271, 229272, 229274, 229270, 229273 )
 spec:RegisterAuras( {
     -- 2-set
-    -- https://www.wowhead.com/spell=1218033
-    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
-    jackpot = {
-        id = 1218033,
-        duration = 10,
+    -- https://www.wowhead.com/spell=1216874
+    -- Winning Streak! Wildfire Bomb damage increased by 6%.  
+    winning_streak = {
+        id = 1216874,
+        duration = 30,
+        max_stack = 6,
+    },
+    -- 4-set
+    -- https://www.wowhead.com/spell=1216879
+    -- Generous Tip Kill Command damage increased by 200% and Kill Command grants 3 stacks of Tip of the Spear.  
+    generous_tip = {
+        id = 1216879,
+        duration = 12,
         max_stack = 1,
     },
 
@@ -1234,6 +1242,10 @@ spec:RegisterAbilities( {
 
             if talent.tip_of_the_spear.enabled then
                 addStack( "tip_of_the_spear", nil, talent.relentless_primal_ferocity.enabled and buff.coordinated_assault.up and 3 or buff.exposed_flank.up and max( 3, true_active_enemies ) or 1 )
+                if set_bonus.tww1 >=4 and buff.generous_tip.up then
+                    removeBuff( "generous_tip" )
+                    addStack( "tip_of_the_spear", nil, 3 )
+                end
             end
 
             if talent.wildfire_infusion.enabled then
@@ -1307,7 +1319,7 @@ spec:RegisterAbilities( {
     misdirection = {
         id = 34477,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - ( 5 * talent.no_hard_feelings.rank ) end,
         gcd = "off",
         school = "physical",
 

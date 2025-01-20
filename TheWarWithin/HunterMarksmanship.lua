@@ -871,7 +871,7 @@ local SpottersMarkConsumer = setfenv( function ( maxTargets )
     active_dot.spotters_mark = max( 0, active_dot.spotters_mark - ( markConsumptions - 1 ) )
     if talent.calling_the_shots.enabled then reduceCooldown( "trueshot", 2 * markConsumptions ) end
     if talent.target_acquisition.enabled then reduceCooldown( "aimed_shot", 2 * markConsumptions ) end
-    if talent.on_target.enabled then addStack( "on_target", markConsumptions ) end
+    if talent.on_target.enabled then addStack( "on_target", nil, markConsumptions ) end
 
 end, state )
 
@@ -961,11 +961,12 @@ spec:RegisterAbilities( {
             if buff.lock_and_load.up then 
                 removeBuff( "lock_and_load" )
                 if talent.magnetic_gunpowder.enabled then reduceCooldown( "explosive_shot", 8 ) end
+                if set_bonus.tww2 >= 4 then spec.abilities.explosive_shot.handler() end
             end
 
             if buff.double_tap.up then
                 removeBuff( "double_tap" )
-                spec.abilities.aimed_shot.runHandler( )
+                spec.abilities.aimed_shot.runHandler()
             end
 
             if talent.bullet_hell.enabled then reduceCooldown( "volley", 0.25 * spec.abilities.aimed_shot.maxTargets ) end
