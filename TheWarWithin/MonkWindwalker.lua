@@ -1,5 +1,5 @@
 -- MonkWindwalker.lua
--- October 2023
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "MONK" then return end
 
@@ -307,11 +307,11 @@ spec:RegisterAuras( {
         max_stack = 2,
         copy = { 286587, "dance_of_chiji_azerite" }
     },
-    darting_hurricane = {
+   --[[darting_hurricane = {
         id = 459841,
         duration = 10,
         max_stack = 2
-    },
+    },--]]
     -- Talent: Spell damage taken reduced by $m1%.
     -- https://wowhead.com/beta/spell=122783
     diffuse_magic = {
@@ -495,12 +495,12 @@ spec:RegisterAuras( {
         mechanic = "stun",
         max_stack = 1
     },
-    mark_of_the_crane = {
+    --[[mark_of_the_crane = {
         id = 228287,
         duration = 15,
         max_stack = 1,
         no_ticks = true
-    },
+    },--]]
     -- The damage of your next Tiger Palm is increased by $w1%.
     martial_mixture = {
         id = 451457,
@@ -793,20 +793,33 @@ spec:RegisterAuras( {
     },
 } )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229298, 212045, 229301, 229299, 229297 )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/ptr-2/spell=1216182/winning-streak // https://www.wowhead.com/ptr-2/spell=1215717/monk-windwalker-11-1-class-set-2pc
+    -- [Your spells and abilities have a chance to activate a Winning Streak! increasing the damage of your Rising Sun Kick and Spinning Crane Kick by 3% stacking up to 10 times. Rising Sun Kick and Spinning Crane Kick have a 15% chance to remove Winning Streak!] = {
+    winning_streak = {
+        id = 1216182,
+        duration = 3600,
+        max_stack = 10
+    },
+    -- https://www.wowhead.com/ptr-2/spell=1216498/cashout // https://www.wowhead.com/ptr-2/spell=1215718/monk-windwalker-11-1-class-set-4pc
+    cashout = {
+        id = 1216498,
+        duration = 30,
+        max_stack = 10
+    },
+} )
 
-
+-- Dragonflight
 spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248 )
-
-
--- Tier 30
 spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
 spec:RegisterAura( "shadowflame_vulnerability", {
     id = 411376,
     duration = 15,
     max_stack = 1
 } )
-
-
 spec:RegisterGear( "tier29", 200360, 200362, 200363, 200364, 200365, 217188, 217190, 217186, 217187, 217189 )
 spec:RegisterAuras( {
     kicks_of_flowing_momentum = {
@@ -821,11 +834,11 @@ spec:RegisterAuras( {
     }
 } )
 
+-- Legacy
 spec:RegisterGear( "tier19", 138325, 138328, 138331, 138334, 138337, 138367 )
 spec:RegisterGear( "tier20", 147154, 147156, 147152, 147151, 147153, 147155 )
 spec:RegisterGear( "tier21", 152145, 152147, 152143, 152142, 152144, 152146 )
 spec:RegisterGear( "class", 139731, 139732, 139733, 139734, 139735, 139736, 139737, 139738 )
-
 spec:RegisterGear( "cenedril_reflector_of_hatred", 137019 )
 spec:RegisterGear( "cinidaria_the_symbiote", 133976 )
 spec:RegisterGear( "drinking_horn_cover", 137097 )
@@ -840,7 +853,6 @@ spec:RegisterGear( "prydaz_xavarics_magnum_opus", 132444 )
 spec:RegisterGear( "salsalabims_lost_tunic", 137016 )
 spec:RegisterGear( "sephuzs_secret", 132452 )
 spec:RegisterGear( "the_emperors_capacitor", 144239 )
-
 spec:RegisterGear( "soul_of_the_grandmaster", 151643 )
 spec:RegisterGear( "stormstouts_last_gasp", 151788 )
 spec:RegisterGear( "the_wind_blows", 151811 )
@@ -940,7 +952,7 @@ spec:RegisterHook( "runHandler", function( key, noStart )
         else
             if talent.hit_combo.enabled then addStack( "hit_combo" ) end
             if azerite.fury_of_xuen.enabled or talent.fury_of_xuen.enabled then addStack( "fury_of_xuen" ) end
-            if ( talent.xuens_bond.enabled or conduit.xuens_bond.enabled ) and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.2 ) end
+            -- if ( talent.xuens_bond.enabled or conduit.xuens_bond.enabled ) and cooldown.invoke_xuen.remains > 0 then reduceCooldown( "invoke_xuen", 0.2 ) end
             if talent.meridian_strikes.enabled and cooldown.touch_of_death.remains > 0 then reduceCooldown( "touch_of_death", 0.6 ) end
         end
         virtual_combo = key
@@ -999,10 +1011,10 @@ end )
 
 spec:RegisterStateTable( "spinning_crane_kick", setmetatable( { onReset = function( self ) self.count = nil end },
         { __index = function( t, k )
-            if k == "count" then
+            --[[if k == "count" then
                 return max( GetSpellCount( action.spinning_crane_kick.id ), active_dot.mark_of_the_crane )
 
-            elseif k == "modifier" then
+            else--]]if k == "modifier" then
                 local mod = 1
                 -- Windwalker:
                 if state.spec.windwalker then
@@ -1087,14 +1099,14 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 574575,
 
-        cycle = function()
+        --[[cycle = function()
             if cycle_enemies == 1 then return end
 
             if level > 32 and cycle_enemies > active_dot.mark_of_the_crane and active_dot.mark_of_the_crane < 5 and debuff.mark_of_the_crane.up then
                 if Hekili.ActiveDebug then Hekili:Debug( "Recommending swap to target missing Mark of the Crane debuff." ) end
                 return "mark_of_the_crane"
             end
-        end,
+        end,--]]
 
         handler = function ()
             if buff.blackout_reinforcement.up then
@@ -1125,10 +1137,10 @@ spec:RegisterAbilities( {
             end
 
             if talent.eye_of_the_tiger.enabled then applyDebuff( "target", "eye_of_the_tiger" ) end
-            if level > 32 then
+            --[[if level > 32 then
                 applyDebuff( "target", "mark_of_the_crane" )
                 if talent.shadowboxing_treads.enabled then active_dot.mark_of_the_crane = min( active_dot.mark_of_the_crane + 2, active_enemies ) end
-            end
+            end--]]
             if talent.ordered_elements.enabled then applyBuff( "ordered_elements" ) end
             if talent.transfer_the_power.enabled then addStack( "transfer_the_power" ) end
         end,
@@ -1370,6 +1382,7 @@ spec:RegisterAbilities( {
         tick_time = function () return haste end,
 
         start = function ()
+            -- Standard effects / talents
             removeBuff( "fists_of_flowing_momentum" )
             removeBuff( "transfer_the_power" )
 
@@ -1383,20 +1396,26 @@ spec:RegisterAbilities( {
                 applyBuff( "whirling_dragon_punch", min( cooldown.fists_of_fury.remains, cooldown.rising_sun_kick.remains ) )
             end
 
+            -- Hero Talents
+
+            -- The War Within
+            if set_bonus.tww2 >= 4 then removeBuff( "cashout" ) end
+
+            -- PvP
             if pvptalent.turbo_fists.enabled then
                 applyDebuff( "target", "heavyhanded_strikes", action.fists_of_fury.cast_time + 2 )
             end
 
-            if legendary.pressure_release.enabled then
-                -- TODO: How much to generate?  Do we need to queue it?  Special buff generator?
-            end
-
+            -- Legacy
             if set_bonus.tier29_2pc > 0 then applyBuff( "kicks_of_flowing_momentum", nil, set_bonus.tier29_4pc > 0 and 3 or 2 ) end
             if set_bonus.tier30_4pc > 0 then
                 applyDebuff( "target", "shadowflame_vulnerability" )
                 active_dot.shadowflame_vulnerability = active_enemies
             end
+
         end,
+
+
 
         tick = function ()
             if legendary.jade_ignition.enabled then
@@ -1480,7 +1499,7 @@ spec:RegisterAbilities( {
     invoke_xuen = {
         id = 123904,
         cast = 0,
-        cooldown = 120,
+        cooldown = function() return 120 - ( 30 * talent.xuens_bond.rank ) end,
         gcd = "spell",
         school = "nature",
 
@@ -1596,14 +1615,14 @@ spec:RegisterAbilities( {
         talent = "rising_sun_kick",
         startsCombat = true,
 
-        cycle = function()
+        --[[cycle = function()
             if cycle_enemies == 1 then return end
 
             if level > 32 and cycle_enemies > active_dot.mark_of_the_crane and active_dot.mark_of_the_crane < 5 and debuff.mark_of_the_crane.up then
                 if Hekili.ActiveDebug then Hekili:Debug( "Recommending swap to target missing Mark of the Crane debuff." ) end
                 return "mark_of_the_crane"
             end
-        end,
+        end,--]]
 
         handler = function ()
             applyDebuff( "target", "rising_sun_kick" )
@@ -1617,7 +1636,7 @@ spec:RegisterAbilities( {
 
             if talent.acclamation.enabled then applyDebuff( "target", "acclamation", nil, debuff.acclamation.stack + 1 ) end
 
-            if level > 32 then applyDebuff( "target", "mark_of_the_crane" ) end
+           -- if level > 32 then applyDebuff( "target", "mark_of_the_crane" ) end
 
             if talent.ordered_elements.enabled and buff.storm_earth_and_fire.up then applyBuff( "ordered_elements" ) end
 
@@ -1857,11 +1876,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "strike_of_the_windlord" )
-            if talent.darting_hurricane.enabled then addStack( "darting_hurricane", nil, 2 ) end
+            -- if talent.darting_hurricane.enabled then addStack( "darting_hurricane", nil, 2 ) end
             if talent.gale_force.enabled then applyDebuff( "target", "gale_force" ) end
             if talent.rushing_jade_wind.enabled then
-                applyDebuff( "target", "mark_of_the_crane" )
-                active_dot.mark_of_the_crane = true_active_enemies
+                --[[applyDebuff( "target", "mark_of_the_crane" )
+                active_dot.mark_of_the_crane = true_active_enemies--]]
                 applyBuff( "rushing_jade_wind" )
             end
             if talent.thunderfist.enabled then addStack( "thunderfist", nil, 4 + ( true_active_enemies - 1 ) ) end
@@ -1881,19 +1900,19 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        cycle = "mark_of_the_crane",
+        -- cycle = "mark_of_the_crane",
 
         handler = function ()
             gain( 2, "chi" )
             removeBuff( "martial_mixture" )
-            removeStack( "darting_hurricane" )
+            -- removeStack( "darting_hurricane" )
 
             if buff.combat_wisdom.up then
                 class.abilities.expel_harm.handler()
                 removeBuff( "combat_wisdom" )
             end
 
-            if level > 32 then applyDebuff( "target", "mark_of_the_crane" ) end
+            -- if level > 32 then applyDebuff( "target", "mark_of_the_crane" ) end
 
             if talent.eye_of_the_tiger.enabled then
                 applyDebuff( "target", "eye_of_the_tiger" )
@@ -1910,10 +1929,10 @@ spec:RegisterAbilities( {
                 end
             end
 
-            if buff.darting_hurricane.up then
+            --[[if buff.darting_hurricane.up then
                 setCooldown( "global_cooldown", cooldown.global_cooldown.remains * 0.75 )
                 removeStack( "darting_hurricane" )
-            end
+            end--]]
         end,
     },
 

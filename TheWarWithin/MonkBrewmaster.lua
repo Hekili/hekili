@@ -1,5 +1,5 @@
 -- MonkBrewmaster.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "MONK" then return end
 
@@ -761,18 +761,35 @@ spec:RegisterHook( "reset_postcast", function( x )
     return x
 end )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229298, 212045, 229301, 229299, 229297 )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/ptr-2/spell=1217990/luck-of-the-draw
+    -- Each time you take damage you have a chance to activate Luck of the Draw! causing you to cast Fortifying Brew for 6.0 sec. Your damage done is increased by 15% for 8 sec after Luck of the Draw! activates.  
+    luck_of_the_draw = {
+        id = 1217990,
+        duration = 8,
+        max_stack = 1
+    },
+    -- tier_4_set_placeholder =https://www.wowhead.com/ptr-2/spell=1217999/opportunistic-strike
+    --[When you gain Luck of the Draw!, your next 2 casts of Blackout Kick deal 150% increased damage and incur a 2.0 sec reduced cooldown.]
+    opportunistic_strike = {
+        id = 1217999,
+        duration = 20,
+        max_stack = 2
+    },
+} )
 
+
+-- Dragonflight
 spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248, 217188, 217190, 217186, 217187, 217189 )
-
--- Tier 30
 spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
 spec:RegisterAura( "leverage", {
     id = 408503,
     duration = 30,
     max_stack = 5
 } )
-
-
 spec:RegisterGear( "tier29", 200363, 200365, 200360, 200362, 200364 )
 spec:RegisterAura( "brewmasters_rhythm", {
     id = 394797,
@@ -780,11 +797,11 @@ spec:RegisterAura( "brewmasters_rhythm", {
     max_stack = 4
 } )
 
+-- Legacy
 spec:RegisterGear( "tier19", 138325, 138328, 138331, 138334, 138337, 138367 )
 spec:RegisterGear( "tier20", 147154, 147156, 147152, 147151, 147153, 147155 )
 spec:RegisterGear( "tier21", 152145, 152147, 152143, 152142, 152144, 152146 )
 spec:RegisterGear( "class", 139731, 139732, 139733, 139734, 139735, 139736, 139737, 139738 )
-
 spec:RegisterGear( "cenedril_reflector_of_hatred", 137019 )
 spec:RegisterGear( "cinidaria_the_symbiote", 133976 )
 spec:RegisterGear( "drinking_horn_cover", 137097 )
@@ -800,7 +817,6 @@ spec:RegisterGear( "soul_of_the_grandmaster", 151643 )
 spec:RegisterGear( "stormstouts_last_gasp", 151788 )
 spec:RegisterGear( "the_emperors_capacitor", 144239 )
 spec:RegisterGear( "the_wind_blows", 151811 )
-
 
 spec:RegisterHook( "spend", function( amount, resource )
     if equipped.the_emperors_capacitor and resource == "chi" then
@@ -1121,6 +1137,11 @@ spec:RegisterAbilities( {
             if talent.walk_with_the_ox.enabled then reduceCooldown( "invoke_niuzao", 0.25 * talent.walk_with_the_ox.rank ) end
 
             if conduit.walk_with_the_ox.enabled and cooldown.invoke_niuzao.remains > 0 then reduceCooldown( "invoke_niuzao", 0.5 ) end
+
+            if set_bonus.tww2 >= 4 and buff.opportunistic_strike.up then
+                reduceCooldown( "blackout_kick" )
+                removeStack( "opportu" )
+            end
 
             addStack( "elusive_brawler" )
         end,

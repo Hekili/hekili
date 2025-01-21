@@ -1,5 +1,5 @@
 -- MonkMistweaver.lua
--- DF Pre-Patch Nov 2022
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "MONK" then return end
 
@@ -630,7 +630,10 @@ spec:RegisterAuras( {
     },
 } )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229298, 212045, 229301, 229299, 229297 )
 
+-- Dragonflight
 spec:RegisterGear( "tier31", 207243, 207244, 207245, 207246, 207248, 217188, 217190, 217186, 217187, 217189 )
 spec:RegisterAuras( {
     chi_harmony = {
@@ -639,8 +642,6 @@ spec:RegisterAuras( {
         max_stack = 1
     }
 } )
-
--- Tier 30
 spec:RegisterGear( "tier30", 202509, 202507, 202506, 202505, 202504 )
 spec:RegisterAuras( {
     soulfang_infusion = {
