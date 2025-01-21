@@ -1,5 +1,5 @@
 -- RogueSubtlety.lua
--- November 2022
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "ROGUE" then return end
 

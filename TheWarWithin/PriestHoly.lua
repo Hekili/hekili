@@ -74,7 +74,7 @@ spec:RegisterTalents( {
     void_shift                 = {  82674, 108968, 1 }, -- Swap health percentages with your ally. Increases the lower health percentage of the two to 25% if below that amount.
     void_tendrils              = {  82708, 108920, 1 }, -- Summons shadowy tendrils, rooting all enemies within 8 yards for 15 sec or until the tendril is killed.
     words_of_the_pious         = {  82721, 377438, 1 }, -- For 12 sec after casting Power Word: Shield, you deal 10% additional damage and healing with Smite and Holy Nova.
-    
+
     -- Holy
     afterlife                  = {  82635, 196707, 1 }, -- Increases the duration of Spirit of Redemption by 50% and the range of its spells by 50%.
     answered_prayers           = {  82608, 391387, 1 }, -- After your Prayer of Mending heals 50 times, gain Apotheosis for 8 sec.
@@ -124,7 +124,7 @@ spec:RegisterTalents( {
     symbol_of_hope             = {  82617,  64901, 1 }, -- Bolster the morale of raid members within 46 yds. They each recover 30 sec of cooldown of a major defensive ability, and regain 10% of their missing mana, over 3.4 sec.
     trail_of_light             = {  82604, 200128, 1 }, -- 35% of healing done by Heal, Flash Heal, and Power Word: Life is replicated to the previous target you healed with those spells.
     voice_of_harmony           = {  82620, 390994, 1 }, -- Prayer of Mending and Power Word: Life reduce the cooldown of Holy Word: Serenity by 4 sec. Halo and Divine Star reduce the cooldown of Holy Word: Sanctify by 4 sec. Holy Fire reduces the cooldown of Holy Word: Chastise by 4 sec.
-    
+
     -- Oracle
     assured_safety             = {  94691, 440766, 1 }, -- Prayer of Mending casts apply a Power Word: Shield to your target at 100% effectiveness.
     clairvoyance               = {  94687, 428940, 1 }, -- Casting Premonition of Solace invokes Clairvoyance, expanding your mind and opening up all possibilities of the future.  Premonition of Clairvoyance Grants Premonition of Insight, Piety, and Solace at 100% effectiveness.
@@ -141,7 +141,7 @@ spec:RegisterTalents( {
     save_the_day               = {  94675, 440669, 1 }, -- For 6 sec after casting Leap of Faith you may cast it a second time for free, ignoring its cooldown.
     twinsight                  = {  94673, 440742, 1 }, -- An additional 2 stacks of Prayer of Mending is placed on a second ally within 46 yards when casting Prayer of Mending.
     waste_no_time              = {  94679, 440681, 1 }, -- Premonition causes your next Heal or Prayer of Healing cast to be instant and cost 15% less mana. 
-    
+
     -- Archon
     concentrated_infusion      = {  94676, 453844, 1 }, -- Your Power Infusion effect grants you an additional 10% haste.
     divine_halo                = {  94702, 449806, 1 }, -- Halo now centers around you and returns to you after it reaches its maximum distance, healing allies and damaging enemies each time it passes through them.

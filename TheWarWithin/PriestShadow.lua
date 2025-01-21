@@ -1,5 +1,5 @@
 -- PriestShadow.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "PRIEST" then return end
 
@@ -2405,7 +2405,6 @@ spec:RegisterAbilities( {
         end,
     },
 } )
-
 
 spec:RegisterRanges( "mind_blast", "dispel_magic" )
 

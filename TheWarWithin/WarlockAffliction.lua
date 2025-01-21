@@ -1,5 +1,5 @@
 -- WarlockAffliction.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "WARLOCK" then return end
 
@@ -107,7 +107,7 @@ spec:RegisterTalents( {
     teachings_of_the_satyr         = {  71935, 387972, 1 }, -- Reduces the cooldown of Amplify Curse by 15 sec.
     touch_of_rancora               = {  94856, 429893, 1 }, -- Demonic Art increases the damage of your next Chaos Bolt, Rain of Fire, or Shadowburn by 100% and reduces its cast time by 50%. Casting Chaos Bolt reduces the duration of Diabolic Ritual by 1 additional sec.
     wrathful_minion                = {  71946, 386864, 1 }, -- Increases the damage done by your primary pet by 5%. Increases Grimoire of Sacrifice damage by 10%.
-    
+
     -- Affliction
     absolute_corruption            = {  72051, 196103, 1 }, -- Wither is now permanent and deals 15% increased damage. Duration reduced to 24 sec against players.
     contagion                      = {  72041, 453096, 2 }, -- Increases critical strike damage dealt by Agony, Wither, and Unstable Affliction by 15%.
@@ -150,7 +150,7 @@ spec:RegisterTalents( {
     withering_bolt                 = {  72055, 386976, 1 }, -- Shadow Bolt and Drain Soul deal 8% increased damage, up to 24%, per damage over time effect you have active on the target.
     writhe_in_agony                = {  72048, 196102, 1 }, -- Agony's damage starts at 4 stacks and may now ramp up to 18 stacks.
     xavius_gambit                  = {  71921, 416615, 1 }, -- Unstable Affliction deals 20% increased damage.
-    
+
     -- Hellcaller
     aura_of_enfeeblement           = {  94822, 440059, 1 }, -- While Unending Resolve is active, enemies within 30 yds are affected by Curse of Tongues and Curse of Weakness at 100% effectiveness.
     blackened_soul                 = {  94837, 440043, 1 }, -- Spending Soul Shards on damaging spells will further corrupt enemies affected by your Wither, increasing its stack count by 1. Each time Wither gains a stack it has a chance to collapse, consuming a stack every 1 sec to deal 8,217 Shadowflame damage to its host until 1 stack remains.
@@ -166,7 +166,7 @@ spec:RegisterTalents( {
     xalans_cruelty                 = {  94845, 440040, 1 }, -- Shadow damage dealt by your spells and abilities is increased by 2% and your Shadow spells gain 10% more critical strike chance from all sources.
     xalans_ferocity                = {  94853, 440044, 1 }, -- Fire damage dealt by your spells and abilities is increased by 2% and your Fire spells gain 10% more critical strike chance from all sources.
     zevrims_resilience             = {  94835, 440065, 1 }, -- Dark Pact heals you for 22,261 every 1 sec while active.
-    
+
     -- Soul Harvester
     demoniacs_fervor               = {  94832, 449629, 1 }, -- Your demonic soul deals 100% increased damage to targets affected by your Unstable Affliction.
     demonic_soul                   = {  94851, 449614, 1, "soul_harvester" }, -- A demonic entity now inhabits your soul, allowing you to detect if a Soul Shard has a Succulent Soul when it's generated. A Succulent Soul empowers your next Malefic Rapture, increasing its damage by 20%, and unleashing your demonic soul to deal an additional 30,890 Shadow damage.

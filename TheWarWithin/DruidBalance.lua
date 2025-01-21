@@ -1,5 +1,5 @@
 -- DruidBalance.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "DRUID" then return end
 

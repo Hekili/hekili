@@ -1,5 +1,5 @@
 -- RogueOutlaw.lua
--- July 2024
+-- January 2025
 
 -- Contributed to JoeMama.
 if UnitClassBase( "player" ) ~= "ROGUE" then return end

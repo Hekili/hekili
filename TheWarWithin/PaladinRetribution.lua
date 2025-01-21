@@ -1,5 +1,5 @@
 -- PaladinRetribution.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "PALADIN" then return end
 
@@ -75,7 +75,7 @@ spec:RegisterTalents( {
     vengeful_wrath                  = { 103849, 406835, 2 }, -- Hammer of Wrath deals 50% increased damage to enemies below 35% health.
     worthy_sacrifice                = { 103865, 469279, 1 }, -- You automatically cast Blessing of Sacrifice onto an ally within 40 yds when they are below 35% health and you are not in a loss of control effect. This effect activates 100% of Blessing of Sacrifice's cooldown.
     wrench_evil                     = { 103855, 460720, 1 }, -- Turn Evil's cast time is reduced by 100%.
-    
+
     -- Retribution
     adjudication                    = {  81537, 406157, 1 }, -- Critical Strike damage of your abilities increased by 5% and Hammer of Wrath also has a chance to cast Highlord's Judgment.
     aegis_of_protection             = {  81550, 403654, 1 }, -- Divine Protection reduces damage you take by an additional 20%.
@@ -130,7 +130,7 @@ spec:RegisterTalents( {
     vanguards_momentum              = {  92688, 383314, 1 }, -- Hammer of Wrath has 1 extra charge and on enemies below 20% health generates 1 additional Holy Power. 
     wake_of_ashes                   = {  81525, 255937, 1 }, -- Lash out at your enemies, dealing 50,694 Radiant damage to all enemies within 14 yds in front of you, and applying Truth's Wake, burning the targets for an additional 31,218 damage over 9 sec. Demon and Undead enemies are also stunned for 5 sec. Generates 3 Holy Power.
     zealots_fervor                  = {  92952, 403509, 2 }, -- Auto-attack speed increased by 20%.
-    
+
     -- Herald of the Sun
     aurora                          = {  95069, 439760, 1 }, -- After you cast Wake of Ashes, gain Divine Purpose.  Divine Purpose Your next Holy Power spending ability is free and deals 10% increased damage and healing.
     blessing_of_anshe               = {  95071, 445200, 1 }, -- Your damage and healing over time effects have a chance to increase the damage of your next Hammer of Wrath by 200% and make it usable on any target, regardless of their health.
@@ -146,7 +146,7 @@ spec:RegisterTalents( {
     sun_sear                        = {  95072, 431413, 1 }, -- Hammer of Wrath and Divine Storm critical strikes cause the target to burn for an additional 6,197 Radiant damage over 4 sec.
     suns_avatar                     = {  95105, 431425, 1 }, -- During Avenging Wrath, you become linked to your Dawnlights, causing 3,592 Radiant damage to enemies or 598 healing to allies that pass through the beams, reduced beyond 5 targets. Activating Crusade applies up to 4 Dawnlights onto nearby allies or enemies and increases Dawnlight's duration by 20%.
     will_of_the_dawn                = {  95098, 431406, 1 }, -- Movement speed increased by 5% while above 80% health. When your health is brought below 35%, your movement speed is increased by 40% for 5 sec. Cannot occur more than once every 1 min.
-    
+
     -- Templar
     bonds_of_fellowship             = {  95181, 432992, 1 }, -- You receive 20% less damage from Blessing of Sacrifice and each time its target takes damage, you gain 4% movement speed up to a maximum of 40%.
     endless_wrath                   = {  95185, 432615, 1 }, -- Calling down an Empyrean Hammer has a 10% chance to reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.

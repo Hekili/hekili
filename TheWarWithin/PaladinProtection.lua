@@ -1,5 +1,5 @@
 -- PaladinProtection.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "PALADIN" then return end
 

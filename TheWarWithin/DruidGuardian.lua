@@ -1,6 +1,5 @@
 -- DruidGuardian.lua
--- July 2024
-
+-- January 2025
 if UnitClassBase( "player" ) ~= "DRUID" then return end
 
 local addon, ns = ...
@@ -152,7 +151,7 @@ spec:RegisterTalents( {
     wild_charge                   = {  82198, 102401, 1 }, -- Fly to a nearby ally's position.
     wild_growth                   = {  82205,  48438, 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 41,687 over 6.0 sec. Healing starts high and declines over the duration.
     wildstalkers_power            = {  94621, 439926, 1 }, -- Rip and Ferocious Bite damage increased by 5%. Rejuvenation healing increased by 10%.
-    
+
     -- Guardian
     after_the_wildfire            = {  82140, 371905, 1 }, -- Every 300 Rage you spend causes a burst of restorative energy, healing allies within 12 yds for 154,920.
     berserk_persistence           = {  82144,  50334, 1 }, -- Go berserk for 15 sec, increasing your haste by 15%, reducing the cooldown of Frenzied Regeneration by 100%, Mangle, Thrash, and Growl by 50%, and reducing the cost of Maul and Ironfur by 50%.
@@ -200,7 +199,7 @@ spec:RegisterTalents( {
     ursols_warding                = {  82148, 471492, 2 }, -- Gain magical damage reduction equal to 5% of your damage reduction from armor.
     vicious_cycle                 = {  82158, 371999, 1 }, -- Mangle increases the damage of your next cast of Maul or Raze, and casting Maul or Raze increases the damage of your next Mangle by 15%. Stacks up to 3.
     vulnerable_flesh              = {  82159, 372618, 2 }, -- Maul and Raze have an additional 30% chance to critically strike.
-    
+
     -- Druid of the Claw
     aggravate_wounds              = {  94616, 441829, 1 }, -- Every Maul, Raze, Mangle, Thrash, or Swipe you cast extends the duration of your Dreadful Wounds by 0.6 sec, up to 8 additional sec.
     bestial_strength              = {  94611, 441841, 1 }, -- Maul and Raze damage increased by 20%.
@@ -216,7 +215,7 @@ spec:RegisterTalents( {
     tear_down_the_mighty          = {  94614, 441846, 1 }, -- The cooldown of Pulverize is reduced by 10 sec.
     wildpower_surge               = {  94612, 441691, 1 }, -- Mangle grants Feline Potential. When you have 6 stacks, the next time you transform into Cat Form, gain 5 combo points and your next Ferocious Bite or Rip deals 225% increased damage for its full duration.
     wildshape_mastery             = {  94610, 441678, 1 }, -- Ironfur and Frenzied Regeneration persist in Cat Form. When transforming from Bear to Cat Form, you retain 80% of your Bear Form armor and health for 6 sec. For 6 sec after entering Bear Form, you heal for 10% of damage taken over 8 sec. 
-    
+
     -- Elune's Chosen
     arcane_affinity               = {  94586, 429540, 1 }, -- All Arcane damage from your spells and abilities is increased by 3%.
     astral_insight                = {  94585, 429536, 1 }, -- Incarnation: Guardian of Ursoc increases Arcane damage from spells and abilities by 10% while active. Increases the duration and number of spells cast by Convoke the Spirits by 25%.
