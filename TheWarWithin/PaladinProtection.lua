@@ -1512,6 +1512,47 @@ spec:RegisterAbilities( {
         end,
     },
 
+        -- Hammer down your enemy with the power of the Light, dealing $429826s1 Holy damage and ${$429826s1/2} Holy damage up to 4 nearby enemies. ; Additionally, calls down Empyrean Hammers from the sky to strike $427445s2 nearby enemies for $431398s1 Holy damage each.;
+        hammer_of_light = {
+            id = 427453,
+            known = 387174,
+            flash = 387174,
+            cast = 0.0,
+            cooldown = 0.0,
+            gcd = "spell",
+
+            spend = function()
+                if buff.divine_purpose.up or buff.hammer_of_light_free.up then return 0 end
+                return 3
+            end,
+            spendType = "holy_power",
+
+            startsCombat = true,
+            buff = function() return buff.hammer_of_light_free.up and "hammer_of_light_free" or "hammer_of_light_ready" end,
+
+            handler = function ()
+                removeBuff( "divine_purpose" )
+                if talent.undisputed_ruling.enabled then
+                    spec.abilities.consecration.handler()
+                    applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
+                end
+                
+
+                if buff.hammer_of_light_free.up then
+                    removeBuff( "hammer_of_light_free" )
+                else
+                    removeBuff( "hammer_of_light_ready" )
+
+                    if buff.lights_deliverance.stack_pct == 100 then
+                        removeBuff( "lights_deliverance" )
+                        applyBuff( "hammer_of_light_free" )
+                    end
+                end
+            end,
+
+            bind = { "wake_of_ashes", "eye_of_tyr" }
+        },
+
     -- Talent: Hammers the current target for 1,302 Physical damage. While you are standing in your Consecration, Hammer of the Righteous also causes a wave of light that hits all other targets within 8 yds for 226 Holy damage. Generates 1 Holy Power.
     hammer_of_the_righteous = {
         id = 53595,
