@@ -1032,7 +1032,7 @@ end )
 
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
 
--- Current Expansion
+-- The War Within
 spec:RegisterGear( "tww2", 229244, 229242, 229243, 229245, 229247 )
 spec:RegisterAuras( {
    -- 2-set

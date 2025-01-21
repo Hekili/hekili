@@ -333,6 +333,11 @@ local PowerSurge = setfenv( function()
 end, state )
 
 
+
+-- The War Within
+spec:RegisterGear( "tww2", 229334, 229332, 229337, 229335, 229333 )
+
+-- Dragonflight
 spec:RegisterGear( "tier29", 200327, 200329, 200324, 200326, 200328 )
 spec:RegisterAuras( {
     dark_reveries = {
@@ -1079,7 +1084,6 @@ spec:RegisterAuras( {
     },
 } )
 
-
 -- Abilities
 spec:RegisterAbilities( {
     -- Talent: Places a feather at the target location, granting the first ally to walk through it $121557s1% increased movement speed for $121557d. Only 3 feathers can be placed at one time.
@@ -1137,6 +1141,10 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "dark_ascension" )
             if talent.ancient_madness.enabled then applyBuff( "ancient_madness", nil, 20 ) end
+            if set_bonus.tww2 >= 2 then
+                spec.abilities.void_bolt.handler()
+                spend( spec.abilities.void_bolt.spend, spec.abilities.void_bolt.spendType )
+            end
         end,
     },
 
@@ -2314,6 +2322,10 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            if set_bonus.tww2 >= 2 then
+                spec.abilities.void_bolt.handler()
+                spend( spec.abilities.void_bolt.spend, spec.abilities.void_bolt.spendType )
+            end
             applyBuff( "voidform" )
             if talent.ancient_madness.enabled then applyBuff( "ancient_madness", nil, 20 ) end
         end,
