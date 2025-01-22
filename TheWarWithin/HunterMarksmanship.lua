@@ -1,12 +1,6 @@
 -- HunterMarksmanship.lua
 -- January 2025
 
-
---[[ 11.1 TODO List 
-- Volley CDR via damage done from talent Bullet Hell
-- Cap the trueshot extensions at 5 seconds
---]]
-
 if UnitClassBase( "player" ) ~= "HUNTER" then return end
 
 local addon, ns = ...
@@ -55,7 +49,7 @@ spec:RegisterTalents( {
     camouflage              = { 102414, 199483, 1 }, -- You and your pet blend into the surroundings and gain stealth for 1 min. While camouflaged, you will heal for 2% of maximum health every 1 sec.
     concussive_shot         = { 102407,   5116, 1 }, -- Dazes the target, slowing movement speed by 50% for 6 sec. Steady Shot will increase the duration of Concussive Shot on the target by 3.0 sec.
     counter_shot            = { 102402, 147362, 1 }, -- Interrupts spellcasting, preventing any spell in that school from being cast for 3 sec.
-    deathblow               = { 102410, 343248, 1 }, -- Aimed Shot has a 10% chance to grant Deathblow.  Deathblow The cooldown of Black Arrow is reset. Your next Black Arrow can be used on any target, regardless of their current health.
+    deathblow               = { 102410, 343248, 1 }, -- Aimed Shot has a 10% chance to grant Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     devilsaur_tranquilizer  = { 102415, 459991, 1 }, -- If Tranquilizing Shot removes only an Enrage effect, its cooldown is reduced by 5 sec.
     dire_summons            = {  94992, 472352, 1 }, -- Kill Command reduces the cooldown of Howl of the Pack Leader by 1.0 sec. Cobra Shot reduces the cooldown of Howl of the Pack Leader by 1.0 sec.
     disruptive_rounds       = { 102395, 343244, 1 }, -- When Tranquilizing Shot successfully dispels an effect or Counter Shot interrupts a cast, gain 10 Focus.
@@ -68,7 +62,7 @@ spec:RegisterTalents( {
     high_explosive_trap     = { 102739, 236776, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 44,960 Fire damage and knocking all enemies away. Limit 1. Trap will exist for 1 min. Targets knocked back by High Explosive Trap deal 10% less damage to you for 8 sec after being knocked back.
     hogstrider              = {  94988, 472639, 1 }, --  Each time your Boar deal damage, you have a 25% chance to gain a stack of Mongoose Fury and Cobra Shot strikes 1 additional target. Stacks up to 4 times.
     horsehair_tether        = {  94979, 472729, 1 }, -- When an enemy is stunned by Binding Shot, it is dragged to Binding Shot's center.
-    howl_of_the_pack_leader = {  94991, 471876, 1 }, -- Every 30 sec, your next Kill Command summons the aid of a Beast.  Bear A Bear leaps into the fray, rending the flesh of your enemies, dealing 470,547 damage over 10 sec to up to 8 nearby enemies.  Wyvern A Wyvern descends from the skies, letting out a battle cry that increases the damage of you and your pets by 10% for 15 sec.  Boar A Boar charges through your target 3 times, dealing 313,698 physical damage to the primary target and 125,479 damage to up to 8 nearby enemies.
+    howl_of_the_pack_leader = {  94991, 471876, 1 }, -- Every 30 sec, your next Kill Command summons the aid of a Beast.  Wyvern A Wyvern descends from the skies, letting out a battle cry that increases the damage of you and your pets by 10% for 15 sec.  Boar A Boar charges through your target 3 times, dealing 313,698 physical damage to the primary target and 125,479 damage to up to 8 nearby enemies.  Bear A Bear leaps into the fray, rending the flesh of your enemies, dealing 601,164 damage over 10 sec to up to 8 nearby enemies.
     hunters_avoidance       = { 102423, 384799, 1 }, -- Damage taken from area of effect attacks reduced by 5%.
     implosive_trap          = { 102739, 462031, 1 }, -- Hurls a fire trap to the target location that explodes when an enemy approaches, causing 44,960 Fire damage and knocking all enemies up. Limit 1. Trap will exist for 1 min. Targets knocked up by Implosive Trap deal 10% less damage to you for 8 sec after being knocked up.
     improved_traps          = { 102418, 343247, 1 }, -- The cooldown of Tar Trap, High Explosive Trap, Implosive Trap, and Freezing Trap is reduced by 5.0 sec.
@@ -77,13 +71,13 @@ spec:RegisterTalents( {
     kill_shot               = { 102399,  53351, 1 }, -- You attempt to finish off a wounded target, dealing 358,594 Physical damage. Only usable on enemies with less than 20% health
     kindling_flare          = { 102425, 459506, 1 }, -- Flare's radius is increased by 50%.
     kodo_tranquilizer       = { 102415, 459983, 1 }, -- Tranquilizing Shot removes up to 1 additional Magic effect from up to 2 nearby targets.
-    lead_from_the_front     = {  94966, 472741, 1 }, -- Casting Coordinated Assault causes your next Kill Command to summon a Beast and increases the damage dealt by your Beasts by 25% for 12 sec.
+    lead_from_the_front     = {  94966, 472741, 1 }, -- Casting Coordinated Assault grants Howl of the Pack Leader and increases the damage dealt by your Beasts by 25% and your pet by 15% for 12 sec.
     lone_survivor           = { 102391, 388039, 1 }, -- Reduce the cooldown of Survival of the Fittest by 30 sec, and increase its duration by 2.0 sec. Reduce the cooldown of Counter Shot and Muzzle by 2 sec.
     misdirection            = { 102419,  34477, 1 }, -- Misdirects all threat you cause to the targeted party or raid member, beginning with your next attack within 30 sec and lasting for 8 sec.
     moment_of_opportunity   = { 102426, 459488, 1 }, -- When a trap triggers, you gain 30% movement speed for 3 sec. Can only occur every 1 min.
     natural_mending         = { 102401, 270581, 1 }, -- Every 10 Focus you spend reduces the remaining cooldown on Exhilaration by 1.0 sec.
     no_hard_feelings        = { 102412, 459546, 1 }, -- The cooldown of Misdirection is reduced by 5 sec.
-    no_mercy                = {  94969, 472660, 1 }, -- Damage from your Kill Shot sends your pets into a rage, causing all active pets within 20 yds and your Bear to pounce to the target and attack it.
+    no_mercy                = {  94969, 472660, 1 }, -- Damage from your Kill Shot sends your pets into a rage, causing all active pets within 20 yds and your Bear to pounce to the target and Smack, Claw, or Bite it. Your pets will not leap if their target is already in melee range.
     pack_mentality          = {  94985, 472358, 1 }, -- Howl of the Pack Leader causes your Kill Command to generate an additional stack of Tip of the Spear. Summoning a Beast reduces the cooldown of Wildfire Bomb by 18.0 sec.
     padded_armor            = { 102406, 459450, 1 }, -- Survival of the Fittest gains an additional charge.
     pathfinding             = { 102404, 378002, 1 }, -- Movement speed increased by 4%.
@@ -111,22 +105,22 @@ spec:RegisterTalents( {
     wilderness_medicine     = { 102383, 343242, 1 }, -- Natural Mending now reduces the cooldown of Exhilaration by an additional 0.5 sec.
 
     -- Marksmanship
-    aimed_shot              = { 103982,  19434, 1 }, -- A powerful aimed shot that deals 501,823 Physical damage.
+    aimed_shot              = { 103982,  19434, 1 }, -- A powerful aimed shot that deals 553,260 Physical damage.
     ammo_conservation       = { 103975, 459794, 1 }, -- Rapid Fire shoots 3 additional shots. Aimed Shot cooldown reduced by 1.0 sec.
     aspect_of_the_hydra     = { 103957, 470945, 1 }, -- Aimed Shot, Rapid Fire, and Arcane Shot now hit a second nearby target for 40% of their damage.
     bullet_hell             = { 104095, 473378, 1 }, -- Damage from Multi-Shot and Volley reduces the cooldown of Rapid Fire by 0.25 sec. Damage from Aimed Shot reduces the cooldown of Volley by 0.25 sec.
     bulletstorm             = { 103962, 389019, 1 }, -- Damage from Rapid Fire increases the damage of Aimed Shot by 2% for 15 sec, stacking up to 15 times. New stacks do not refresh duration and are removed upon casting Rapid Fire.
     bullseye                = { 103950, 204089, 2 }, -- When your abilities damage a target below 20% health, you gain 1% increased critical strike chance for 6 sec, stacking up to 15 times.
-    calling_the_shots       = { 103958, 260404, 1 }, -- Consuming Spotter's Mark reduces the cooldown of Trueshot by 2.0 sec.
+    calling_the_shots       = { 103958, 260404, 1 }, -- Consuming Spotter's Mark reduces the cooldown of Trueshot by 3.0 sec.
     cunning                 = { 103986, 474440, 1 }, -- Your Spotting Eagle gains the Cunning specialization, granting you Master's Call and Pathfinding.  Master's Call Your pet removes all root and movement impairing effects from itself and a friendly target, and grants immunity to all such effects for 4 sec.  Pathfinding Your movement speed is increased by 8%.
-    deadeye                 = { 103972, 321460, 1 }, -- Black Arrow now has 2 charges and has its cooldown reduced by 2.0 sec.
-    double_tap              = { 103953, 473370, 1 }, -- Casting Trueshot grants Double Tap, causing your next Aimed Shot to fire again at 100% power, or your next Rapid Fire to fire 100% additional shots during its channel.
-    eagles_accuracy         = { 103973, 473369, 2 }, -- Spotter's Mark's damage bonus is increased by 5%.
-    feathered_frenzy        = { 103984, 470943, 1 }, -- Trueshot sends your Spotting Eagle into a frenzy, instantly applying Spotter's Mark to your target. During Trueshot, your chance to apply Spotter's Mark is increased by 50%.
+    deadeye                 = { 103972, 321460, 1 }, -- Kill Shot now has 2 charges and has its cooldown reduced by 2.0 sec.
+    double_tap              = { 103953, 473370, 1 }, -- Casting Trueshot or Volley grants Double Tap, causing your next Aimed Shot to fire again at 80% power, or your next Rapid Fire to fire 80% additional shots during its channel.
+    eagles_accuracy         = { 103973, 473369, 2 }, -- Aimed Shot and Rapid Fire's damage is increased by 5.0%.
+    feathered_frenzy        = { 103984, 470943, 1 }, -- Trueshot sends your Spotting Eagle into a frenzy, instantly applying Spotter's Mark to your target. During Trueshot, your chance to apply Spotter's Mark is increased by 100%.
     focused_aim             = { 103987, 378767, 1 }, -- Consuming Precise Shots reduces the cooldown of Aimed Shot by 0.75 sec.
-    headshot                = { 103972, 471363, 1 }, -- Black Arrow can now benefit from Precise Shots at 25% effectiveness. Black Arrow consumes Precise Shots.
-    improved_deathblow      = { 103969, 378769, 1 }, -- Aimed Shot now has a 15% chance and Rapid Fire now has a 25% chance to grant Deathblow. Black Arrow critical strike damage is increased by 25%.  Deathblow The cooldown of Black Arrow is reset. Your next Black Arrow can be used on any target, regardless of their current health.
-    improved_spotters_mark  = { 104127, 466867, 1 }, -- The damage bonus of Spotter's Mark is increased by 20%.  Spotter's Mark Damaging an enemy with abilities empowered by Precise Shots has a 30% chance to apply Spotter's Mark, causing your next Aimed Shot to deal 40% increased damage to the target. 
+    headshot                = { 103972, 471363, 1 }, -- Kill Shot can now benefit from Precise Shots at 25% effectiveness. Kill Shot consumes Precise Shots.
+    improved_deathblow      = { 103969, 378769, 1 }, -- Aimed Shot now has a 15% chance and Rapid Fire now has a 25% chance to grant Deathblow. Kill Shot critical strike damage is increased by 25%.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
+    improved_spotters_mark  = { 104127, 466867, 1 }, -- The damage bonus of Spotter's Mark is increased by 20%.  Spotter's Mark Damaging an enemy with abilities empowered by Precise Shots has a 30% chance to apply Spotter's Mark, causing your next Aimed Shot to deal 30% increased damage to the target. 
     improved_streamline     = { 103987, 471427, 1 }, -- Streamline's cast time reduction effect is increased to 30%.
     in_the_rhythm           = { 103948, 407404, 1 }, -- When Rapid Fire finishes channeling, the time between your Auto Shots is reduced by 1.0 sec for 12 sec.
     incendiary_ammunition   = { 103985, 471428, 1 }, -- Bulletstorm now increases your critical strike damage by 2%. Additionally, Bulletstorm now stacks 5 more times.
@@ -135,45 +129,45 @@ spec:RegisterTalents( {
     lock_and_load           = { 103988, 194595, 1 }, -- Your ranged auto attacks have a 8% chance to trigger Lock and Load, causing your next Aimed Shot to cost no Focus and be instant.
     magnetic_gunpowder      = { 103981, 473522, 1 }, -- Consuming Precise Shots reduces the cooldown of Explosive Shot by 2.0 sec. Consuming Lock and Load reduces the cooldown of Explosive Shot by 8.0 sec.
     master_marksman         = { 103974, 260309, 1 }, -- Your ranged ability critical strikes cause the target to bleed for an additional 15% of the damage dealt over 6 sec.
-    moving_target           = { 103980, 474296, 1 }, -- Consuming Precise Shots increases the damage of your next Aimed Shot by 20% and grants Streamline.  Streamline Your next Aimed Shot has its Focus cost and cast time reduced by 30%. Stacks up to 2 times.
+    moving_target           = { 103980, 474296, 1 }, -- Consuming Precise Shots increases the damage of your next Aimed Shot by 20% and grants Streamline.  Streamline Your next Aimed Shot has its Focus cost and cast time reduced by $w1%. Stacks up to 2 times.
     no_scope                = { 103955, 473385, 1 }, -- Rapid Fire grants Precise Shots.
     obsidian_arrowhead      = { 103959, 471350, 1 }, -- The damage of Auto Shot is increased by 25% and its critical strike chance is increased by 15%.
     ohnahran_winds          = { 103979, 1215021, 1 }, -- When your Eagle applies Spotter's Mark, it has a 25% chance to apply a Spotter's Mark to up to 3 additional nearby enemies.
     on_target               = { 103959, 471348, 1 }, -- Consuming Spotter's Mark grants 4% increased Haste for 10 sec, stacking up to 4 times. Multiple instances of this effect can overlap.
     penetrating_shots       = { 104130, 459783, 1 }, -- Gain critical strike damage equal to 40% of your critical strike chance.
-    precise_shots           = { 103977, 260240, 1 }, -- Aimed Shot causes your next Arcane Shot or Multi-Shot to deal 100% more damage and cost 70% less Focus. Your Auto Shot damage is increased by 100% but the time between your Auto Shots is increased by 2.0 sec.
-    precision_detonation    = { 103949, 471369, 1 }, -- Casting Explosive Shot grants Streamline. When Aimed Shot damages a target affected by your Explosive Shot, Explosive Shot instantly explodes, dealing 25% increased damage.  Streamline Your next Aimed Shot has its Focus cost and cast time reduced by 30%. Stacks up to 2 times.
+    precise_shots           = { 103977, 260240, 1 }, -- Aimed Shot causes your next Arcane Shot or Multi-Shot to deal 80% more damage and cost 70% less Focus. Your Auto Shot damage is increased by 100% but the time between your Auto Shots is increased by 2.0 sec.
+    precision_detonation    = { 103949, 471369, 1 }, -- Casting Explosive Shot grants Streamline. When Aimed Shot damages a target affected by your Explosive Shot, Explosive Shot instantly explodes, dealing 25% increased damage.  Streamline Your next Aimed Shot has its Focus cost and cast time reduced by $w1%. Stacks up to 2 times.
     quickdraw               = { 103963, 473380, 1 }, -- Lock and Load now increases the damage of Aimed Shot by 15%.
-    rapid_fire              = { 103961, 257044, 1 }, -- Shoot a stream of 10 shots at your target over 1.7 sec, dealing a total of 728,657 Physical damage. Usable while moving. Rapid Fire causes your next Aimed Shot to cast 30% faster. Each shot generates 2 Focus.
-    razor_fragments         = { 103965, 384790, 1 }, -- After gaining Deathblow, your next Black Arrow will deal 75% increased damage, and shred up to 5 targets near your Black Arrow target for 35% of the damage dealt by Black Arrow over 6 sec.
+    rapid_fire              = { 103961, 257044, 1 }, -- Shoot a stream of 10 shots at your target over 1.7 sec, dealing a total of 803,344 Physical damage. Usable while moving. Rapid Fire causes your next Aimed Shot to cast 20% faster. Each shot generates 2 Focus.
+    razor_fragments         = { 103965, 384790, 1 }, -- After gaining Deathblow, your next Kill Shot will deal 75% increased damage, and shred up to 5 targets near your Kill Shot target for 35% of the damage dealt by Kill Shot over 6 sec.
     salvo                   = { 103960, 400456, 1 }, -- Volley now also applies Explosive Shot to up to 2 targets hit. 
     shrapnel_shot           = { 104126, 473520, 1 }, -- Damaging an enemy with Explosive Shot increases the damage they receive from your next Arcane Shot or Multi-Shot by 30%.
     small_game_hunter       = { 103978, 459802, 1 }, -- Multi-Shot deals 75% increased damage and Explosive Shot deals 15% increased damage.
-    streamline              = { 103983, 260367, 1 }, -- Rapid Fire's damage is increased by 15%. Casting Rapid Fire grants Streamline.  Streamline Your next Aimed Shot has its Focus cost and cast time reduced by 30%. Stacks up to 2 times.
+    streamline              = { 103983, 260367, 1 }, -- Rapid Fire's damage is increased by 15%. Casting Rapid Fire grants Streamline.  Streamline Your next Aimed Shot has its Focus cost and cast time reduced by $w1%. Stacks up to 2 times.
     surging_shots           = { 103964, 391559, 1 }, -- Rapid Fire deals 35% additional damage, and Aimed Shot has a 15% chance to reset the cooldown of Rapid Fire.
     target_acquisition      = { 103968, 473379, 1 }, -- Consuming Spotter's Mark reduces the cooldown of Aimed Shot by 2.0 sec.
     tenacious               = { 103986, 474456, 1 }, -- Your Spotting Eagle gains the Tenacity specialization, granting you Endurance Training and Air Superiority.  Endurance Training You gain 5% increased maximum health.  Air Superiority Your Spotting Eagle alerts you to oncoming danger, reducing all damage you take by 3%
     tensile_bowstring       = { 103966, 471366, 1 }, -- While Trueshot is active, consuming Precise Shots extends Trueshot's duration by 1.0 sec, up to 5.0 sec. Additionally, Trueshot now increases the effectiveness of Streamline by 50%.
     trick_shots             = { 103957, 257621, 1 }, -- When Multi-Shot hits 3 or more targets, your next Aimed Shot or Rapid Fire will ricochet and hit up to 5 additional targets for 75% of normal damage.
-    trueshot                = { 103947, 288613, 1 }, -- Increases your critical strike chance by 20% and critical strike damage by 20% for 15 sec. Reduces the cooldown of your Aimed Shot and Rapid Fire by 60%.
-    unerring_vision         = { 103958, 474738, 1 }, -- Trueshot now increases your critical strike chance by an additional 10% and increases your critical strike damage by an additional 10%.
+    trueshot                = { 103947, 288613, 1 }, -- Increases your critical strike chance by 20% and critical strike damage by 30% for 15 sec. Reduces the cooldown of your Aimed Shot and Rapid Fire by 60%. Consuming Spotter's Mark reduces the cooldown of Trueshot by 3.0 sec
+    unerring_vision         = { 103953, 474738, 1 }, -- Trueshot now increases your critical strike chance by an additional 10% and increases your critical strike damage by an additional 20%. Additionally, Calling the Shots reduces Trueshot's cooldown by an additional 1.0 sec.
     volley                  = { 103956, 260243, 1 }, -- Rain a volley of arrows down over 6 sec, dealing up to 829,459 Physical damage to any enemy in the area, and gain the effects of Trick Shots for as long as Volley is active.
     windrunner_quiver       = { 103952, 473523, 1 }, -- Precise Shots can now stack up to 2 times, but its damage bonus is reduced to 80%. Casting Aimed Shot has a 50% chance to grant an additional stack of Precise Shots.
 
     -- Dark Ranger
     banshees_mark           = {  94957, 467902, 1 }, -- Murder of Crows now deals Shadow damage. Black Arrow's initial damage has a 25% chance to summon a Murder of Crows on your target.  A Murder of Crows Summons a flock of crows to attack your target, dealing 373,256 Physical damage over 15 sec.
     black_arrow             = {  94987, 466932, 1, "dark_ranger" }, -- Your Kill Shot is replaced with Black Arrow.  Black Arrow You attempt to finish off a wounded target, dealing 358,172 Shadow damage and 35,873 Shadow damage over 10 sec. Only usable on enemies above 80% health or below 20% health.
-    bleak_arrows            = {  94961, 467749, 1 }, -- Your auto shot now deals Shadow damage, allowing it to bypass armor. Your auto shot has a 8% chance to grant Deathblow.  Deathblow The cooldown of Black Arrow is reset. Your next Black Arrow can be used on any target, regardless of their current health.
+    bleak_arrows            = {  94961, 467749, 1 }, -- Your auto shot now deals Shadow damage, allowing it to bypass armor. Your auto shot has a 8% chance to grant Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     bleak_powder            = {  94974, 467911, 1 }, -- Casting Black Arrow while Trick Shots is active causes Black Arrow to explode upon hitting its target, dealing 323,501 Shadow damage to other nearby enemies.
     dark_chains             = {  94960, 430712, 1 }, -- While in combat, Disengage will chain the closest target to the ground, causing them to move 40% slower until they move 8 yards away.
-    ebon_bowstring          = {  94986, 467897, 1 }, -- Casting Black Arrow has a 15% chance to grant Deathblow.  Deathblow The cooldown of Black Arrow is reset. Your next Black Arrow can be used on any target, regardless of their current health.
+    ebon_bowstring          = {  94986, 467897, 1 }, -- Casting Black Arrow has a 15% chance to grant Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     embrace_the_shadows     = {  94959, 430704, 1 }, -- You heal for 15% of all Shadow damage dealt by you or your pets.
     phantom_pain            = {  94986, 467941, 1 }, -- When Aimed Shot damages a target affected by Black Arrow, 8% of the damage dealt is replicated to each other unit affected by Black Arrow.
     shadow_dagger           = {  94960, 467741, 1 }, -- While in combat, Disengage releases a fan of shadow daggers, dealing 392 Shadow damage per second and reducing affected target's movement speed by 30% for 6 sec.
-    shadow_hounds           = {  94983, 430707, 1 }, -- Each time Black Arrow deals damage, you have a small chance to manifest a Dark Hound to charge to your target and deal Shadow damage for 8 sec.
+    shadow_hounds           = {  94983, 430707, 1 }, -- Each time Black Arrow deals damage, you have a small chance to manifest a Dark Hound to charge to your target and deal Shadow damage to nearby targets for 8 sec.
     shadow_surge            = {  94982, 467936, 1 }, -- Periodic damage from Black Arrow has a small chance to erupt in a burst of darkness, dealing 117,821 Shadow damage to all enemies near the target. Damage reduced beyond 8 targets.
     smoke_screen            = {  94959, 430709, 1 }, -- Exhilaration grants you 3 sec of Survival of the Fittest. Survival of the Fittest activates Exhilaration at 50% effectiveness.
-    soul_drinker            = {  94983, 469638, 1 }, -- When an enemy affected by Black Arrow dies, you have a 10% chance to gain Deathblow.  Deathblow The cooldown of Black Arrow is reset. Your next Black Arrow can be used on any target, regardless of their current health.
+    soul_drinker            = {  94983, 469638, 1 }, -- When an enemy affected by Black Arrow dies, you have a 10% chance to gain Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     the_bell_tolls          = {  94968, 467644, 1 }, -- Black Arrow is now usable on enemies with greater than 80% health or less than 20% health.
     withering_fire          = {  94993, 466990, 1 }, -- While Trueshot is active, you surrender to darkness, granting you Deathblow and enabling you to cast Black Arrow regardless of your enemy's health. Casting Black Arrow while under the effects of Withering Fire causes you to additionally fire a barrage of 2 additional Black Arrows at nearby targets at 50% effectiveness.
 
@@ -196,17 +190,16 @@ spec:RegisterTalents( {
 
 -- PvP Talents
 spec:RegisterPvpTalents( { 
-    aspect_of_the_fox      = 5700, -- (1219162) Aimed Shot may be cast while moving during Aspect of the Cheetah and Aspect of the Cheetah's delayed effect is increased by 4 sec.
+    aspect_of_the_fox      = 5700, -- (1219162) 
     chimaeral_sting        =  653, -- (356719) Stings the target, dealing 117,636 Nature damage and initiating a series of venoms. Each lasts 3 sec and applies the next effect after the previous one ends.  Scorpid Venom: 90% reduced movement speed.  Spider Venom: Silenced.  Viper Venom: 20% reduced damage and healing.
-    consecutive_concussion = 5440, -- (357018) Concussive Shot slows movement by an additional 20%. Using Steady Shot 3 times on a concussed enemy stuns them for 4 sec.
-    diamond_ice            = 5533, -- (203340) Victims of Freezing Trap can no longer be damaged or healed. Freezing Trap is now undispellable, but has a 5 sec duration.
-    explosive_powder       = 5688, -- (1218150) Bursting Shot now also knocks you back and snares enemies by an additional 20%.
-    hunting_pack           = 3729, -- (203235) Aspect of the Cheetah has 50% reduced cooldown and grants its effects to allies within 15 yds.
-    rangers_finesse        =  659, -- (248443) Casting Aimed Shot provides you with Ranger's Finesse. After gaining 3 stacks of Ranger's Finesse, increase your next Volley's radius and duration by 50%. Consuming Ranger's Finesse reduces the remaining cooldown of Aspect of the Turtle by 20 sec.
-    snipers_advantage      =  660, -- (1217102) Trueshot and Volley increase the range of all shots by 30% for their duration.
-    survival_tactics       =  651, -- (202746) Feign Death reduces damage taken by 90% for 2 sec.
+    consecutive_concussion = 5440, -- (357018) 
+    diamond_ice            = 5533, -- (203340) 
+    explosive_powder       = 5688, -- (1218150) 
+    hunting_pack           = 3729, -- (203235) 
+    rangers_finesse        =  659, -- (248443) 
+    snipers_advantage      =  660, -- (1217102) 
+    survival_tactics       =  651, -- (202746) 
 } )
-
 
 -- Auras
 spec:RegisterAuras( {
@@ -563,9 +556,8 @@ spec:RegisterAuras( {
     rapid_fire = {
         id = 257044,
         duration = function () return 2 * haste end,
-        shots = function() return ( 7 + 3 * talent.ammo_conservation.rank ) * ( buff.double_tap.up and 2 or 1 ) end,
         tick_time = function ()
-            return ( 2 * haste ) / ( spec.auras.rapid_fire.shots )
+            return ( 2 * haste ) / ( action.rapid_fire.shots )
         end,
         type = "Ranged",
         max_stack = 1
@@ -685,7 +677,7 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
         streamlineCostMultiplier = function() return 1 - ( buff.streamline.stack * 0.2 * ( talent.tensile_bowstring.enabled and buff.trueshot.up and 1.5 or 1 ) ) end,
-        streamlineCastMultiplier = function() return 1 - ( buff.streamline.stack * ( 0.2 + 0.1 * talent.improved_streamline ) * ( talent.tensile_bowstring.enabled and buff.trueshot.up and 1.5 or 1 ) ) end
+        streamlineCastMultiplier = function() return 1 - ( buff.streamline.stack * ( 0.2 + 0.1 * talent.improved_streamline.rank ) * ( talent.tensile_bowstring.enabled and buff.trueshot.up and 1.5 or 1 ) ) end
     },
     survival_of_the_fittest = {
         id = 281195,
@@ -853,45 +845,57 @@ spec:RegisterGear( "tier30", 202482, 202480, 202479, 202478, 202477 )
 spec:RegisterGear( "tier31", 207216, 207217, 207218, 207219, 207221, 217183, 217185, 217181, 217182, 217184 )
 
 
-local SpottersMarkConsumer = setfenv( function ( maxTargets )
+local SpottersMarkConsumer = setfenv( function ( max_targets )
 
     local markConsumptions = 0
+    local trueshotCDR = talent.unerring_vision.enabled and 3 or 2
 
-    if maxTargets >= active_enemies then
+    if max_targets >= active_enemies then
         -- Case where all consumptions are guaranteed
         markConsumptions = min( active_enemies, active_dot.spotters_mark )
     else
         -- Case where not all targets can be hit, ONLY apply CDR based on what we can guarantee
-        local guaranteedHits = min( maxTargets, active_dot.spotters_mark )
-        local overflowTargets = active_enemies - maxTargets
+        local guaranteedHits = min( max_targets, active_dot.spotters_mark )
+        local overflowTargets = active_enemies - max_targets
         markConsumptions = max( 0, guaranteedHits - overflowTargets )
     end
 
     removeDebuff( "target", "spotters_mark" )
     active_dot.spotters_mark = max( 0, active_dot.spotters_mark - ( markConsumptions - 1 ) )
-    if talent.calling_the_shots.enabled then reduceCooldown( "trueshot", 2 * markConsumptions ) end
+    if talent.calling_the_shots.enabled then reduceCooldown( "trueshot", trueshotCDR * markConsumptions ) end
     if talent.target_acquisition.enabled then reduceCooldown( "aimed_shot", 2 * markConsumptions ) end
     if talent.on_target.enabled then addStack( "on_target", nil, markConsumptions ) end
 
 end, state )
 
+local tensileTrueshotExtension = 0
 
 local PreciseShotsConsumer = setfenv( function ()
-    
+
     local count = buff.precise_shots.stack
-    
+
     if set_bonus.tww1 >= 4 or talent.moving_target.enabled then
         applyBuff( "moving_target" )
         addStack( "streamline", nil, count )
     end
 
     if talent.magnetic_gunpowder.enabled then reduceCooldown( "explosive_shot", 2 * count ) end
-    if talent.focused_aim.enabled then reduceCooldown( "aimed_shot", 2 * count ) end
 
-    if talent.tensile_bowstring.enabled then buff.trueshot.expires = buff.trueshot.expires + count end
+    if talent.focused_aim.enabled then reduceCooldown( "aimed_shot", 0.75 * count ) end
+
+    if talent.tensile_bowstring.enabled and tensileTrueshotExtension < 5 then
+
+        if tensileTrueshotExtension == 4 then
+            -- If consuming 2 stacks @ 4, it still caps at 5. Don't roll over to 6
+            buff.trueshot.expires = buff.trueshot.expires + 1
+        else
+            buff.trueshot.expires = buff.trueshot.expires + count
+        end
+
+        tensileTrueshotExtension = tensileTrueshotExtension + count
+    end
 
     removeBuff( "precise_shots" )
-
 end, state )
 
 
@@ -932,7 +936,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
         -- cycle = function() return talent.serpentstalkers_trickery.enabled and "serpent_sting" or nil end,
-        maxTargets = function() return ( buff.trick_shots.up or buff.volley.up and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
+        max_targets = function() return ( buff.trick_shots.up or buff.volley.up and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
 
         spend = function ()
             if buff.lock_and_load.up or buff.secrets_of_the_unblinking_vigil.up then return 0 end
@@ -956,7 +960,7 @@ spec:RegisterAbilities( {
             removeBuff ( "moving_target" )
             if talent.precise_shots.enabled then addStack( "precise_shots" ) end
             if debuff.explosive_shot.up and talent.precision_detonation.enabled then removeDebuff( "target", "explosive_shot" ) end
-            if debuff.spotters_mark.up then SpottersMarkConsumer( spec.abilities.aimed_shot.maxTargets ) end
+            if debuff.spotters_mark.up then SpottersMarkConsumer( action.aimed_shot.max_targets ) end
             
             if buff.lock_and_load.up then 
                 removeBuff( "lock_and_load" )
@@ -969,7 +973,7 @@ spec:RegisterAbilities( {
                 spec.abilities.aimed_shot.runHandler()
             end
 
-            if talent.bullet_hell.enabled then reduceCooldown( "volley", 0.25 * spec.abilities.aimed_shot.maxTargets ) end
+            if talent.bullet_hell.enabled then reduceCooldown( "volley", 0.25 * action.aimed_shot.max_targets ) end
 
             -- Trick Shots
             if buff.trick_shots.up then
@@ -999,7 +1003,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
         school = "arcane",
-        maxTargets = function() return ( buff.trick_shots.up or buff.volley.up and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
+        max_targets = function() return ( buff.trick_shots.up or buff.volley.up and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
 
         spend = function () return  40  * ( buff.precise_shots.up and 0.3 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
@@ -1216,25 +1220,41 @@ spec:RegisterAbilities( {
         end,
     },
 
-        -- Talent: Fires an explosive shot at your target. After $t1 sec, the shot will explode, dealing $212680s1 Fire damage to all enemies within $212680A1 yards. Deals reduced damage beyond $s2 targets.
-        explosive_shot = {
-            id = 212431,
-            cast = 0,
-            cooldown = 30,
-            gcd = "spell",
-            school = "fire",
-    
-            spend = 20,
-            spendType = "focus",
-    
-            talent = "explosive_shot",
-            startsCombat = true,
-    
-            handler = function ()
-                applyDebuff( "target", "explosive_shot" )
-                if talent.precision_detonation.enabled then addStack( "streamline" ) end
-            end,
-        },
+    -- Changes your viewpoint to the targeted location for $d. Only usable outdoors.
+    eagle_eye = {
+        id = 6197,
+        cast = 60,
+        channeled = true,
+        cooldown = 0,
+        gcd = "spell",
+        school = "arcane",
+
+        startsCombat = false,
+
+        start = function ()
+            applyBuff( "eagle_eye" )
+        end,
+    },
+
+    -- Talent: Fires an explosive shot at your target. After $t1 sec, the shot will explode, dealing $212680s1 Fire damage to all enemies within $212680A1 yards. Deals reduced damage beyond $s2 targets.
+    explosive_shot = {
+        id = 212431,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+        school = "fire",
+
+        spend = 20,
+        spendType = "focus",
+
+        talent = "explosive_shot",
+        startsCombat = true,
+
+        handler = function ()
+            applyDebuff( "target", "explosive_shot" )
+            if talent.precision_detonation.enabled then addStack( "streamline" ) end
+        end,
+    },
 
     interlope = {
         id = 248518,
@@ -1247,6 +1267,23 @@ spec:RegisterAbilities( {
         texture = 132180,
 
         handler = function ()
+        end,
+    },
+
+    -- Your Spotting Eagle descends from the skies, stunning your target for 5 sec. Targets stunned by Intimidation deal 10% less damage to you for 8 sec after the effect ends. This ability does not require line of sight.
+    intimidation = {
+        id = 474421,
+        cast = 0,
+        cooldown = function() return 60 - ( 10* talent.territorial_instincts.rank ) end,
+        gcd = "spell",
+
+        talent = "intimidation",
+        startsCombat = true,
+        texture = 1392564,
+
+
+        handler = function ()
+            applyDebuff( "target", "intimidation" )
         end,
     },
 
@@ -1299,8 +1336,34 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "off",
         hidden = true,
-        readyTime = buff.lunar_storm_cooldown.down
+        readyTime = function() return buff.lunar_storm_cooldown.remains end,
     },
+
+        -- Your pet removes all root and movement impairing effects from itself and a friendly target, and grants immunity to all such effects for 4 sec.
+        masters_call = {
+            id = 272682,
+            cast = 0,
+            cooldown = function() return pvptalent.kindred_beasts.enabled and 22.5 or 45 end,
+            gcd = "spell",
+    
+            startsCombat = false,
+            texture = off,
+            talent = "cunning",
+    
+            handler = function ()
+                applyBuff( "masters_call" )
+            end,
+    
+            copy = 53271, -- Pet's version.
+    
+            auras = {
+                masters_call = {
+                    id = 62305,
+                    duration = 4,
+                    max_stack = 1
+                }
+            }
+        },
 
     -- Talent: Fires several missiles, hitting your current target and all enemies within $A1 yards for $s1 Physical damage. Deals reduced damage beyond $2643s1 targets.$?s260393[    Multi-Shot has a $260393h% chance to reduce the cooldown of Rapid Fire by ${$260393m1/10}.1 sec.][]
     multishot = {
@@ -1338,14 +1401,15 @@ spec:RegisterAbilities( {
         cooldown = function() return 20 * ( buff.trueshot.up and 0.4 or 1 ) end,
         gcd = "spell",
         school = "physical",
-        maxTargets = function() return ( buff.trick_shots.up or buff.volley.up and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
+        max_targets = function() return ( buff.trick_shots.up or buff.volley.up and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
+        shots = function() return ( 7 + 3 * talent.ammo_conservation.rank ) * ( buff.double_tap.up and 1.8 or 1 ) end,
         talent = "rapid_fire",
         startsCombat = true,
 
         start = function ()
 
             if talent.bulletstorm.enabled and buff.trick_shots.up then
-                addStack( "bulletstorm", nil, spec.abilities.rapid_fire.maxTargets * spec.abilities.rapid_fire.shots )
+                addStack( "bulletstorm", nil, action.rapid_fire.max_targets * action.rapid_fire.shots )
             end
             if talent.lunar_storm.enabled and cooldown.lunar_storm.ready then
                 applyDebuff( "target", "lunar_storm" )
@@ -1425,6 +1489,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+            tensileTrueshotExtension = 0
             focus.regen = focus.regen * 1.5
             reduceCooldown( "aimed_shot", cooldown.aimed_shot.remains * 0.6 )
             reduceCooldown( "rapid_fire", cooldown.rapid_fire.remains * 0.6 )
@@ -1447,7 +1512,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Rain a volley of arrows down over $d, dealing up to ${$260247s1*12} Physical damage to any enemy in the area, and gain the effects of Trick Shots for as long as Volley is active.
     volley = {
-        
+
         id = 260243,
         cast = 0,
         cooldown = 45,
@@ -1460,7 +1525,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "volley" )
             applyBuff( "trick_shots", 6 )
-
+            if talent.double_tap.enabled then applyBuff( "double_tap" ) end
             if talent.salvo.enabled then
                 applyDebuff( "target", "explosive_shot" )
                 if active_enemies > 1 and active_dot.explosive_shot < active_enemies then active_dot.explosive_shot = active_dot.explosive_shot + 1 end
@@ -1472,6 +1537,10 @@ spec:RegisterAbilities( {
                     reduceCooldown( "aspect_of_the_turtle", 20 )
                 end
             end
+        end,
+
+        tick = function()
+            if talent.bullet_hell.enabled then reduceCooldown( "rapid_fire", 0.25 * active_enemies ) end
         end,
     },
 

@@ -666,14 +666,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Vision is enhanced.
-    -- https://wowhead.com/beta/spell=6197
-    eagle_eye = {
-        id = 6197,
-        duration = 60,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Talent: Exploding for $212680s1 Fire damage after $t1 sec.
     -- https://wowhead.com/beta/spell=212431
     explosive_shot = {
@@ -1320,7 +1312,7 @@ local pack_leader__buff_cycle = {
 
 local pack_leader_buff_current = 1
 
-local function HowlOfThePackLeaderHandler( isBestialWrath )
+local HowlOfThePackLeaderHandler = setfenv( function( isBestialWrath )
     -- Track the number of summons triggered.
     local summonCount = 0
 
@@ -1358,7 +1350,7 @@ local function HowlOfThePackLeaderHandler( isBestialWrath )
         -- Apply the Barbed Shot cooldown reduction based on the number of summons.
         if talent.pack_mentality.enabled then reduceCooldown( "barbed_shot", 18 * summonCount ) end
     end
-end
+end, state )
 
 spec:RegisterHook( "reset_precast", function()
     if debuff.tar_trap.up then
@@ -1842,22 +1834,6 @@ spec:RegisterAbilities( {
         handler = function ()
             if talent.posthaste.enabled then applyBuff( "posthaste" ) end
             if conduit.tactical_retreat.enabled then applyDebuff( "target", "tactical_retreat" ) end
-        end,
-    },
-
-    -- Changes your viewpoint to the targeted location for $d. Only usable outdoors.
-    eagle_eye = {
-        id = 6197,
-        cast = 60,
-        channeled = true,
-        cooldown = 0,
-        gcd = "spell",
-        school = "arcane",
-
-        startsCombat = false,
-
-        start = function ()
-            applyBuff( "eagle_eye" )
         end,
     },
 
