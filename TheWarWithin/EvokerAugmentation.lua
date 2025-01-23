@@ -315,7 +315,7 @@ spec:RegisterAuras( {
     essence_burst = {
         id = 392268,
         duration = function() return 15.0 * ( 1 + 1.25 * stat.mastery_value ) end,
-        max_stack = function() return 1 + ( talent.essence_attunement.enabled and 1 or 0 ) end,
+        max_stack = function() return 1 + talent.essence_attunement.rank end,
     },
     -- Movement speed increased by $w2%.$?e0[ Area damage taken reduced by $s1%.][]; Evoker spells may be cast while moving. Does not affect empowered spells.$?e9[; Immune to movement speed reduction effects.][]
     hover = {
@@ -446,6 +446,11 @@ spec:RegisterAuras( {
     prescience_applied = {
         duration = function() return 18.0 * ( 1 + 1.25 * stat.mastery_value ) end,
         max_stack = 1,
+    },
+    primacy = {
+        id = 431654,
+        duration = 8,
+        max_stack = 3
     },
     -- Blistering Scales deals $w1% increased damage.
     reactive_hide = {
@@ -777,8 +782,8 @@ spec:RegisterAbilities( {
         color = "black",
         cast = 0.0,
         charges = function() return talent.regenerative_chitin.enabled and 2 or nil end,
-        cooldown = 30.0,
-        recharge = function() return talent.regenerative_chitin.enabled and 30 or nil end,
+        cooldown = function() return 30 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
+        recharge = function() return talent.regenerative_chitin.enabled and 30 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) or nil end,
         gcd = "spell",
 
         talent = "blistering_scales",
@@ -796,7 +801,7 @@ spec:RegisterAbilities( {
         color = "bronze",
         cast = 4.0,
         channeled = true,
-        cooldown = 120.0,
+        cooldown = function() return 120 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
         gcd = "spell",
 
         talent = "breath_of_eons",
@@ -807,10 +812,16 @@ spec:RegisterAbilities( {
             applyBuff( "breath_of_eons" )
             if buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 5
             else applyBuff( "ebon_might", 5 ) end
+            if talent.overlord.enabled then
+                for i = 1, ( max( 3, active_enemies ) ) do
+                    spec.abilities.eruption.handler()
+                end
+            end
         end,
 
         finish = function()
             removeBuff( "breath_of_eons" )
+            if talent.plot_the_future.enabled then applyBuff( "fury_of_the_aspects", 15 ) end
         end,
 
         copy = { 403631, 442204 }
@@ -856,7 +867,7 @@ spec:RegisterAbilities( {
         id = 395152,
         color = "black",
         cast = 1.5,
-        cooldown = 30.0,
+        cooldown = function() return 30 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
         gcd = "spell",
 
         spend = 0.010,
@@ -883,7 +894,7 @@ spec:RegisterAbilities( {
 
         spend = function()
             if buff.essence_burst.up then return 0 end
-            return 3 - ( talent.volcanism.enabled and 1 or 0 )
+            return 3 - talent.volcanism.rank - ( buff.imminent_destruction.up and 1 or 0 )
         end,
         spendType = "essence",
         cycle = function() if talent.bombardments.enabled and buff.mass_eruption_stacks.up then return "bombardments" end end,
@@ -892,17 +903,72 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function()
-            removeBuff( "essence_burst" )
-            removeBuff( "trembling_earth" )
-            removeBuff( "mass_eruption_stacks" )
+
+            removeStack( "essence_burst" )
+
+            if buff.mass_disintegrate_stacks.up then
+                if talent.bombardments.enabled then applyDebuff( "target", "bombardments" ) end
+                removeStack( "mass_disintegrate_stacks" )
+            end
 
             if buff.ebon_might.up then
                 buff.ebon_might.expires = buff.ebon_might.expires + 1 + ( set_bonus.tier31_4pc > 0 and ( active_dot.prescience * 0.2 ) or 0 )
             end
-
-
+            if talent.accretion.enabled then reduceCooldown( "upheaval", 1 ) end
             if talent.regenerative_chitin.enabled and buff.blistering_scales.up then addStack( "blistering_scales" ) end
+
+            if talent.reverberations.enabled then
+                applyDebuff( "target", "upheaval" )
+                active_dot.upheaval = active_enemies
+                if talent.primacy.enabled then applyBuff( "primacy", max( 3, active_dot.upheaval ) ) end
+            end
+
+
+            -- Legacy
+            removeBuff( "trembling_earth" )
         end
+    },
+
+    -- Inhale, stoking your inner flame. Release to exhale, burning enemies in a cone in front of you for 8,395 Fire damage, reduced beyond 5 targets. Empowering causes more of the damage to be dealt immediately instead of over time. I: Deals 2,219 damage instantly and 6,176 over 20 sec. II: Deals 4,072 damage instantly and 4,323 over 14 sec. III: Deals 5,925 damage instantly and 2,470 over 8 sec. IV: Deals 7,778 damage instantly and 618 over 2 sec.
+    fire_breath = {
+        id = function() return talent.font_of_magic.enabled and 382266 or 357208 end,
+        known = 357208,
+        cast = empowered_cast_time,
+        empowered = true,
+        cooldown = function() return 30 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
+        gcd = "off",
+        school = "fire",
+        color = "red",
+
+        spend = 0.026,
+        spendType = "mana",
+
+        startsCombat = true,
+        caption = function()
+            local power_level = settings.fire_breath_fixed
+            if power_level > 0 then return power_level end
+        end,
+
+        spell_targets = function () return active_enemies end,
+        damage = function () return 1.334 * stat.spell_power * ( 1 + 0.1 * talent.blast_furnace.rank ) * ( debuff.shattering_star.up and 1.2 or 1 ) end,
+        critical = function () return stat.crit + conduit.spark_of_savagery.mod end,
+        critical_damage = function () return talent.tyranny.enabled and 2.2 or 2 end,
+
+        handler = function()
+            -- Many Color, Essence and Empower interactions have been moved to the runHandler hook
+            if talent.leaping_flames.enabled then applyBuff( "leaping_flames", nil, empowerment_level ) end
+            if talent.mass_eruption.enabled then addStack( "mass_eruption_stacks" ) end -- ???
+
+            applyDebuff( "target", "fire_breath" )
+            applyDebuff( "target", "fire_breath_damage" )
+            if talent.infernos_blessing.enabled then applyBuff( "infernos_blessing" ) end
+
+            -- Legacy
+            if set_bonus.tier29_2pc > 0 then applyBuff( "limitless_potential" ) end
+            if set_bonus.tier30_4pc > 0 then applyBuff( "blazing_shards" ) end
+        end,
+
+        copy = { 382266, 357208 }
     },
 
     -- Form a protective barrier of molten rock around an ally, absorbing up to $<shield> damage. While the barrier holds, your ally cannot be interrupted or silenced.
@@ -938,7 +1004,7 @@ spec:RegisterAbilities( {
     -- Send a flickering flame towards your target, dealing 2,625 Fire damage to an enemy or healing an ally for 3,089.
     living_flame = {
         id = function() return talent.chrono_flame.enabled and 431443 or 361469 end,
-        cast = function() return ( talent.engulfing_blaze.enabled and 2.3 or 2 ) * ( buff.ancient_flame.up and 0.6 or 1 ) * haste end,
+        cast = function() return 2 * ( buff.ancient_flame.up and 0.6 or 1 ) * haste end,
         cooldown = 0,
         gcd = "spell",
         school = "fire",
@@ -957,19 +1023,12 @@ spec:RegisterAbilities( {
             if buff.burnout.up then removeStack( "burnout" )
             else removeBuff( "ancient_flame" ) end
 
-            -- Burnout is not consumed.
-            if talent.ruby_essence_burst.enabled and buff.dragonrage.up then
-                addStack( "essence_burst", nil, buff.leaping_flames.up and ( true_active_enemies > 1 or group or health.percent < 100 ) and 2 or 1 )
-            end
-            if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
-
             removeBuff( "leaping_flames" )
             removeBuff( "scarlet_adaptation" )
         end,
 
         copy = { 361469, "chrono_flame", 431443 }
     },
-
     -- Wreathe yourself in arcane energy, preventing the next $s1 full loss of control effects against you. Lasts $d.
     nullifying_shroud = {
         id = 378464,
@@ -994,9 +1053,9 @@ spec:RegisterAbilities( {
         id = 409311,
         color = "bronze",
         cast = 0,
-        cooldown = 12,
+        cooldown = function() return 10 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
         charges = 2,
-        recharge = 12,
+        recharge = function() return 10 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
         gcd = "spell",
 
         talent = "prescience",
@@ -1032,7 +1091,7 @@ spec:RegisterAbilities( {
         id = 406732,
         color = "bronze",
         cast = 0.0,
-        cooldown = 120.0,
+        cooldown = function() return 120 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
         gcd = "off",
         icd = 0.5,
 
@@ -1092,7 +1151,7 @@ spec:RegisterAbilities( {
         color = "black",
         cast = empowered_cast_time,
         empowered = true,
-        cooldown = 40.0,
+        cooldown = function() return 40 * ( talent.interwoven_threads.enabled and 0.9 or 1 ) end,
         gcd = "spell",
 
         talent = "upheaval",
