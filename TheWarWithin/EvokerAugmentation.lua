@@ -935,6 +935,41 @@ spec:RegisterAbilities( {
         -- spatial_paradox[415305] #2: { 'type': APPLY_AURA, 'subtype': CAST_WHILE_WALKING, 'target': TARGET_UNIT_CASTER, }
     },
 
+    -- Send a flickering flame towards your target, dealing 2,625 Fire damage to an enemy or healing an ally for 3,089.
+    living_flame = {
+        id = function() return talent.chrono_flame.enabled and 431443 or 361469 end,
+        cast = function() return ( talent.engulfing_blaze.enabled and 2.3 or 2 ) * ( buff.ancient_flame.up and 0.6 or 1 ) * haste end,
+        cooldown = 0,
+        gcd = "spell",
+        school = "fire",
+        color = "red",
+
+        spend = 0.12,
+        spendType = "mana",
+
+        startsCombat = true,
+
+        damage = function () return 1.61 * stat.spell_power * ( talent.engulfing_blaze.enabled and 1.4 or 1 ) end,
+        healing = function () return 2.75 * stat.spell_power * ( talent.engulfing_blaze.enabled and 1.4 or 1 ) * ( 1 + 0.03 * talent.enkindled.rank ) * ( talent.inner_radiance.enabled and 1.3 or 1 ) end,
+        spell_targets = function () return buff.leaping_flames.up and min( active_enemies, 1 + buff.leaping_flames.stack ) end,
+
+        handler = function ()
+            if buff.burnout.up then removeStack( "burnout" )
+            else removeBuff( "ancient_flame" ) end
+
+            -- Burnout is not consumed.
+            if talent.ruby_essence_burst.enabled and buff.dragonrage.up then
+                addStack( "essence_burst", nil, buff.leaping_flames.up and ( true_active_enemies > 1 or group or health.percent < 100 ) and 2 or 1 )
+            end
+            if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
+
+            removeBuff( "leaping_flames" )
+            removeBuff( "scarlet_adaptation" )
+        end,
+
+        copy = { 361469, "chrono_flame", 431443 }
+    },
+
     -- Wreathe yourself in arcane energy, preventing the next $s1 full loss of control effects against you. Lasts $d.
     nullifying_shroud = {
         id = 378464,

@@ -710,18 +710,56 @@ spec:RegisterStateExpr( "maximum", function()
     return max_empower
 end )
 
+local animosityExtension = 0
 
 spec:RegisterHook( "runHandler", function( action )
     local ability = class.abilities[ action ]
     local color = ability.color
 
-    if color then
-        if color == "red" and buff.iridescence_red.up then removeStack( "iridescence_red" )
-        elseif color == "blue" and buff.iridescence_blue.up then removeStack( "iridescence_blue" ) end
+    if color == "blue" then
+
+        if buff.iridescence_blue.up then removeStack( "iridescence_blue" ) end
+        if talent.charged_blast.enabled then
+            addStack( "charged_blast", nil, ( min( active_enemies, ability.spell_targets ) ) )
+        end
+
+    elseif color == "red" then
+
+       if buff.iridescence_red.up then removeStack( "iridescence_red" ) end
+
+    else
+        -- Other colors?
     end
 
-    if talent.power_swell.enabled and ability.empowered then
-        applyBuff( "power_swell" ) -- TODO: Modify Essence regen rate.
+    if ability.empowered then
+        if talent.power_swell.enabled then applyBuff( "power_swell" ) end -- TODO: Modify Essence regen rate.
+        if talent.animosity.enabled then
+            animosityExtension = animosityExtension + 1
+            if animosityExtension < 5 then
+                buff.dragonrage.expires = buff.dragonrage.expires + 5
+            end
+        end
+        if talent.iridescence.enabled and color then
+                local iridescenceBuffType = "iridescence_" .. color -- Constructs "iridescence_red", "iridescence_blue", etc.
+                applyBuff( iridescenceBuffType, nil, 2 ) -- Apply the dynamically determined buff with 2 stacks.
+        end
+        if talent.mass_disintegrate.enabled then
+            addStack( "mass_disintegrate_stacks" )
+        end
+        if buff.tip_the_scales.up then
+            removeBuff( "tip_the_scales" )
+            setCooldown( "tip_the_scales", spec.abilities.tip_the_scales.cooldown )
+        end
+    end
+
+    if ability.spendType == "essence" then
+        removeStack( "essence_burst" )
+        if talent.enkindle.enabled then
+            applyDebuff( "target", "enkindle" )
+        end
+        if talent.extended_battle.enabled then
+            if debuff.bombardments.up then debuff.bombardments.expires = debuff.bombardments.expires + 1 end
+        end
     end
 
     empowerment.active = false
@@ -848,20 +886,13 @@ spec:RegisterAbilities( {
         school = "spellfrost",
         color = "blue",
 
-        spend = 0.009,
-        spendType = "mana",
+        -- spend = 0.009,
+        -- spendType = "mana",
 
         startsCombat = true,
 
         minRange = 0,
         maxRange = 25,
-
-        -- Modifiers:
-        -- x Spark of Savagery (Conduit)
-        -- P Honed Aggression (Talent)
-        -- x Protracted Talons (Talent)
-        -- P Shattering Star (Talent)
-        -- x Tyranny (Talent)
 
         damage = function () return stat.spell_power * 0.755 * ( debuff.shattering_star.up and 1.2 or 1 ) end, -- PvP multiplier = 1.
         critical = function() return stat.crit + conduit.spark_of_savagery.mod end,
@@ -869,7 +900,8 @@ spec:RegisterAbilities( {
         spell_targets = function() return talent.protracted_talons.enabled and 3 or 2 end,
 
         handler = function ()
-            if talent.azure_essence_burst.enabled and buff.dragonrage.up then addStack( "essence_burst", nil, 1 ) end -- TODO:  Does this give 2 stacks if hitting 2 targets w/ Essence Attunement?
+            -- Many Color, Essence and Empower interactions have been moved to the runHandler hook
+            if talent.azure_essence_burst.enabled and buff.dragonrage.up then addStack( "essence_burst", nil, 1 ) end
             if talent.charged_blast.enabled then addStack( "charged_blast", nil, min( active_enemies, spell_targets.azure_strike ) ) end
         end,
     },
@@ -987,27 +1019,26 @@ spec:RegisterAbilities( {
         damage = function () return 2.28 * stat.spell_power * ( 1 + 0.08 * talent.arcane_intensity.rank ) * ( talent.energy_loop.enabled and 1.2 or 1 ) * ( debuff.shattering_star.up and 1.2 or 1 ) end,
         critical = function () return stat.crit + conduit.spark_of_savagery.mod end,
         critical_damage = function () return talent.tyranny.enabled and 2.2 or 2 end,
+        spell_targets = function() if buff.mass_disintegrate_stacks.up then return min( active_enemies, 3 ) end
+            return 1
+        end,
 
         min_range = 0,
         max_range = 25,
 
-        -- o Antique Oathstone (Anima Power)
-        -- o Arcane Intensity
-        -- x Disintegrate Rank 2 (built in)
-        -- x Energy Loop (Preservation)
-        -- x Essence Burst
-        -- - Hover
-        -- x Shattering Star
-
         start = function ()
-            removeStack( "burning_adrenaline" )
-            removeBuff( "mass_disintegrate_stacks" )
+            -- Many Color, Essence and Empower interactions have been moved to the runHandler hook
             applyDebuff( "target", "disintegrate" )
-            if talent.enkindle.enabled then applyDebuff( "target", "enkindle" ) end
-            if set_bonus.tier30_2pc > 0 then applyDebuff( "target", "obsidian_shards" ) end
-            if buff.essence_burst.up then
-                removeStack( "essence_burst", 1 )
+            if buff.mass_disintegrate_stacks.up then
+                if talent.bombardments.enabled then applyDebuff( "target", "bombardments" ) end
+                removeStack( "mass_disintegrate_stacks" )
             end
+
+            removeStack( "burning_adrenaline" )
+
+            -- Legacy
+            if set_bonus.tier30_2pc > 0 then applyDebuff( "target", "obsidian_shards" ) end
+
         end,
 
         tick = function ()
@@ -1037,8 +1068,15 @@ spec:RegisterAbilities( {
         damage = function () return action.living_pyre.damage * action.dragonrage.spell_targets end,
 
         handler = function ()
+            animosityExtension = 0
+
+            for i = 1, ( max( 3, active_enemies ) ) do
+                spec.abilities.pyre.handler()
+            end
             applyBuff( "dragonrage" )
-            if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
+
+
+            -- Legacy
             if set_bonus.tier31_2pc > 0 then
                 QueueEmeraldTrance()
             end
@@ -1057,12 +1095,8 @@ spec:RegisterAbilities( {
         school = "nature",
         color = "green",
 
-        spend = function()
-            if state.spec.preservation then return 2 end
-            if talent.dream_of_spring.enabled then return 3 end
-            return level > 57 and 0 or 3
-        end,
-        spendType = "essence",
+        spend = 0.14,
+        spendType = "mana",
 
         startsCombat = false,
 
@@ -1092,7 +1126,6 @@ spec:RegisterAbilities( {
                 end
             end
             if talent.dream_of_spring.enabled and buff.ebon_might.up then buff.ebon_might.expires = buff.ebon_might.expires + 1 end
-            if talent.enkindle.enabled then applyDebuff( "target", "enkindle" ) end
         end,
     },
 
@@ -1137,16 +1170,10 @@ spec:RegisterAbilities( {
         damage = function () return spell_targets.eternity_surge * 3.4 * stat.spell_power end,
 
         handler = function ()
-            if buff.tip_the_scales.up then
-                removeBuff( "tip_the_scales" )
-                setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
-            end
+            -- Many Color, Essence and Empower interactions have been moved to the runHandler hook
 
-            if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = min( buff.dragonrage.applied + class.auras.dragonrage.duration + 20, buff.dragonrage.expires + 5 ) end
             -- TODO: Determine if we need to model projectiles instead.
             if talent.charged_blast.enabled then addStack( "charged_blast", nil, spell_targets.eternity_surge ) end
-            if talent.iridescence.enabled then addStack( "iridescence_blue", nil, 2 ) end
-            if talent.mass_disintegrate.enabled then addStack( "mass_disintegrate_stacks" ) end
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "limitless_potential" ) end
             if set_bonus.tier30_4pc > 0 then applyBuff( "blazing_shards" ) end
@@ -1204,19 +1231,12 @@ spec:RegisterAbilities( {
         critical_damage = function () return talent.tyranny.enabled and 2.2 or 2 end,
 
         handler = function()
-            if talent.animosity.enabled and buff.dragonrage.up then buff.dragonrage.expires = min( buff.dragonrage.applied + class.auras.dragonrage.duration + 20, buff.dragonrage.expires + 5 ) end
-            if talent.iridescence.enabled then applyBuff( "iridescence_red", nil, 2 ) end
+            -- Many Color, Essence and Empower interactions have been moved to the runHandler hook
             if talent.leaping_flames.enabled then applyBuff( "leaping_flames", nil, empowerment_level ) end
-            if talent.mass_disintegrate.enabled then addStack( "mass_disintegrate_stacks" ) end
             if talent.mass_eruption.enabled then applyBuff( "mass_eruption_stacks" ) end -- ???
 
             applyDebuff( "target", "fire_breath" )
             applyDebuff( "target", "fire_breath_damage" )
-
-            if buff.tip_the_scales.up then
-                removeBuff( "tip_the_scales" )
-                setCooldown( "tip_the_scales", action.tip_the_scales.cooldown )
-            end
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "limitless_potential" ) end
             if set_bonus.tier30_4pc > 0 then applyBuff( "blazing_shards" ) end
@@ -1317,7 +1337,7 @@ spec:RegisterAbilities( {
 
     -- Send a flickering flame towards your target, dealing 2,625 Fire damage to an enemy or healing an ally for 3,089.
     living_flame = {
-        id = function() return talent.chrono_flame.enabled and 431443 or 361469 end,
+        id = 361469,
         cast = function() return ( talent.engulfing_blaze.enabled and 2.3 or 2 ) * ( buff.ancient_flame.up and 0.6 or 1 ) * haste end,
         cooldown = 0,
         gcd = "spell",
@@ -1333,25 +1353,19 @@ spec:RegisterAbilities( {
         healing = function () return 2.75 * stat.spell_power * ( talent.engulfing_blaze.enabled and 1.4 or 1 ) * ( 1 + 0.03 * talent.enkindled.rank ) * ( talent.inner_radiance.enabled and 1.3 or 1 ) end,
         spell_targets = function () return buff.leaping_flames.up and min( active_enemies, 1 + buff.leaping_flames.stack ) end,
 
-        -- x Ancient Flame
-        -- x Burnout
-        -- x Engulfing Blaze
-        -- x Enkindled
-        -- - Hover
-        -- x Inner Radiance
-
         handler = function ()
+            -- Many Color, Essence and Empower interactions have been moved to the runHandler hook
             if buff.burnout.up then removeStack( "burnout" )
             else removeBuff( "ancient_flame" ) end
+            if talent.ruby_embers.enabled then addStack( "living_flame" ) end
 
-            -- Burnout is not consumed.
             if talent.ruby_essence_burst.enabled and buff.dragonrage.up then
                 addStack( "essence_burst", nil, buff.leaping_flames.up and ( true_active_enemies > 1 or group or health.percent < 100 ) and 2 or 1 )
             end
-            if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
 
             removeBuff( "leaping_flames" )
             removeBuff( "scarlet_adaptation" )
+
         end,
 
         copy = { 361469, "chrono_flame", 431443 }
@@ -1412,30 +1426,24 @@ spec:RegisterAbilities( {
 
         spend = function()
             if buff.essence_burst.up then return 0 end
-            return ( buff.imminent_destruction.up and 2 or 3 ) - talent.dense_energy.rank
+            return 3 - talent.dense_energy.rank - ( buff.imminent_destruction.up and 1 or 0 )
         end,
         spendType = "essence",
+        timeToReadyOverride = function()
+            return buff.essence_burst.up and 0 or nil -- Essence Burst makes the spell ready immediately.
+        end,
 
         talent = "pyre",
         startsCombat = true,
 
-        -- TODO: Need to proc Charged Blast on Blue spells.
-
         handler = function ()
+            -- Many Color, Essence and Empower interactions have been moved to the runHandler hook
             removeBuff( "feed_the_flames_pyre" )
-
-            if buff.essence_burst.up then
-                removeStack( "essence_burst", 1 )
-            end
-
-            if set_bonus.tier30_2pc > 0 then applyDebuff( "target", "obsidian_shards" ) end
 
             if talent.causality.enabled then
                 reduceCooldown( "fire_breath", min( 2, true_active_enemies * 0.4 ) )
                 reduceCooldown( "eternity_surge", min( 2, true_active_enemies * 0.4 ) )
             end
-            if talent.enkindle.enabled then applyDebuff( "target", "enkindle" ) end
-            if talent.everburning_flame.enabled and debuff.fire_breath.up then debuff.fire_breath.expires = debuff.fire_breath.expires + 1 end
             if talent.feed_the_flames.enabled then
                 if buff.feed_the_flames_stacking.stack == 8 then
                     applyBuff( "feed_the_flames_pyre" )
@@ -1445,6 +1453,9 @@ spec:RegisterAbilities( {
                 end
             end
             removeBuff( "charged_blast" )
+
+            -- Legacy
+            if set_bonus.tier30_2pc > 0 then applyDebuff( "target", "obsidian_shards" ) end
         end,
     },
 
@@ -1551,7 +1562,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "shattering_star" )
             if talent.arcane_vigor.enabled then addStack( "essence_burst" ) end
-            if talent.charged_blast.enabled then addStack( "charged_blast" ) end
+            if talent.charged_blast.enabled then addStack( "charged_blast", nil, min( action.shattering_star.spell_targets, active_enemies ) ) end
         end,
     },
 
@@ -1735,6 +1746,7 @@ spec:RegisterAbilities( {
         talent = "unravel",
         startsCombat = true,
         debuff = "all_absorbs",
+        spell_targets = 1,
 
         usable = function() return settings.use_unravel, "use_unravel setting is OFF" end,
 
