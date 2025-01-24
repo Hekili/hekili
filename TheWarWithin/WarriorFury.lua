@@ -447,7 +447,7 @@ spec:RegisterAuras( {
         tick_time = 2,
         max_stack = 1
     },
-    reckless_abandon_bloodbath = {
+    --[[reckless_abandon_bloodbath = {
         id = 461288,
         duration = 12,
         max_stack = 1,
@@ -458,7 +458,7 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1,
         copy = "crushing_blow"
-    },
+    },--]]
     recklessness = {
         id = 1719,
         duration = function() return state.talent.depths_of_insanity.enabled and 16 or 12 end,
@@ -540,16 +540,40 @@ spec:RegisterAuras( {
     },
 } )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229235, 229233, 229238, 229236, 229234 )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/ptr-2/spell=1216561/winning-streak
+    -- Rampage damage increased by 2%.
+    winning_streak = {
+    id = 1216561,
+    duration = 30,
+    max_stack = 10
+    },
+    -- https://www.wowhead.com/ptr-2/spell=1216565/double-down
+        -- Bloodthirst damage increased by 15% and critical strike chance increased by 25%.
 
+    double_down_bt = {
+        id = 1216565,
+        duration = 12,
+        max_stack = 1
+    },
+    --https://www.wowhead.com/ptr-2/spell=1216569/double-down
+    --Raging Blow damage increased by 15% and Rage generated increased by (w2 / 10).
+    double_down_rb = {
+    id = 1216569,
+    duration = 12,
+    max_stack = 1
+    },
+    } )
+
+-- Dragonflight
 spec:RegisterGear( "tier29", 200426, 200428, 200423, 200425, 200427 )
 spec:RegisterSetBonuses( "tier29_2pc", 393708, "tier29_4pc", 393709 )
--- 2-Set - Execute's chance to critically strike increased by 10%.
--- 4-Set - Sudden Death's chance to reset the cooldown of Execute and make it usable on any target, regardless of health, is greatly increased.
 
 spec:RegisterGear( "tier30", 202446, 202444, 202443, 202442, 202441, 217218, 217220, 217216, 217217, 217219 )
 spec:RegisterSetBonuses( "tier30_2pc", 405579, "tier30_4pc", 405580 )
---(2) Rampage damage and critical strike chance increased by 10%.
---(4) Rampage causes your next Bloodthirst to have a 10% increased critical strike chance, deal 25% increased damage and generate 2 additional Rage. Stacking up to 10 times.
 spec:RegisterAura( "merciless_assault", {
     id = 409983,
     duration = 14,
@@ -558,16 +582,12 @@ spec:RegisterAura( "merciless_assault", {
 
 spec:RegisterGear( "tier31", 207180, 207181, 207182, 207183, 207185 )
 spec:RegisterSetBonuses( "tier31_2pc", 422925, "tier31_4pc", 422926 )
--- (2) Odyn's Fury deals 50% increased damage and causes your next 3 Bloodthirsts to deal 150% additional damage and have 100% increased critical strike chance against its primary target.
--- (4) Bloodthirst critical strikes reduce the cooldown of Odyn's Fury by 2.5 sec.
 spec:RegisterAura( "furious_bloodthirst", {
     id = 423211,
     duration = 20,
     max_stack = 3
 } )
--- (4) Bloodthirst critical strikes reduce the cooldown of Odyn's Fury by 2.5 sec.
-
-
+-- Legacy
 spec:RegisterGear( 'tier20', 147187, 147188, 147189, 147190, 147191, 147192 )
     spec:RegisterAura( "raging_thirst", {
         id = 242300,
@@ -669,7 +689,6 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
     end
 end )
 
-
 local wipe = table.wipe
 
 spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function()
@@ -679,7 +698,6 @@ end )
 spec:RegisterHook( "UNIT_ELIMINATED", function( id )
     fresh_meat_actual[ id ] = nil
 end )
-
 
 local RAGE = Enum.PowerType.Rage
 local lastRage = -1
@@ -707,6 +725,11 @@ spec:RegisterStateExpr( "glory_rage", function ()
     return gloryRage
 end )
 
+spec:RegisterHook( "prespend", function( amt, resource, overcap, clean )
+    if buff.recklessness.up and resource == "rage" then
+        return amt * 2, resource, overcap, true
+    end
+end )
 
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" then
@@ -950,6 +973,7 @@ spec:RegisterAbilities( {
             + ( talent.cold_steel_hot_blood.enabled and action.bloodthirst.crit_pct_current >= 100 and -4 or 0 )
             + ( buff.burst_of_power.up and -2 or 0 )
             + ( -1 * talent.swift_strikes.rank )
+            + ( buff.double_down_rb.up and -2 or 0 )
         end,
         spendType = "rage",
 
@@ -957,7 +981,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 236304,
-        buff = "reckless_abandon_bloodbath",
+        buff = "reckless_abandon",
         bind = "bloodthirst",
 
         critical = function()
@@ -973,35 +997,35 @@ spec:RegisterAbilities( {
             if buff.enrage.up and talent.deft_experience.enabled then
                 buff.enrage.remains = buff.enrage.remains + ( 0.5 * talent.deft_experience.rank )
             end
-        
+
             if talent.cold_steel_hot_blood.enabled and action.bloodthirst.crit_pct_current >= 100 then
                 applyDebuff( "target", "gushing_wound" )
                 gain( 4, "rage" )
             end
-        
+
             if set_bonus.tier31_4pc > 0 and action.bloodthirst.crit_pct_current >= 100 then
                 reduceCooldown( "odyns_fury", 2.5 )
             end
-        
+
             removeBuff( "merciless_assault" )
             if talent.bloodcraze.enabled then
                 if action.bloodthirst.crit_pct_current >= 100 then removeBuff( "bloodcraze" )
                 else addStack( "bloodcraze" ) end
             end
-        
+
             gain( health.max * ( buff.enraged_regeneration.up and 0.23 or 0.03 ) , "health" )
-        
+
             if talent.fresh_meat.enabled and debuff.hit_by_fresh_meat.down then
                 applyBuff( "enrage" )
                 applyDebuff( "target", "hit_by_fresh_meat" )
             end
-        
+
             if legendary.cadence_of_fujieda.enabled then
                 if buff.cadence_of_fujieda.stack < 5 then stat.haste = stat.haste + 0.01 end
                 addStack( "cadence_of_fujieda" )
             end
-        
-            if buff.reckless_abandon_bloodbath.up then removeBuff( "reckless_abandon_bloodbath" ) end
+
+            removeBuff( "double_down_bt" )
         end,
     },
 
@@ -1028,7 +1052,7 @@ spec:RegisterAbilities( {
     bloodthirst = {
         id = 23881,
         cast = 0,
-        cooldown = function () return buff.burst_of_power.up and 0 or ( 4.5 ) * haste end,
+        cooldown = function () return buff.burst_of_power.up and 0 or ( 4.5 - ( talent.titans_torment.enabled and buff.avatar.up and 1.5 or 0 ) ) * haste end,
         gcd = "spell",
 
         spend = function()
@@ -1089,6 +1113,7 @@ spec:RegisterAbilities( {
             end
         
             if buff.reckless_abandon_bloodbath.up then removeBuff( "reckless_abandon_bloodbath" ) end
+            removeBuff( "double_down_bt" )
         end,
 
         auras = {
@@ -1169,7 +1194,7 @@ spec:RegisterAbilities( {
         texture = 132215,
 
         talent = "reckless_abandon",
-        buff = "reckless_abandon_crushing_blow",
+        buff = "reckless_abandon",
         bind = "raging_blow",
 
         handler = function ()
@@ -1179,7 +1204,7 @@ spec:RegisterAbilities( {
             spendCharges( "raging_blow", 1 )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
 
-            if buff.reckless_abandon_crushing_blow.up then removeBuff( "reckless_abandon_crushing_blow" ) end
+            removeBuff( "double_down_rb" )
         end,
     },
 
@@ -1538,7 +1563,7 @@ spec:RegisterAbilities( {
         recharge = function() return 8 * state.haste end,
         gcd = "spell",
 
-        spend = function () return -12 - talent.swift_strikes.rank end,
+        spend = function () return -12 - talent.swift_strikes.rank - ( buff.double_down_rb.up and 2 or 0 )end,
         spendType = "rage",
 
         talent = "raging_blow",
@@ -1553,6 +1578,7 @@ spec:RegisterAbilities( {
             removeBuff( "opportunist" )
             if buff.will_of_the_berserker.up then buff.will_of_the_berserker.expires = query_time + 12 end
             if talent.slaughtering_strikes.enabled then addStack( "slaughtering_strikes_raging_blow" ) end
+            removeBuff( "double_down_rb" )
         end,
     },
 
@@ -1584,7 +1610,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = 80,
+        spend = function() return 80 - ( talent.titans_torment.enabled and buff.avatar.up and 20 or 0 ) end,
         spendType = "rage",
 
         startsCombat = true,
