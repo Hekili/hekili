@@ -760,6 +760,7 @@ spec:RegisterHook( "runHandler", function( action )
             removeBuff( "tip_the_scales" )
             setCooldown( "tip_the_scales", spec.abilities.tip_the_scales.cooldown )
         end
+        removeBuff( "jackpot" )
     end
 
     if ability.spendType == "essence" then
@@ -778,9 +779,9 @@ end )
 -- TheWarWithin
 spec:RegisterGear( "tww2", 229283, 229281, 229279, 229280, 229278 )
 spec:RegisterAuras( {
-    tww2_buff = { -- Need the ID and name
-        id = 0000,
-        duration = 30,
+    jackpot = { -- Need the ID and name
+        id = 1217769,
+        duration = 40,
         max_stack = 2
     }
 } )
@@ -1578,7 +1579,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "shattering_star" )
             if talent.arcane_vigor.enabled then addStack( "essence_burst" ) end
             if talent.charged_blast.enabled then addStack( "charged_blast", nil, min( action.shattering_star.spell_targets, active_enemies ) ) end
-            if set_bonus.tww2 >= 4 then addStack( "tww2_buff" ) end
+            if set_bonus.tww2 >= 4 then addStack( "jackpot" ) end
         end,
     },
 
