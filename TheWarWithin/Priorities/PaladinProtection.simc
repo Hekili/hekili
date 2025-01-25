@@ -8,8 +8,8 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_coo
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_cooldown&trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)|!trinket.1.has_cooldown
 
 actions+=/rebuke
-actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=mitigation
+actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=trinkets
 actions+=/call_action_list,name=standard
 
@@ -30,10 +30,11 @@ actions.mitigation+=/sentinel,if=defensive_sentinel&tanking&incoming_damage_5s>g
 actions.mitigation+=/ardent_defender,if=tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
 actions.mitigation+=/lay_on_hands,if=health.pct<15
 
-actions.standard+=/call_action_list,name=hammer_of_light,if=talent.lights_guidance.enabled&(cooldown.eye_of_tyr.remains<2|buff.hammer_of_light_ready.up)&(!talent.redoubt.enabled|buff.redoubt.stack>=2|!talent.bastion_of_light.enabled)&!buff.hammer_of_light_free.up
-actions.standard+=/hammer_of_light,if=buff.hammer_of_light_free.remains<2|buff.shake_the_heavens.duration<1|!buff.shake_the_heavens.up|cooldown.eye_of_tyr.remains<1.5|fight_remains<2
+actions.standard+=/judgment,cycle_targets=1,if=charges>=2|full_recharge_time<=gcd.max
+actions.standard+=/hammer_of_light,if=buff.hammer_of_light_free.remains<2|buff.shake_the_heavens.remains<1|!buff.shake_the_heavens.up|cooldown.eye_of_tyr.remains<1.5|fight_remains<2
+actions.standard+=/eye_of_tyr,if=(hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled)&talent.lights_guidance.enabled
+actions.standard+=/eye_of_tyr,if=(hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0)&talent.lights_guidance.enabled
 actions.standard+=/shield_of_the_righteous,if=(!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&!buff.hammer_of_light_ready.up
-actions.standard+=/holy_armaments,if=next_armament=sacred_weapon&(!buff.sacred_weapon.up|(buff.sacred_weapon.remains<6&!buff.avenging_wrath.up&cooldown.avenging_wrath.remains<=30))
 actions.standard+=/judgment,cycle_targets=1,if=spell_targets.shield_of_the_righteous>3&buff.bulwark_of_righteous_fury.stack>=3&holy_power<3
 actions.standard+=/avengers_shield,if=!buff.bulwark_of_righteous_fury.up&talent.bulwark_of_righteous_fury.enabled&spell_targets.shield_of_the_righteous>=3
 actions.standard+=/hammer_of_the_righteous,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3&!buff.avenging_wrath.up
@@ -41,9 +42,13 @@ actions.standard+=/blessed_hammer,if=buff.blessed_assurance.up&spell_targets.shi
 actions.standard+=/crusader_strike,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2&!buff.avenging_wrath.up
 actions.standard+=/judgment,cycle_targets=1,if=charges>=2|full_recharge_time<=gcd.max
 actions.standard+=/consecration,if=buff.divine_guidance.stack=5
+actions.standard+=/holy_armaments,if=next_armament=sacred_weapon&(!buff.sacred_weapon.up|(buff.sacred_weapon.remains<6&!buff.avenging_wrath.up&cooldown.avenging_wrath.remains<=30))
 actions.standard+=/hammer_of_wrath
-actions.standard+=/holy_armaments,if=next_armament=holy_bulwark&charges=2
-actions.standard+=/divine_toll,if=(!raid_event.adds.exists|raid_event.adds.in>10)
+actions.standard+=/divine_toll
+actions.standard+=/avengers_shield,if=!buff.shake_the_heavens.up&talent.shake_the_heavens.enabled
+actions.standard+=/hammer_of_the_righteous,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3)|buff.shake_the_heavens.up
+actions.standard+=/blessed_hammer,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3)|buff.shake_the_heavens.up
+actions.standard+=/crusader_strike,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2)|buff.shake_the_heavens.up
 actions.standard+=/judgment,cycle_targets=1
 actions.standard+=/hammer_of_the_righteous,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3
 actions.standard+=/blessed_hammer,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3
@@ -62,17 +67,6 @@ actions.standard+=/eye_of_tyr,if=!talent.lights_deliverance.enabled
 actions.standard+=/word_of_glory,if=buff.shining_light_free.up
 actions.standard+=/arcane_torrent,if=holy_power<5
 actions.standard+=/consecration
-
-actions.hammer_of_light+=/hammer_of_light,if=(buff.blessing_of_dawn.stack>0|!talent.of_dusk_and_dawn.enabled)|spell_targets.shield_of_the_righteous>=5
-actions.hammer_of_light+=/eye_of_tyr,if=hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled
-actions.hammer_of_light+=/shield_of_the_righteous,if=hpg_to_2dawn=4
-actions.hammer_of_light+=/eye_of_tyr,if=hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0
-actions.hammer_of_light+=/hammer_of_wrath
-actions.hammer_of_light+=/judgment
-actions.hammer_of_light+=/blessed_hammer
-actions.hammer_of_light+=/hammer_of_the_righteous
-actions.hammer_of_light+=/crusader_strike
-actions.hammer_of_light+=/divine_toll
 
 actions.trinkets+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(buff.avenging_wrath.up|fight_remains<=40)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|!buff.avenging_wrath.up))|!variable.trinket_sync_slot)
 actions.trinkets+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(buff.avenging_wrath.up|fight_remains<=40)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|!buff.avenging_wrath.up))|!variable.trinket_sync_slot)

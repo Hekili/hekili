@@ -451,6 +451,16 @@ spec:RegisterAuras( {
 } )
 
 
+-- The War Within
+spec:RegisterGear( "tww1", 212084, 212083, 212081, 212086, 212082 )
+spec:RegisterAuras( {
+    darkness_from_light = {
+        id = 455033,
+        duration = 30,
+        max_stack = 3
+    }
+} )
+
 spec:RegisterGear( "tier29", 200327, 200329, 200324, 200326, 200328 )
 spec:RegisterGear( "tier30", 202543, 202542, 202541, 202545, 202540 )
 spec:RegisterAuras( {
@@ -828,6 +838,9 @@ spec:RegisterAbilities( {
             if set_bonus.tier29_4pc > 0 then
                 applyBuff( "shield_of_absolution" )
             end
+            if set_bonus.tww1 >= 4 then
+                addStack( "darkness_from_light" )
+            end
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
             end
@@ -927,6 +940,30 @@ spec:RegisterAbilities( {
             end
 
             if talent.harsh_discipline.enabled then addStack( "harsh_discipline" ) end
+        end,
+    },
+
+    power_word_shield = {
+        id = 17,
+        cast = 0,
+        cooldown = function() return buff.rapture.up and 0 or 7.5 end,
+        gcd = "spell",
+
+        spend = 0.03,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 135940,
+
+        handler = function ()
+            applyBuff( "power_word_shield" )
+            removeStack( "rapture" )
+
+            removeBuff( "darkness_from_light" ) -- Tww season 1 set
+
+            if talent.body_and_soul.enabled then
+                applyBuff( "body_and_soul" )
+            end
         end,
     },
 
@@ -1082,6 +1119,10 @@ spec:RegisterAbilities( {
             end
             if talent.manipulation.enabled then
                 reduceCooldown( "mindgames", 0.5 * talent.manipulation.rank )
+            end
+
+            if set_bonus.tww1 >= 4 then
+                addStack( "darkness_from_light" )
             end
 
             if talent.darkening_horizon.enabled and rift_extensions < 3 then

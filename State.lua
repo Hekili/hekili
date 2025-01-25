@@ -1209,18 +1209,21 @@ state.removeDebuff = removeDebuff
 
 local function removeDebuffStack( unit, aura, stacks )
     stacks = stacks or 1
-
     local d = state.debuff[ aura ]
+    if not d then return 0 end
 
-    if not d then return end
+    local removed = min( stacks, d.count )
 
     if d.count > stacks then
         d.lastCount = d.count
-        d.count = max( 1, d.count - stacks )
+        d.count = max( 0, d.count - stacks )
     else
         removeDebuff( unit, aura )
     end
+
+    return removed
 end
+
 state.removeDebuffStack = removeDebuffStack
 
 
@@ -1244,7 +1247,7 @@ local function timeToInterrupt()
     local casting = state.debuff.casting
     if casting.down or casting.v2 == 1 then return 3600 end
     if casting.v3 == 1 then return 0 end
-    return max( 0, casting.remains - 0.25 )
+    return max( 0, casting.remains - Hekili.DB.profile.toggles.interrupts.castRemainingThreshold or 0.25 )
 end
 state.timeToInterrupt = timeToInterrupt
 
@@ -1415,7 +1418,6 @@ state.raid_event.adds = setmetatable( {
     end
 } )
 
-
 -- Resource Modeling!
 local forecastResources
 
@@ -1427,60 +1429,60 @@ do
         return b == nil or ( a.next < b.next )
     end
 
-
     -- Increase max forecast duration because Assassination is pooling hard this tier.
     local FORECAST_DURATION = 10.01
 
     forecastResources = function( resource )
-
         if not resource then return end
 
+        -- Initialize or wipe tables
         wipe( events )
         wipe( remains )
 
-        local now = state.now + state.offset -- roundDown( state.now + state.offset, 2 )
-
-        local timeout = FORECAST_DURATION * state.haste -- roundDown( FORECAST_DURATION * state.haste, 2 )
+        local now = state.now + state.offset
+        local timeout = FORECAST_DURATION * state.haste
 
         if state.class.file == "DEATHKNIGHT" and state.runes then
-            timeout = max( timeout, 0.01 + 2 * state.runes.cooldown )
+            -- Adjust timeout based on rune cooldowns and regen models for Frost DK
+            timeout = max( timeout, 0.01 + state.runes.expiry[ 6 ] - state.query_time )
         elseif state.spec.assassination then
             timeout = 15.01
         end
 
         timeout = timeout + state.gcd.remains
-
         local r = state[ resource ]
 
-        -- We account for haste here so that we don't compute lots of extraneous future resource gains in Bloodlust/high haste situations.
+        -- Initialize forecast tables
         remains[ resource ] = timeout
 
         wipe( r.times )
         wipe( r.values )
-        r.forecast[1] = r.forecast[1] or {}
-        r.forecast[1].t = now
-        r.forecast[1].v = r.actual
-        r.forecast[1].e = "actual"
+
+        r.forecast[ 1 ] = r.forecast[ 1 ] or {}
+        r.forecast[ 1 ].t = now
+        r.forecast[ 1 ].v = r.actual
+        r.forecast[ 1 ].e = "actual"
         r.fcount = 1
 
         local models = r.regenModel
 
         if models then
             for k, v in pairs( models ) do
-                if  ( not v.resource  or v.resource == resource ) and
-                    ( not v.spec      or state.spec[ v.spec ] ) and
-                    ( not v.equip     or state.equipped[ v.equip ] ) and
-                    ( not v.talent    or state.talent[ v.talent ].enabled ) and
-                    ( not v.pvptalent or state.pvptalent[ v.pvptalent ].enabled ) and
-                    ( not v.aura      or state[ v.debuff and "debuff" or "buff" ][ v.aura ].remains > 0 ) and
-                    ( not v.set_bonus or state.set_bonus[ v.set_bonus ] > 0 ) and
-                    ( not v.setting   or state.settings[ v.setting ] ) and
-                    ( not v.swing     or state.swings[ v.swing .. "_speed" ] and state.swings[ v.swing .. "_speed" ] > 0 ) and
-                    ( not v.channel   or state.buff.casting.up and state.buff.casting.v3 == 1 and state.buff.casting.v1 == class.abilities[ v.channel ].id ) then
+                if ( not v.resource or v.resource == resource ) and
+                   ( not v.spec or state.spec[ v.spec ] ) and
+                   ( not v.equip or state.equipped[ v.equip ] ) and
+                   ( not v.talent or state.talent[ v.talent ].enabled ) and
+                   ( not v.pvptalent or state.pvptalent[ v.pvptalent ].enabled ) and
+                   ( not v.aura or state[ v.debuff and "debuff" or "buff" ][ v.aura ].remains > 0 ) and
+                   ( not v.set_bonus or state.set_bonus[ v.set_bonus ] > 0 ) and
+                   ( not v.setting or state.settings[ v.setting ] ) and
+                   ( not v.swing or state.swings[ v.swing .. "_speed" ] and state.swings[ v.swing .. "_speed" ] > 0 ) and
+                   ( not v.channel or state.buff.casting.up and state.buff.casting.v3 == 1 and state.buff.casting.v1 == class.abilities[ v.channel ].id ) then
 
                     local l = v.last()
-                    local i = type( v.interval ) == "number" and v.interval or ( type( v.interval ) == "function" and v.interval( now, r.actual ) or ( type( v.interval ) == "string" and state[ v.interval ] or 0 ) )
-                    -- local i = roundDown( type( v.interval ) == "number" and v.interval or ( type( v.interval ) == "function" and v.interval( now, r.actual ) or ( type( v.interval ) == "string" and state[ v.interval ] or 0 ) ), 2 )
+                    local i = type( v.interval ) == "number" and v.interval or
+                              ( type( v.interval ) == "function" and v.interval( now, r.actual ) or
+                              ( type( v.interval ) == "string" and state[ v.interval ] or 0 ) )
 
                     v.next = l + i
                     v.name = k
@@ -1495,36 +1497,30 @@ do
         sort( events, resourceModelSort )
 
         local finish = now + timeout
-
         local prev = now
         local iter = 0
         local regen = r.regen > 0.001 and r.regen or 0
 
-        while( #events > 0 and now <= finish and iter < 20 ) do
-            local e = events[1]
-
+        while ( #events > 0 and now <= finish and iter < 20 ) do
+            local e = events[ 1 ]
             iter = iter + 1
 
             if e.next > finish or not r or not r.actual then
                 table.remove( events, 1 )
-
             else
                 now = e.next
 
                 local bonus = regen * ( now - prev )
-
                 local stop = e.stop and e.stop( r.forecast[ r.fcount ].v )
                 local aura = e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < now
                 local channel = ( e.channel and state.buff.casting.expires < now )
 
                 if stop or aura or channel then
                     table.remove( events, 1 )
-
                     local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
                     local idx
 
                     if r.forecast[ r.fcount ].t == now then
-                        -- Reuse the last one.
                         idx = r.fcount
                     else
                         idx = r.fcount + 1
@@ -1539,14 +1535,11 @@ do
                     prev = now
 
                     local val = r.fcount > 0 and r.forecast[ r.fcount ].v or r.actual
-
                     local v = max( 0, min( r.max, val + bonus ) )
                     v = max( 0, min( r.max, v + ( type( e.value ) == "number" and e.value or e.value( now ) ) ) )
-
                     local idx
 
                     if r.forecast[ r.fcount ].t == now then
-                        -- Reuse the last one.
                         idx = r.fcount
                     else
                         idx = r.fcount + 1
@@ -1558,19 +1551,22 @@ do
                     r.forecast[ idx ].e = e.name or "none"
                     r.fcount = idx
 
-                    -- interval() takes the last tick and the current value to remember the next step.
-                    local step = roundDown( type( e.interval ) == "number" and e.interval or ( type( e.interval ) == "function" and e.interval( now, v ) or ( type( e.interval ) == "string" and state[ e.interval ] or 0 ) ), 3 )
+                    local step = roundDown( type( e.interval ) == "number" and e.interval or 
+                                           ( type( e.interval ) == "function" and e.interval( now, v ) or 
+                                           ( type( e.interval ) == "string" and state[ e.interval ] or 0 ) ), 3 )
 
                     remains[ e.resource ] = finish - e.next
                     e.next = e.next + step
 
-                    if e.next > finish or step < 0 or ( e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < e.next ) or ( e.channel and state.buff.casting.expires < e.next ) then
+                    if e.next > finish or step < 0 or 
+                       ( e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < e.next ) or 
+                       ( e.channel and state.buff.casting.expires < e.next ) then
                         table.remove( events, 1 )
                     end
                 end
-            end
 
-            if #events > 1 then sort( events, resourceModelSort ) end
+                if #events > 1 then sort( events, resourceModelSort ) end
+            end
         end
 
         if regen > 0 and r.forecast[ r.fcount ].v < r.max then
@@ -1585,9 +1581,9 @@ do
             end
         end
     end
+
     ns.forecastResources = forecastResources
     state.forecastResources = forecastResources
-    Hekili:ProfileCPU( "forecastResources", forecastResources )
 end
 
 
@@ -1669,8 +1665,8 @@ do
             if type( x ) == "number" then
                 if x > 0 and x >= state.delayMin and x <= state.delayMax then
                     t[ x ] = true
-                -- elseif x < 60 then
-                --     if Hekili.ActiveDebug then Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 ) end
+                elseif Hekili.ActiveDebug and x < 60 then
+                    Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 )
                 end
             end
         end
@@ -1902,6 +1898,7 @@ do
         selection = 1,
         selection_time = 1,
         this_action = 1,
+        this_list = 1,
 
         -- Calculated from event data.
         aggro = 1,
@@ -2100,6 +2097,7 @@ do
             elseif k == "selection" then return t.selection_time < 60
             elseif k == "selection_time" then t[k] = 60
             elseif k == "this_action" then t[k] = "wait"
+            elseif k == "this_list" then t[k] = "default"
 
             -- Calculated from real event data.
             elseif k == "aggro" then t[k] = ( UnitThreatSituation( "player" ) or 0 ) > 1
@@ -3529,39 +3527,56 @@ function state:CombinedResourceRegen( t )
     return regen
 end
 
-
 function state:TimeToResource( t, amount )
-    if not amount or amount > t.max then return 3600
-    elseif t.current >= amount then return 0 end
+    -- Handle invalid or overflow cases.
+    if not amount or amount > t.max then return 3600 end
+    if t.current >= amount then return 0 end
 
-    local pad, lastTick = 0, nil
+    local regen, lastTick, pad = t.regen, nil, 0
+    local queryTime = state.query_time
+    local deficit = amount - t.current
+
+    --[[ Handle rune-specific logic.
+    if t.resource == "runes" then
+        local totalTime = 0
+
+        -- Check `expiry` to calculate when the required runes will regenerate.
+        for i = 1, deficit do
+            if i > #t.expiry then break end
+            local nextRune = t.expiry[ i ] or 0
+            if nextRune > queryTime then
+                totalTime = max( totalTime, nextRune - queryTime )
+            end
+        end
+        return totalTime
+    end ]]
+
+    -- Handle tick-based resources (e.g., energy, focus).
     if t.resource == "energy" or t.resource == "focus" then
         -- Round any result requiring ticks to the next tick.
         lastTick = t.last_tick
     end
 
-    local regen, slice = t.regen, nil
     if regen == 0.001 then regen = 0 end
 
+    -- Handle forecasted resources with slices (e.g., energy/focus models).
     if t.forecast and t.fcount > 0 then
-        local q = state.query_time
-
-        if t.times[ amount ] then return t.times[ amount ] - q end
+        if t.times[ amount ] then return t.times[ amount ] - queryTime end
 
         if regen == 0 then
             for i = 1, t.fcount do
                 local v = t.forecast[ i ]
                 if v.v >= amount then
                     t.times[ amount ] = v.t
-                    return max( 0, t.times[ amount ] - q )
+                    return max( 0, t.times[ amount ] - queryTime )
                 end
             end
-            t.times[ amount ] = q + 3600
-            return max( 0, t.times[ amount ] - q )
+            t.times[ amount ] = queryTime + 3600
+            return max( 0, t.times[ amount ] - queryTime )
         end
 
         for i = 1, t.fcount do
-            slice = t.forecast[ i ]
+            local slice = t.forecast[ i ]
             local after = t.forecast[ i + 1 ]
 
             if slice.v >= amount then
@@ -3572,10 +3587,10 @@ function state:TimeToResource( t, amount )
                     pad = 0.1 - pad
                 end
 
-                return max( 0, pad + t.times[ amount ] - q )
+                return max( 0, pad + t.times[ amount ] - queryTime )
 
             elseif after and after.v >= amount then
-                -- Our next slice will have enough resources.  Check to see if we'd regen enough in-between.
+                -- Check if regeneration fills the deficit before the next slice.
                 local time_diff = after.t - slice.t
                 local deficit = amount - slice.v
                 local regen_time = deficit / regen
@@ -3590,24 +3605,23 @@ function state:TimeToResource( t, amount )
                 else
                     t.times[ amount ] = after.t
                 end
-                return max( 0, t.times[ amount ] - q )
+                return max( 0, t.times[ amount ] - queryTime )
             end
         end
 
-        t.times[ amount ] = q + 3600
-        return max( 0, t.times[ amount ] - q )
+        t.times[ amount ] = queryTime + 3600
+        return max( 0, t.times[ amount ] - queryTime )
     end
 
-    -- This wasn't a modeled resource, just look at regen time.
-    if lastTick and slice then
-        pad = ( slice.t - lastTick ) % 0.1
+    -- Fallback for non-modeled resources.
+    if lastTick and regen > 0 then
+        pad = ( queryTime - lastTick ) % 0.1
         pad = 0.1 - pad
     end
 
     if regen <= 0 then return 3600 end
     return max( 0, pad + ( ( amount - t.current ) / regen ) )
 end
-
 
 
 local mt_resource = {

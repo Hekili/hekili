@@ -46,7 +46,6 @@ actions+=/variable,name=fwf_buffs,value=(buff.pillar_of_frost.remains<gcd.max|(b
 ## High Priority Actions Use <a href='https://www.wowhead.com/spell=10060/power-infusion'>Power Infusion</a> while <a href='https://www.wowhead.com/spell=51271/pillar-of-frost'>Pillar of Frost</a> is up, as well as <a href='https://www.wowhead.com/spell=152279/breath-of-sindragosa'>Breath of Sindragosa</a> or on cooldown if <a href='https://www.wowhead.com/spell=51271/pillar-of-frost'>Pillar of Frost</a> and <a href='https://www.wowhead.com/spell=152279/breath-of-sindragosa'>Breath of Sindragosa</a> are not talented
 ## actions.high_prio+=/invoke_external_buff,name=power_infusion,if=(buff.pillar_of_frost.up|!talent.pillar_of_frost)&(talent.obliteration|talent.breath_of_sindragosa&buff.breath_of_sindragosa.up|!talent.breath_of_sindragosa&!talent.obliteration)
 actions+=/antimagic_shell,if=runic_power.deficit>40&death_knight.first_ams_cast<time&(!talent.breath_of_sindragosa|talent.breath_of_sindragosa&variable.true_breath_cooldown>cooldown.antimagic_shell.duration)
-
 # Trinkets
 actions+=/use_item,use_off_gcd=1,name=treacherous_transmitter,if=cooldown.pillar_of_frost.remains<6&variable.sending_cds&(variable.trinket_1_buffs&variable.trinket_2_buffs|!talent.breath_of_sindragosa|cooldown.breath_of_sindragosa.remains<6)|boss&fight_remains<30
 ### When to complete the Tracherous Transmitter task given.
@@ -60,9 +59,8 @@ actions+=/use_item,slot=trinket2,use_off_gcd=1,if=trinket.2.cast_time>0&variable
 # If only one on use trinket provides a buff, use the other on cooldown. Or if neither trinket provides a buff, use both on cooldown.
 actions+=/use_item,slot=trinket1,if=!variable.trinket_1_buffs&!variable.trinket_1_manual&(variable.damage_trinket_priority=1|(!trinket.2.has_cooldown|trinket.2.cooldown.remains))&((trinket.1.cast_time>0&(!talent.breath_of_sindragosa|!buff.breath_of_sindragosa.up|!variable.breath_dying)&!buff.pillar_of_frost.up|!trinket.1.cast_time>0)&(!variable.trinket_2_buffs|cooldown.pillar_of_frost.remains>20)|!talent.pillar_of_frost)|boss&fight_remains<15
 actions+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&!variable.trinket_2_manual&(variable.damage_trinket_priority=2|(!trinket.1.has_cooldown|trinket.1.cooldown.remains))&((trinket.2.cast_time>0&(!talent.breath_of_sindragosa|!buff.breath_of_sindragosa.up|!variable.breath_dying)&!buff.pillar_of_frost.up|!trinket.2.cast_time>0)&(!variable.trinket_1_buffs|cooldown.pillar_of_frost.remains>20)|!talent.pillar_of_frost)|boss&fight_remains<15
-
 # Maintain Frost Fever, Icy Talons and Unleashed Frenzy
-actions+=/howling_blast,if=!dot.frost_fever.ticking&active_enemies>=2&(!talent.obliteration|talent.wither_away|talent.obliteration&(!cooldown.pillar_of_frost.ready|buff.pillar_of_frost.up&!buff.killing_machine.up))
+actions+=/howling_blast,if=!dot.frost_fever.ticking&active_enemies>=2&(!talent.breath_of_sindragosa|!buff.breath_of_sindragosa.up)&(!talent.obliteration|talent.wither_away|talent.obliteration&(!cooldown.pillar_of_frost.ready|buff.pillar_of_frost.up&!buff.killing_machine.up))
 
 # Cooldowns
 actions+=/potion,if=(talent.pillar_of_frost&buff.pillar_of_frost.up|!talent.pillar_of_frost&buff.empower_rune_weapon.up|!talent.pillar_of_frost&!talent.empower_rune_weapon|active_enemies>=2&buff.pillar_of_frost.up)|boss&fight_remains<25
@@ -100,7 +98,7 @@ actions+=/bag_of_tricks,if=!talent.obliteration&buff.pillar_of_frost.up&(buff.un
 
 
 actions+=/call_action_list,name=cold_heart,if=talent.cold_heart&(!buff.killing_machine.up|talent.breath_of_sindragosa)&((debuff.razorice.stack=5|!death_knight.runeforge.razorice&!talent.glacial_advance&!talent.avalanche&!talent.arctic_assault)|boss&fight_remains<=gcd)
-actions+=/run_action_list,name=breath,strict=1,if=buff.breath_of_sindragosa.up
+actions+=/run_action_list,name=breath,strict=1,if=buff.breath_of_sindragosa.up|breath_ticks_left>0
 actions+=/run_action_list,name=obliteration,if=talent.obliteration&buff.pillar_of_frost.up&!buff.breath_of_sindragosa.up
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=2
 actions+=/call_action_list,name=single_target,strict=1,if=active_enemies=1

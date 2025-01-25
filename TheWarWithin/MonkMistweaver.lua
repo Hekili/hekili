@@ -196,7 +196,8 @@ spec:RegisterAuras( {
     accumulating_mist = {
         id = 388566,
         duration = 30,
-        max_stack = 6
+        max_stack = 6,
+        dot = "buff"
     },
     ancient_concordance = {
         id = 389391,
@@ -271,13 +272,15 @@ spec:RegisterAuras( {
     dome_of_mist = {
         id = 205655,
         duration = 8,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff"
     },
     enveloping_mist = {
         id = 124682,
         duration = 6,
         tick_time = 1,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff"
     },
     eye_of_the_tiger = {
         id = 196608,
@@ -363,7 +366,8 @@ spec:RegisterAuras( {
     life_cocoon = {
         id = 116849,
         duration = 12,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff"
     },
     mana_tea = {
         id = 197908,
@@ -480,15 +484,11 @@ spec:RegisterAuras( {
         duration = function() return 3 * gust_of_mist.count end,
         max_stack = 1
     },
-    refreshing_jade_wind = {
-        id = 196725,
-        duration = 6,
-        max_stack = 1
-    },
     renewing_mist = {
         id = 119611,
         duration = function() return 20 + ( buff.tea_of_serenity_rm.up and 10 or 0 ) + ( buff.tea_of_plenty_rm.up and 10 or 0 ) end,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff"
     },
     rushing_winds = {
         id = 467341,

@@ -134,7 +134,7 @@ actions.havoc+=/wither,cycle_targets=1,if=(((dot.wither.refreshable&variable.hav
 actions.havoc+=/shadowburn,if=(cooldown.shadowburn.full_recharge_time<=gcd.max*3|debuff.eradication.remains<=gcd.max&talent.eradication&!action.chaos_bolt.in_flight&!talent.diabolic_ritual)&(talent.conflagration_of_chaos|talent.blistering_atrophy)
 actions.havoc+=/shadowburn,if=havoc_remains<=gcd.max*3
 actions.havoc+=/chaos_bolt,if=cast_time<havoc_remains&((!talent.improved_chaos_bolt&active_enemies<=2)|(talent.improved_chaos_bolt&((talent.wither&talent.inferno&active_enemies<=2)|(((talent.wither&talent.cataclysm)|(!talent.wither&talent.inferno))&active_enemies<=3)|(!talent.wither&talent.cataclysm&active_enemies<=4))))
-actions.havoc+=/rain_of_fire,if=active_enemies>=3-talent.wither
+actions.havoc+=/rain_of_fire,if=active_enemies>=3
 actions.havoc+=/channel_demonfire,if=soul_shard<4.5
 actions.havoc+=/conflagrate,if=!talent.backdraft
 actions.havoc+=/dimensional_rift,if=soul_shard<4.7&(charges>2|boss&fight_remains<cooldown.dimensional_rift.duration)

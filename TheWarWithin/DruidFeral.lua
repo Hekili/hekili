@@ -1245,7 +1245,7 @@ spec:RegisterAuras( {
         duration = 4,
         max_stack = 1,
         generate = bt_generator,
-        copy = "bt_swipe_cat"
+        copy = { "bt_swipe_cat", "bt_brutal_slash" }
     },
     bt_thrash = {
         duration = 4,

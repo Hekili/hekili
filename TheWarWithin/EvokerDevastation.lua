@@ -213,7 +213,7 @@ spec:RegisterAuras( {
     -- Damage taken has a chance to summon air support from the Dracthyr.
     bombardments = {
         id = 434473,
-        duration = 10.0,
+        duration = 6.0,
         pandemic = true,
         max_stack = 1,
     },
@@ -979,6 +979,8 @@ spec:RegisterAbilities( {
 
         spend = function () return buff.essence_burst.up and 0 or ( buff.imminent_destruction.up and 2 or 3 ) end,
         spendType = "essence",
+
+        cycle = function() if talent.bombardments.enabled and buff.mass_disintegrate_stacks.up then return "bombardments" end end,
 
         startsCombat = true,
 

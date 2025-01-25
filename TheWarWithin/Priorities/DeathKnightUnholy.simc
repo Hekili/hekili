@@ -45,8 +45,8 @@ actions+=/call_action_list,name=cds_san,strict=1,if=talent.vampiric_strike&activ
 actions+=/call_action_list,name=cds,strict=1,if=!talent.vampiric_strike&active_enemies=1
 actions+=/call_action_list,name=cleave,strict=1,if=active_enemies=2
 actions+=/call_action_list,name=aoe_setup,if=active_enemies>=3&!death_and_decay.ticking&cooldown.death_and_decay.remains<10
-actions+=/call_action_list,name=aoe_burst,strict=1,if=active_enemies>=3&(death_and_decay.ticking|buff.death_and_decay.up&death_knight.fwounded_targets>=(cycle_enemies*0.5))
-actions+=/call_action_list,name=aoe,if=active_enemies>=3&!death_and_decay.ticking
+actions+=/call_action_list,name=aoe_burst,if=active_enemies>=3&(death_and_decay.ticking|buff.death_and_decay.up&death_knight.fwounded_targets>=(cycle_enemies*0.5))
+actions+=/call_action_list,name=aoe,if=active_enemies>=3&!buff.death_and_decay.up
 actions+=/run_action_list,name=san_fishing,if=active_enemies=1&talent.gift_of_the_sanlayn&!cooldown.dark_transformation.ready&!buff.gift_of_the_sanlayn.up&buff.essence_of_the_blood_queen.remains<cooldown.dark_transformation.remains+2
 actions+=/call_action_list,name=san_st,strict=1,if=active_enemies=1&talent.vampiric_strike
 actions+=/call_action_list,name=st,strict=1,if=active_enemies=1&!talent.vampiric_strike
@@ -75,7 +75,7 @@ actions.aoe_burst+=/wound_spender,cycle_targets=1
 # AoE Setup
 actions.aoe_setup+=/festering_strike,if=buff.festering_scythe.up
 actions.aoe_setup+=/any_dnd,if=!death_and_decay.ticking&(!talent.bursting_sores&!talent.vile_contagion|death_knight.fwounded_targets>=cycle_enemies|death_knight.fwounded_targets>=8|raid_event.adds.exists&raid_event.adds.remains<=11&raid_event.adds.remains>5|!buff.death_and_decay.up&talent.defile)
-actions.aoe_setup+=/wound_spender,target_if=debuff.chains_of_ice_trollbane_slow.up
+actions.aoe_setup+=/wound_spender,cycle_targets=1,if=debuff.chains_of_ice_trollbane_slow.up
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=!talent.vile_contagion
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=cooldown.vile_contagion.remains<5|death_knight.fwounded_targets>=cycle_enemies&debuff.festering_wound.stack<=4
 actions.aoe_setup+=/death_coil,if=!variable.pooling_runic_power&buff.sudden_doom.react&active_enemies<variable.epidemic_targets

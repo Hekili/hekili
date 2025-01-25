@@ -915,7 +915,7 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if talent.holy_armaments.enabled then
-        if IsActiveSpell( 432472 ) then applyBuff( "sacred_weapon_ready" )
+        if IsSpellKnownOrOverridesKnown( 432472 ) then applyBuff( "sacred_weapon_ready" )
         else applyBuff( "holy_bulwark_ready" ) end
     end
 
@@ -1440,7 +1440,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Empowers you with the spirit of ancient kings, reducing all damage you take by 50% for 8 sec.
     guardian_of_ancient_kings = {
-        id = function () return IsSpellKnownOrOverridesKnown( 212641 ) and 212641 or 86659 end,
+        id = 86659,
         cast = 0,
         cooldown = function () return 300 - ( conduit.royal_decree.mod * 0.001 ) end,
         gcd = "off",
@@ -1448,6 +1448,7 @@ spec:RegisterAbilities( {
 
         talent = "guardian_of_ancient_kings",
         startsCombat = false,
+        nopvptalent = "guardian_of_the_forgotten_queen",
 
         toggle = "defensives",
 
@@ -1463,7 +1464,7 @@ spec:RegisterAbilities( {
     guardian_of_the_forgotten_queen = {
         id = 228049,
         cast = 0,
-        cooldown = 180,
+        cooldown = 300,
         gcd = "spell",
         school = "holy",
 
@@ -1610,9 +1611,9 @@ spec:RegisterAbilities( {
         id = function() return buff.holy_bulwark_ready.up and 432459 or 432472 end,
         known = 432459,
         cast = 0.0,
-        cooldown = 60,
+        cooldown = function() return 60 * ( 1 - 0.2 * talent.forewarning.rank ) end,
         charges = 2,
-        recharge = 60,
+        recharge = function() return 60 * ( 1 - 0.2 * talent.forewarning.rank ) end,
         gcd = "spell",
 
         startsCombat = false,
@@ -1666,9 +1667,12 @@ spec:RegisterAbilities( {
 
     -- Talent: Heals a friendly target for an amount equal to 100% your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
     lay_on_hands = {
-        id = 633,
+        id = function() if talent.empyreal_ward.enabled then
+            return 471195 end
+            return 633
+        end,
         cast = 0,
-        cooldown = function () return 600 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( 1 - 0.3 * talent.uthers_counsel.rank ) end,
+        cooldown = function () return 600 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( talent.uthers_counsel.enabled and 0.7 or 1 ) end,
         gcd = "off",
         school = "holy",
 
@@ -1680,9 +1684,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( health.max, "health" )
-            applyDebuff( "player", "forbearance" )
-            if azerite.empyreal_ward.enabled then applyBuff( "empyrael_ward" ) end
+            if talent.tirions_devotion.enabled then gain( 0.05 * mana.max, "mana" ) end
+            -- applyDebuff( "", "forbearance" )
+            if talent.empyreal_ward.enabled then applyBuff( "empyrael_ward" ) end
         end,
+
+        copy = { 633, 471195 }
     },
 
     -- Talent: For the next 15 sec, you generate an absorb shield for 20% of all damage you deal, and Avenger's Shield damage is increased by 20% and its cooldown is reduced by 75%.
@@ -1770,15 +1777,15 @@ spec:RegisterAbilities( {
 
             if talent.faiths_armor.enabled then applyBuff( "faiths_armor" ) end
             if talent.redoubt.enabled then addStack( "redoubt", nil, 3 ) end
-
-            if buff.shining_light_full.up then removeBuff( "shining_light_full" )
-            elseif talent.shining_light.enabled then
+            if talent.shining_light.enabled then
                 addStack( "shining_light", nil, 1 )
                 if buff.shining_light.stack == 3 then
-                    applyBuff( "shining_light_full" )
+                    addStack( "shining_light_full" )
                     removeBuff( "shining_light" )
                 end
             end
+
+
 
             applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
             last_shield = query_time
@@ -1932,4 +1939,4 @@ spec:RegisterOptions( {
 } )
 
 
-spec:RegisterPack( "Protection Paladin", 20271021, [[Hekili:vVX2UTno2VLGbWJn2uxl54K2Iy)WoVmtWIbd20f7BwMrI2MtKL8skLuVWWF77HK6cjfPKCsA2oaf1jMhEUXZvYtw6T8RlVpcLHx(7(t8VYBIV3ypVP34)5L3NDypE597rHpI2a)qcAh8))bnndhMrstoT6pqXOischMdXPOioUyP50qaUTzz7zF5JFCdjBB(dJdt39rgzxEmIV1qkADg)3d)4Y7FiNeN9BjlFWjJGYZ2MsxE)9KD)cGzsuewcoMfU8Eo4FWBYh88U80k4tFVVCA1)AphxNwTMMU70k(gpD3P7eGo5ZFyYNaq(NywwkfGzhjJSbjfjuHOftyzA7Whqo)ZRk(KJbbAxLljvfWFsYj((DWg38b)PaiFDlS()grH)duvCTjN2mUUmmnnok95e(V87ItkCc6HyC0Y)oSiLKHPeeOY3JJJdYq0n4m24yYMTzSG)mpAZoCs2PvlMdmZPvhpEA1fNwrrKOa8tWkJrrrSX4VXPMCzZ1iGIyXPv3mZ(Y57HJgH(IZZAuDzgCmYz4Y1rW22qs2e8mfLTvvqaiN6u0EiF96X67vJS7tfFc44kN4y4Pv2qdfVdrsaj)wWQPqcbqZi7WcP2BYPvJG)vtSDPCrliDDWM4u6bovN1Zdf2wcooIV1ST4akxzHtZzYdNP1KiI8ejbhKLghZr)1NPIrkfLMnULyorNut1hqm(pWzpX5iN03CwKUc1GI7t1iEnHIFionnAjhNG)6AuECwL1Cjyaq5pInmk8nyGsGdrGEv(lbCpfP)sGm6uThJfZQEHH6Gb2SQ6fkYOKKhHtDBgi9cbSmuseIwO12tXq0Zhqn1Br4Ne2)bOCkYM6ZL3Pf3VkhvAisybsPnH8kvidttyyisU830GZuQtbxwgoREVpHatjyv(pfNdF4PAHvOahN5nElIfuEOEA1aW)uFnqvbrJsoeeTNjwFOikxfu(wGI7JOGMk3LOCArwaUxPckSaXOQaQgKQewHmQBqeWoKegWItZS5B3ToY3QoYVfDKnPVPoYMMuthzvdSOlLOfvK3zPIY08gBnfi4W8iensiDI4toc4oUshb6GTPXhc2N(mMogImrcjqYs4GFIKVfOPiE8(C6(ugweHvjHGdIyl6vnRUfJIHiM7dZePEEoDtG8REDSv1AatLWdml85dwtXny7NtPrAzXCN)ndfZt3VMKGIdeHLgxaN0qtrTtsGOuCchH2b1lgmtMniIv8fcGUqiHYmi0iE2uqeXjrGSQjeBYHLjirkjusiHdjNsmDWk0dYZb9LKvgyk6ABO9Yg6HSTjf94pssNt82EPkcMKrEcifSdGKX99W9hnfGrvMTwb1FffpDI2EzAgXz8MPuoa6qau1WwWDMjJZwvYILOSL7QagpJARlttnUriCrylVYWATvX6ArSkT6tVAsvgKUjIV9u)vjLOyu0HQ0rU4KrQ5SAJIWrc)hyk6KwkyTag)ZtV5)EO38SxoW7MEZxA9TfTBhMw3(rRP6lvjWkmgNrGTfHaMfspf(OWVDsDLhY8xCqYzpcoJrsyRsIvW4Nr3Ak(rM8D7593VbQQoWNtFHYFwF5YAcIpGfC1bA7PTBqRR6vrlUtg2aHEkbRA7KWfVptTtIA9OTBh4AvqD0cZnQWi4hCuGeTgq(j7ewxxOVLpR11dnNHGGVq1qusJMw9MO1FMs38AWLP0Jxh11kSmk6FBtojcYNG1QbBOsd)16yTR3Wx5WYWMnq4Ix6gxhmqsxkokn)HSA6vHMYvkpQ1UJPIDBETcAEDdQdPyYsf1S2ZMLplNq30ZL(ITf9iwyEajuHyFmLoCUTYp4cNq34szCCg5nEM9y6a70Aeh3rb0pklnUd2lVb3uQ(XADq)MqgqcJQ5wzZiTFgwAw9kJ7KG)wwaIUdjVktGYmuiy7f8mgTpnrXIvQ(vxSs1p06QQA4R1KflP4g07BvZ8sdfDZvkbTELq1H2o)BreOCDVVpKh)mI(ihU6ZY150dQERs4R71uOhMc0(qymUKI8qtTwe9fDsYcTxzibNWPgsRVsT(DNkoxWuMs3DDCjMLjkqmg4tZdSwWT9KbUTun60YP7unLPK(XGlnsDwM877kZ53xMZm1Bv(2E6mfULZnmTSvRZbUKILlfiV8FUJ8giG3o03S7p45oHTAJDvPRlC70lEu76t5i1V)Le55oOFZiMcF8chpzKSs9WC9ClnIu516JQ8YEmjXZQyVejof7rWrBhiD8qjVbwPt7LRS37qeN28w9((hlXVDhsZ4fUIolE8wkzVC1Fdmo4TqeJ5Pk4mXLNw9v8U9X8hgLTnnpgsnSNssb5H8F5pAlK0ndjUQZtRUNx2fSt(tP(RYcVGWjqNRH8sq5qiKpM8DD5zz4wJ)kix8eF)cuEja0yJeBTx7TOotZOpA7x1bxpoMHNVFRn7wWgKKDPqnVgfspWHFgVLVzNDRTtvQQtx6JWXKNWunfGJo78Dx9D7XMAlsK)0E3GN)vNFhE(Z6FlE(DeRXX9VlluTSmOgUHALIpSlJp9csLY4AEts2RtVT7(3xR15gEP6IU7OlVklMoQXWQgTfrAQB3sJ6DvshB8UNC0O9wRUFTtr78GOY4RWhELB8MaviCpytNiU897fJ4bz3(uky1VofO9px9OU)m4bJ)p5ek)uLLYR)aLNLUdjctbPQHZd24t39pG0Kad)fiCvAcqnXY)C5L2P)WAaoZsvwnRXYd9(2OEIu13f0bInaPxiV5tt2a5wbPxi3Y7rAH1TbZ3v03jIT8qRw0kVy((LI(EG4wn)ASSg3E97psFLMDUq(BIdJBo)LD49Dg9DI4xQZsp57xk67bIFrHupDNLO9f7IDEb796(OsCnBTDovcGMU8TdXvO0V7Jh7O0caA86BhIfho)M4CHJPB0h2tUANpRvPRj8rU5N(PYLzJRYv)3M)rELe8InyqHnzK1Kq5vbFxxWJI(ZYRn(oBWPnkx2bXCWoTcKEzm2HrTug7qu(iExYVI95fQ06xY7sXajn37sY652Dxg4oK4GHx4oy8XJT4xVyElbRgD84f2ZC8AerFvr03Ui2ukueXMYFTiArkw0I4RkHgdg3DvYi3KtmnLQFJ57NiL5YDZ6guLjKUtylJ11nKLpbMc7xj1SMg88JIwh15fZ9bvK97K64XM9jV4Mzn)AOxnRmJ(9sAhg5uBW5thVJG1DzmwX8Tp02(l6R7wpGRhYVPYfEtgnYoovUwTMQnh3bWI5tTJmZ3XZTaE8yLvRdMF(0j6blvjej5P0hXb4VbDRXh4morKMkIw2cijRZzVanC1yi7AJfC3IpPAkwB0dOWHoteEqoirdk7v15ChoyyZr7B(KJhvVZ46r6BKdorRDxo9Rh0NBRhMWZJwfFV1gTDXhAtVKup4AwbhuQIAoNvlQMpWbxuy13yYQk4U2MQkDbRAIQk(6QPPYLS4e1QNVwyELbe7)NSF5y7X52MdZxBA)FqeadA(xdTU6u0z4h6ntnqszEoNjcnE8CfNjh3)3GHvXzBoob36xibUEt(r86tSoGhfBuB4oKzv7yKogn4cRKS86pTPlSi1UXHPS5ESmU1dyxhWOLHYIMZBmKBvBamU13kV3s6GADB532CIlu4IoM2I5tCPARgChR6wTBqNZwA39(CTrHamhK6lJPNakZWY3xQyUUGVAKdEqpQbqTUff2UQupTh5t2Or)QHzQmnChJabuQZG68J3o1kZyCx4CE4Ioqoi89Dqhg0p5zUDEZXZAu5dz7D(6hfVDQRZvRmI(tX8(tFJ3Q5TGb8plgOnt2IhAxebT5GgC78IHmWUGLw3KELuzDWcMpRdteJowoJWeQpp3GcPzU9iIgDCm8C6dd6J5S0TV7UeVxM(VBM4qpyNw9dXJU37qVD8IO9Xh6cJNK36MQllqyh3YZVpWIP88RGki61HaeAhsT35JM(Q9B7HT754p1htuRW0OV1IA0S0Y5GHD9o58BaP9kKRkcX(RJp3vjigME9We5fEgEg6d7mQ2n9kAaPUIg7Pe0V43AqmkT0ET5dRd6qmN1)ftQBri1XFfdJ6TFXS24mDDV6FxcZN1nt0gMBPMEnYC1lK98kADXLkSFNhgjZBcAZ3hOjmUC)BJWoIc0Clodg0euLIguThlVczaICgoGKH3XUu8xou5TllkVAO7)wJM7nW6DOYBQrV)U5xnbSmBdv(AVyH(Jkv2QzdYmIFB9Ur6OZry97sy9F7ewpT3U4nsyfZXE4YF)6RfdlZY)3p]] )
+spec:RegisterPack( "Protection Paladin", 20271125, [[Hekili:vVrxVTnoYFlblGxBCPUwYXPPfX5HBFzBWHIfx6H7nlZirBZ1YsAfLsQpy4F73muFrkrkj7K2M9HwNyoC489mC4Kfwl(6Ih8ij0fFXEI9vww2Zgp5JtVz2vlEizFeDXdre3TK1Wpeq2b))FehMqDtyHbhx(heFIhlaHzVFiXdXfpmn2fGBtsse)tV)9RzjBsFCSB4U3Zz7s9j4wDJjRsWF399lE4XuMFYNdw8OrcHKMSjmEXdpW29BaMzEE0mWPC3fpGG)oRjVZY6YJlHpTfFA9oB78pN9PJl)priUpUCvC4UJlreD8(J3l26Kp(Uj3aG8VP8KWyaMDSe2AsglsYzvFgprzhiYXpVk)tedc0Umn7Okb(MmkZ2UdY4dVZEkaYx3aR)FjXW)bIou6INnxONORiP(jWp(fHElJ4w8qm9X0TGmNgqE0N6T4FUibKIievFtjWUeFFNSFXbXCg(DY0UvSoIIPNdkCdd99cFoGJy4QZbdjXSGT0ebcMDoiGNqc8iXEacGfIIPG13JKMYnp6tHcmqsJj6eFfa6ZwVjH78NPER3rdsQb6uzqjXUKaQdyjf3eYRKH0nmGtbpHSFtbU6CDyeWu0KQ9(ejMHRI)KFk8HfGVywcf(6sb44eRXBiCNcnYXLdoUS2AGOkzmjyVJxexS(WJlVqckBnqD4GcAkq)yV04CVM7MRGcnqmkdnnpQcyf8OQbHdFFGRd3pevRF56twgzRvgz3Imsh33ugPtsQiJ0kbURlHOgrK1jjIsKDglS9LKyvcdEefCNsiXRb3UX1S2ZuN2LutmH55qFcwzmXZJpM(nm(u2Y1xJLXOFyM(LtJm7Jv3hKaBBnlyTZZGaAJoxqTS2JPRwnwDVkhBuyr0U6XQQWbOV1HMy6ocla48BH8m5CiaAcBhvW1wtekXrvh2UqK1Ccx5S2pmEVoxDtkf(gg13d3AYgQtmkSOHP8mLZuPyASNyI4p((68s6sWKXfLwJg5y8qNuDQps4IaPa5j0J4r)Ht6Olrni4UPcXRyqYn)WW8y5LPg0yoxSLCySQPblchmUHRYXLa3yv4z3MCzfYBoksHRMu6P29HyRpeBP4oMs82x6OzIsgjhBOTteS8WFGljtAPWGCySpn5M9pc5ML(WU)WKB2zwFL1v0I1xvncvsr3nOtmxjq6QuW5gQmrSKtwmduUS21B8oY3GnT31Nw4(JNNgvxnxQnKD7OXLoHoRIPuLOu5NTay(gYwQiyYgkkS4QXZuLMnbUrOc6EQi60(yvenEMEBaGAQKA1O82dPd2bBIwdH4CS9iykBqSnRkzjXhZVaOYlLV1b0yoiuJZrLWgyqjy5zDwNY8ibU0cOQOSk2QZCenikljXnSdohThrcdPhWyYDRiC3KxgnzodYqzbszkdNOSRWfgxjtu0KAG0HbMLL6U5s0CHfsDBpHlPsMwdzW0LLQnNP(MwesqjiWmPFQ)ZK4TiCvC3Q049LQH5fWVj0FVtu4Z0yHr6u9EIMtUDrNhj66uPTndxP2baUVCTAXaIGG0yO4uXgqc)M2dHimtPEoeohkefT(YP2Esa3wignghwNtFddIp(2HkloRmQfjoRjF3Po7(sDUXPCIhif5qQQTub59tj1Kvh5MYRlTmOwUFhg62WvIrKAojqa9BjoK4DKSROa4HtCJbP(ZusuyGubdzjWKxSm51qTRkNJ662veIv7z1Y1VmGiqtbhiS6Tu6pqL7HUB8yntPtgsv9xdoZ3aO9K7vrOAUEJmsAc0yzoe5q5CIVmhLPL10zKv6vahlZXf)zrTAc8yoS4RirAFkePM4p21dpQj(JUABn3EIxloBAVmfS7is2RlH0ulB3rZmEfoF72vGM6ABDVCrd4JzrzR(ziOlwHRpfJCGeXLhx(v6UiFSz28nHP(qTmrXSqGFy)pSr7q4Xe4FWMoU8b0od2j2(7FpZsdSaHB15I9waHqWF8SEXJLfHnx63b(cRu73i((aqJRfFRJkQrM1C5ZxGH2RsiPA3xltLT5WSdljdwWUqEswbYkv3PTTz4LKZVwtp1S5fXwwyUk37r9zprJ7ZvkSnh7UzExrES8QyBl7M9nYzSQz3RM0Y(J6teQ6RQUNPtK3tDZ6AW2rSgqcJgLYxJo3hRsz20nu52ud7Y4tT0HmECf(Qg6VQLuHdphg7P0dXPnBuQSxQkRBo6YlXIzQ5BgBwI2glz2TS2f0KkFS2BVGO5AfJcJV4sIYtF1AVYtibBfHJguMGuR744YNtyO8Lkh7rxXCzjfQ2Y8S5LWfLghfYZS3K05TC5zZPRGe2(qDOrUjcj1ZHRDY(QxgzjvAGw3KwnvBrUkm9wXci(oIoTP4Pil2zbUH7Wd2JSJaxrzw299945Frr8VYUsg7HTDhyrAaetqLjwNclZiIExdw6mes8K4QGLlhY0dQlL9ec1zDLnGSUzpKEWBRdjBFlXDgXlYPM9DfejhcQ4WHDahPFFvUV1eaf0pYVMZ9)3qgR2HI8N5QbQfHXskySpzVtyaKFpWJVi)5iHKjCCrCep(GLfuP9dqvdbc7Mhed(aBxuymGSvHq09FT8P7)vOgj6FLYIXOb8qSJeK0KWDerHGUWHSMYhF8()fWRqkHpbfeggaNMy5FT4jduF(uaNjHsRM0y5HwFBuprQ8R)AaX1aPxiV5dq3a5AbPxixZRoRH01bZ3v03jI18C6AKkNnDFUOVhiUvZVglRqTx)JhPVqZoti)vXHXmLFEkVVZOVteFUol9KUpx03deFwHupEVMO957IFAb7T6wvjElQ20tfaOilF9qCjkT7w9OhLAaqHwF9qSq58zHEbX01QJajk2XjQlCfdhSQF5xkwMpUmx9)y(7X6dW6s4qHjjm4IfzJ009DbpX7plg)P71bNYa7PhK6dVKwGuVOOEyKVSOEikgHGlXrWAEUiTAocUum2zZTUKTAUE3LbMdjoy4fMdgF4ql(13nVLGvJoC4c9zoEjSOTmlARNfBYfsSyt(VIf1Wf31c7lZH1g)X7l5r0KtmZSYFt9rknJNLgg4oHT4K4DdArSUUHSyOtKi)sUM30GhvfTooF3n3ger6hIVdhA2jY7(WSMFnCNbTeJ6lGPhMSRDG0z2LCA8MAA3vTrNd3(qD7pVZz3Abu9q8TlVZAYOr6XP0RM1uSzOJl3nFQEKvFe4mZGhouA1AG4NpDIAWs5dIf8u4wQd9BWDWWELGhsMPIOtooSGvP8ZqcxoQDM2yo1D3nYMIv(hakmiZeHhYUj8GoBz2GHn7k18jhoOVBuJmqjknEcp)QBQEBvFWoTZk)7121lt0HY1VZKdMAZ1GcruZgfCxzRTgCXqdTgiN6ARTaQmwzlbY)6Y2byIxmIAz9RgIxQdh)mj)Io2GuBZ(q1M0)ncdu7m)7HuxUnq18dTMjhiPiphSNYCzkVtCwLu5dSIilwZbv5255dPIw8wBg1kJZ12CtERDPBVH5L8wliFQbquc23CcjV1AmKMszYiV1wlPxTxrMp5rnC(mSKN2N6Xrd64XOo1Z0kxQ8O2XA8UjN1b2s6JHx09ymkjQ7yegNd03fAv9fJT4jBx2VIhMML)RJXreQXyqvIPBNQLyQ9mFinCrhipnAqFh6Wb9JFMRN2m8ITLoCnF7uG061jE70Cfxlf1iriQVY8p(ZV2Zq)Aqa2Neb89kuQ8TJl5kTZ438z6nruMpaefktwWCLrYdUQywa2AtXhuIVMVVis61MKud6r93Y3zqRLDTB4ibJ01konpxD5pg01q4DQoGdFPgGthzmJyV9c)jqeACfFXuH9jtfM8hpvT4lLY1h3(7q4Y(QlEPheu2eCF53eZGwVD6pJsKQh39IAtOwFkKRLPrBGM()m)kOaZEPeGYbG6Q6CgIoR8bYtzwpSDpf)P(yIQfMgnzipwGM(dmyyxJng2UQwThQYAPFyXMBkNvntVEyICM6WtqEONqvAlV42IvvbRVmc1U0xbsr)vbqs5uhwcDh)sXFuFfTEvuc0qZ)zao3AG2gmIvDOEJT5xnbYd0gQSvANV6lUuC5XghZiSv2Mr6OtHzT7IzTF9ywlLg7)kXSI)UVCx8LRVwmjjl()p]] )

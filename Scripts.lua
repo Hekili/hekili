@@ -1307,6 +1307,7 @@ local function ConvertScript( node, hasModifiers, header )
     state.scriptID = header
 
     state.this_action = node.action
+    state.this_list = header:match( "^(.-):" ) or "default"
 
     local t = node.criteria and node.criteria ~= "" and node.criteria
     local clean = SimToLua( t )
@@ -1502,7 +1503,9 @@ scripts.ConvertScript = ConvertScript
 
 function scripts:CheckScript( scriptID, action, elem )
     local prev_action = state.this_action
-    if action then state.this_action = action end
+    if action then
+        state.this_action = action
+    end
 
     local script = self.DB[ scriptID ]
 

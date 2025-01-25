@@ -1558,16 +1558,40 @@ spec:RegisterAbilities( {
 
         spend = 20,
         spendType = "energy",
+        toggle = function() if talent.pressure_points.enabled then return "interrupts" end end,
 
         talent = "paralysis",
         startsCombat = true,
-        debuff = function() return talent.pressure_points.enabled and "dispellable_enrage" or nil end,
+
+        usable = function () if talent.pressure_points.enabled then
+            return buff.dispellable_enrage.up end
+            return true
+        end,
 
         handler = function ()
             applyDebuff( "target", "paralysis" )
-            if talent.pressure_points.enabled then removeDebuff( "target", "dispellable_enrage" ) end
+            if talent.pressure_points.enabled then removeBuff( "dispellable_enrage" ) end
         end,
     },
+
+
+
+--[[
+    -- Talent: Removes $s1 Enrage and $s2 Magic effect from an enemy target.$?s343244[    Successfully dispelling an effect generates $343244s1 Focus.][]
+    tranquilizing_shot = {
+
+        usable = function () return buff.dispellable_enrage.up or buff.dispellable_magic.up, "requires enrage or magic effect" end,
+
+        handler = function ()
+            if talent.devilsaur_tranquilizer.enabled and buff.dispellable_enrage.up and buff.dispellable_magic.up then reduceCooldown( "tranquilizing_shot", 5 ) end
+            removeBuff( "dispellable_enrage" )
+            removeBuff( "dispellable_magic" )
+            if state.spec.survival or talent.improved_tranquilizing_shot.enabled then gain( 10, "focus" ) end
+        end,
+    },
+--]]
+
+
 
     -- Taunts the target to attack you and causes them to move toward you at 50% increased speed. This ability can be targeted on your Statue of the Black Ox, causing the same effect on all enemies within 10 yards of the statue.
     provoke = {

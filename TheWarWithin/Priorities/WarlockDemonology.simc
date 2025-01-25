@@ -55,7 +55,7 @@ actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains>25|variab
 actions+=/summon_vilefiend,if=cooldown.summon_demonic_tyrant.remains>30
 actions+=/demonbolt,cycle_targets=1,if=(!debuff.doom.up|!action.demonbolt.in_flight&debuff.doom.remains<=2)&buff.demonic_core.up&(((!talent.soul_strike|cooldown.soul_strike.remains>gcd.max*2&talent.fel_invocation)&soul_shard<4)|soul_shard<(4-(active_enemies>2)))&!prev_gcd.1.demonbolt&talent.doom&cooldown.summon_demonic_tyrant.remains>15
 actions+=/demonbolt,if=buff.demonic_core.stack>=3&soul_shard<=3&!variable.pool_cores_for_tyrant
-actions+=/power_siphon,if=buff.demonic_core.stack<3&cooldown.summon_demonic_tyrant.remains>25
+actions+=/power_siphon,if=buff.demonic_core.stack<3&cooldown.summon_demonic_tyrant.remains>25&!buff.demonic_power.up
 actions+=/demonic_strength,if=active_enemies>1
 actions+=/bilescourge_bombers,if=active_enemies>1
 actions+=/guillotine,if=active_enemies>1&(cooldown.demonic_strength.remains|!talent.demonic_strength)
@@ -77,6 +77,7 @@ actions+=/summon_vilefiend,if=boss&fight_remains<cooldown.summon_demonic_tyrant.
 actions+=/infernal_bolt
 actions+=/lights_judgment,if=!pet.tyrant.active&cooldown.tyrant_remains>15&active_enemies>1
 actions+=/shadow_bolt
+actions+=/felstorm,if=active_enemies>1&(cooldown.demonic_strength.remains|!talent.demonic_strength)&talent.fel_sunder
 
 actions.fight_end+=/grimoire_felguard,if=fight_remains<20
 actions.fight_end+=/ruination
@@ -128,7 +129,7 @@ actions.tyrant+=/shadow_bolt,if=!buff.demonic_core.up&variable.imp_despawn>time+
 actions.tyrant+=/grimoire_felguard,if=cooldown.summon_demonic_tyrant.remains<17-2*gcd.max&cooldown.summon_vilefiend.remains<15-2*gcd.max&cooldown.call_dreadstalkers.remains<12-2*gcd.max
 actions.tyrant+=/summon_vilefiend,if=cooldown.summon_demonic_tyrant.remains<15-2*gcd.max&(buff.grimoire_felguard.up|cooldown.grimoire_felguard.remains>15|!talent.grimoire_felguard)&(buff.dreadstalkers.up|cooldown.call_dreadstalkers.remains<15-2*gcd.max|!talent.call_dreadstalkers)
 actions.tyrant+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains<12-2*gcd.max&(buff.vilefiend.up|cooldown.summon_vilefiend.remains<12-2*gcd.max|!talent.summon_vilefiend)
-actions.tyrant+=/summon_demonic_tyrant,if=(((variable.imp_despawn&variable.imp_despawn<time+gcd.max*2+cast_time)|(buff.wild_imps.stack>9&soul_shards<2))&buff.dreadstalkers.up&(buff.vilefiend.up|!talent.summon_vilefiend.enabled))|(buff.dreadstalkers.up&buff.dreadstalkers.remains<gcd.max*2+cast_time&((buff.vilefiend.up&buff.vilefiend.remains>2*gcd.max)|!talent.summon_vilefiend.enabled)&((buff.grimoire_felguard.up&buff.grimoire_felguard.remains>2*gcd.max)|!talent.grimoire_felguard.enabled|cooldown.grimoire_felguard.remains>20))
+actions.tyrant+=/summon_demonic_tyrant,if=(((variable.imp_despawn&variable.imp_despawn<time+gcd.max*2.5+cast_time)|(buff.wild_imps.stack>9&soul_shards<2))&buff.dreadstalkers.up&(buff.vilefiend.up|!talent.summon_vilefiend.enabled))|(buff.dreadstalkers.up&buff.dreadstalkers.remains<gcd.max*2+cast_time&((buff.vilefiend.up&buff.vilefiend.remains>2*gcd.max)|!talent.summon_vilefiend.enabled)&((buff.grimoire_felguard.up&buff.grimoire_felguard.remains>2*gcd.max)|!talent.grimoire_felguard.enabled|cooldown.grimoire_felguard.remains>20))
 actions.tyrant+=/hand_of_guldan,if=(variable.imp_despawn|buff.dreadstalkers.remains)&soul_shard>=3|soul_shard=5
 actions.tyrant+=/infernal_bolt,if=variable.imp_despawn&soul_shard<3
 actions.tyrant+=/demonbolt,if=variable.imp_despawn&buff.demonic_core.up&soul_shard<4|prev_gcd.1.call_dreadstalkers&soul_shard<4&buff.demonic_core.stack=4|buff.demonic_core.stack=4&soul_shard<4|buff.demonic_core.stack>=2&cooldown.power_siphon.remains<5
@@ -157,3 +158,5 @@ actions.variables+=/variable,name=pool_cores_for_tyrant,op=set,value=cooldown.su
 actions.variables+=/variable,name=diabolic_ritual_remains,value=buff.diabolic_ritual_mother_of_chaos.remains,if=buff.diabolic_ritual_mother_of_chaos.up
 actions.variables+=/variable,name=diabolic_ritual_remains,value=buff.diabolic_ritual_overlord.remains,if=buff.diabolic_ritual_overlord.up
 actions.variables+=/variable,name=diabolic_ritual_remains,value=buff.diabolic_ritual_pit_lord.remains,if=buff.diabolic_ritual_pit_lord.up
+actions.variables+=/variable,name=imp_despawn,op=set,value=2*spell_haste*6+0.58+time,if=prev_gcd.1.hand_of_guldan&buff.dreadstalkers.up&cooldown.summon_demonic_tyrant.remains<13&variable.imp_despawn=0
+actions.variables+=/felstorm,if=active_enemies>1&(cooldown.demonic_strength.remains|!talent.demonic_strength)&talent.fel_sunder

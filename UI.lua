@@ -34,7 +34,7 @@ local GetSpellCooldown = function(spellID)
     return 0, 0, false, 0
 end
 
-local format, insert = string.format, table.insert
+local floor, format, insert = math.floor, string.format, table.insert
 
 local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi
 local Tooltip = ns.Tooltip
@@ -2310,7 +2310,7 @@ do
 
         if Hekili.DB.profile.enabled and not Hekili.Pause then
             self.refreshRate = self.refreshRate or 0.5
-            self.combatRate = self.combatRate or 0.25
+            self.combatRate = self.combatRate or 0.2
 
             local thread = self.activeThread
 
@@ -2332,14 +2332,15 @@ do
                 self.activeThreadFrames = 0
 
                 if not self.firstThreadCompleted then
-                    Hekili.maxFrameTime = InCombatLockdown() and 10 or 50
+                    Hekili.maxFrameTime = 16.67
                 else
-                    local spf = GetFramerate()
-                    spf = 950 / ( spf > 0 and spf or 60 )
+                    local rate = GetFramerate()
+                    local spf = 1000 / ( rate > 0 and rate or 100 )
+
                     if HekiliEngine.threadUpdates then
-                        Hekili.maxFrameTime = min( spf, HekiliEngine.threadUpdates.meanFrameTime )
+                        Hekili.maxFrameTime = 0.9 * max( 7, min( 16.667, spf, 1.1 * HekiliEngine.threadUpdates.meanWorkTime / floor( HekiliEngine.threadUpdates.meanFrames ) ) )
                     else
-                        Hekili.maxFrameTime = spf
+                        Hekili.maxFrameTime = 0.9 * max( 7, min( 16.667, spf ) )
                     end
                 end
 
@@ -2354,6 +2355,7 @@ do
                 self.activeThreadFrames = self.activeThreadFrames + 1
                 Hekili.activeFrameStart = debugprofilestop()
 
+                -- if HekiliEngine.threadUpdates then print( 1000 * elapsed, Hekili.maxFrameTime, HekiliEngine.threadUpdates.meanWorkTime, HekiliEngine.threadUpdates.meanFrames ) end
                 local ok, err = coroutine.resume( thread )
 
                 if not ok then

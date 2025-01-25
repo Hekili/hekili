@@ -757,6 +757,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                 local action = entry.action
 
                 state.this_action = action
+                state.this_list = listName
                 state.delay = nil
 
                 local ability = class.abilities[ action ]
@@ -780,12 +781,14 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         action = class.active_essence
                         ability = class.abilities[ action ]
                         state.this_action = action
+                        state.this_list = listName
                         entryReplaced = true
                     elseif action == "trinket1" then
                         if state.trinket.t1.usable and state.trinket.t1.ability and not Hekili:IsItemScripted( state.trinket.t1.ability, true ) then
                             action = state.trinket.t1.ability
                             ability = class.abilities[ action ]
                             state.this_action = action
+                            state.this_list = listName
                             entryReplaced = true
                         else
                             if debug then
@@ -798,6 +801,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             action = state.trinket.t2.ability
                             ability = class.abilities[ action ]
                             state.this_action = action
+                            state.this_list = listName
                             entryReplaced = true
                         else
                             if debug then
@@ -809,6 +813,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         action = class.abilities[ action ].key
                         ability = class.abilities[ action ]
                         state.this_action = action
+                        state.this_list = listName
                         entryReplaced = true
                     elseif action == "potion" then
                         local usePotion = entry.potion or spec.potion
@@ -819,10 +824,12 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             action = nil
                             ability = nil
                             state.this_action = "wait"
+                            state.this_list = listName
                         else
                             action = class.abilities[ usePotion ] and class.abilities[ usePotion ].key or "tempered_potion"
                             ability = class.abilities[ action ]
                             state.this_action = action
+                            state.this_list = listName
                             entryReplaced = true
                         end
                     end
@@ -1429,6 +1436,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
     local action, wait, depth = nil, 10, 0
 
     state.this_action = nil
+    state.this_list = nil
 
     state.selection_time = 10
     state.selected_action = nil
@@ -1842,8 +1850,10 @@ function Hekili.Update( initial )
 
                     if class.file == "DEATHKNIGHT" then
                         state:SetConstraint( 0, min( state.delayMax, max( 0.01 + state.rune.cooldown * 2, 10 ) ) )
+                    elseif state.spec.assassination then
+                        state:SetConstraint( 0, max( 3, min( state.delayMax, state.energy.time_to_pct_70 ) ) )
                     else
-                        state:SetConstraint( 0, min( state.delayMax, state.spec.assassination and 15 or 10 ) )
+                        state:SetConstraint( 0, min( state.delayMax, 10 ) )
                     end
 
                     if hadProj and debug then Hekili:Debug( "[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end
@@ -1947,6 +1957,7 @@ function Hekili.Update( initial )
                     if i < display.numIcons then
                         -- Advance through the wait time.
                         state.this_action = action
+                        state.this_list = listName
 
                         if state.delay > 0 then state.advance( state.delay ) end
 

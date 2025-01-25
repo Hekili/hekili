@@ -655,6 +655,11 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
+    soul_swap = {
+        id = 399680,
+        duration = 10,
+        max_stack = 1
+    },
     -- Talent: Consumes a Soul Shard, unlocking the hidden power of your spells.    |cFFFFFFFFDemonic Circle: Teleport|r: Increases your movement speed by $387633s1% and makes you immune to snares and roots for $387633d.    |cFFFFFFFFDemonic Gateway|r: Can be cast instantly.    |cFFFFFFFFDrain Life|r: Gain an absorb shield equal to the amount of healing done for $387630d. This shield cannot exceed $387630s1% of your maximum health.    |cFFFFFFFFHealth Funnel|r: Restores $387626s1% more health and reduces the damage taken by your pet by ${$abs($387641s1)}% for $387641d.    |cFFFFFFFFHealthstone|r: Increases the healing of your Healthstone by $387626s2% and increases your maximum health by $387636s1% for $387636d.
     -- https://wowhead.com/beta/spell=387626
     soulburn = {
@@ -1977,6 +1982,51 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 386997, 325640 }
+    },
+
+    soul_swap = {
+
+        id = 386951,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+        texture = 460857,
+
+        spend = 1,
+        spendType = "soul_shards",
+        pvptalent = "soul_swap",
+
+        startsCombat = true,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyBuff( "soul_swap" )
+        end,
+        copy = { 386951, 399685 }
+    },
+
+    soul_swap_exhale = {
+
+        id = 399685,
+        cast = 0,
+        cooldown = 30,
+        gcd = "spell",
+        texture = 132291,
+
+        spend = 1,
+        spendType = "soul_shards",
+        buff = "soul_swap",
+        pvptalent = "soul_swap",
+
+        startsCombat = true,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            removeBuff( "soul_swap" )
+        end,
+        copy = { 386951, 399685 }
     },
 
     soulburn = {
