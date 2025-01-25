@@ -957,7 +957,6 @@ do
     state.cycleInfo = cycle
 end
 
-
 -- Apply a buff to the current game state.
 local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
     if not aura then
@@ -1048,7 +1047,6 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
 end
 state.applyBuff = applyBuff
 
-
 local function removeBuff( aura )
     local auraInfo = class.auras[ aura ]
     if auraInfo and auraInfo.alias then
@@ -1060,41 +1058,6 @@ local function removeBuff( aura )
     end
 end
 state.removeBuff = removeBuff
-
--- Modify buff/debuff remaining duration function, defaults to 1 second if no value supplied, breaks out if supplied a 0 or a faulty input
-local function auraDuration( unit, aura, duration )
-
-    -- ???
-    if not aura then aura = unit; unit = "target" end
-    if duration == 0 then return false end -- dont waste time checking buffs to add 0 to it
-    duration = duration or 1 -- default to +1 second if no value is supplied
-
-    -- buff/debuff handling
-    local b = state.buff[ aura ]
-    if not b then
-        local d = state.debuff[ aura ]
-        if not d then -- you supplied an oopsie
-            Error( "Attempted to extend/shorten a nameless aura '%s'.\n\n%s", aura or "nil", debugstack() )
-            return false
-        else -- it's a debuff
-            if duration + d.remains <= 0 then --duration decrease will remove buff
-                removeDebuff( unit, aura )
-            else
-                d.expires = d.expires + duration
-            end
-            return true
-        end
-    else -- it's a buff
-        if duration + a.remains <= 0 then --duration decrease will remove buff
-            removeBuff( aura )
-        else
-            a.expires = a.expires + duration
-        end
-        return true
-    end
-
-end
-state.auraDuration = auraDuration
 
 -- Apply stacks of a buff to the current game state.
 -- Wraps around Buff() to check for an existing buff.
@@ -1118,7 +1081,6 @@ local function addStack( aura, duration, stacks, value )
 end
 state.addStack = addStack
 
-
 local function removeStack( aura, stacks )
     stacks = stacks or 1
 
@@ -1132,7 +1094,6 @@ local function removeStack( aura, stacks )
     end
 end
 state.removeStack = removeStack
-
 
 -- Add a debuff to the simulated game state.
 -- Needs to actually use "unit" !
@@ -1226,6 +1187,55 @@ end
 
 state.removeDebuffStack = removeDebuffStack
 
+-- Modify aura remaining duration function.
+-- Extends or reduces the duration of an aura. 
+-- Returns:
+  --  1: Successfully extended (positive or negative value).
+  --  0: Aura not active, no operations performed.
+  -- -1: Aura removed due to a negative extension that reduced its duration to 0 or less.
+local function auraDuration( aura, duration, unit )
+    if not aura then
+        Error( "Invalid arguments passed to auraDuration: '%s'.\n\n%s", tostring( aura ), debugstack() )
+        return 0
+    end
+
+    -- Default parameters.
+    duration = duration or 1 -- Defaults to +1 second if no value supplied.
+    if duration == 0 then return 0 end -- Don't perform operations for a zero duration.
+    unit = unit or "target" -- Default to "target" for debuffs if no unit is specified.
+
+    -- Buff handling.
+    local b = state.buff[ aura ]
+    if b and b.remains > 0 then
+        -- Modify the buff's duration.
+        b.expires = b.expires + duration
+
+        if b.remains <= 0 then
+            state.removeBuff( aura )
+            return -1 -- Buff removed.
+        end
+
+        return 1 -- Buff extended successfully.
+    end
+
+    -- Debuff handling.
+    local d = state.debuff[ aura ]
+    if d and d.remains > 0 then
+        -- Modify the debuff's duration.
+        d.expires = d.expires + duration
+
+        if d.remains <= 0 then
+            state.removeDebuff( unit, aura )
+            return -1 -- Debuff removed.
+        end
+
+        return 1 -- Debuff extended successfully.
+    end
+
+    -- Aura not active (neither buff nor debuff).
+    return 0
+end
+state.auraDuration = auraDuration
 
 local function setStance( stance )
     for k in pairs( state.stance ) do
