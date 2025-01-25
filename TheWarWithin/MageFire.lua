@@ -1322,7 +1322,7 @@ spec:RegisterAbilities( {
             if talent.spontaneous_combustion.enabled then gainCharges( "fire_blast", min( 3, action.fire_blast.charges ) ) end
             if talent.wildfire.enabled or azerite.wildfire.enabled then applyBuff( "wildfire" ) end
             if set_bonus.tww2 >= 2 then
-                reduceCooldown( "combustion", 6 )
+                reduceCooldown( "combustion", 4 )
                 if set_bonus.tww2 >= 4 then
                     applyBuff( "rolling_hot", 15 )
                 end

@@ -826,7 +826,7 @@ spec:RegisterAbilities( {
             if talent.resonant_words.enabled then applyBuff( "resonant_words" ) end
 
             if talent.eternal_sanctity.enabled and buff.apotheosis.up then
-                buff.apotheosis.expires = buff.apotheosis.expires + 1.5
+                buff.apotheosis.expires = buff.apotheosis.expires + 1
             end
         end,
     },
@@ -880,7 +880,7 @@ spec:RegisterAbilities( {
             if talent.divine_image.enabled then applyBuff( "divine_image" ) end
             if talent.resonant_words.enabled then applyBuff( "resonant_words" ) end
             if talent.eternal_sanctity.enabled and buff.apotheosis.up then
-                buff.apotheosis.expires = buff.apotheosis.expires + 1.5
+                buff.apotheosis.expires = buff.apotheosis.expires + 1
             end
             reduceCooldown( "lightwell", 3 )
             if talent.lasting_words.enabled then applyBuff( "renew", 6 ) end
@@ -922,7 +922,7 @@ spec:RegisterAbilities( {
 
             if talent.resonant_words.enabled then applyBuff( "resonant_words" ) end
             if talent.eternal_sanctity.enabled and buff.apotheosis.up then
-                buff.apotheosis.expires = buff.apotheosis.expires + 1.5
+                buff.apotheosis.expires = buff.apotheosis.expires + 1
             end
             reduceCooldown( "lightwell", 3 )
         end,

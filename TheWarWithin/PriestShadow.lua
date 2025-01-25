@@ -1084,6 +1084,13 @@ spec:RegisterAuras( {
     },
 } )
 
+local InescapableTorment = setfenv( function ()
+    if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 0.7
+    elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + 0.7
+    elseif buff.voidwraith.up then buff.voidwraith.expires = buff.voidwraith.expires + 0.7 
+    end
+end, state )
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Talent: Places a feather at the target location, granting the first ally to walk through it $121557s1% increased movement speed for $121557d. Only 3 feathers can be placed at one time.
@@ -1494,11 +1501,7 @@ spec:RegisterAbilities( {
             removeBuff( "mind_melt" )
             removeBuff( "shadowy_insight" )
 
-            if talent.inescapable_torment.enabled then
-                if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 0.7
-                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + 0.7
-                elseif buff.voidwraith.up then buff.voidwraith.expires = buff.voidwraith.expires + 0.7 end
-            end
+            if talent.inescapable_torment.enabled then InescapableTorment() end
 
             if talent.schism.enabled then applyDebuff( "target", "schism" ) end
 
@@ -1552,10 +1555,7 @@ spec:RegisterAbilities( {
                 rift_extensions = rift_extensions + 1
             end
 
-            if talent.inescapable_torment.enabled then
-                if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 0.7
-                elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + 0.7 end
-            end
+            if talent.inescapable_torment.enabled then InescapableTorment() end
 
             if talent.schism.enabled then applyDebuff( "target", "schism" ) end
 
@@ -2117,11 +2117,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "death_and_madness_debuff" )
             end
 
-            if talent.inescapable_torment.enabled then
-                local fiend = talent.voidwraith.enabled and "voidwraith" or talent.mindbender.enabled and "mindbender" or "shadowfiend"
-                if buff[ fiend ].up then buff[ fiend ].expires = buff[ fiend ].expires + ( talent.inescapable_torment.rank * 0.5 ) end
-                if pet[ fiend ].up then pet[ fiend ].expires = pet[ fiend ].expires + ( talent.inescapable_torment.rank * 0.5 ) end
-            end
+            if talent.inescapable_torment.enabled then InescapableTorment() end
 
             if talent.expiation.enabled then
                 local swp = talent.purge_the_wicked.enabled and "purge_the_wicked" or "shadow_word_pain"
@@ -2405,6 +2401,7 @@ spec:RegisterAbilities( {
         end,
     },
 } )
+
 
 spec:RegisterRanges( "mind_blast", "dispel_magic" )
 

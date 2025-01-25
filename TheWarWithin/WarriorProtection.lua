@@ -576,7 +576,7 @@ spec:RegisterAuras( {
 -- Each time you take damage you have a chance to cast Shield Wall for 4.0 sec and gain Luck of the Draw!, which increases your damage dealt by 15% for 10 sec.
     luck_of_the_draw = {
         id = 1218163,
-        duration = 10,
+        duration = 12,
         max_stack = 1,
     },
 } )

@@ -526,7 +526,7 @@ spec:RegisterAuras( {
     purified_chi = {
         id = 325092,
         duration = 15,
-        max_stack = 10,
+        max_stack = 6
     },
     -- Talent: Nearby enemies will be knocked out of the Ring of Peace.
     -- https://wowhead.com/beta/spell=116844

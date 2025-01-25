@@ -941,7 +941,7 @@ spec:RegisterAuras( {
     winning_streak = {
         id = 1217897,
         duration = 3600,
-        max_stack = 8
+        max_stack = 6
     },
     -- https://www.wowhead.com/spell=1222698
     -- Murderous Frenzy Your Haste is increased by 12%.  

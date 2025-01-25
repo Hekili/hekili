@@ -1331,14 +1331,14 @@ spec:RegisterAuras( {
     winning_streak = {
         id = 1218616,
         duration = 30,
-        max_stack = 10
+        max_stack = 5
     },
     -- https://www.wowhead.com/spell=1223410
     -- Electrostatic Wager Crash Lightning damage increased by 120%.  
     electrostatic_wager = {
         id = 1223410,
         duration = 30,
-        max_stack = 9,
+        max_stack = 10,
     },
 } )
 

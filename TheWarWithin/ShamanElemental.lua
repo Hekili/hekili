@@ -2497,7 +2497,7 @@ spec:RegisterAbilities( {
             if talent.flash_of_lightning.enabled then flash_of_lightning() end
 
             if talent.arc_discharge.enabled and active_enemies > 1 then
-                addStack( "arc_discharge", nil, 3 )
+                addStack( "arc_discharge", nil, 2 )
             end
 
             if set_bonus.tier29_2pc > 0 then
@@ -2568,7 +2568,7 @@ spec:RegisterAbilities( {
             if talent.flash_of_lightning.enabled then flash_of_lightning() end
 
             if talent.arc_discharge.enabled and active_enemies > 1 then
-                addStack( "arc_discharge", nil, 3 )
+                addStack( "arc_discharge", nil, 2 )
             end
 
             if talent.lightning_rod.enabled then applyDebuff( "target", "lightning_rod" ) end

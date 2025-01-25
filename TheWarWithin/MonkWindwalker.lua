@@ -533,7 +533,7 @@ spec:RegisterAuras( {
     -- Reduces the Chi Cost of your abilities by $s1.
     ordered_elements = {
         id = 451462,
-        duration = 7.0,
+        duration = 3600,
         max_stack = 1,
     },
     -- Talent: Incapacitated.
@@ -916,6 +916,19 @@ end )
 
 local chiSpent = 0
 
+spec:RegisterHook( "prespend", function( amt, resource, overcap, clean )
+
+    if resource == "chi" then
+        if talent.ordered_elements.enabled and buff.storm_earth_and_fire.up then
+            amt = max( 0, amt - 1 )
+        end
+        if covenant.kyrian then return weapons_of_order( amt ), resource, overcap, true end
+    end
+
+    return amt, resource, overcap, true
+
+end )
+
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "chi" and amt > 0 then
         if talent.spiritual_focus.enabled then
@@ -1105,7 +1118,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.bok_proc.up then return 0 end
-            return weapons_of_order( ( level < 17 and 3 or 1 ) - ( buff.ordered_elements.up and 1 or 0 ) )
+            return 3
         end,
         spendType = "chi",
 
@@ -1138,8 +1151,8 @@ spec:RegisterAbilities( {
             end
 
             if level > 22 then
-                reduceCooldown( "rising_sun_kick", ( buff.weapons_of_order.up and 2 or 1 ) + ( buff.ordered_elements.up and 1 or 0 ) )
-                reduceCooldown( "fists_of_fury", ( buff.weapons_of_order.up and 2 or 1 ) + ( buff.ordered_elements.up and 1 or 0 ) )
+                reduceCooldown( "rising_sun_kick", ( buff.weapons_of_order.up and 2 or 1 ) )
+                reduceCooldown( "fists_of_fury", ( buff.weapons_of_order.up and 2 or 1 ) )
             end
 
             if buff.teachings_of_the_monastery.up then
@@ -1154,7 +1167,6 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "mark_of_the_crane" )
                 if talent.shadowboxing_treads.enabled then active_dot.mark_of_the_crane = min( active_dot.mark_of_the_crane + 2, active_enemies ) end
             end--]]
-            if talent.ordered_elements.enabled then applyBuff( "ordered_elements" ) end
             if talent.transfer_the_power.enabled then addStack( "transfer_the_power" ) end
         end,
     },
@@ -1387,9 +1399,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function ()
-            return weapons_of_order( buff.ordered_elements.up and 2 or 3 )
-        end,
+        spend = 3,
         spendType = "chi",
 
         tick_time = function () return haste end,
@@ -1621,9 +1631,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function ()
-            return weapons_of_order( buff.ordered_elements.up and 1 or 2 )
-        end,
+        spend = 2,
         spendType = "chi",
 
         talent = "rising_sun_kick",
@@ -1651,8 +1659,6 @@ spec:RegisterAbilities( {
             if talent.acclamation.enabled then applyDebuff( "target", "acclamation", nil, debuff.acclamation.stack + 1 ) end
 
            -- if level > 32 then applyDebuff( "target", "mark_of_the_crane" ) end
-
-            if talent.ordered_elements.enabled and buff.storm_earth_and_fire.up then applyBuff( "ordered_elements" ) end
 
             if talent.transfer_the_power.enabled then addStack( "transfer_the_power" ) end
 
@@ -1801,7 +1807,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function () return buff.dance_of_chiji.up and 0 or weapons_of_order( buff.ordered_elements.up and 1 or 2 ) end,
+        spend = function () return buff.dance_of_chiji.up and 0 or 2 end,
         spendType = "chi",
 
         startsCombat = true,
@@ -1898,7 +1904,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return buff.ordered_elements.up and 1 or 2 end,
+        spend = 2,
         spendType = "chi",
 
         talent = "strike_of_the_windlord",

@@ -242,7 +242,7 @@ spec:RegisterAuras( {
     },
     master_of_the_elements = {
         id = 462377,
-        duration = 15,
+        duration = 30,
         max_stack = 2
     },
     spiritwalkers_tidal_totem = {
