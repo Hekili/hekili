@@ -679,6 +679,10 @@ spec:RegisterHook( "spend", function( amt, resource )
         if talent.blessed_assurance.enabled then
             applyBuff( "blessed_assurance" )
         end
+
+        if talent.unending_light.enabled and this_action == "word_of_glory" then
+            addStack( "unending_light", nil, amt )
+        end
     end
 end )
 
@@ -1621,6 +1625,7 @@ spec:RegisterAbilities( {
             removeBuff( "divine_purpose" )
             removeBuff( "shining_righteousness_ready" )
             if talent.maraads_dying_breath.enabled then applyBuff( "maraads_dying_breath" ) end
+            removeBuff( "unending_light" )
         end,
     },
 
