@@ -1725,9 +1725,9 @@ spec:RegisterAbilities( {
 
         talent = "storm_bolt",
 
-        -- Add usable check for Unrelenting Onslaught talent
         usable = function()
-            if buff.bladestorm.up and not talent.unrelenting_onslaught.enabled then 
+            -- Check both Bladestorm IDs and talent requirement
+            if (buff.bladestorm.up or buff[446035].up or buff[227847].up) and not talent.unrelenting_onslaught.enabled then 
                 return false, "can't use during bladestorm without unrelenting onslaught" 
             end
             return true
