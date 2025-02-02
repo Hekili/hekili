@@ -829,6 +829,11 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
+    lightning_conduit = {
+        id = 468226,
+        duration = 5,
+        max_stack = 1
+    },
 } )
 
 
@@ -2087,6 +2092,7 @@ spec:RegisterAbilities( {
         cooldown = 15,
         gcd = "spell",
         school = "frost",
+        range = 40, -- Update range to 40 yards
 
         spend = 0.033,
         spendType = "mana",
@@ -2411,6 +2417,7 @@ spec:RegisterAbilities( {
         cooldown = 30,
         gcd = "spell",
         school = "shadow",
+        velocity = 45, -- Update velocity to 45 yards/sec
 
         spend = 0.06,
         spendType = "mana",
