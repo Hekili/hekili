@@ -717,8 +717,6 @@ spec:RegisterStateTable( "frost_info", {
 } )
 
 
-local brain_freeze_removed = 0
-
 local lastCometCast = 0
 local lastAutoComet = 0
 
@@ -728,12 +726,6 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
             if spellID == 116 then
                 frost_info.last_target_actual = destGUID
             end
-
-            --[[ if spellID == 44614 then
-                frost_info.real_brain_freeze = FindUnitBuffByID( "player", 190446 ) ~= nil
-            end ]]
-        elseif subtype == "SPELL_AURA_REMOVED" and spellID == 190446 then
-            brain_freeze_removed = GetTime()
         end
 
         if state.talent.glacial_spike.enabled and ( spellID == 205473 or spellID == 199844 ) and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
@@ -881,11 +873,7 @@ end, state )
 
 
 spec:RegisterHook( "reset_precast", function ()
-    --[[ if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
-    else removeBuff( "rune_of_power" ) end --]]
-
     frost_info.last_target_virtual = frost_info.last_target_actual
-    -- frost_info.virtual_brain_freeze = frost_info.real_brain_freeze
 
     if now - action.flurry.lastCast < gcd.execute and debuff.winters_chill.stack < 2 then applyDebuff( "target", "winters_chill", nil, 2 ) end
 
@@ -1415,6 +1403,7 @@ spec:RegisterAbilities( {
             if buff.fingers_of_frost.up then return end
             return "frozen"
         end,
+
         cycle_to = function()
             if buff.fingers_of_frost.up then return end
             return true
@@ -1438,21 +1427,22 @@ spec:RegisterAbilities( {
                 cooldown.frozen_orb.expires = max( 0, cooldown.frozen_orb.expires - 0.5 )
             end
 
-            if buff.fingers_of_frost.up then
+            if buff.fingers_of_frost.up or debuff.frozen.up then
                 removeStack( "fingers_of_frost" )
+                if talent.hailstones.enabled then
+                    addStack( "icicles" )
+                    if talent.glacial_spike.enabled and buff.icicles.stack_pct == 100 then
+                        applyBuff( "glacial_spike_usable" )
+                    end
+                end
+
                 if talent.cryopathy.enabled then addStack( "cryopathy" ) end
                 if set_bonus.tier29_4pc > 0 then applyBuff( "touch_of_ice" ) end
             end
         end,
 
         impact = function ()
-            if ( buff.fingers_of_frost.up or debuff.frozen.up ) and talent.hailstones.enabled then
-                addStack( "icicles" )
-                if talent.glacial_spike.enabled and buff.icicles.stack == buff.icicles.max_stack then
-                    applyBuff( "glacial_spike_usable" )
-                end
-            end
-
+            removeDebuff( "target", "frozen" )
             if talent.frostfire_mastery.enabled then
                 if buff.excess_fire.up then
                     removeBuff( "excess_fire" )
@@ -1698,7 +1688,12 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        usable = function () return pet.water_elemental.alive, "requires water elemental" end,
+        usable = function ()
+            if target.is_boss then return false, "target is a boss" end
+            if not pet.water_elemental.alive then return false, "requires water elemental" end
+            return true
+        end,
+
         handler = function ()
             applyDebuff( "target", "freeze" )
         end

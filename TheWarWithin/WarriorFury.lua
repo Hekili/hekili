@@ -2,7 +2,6 @@
 -- August 2024
 -- 11.0.2
 
-
 if UnitClassBase( "player" ) ~= "WARRIOR" then return end
 
 local addon, ns = ...
@@ -1871,10 +1870,15 @@ spec:RegisterAbilities( {
 
         texture = 132369,
 
-        readyTime = function ()
+        usable = function ()
             if settings.check_ww_range and target.distance > 8 then return false, "target is outside of whirlwind range" end
-            if active_enemies == 1 and buff.meat_cleaver.up then return false, "meat cleaver already active" end
-            return true
+        end,
+
+        -- Modify Syrif's solution; in multi-target using WW while Meat Cleaver is up is fine; the restriction was only intended for single-target.
+        -- Checking both active_enemies and true_active_enemies lets WW slip through with Meat Cleaver up when single-target mode is active but there are actually more targets.
+        nobuff = function()
+            if max( active_enemies, true_active_enemies ) > 1 then return end
+            return "meat_cleaver"
         end,
 
         handler = function ()

@@ -25,6 +25,7 @@ actions.deathbringer+=/potion,if=buff.dancing_rune_weapon.up
 actions.deathbringer+=/raise_dead
 actions.deathbringer+=/blood_fury,if=cooldown.dancing_rune_weapon.ready
 actions.deathbringer+=/berserking,if=cooldown.dancing_rune_weapon.ready
+actions.deathbringer+=/ancestral_call,if=cooldown.dancing_rune_weapon.ready
 actions.deathbringer+=/blood_tap,if=rune<=1
 actions.deathbringer+=/use_items
 # Use Death Strike if your Blood Shield is going to expire.
