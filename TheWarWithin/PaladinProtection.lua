@@ -1,5 +1,5 @@
 -- PaladinProtection.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "PALADIN" then return end
 
@@ -798,6 +798,20 @@ spec:RegisterAuras( {
 } )
 
 
+-- The War Within
+spec:RegisterGear( "tww2", 229244, 229242, 229243, 229245, 229247 )
+spec:RegisterAuras( {
+    -- https://www.wowhead.com/ptr-2/spell=1218114/luck-of-the-draw
+    -- Each time you take damage you have a chance to activate Luck of the Draw! causing you to cast Guardian of Ancient Kings for 4.0 sec. Your damage done is increased by 15% for 10 sec after Luck of the Draw! activates.
+    luck_of_the_draw = {
+    id = 1218114,
+    duration = 10,
+    max_stack = 1
+    },
+} )
+
+-- Legacy
+
 spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194 )
 spec:RegisterAuras( {
     sanctification = { -- TODO: Explore reset of stacks when empowered Consecration expires.
@@ -1177,7 +1191,7 @@ spec:RegisterAbilities( {
         id = 1022,
         cast = 0,
         -- charges = 1,
-        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.3 * talent.uthers_counsel.rank ) end,
+        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
         -- recharge = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.3 * talent.uthers_counsel.rank ) end,
         gcd = "spell",
         school = "holy",
@@ -1229,7 +1243,7 @@ spec:RegisterAbilities( {
         id = 204018,
         cast = 0,
         -- charges = 1,
-        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.3 * talent.uthers_counsel.rank ) end,
+        cooldown = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
         -- recharge = function() return ( talent.improved_blessing_of_protection.enabled and 240 or 300 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
         gcd = "spell",
         school = "holy",
@@ -1372,7 +1386,7 @@ spec:RegisterAbilities( {
     divine_shield = {
         id = 642,
         cast = 0,
-        cooldown = function () return 300 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( 1 - 0.3 * talent.uthers_counsel.rank ) end,
+        cooldown = function () return 300 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( 1 - 0.15 * talent.uthers_counsel.rank ) end,
         gcd = "spell",
         school = "holy",
 
@@ -1415,6 +1429,8 @@ spec:RegisterAbilities( {
             if talent.lights_guidance.enabled then
                 applyBuff( "hammer_of_light_ready" )
             end
+
+            if talent.undisputed_ruling.enabled then gain( 3, "holy_power" ) end
         end,
 
         bind = "hammer_of_light"
@@ -1495,6 +1511,47 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "hammer_of_justice" )
         end,
     },
+
+        -- Hammer down your enemy with the power of the Light, dealing $429826s1 Holy damage and ${$429826s1/2} Holy damage up to 4 nearby enemies. ; Additionally, calls down Empyrean Hammers from the sky to strike $427445s2 nearby enemies for $431398s1 Holy damage each.;
+        hammer_of_light = {
+            id = 427453,
+            known = 387174,
+            flash = 387174,
+            cast = 0.0,
+            cooldown = 0.0,
+            gcd = "spell",
+
+            spend = function()
+                if buff.divine_purpose.up or buff.hammer_of_light_free.up then return 0 end
+                return 3
+            end,
+            spendType = "holy_power",
+
+            startsCombat = true,
+            buff = function() return buff.hammer_of_light_free.up and "hammer_of_light_free" or "hammer_of_light_ready" end,
+
+            handler = function ()
+                removeBuff( "divine_purpose" )
+                if talent.undisputed_ruling.enabled then
+                    spec.abilities.consecration.handler()
+                    applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
+                end
+                
+
+                if buff.hammer_of_light_free.up then
+                    removeBuff( "hammer_of_light_free" )
+                else
+                    removeBuff( "hammer_of_light_ready" )
+
+                    if buff.lights_deliverance.stack_pct == 100 then
+                        removeBuff( "lights_deliverance" )
+                        applyBuff( "hammer_of_light_free" )
+                    end
+                end
+            end,
+
+            bind = { "wake_of_ashes", "eye_of_tyr" }
+        },
 
     -- Talent: Hammers the current target for 1,302 Physical damage. While you are standing in your Consecration, Hammer of the Righteous also causes a wave of light that hits all other targets within 8 yds for 226 Holy damage. Generates 1 Holy Power.
     hammer_of_the_righteous = {
@@ -1672,7 +1729,7 @@ spec:RegisterAbilities( {
             return 633
         end,
         cast = 0,
-        cooldown = function () return 600 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( talent.uthers_counsel.enabled and 0.7 or 1 ) end,
+        cooldown = function () return 600 * ( talent.unbreakable_spirit.enabled and 0.7 or 1 ) * ( talent.uthers_counsel.enabled and 0.85 or 1 ) end,
         gcd = "off",
         school = "holy",
 
@@ -1785,7 +1842,10 @@ spec:RegisterAbilities( {
                 end
             end
 
-
+            if set_bonus.tww2 >= 4 and buff.luck_of_the_draw.up then
+                gain( 1, "holy_power" )
+                buff.luck_of_the_draw.expires = buff.luck_of_the_draw.expires + 0.5
+            end
 
             applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
             last_shield = query_time

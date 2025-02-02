@@ -1,5 +1,5 @@
 -- PaladinRetribution.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "PALADIN" then return end
 
@@ -15,14 +15,14 @@ spec:RegisterResource( Enum.PowerType.Mana )
 -- Talents
 spec:RegisterTalents( {
     -- Paladin
-    a_just_reward                   = { 103858, 469411, 1 }, -- After Cleanse Toxins successfully removes an effect from an ally, they are healed for 22,652.
+    a_just_reward                   = { 103858, 469411, 1 }, -- After Cleanse Toxins successfully removes an effect from an ally, they are healed for 36,975.
     afterimage                      = {  93189, 385414, 1 }, -- After you spend 20 Holy Power, your next Word of Glory echoes onto a nearby ally at 30% effectiveness.
     auras_of_the_resolute           = {  81600, 385633, 1 }, -- Learn Concentration Aura, Devotion Aura, and Crusader Aura: Concentration Aura: Interrupt and Silence effects on party and raid members within 40 yds are 30% shorter.  Devotion Aura: Party and raid members within 40 yds are bolstered by their devotion, reducing damage taken by 3%.  Crusader Aura: Increases mounted speed by 20% for all party and raid members within 40 yds.
     blessed_calling                 = { 103868, 469770, 1 }, -- Allies affected by your Blessings have 15% increased movement speed.
     blessing_of_freedom             = {  81631,   1044, 1 }, -- Blesses a party or raid member, granting immunity to movement impairing effects for 8 sec.
     blessing_of_protection          = {  81616,   1022, 1 }, -- Blesses a party or raid member, granting immunity to Physical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
     blessing_of_sacrifice           = {  81614,   6940, 1 }, -- Blesses a party or raid member, reducing their damage taken by 30%, but you suffer 100% of damage prevented. Last 12 sec, or until transferred damage would cause you to fall below 20% health.
-    blinding_light                  = {  81598, 115750, 1 }, -- Emits dazzling light in all directions, blinding enemies within 10 yds, causing them to wander disoriented for 6 sec.
+    blinding_light                  = {  81598, 115750, 1 }, -- Emits dazzling light in all directions, blinding enemies within 10 yds, causing them to wander disoriented for 6 sec. Damage may cancel the effect.
     cavalier                        = {  81605, 230332, 1 }, -- Divine Steed now has 2 charges.
     cleanse_toxins                  = {  81507, 213644, 1 }, -- Cleanses a friendly target, removing all Poison and Disease effects.
     consecrated_ground              = {  81543, 204054, 1 }, -- Your Consecration is 15% larger, and enemies within it have 50% reduced movement speed. Your Divine Hammer is 25% larger, and enemies within them have 30% reduced movement speed.
@@ -33,38 +33,38 @@ spec:RegisterTalents( {
     divine_steed                    = {  81632, 190784, 1 }, -- Leap atop your Charger for 6 sec, increasing movement speed by 100%. Usable while indoors or in combat.
     divine_toll                     = {  81496, 375576, 1 }, -- Instantly cast Judgment on up to 5 targets within 30 yds. Divine Toll's Judgment deals 100% increased damage.
     empyreal_ward                   = { 103859, 387791, 1 }, -- Lay on Hands grants the target 30% increased armor for 8 sec and now ignores healing reduction effects.
-    eye_for_an_eye                  = {  81628, 469309, 1 }, -- Melee and ranged attackers receive 6,723 Holy damage each time they strike you during Divine Protection and Divine Shield.
+    eye_for_an_eye                  = {  81628, 469309, 1 }, -- Melee and ranged attackers receive 4,572 Holy damage each time they strike you during Divine Protection and Divine Shield.
     faiths_armor                    = {  81495, 406101, 1 }, -- Word of Glory grants 20% bonus armor for 4.5 sec.
     fist_of_justice                 = {  81602, 234299, 1 }, -- Hammer of Justice's cooldown is reduced by 15 sec.
-    golden_path                     = { 103856, 377128, 1 }, -- Consecration heals you and 5 allies within it for 834 every 0.8 sec.
+    golden_path                     = { 103856, 377128, 1 }, -- Consecration heals you and 5 allies within it for 583 every 0.9 sec.
     greater_judgment                = {  81603, 231663, 1 }, -- Judgment causes the target to take 20% increased damage from your next Holy Power ability. Multiple applications may overlap.
-    hammer_of_wrath                 = {  81510,  24275, 1 }, -- Hurls a divine hammer that strikes an enemy for 37,910 Holy damage. Only usable on enemies that have less than 20% health, or during Avenging Wrath. Generates 1 Holy Power.
-    healing_hands                   = {  93189, 326734, 1 }, -- The cooldown of Lay on Hands is reduced up to 60%, based on the target's missing health. Word of Glory's healing is increased by up to 100%, based on the target's missing health.
+    hammer_of_wrath                 = {  81510,  24275, 1 }, -- Hurls a divine hammer that strikes an enemy for 24,701 Holystrike damage. Only usable on enemies that have less than 20% health, or during Avenging Wrath. Generates 1 Holy Power.
+    healing_hands                   = {  93189, 326734, 1 }, -- The cooldown of Lay on Hands is reduced up to 60%, based on the target's missing health. Word of Glory's healing is increased by up to 100% on yourself, based on your missing health.
     holy_aegis                      = {  81609, 385515, 1 }, -- Armor and critical strike chance increased by 4%.
     holy_reprieve                   = { 103860, 469445, 1 }, -- Your Forbearance's duration is reduced by 10 sec.
-    holy_ritual                     = { 103866, 199422, 1 }, -- Allies are healed for 18,122 when you cast a Blessing spell on them and healed again for 18,122 when the blessing ends.
+    holy_ritual                     = { 103866, 199422, 1 }, -- Allies are healed for 12,325 when you cast a Blessing spell on them and healed again for 12,325 when the blessing ends.
     improved_blessing_of_protection = {  81617, 384909, 1 }, -- Reduces the cooldown of Blessing of Protection by 60 sec.
     inspired_guard                  = { 103864, 469439, 1 }, -- Divine Protection increases healing taken by 15% for its duration.
-    judgment_of_light               = {  81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 3,171.
+    judgment_of_light               = {  81608, 183778, 1 }, -- Judgment causes the next 5 successful attacks against the target to heal the attacker for 2,156. 
     lay_on_hands                    = {  81597,    633, 1 }, -- Heals a friendly target for an amount equal to 100% your maximum health. Grants the target 30% increased armor for 8 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec.
     lead_the_charge                 = { 103867, 469780, 1 }, -- Divine Steed reduces the cooldown of 4 nearby ally's major movement ability by 3.0 sec. Your movement speed is increased by 3%.
     lightbearer                     = { 103861, 469416, 1 }, -- 10% of all healing done to you from other sources heals up to 4 nearby allies, divided evenly among them.
-    lightforged_blessing            = {  93008, 403479, 1 }, -- Divine Storm heals you and up to 2 nearby allies for 2.0% of maximum health.
+    lightforged_blessing            = {  93008, 403479, 1 }, -- Divine Storm heals you and up to 2 nearby allies for 1.0% of maximum health.
     lights_countenance              = { 103854, 469325, 1 }, -- The cooldowns of Repentance and Blinding Light are reduced by 15 sec.
     lights_revocation               = { 103863, 146956, 1 }, -- Removing harmful effects with Divine Shield heals you for 10% for each effect removed. This heal cannot exceed 30% of your maximum health. Divine Shield may now be cast while Forbearance is active.
     obduracy                        = {  81630, 385427, 1 }, -- Speed increased by 2% and damage taken from area of effect attacks reduced by 2%.
-    of_dusk_and_dawn                = {  81624, 385125, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 20% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 4% For 10 sec.
+    of_dusk_and_dawn                = {  81624, 385125, 1 }, -- When you cast 3 Holy Power generating abilities, you gain Blessing of Dawn. When you consume Blessing of Dawn, you gain Blessing of Dusk. Blessing of Dawn Your next Holy Power spending ability deals 20% additional increased damage and healing. This effect stacks. Blessing of Dusk Damage taken reduced by 4% For 10 sec. 
     punishment                      = {  93165, 403530, 1 }, -- Successfully interrupting an enemy with Rebuke casts an extra Crusader Strike.
     quickened_invocation            = {  93181, 379391, 1 }, -- Divine Toll's cooldown is reduced by 15 sec.
     rebuke                          = {  81604,  96231, 1 }, -- Interrupts spellcasting and prevents any spell in that school from being cast for 3 sec.
     recompense                      = {  81607, 384914, 1 }, -- After your Blessing of Sacrifice ends, 50% of the total damage it diverted is added to your next Judgment as bonus damage, or your next Word of Glory as bonus healing. This effect's bonus damage cannot exceed 30% of your maximum health and its bonus healing cannot exceed 100% of your maximum health.
-    repentance                      = {  81598,  20066, 1 }, -- Forces an enemy target to meditate, incapacitating them for 1 min. Usable against Humanoids, Demons, Undead, Dragonkin, and Giants.
+    repentance                      = {  81598,  20066, 1 }, -- Forces an enemy target to meditate, incapacitating them for 1 min. Damage may cancel the effect. Usable against Humanoids, Demons, Undead, Dragonkin, and Giants.
     righteous_protection            = { 103865, 469321, 1 }, -- Blessing of Sacrifice now removes and prevents all Poison and Disease effects.
-    sacred_strength                 = {  81618, 469337, 1 }, -- Holy Power spending abilities are 2% more effective.
+    sacred_strength                 = {  81618, 469337, 1 }, -- Holy Power spending abilities have 2% increased damage and healing.
     sacrifice_of_the_just           = {  81607, 384820, 1 }, -- Reduces the cooldown of Blessing of Sacrifice by 60 sec.
     sanctified_plates               = {  93009, 402964, 2 }, -- Armor increased by 10%, Stamina increased by 5% and damage taken from area of effect attacks reduced by 3%.
     seal_of_might                   = {  81621, 385450, 2 }, -- Mastery increased by 2% and strength increased by 2%.
-    seal_of_the_crusader            = {  93683, 416770, 1 }, -- Your auto attacks heal a nearby ally for 14,299.
+    seal_of_the_crusader            = {  93683, 416770, 1 }, -- Your auto attacks heal a nearby ally for 8,662.
     selfless_healer                 = { 103856, 469434, 1 }, -- Flash of Light is 30% more effective on your allies and 40% of the healing done also heals you.
     stand_against_evil              = { 103855, 469317, 1 }, -- Turn Evil now affects 5 additional enemies.
     steed_of_liberty                = {  81631, 469304, 1 }, -- Divine Steed also grants Blessing of Freedom for 3.0 sec.  Blessing of Freedom: Blesses a party or raid member, granting immunity to movement impairing effects for 8 sec.
@@ -81,29 +81,29 @@ spec:RegisterTalents( {
     aegis_of_protection             = {  81550, 403654, 1 }, -- Divine Protection reduces damage you take by an additional 20%.
     art_of_war                      = {  81523, 406064, 1 }, -- Your auto attacks have a 20% chance to reset the cooldown of Blade of Justice. Critical strikes increase the chance by an additional 10%.
     avenging_wrath                  = {  81544,  31884, 1 }, -- Call upon the Light to become an avatar of retribution, allowing Hammer of Wrath to be used on any target, increasing your damage, healing, and critical strike chance by 20% for 20 sec.
-    blade_of_justice                = {  81526, 184575, 1 }, -- Pierce enemies with a blade of light, dealing 41,875 Holy damage to your target and 36,819 Holy damage to nearby enemies. Generates 1 Holy Power.
-    blade_of_vengeance              = {  81545, 403826, 1 }, -- Blade of Justice now hits nearby enemies for 36,819 Holy damage. Deals reduced damage beyond 5 targets.
+    blade_of_justice                = {  81526, 184575, 1 }, -- Pierce an enemy with a blade of light, dealing 25,368 Holy damage. Generates 1 Holy Power.
+    blade_of_vengeance              = {  81545, 403826, 1 }, -- Blade of Justice now hits nearby enemies for 22,305 Holy damage. Deals reduced damage beyond 5 targets.
     blades_of_light                 = {  93164, 403664, 1 }, -- Crusading Strikes, Judgment, Hammer of Wrath and your damaging single target Holy Power abilities now deal Holystrike damage and your abilities that deal Holystrike damage deal 5% increased damage.
     blessed_champion                = {  81541, 403010, 1 }, -- Crusader Strike and Judgment hit an additional 4 targets but deal 25% reduced damage to secondary targets.
     boundless_judgment              = {  81533, 405278, 1 }, -- Judgment generates 1 additional Holy Power and has a 50% increased chance to trigger Mastery: Highlord's Judgment.
-    burn_to_ash                     = {  92686, 446663, 1 }, -- When Truth's Wake critically strikes, its duration is extended by 2 sec. Your other damage over time effects deal 30% increased damage to targets affected by Truth's Wake.
+    burn_to_ash                     = {  92686, 446663, 1 }, -- When Truth's Wake critically strikes, its duration is extended by 2 sec. Your other damage over time effects deal 30% increased damage to targets affected by Truth's Wake. 
     burning_crusade                 = {  81536, 405289, 1 }, -- Divine Storm, Divine Hammer and Consecration now deal Radiant damage and your abilities that deal Radiant damage deal 5% increased damage.
-    crusade                         = {  81544, 231895, 1 }, -- Call upon the Light and begin a crusade, increasing your haste and damage by 3% for 27 sec. Each Holy Power spent during Crusade increases haste and damage by an additional 3%. Maximum 10 stacks. Hammer of Wrath may be cast on any target.
-    crusading_strikes               = {  93186, 404542, 1 }, -- Crusader Strike replaces your auto-attacks and deals 11,561 Physical damage, but now only generates 1 Holy Power every 2 attacks. Inherits Crusader Strike benefits but cannot benefit from Skyfury.
-    divine_arbiter                  = {  81540, 404306, 1 }, -- Highlord's Judgment and Holystrike damage abilities grant you a stack of Divine Arbiter. At 25 stacks your next damaging single target Holy Power ability causes 107,246 Holystrike damage to your primary target and 21,449 Holystrike damage to enemies within 6 yds.
+    crusade                         = {  81544, 231895, 1 }, -- Call upon the Light and begin a crusade, increasing your haste and damage by 3% for 27 sec. Each Holy Power spent during Crusade increases haste and damage by an additional 3%. Maximum 10 stacks. Hammer of Wrath may be cast on any target. 
+    crusading_strikes               = {  93186, 404542, 1 }, -- Crusader Strike replaces your auto-attacks and deals 7,963 Holystrike damage, but now only generates 1 Holy Power every 2 attacks. Inherits Crusader Strike benefits but cannot benefit from Skyfury.
+    divine_arbiter                  = {  81540, 404306, 1 }, -- Highlord's Judgment and Holystrike damage abilities grant you a stack of Divine Arbiter. At 25 stacks your next damaging single target Holy Power ability causes 64,971 Holystrike damage to your primary target and 12,994 Holystrike damage to enemies within 6 yds.
     divine_auxiliary                = {  81538, 406158, 1 }, -- Final Reckoning and Execution Sentence grant 3 Holy Power.
-    divine_hammer                   = {  81516, 198034, 1 }, -- Divine Hammers spin around you, consuming a Holy Power to strike enemies within 8 yds for 11,792 Radiant damage every 1.6 sec. While active, Judgment and Blade of Justice recharge 75% faster, and increases the rate at which Divine Hammer strikes by 15% when they are cast. Deals reduced damage beyond 8 targets.
-    divine_storm                    = {  81527,  53385, 1 }, -- Unleashes a whirl of divine energy, dealing 35,655 Radiant damage to all nearby enemies. Deals reduced damage beyond 5 targets.
+    divine_hammer                   = {  81516, 198034, 1 }, -- Divine Hammers spin around you, striking enemies nearby for 6,803 Holy damage every 1.7 sec for 8 sec. While active, each Holy Power spent increases the duration of Divine Hammer by 0.5 sec. Deals reduced damage beyond 8 targets.
+    divine_storm                    = {  81527,  53385, 1 }, -- Unleashes a whirl of divine energy, dealing 22,185 Holy damage to all nearby enemies. Deals reduced damage beyond 5 targets.
     divine_wrath                    = {  93160, 406872, 1 }, -- Increases the duration of Avenging Wrath or Crusade by 3 sec.
     empyrean_legacy                 = {  93173, 387170, 1 }, -- Judgment empowers your next Single target Holy Power ability to automatically activate Divine Storm with 25% increased effectiveness. This effect can only occur every 20 sec.
     empyrean_power                  = {  92860, 326732, 1 }, -- Crusading Strikes has a 5% chance to make your next Divine Storm free and deal 15% additional damage.
-    execution_sentence              = {  81539, 343527, 1 }, -- A hammer slowly falls from the sky upon the target, after 8 sec, they suffer 20% of the damage taken from your abilities as Holy damage during that time. Generates 3 Holy Power.
-    executioners_will               = {  81548, 406940, 1 }, -- Final Reckoning and Execution Sentence's durations are increased by 4 sec.
-    expurgation                     = {  92689, 383344, 1 }, -- Your Blade of Justice causes the target to burn for 52,583 Radiant damage over 12 sec.
-    final_reckoning                 = {  81539, 343721, 1 }, -- Call down a blast of heavenly energy, dealing 82,579 Holy damage to all targets in the area and causing them to take 30% increased damage from your single target Holy Power abilities, and 15% increased damage from other Holy Power abilities for 12 sec. Generates 3 Holy Power.
-    final_verdict                   = {  81532, 383328, 1 }, -- Unleashes a powerful weapon strike that deals 51,787 Holy damage to an enemy target, Final Verdict has a 15% chance to reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.
+    execution_sentence              = {  81539, 343527, 1 }, -- A hammer slowly falls from the sky upon the target, after 12 sec, they suffer 20% of the damage taken from your abilities as Holy damage during that time. Generates 3 Holy Power.
+    executioners_will               = {  81548, 406940, 1 }, -- Final Reckoning and Execution Sentence's durations are increased by 4 sec. 
+    expurgation                     = {  92689, 383344, 1 }, -- Your Blade of Justice causes the target to burn for 15,245 Radiant damage over 9 sec.
+    final_reckoning                 = {  81539, 343721, 1 }, -- Call down a blast of heavenly energy, dealing 50,027 Holy damage to all targets in the area and causing them to take 30% increased damage from your single target Holy Power abilities, and 15% increased damage from other Holy Power abilities for 16 sec. Generates 3 Holy Power.
+    final_verdict                   = {  81532, 383328, 1 }, -- Unleashes a powerful weapon strike that deals 32,296 Holystrike damage to an enemy target, Final Verdict has a 15% chance to reset the cooldown of Hammer of Wrath and make it usable on any target, regardless of their health.
     guided_prayer                   = {  81531, 404357, 1 }, -- When your health is brought below 25%, you instantly cast a free Word of Glory at 60% effectiveness on yourself. Cannot occur more than once every 60 sec.
-    heart_of_the_crusader           = {  93190, 406154, 2 }, -- Crusader Strike and auto-attacks deal 10% increased damage and deal 10% increased critical strike damage.
+    heart_of_the_crusader           = {  93190, 406154, 2 }, -- Crusader Strike and auto-attacks deal 10% increased damage and deal 10% increased critical strike damage. 
     highlords_wrath                 = {  81534, 404512, 1 }, -- Mastery: Highlord's Judgment is 50% more effective on Judgment and Hammer of Wrath. Judgment applies an additional stack of Greater Judgment if it is known.
     holy_blade                      = {  92838, 383342, 1 }, -- Blade of Justice generates 1 additional Holy Power.
     holy_flames                     = {  81545, 406545, 1 }, -- Divine Storm deals 10% increased damage and when it hits an enemy affected by your Expurgation, it spreads the effect to up to 4 targets hit. You deal 3% increased Holy damage to targets burning from your Expurgation.
@@ -113,29 +113,29 @@ spec:RegisterTalents( {
     judge_jury_and_executioner      = {  92860, 405607, 1 }, -- Holy Power generating abilities have a chance to cause your next Final Verdict to hit an additional 3 targets at 80% effectiveness.
     judgment_of_justice             = {  93161, 403495, 1 }, -- Judgment deals 10% increased damage and increases your movement speed by 10% for 5 sec. If you have Greater Judgment, Judgment slows enemies by 30% for 8 sec.
     jurisdiction                    = {  81542, 402971, 1 }, -- Final Verdict and Blade of Justice deal 10% increased damage. The range of Final Verdict and Blade of Justice is increased to 20 yds.
-    justicars_vengeance             = {  81532, 215661, 1 }, -- Focuses Holy energy to deliver a powerful weapon strike that deals 43,784 Holy damage, and restores 3% of your maximum health. Damage is increased by 25% when used against a stunned target.
+    justicars_vengeance             = {  81532, 215661, 1 }, -- Focuses Holy energy to deliver a powerful weapon strike that deals 27,305 Holystrike damage, and restores 3% of your maximum health. Damage is increased by 25% when used against a stunned target.
     light_of_justice                = {  81521, 404436, 1 }, -- Reduces the cooldown of Blade of Justice by 2 sec.
     lights_celerity                 = {  81531, 403698, 1 }, -- Flash of Light casts instantly, its healing done is increased by 20%, but it now has a 6 sec cooldown.
     penitence                       = {  92839, 403026, 1 }, -- Your damage over time effects deal 10% more damage.
     radiant_glory                   = {  81549, 458359, 1 }, -- Avenging Wrath is replaced with Radiant Glory. Radiant Glory Wake of Ashes activates Avenging Wrath for 8 sec. Each Holy Power spent has a chance to activate Avenging Wrath for 4 sec.
     righteous_cause                 = {  81523, 402912, 1 }, -- Each Holy Power spent has a 6% chance to reset the cooldown of Blade of Justice.
     rush_of_light                   = {  81512, 407067, 1 }, -- The critical strikes of your damaging single target Holy Power abilities grant you 5% Haste for 10 sec.
-    sanctify                        = {  92688, 382536, 1 }, -- Enemies hit by Divine Storm take 20% more damage from Consecration and Divine Hammers for 12 sec.
-    searing_light                   = {  81552, 404540, 1 }, -- Highlord's Judgment and Radiant damage abilities have a chance to call down an explosion of Holy Fire dealing 54,052 Radiant damage to all nearby enemies and leaving a Consecration in its wake. Deals reduced damage beyond 8 targets.
-    seething_flames                 = {  92854, 405355, 1 }, -- Wake of Ashes deals significantly reduced damage to secondary targets, but now causes you to lash out 2 extra times for 56,848 Radiant damage.
-    shield_of_vengeance             = {  81550, 184662, 1 }, -- Creates a barrier of holy light that absorbs 343,976 damage for 10 sec. When the shield expires, it bursts to inflict Holy damage equal to the total amount absorbed, divided among all nearby enemies.
+    sanctify                        = {  92688, 382536, 1 }, -- Enemies hit by Divine Storm take 20% more damage from Consecration and Divine Hammers for 12 sec. 
+    searing_light                   = {  81552, 404540, 1 }, -- Highlord's Judgment and Radiant damage abilities have a chance to call down an explosion of Holy Fire dealing 31,185 Radiant damage to all nearby enemies and leaving a Consecration in its wake. Deals reduced damage beyond 8 targets.
+    seething_flames                 = {  92854, 405355, 1 }, -- Wake of Ashes deals significantly reduced damage to secondary targets, but now causes you to lash out 2 extra times for 32,799 Radiant damage. 
+    shield_of_vengeance             = {  81550, 184662, 1 }, -- Creates a barrier of holy light that absorbs 274,592 damage for 10 sec. When the shield expires, it bursts to inflict Holy damage equal to the total amount absorbed, divided among all nearby enemies.
     swift_justice                   = {  81521, 383228, 1 }, -- Reduces the cooldown of Judgment by 2 sec and Crusader Strike by 2 sec.
     tempest_of_the_lightbringer     = {  92951, 383396, 1 }, -- Divine Storm projects an additional wave of light, striking all enemies up to 20 yds in front of you for 20% of Divine Storm's damage.
-    templar_strikes                 = {  93186, 406646, 1 }, -- Crusader Strike becomes a 2 part combo. Templar Strike slashes an enemy for 43,959 Radiant damage and gets replaced by Templar Slash for 5 sec. Templar Slash strikes an enemy for 81,082 Radiant damage, and burns the enemy for 50% of the damage dealt over 4 sec.
-    vanguards_momentum              = {  92688, 383314, 1 }, -- Hammer of Wrath has 1 extra charge and on enemies below 20% health generates 1 additional Holy Power.
-    wake_of_ashes                   = {  81525, 255937, 1 }, -- Lash out at your enemies, dealing 87,865 Radiant damage to all enemies within 14 yds in front of you, and applying Truth's Wake, burning the targets for an additional 59,447 damage over 9 sec. Demon and Undead enemies are also stunned for 5 sec. Generates 3 Holy Power.
+    templar_strikes                 = {  93186, 406646, 1 }, -- Crusader Strike becomes a 2 part combo. Templar Strike slashes an enemy for 22,192 Holystrike damage and gets replaced by Templar Slash for 5 sec. Templar Slash strikes an enemy for 40,933 Holystrike damage, and burns the enemy for 50% of the damage dealt over 4 sec.
+    vanguards_momentum              = {  92688, 383314, 1 }, -- Hammer of Wrath has 1 extra charge and on enemies below 20% health generates 1 additional Holy Power. 
+    wake_of_ashes                   = {  81525, 255937, 1 }, -- Lash out at your enemies, dealing 50,694 Radiant damage to all enemies within 14 yds in front of you, and applying Truth's Wake, burning the targets for an additional 31,218 damage over 9 sec. Demon and Undead enemies are also stunned for 5 sec. Generates 3 Holy Power.
     zealots_fervor                  = {  92952, 403509, 2 }, -- Auto-attack speed increased by 20%.
 
     -- Herald of the Sun
     aurora                          = {  95069, 439760, 1 }, -- After you cast Wake of Ashes, gain Divine Purpose.  Divine Purpose Your next Holy Power spending ability is free and deals 10% increased damage and healing.
     blessing_of_anshe               = {  95071, 445200, 1 }, -- Your damage and healing over time effects have a chance to increase the damage of your next Hammer of Wrath by 200% and make it usable on any target, regardless of their health.
     dawnlight                       = {  95099, 431377, 1, "herald_of_the_sun" }, -- Casting Wake of Ashes causes your next 2 Holy Power spending abilities to apply Dawnlight on your target, dealing 150,713 Radiant damage or 134,359 healing over 8 sec. 8% of Dawnlight's damage and healing radiates to nearby allies or enemies, reduced beyond 5 targets.
-    eternal_flame                   = {  95095, 156322, 1 }, -- Heals an ally for 123,302 and an additional 47,630 over 16 sec. Healing increased by 35% when cast on self.
+    eternal_flame                   = {  95095, 156322, 1 }, -- Heals an ally for 83,859 and an additional 28,215 over 16 sec. Healing increased by 35% when cast on self.
     gleaming_rays                   = {  95073, 431480, 1 }, -- While a Dawnlight is active, your Holy Power spenders deal 5% additional damage or healing.
     illumine                        = {  95098, 431423, 1 }, -- Dawnlight reduces the movement speed of enemies by 50% and increases the movement speed of allies by 20%.
     lingering_radiance              = {  95071, 431407, 1 }, -- Dawnlight leaves an Eternal Flame for 6 sec on allies or a Greater Judgment on enemies when it expires or is extended.
@@ -143,8 +143,8 @@ spec:RegisterTalents( {
     morning_star                    = {  95073, 431482, 1 }, -- Every 5.0 sec, your next Dawnlight's damage or healing is increased by 5%, stacking up to 10 times. Morning Star stacks twice as fast while out of combat.
     second_sunrise                  = {  95086, 431474, 1 }, -- Divine Storm and Hammer of Wrath have a 15% chance to cast again at 30% effectiveness.
     solar_grace                     = {  95094, 431404, 1 }, -- Your Haste is increased by 2% for 12 sec each time you apply Dawnlight. Multiple stacks may overlap.
-    sun_sear                        = {  95072, 431413, 1 }, -- Hammer of Wrath and Divine Storm critical strikes cause the target to burn for an additional 12,050 Radiant damage over 4 sec.
-    suns_avatar                     = {  95105, 431425, 1 }, -- During Avenging Wrath, you become linked to your Dawnlights, causing 6,226 Radiant damage to enemies or 880 healing to allies that pass through the beams, reduced beyond 5 targets. Activating Avenging Wrath applies up to 4 Dawnlights onto nearby allies or enemies and increases Dawnlight's duration by 20%.
+    sun_sear                        = {  95072, 431413, 1 }, -- Hammer of Wrath and Divine Storm critical strikes cause the target to burn for an additional 6,197 Radiant damage over 4 sec.
+    suns_avatar                     = {  95105, 431425, 1 }, -- During Avenging Wrath, you become linked to your Dawnlights, causing 3,592 Radiant damage to enemies or 598 healing to allies that pass through the beams, reduced beyond 5 targets. Activating Crusade applies up to 4 Dawnlights onto nearby allies or enemies and increases Dawnlight's duration by 20%.
     will_of_the_dawn                = {  95098, 431406, 1 }, -- Movement speed increased by 5% while above 80% health. When your health is brought below 35%, your movement speed is increased by 40% for 5 sec. Cannot occur more than once every 1 min.
 
     -- Templar
@@ -164,19 +164,17 @@ spec:RegisterTalents( {
     zealous_vindication             = {  95183, 431463, 1 }, -- Hammer of Light instantly calls down 2 Empyrean Hammers on your target when it is cast.
 } )
 
-
 -- PvP Talents
-spec:RegisterPvpTalents( {
-    aura_of_reckoning        =  756, -- (247675) When you or allies within your Aura are critically struck, gain Reckoning. Gain 1 additional stack if you are the victim. At 100 stacks of Reckoning, your next weapon swing deals 200% increased damage, will critically strike, and activates Avenging Wrath for 6 sec.
+spec:RegisterPvpTalents( { 
     blessing_of_sanctuary    =  752, -- (210256) Instantly removes all stun, silence, fear and horror effects from the friendly target and reduces the duration of future such effects by 60% for 5 sec.
     blessing_of_spellwarding = 5573, -- (204018) Blesses a party or raid member, granting immunity to magical damage and harmful effects for 10 sec. Cannot be used on a target with Forbearance. Causes Forbearance for 30 sec. Shares a cooldown with Blessing of Protection.
     hallowed_ground          = 5535, -- (216868) Your Consecration clears and suppresses all snare effects on allies within its area of effect.
-    lawbringer               =  754, -- (246806)
-    luminescence             =   81, -- (199428) When healed by an ally, allies within your Aura gain 2% increased damage and healing for 6 sec.
-    searing_glare            = 5584, -- (410126) Call upon the light to blind your enemies in a 25 yd cone, causing enemies to miss their spells and attacks for 4 sec.
-    spellbreaker             = 5666, -- (469895) Eye for an Eye can now also trigger at 100% effectiveness from Magic damage.
+    luminescence             =   81, -- (556606) Lightbearer's healing transfer is increased by up to 200% based on your current health. Lower health heals allies for more.
+    searing_glare            = 5584, -- (410126) Call upon the light to blind enemy players in a 25 yd cone, causing enemies to miss their spells and attacks for 4 sec.
+    shining_revelation       = 5675, -- (936051) : The light reveals all enemies in stealth or invisible to you while under the effects of Divine Shield. This effect lingers for 20 sec after Divine Shield fades.
+    spellbreaker             = 5666, -- (469895) Eye for an Eye can now also trigger at 100% effectiveness from direct Magic damage.
     spreading_the_word       = 5572, -- (199456) Your allies affected by your Aura gain an effect after you cast Blessing of Protection or Blessing of Freedom.  Blessing of Protection Physical damage reduced by 30% for 6 sec.  Blessing of Freedom Cleared of all movement impairing effects.
-    ultimate_retribution     =  753, -- (355614)
+    ultimate_retribution     =  753, -- (355614) Mark an enemy player for retribution after they kill an ally within your active Aura. If the marked enemy is slain within 12 sec, cast Redemption on the fallen ally.
 } )
 
 -- Auras
@@ -214,12 +212,6 @@ spec:RegisterAuras( {
         end,
         max_stack = 1,
         copy = { 31884, 454351 }
-    },
-    avenging_wrath_autocrit = {
-        id = 294027,
-        duration = 20,
-        max_stack = 1,
-        copy = "avenging_wrath_crit"
     },
     -- Will be healed for $w1 upon expiration.
     -- https://wowhead.com/beta/spell=223306
@@ -404,23 +396,9 @@ spec:RegisterAuras( {
     },
     divine_hammer = {
         id = 198034,
-        duration = 12,
-        max_stack = 1,
-        generate = function( dh )
-            local last = action.divine_hammer.lastCast
-
-            if last and last + 12 > query_time then
-                dh.count = 1
-                dh.expires = last + 12
-                dh.applied = last
-                dh.caster = "player"
-                return
-            end
-            dh.count = 0
-            dh.expires = 0
-            dh.applied = 0
-            dh.caster = "nobody"
-        end
+        duration = 8,
+        tick_time = 2,
+        max_stack = 1
     },
     -- Movement speed reduced by ${$s3*-1}%.
     divine_hammer_snare = {
@@ -478,12 +456,6 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1,
     },
-    -- Armor increased by $s1%.
-    empyreal_ward = {
-        id = 387792,
-        duration = 60.0,
-        max_stack = 1,
-    },
     -- Damage done to $@auracaster is reduced by $w3%.
     empyrean_hammer = {
         id = 431625,
@@ -505,6 +477,11 @@ spec:RegisterAuras( {
     empyrean_power = {
         id = 326733,
         duration = 15,
+        max_stack = 1
+    },
+    endless_wrath = {
+        id = 452244,
+        dutaion = 12,
         max_stack = 1
     },
     -- Healing $w1 health every $t1 sec.
@@ -725,14 +702,6 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1,
     },
-    -- Taking $w2% increased damage from $@auracaster's next Holy Power ability.
-    -- https://wowhead.com/beta/spell=343724
-    reckoning = {
-        id = 343724,
-        duration = 15,
-        type = "Magic",
-        max_stack = 1,
-    },
     -- Talent: Haste increased by $w1%.
     -- https://wowhead.com/beta/spell=383389
     relentless_inquisitor = {
@@ -831,11 +800,6 @@ spec:RegisterAuras( {
         duration = 4.0,
         max_stack = 1
     },
-    the_magistrates_judgment = {
-        id = 337682,
-        duration = 15,
-        max_stack = 1,
-    },
     -- $?(s403696)[Burning for $w2 damage every $t2 sec and movement speed reduced by $s1%.] [Movement speed reduced by $s1%.]
     truths_wake = {
         id = 403695,
@@ -857,7 +821,7 @@ spec:RegisterAuras( {
     -- Haste increased by $w1%
     undisputed_ruling = {
         id = 432629,
-        duration = 6.0,
+        duration = 8,
         max_stack = 1,
     },
     -- Talent: Holy Damage increased by $w1%.
@@ -931,7 +895,6 @@ spec:RegisterAuras( {
     },
 } )
 
-
 -- Legacy sets.
 spec:RegisterAuras( {
     sacred_judgment = {
@@ -965,7 +928,6 @@ spec:RegisterAuras( {
     }
 } )
 
-
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "holy_power" then
         if buff.blessing_of_dawn.up then
@@ -975,20 +937,13 @@ spec:RegisterHook( "spend", function( amt, resource )
         if talent.crusade.enabled and buff.crusade.up then
             addStack( "crusade", buff.crusade.remains, amt )
         end
-        if talent.relentless_inquisitor.enabled then
-            if buff.relentless_inquisitor.stack < ( 3 * talent.relentless_inquisitor.rank ) then
-                stat.haste = stat.haste + 0.01
-            end
-            addStack( "relentless_inquisitor" )
-        end
-        if talent.sealed_verdict.enabled then applyBuff( "sealed_verdict" ) end
-        if talent.selfless_healer.enabled then addStack( "selfless_healer" ) end
         if legendary.uthers_devotion.enabled then
             reduceCooldown( "blessing_of_freedom", 1 )
             reduceCooldown( "blessing_of_protection", 1 )
             reduceCooldown( "blessing_of_sacrifice", 1 )
             reduceCooldown( "blessing_of_spellwarding", 1 )
         end
+        if buff.divine_hammer.up then buff.divine_hammer.up.expires =  buff.divine_hammer.up.expires + ( amt * 0.5 ) end
     end
 end )
 
@@ -1010,7 +965,6 @@ spec:RegisterStateExpr( "time_to_hpg", function ()
 
     return max( gcd.remains, min( cooldown.judgment.true_remains, cooldown.crusader_strike.true_remains, cooldown.blade_of_justice.true_remains, ( state:IsUsable( "hammer_of_wrath" ) and cooldown.hammer_of_wrath.true_remains or 999 ), action.wake_of_ashes.known and cooldown.wake_of_ashes.true_remains or 999, ( race.blood_elf and cooldown.arcane_torrent.true_remains or 999 ), ( action.divine_toll.known and cooldown.divine_toll.true_remains or 999 ) ) )
 end )
-
 
 local current_crusading_strikes = 1
 -- Strike 0 = SPELL_ENERGIZE occurred; Holy Power was gained -- the swing lands *after*.
@@ -1070,29 +1024,41 @@ local csStartCombat = setfenv( function()
     end
 end, state )
 
-
-
 spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, unit, resource )
     if resource == "HOLY_POWER" then
         Hekili:ForceUpdate( event, true )
     end
 end )
 
-
 spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
 
+-- The War Within
+spec:RegisterGear( "tww2", 229244, 229242, 229243, 229245, 229247 )
+spec:RegisterAuras( {
+   -- 2-set
+    winning_streak = {
+        id = 1216828,
+        duration = 30,
+        max_stack = 10
+    },
+    all_in = {
+        id = 1216837,
+        duration = 4,
+        max_stack = 1
+    },
 
+    -- TODO: Incorporate free spends?
+
+} )
+
+-- Legacy
 spec:RegisterGear( "tier31", 207189, 207190, 207191, 207192, 207194, 217198, 217200, 217196, 217197, 217199 )
 spec:RegisterAura( "echoes_of_wrath", {
     id = 423590,
     duration = 12,
     max_stack = 1
 } )
-
-
--- Tier 30
 spec:RegisterGear( "tier30", 202455, 202453, 202452, 202451, 202450 )
-
 spec:RegisterGear( "tier29", 200417, 200419, 200414, 200416, 200418 )
 
 
@@ -1204,7 +1170,7 @@ spec:RegisterAbilities( {
     avenging_wrath = {
         id = 31884,
         cast = 0,
-        cooldown = function () return ( level > 42 and 60 or 120 ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) end,
+        cooldown = 60,
         gcd = "off",
         school = "holy",
 
@@ -1242,6 +1208,9 @@ spec:RegisterAbilities( {
                 -- TODO: Handle 10 second CD.
                 spec.abilities.consecration.handler()
                 removeBuff( "consecrated_blade" )
+            end
+            if buff.shake_the_heavens.up then
+                buff.shake_the_heavens.expires = buff.shake_the_heavens.expires + 1
             end
             if buff.dawnlight.up then
                 applyBuff( "dawnlight_dot" )
@@ -1475,6 +1444,9 @@ spec:RegisterAbilities( {
             gain( 1, "holy_power" )
             if talent.divine_arbiter.enabled then addStack( "divine_arbiter" ) end
             if talent.crusaders_might.enabled then reduceCooldown( "holy_shock", 1 ) end
+            if buff.shake_the_heavens.up then
+                buff.shake_the_heavens.expires = buff.shake_the_heavens.expires + 1
+            end
         end,
     },
 
@@ -1499,15 +1471,21 @@ spec:RegisterAbilities( {
     divine_hammer = {
         id = 198034,
         cast = 0,
-        cooldown = 120,
+        cooldown = 60,
         gcd = "spell",
+
+        spend = function ()
+            if buff.divine_purpose.up then return 0 end
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 )
+        end,
+        spendType = "holy_power",
 
         talent = "divine_hammer",
         startsCombat = false,
         texture = 626003,
 
         handler = function ()
-            applyBuff( "divine_hammer" ) -- TODO: Tick down Holy Power.
+            applyBuff( "divine_hammer" )
         end,
     },
 
@@ -1583,7 +1561,7 @@ spec:RegisterAbilities( {
         spend = function ()
             if buff.divine_purpose.up then return 0 end
             if buff.empyrean_power.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 )
         end,
         spendType = "holy_power",
 
@@ -1591,9 +1569,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "echoes_of_wrath" )
+            --Standard effects / talents
             removeDebuffStack( "target", "judgment" )
-            removeDebuff( "target", "reckoning" )
 
             if buff.dawnlight.up then
                 applyBuff( "dawnlight_dot" )
@@ -1604,11 +1581,7 @@ spec:RegisterAbilities( {
                 removeBuff( "empyrean_power" )
             elseif buff.divine_purpose.up then
                 removeBuff( "divine_purpose" )
-            else
-                removeBuff( "hidden_retribution_t21_4p" )
             end
-
-            if buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
 
             if talent.holy_flames.enabled and debuff.expurgation.up and active_enemies > active_dot.expurgation then
                 active_dot.expurgation = min( active_enemies, active_dot.expurgation + 4 )
@@ -1618,6 +1591,17 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "sanctify" )
                 active_dot.sanctify = active_enemies
             end
+
+            -- Hero Talents
+            if talent.lights_deliverance.enabled and talent.hammerfall.enabled then
+                if buff.shake_the_heavens.up then
+                    addStack( "lights_deliverance", nil, 2 )
+                else
+                    addStack( "lights_deliverance", nil, 1 )
+                end
+            end
+            -- Legacy
+            removeBuff( "echoes_of_wrath" )
         end,
     },
 
@@ -1696,8 +1680,6 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            removeBuff( "hidden_retribution_t21_4p" )
-            removeDebuff( "target", "reckoning" )
             applyDebuff( "target", "execution_sentence" )
         end,
     },
@@ -1798,23 +1780,32 @@ spec:RegisterAbilities( {
     -- Hammer down your enemy with the power of the Light, dealing $429826s1 Holy damage and ${$429826s1/2} Holy damage up to 4 nearby enemies. ; Additionally, calls down Empyrean Hammers from the sky to strike $427445s2 nearby enemies for $431398s1 Holy damage each.;
     hammer_of_light = {
         id = 427453,
-        known = function() return state.spec.protection and 387174 or 255937 end,
-        flash = function() return state.spec.protection and 387174 or 255937 end,
+        known = 255937,
+        flash = 255937,
         cast = 0.0,
         cooldown = 0.0,
         gcd = "spell",
 
         spend = function()
             if buff.divine_purpose.up or buff.hammer_of_light_free.up then return 0 end
-            return state.spec.protection and 3 or 5
+            return 5
         end,
-        spendType = 'holy_power',
+        spendType = "holy_power",
 
         startsCombat = true,
         buff = function() return buff.hammer_of_light_free.up and "hammer_of_light_free" or "hammer_of_light_ready" end,
 
         handler = function ()
             removeBuff( "divine_purpose" )
+
+            if talent.undisputed_ruling.enabled then
+                applyDebuff( "target", "judgment" )
+                applyBuff( "undisputed_ruling" )
+            end
+
+            if talent.lights_deliverance.enabled then
+                addStack( "lights_deliverance", nil, 3 + ( 2 * talent.zealous_vindication.rank ) )
+            end
 
             if buff.hammer_of_light_free.up then
                 removeBuff( "hammer_of_light_free" )
@@ -1831,7 +1822,7 @@ spec:RegisterAbilities( {
         bind = { "wake_of_ashes", "eye_of_tyr" }
     },
 
-    hammer_of_reckoning = {
+    --[[hammer_of_reckoning = {
         id = 247675,
         cast = 0,
         cooldown = 60,
@@ -1851,7 +1842,7 @@ spec:RegisterAbilities( {
                 applyBuff( "avenging_wrath", 6 )
             end
         end,
-    },
+    },--]]
 
     -- Talent: Hurls a divine hammer that strikes an enemy for $<damage> Holy damage. Only usable on enemies that have less than 20% health$?s326730[, or during Avenging Wrath][].    |cFFFFFFFFGenerates $s2 Holy Power.
     hammer_of_wrath = {
@@ -1870,14 +1861,16 @@ spec:RegisterAbilities( {
         talent = "hammer_of_wrath",
         startsCombat = false,
 
-        usable = function () return target.health_pct < 20 or buff.avenging_wrath.up or buff.crusade.up or buff.final_verdict.up or buff.blessing_of_anshe.up or buff.hammer_of_wrath_hallow.up or buff.negative_energy_token_proc.up, "requires buff/talent or target under 20% health" end,
+        usable = function () return target.health_pct < 20 or buff.avenging_wrath.up or buff.crusade.up or buff.endless_wrath.up or buff.final_verdict.up or buff.blessing_of_anshe.up or buff.hammer_of_wrath_hallow.up or buff.negative_energy_token_proc.up, "requires buff/talent or target under 20% health" end,
         handler = function ()
             removeBuff( "final_verdict" )
+            removeBuff( "endless_wrath" )
             if buff.divine_arbiter.stack > 24 then removeBuff( "divine_arbiter" ) end
-            if talent.zealots_paragon.enabled then
-                if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + ( 0.5 * talent.zealots_paragon.rank ) end
-                if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + ( 0.5 * talent.zealots_paragon.rank ) end
+
+            if buff.shake_the_heavens.up then
+                buff.shake_the_heavens.expires = buff.shake_the_heavens.expires + 1
             end
+            -- Legacy
             if set_bonus.tier30_2pc > 0 then
                 applyDebuff( "target", "judgment" )
                 if set_bonus.tier30_4pc > 0 then
@@ -1981,10 +1974,6 @@ spec:RegisterAbilities( {
             if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", nil, 5 ) end
             if talent.virtuous_command.enabled or conduit.virtuous_command.enabled then applyBuff( "virtuous_command" ) end
             if talent.zeal.enabled then applyBuff( "zeal", 20, 2 ) end
-            if talent.zealots_paragon.enabled then
-                if buff.crusade.up then buff.crusade.expires = buff.crusade.expires + ( 0.5 * talent.zealots_paragon.rank ) end
-                if buff.avenging_wrath.up then buff.avenging_wrath.expires = buff.avenging_wrath.expires + ( 0.5 * talent.zealots_paragon.rank ) end
-            end
         end,
 
         impact = function()
@@ -2004,7 +1993,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 )
         end,
         spendType = "holy_power",
 
@@ -2013,7 +2002,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "empyrean_legacy" )
-            removeDebuff( "target", "reckoning" )
             if buff.blessing_of_dawn.up then
                 removeBuff( "blessing_of_dawn" )
                 applyBuff( "blessing_of_dusk" )
@@ -2022,10 +2010,8 @@ spec:RegisterAbilities( {
                 applyBuff( "dawnlight_dot" )
                 removeStack( "dawnlight" )
             end
-            if buff.divine_purpose.up then removeBuff( "divine_purpose" )
-            else
-                removeBuff( "hidden_retribution_t21_4p" )
-            end
+            removeBuff( "divine_purpose" )
+
             if talent.divine_arbiter.enabled then addStack( "divine_arbiter" ) end
         end,
     },
@@ -2052,7 +2038,7 @@ spec:RegisterAbilities( {
                 gain( 5, "holy_power" )
             end
 
-            if azerite.empyreal_ward.enabled then applyBuff( "empyreal_ward" ) end
+            if talent.empyreal_ward.enabled then applyBuff( "empyreal_ward" ) end
         end,
     },
 
@@ -2076,7 +2062,6 @@ spec:RegisterAbilities( {
             removeDebuffStack( "target", "judgment" )
             removeDebuff( "target", "reckoning" )
             if target.is_undead or target.is_demon then applyDebuff( "target", "radiant_decree" ) end
-            if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if talent.truths_wake.enabled or conduit.truths_wake.enabled then applyDebuff( "target", "truths_wake" ) end
         end,
     }, ]]
@@ -2128,7 +2113,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return ( talent.vanguard_of_justice.enabled and 4 or 3 )
         end,
         spendType = "holy_power",
 
@@ -2138,7 +2123,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "divine_purpose" )
-            removeBuff( "the_magistrates_judgment" )
             applyBuff( "shield_of_the_righteous" )
 
             if buff.dawnlight.up then
@@ -2239,7 +2223,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return 3 - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return 3
         end,
         spendType = "holy_power",
         notalent = "justicars_vengeance",
@@ -2247,30 +2231,35 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            removeBuff( "echoes_of_wrath" )
+
+            -- Standard effects and talents
+            if buff.divine_arbiter.stack > 24 then removeBuff( "divine_arbiter" ) end
             removeDebuffStack( "target", "judgment" )
-            removeDebuff( "target", "reckoning" )
-            removeStack( "vanquishers_hammer" )
+            if buff.empyrean_legacy.up then
+                spec.abilities.divine_storm.handler() -- TODO: Check for resource gain?
+                removeBuff( "empyrean_legacy" )
+            end
 
             if buff.dawnlight.up then
                 applyBuff( "dawnlight_dot" )
                 removeStack( "dawnlight" )
             end
 
-            if buff.divine_purpose.up then removeBuff( "divine_purpose" )
-            else
-                removeBuff( "hidden_retribution_t21_4p" )
+            removeBuff( "divine_purpose" )
+
+            -- Hero Talents
+            if talent.lights_deliverance.enabled and talent.hammerfall.enabled then
+                if buff.shake_the_heavens.up then
+                    addStack( "lights_deliverance", nil, 2 )
+                else
+                    addStack( "lights_deliverance", nil, 1 )
+                end
             end
 
-            if buff.avenging_wrath_crit.up then removeBuff( "avenging_wrath_crit" ) end
-            if buff.empyrean_legacy.up then
-                spec.abilities.divine_storm.handler() -- TODO: Check for resource gain?
-                removeBuff( "empyrean_legacy" )
-            end
-            if buff.divine_arbiter.stack > 24 then removeBuff( "divine_arbiter" ) end
+            -- Legacy
+            removeBuff( "echoes_of_wrath" )
+            removeStack( "vanquishers_hammer" )
 
-            if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
-            if talent.righteous_verdict.enabled then applyBuff( "righteous_verdict" ) end
         end,
 
         copy = { "final_verdict", 336872, 383328, 85256 },
@@ -2321,7 +2310,6 @@ spec:RegisterAbilities( {
                 removeStack( "dawnlight" )
             end
             if target.is_undead or target.is_demon then applyDebuff( "target", "wake_of_ashes" ) end
-            if talent.divine_judgment.enabled then addStack( "divine_judgment" ) end
             if talent.lights_guidance.enabled then applyBuff( "hammer_of_light_ready" ) end
             if talent.radiant_glory.enabled then
                 if talent.crusade.enabled then applyBuff( "crusade", 10 )
@@ -2343,20 +2331,16 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return 3 - ( buff.hidden_retribution_t21_4p.up and 1 or 0 ) - ( buff.the_magistrates_judgment.up and 1 or 0 )
+            return 3
         end,
         spendType = "holy_power",
 
         startsCombat = false,
 
         handler = function ()
-            spend( 0.1 * mana.max, "mana" )
+            spend( 0.15 * mana.max, "mana" )
             removeBuff( "recompense" )
-            if buff.divine_purpose.up then removeBuff( "divine_purpose" )
-            else
-                removeBuff( "hidden_retribution_t21_4p" )
-                removeBuff( "the_magistrates_judgment" )
-            end
+            removeBuff( "divine_purpose" )
             gain( 1.33 * stat.spell_power * 8, "health" )
 
             if talent.faiths_armor.enabled then applyBuff( "faiths_armor" ) end
