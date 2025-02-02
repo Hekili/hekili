@@ -1,5 +1,5 @@
 -- DemonHunterVengeance.lua
--- July 2024
+-- January 2025
 
 -- TODO: Support soul_fragments.total, .inactive
 
@@ -15,7 +15,7 @@ local strformat = string.format
 local spec = Hekili:NewSpecialization( 581 )
 
 spec:RegisterResource( Enum.PowerType.Fury, {
-    -- Immolation Aura now grants 20 up front, 60 over 12 seconds (5 fps).
+    -- Immolation Aura now grants 8 up front, then 2 per second
     immolation_aura = {
         aura    = "immolation_aura",
 
@@ -29,136 +29,167 @@ spec:RegisterResource( Enum.PowerType.Fury, {
         interval = 1,
         value = 2
     },
+    -- 5 fury every 2 seconds for 8 seconds
+    student_of_suffering= {
+        aura    = "student_of_suffering",
+
+        last = function ()
+            local app = state.buff.student_of_suffering.applied
+            local t = state.query_time
+
+            return app + floor( t - app )
+        end,
+
+        interval = 2,
+        value = 5
+    },
 } )
 
 -- Talents
 spec:RegisterTalents( {
     -- DemonHunter
-    aldrachi_design          = {  90999, 391409, 1 }, -- Increases your chance to parry by 3%.
-    aura_of_pain             = {  90933, 207347, 1 }, -- Increases the critical strike chance of Immolation Aura by 6%.
-    blazing_path             = {  91008, 320416, 1 }, -- Infernal Strike gains an additional charge.
-    bouncing_glaives         = {  90931, 320386, 1 }, -- Throw Glaive ricochets to 1 additional target.
-    champion_of_the_glaive   = {  90994, 429211, 1 }, -- Throw Glaive has 2 charges and 10 yard increased range.
-    chaos_fragments          = {  95154, 320412, 1 }, -- Each enemy stunned by Chaos Nova has a 30% chance to generate a Lesser Soul Fragment.
-    chaos_nova               = {  90993, 179057, 1 }, -- Unleash an eruption of fel energy, dealing 5,351 Chaos damage and stunning all nearby enemies for 2 sec.
-    charred_warblades        = {  90948, 213010, 1 }, -- You heal for 4% of all Fire damage you deal.
-    collective_anguish       = {  95152, 390152, 1 }, -- Fel Devastation summons an allied Havoc Demon Hunter who casts Eye Beam, dealing 45,561 Chaos damage over 1.6 sec. Deals reduced damage beyond 5 targets.
-    consume_magic            = {  91006, 278326, 1 }, -- Consume 1 beneficial Magic effect removing it from the target.
-    darkness                 = {  91002, 196718, 1 }, -- Summons darkness around you in an 8 yd radius, granting friendly targets a 15% chance to avoid all damage from an attack. Lasts 8 sec. Chance to avoid damage increased by 100% when not in a raid.
-    demon_muzzle             = {  90928, 388111, 1 }, -- Enemies deal 8% reduced magic damage to you for 8 sec after being afflicted by one of your Sigils.
-    demonic                  = {  91003, 213410, 1 }, -- Fel Devastation causes you to enter demon form for 5 sec after it finishes dealing damage.
-    disrupting_fury          = {  90937, 183782, 1 }, -- Disrupt generates 30 Fury on a successful interrupt.
-    erratic_felheart         = {  90996, 391397, 2 }, -- The cooldown of Infernal Strike is reduced by 10%.
-    felblade                 = {  95150, 232893, 1 }, -- Charge to your target and deal 14,073 Fire damage. Fracture has a chance to reset the cooldown of Felblade. Generates 40 Fury.
-    felfire_haste            = {  90939, 389846, 1 }, -- Infernal Strike increases your movement speed by 10% for 8 sec.
-    flames_of_fury           = {  90949, 389694, 2 }, -- Sigil of Flame deals 35% increased damage and generates 1 additional Fury per target hit.
-    illidari_knowledge       = {  90935, 389696, 1 }, -- Reduces magic damage taken by 5%.
-    imprison                 = {  91007, 217832, 1 }, -- Imprisons a demon, beast, or humanoid, incapacitating them for 1 min. Damage will cancel the effect. Limit 1.
-    improved_disrupt         = {  90938, 320361, 1 }, -- Increases the range of Disrupt to 10 yds.
-    improved_sigil_of_misery = {  90945, 320418, 1 }, -- Reduces the cooldown of Sigil of Misery by 30 sec.
-    infernal_armor           = {  91004, 320331, 2 }, -- Immolation Aura increases your armor by 20% and causes melee attackers to suffer 2,336 Fire damage.
-    internal_struggle        = {  90934, 393822, 1 }, -- Increases your mastery by 3.6%.
-    live_by_the_glaive       = {  95151, 428607, 1 }, -- When you parry an attack or have one of your attacks parried, restore 2% of max health and 10 Fury. This effect may only occur once every 5 sec.
-    long_night               = {  91001, 389781, 1 }, -- Increases the duration of Darkness by 3 sec.
-    lost_in_darkness         = {  90947, 389849, 1 }, -- Spectral Sight lasts an additional 6 sec if disrupted by attacking or taking damage.
-    master_of_the_glaive     = {  90994, 389763, 1 }, -- Throw Glaive has 2 charges and snares all enemies hit by 50% for 6 sec.
-    pitch_black              = {  91001, 389783, 1 }, -- Reduces the cooldown of Darkness by 120 sec.
-    precise_sigils           = {  95155, 389799, 1 }, -- All Sigils are now placed at your target's location.
-    pursuit                  = {  90940, 320654, 1 }, -- Mastery increases your movement speed.
-    quickened_sigils         = {  95149, 209281, 1 }, -- All Sigils activate 1 second faster.
-    rush_of_chaos            = {  95148, 320421, 2 }, -- Reduces the cooldown of Metamorphosis by 30 sec.
-    shattered_restoration    = {  90950, 389824, 1 }, -- The healing of Shattered Souls is increased by 10%.
-    sigil_of_misery          = {  90946, 207684, 1 }, -- Place a Sigil of Misery at the target location that activates after 1 sec. Causes all enemies affected by the sigil to cower in fear, disorienting them for 17 sec.
-    sigil_of_spite           = {  90997, 390163, 1 }, -- Place a demonic sigil at the target location that activates after 1 sec. Detonates to deal 75,606 Chaos damage and shatter up to 3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond 5 targets.
-    soul_rending             = {  90936, 204909, 2 }, -- Leech increased by 6%. Gain an additional 6% leech while Metamorphosis is active.
-    soul_sigils              = {  90929, 395446, 1 }, -- Afflicting an enemy with a Sigil generates 1 Lesser Soul Fragment.
-    swallowed_anger          = {  91005, 320313, 1 }, -- Consume Magic generates 20 Fury when a beneficial Magic effect is successfully removed from the target.
-    the_hunt                 = {  90927, 370965, 1 }, -- Charge to your target, striking them for 90,007 Chaos damage, rooting them in place for 1.5 sec and inflicting 78,797 Chaos damage over 6 sec to up to 5 enemies in your path. The pursuit invigorates your soul, healing you for 25% of the damage you deal to your Hunt target for 20 sec.
-    unrestrained_fury        = {  90941, 320770, 1 }, -- Increases maximum Fury by 20.
-    vengeful_bonds           = {  90930, 320635, 1 }, -- Vengeful Retreat reduces the movement speed of all nearby enemies by 70% for 3 sec.
-    vengeful_retreat         = {  90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 2,832 Physical damage.
-    will_of_the_illidari     = {  91000, 389695, 1 }, -- Increases maximum health by 5%.
+    aldrachi_design           = {  90999, 391409, 1 }, -- Increases your chance to parry by 3%.
+    aura_of_pain              = {  90933, 207347, 1 }, -- Increases the critical strike chance of Immolation Aura by 6%.
+    blazing_path              = {  91008, 320416, 1 }, -- Infernal Strike gains an additional charge.
+    bouncing_glaives          = {  90931, 320386, 1 }, -- Throw Glaive ricochets to 1 additional target.
+    champion_of_the_glaive    = {  90994, 429211, 1 }, -- Throw Glaive has 2 charges and 10 yard increased range.
+    chaos_fragments           = {  95154, 320412, 1 }, -- Each enemy stunned by Chaos Nova has a 30% chance to generate a Lesser Soul Fragment.
+    chaos_nova                = {  90993, 179057, 1 }, -- Unleash an eruption of fel energy, dealing 6,802 Chaos damage and stunning all nearby enemies for 2 sec. Each enemy stunned by Chaos Nova has a 30% chance to generate a Lesser Soul Fragment.
+    charred_warblades         = {  90948, 213010, 1 }, -- You heal for 4% of all Fire damage you deal.
+    collective_anguish        = {  95152, 390152, 1 }, -- Fel Devastation summons an allied Havoc Demon Hunter who casts Eye Beam, dealing 57,918 Chaos damage over 1.6 sec. Deals reduced damage beyond 5 targets.
+    consume_magic             = {  91006, 278326, 1 }, -- Consume 1 beneficial Magic effect removing it from the target.
+    darkness                  = {  91002, 196718, 1 }, -- Summons darkness around you in an 8 yd radius, granting friendly targets a 15% chance to avoid all damage from an attack. Lasts 8 sec. Chance to avoid damage increased by 100% when not in a raid.
+    demon_muzzle              = {  90928, 388111, 1 }, -- Enemies deal 8% reduced magic damage to you for 8 sec after being afflicted by one of your Sigils.
+    demonic                   = {  91003, 213410, 1 }, -- Fel Devastation causes you to enter demon form for 5 sec after it finishes dealing damage.
+    disrupting_fury           = {  90937, 183782, 1 }, -- Disrupt generates 30 Fury on a successful interrupt.
+    erratic_felheart          = {  90996, 391397, 2 }, -- The cooldown of Infernal Strike is reduced by 10%.
+    felblade                  = {  95150, 232893, 1 }, -- Charge to your target and deal 19,679 Fire damage. Fracture has a chance to reset the cooldown of Felblade. Generates 40 Fury.
+    felfire_haste             = {  90939, 389846, 1 }, -- Infernal Strike increases your movement speed by 10% for 8 sec.
+    flames_of_fury            = {  90949, 389694, 2 }, -- Sigil of Flame deals 35% increased damage and generates 1 additional Fury per target hit.
+    illidari_knowledge        = {  90935, 389696, 1 }, -- Reduces magic damage taken by 5%.
+    imprison                  = {  91007, 217832, 1 }, -- Imprisons a demon, beast, or humanoid, incapacitating them for 1 min. Damage may cancel the effect. Limit 1.
+    improved_disrupt          = {  90938, 320361, 1 }, -- Increases the range of Disrupt to 10 yds.
+    improved_sigil_of_misery  = {  90945, 320418, 1 }, -- Reduces the cooldown of Sigil of Misery by 30 sec.
+    infernal_armor            = {  91004, 320331, 2 }, -- Immolation Aura increases your armor by 20% and causes melee attackers to suffer 2,970 Fire damage.
+    internal_struggle         = {  90934, 393822, 1 }, -- Increases your mastery by 3.6%.
+    live_by_the_glaive        = {  95151, 428607, 1 }, -- When you parry an attack or have one of your attacks parried, restore 2% of max health and 10 Fury. This effect may only occur once every 5 sec.
+    long_night                = {  91001, 389781, 1 }, -- Increases the duration of Darkness by 3 sec.
+    lost_in_darkness          = {  90947, 389849, 1 }, -- Spectral Sight has 5 sec reduced cooldown and no longer reduces movement speed. 
+    master_of_the_glaive      = {  90994, 389763, 1 }, -- Throw Glaive has 2 charges and snares all enemies hit by 50% for 6 sec.
+    pitch_black               = {  91001, 389783, 1 }, -- Reduces the cooldown of Darkness by 120 sec.
+    precise_sigils            = {  95155, 389799, 1 }, -- All Sigils are now placed at your target's location.
+    pursuit                   = {  90940, 320654, 1 }, -- Mastery increases your movement speed.
+    quickened_sigils          = {  95149, 209281, 1 }, -- All Sigils activate 1 second faster.
+    rush_of_chaos             = {  95148, 320421, 2 }, -- Reduces the cooldown of Metamorphosis by 30 sec.
+    shattered_restoration     = {  90950, 389824, 1 }, -- The healing of Shattered Souls is increased by 10%.
+    sigil_of_misery           = {  90946, 207684, 1 }, -- Place a Sigil of Misery at the target location that activates after 1 sec. Causes all enemies affected by the sigil to cower in fear, disorienting them for 17 sec.
+    sigil_of_spite            = {  90997, 390163, 1 }, -- Place a demonic sigil at the target location that activates after 1 sec. Detonates to deal 105,722 Chaos damage and shatter up to 3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond 5 targets.
+    soul_rending              = {  90936, 204909, 2 }, -- Leech increased by 6%. Gain an additional 6% leech while Metamorphosis is active.
+    soul_sigils               = {  90929, 395446, 1 }, -- Afflicting an enemy with a Sigil generates 1 Lesser Soul Fragment. 
+    swallowed_anger           = {  91005, 320313, 1 }, -- Consume Magic generates 20 Fury when a beneficial Magic effect is successfully removed from the target.
+    the_hunt                  = {  90927, 370965, 1 }, -- Charge to your target, striking them for 138,446 Chaos damage, rooting them in place for 1.5 sec and inflicting 108,579 Chaos damage over 6 sec to up to 5 enemies in your path. The pursuit invigorates your soul, healing you for 25% of the damage you deal to your Hunt target for 20 sec.
+    unrestrained_fury         = {  90941, 320770, 1 }, -- Increases maximum Fury by 20.
+    vengeful_bonds            = {  90930, 320635, 1 }, -- Vengeful Retreat reduces the movement speed of all nearby enemies by 70% for 3 sec.
+    vengeful_retreat          = {  90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 3,600 Physical damage.
+    will_of_the_illidari      = {  91000, 389695, 1 }, -- Increases maximum health by 5%.
 
     -- Vengeance
     agonizing_flames          = {  90971, 207548, 1 }, -- Immolation Aura increases your movement speed by 10% and its duration is increased by 50%.
     ascending_flame           = {  90960, 428603, 1 }, -- Sigil of Flame's initial damage is increased by 50%. Multiple applications of Sigil of Flame may overlap.
-    bulk_extraction           = {  90956, 320341, 1 }, -- Demolish the spirit of all those around you, dealing 6,269 Fire damage to nearby enemies and extracting up to 5 Lesser Soul Fragments, drawing them to you for immediate consumption.
+    bulk_extraction           = {  90956, 320341, 1 }, -- Demolish the spirit of all those around you, dealing 7,970 Fire damage to nearby enemies and extracting up to 5 Lesser Soul Fragments, drawing them to you for immediate consumption.
     burning_alive             = {  90959, 207739, 1 }, -- Every 1 sec, Fiery Brand spreads to one nearby enemy.
     burning_blood             = {  90987, 390213, 1 }, -- Fire damage increased by 10%.
     calcified_spikes          = {  90967, 389720, 1 }, -- You take 12% reduced damage after Demon Spikes ends, fading by 1% per second.
     chains_of_anger           = {  90964, 389715, 1 }, -- Increases the duration of your Sigils by 2 sec and radius by 2 yds.
     charred_flesh             = {  90962, 336639, 2 }, -- Immolation Aura damage increases the duration of your Fiery Brand and Sigil of Flame by 0.25 sec.
-    cycle_of_binding          = {  90963, 389718, 1 }, -- Afflicting an enemy with a Sigil reduces the cooldown of your Sigils by 2 sec.
+    cycle_of_binding          = {  90963, 389718, 1 }, -- Sigil of Flame reduces the cooldown of your Sigils by 5 sec.
     darkglare_boon            = {  90985, 389708, 1 }, -- When Fel Devastation finishes fully channeling, it refreshes 15-30% of its cooldown and refunds 15-30 Fury.
-    deflecting_spikes         = {  90989, 321028, 1 }, -- Demon Spikes also increases your Parry chance by 15% for 6 sec.
+    deflecting_spikes         = {  90989, 321028, 1 }, -- Demon Spikes also increases your Parry chance by 15% for 10 sec.
     down_in_flames            = {  90961, 389732, 1 }, -- Fiery Brand has 12 sec reduced cooldown and 1 additional charge.
     extended_spikes           = {  90966, 389721, 1 }, -- Increases the duration of Demon Spikes by 2 sec.
     fallout                   = {  90972, 227174, 1 }, -- Immolation Aura's initial burst has a chance to shatter Lesser Soul Fragments from enemies.
-    feast_of_souls            = {  90969, 207697, 1 }, -- Soul Cleave heals you for an additional 23,729 over 6 sec.
+    feast_of_souls            = {  90969, 207697, 1 }, -- Soul Cleave heals you for an additional 33,553 over 6 sec.
     feed_the_demon            = {  90983, 218612, 2 }, -- Consuming a Soul Fragment reduces the remaining cooldown of Demon Spikes by 0.25 sec.
-    fel_devastation           = {  90991, 212084, 1 }, -- Unleash the fel within you, damaging enemies directly in front of you for 57,209 Fire damage over 2 sec. Causing damage also heals you for up to 83,309 health.
+    fel_devastation           = {  90991, 212084, 1 }, -- Unleash the fel within you, damaging enemies directly in front of you for 71,403 Fire damage over 2 sec. Causing damage also heals you for up to 115,658 health.
     fel_flame_fortification   = {  90955, 389705, 1 }, -- You take 10% reduced magic damage while Immolation Aura is active.
-    fiery_brand               = {  90951, 204021, 1 }, -- Brand an enemy with a demonic symbol, instantly dealing 40,499 Fire damage and 37,617 Fire damage over 12 sec. The enemy's damage done to you is reduced by 40% for 12 sec.
+    fiery_brand               = {  90951, 204021, 1 }, -- Brand an enemy with a demonic symbol, instantly dealing 51,482 Fire damage and 47,819 Fire damage over 12 sec. The enemy's damage done to you is reduced by 40% for 12 sec.
     fiery_demise              = {  90958, 389220, 2 }, -- Fiery Brand also increases Fire damage you deal to the target by 20%.
     focused_cleave            = {  90975, 343207, 1 }, -- Soul Cleave deals 50% increased damage to your primary target.
-    fracture                  = {  90970, 263642, 1 }, -- Rapidly slash your target for 26,377 Physical damage, and shatter 2 Lesser Soul Fragments from them. Generates 25 Fury.
+    fracture                  = {  90970, 263642, 1 }, -- Rapidly slash your target for 33,941 Physical damage, and shatter 2 Lesser Soul Fragments from them. Generates 25 Fury.
     frailty                   = {  90990, 389958, 1 }, -- Enemies struck by Sigil of Flame are afflicted with Frailty for 6 sec. You heal for 8% of all damage you deal to targets with Frailty.
     illuminated_sigils        = {  90961, 428557, 1 }, -- Sigil of Flame has 5 sec reduced cooldown and 1 additional charge. You have 12% increased chance to parry attacks from enemies afflicted by your Sigil of Flame.
     last_resort               = {  90979, 209258, 1 }, -- Sustaining fatal damage instead transforms you to Metamorphosis form. This may occur once every 8 min.
     meteoric_strikes          = {  90953, 389724, 1 }, -- Reduce the cooldown of Infernal Strike by 10 sec.
     painbringer               = {  90976, 207387, 2 }, -- Consuming a Soul Fragment reduces all damage you take by 1% for 6 sec. Multiple applications may overlap.
     perfectly_balanced_glaive = {  90968, 320387, 1 }, -- Reduces the cooldown of Throw Glaive by 6 sec.
-    retaliation               = {  90952, 389729, 1 }, -- While Demon Spikes is active, melee attacks against you cause the attacker to take 2,761 Physical damage. Generates high threat.
-    revel_in_pain             = {  90957, 343014, 1 }, -- When Fiery Brand expires on your primary target, you gain a shield that absorbs up 126,603 damage for 15 sec, based on your damage dealt to them while Fiery Brand was active.
+    retaliation               = {  90952, 389729, 1 }, -- While Demon Spikes is active, melee attacks against you cause the attacker to take 3,510 Physical damage. Generates high threat.
+    revel_in_pain             = {  90957, 343014, 1 }, -- When Fiery Brand expires on your primary target, you gain a shield that absorbs up 160,940 damage for 15 sec, based on your damage dealt to them while Fiery Brand was active. 
     roaring_fire              = {  90988, 391178, 1 }, -- Fel Devastation heals you for up to 50% more, based on your missing health.
     ruinous_bulwark           = {  90965, 326853, 1 }, -- Fel Devastation heals for an additional 10%, and 100% of its healing is converted into an absorb shield for 10 sec.
     shear_fury                = {  90970, 389997, 1 }, -- Shear generates 10 additional Fury.
     sigil_of_chains           = {  90954, 202138, 1 }, -- Place a Sigil of Chains at the target location that activates after 1 sec. All enemies affected by the sigil are pulled to its center and are snared, reducing movement speed by 70% for 8 sec.
     sigil_of_silence          = {  90988, 202137, 1 }, -- Place a Sigil of Silence at the target location that activates after 1 sec. Silences all enemies affected by the sigil for 6 sec.
-    soul_barrier              = {  90956, 263648, 1 }, -- Shield yourself for 15 sec, absorbing 197,745 damage. Consumes all available Soul Fragments to add 52,732 to the shield per fragment.
-    soul_carver               = {  90982, 207407, 1 }, -- Carve into the soul of your target, dealing 59,681 Fire damage and an additional 26,110 Fire damage over 3 sec. Immediately shatters 3 Lesser Soul Fragments from the target and 1 additional Lesser Soul Fragment every 1 sec.
+    soul_barrier              = {  90956, 263648, 1 }, -- Shield yourself for 15 sec, absorbing 279,615 damage. Consumes all available Soul Fragments to add 74,564 to the shield per fragment.
+    soul_carver               = {  90982, 207407, 1 }, -- Carve into the soul of your target, dealing 76,482 Fire damage and an additional 33,191 Fire damage over 3 sec. Immediately shatters 3 Lesser Soul Fragments from the target and 1 additional Lesser Soul Fragment every 1 sec.
     soul_furnace              = {  90974, 391165, 1 }, -- Every 10 Soul Fragments you consume increases the damage of your next Soul Cleave or Spirit Bomb by 40%.
     soulcrush                 = {  90980, 389985, 1 }, -- Multiple applications of Frailty may overlap. Soul Cleave applies Frailty to your primary target for 8 sec.
-    soulmonger                = {  90973, 389711, 1 }, -- When consuming a Soul Fragment would heal you above full health it shields you instead, up to a maximum of 106,096.
-    spirit_bomb               = {  90978, 247454, 1 }, -- Consume up to 5 available Soul Fragments then explode, damaging nearby enemies for 7,107 Fire damage per fragment consumed, and afflicting them with Frailty for 6 sec, causing you to heal for 8% of damage you deal to them. Deals reduced damage beyond 8 targets.
+    soulmonger                = {  90973, 389711, 1 }, -- When consuming a Soul Fragment would heal you above full health it shields you instead, up to a maximum of 184,766.
+    spirit_bomb               = {  90978, 247454, 1 }, -- Consume up to 5 available Soul Fragments then explode, damaging nearby enemies for 9,034 Fire damage per fragment consumed, and afflicting them with Frailty for 6 sec, causing you to heal for 8% of damage you deal to them. Deals reduced damage beyond 8 targets.
     stoke_the_flames          = {  90984, 393827, 1 }, -- Fel Devastation damage increased by 35%.
     void_reaver               = {  90977, 268175, 1 }, -- Frailty now also reduces all damage you take from afflicted targets by 3%. Enemies struck by Soul Cleave are afflicted with Frailty for 6 sec.
     volatile_flameblood       = {  90986, 390808, 1 }, -- Immolation Aura generates 5-10 Fury when it deals critical damage. This effect may only occur once per 1 sec.
     vulnerability             = {  90981, 389976, 2 }, -- Frailty now also increases all damage you deal to afflicted targets by 2%.
 
     -- Aldrachi Reaver
-    aldrachi_tactics         = {  94914, 442683, 1 }, -- The second enhanced ability in a pattern shatters an additional Soul Fragment.
-    army_unto_oneself        = {  94896, 442714, 1 }, -- Felblade surrounds you with a Blade Ward, reducing damage taken by 10% for 5 sec.
-    art_of_the_glaive        = {  94915, 442290, 1, "aldrachi_reaver" }, -- Consuming 20 Soul Fragments or casting The Hunt converts your next Throw Glaive into Reaver's Glaive.  Reaver's Glaive: Throw a glaive enhanced with the essence of consumed souls at your target, dealing 61,066 Physical damage and ricocheting to 3 additional enemies. Begins a well-practiced pattern of glaivework, enhancing your next Fracture and Soul Cleave. The enhanced ability you cast first deals 10% increased damage, and the second deals 20% increased damage.
-    evasive_action           = {  94911, 444926, 1 }, -- Vengeful Retreat can be cast a second time within 3 sec.
-    fury_of_the_aldrachi     = {  94898, 442718, 1 }, -- When enhanced by Reaver's Glaive, Soul Cleave casts 3 additional glaive slashes to nearby targets. If cast after Fracture, cast 6 slashes instead.
-    incisive_blade           = {  94895, 442492, 1 }, -- Soul Cleave deals 10% increased damage.
-    incorruptible_spirit     = {  94896, 442736, 1 }, -- Each Soul Fragment you consume shields you for an additional 15% of the amount healed.
-    keen_engagement          = {  94910, 442497, 1 }, -- Reaver's Glaive generates 20 Fury.
-    preemptive_strike        = {  94910, 444997, 1 }, -- Throw Glaive deals 5,250 Physical damage to enemies near its initial target.
-    reavers_mark             = {  94903, 442679, 1 }, -- When enhanced by Reaver's Glaive, Fracture applies Reaver's Mark, which causes the target to take 7% increased damage for 20 sec. If cast after Soul Cleave, Reaver's Mark is increased to 14%.
-    thrill_of_the_fight      = {  94919, 442686, 1 }, -- After consuming both enhancements, gain Thrill of the Fight, increasing your attack speed by 15% for 20 sec and your damage and healing by 20% for 10 sec.
-    unhindered_assault       = {  94911, 444931, 1 }, -- Vengeful Retreat resets the cooldown of Felblade.
-    warblades_hunger         = {  94906, 442502, 1 }, -- Consuming a Soul Fragment causes your next Fracture to deal 6,000 additional damage.
-    wounded_quarry           = {  94897, 442806, 1 }, -- While Reaver's Mark is on your target, melee attacks strike with an additional glaive slash for 3,540 Physical damage and have a chance to shatter a soul.
+    aldrachi_tactics          = {  94914, 442683, 1 }, -- The second enhanced ability in a pattern shatters an additional Soul Fragment.
+    army_unto_oneself         = {  94896, 442714, 1 }, -- Felblade surrounds you with a Blade Ward, reducing damage taken by 10% for 5 sec.
+    art_of_the_glaive         = {  94915, 442290, 1, "aldrachi_reaver" }, -- Consuming 20 Soul Fragments or casting The Hunt converts your next Throw Glaive into Reaver's Glaive.  Reaver's Glaive: Throw a glaive enhanced with the essence of consumed souls at your target, dealing 61,066 Physical damage and ricocheting to 3 additional enemies. Begins a well-practiced pattern of glaivework, enhancing your next Fracture and Soul Cleave. The enhanced ability you cast first deals 10% increased damage, and the second deals 20% increased damage.
+    evasive_action            = {  94911, 444926, 1 }, -- Vengeful Retreat can be cast a second time within 3 sec.
+    fury_of_the_aldrachi      = {  94898, 442718, 1 }, -- When enhanced by Reaver's Glaive, Soul Cleave casts 3 additional glaive slashes to nearby targets. If cast after Fracture, cast 6 slashes instead.
+    incisive_blade            = {  94895, 442492, 1 }, -- Soul Cleave deals 10% increased damage.
+    incorruptible_spirit      = {  94896, 442736, 1 }, -- Each Soul Fragment you consume shields you for an additional 15% of the amount healed.
+    keen_engagement           = {  94910, 442497, 1 }, -- Reaver's Glaive generates 20 Fury.
+    preemptive_strike         = {  94910, 444997, 1 }, -- Throw Glaive deals 3,813 Physical damage to enemies near its initial target.
+    reavers_mark              = {  94903, 442679, 1 }, -- When enhanced by Reaver's Glaive, Fracture applies Reaver's Mark, which causes the target to take 7% increased damage for 20 sec. If cast after Soul Cleave, Reaver's Mark is increased to 14%.
+    thrill_of_the_fight       = {  94919, 442686, 1 }, -- After consuming both enhancements, gain Thrill of the Fight, increasing your attack speed by 15% for 20 sec and your damage and healing by 20% for 10 sec.
+    unhindered_assault        = {  94911, 444931, 1 }, -- Vengeful Retreat resets the cooldown of Felblade.
+    warblades_hunger          = {  94906, 442502, 1 }, -- Consuming a Soul Fragment causes your next Fracture to deal 7,627 additional Physical damage.
+    wounded_quarry            = {  94897, 442806, 1 }, -- Expose weaknesses in the target of your Reaver's Mark, causing your Physical damage to any enemy to also deal 30% of the damage dealt to your marked target as Chaos. 
 
     -- Fel-Scarred
-    burning_blades           = {  94905, 452408, 1 }, -- Your blades burn with Fel energy, causing your Soul Cleave, Throw Glaive, and auto-attacks to deal an additional 35% damage as Fire over 6 sec.
-    demonic_intensity        = {  94901, 452415, 1 }, -- Activating Metamorphosis greatly empowers Fel Devastation, Immolation Aura, and Sigil of Flame. Demonsurge damage is increased by 10% for each time it previously triggered while your demon form is active.
-    demonsurge               = {  94917, 452402, 1, "felscarred" }, -- Metamorphosis now also greatly empowers Soul Cleave and Spirit Bomb. While demon form is active, the first cast of each empowered ability induces a Demonsurge, causing you to explode with Fel energy, dealing 38,941 Fire damage to nearby enemies.
-    enduring_torment         = {  94916, 452410, 1 }, -- The effects of your demon form persist outside of it in a weakened state, increasing maximum health by 5% and Armor by 20%.
-    flamebound               = {  94902, 452413, 1 }, -- Immolation Aura has 2 yd increased radius and 25% increased critical strike damage bonus.
-    focused_hatred           = {  94918, 452405, 1 }, -- Demonsurge deals 50% increased damage when it strikes a single target. Each additional target reduces this bonus by 10%.
-    improved_soul_rending    = {  94899, 452407, 1 }, -- Leech granted by Soul Rending increased by 2% and an additional 2% while Metamorphosis is active.
-    monster_rising           = {  94909, 452414, 1 }, -- Agility increased by 8% while not in demon form.
-    pursuit_of_angriness     = {  94913, 452404, 1 }, -- Movement speed increased by 1% per 10 Fury.
-    set_fire_to_the_pain     = {  94899, 452406, 1 }, -- 5% of all non-Fire damage taken is instead taken as Fire damage over 6 sec. Fire damage taken reduced by 10%.
-    student_of_suffering     = {  94902, 452412, 1 }, -- Sigil of Flame applies Student of Suffering to you, increasing Mastery by 21.6% and granting 5 Fury every 2 sec, for 8 sec.
-    untethered_fury          = {  94904, 452411, 1 }, -- Maximum Fury increased by 50.
-    violent_transformation   = {  94912, 452409, 1 }, -- When you activate Metamorphosis, the cooldowns of your Sigil of Flame and Fel Devastation are immediately reset.
-    wave_of_debilitation     = {  94913, 452403, 1 }, -- Chaos Nova slows enemies by 60% and reduces attack and cast speed 15% for 5 sec after its stun fades.
+    burning_blades            = {  94905, 452408, 1 }, -- Your blades burn with Fel energy, causing your Soul Cleave, Throw Glaive, and auto-attacks to deal an additional 35% damage as Fire over 6 sec.
+    demonic_intensity         = {  94901, 452415, 1 }, -- Activating Metamorphosis greatly empowers Fel Devastation, Immolation Aura, and Sigil of Flame. Demonsurge damage is increased by 10% for each time it previously triggered while your demon form is active.
+    demonsurge                = {  94917, 452402, 1, "felscarred" }, -- Metamorphosis now also greatly empowers Soul Cleave and Spirit Bomb. While demon form is active, the first cast of each empowered ability induces a Demonsurge, causing you to explode with Fel energy, dealing 38,941 Fire damage to nearby enemies.
+    enduring_torment          = {  94916, 452410, 1 }, -- The effects of your demon form persist outside of it in a weakened state, increasing maximum health by 5% and Armor by 20%.
+    flamebound                = {  94902, 452413, 1 }, -- Immolation Aura has 2 yd increased radius and 25% increased critical strike damage bonus.
+    focused_hatred            = {  94918, 452405, 1 }, -- Demonsurge deals 50% increased damage when it strikes a single target. Each additional target reduces this bonus by 10%.
+    improved_soul_rending     = {  94899, 452407, 1 }, -- Leech granted by Soul Rending increased by 2% and an additional 2% while Metamorphosis is active.
+    monster_rising            = {  94909, 452414, 1 }, -- Agility increased by 8% while not in demon form.
+    pursuit_of_angriness      = {  94913, 452404, 1 }, -- Movement speed increased by 1% per 10 Fury.
+    set_fire_to_the_pain      = {  94899, 452406, 1 }, -- 5% of all non-Fire damage taken is instead taken as Fire damage over 6 sec. Fire damage taken reduced by 10%.
+    student_of_suffering      = {  94902, 452412, 1 }, -- Sigil of Flame applies Student of Suffering to you, increasing Mastery by 21.6% and granting 5 Fury every 2 sec, for 8 sec.
+    untethered_fury           = {  94904, 452411, 1 }, -- Maximum Fury increased by 50.
+    violent_transformation    = {  94912, 452409, 1 }, -- When you activate Metamorphosis, the cooldowns of your Sigil of Flame and Fel Devastation are immediately reset.
+    wave_of_debilitation      = {  94913, 452403, 1 }, -- Chaos Nova slows enemies by 60% and reduces attack and cast speed 15% for 5 sec after its stun fades. 
 } )
 
+-- PvP Talents
+spec:RegisterPvpTalents( { 
+    blood_moon        = 5434, -- (355995) 
+    cleansed_by_flame =  814, -- (205625) 
+    cover_of_darkness = 5520, -- (357419) 
+    demonic_trample   = 3423, -- (205629) Transform to demon form, moving at 175% increased speed for 3 sec, knocking down all enemies in your path and dealing 2347.4 Physical damage. During Demonic Trample you are unaffected by snares but cannot cast spells or use your normal attacks. Shares charges with Infernal Strike.
+    detainment        = 3430, -- (205596) 
+    everlasting_hunt  =  815, -- (205626) 
+    glimpse           = 5522, -- (354489) 
+    illidans_grasp    =  819, -- (205630) You strangle the target with demonic magic, stunning them in place and dealing 133,481 Shadow damage over 5 sec while the target is grasped. Can move while channeling. Use Illidan's Grasp again to toss the target to a location within 20 yards.
+    jagged_spikes     =  816, -- (205627) 
+    rain_from_above   = 5521, -- (206803) You fly into the air out of harm's way. While floating, you gain access to Fel Lance allowing you to deal damage to enemies below. 
+    reverse_magic     = 3429, -- (205604) Removes all harmful magical effects from yourself and all nearby allies within 10 yards, and sends them back to their original caster if possible.
+    sigil_mastery     = 1948, -- (211489) 
+    tormentor         = 1220, -- (207029) You focus the assault on this target, increasing their damage taken by 3% for 6 sec. Each unique player that attacks the target increases the damage taken by an additional 3%, stacking up to 5 times. Your melee attacks refresh the duration of Focused Assault.
+    unending_hatred   = 3727, -- (213480) 
+} )
 
 -- Auras
 spec:RegisterAuras( {
@@ -194,6 +225,12 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
+    -- https://www.wowhead.com/spell=1490
+    chaos_brand = {
+        id = 1490,
+        duration = 3600,
+        max_stack = 1,
+    },
     -- Talent: Stunned.
     -- https://wowhead.com/beta/spell=179057
     chaos_nova = {
@@ -218,26 +255,25 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=203819
     demon_spikes = {
         id = 203819,
-        duration = function() return 6 + talent.extended_spikes.rank end,
+        duration = function() return 8 + talent.extended_spikes.rank end,
         max_stack = 1
+    },
+    -- https://www.wowhead.com/spell=452416
+    -- Demonsurge Damage of your next Demonsurge is increased by 10%.  
+    demonsurge = {
+        id = 452416,
+        duration = 12,
+        max_stack = 6,
     },
     demonsurge_hardcast = {
         id = 452489,
     },
-    demonsurge_spirit_burst = {
-    },
-    demonsurge_soul_sunder = {
-
-    },
-    demonsurge_fel_desolation = {
-
-    },
-    demonsurge_consuming_fire = {
-
-    },
-    demonsurge_sigil_of_doom = {
-
-    },
+    -- Fake Buffs
+    demonsurge_spirit_burst = {},
+    demonsurge_soul_sunder = {},
+    demonsurge_fel_desolation = {},
+    demonsurge_consuming_fire = {},
+    demonsurge_sigil_of_doom = {},
 
     -- Vengeful Retreat may be cast again.
     evasive_action = {
@@ -259,7 +295,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     fel_flame_fortification = {
-        id = 337546,
+        id = 393009,
         duration = function () return class.auras.immolation_aura.duration end,
         max_stack = 1
     },
@@ -365,7 +401,7 @@ spec:RegisterAuras( {
     painbringer = {
         id = 212988,
         duration = 6,
-        max_stack = 1
+        max_stack = 30
     },
     -- $w3
     pursuit_of_angriness = {
@@ -375,9 +411,6 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     reavers_glaive = {
-        id = 444764,
-        duration = 15,
-        max_stack = 2
     },
     reavers_mark = {
         id = 442624,
@@ -486,7 +519,7 @@ spec:RegisterAuras( {
     soul_furnace_stack = {
         id = 391166,
         duration = 30,
-        max_stack = 10,
+        max_stack = 9,
         copy = 339424
     },
     soul_furnace = {
@@ -614,7 +647,6 @@ spec:RegisterAuras( {
     },
 } )
 
-
 local sigils = setmetatable( {}, {
     __index = function( t, k )
         t[ k ] = 0
@@ -637,14 +669,13 @@ spec:RegisterStateExpr( "soul_fragments", function ()
     return buff.soul_fragments.stack
 end )
 
-spec:RegisterStateExpr( "last_metamorphosis", function ()
+--[[spec:RegisterStateExpr( "last_metamorphosis", function ()
     return action.metamorphosis.lastCast
-end )
+end )--]]
 
 spec:RegisterStateExpr( "last_infernal_strike", function ()
     return action.infernal_strike.lastCast
 end )
-
 
 local activation_time = function ()
     return talent.quickened_sigils.enabled and 1 or 2
@@ -709,11 +740,10 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sour
     end
 end, false )
 
-
 local sigil_types = { "chains", "flame", "misery", "silence" }
 
 spec:RegisterHook( "reset_precast", function ()
-    last_metamorphosis = nil
+    -- last_metamorphosis = nil
     last_infernal_strike = nil
 
     for i, sigil in ipairs( sigil_types ) do
@@ -742,12 +772,6 @@ spec:RegisterHook( "reset_precast", function ()
         sigils.elysian_decree = 0
     end
 
-    if talent.abyssal_strike.enabled then
-        -- Infernal Strike is also a trigger for Sigil of Flame.
-        local activation = ( action.infernal_strike.lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
-        if activation > now and activation > sigils[ sigil ] then sigils.flame = activation end
-    end
-
     if fragments.realTime > 0 and fragments.realTime < now then
         fragments.real = 0
         fragments.realTime = 0
@@ -768,27 +792,21 @@ spec:RegisterHook( "reset_precast", function ()
         addStack( "soul_fragments", nil, fragments.real )
     end
 
-    if IsActiveSpell( 442294 ) then applyBuff( "reavers_glaive" ) end
+    if IsSpellKnownOrOverridesKnown( 442294 ) then applyBuff( "reavers_glaive" ) end
 
     if talent.demonsurge.enabled and buff.metamorphosis.up then
-        if talent.demonic.enabled and action.fel_devastation.lastCast >= buff.metamorphosis.applied then applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-        if action.metamorphosis.lastCast >= buff.metamorphosis.applied then applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains ) end
-        if action.soul_sunder.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains ) end
-        if action.spirit_burst.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains ) end
-
+        if IsSpellOverlayed( 452436 ) then applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains ) end
+        if IsSpellOverlayed( 452437 ) then applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains ) end
         if talent.demonic_intensity.enabled then
-
-            if action.fel_desolation.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_fel_desolation", buff.metamorphosis.remains ) end
-            if action.consuming_fire.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_consuming_fire", buff.metamorphosis.remains ) end
-            if action.sigil_of_doom.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_sigil_of_doom", buff.metamorphosis.remains ) end
-
-            setCooldown( "fel_devastation", max( cooldown.fel_devastation.remains, cooldown.fel_desolation.remains, buff.metamorphosis.remains ) ) -- To support cooldown.eye_beam.up checks in SimC priority.
+            if IsSpellOverlayed( 452486 ) then applyBuff( "demonsurge_fel_desolation", buff.metamorphosis.remains ) end
+            if IsSpellOverlayed( 452487 ) then applyBuff( "demonsurge_consuming_fire", buff.metamorphosis.remains ) end
+            if IsSpellOverlayed( 452490 ) then applyBuff( "demonsurge_sigil_of_doom", buff.metamorphosis.remains ) end
+            -- setCooldown( "fel_devastation", max( cooldown.fel_devastation.remains, cooldown.fel_desolation.remains, buff.metamorphosis.remains ) ) -- To support cooldown.eye_beam.up checks in SimC priority.
         end
-
         if Hekili.ActiveDebug then
             Hekili:Debug( "Demon Surge status:\n" ..
-                " - Hardcast " .. ( buff.demonsurge_hardcast.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
-                " - Demonic " .. ( buff.demonsurge_demonic.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
+                -- " - Hardcast " .. ( buff.demonsurge_hardcast.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
+                -- " - Demonic " .. ( buff.demonsurge_demonic.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Consuming Fire " .. ( buff.demonsurge_consuming_fire.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Fel Desolation " .. ( buff.demonsurge_fel_desolation.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Sigil of Doom " .. ( buff.demonsurge_sigil_of_doom.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
@@ -802,7 +820,6 @@ spec:RegisterHook( "reset_precast", function ()
     fury_spent = nil
 end )
 
-
 spec:RegisterHook( "spend", function( amt, resource )
     if set_bonus.tier31_4pc == 0 or amt < 0 or resource ~= "fury" then return end
 
@@ -812,7 +829,6 @@ spec:RegisterHook( "spend", function( amt, resource )
         fury_spent = fury_spent % 40
     end
 end )
-
 
 spec:RegisterHook( "advance_end", function( time )
     if query_time - time < sigils.flame and query_time >= sigils.flame then
@@ -827,7 +843,6 @@ spec:RegisterHook( "advance_end", function( time )
     end
 end )
 
-
 -- approach that actually calculated time remaining of fiery_brand via combat log. last modified 1/27/2023.
 spec:RegisterStateExpr( "fiery_brand_dot_primary_expires", function()
     return action.fiery_brand.lastCast + bonus_time_from_immo_aura + class.auras.fiery_brand.duration
@@ -841,7 +856,7 @@ spec:RegisterStateExpr( "fiery_brand_dot_primary_ticking", function()
     return fiery_brand_dot_primary_remains > 0
 end )
 
-
+--[[
 -- Incoming Souls calculation added to APL in August 2023.
 spec:RegisterVariable( "incoming_souls", function()
     -- actions+=/variable,name=incoming_souls,op=reset
@@ -876,22 +891,18 @@ spec:RegisterVariable( "incoming_souls", function()
     if talent.soul_carver.enabled and cooldown.soul_carver.true_remains > 57 then souls = souls + ( 3 - ( cooldown.soul_carver.duration - ceil( cooldown.soul_carver.remains ) ) ) end
 
     return souls
-end )
+end )--]]
 
+-- The War Within
+spec:RegisterGear( "tww2", 229316, 229314, 229319, 229317, 229315 )
 
-
-
-
-
--- Gear Sets
+-- Dragonflight
 spec:RegisterGear( "tier29", 200345, 200347, 200342, 200344, 200346 )
 spec:RegisterAura( "decrepit_souls", {
     id = 394958,
     duration = 8,
     max_stack = 1
 } )
-
--- Tier 30
 spec:RegisterGear( "tier30", 202527, 202525, 202524, 202523, 202522 )
 -- 2 pieces (Vengeance) : Soul Fragments heal for 10% more and generating a Soul Fragment increases your Fire damage by 2% for 6 sec. Multiple applications may overlap.
 -- TODO: Track each application to keep count for Recrimination.
@@ -906,7 +917,6 @@ spec:RegisterAura( "recrimination", {
     duration = 30,
     max_stack = 1
 } )
-
 spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266, 217228, 217230, 217226, 217227, 217229 )
 -- (2) When you attack a target afflicted by Sigil of Flame, your damage and healing are increased by 2% and your Stamina is increased by 2% for 8 sec, stacking up to 5.
 -- (4) Sigil of Flame's periodic damage has a chance to flare up, shattering an additional Soul Fragment from a target and dealing $425672s1 additional damage. Each $s1 Fury you spend reduces its cooldown by ${$s2/1000}.1 sec.
@@ -915,7 +925,6 @@ spec:RegisterAura( "fiery_resolve", {
     duration = 8,
     max_stack = 5
 } )
-
 
 local furySpent = 0
 
@@ -939,14 +948,61 @@ spec:RegisterStateExpr( "fury_spent", function ()
     return furySpent
 end )
 
-
+-- Legacy
 spec:RegisterGear( "tier19", 138375, 138376, 138377, 138378, 138379, 138380 )
 spec:RegisterGear( "tier20", 147130, 147132, 147128, 147127, 147129, 147131 )
 spec:RegisterGear( "tier21", 152121, 152123, 152119, 152118, 152120, 152122 )
 spec:RegisterGear( "class", 139715, 139716, 139717, 139718, 139719, 139720, 139721, 139722 )
-
 spec:RegisterGear( "convergence_of_fates", 140806 )
 
+local ConsumeSoulFragments = setfenv( function( amt )
+    if talent.soul_furnace.enabled then
+        local overflow = buff.soul_furnace_stack.stack + amt
+        if overflow >= 10 then
+            applyBuff( "soul_furnace" )
+            overflow = overflow - 10
+            if overflow > 0 then -- stacks carry over past 10 to start a new stack
+                applyBuff( "soul_furnace_stack", nil, overflow )
+            end
+        else
+            addStack( "soul_furnace_stack", nil, amt )
+        end
+    end
+    -- Reaver Tree
+    if talent.art_of_the_glaive.enabled then
+        addStack( "art_of_the_glaive", nil, amt )
+        if  buff.art_of_the_glaive.stack == 20 then
+            removeBuff( "art_of_the_glaive" )
+            applyBuff( "reavers_glaive" )
+        end
+    end
+    if talent.warblades_hunger.enabled then
+        addStack( "warblades_hunger", nil, amt )
+    end
+
+    gainChargeTime( "demon_spikes", ( 0.25 * talent.feed_the_demon.rank * amt ) )
+    buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - amt )
+end, state )
+
+local sigilList = { "sigil_of_Flame", "sigil_of_misery", "sigil_of_spite", "sigil_of_silence", "sigil_of_chains", "sigil_of_doom" }
+
+local TriggerDemonic = setfenv( function( )
+    if buff.metamorphosis.up then
+        buff.metamorphosis.duration = buff.metamorphosis.duration + 7
+        buff.metamorphosis.expires = buff.metamorphosis.expires + 7
+    else
+        applyBuff( "metamorphosis", 7 )
+        if talent.inner_demon.enabled then
+            applyBuff( "inner_demon" )
+        end
+        stat.haste = stat.haste + 10
+        -- Fel-Scarred
+        if talent.demonsurge.enabled then
+            applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
+            applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
+        end
+    end
+end, state )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -960,6 +1016,7 @@ spec:RegisterAbilities( {
 
         talent = "bulk_extraction",
         startsCombat = true,
+        texture = 136194,
 
         toggle = "cooldowns",
 
@@ -980,6 +1037,7 @@ spec:RegisterAbilities( {
 
         talent = "chaos_nova",
         startsCombat = true,
+        texture = 135795,
 
         handler = function ()
             applyDebuff( "target", "chaos_nova" )
@@ -1016,6 +1074,7 @@ spec:RegisterAbilities( {
 
         talent = "darkness",
         startsCombat = false,
+        texture = 1305154,
 
         toggle = "defensives",
 
@@ -1032,6 +1091,8 @@ spec:RegisterAbilities( {
         charges = 2,
         cooldown = 20,
         recharge = 20,
+        hasteCD = true,
+
         icd = 1.5,
         gcd = "off",
         school = "physical",
@@ -1042,10 +1103,10 @@ spec:RegisterAbilities( {
         defensive = true,
 
         handler = function ()
+            if talent.calcified_spikes.enabled and buff.demon_spikes.up then applyBuff( "calcified_spikes" ) end
             applyBuff( "demon_spikes", buff.demon_spikes.remains + buff.demon_spikes.duration )
         end,
     },
-
 
     demonic_trample = {
         id = 205629,
@@ -1112,41 +1173,10 @@ spec:RegisterAbilities( {
 
         start = function ()
             applyBuff( "fel_devastation" )
-
-            -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
-            if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
-                debuff.sinful_brand.expires = debuff.sinful_brand.expires + 0.75
-            end
+            if talent.demonic.enabled then TriggerDemonic() end
         end,
 
         finish = function ()
-            if talent.demonic.enabled then
-                if buff.metamorphosis.up then
-                    buff.metamorphosis.duration = buff.metamorphosis.duration + 5
-                    buff.metamorphosis.expires = buff.metamorphosis.expires + 5
-
-                    if talent.demonsurge.enabled then
-                        if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
-
-                        applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-                    end
-                else
-                    applyBuff( "metamorphosis", 5 )
-                    buff.metamorphosis.duration = 5
-
-                    if talent.demonsurge.enabled then
-                        applyBuff( "demonsurge_demonic", buff.metamorphosis.remains )
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
-
-                        applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-                    end
-
-                end
-            end
             if talent.darkglare_boon.enabled then
                 gain( 15, "fury" )
                 reduceCooldown( "fel_devastation", 6 )
@@ -1177,43 +1207,17 @@ spec:RegisterAbilities( {
 
         start = function ()
             applyBuff( "fel_devastation" )
-            removeBuff( "demonsurge_fel_desolation" )
-            if talent.demonic_intensity.enabled then addStack( "demonsurge" ) end
 
-            -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
-            if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
-                debuff.sinful_brand.expires = debuff.sinful_brand.expires + 0.75
+            if talent.demonic_intensity.enabled and buff.demonsurge_fel_Desolation.up then
+                addStack( "demonsurge" )
+                removeBuff( "demonsurge_fel_desolation" )
             end
+
+            if talent.demonic.enabled then TriggerDemonic() end
         end,
 
         finish = function ()
-            if talent.demonic.enabled then
-                if buff.metamorphosis.up then
-                    buff.metamorphosis.duration = buff.metamorphosis.duration + 5
-                    buff.metamorphosis.expires = buff.metamorphosis.expires + 5
 
-                    if talent.demonsurge.enabled then
-                        if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains ) end
-
-                        applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-                    end
-                else
-                    applyBuff( "metamorphosis", 5 )
-                    buff.metamorphosis.duration = 5
-
-                    if talent.demonsurge.enabled then
-                        applyBuff( "demonsurge_demonic", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
-
-                        applyBuff( "demonsurge_soul_sunder", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_spirit_burst", buff.metamorphosis.remains )
-                    end
-                end
-            end
             if talent.darkglare_boon.enabled then
                 gain( 15, "fury" )
                 reduceCooldown( "fel_devastation", 6 )
@@ -1229,6 +1233,7 @@ spec:RegisterAbilities( {
         id = 232893,
         cast = 0,
         cooldown = 15,
+        hasteCD = true,
         gcd = "spell",
         school = "physical",
 
@@ -1282,7 +1287,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function() return ( buff.metamorphosis.up and -45 or -25 ) * ( set_bonus.tier29_2pc > 0 and 1.2 or 1 ) end,
+        spend = function() return ( buff.metamorphosis.up and -45 or -25 ) end,
         spendType = "fury",
 
         talent = "fracture",
@@ -1290,18 +1295,12 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            if buff.rending_strike.up then
-                applyDebuff( "target", "reavers_mark" )
-                removeBuff( "rending_strike" )
-            end
-            if buff.recrimination.up then
-                applyDebuff( "target", "fiery_brand", 6 )
-                removeBuff( "recrimination" )
-            end
-            addStack( "soul_fragments", nil, buff.metamorphosis.up and 3 or 2 )
+
+            spec.abilities.shear.handler()
+            addStack( "soul_fragments", nil, 1 )
+
         end,
     },
-
 
     illidans_grasp = {
         id = function () return debuff.illidans_grasp.up and 208173 or 205630 end,
@@ -1330,11 +1329,13 @@ spec:RegisterAbilities( {
     immolation_aura = {
         id = 258920,
         cast = 0,
-        cooldown = function () return level > 26 and 15 or 30 end,
+        cooldown = 15,
+        hasteCD = true,
+        
         gcd = "spell",
         school = "fire",
 
-        spend = -20,
+        spend = -8,
         spendType = "fury",
         startsCombat = true,
 
@@ -1346,6 +1347,11 @@ spec:RegisterAbilities( {
             end
         end,
 
+        tick = function ()
+            if talent.charred_flesh.enabled and debuff.fiery_brand.up then applyDebuff( "target", debuff.fiery_brand.remains + 0.25 * talent.charred_flesh.rank ) end
+            if talent.charred_flesh.enabled and debuff.sigil_of_flame.up then applyDebuff( "target", debuff.sigil_of_flame.remains + 0.25 * talent.charred_flesh.rank ) end
+        end,
+
         bind = "consuming_fire"
     },
 
@@ -1353,11 +1359,12 @@ spec:RegisterAbilities( {
         id = 452487,
         known = 258920,
         cast = 0,
-        cooldown = function () return level > 26 and 15 or 30 end,
+        cooldown = 15,
+        hasteCD = true,
         gcd = "spell",
         school = "fire",
 
-        spend = -20,
+        spend = -8,
         spendType = "fury",
         startsCombat = true,
 
@@ -1395,8 +1402,9 @@ spec:RegisterAbilities( {
         id = 189110,
         cast = 0,
         charges = function() return talent.blazing_path.enabled and 2 or nil end,
-        cooldown = function() return ( talent.meteoric_strikes.enabled and 12 or 20 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) end,
-        recharge = function() return talent.blazing_path.enabled and ( ( talent.meteoric_strikes.enabled and 12 or 20 ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) ) or nil end,
+        cooldown = function() return ( 20 - ( 10 * talent.meteoric_strikes.rank ) ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) end,
+        recharge = function() return talent.blazing_path.enabled and ( 20 - ( 10 * talent.meteoric_strikes.rank ) ) * ( 1 - 0.1 * talent.erratic_felheart.rank ) or nil end,
+
         gcd = "off",
         school = "physical",
         icd = function () return gcd.max + 0.1 end,
@@ -1404,7 +1412,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
         nodebuff = "rooted",
 
-        sigil_placed = function() return sigil_placed end,
+        -- sigil_placed = function() return sigil_placed end,
 
         readyTime = function ()
             if ( settings.infernal_charges or 1 ) == 0 then return end
@@ -1415,10 +1423,6 @@ spec:RegisterAbilities( {
             setDistance( 5 )
             spendCharges( "demonic_trample", 1 )
 
-            if talent.abyssal_strike.enabled then
-                create_sigil( "flame" )
-            end
-
             if talent.felfire_haste.enabled or conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
         end,
     },
@@ -1427,9 +1431,7 @@ spec:RegisterAbilities( {
     metamorphosis = {
         id = 187827,
         cast = 0,
-        cooldown = function()
-            return ( 180 - ( talent.first_of_the_illidari.enabled and 60 or 0 ) - ( talent.rush_of_chaos.enabled and 30 or 0 ) ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 )
-        end,
+        cooldown = function() return ( 180 - ( 30 * talent.rush_of_chaos.rank) ) end,
         gcd = "off",
         school = "chaos",
 
@@ -1438,12 +1440,11 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff( "metamorphosis" )
+
+            applyBuff( "metamorphosis", buff.metamorphosis.remains + 15 )
             gain( health.max * 0.4, "health" )
 
             if talent.demonsurge.enabled then
-                applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
-                if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires end
                 applyBuff( "demonsurge_soul_cleave", buff.metamorphosis.remains )
                 applyBuff( "demonsurge_spirit_bomb", buff.metamorphosis.remains )
             end
@@ -1457,22 +1458,13 @@ spec:RegisterAbilities( {
             if talent.violent_transformation.enabled then
                 setCooldown( "sigil_of_flame", 0 )
                 setCooldown( "fel_devastation", 0 )
-
-                if talent.demonic_intensity.enabled then
-                    setCooldown( "sigil_of_doom", 0 )
-                    setCooldown( "fel_desolation", 0 )
-                end
+                setCooldown( "sigil_of_doom", 0 )
+                setCooldown( "fel_desolation", 0 )
             end
 
-            if action.sinful_brand.known then
-                applyDebuff( "target", "sinful_brand" )
-                active_dot.sinful_brand = active_enemies
-            end
-
-            last_metamorphosis = query_time
+            -- last_metamorphosis = query_time
         end,
     },
-
 
     reverse_magic = {
         id = 205604,
@@ -1501,21 +1493,25 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "physical",
 
-        spend = function () return ( ( level > 47 and buff.metamorphosis.up and -30 or -10 ) - ( talent.shear_fury.enabled and 20 or 0 ) ) * ( set_bonus.tier29_2pc > 0 and 1.2 or 1 ) end,
+        spend = function () return -1 * ( 10 + 10 * talent.shear_fury.rank + ( buff.metamorphosis.up and 20 or 0 ) ) end,
 
         notalent = "fracture",
         bind = "fracture",
         startsCombat = true,
 
         handler = function ()
-            if buff.rending_strike.up then
+            if buff.rending_strike.up then -- Reaver stuff
                 applyDebuff( "target", "reavers_mark" )
                 removeBuff( "rending_strike" )
+                if buff.glaive_flurry.down then applyBuff( "thrill_of_the_fight" ) end
             end
+
+            -- Legacy
             if buff.recrimination.up then
                 applyDebuff( "target", "fiery_brand", 6 )
                 removeBuff( "recrimination" )
             end
+
             addStack( "soul_fragments", nil, buff.metamorphosis.up and 2 or 1 )
         end,
     },
@@ -1566,6 +1562,18 @@ spec:RegisterAbilities( {
 
         handler = function ()
             create_sigil( "flame" )
+            if talent.flames_of_fury.enabled then gain( talent.flames_of_fury.rank * active_enemies, "fury" ) end
+            if talent.student_of_suffering.enabled then applyBuff( "student_of_suffering" ) end
+            if talent.frailty.enabled then
+                applyDebuff( "target", "frailty" )
+                active_dot.frailty = active_enemies
+                if talent.cycle_of_binding.enabled then
+                    for _, sigil in ipairs( sigilList ) do
+                        reduceCooldown( sigil, 5 )
+                    end
+                end
+
+            end
         end,
 
         bind = "sigil_of_doom",
@@ -1598,9 +1606,9 @@ spec:RegisterAbilities( {
         sigil_placed = function() return sigil_placed end,
 
         handler = function ()
-            create_sigil( "flame" )
             removeBuff( "demonsurge_sigil_of_doom" )
             if talent.demonic_intensity.enabled then addStack( "demonsurge" ) end
+            spec.abilities.sigil_of_flame.handler()
         end,
 
         bind = "sigil_of_flame"
@@ -1626,8 +1634,6 @@ spec:RegisterAbilities( {
 
         copy = { 207684, 389813 }
     },
-
-
 
     sigil_of_silence = {
         id = function () return talent.precise_sigils.enabled and 389809 or 202137 end,
@@ -1663,7 +1669,7 @@ spec:RegisterAbilities( {
     sigil_of_spite = {
         id = 390163,
         cast = 0.0,
-        cooldown = function() return talent.sigil_mastery.enabled and 45 or 60 end,
+        cooldown = 60,
         gcd = "spell",
 
         talent = "sigil_of_spite",
@@ -1671,17 +1677,8 @@ spec:RegisterAbilities( {
 
         handler = function()
             create_sigil( "spite" )
+            addStack( "soul_fragments", nil, 3 )
         end,
-
-        -- Effects:
-        -- #0: { 'type': DUMMY, 'subtype': NONE, 'radius': 8.0, 'target': TARGET_DEST_DEST, }
-        -- #1: { 'type': CREATE_AREATRIGGER, 'subtype': NONE, 'points': 50.0, 'value': 26752, 'target': TARGET_DEST_DEST, }
-        -- #2: { 'type': DUMMY, 'subtype': NONE, 'target': TARGET_DEST_DEST, }
-
-        -- Affected by:
-        -- quickened_sigils[209281] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': -1000.0, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
-        -- chains_of_anger[389715] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': RADIUS, }
-        -- sigil_mastery[211489] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': -25.0, 'target': TARGET_UNIT_CASTER, 'modifies': COOLDOWN, }
     },
 
     -- Talent: Shield yourself for $d, absorbing $<baseAbsorb> damage.    Consumes all Soul Fragments within 25 yds to add $<fragmentAbsorb> to the shield per fragment.
@@ -1699,13 +1696,10 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         handler = function ()
-            if talent.feed_the_demon.enabled then
-                gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
-            end
 
-            -- TODO: Soul Fragment consumption mechanics.
-            buff.soul_fragments.count = 0
+            ConsumeSoulFragments( buff.soul_fragments.stack )
             applyBuff( "soul_barrier" )
+
         end,
     },
 
@@ -1713,7 +1707,7 @@ spec:RegisterAbilities( {
     soul_carver = {
         id = 207407,
         cast = 0,
-        cooldown = 30,
+        cooldown = 60,
         gcd = "spell",
         school = "fire",
 
@@ -1743,24 +1737,18 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "soul_furnace" )
-            removeBuff( "glaive_flurry" )
 
-            if talent.feed_the_demon.enabled then
-                gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
+            -- 
+            if buff.glaive_flurry.up then -- Reaver stuff
+                removeBuff( "glaive_flurry" )
+                if buff.rending_strike.down then applyBuff( "thrill_of_the_fight" ) end
             end
 
             if talent.feast_of_souls.enabled then applyBuff( "feast_of_souls" ) end
             if talent.soulcrush.enabled then applyDebuff( "target", "frailty" ) end
-            if talent.soul_furnace.enabled then
-                addStack( "soul_furnace_stack", nil, min( 2, buff.soul_fragments.stack ) )
-                if buff.soul_furnace_stack.up and buff.soul_furnace_stack.stack == 10 then
-                    removeBuff( "soul_furnace_stack" )
-                    applyBuff( "soul_furnace" )
-                end
-            end
             if talent.void_reaver.enabled then active_dot.frailty = true_active_enemies end
 
-            buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 2 )
+            ConsumeSoulFragments( min( 2, buff.soul_fragments.stack ) )
 
             if legendary.fiery_soul.enabled then reduceCooldown( "fiery_brand", 2 * min( 2, buff.soul_fragments.stack ) ) end
         end,
@@ -1786,30 +1774,9 @@ spec:RegisterAbilities( {
         buff = "metamorphosis",
 
         handler = function ()
-            removeBuff( "soul_furnace" )
-            removeBuff( "glaive_flurry" )
-
             removeBuff( "demonsurge_soul_sunder" )
             if talent.demonic_intensity.enabled then addStack( "demonsurge" ) end
-
-            if talent.feed_the_demon.enabled then
-                gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
-            end
-
-            if talent.feast_of_souls.enabled then applyBuff( "feast_of_souls" ) end
-            if talent.soulcrush.enabled then applyDebuff( "target", "frailty" ) end
-            if talent.soul_furnace.enabled then
-                addStack( "soul_furnace_stack", nil, min( 2, buff.soul_fragments.stack ) )
-                if buff.soul_furnace_stack.up and buff.soul_furnace_stack.stack == 10 then
-                    removeBuff( "soul_furnace_stack" )
-                    applyBuff( "soul_furnace" )
-                end
-            end
-            if talent.void_reaver.enabled then active_dot.frailty = true_active_enemies end
-
-            buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 2 )
-
-            if legendary.fiery_soul.enabled then reduceCooldown( "fiery_brand", 2 * min( 2, buff.soul_fragments.stack ) ) end
+            spec.abilities.soul_cleave.handler()
         end,
 
         bind = "soul_cleave"
@@ -1819,7 +1786,7 @@ spec:RegisterAbilities( {
     spectral_sight = {
         id = 188501,
         cast = 0,
-        cooldown = 30,
+        cooldown = function() return 30 - ( 5 * talent.lost_in_darkness.rank ) end,
         gcd = "spell",
         school = "physical",
 
@@ -1847,23 +1814,14 @@ spec:RegisterAbilities( {
         nobuff = function () return talent.demonsurge.enabled and "metamorphosis" or nil end,
 
         handler = function ()
-            if talent.feed_the_demon.enabled then
-                gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
-            end
 
             applyDebuff( "target", "frailty" )
             active_dot.frailty = active_enemies
-
             removeBuff( "soul_furnace" )
-            if talent.soul_furnace.enabled then
-                addStack( "soul_furnace_stack", nil, min( 5, buff.soul_fragments.stack ) )
-                if buff.soul_furnace_stack.up and buff.soul_furnace_stack.stack == 10 then
-                    removeBuff( "soul_furnace_stack" )
-                    applyBuff( "soul_furnace" )
-                end
-            end
-            buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 5 )
+            ConsumeSoulFragments( min( 5, buff.soul_fragments.stack ) )
+
         end,
+
 
         bind = "spirit_burst"
     },
@@ -1887,27 +1845,11 @@ spec:RegisterAbilities( {
             removeBuff( "demonsurge_spirit_burst" )
             if talent.demonic_intensity.enabled then addStack( "demonsurge" ) end
 
-            if talent.feed_the_demon.enabled then
-                gainChargeTime( "demon_spikes", 0.5 * buff.soul_fragments.stack )
-            end
-
-            applyDebuff( "target", "frailty" )
-            active_dot.frailty = active_enemies
-
-            removeBuff( "soul_furnace" )
-            if talent.soul_furnace.enabled then
-                addStack( "soul_furnace_stack", nil, min( 5, buff.soul_fragments.stack ) )
-                if buff.soul_furnace_stack.up and buff.soul_furnace_stack.stack == 10 then
-                    removeBuff( "soul_furnace_stack" )
-                    applyBuff( "soul_furnace" )
-                end
-            end
-            buff.soul_fragments.count = max( 0, buff.soul_fragments.stack - 5 )
+            spec.abilities.spirit_bomb.handler()
         end,
 
         bind = "spirit_bomb"
     },
-
 
     -- Talent / Covenant (Night Fae): Charge to your target, striking them for $370966s1 $@spelldesc395042 damage, rooting them in place for $370970d and inflicting $370969o1 $@spelldesc395042 damage over $370969d to up to $370967s2 enemies in your path.     The pursuit invigorates your soul, healing you for $?c1[$370968s1%][$370968s2%] of the damage you deal to your Hunt target for $370966d.
     the_hunt = {
@@ -1926,43 +1868,41 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "the_hunt_dot" )
             setDistance( 5 )
 
-            if talent.momentum.enabled then applyBuff( "momentum" ) end
-
             if legendary.blazing_slaughter.enabled then
                 applyBuff( "immolation_aura" )
                 applyBuff( "blazing_slaughter" )
             end
+            -- Hero Talents
+            if talent.art_of_the_glaive.enabled then applyBuff( "reavers_glaive" ) end
+
         end,
 
         copy = { 370965, 323639 }
     },
 
-
     reavers_glaive = {
         id = 442294,
         cast = 0,
-        charges = function()
-            local c = talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank
-            if c > 0 then return 1 + c end
-        end,
+        charges = function() return 1 + talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank end,
         cooldown = function() return talent.perfectly_balanced_glaive.enabled and 3 or 9 end,
-        recharge = function()
-            local c = talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank
-            if c > 0 then return ( talent.perfectly_balanced_glaive.enabled and 3 or 9 ) end
-        end,
+        recharge = function() if ( talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank ) > 0 then
+            return ( talent.perfectly_balanced_glaive.enabled and 3 or 9 ) end
+            end,
         gcd = "spell",
         school = "physical",
+        known = 442290,
 
-        spend = function() return talent.furious_throws.enabled and 25 or nil end,
-        spendType = function() return talent.furious_throws.enabled and "fury" or nil end,
+        spend = function() return talent.keen_engagement.enabled and -20 or nil end,
+        spendType = function() return talent.keen_engagement.enabled and "fury" or nil end,
 
         startsCombat = true,
         buff = "reavers_glaive",
 
         handler = function ()
             removeBuff( "reavers_glaive" )
-            if talent.serrated_glaive.enabled or conduit.serrated_glaive.enabled then applyDebuff( "target", "exposed_wound" ) end
             if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
+            applyBuff( "rending_strike" )
+            applyBuff( "glaive_flurry" )
         end,
 
         bind = "throw_glaive"
@@ -1972,30 +1912,22 @@ spec:RegisterAbilities( {
     throw_glaive = {
         id = 204157,
         cast = 0,
-        charges = function()
-            local c = talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank
-            if c > 0 then return 1 + c end
-        end,
+        charges = function() return 1 + talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank end,
         cooldown = function() return talent.perfectly_balanced_glaive.enabled and 3 or 9 end,
-        recharge = function()
-            local c = talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank
-            if c > 0 then return ( talent.perfectly_balanced_glaive.enabled and 3 or 9 ) end
-        end,
+        recharge = function() if ( talent.champion_of_the_glaive.rank + talent.master_of_the_glaive.rank ) > 0 then
+            return ( talent.perfectly_balanced_glaive.enabled and 3 or 9 ) end
+            end,
         gcd = "spell",
         school = "physical",
 
-        spend = function() return talent.furious_throws.enabled and 25 or nil end,
-        spendType = function() return talent.furious_throws.enabled and "fury" or nil end,
+        -- spend = function() return talent.furious_throws.enabled and 25 or nil end,
+        -- spendType = function() return talent.furious_throws.enabled and "fury" or nil end,
 
         startsCombat = true,
         nobuff = "reavers_glaive",
 
         handler = function ()
-            if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
-            if talent.champion_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
             if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
-            if talent.serrated_glaive.enabled then applyDebuff( "target", "serrated_glaive" ) end
-            if talent.soulscar.enabled then applyDebuff( "target", "soulscar" ) end
             if set_bonus.tier31_4pc > 0 then reduceCooldown( "the_hunt", 2 ) end
         end,
 
@@ -2018,7 +1950,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     tormentor = {
         id = 207029,
         cast = 0,
@@ -2039,11 +1970,12 @@ spec:RegisterAbilities( {
     vengeful_retreat = {
         id = 198793,
         cast = 0,
-        cooldown = function () return talent.momentum.enabled and 20 or 25 end,
+        cooldown = 25,
         gcd = "spell",
 
         startsCombat = true,
         nodebuff = "rooted",
+        talent = "vengeful_retreat",
 
         readyTime = function ()
             if settings.recommend_movement then return 0 end
@@ -2055,13 +1987,11 @@ spec:RegisterAbilities( {
                 applyBuff( "evasive_action" )
                 setCooldown( "vengeful_retreat", 0 )
             end
-
             if talent.vengeful_bonds.enabled and action.chaos_strike.in_range then -- 20231116: and target.within8 then
                 applyDebuff( "target", "vengeful_retreat" )
             end
 
-            if talent.momentum.enabled then applyBuff( "momentum" ) end
-
+            if talent.unhindered_assault.enabled then setCooldown( "felblade", 0 ) end
             if pvptalent.glimpse.enabled then applyBuff( "glimpse" ) end
         end,
     }

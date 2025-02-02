@@ -1,5 +1,5 @@
 -- DeathKnightFrost.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
@@ -933,19 +933,32 @@ spec:RegisterAuras( {
 
 spec:RegisterTotem( "ghoul", 1100170 )
 
-
--- Tier 29
+-- The War Within
+spec:RegisterGear( "tww2", 229253, 229251, 229256, 229254, 229252 )
+spec:RegisterAuras( {
+    -- https://www.wowhead.com/spell=1216813
+    -- Winning Streak! On a Winning Streak! Death Coil and Epidemic damage increased by 30%.  
+    winning_streak = {
+        id = 1217897,
+        duration = 3600,
+        max_stack = 6
+    },
+    -- https://www.wowhead.com/spell=1222698
+    -- Murderous Frenzy Your Haste is increased by 12%.  
+    murderous_frenzy = {
+        id = 1222698,
+        duration = 6,
+        max_stack = 1,
+    },
+} )
+-- Dragonflight
 spec:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
-
--- Tier 30
 spec:RegisterGear( "tier30", 202464, 202462, 202461, 202460, 202459, 217223, 217225, 217221, 217222, 217224 )
--- 2 pieces (Frost) : Howling Blast damage increased by 20%. Consuming Rime increases the damage of your next Frostwyrm's Fury by 5%, stacking 10 times. Pillar of Frost calls a Frostwyrm's Fury at 40% effectiveness that cannot Freeze enemies.
 spec:RegisterAura( "wrath_of_the_frostwyrm", {
     id = 408368,
     duration = 30,
     max_stack = 10
 } )
--- 4 pieces (Frost) : Frostwyrm's Fury causes enemies hit to take 25% increased damage from your critical strikes for 12 sec.
 spec:RegisterAura( "lingering_chill", {
     id = 410879,
     duration = 12,
@@ -953,8 +966,6 @@ spec:RegisterAura( "lingering_chill", {
 } )
 
 spec:RegisterGear( "tier31", 207198, 207199, 207200, 207201, 207203 )
--- (2) Chill Streak's range is increased by $s1 yds and can bounce off of you. Each time Chill Streak bounces your damage is increased by $424165s2% for $424165d, stacking up to $424165u times.
--- (4) Chill Streak can bounce $s1 additional times and each time it bounces, you have a $s4% chance to gain a Rune, reduce Chill Streak cooldown by ${$s2/1000} sec, or reduce the cooldown of Empower Rune Weapon by ${$s3/1000} sec.
 spec:RegisterAura( "chilling_rage", {
     id = 424165,
     duration = 12,

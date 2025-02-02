@@ -1,5 +1,5 @@
 -- DeathKnightUnholy.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
@@ -1120,7 +1120,19 @@ end )
 
 local Glyphed = IsSpellKnownOrOverridesKnown
 
--- Tier 29
+-- The War Within
+spec:RegisterGear( "tww2", 229253, 229251, 229256, 229254, 229252 )
+spec:RegisterAuras( {
+    -- https://www.wowhead.com/spell=1216813
+    -- Winning Streak! On a Winning Streak! Death Coil and Epidemic damage increased by 30%.  
+    winning_streak = {
+        id = 1216813,
+        duration = 3600,
+        max_stack = 10
+    },
+} )
+
+-- Dragonflight
 spec:RegisterGear( "tier29", 200405, 200407, 200408, 200409, 200410 )
 spec:RegisterAuras( {
     vile_infusion = {
@@ -1135,10 +1147,7 @@ spec:RegisterAuras( {
         max_stack = 1
     }
 } )
-
--- Tier 30
 spec:RegisterGear( "tier30", 202464, 202462, 202461, 202460, 202459 )
--- 2 pieces (Unholy) : Death Coil and Epidemic damage increased by 10%. Casting Death Coil or Epidemic grants a stack of Master of Death, up to 20. Dark Transformation consumes Master of Death and grants 1% Mastery for each stack for 20 sec.
 spec:RegisterAura( "master_of_death", {
     id = 408375,
     duration = 30,
@@ -1149,28 +1158,41 @@ spec:RegisterAura( "death_dealer", {
     duration = 20,
     max_stack = 1
 } )
--- 4 pieces (Unholy) : Army of the Dead grants 20 stacks of Master of Death. When Death Coil or Epidemic consumes Sudden Doom gain 2 extra stacks of Master of Death and 10% Mastery for 6 sec.
 spec:RegisterAura( "lingering_chill", {
     id = 410879,
     duration = 12,
     max_stack = 1
 } )
-
 spec:RegisterGear( "tier31", 207198, 207199, 207200, 207201, 207203, 217223, 217225, 217221, 217222, 217224 )
--- (2) Apocalypse summons an additional Magus of the Dead. Your Magus of the Dead Shadow Bolt now fires a volley of Shadow Bolts at up to $s2 nearby enemies.
--- (4) Each Rune you spend increases the duration of your active Magi by ${$s1/1000}.1 sec and your Magi will now also cast Amplify Damage, increasing the damage you deal by $424949s2% for $424949d.
-
-
--- TWW2
-spec:RegisterAura( "winning_streak", {
-    id = 1216813,
-    max_stack = 10,
-    duration = 3600,
-    copy = "winning_streak_unholy"
-} )
 
 
 local any_dnd_set, wound_spender_set = false, false
+
+--[[local ExpireRunicCorruption = setfenv( function()
+    local debugstr
+
+    local mod = ( 2 + 0.1 * talent.runic_mastery.rank )
+
+    if Hekili.ActiveDebug then debugstr = format( "Runic Corruption expired; updating regen from %.2f to %.2f at %.2f + %.2f.", rune.cooldown, rune.cooldown * mod, offset, delay ) end
+    rune.cooldown = rune.cooldown * mod
+
+    for i = 1, 6 do
+        local exp = rune.expiry[ i ] - query_time
+
+        if exp > 0 then
+            rune.expiry[ i ] = query_time + exp * mod
+            if Hekili.ActiveDebug then debugstr = format( "%s\n - rune %d extended by %.2f [%.2f].", debugstr, i, exp * mod, rune.expiry[ i ] - query_time ) end
+        end
+    end
+
+    table.sort( rune.expiry )
+    rune.actual = nil
+    if Hekili.ActiveDebug then debugstr = format( "%s\n - %d, %.2f %.2f %.2f %.2f %.2f %.2f.", debugstr, rune.current, rune.expiry[1] - query_time, rune.expiry[2] - query_time, rune.expiry[3] - query_time, rune.expiry[4] - query_time, rune.expiry[5] - query_time, rune.expiry[6] - query_time ) end
+    forecastResources( "runes" )
+    if Hekili.ActiveDebug then debugstr = format( "%s\n - %d, %.2f %.2f %.2f %.2f %.2f %.2f.", debugstr, rune.current, rune.expiry[1] - query_time, rune.expiry[2] - query_time, rune.expiry[3] - query_time, rune.expiry[4] - query_time, rune.expiry[5] - query_time, rune.expiry[6] - query_time ) end
+    if debugstr then Hekili:Debug( debugstr ) end
+end, state )--]]
+
 
 local TriggerInflictionOfSorrow = setfenv( function ()
     applyBuff( "infliction_of_sorrow" )
@@ -1678,6 +1700,8 @@ spec:RegisterAbilities( {
                 applyBuff( "frenzied_monstrosity" )
                 applyBuff( "frenzied_monstrosity_pet" )
             end
+
+            if set_bonus.tww2 >= 4 then addStack( "winning_streak", nil, 10 ) end
 
         end,
 

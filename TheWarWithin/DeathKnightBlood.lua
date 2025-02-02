@@ -1,5 +1,5 @@
 -- DeathKnightBlood.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "DEATHKNIGHT" then return end
 
@@ -1078,7 +1078,26 @@ spec:RegisterAuras( {
 } )
 
 
--- TWW
+-- The War Within
+spec:RegisterGear( "tww2", 229253, 229251, 229256, 229254, 229252 )
+spec:RegisterAuras( {
+    -- https://www.wowhead.com/spell=1218601
+    -- Luck of the Draw! Damage increased by 15%. Death Strike costs 10 less Runic Power and strikes 2 additional nearby targets.  
+    luck_of_the_draw = {
+        id = 1218601,
+        duration = function() if set_bonus.tww2 >= 4 then return 12 end
+            return 10
+        end,
+        max_stack = 1,
+    },
+    -- https://www.wowhead.com/spell=1222698
+    -- Murderous Frenzy Your Haste is increased by 12%.  
+    murderous_frenzy = {
+        id = 1222698,
+        duration = 6,
+        max_stack = 1,
+    },
+} )
 spec:RegisterGear( "tww1", 212005, 212003, 212002, 212001, 212000 )
 spec:RegisterAuras( {
     unbreakable = {
@@ -1752,7 +1771,11 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return ( ( talent.ossuary.enabled and buff.bone_shield.stack >= 5 ) and 40 or 45 ) - ( talent.improved_death_strike.enabled and 5 or 0 ) - ( buff.blood_draw.up and 10 or 0 ) end,
+        spend = function () return ( ( talent.ossuary.enabled and buff.bone_shield.stack >= 5 ) and 40 or 45 ) 
+                - ( talent.improved_death_strike.enabled and 5 or 0 )
+                - ( buff.blood_draw.up and 10 or 0 )
+                - ( set_bonus.tww2 >= 4 and buff.luck_of_the_draw.up and 10 or 0 )
+                end,
         spendType = "runic_power",
 
         talent = "death_strike",

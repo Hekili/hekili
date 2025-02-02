@@ -1,5 +1,5 @@
 -- DruidBalance.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "DRUID" then return end
 
@@ -71,98 +71,133 @@ spec:RegisterResource( Enum.PowerType.Energy )
 -- Talents
 spec:RegisterTalents( {
     -- Druid
+    aessinas_renewal            = {  82232, 474678, 1 }, -- When a hit deals more than 12% of your maximum health, instantly heal for 10% of your health. This effect cannot occur more than once every 30 seconds.
+    aggravate_wounds            = {  94616, 441829, 1 }, -- Every attack with an Energy cost that you cast extends the duration of your Dreadful Wounds by 0.6 sec, up to 8 additional sec.
     astral_influence            = {  82210, 197524, 1 }, -- Increases the range of all of your spells by 5 yards.
-    cyclone                     = {  82213,  33786, 1 }, -- Tosses the enemy target into the air, disorienting them but making them invulnerable for up to 6 sec. Only one target can be affected by your Cyclone at a time.
-    feline_swiftness            = {  82239, 131768, 1 }, -- Increases your movement speed by 15%.
-    fluid_form                  = {  92229, 449193, 1 }, -- Shred and Rake can be used in any form and shift you into Cat Form. Mangle can be used in any form and shifts you into Bear Form. Wrath and Starfire shift you into Moonkin Form, if known.
-    forestwalk                  = { 100173, 400129, 1 }, -- Casting Regrowth increases your movement speed and healing received by 8% for 6 sec.
-    frenzied_regeneration       = {  82220,  22842, 1 }, -- Heals you for 32% health over 3 sec.
+    bestial_strength            = {  94611, 441841, 1 }, -- Maul and Raze damage increased by 20%.
+    bond_with_nature            = {  94625, 439929, 1 }, -- Healing you receive is increased by 4%.
+    bursting_growth             = {  94630, 440120, 1 }, -- When Bloodseeker Vines expire or you use Ferocious Bite on their target they explode in thorns, dealing 19,410 physical damage to nearby enemies. Damage reduced above 5 targets. When Symbiotic Blooms expire or you cast Rejuvenation on their target flowers grow around their target, healing them and up to 3 nearby allies for 3,956.
+    circle_of_the_heavens       = { 104078, 474541, 1 }, -- Magical damage dealt by your spells increased by 5%.
+    circle_of_the_wild          = { 104078, 474530, 1 }, -- Physical damage dealt by your abilities increased by 5%.
+    claw_rampage                = {  94613, 441835, 1 }, -- During Berserk, Shred, Swipe, and Thrash have a 25% chance to make your next Ferocious Bite become Ravage.
+    cyclone                     = {  82229,  33786, 1 }, -- Tosses the enemy target into the air, disorienting them but making them invulnerable for up to 5 sec. Only one target can be affected by your Cyclone at a time.
+    dreadful_wound              = {  94620, 441809, 1 }, -- Ravage also inflicts a Bleed that causes 7,375 damage over 6 sec and saps its victims' strength, reducing damage they deal to you by 10%. Dreadful Wound is not affected by Circle of Life and Death. 
+    empowered_shapeshifting     = {  94612, 441689, 1 }, -- Frenzied Regeneration can be cast in Cat Form for 40 Energy. Bear Form reduces magic damage you take by 4%. Shred and Swipe damage increased by 6%. Mangle damage increased by 15%.
+    entangling_vortex           = {  94622, 439895, 1 }, -- Enemies pulled into Ursol's Vortex are rooted in place for 3 sec. Damage may cancel the effect.
+    feline_swiftness            = {  82236, 131768, 1 }, -- Increases your movement speed by 15%.
+    flower_walk                 = {  94622, 439901, 1 }, -- During Barkskin your movement speed is increased by 10% and every second flowers grow beneath your feet that heal up to 3 nearby injured allies for 3,732.
+    fluid_form                  = {  82246, 449193, 1 }, -- Shred, Rake, and Skull Bash can be used in any form and shift you into Cat Form, if necessary. Mangle can be used in any form and shifts you into Bear Form. Wrath and Starfire shift you into Moonkin Form, if known.
+    forestwalk                  = {  82243, 400129, 1 }, -- Casting Regrowth increases your movement speed and healing received by 8% for 6 sec.
+    fount_of_strength           = {  94618, 441675, 1 }, -- Your maximum Energy and Rage are increased by 20. Frenzied Regeneration also increases your maximum health by 10%.
+    frenzied_regeneration       = {  82220,  22842, 1 }, -- Heals you for 32% health over 3 sec, and increases healing received by 20%.
+    gale_winds                  = { 104079, 400142, 1 }, -- Increases Typhoon's radius by 20% and its range by 5 yds.
+    grievous_wounds             = {  82239, 474526, 1 }, -- Rake, Rip, and Thrash damage increased by 10%.
+    harmonious_constitution     = {  94625, 440116, 1 }, -- Your Regrowth's healing to yourself is increased by 35%.
     heart_of_the_wild           = {  82231, 319454, 1 }, -- Abilities not associated with your specialization are substantially empowered for 45 sec. Feral: Gain 1 Combo Point every 2 sec while in Cat Form and Physical damage increased by 20%. Guardian: Bear Form gives an additional 20% Stamina, multiple uses of Ironfur may overlap, and Frenzied Regeneration has 2 charges. Restoration: Healing increased by 30%, and mana costs reduced by 50%.
     hibernate                   = {  82211,   2637, 1 }, -- Forces the enemy target to sleep for up to 40 sec. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
-    improved_barkskin           = {  82219, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
-    improved_rejuvenation       = {  82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec.
+    hunt_beneath_the_open_skies = {  94629, 439868, 1 }, -- Damage and healing while in Cat Form increased by 3%. Moonfire and Sunfire damage increased by 10%.
+    implant                     = {  94628, 440118, 1 }, -- Your Swiftmend causes a Symbiotic Bloom to grow on the target for 6 sec.
+    improved_barkskin           = { 104085, 327993, 1 }, -- Barkskin's duration is increased by 4 sec.
     improved_stampeding_roar    = {  82230, 288826, 1 }, -- Cooldown reduced by 60 sec.
-    improved_sunfire            = {  93714, 231050, 1 }, -- Sunfire now applies its damage over time effect to all enemies within 8 yards.
-    incapacitating_roar         = {  82237,     99, 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage will cancel the effect.
-    innervate                   = {  82243,  29166, 1 }, -- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 8 sec.
-    instincts_of_the_claw       = { 100176, 449184, 2 }, -- Shred, Swipe, Rake, Mangle, and Thrash damage increased by 5%.
-    ironfur                     = {  82227, 192081, 1 }, -- Increases armor by 2,901 for 7 sec.
+    incapacitating_roar         = {  82237,     99, 1 }, -- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage may cancel the effect.
+    incessant_tempest           = { 104079, 400140, 1 }, -- Reduces the cooldown of Typhoon by 5 sec.
+    innervate                   = { 100175,  29166, 1 }, -- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 8 sec.
+    instincts_of_the_claw       = { 104081, 449184, 1 }, -- Ferocious Bite and Maul damage increased by 8%.
+    ironfur                     = {  82227, 192081, 1 }, -- Increases armor by 10,486 for 7 sec.
     killer_instinct             = {  82225, 108299, 2 }, -- Physical damage and Armor increased by 6%.
-    lore_of_the_grove           = { 100175, 449185, 2 }, -- Moonfire and Sunfire damage increased by 10%. Rejuvenation and Wild Growth healing increased by 5%.
+    killing_strikes             = {  94619, 441824, 1 }, -- Ravage increases your Agility by 8% and the armor granted by Ironfur by 20% for 8 sec. Your first Mangle after entering combat makes your next Maul become Ravage.
+    lethal_preservation         = {  94624, 455461, 1 }, -- When you remove an effect with Soothe or Remove Corruption, gain a combo point and heal for 4% of your maximum health. If you are at full health an injured party or raid member will be healed instead.
+    light_of_the_sun            = { 104083, 202918, 1 }, -- Reduces the remaining cooldown on Solar Beam by 15 sec when it interrupts the primary target.
+    lingering_healing           = {  82240, 231040, 1 }, -- Rejuvenation's duration is increased by 3 sec. Regrowth's duration is increased by 3 sec when cast on yourself.
+    lore_of_the_grove           = { 104080, 449185, 1 }, -- Moonfire and Sunfire damage increased by 10%.
+    lycaras_meditation          = {  92229, 474728, 1 }, -- You retain Lycara's Teachings' bonus from your most recent shapeshift form for 5 sec after shifting out of it.
     lycaras_teachings           = {  82233, 378988, 2 }, -- You gain 3% of a stat while in each form: No Form: Haste Cat Form: Critical Strike Bear Form: Versatility Moonkin Form: Mastery
-    maim                        = {  82221,  22570, 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 2,150 damage, 1 sec 2 points: 4,300 damage, 2 sec 3 points: 6,450 damage, 3 sec 4 points: 8,600 damage, 4 sec 5 points: 10,750 damage, 5 sec
-    mass_entanglement           = {  82242, 102359, 1 }, -- Roots the target and all enemies within 12 yards in place for 10 sec. Damage may interrupt the effect. Usable in all shapeshift forms.
-    matted_fur                  = {  82236, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 40,771 damage for 8 sec.
+    maim                        = {  82221,  22570, 1 }, -- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point: 1 point : 3,105 damage, 1 sec 2 points: 6,211 damage, 2 sec 3 points: 9,316 damage, 3 sec 4 points: 12,422 damage, 4 sec 5 points: 15,528 damage, 5 sec
+    mass_entanglement           = {  82207, 102359, 1 }, -- Roots the target and all enemies within 12 yards in place for 10 sec. Damage may interrupt the effect. Usable in all shapeshift forms.
+    matted_fur                  = { 100177, 385786, 1 }, -- When you use Barkskin or Survival Instincts, absorb 60,657 damage for 8 sec.
     mighty_bash                 = {  82237,   5211, 1 }, -- Invokes the spirit of Ursoc to stun the target for 4 sec. Usable in all shapeshift forms.
+    moonkin_form                = {  82208,  24858, 1 }, -- Shapeshift into Moonkin Form, increasing the damage of your spells by 10% and your armor by 125%, and granting protection from Polymorph effects. While in this form, single-target attacks against you have a 15% chance to make your next Starfire instant. The act of shapeshifting frees you from movement impairing effects.
     natural_recovery            = {  82206, 377796, 1 }, -- Healing you receive is increased by 4%.
     natures_vigil               = {  82244, 124974, 1 }, -- For 15 sec, all single-target damage also heals a nearby friendly target for 20% of the damage done.
     nurturing_instinct          = {  82214,  33873, 2 }, -- Magical damage and healing increased by 6%.
-    oakskin                     = { 100174, 449191, 1 }, -- Survival Instincts and Barkskin reduce damage taken by an additional 10%.
-    primal_fury                 = {  82238, 159286, 1 }, -- While in Cat Form, when you critically strike with an attack that generates a combo point, you gain an additional combo point. Damage over time cannot trigger this effect. Mangle critical strike damage increased by 20%.
-    rake                        = {  82199,   1822, 1 }, -- Rake the target for 4,346 Bleed damage and an additional 28,858 Bleed damage over 15 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
-    rejuvenation                = {  82217,    774, 1 }, -- Heals the target for 27,733 over 12 sec.
-    remove_corruption           = {  82205,   2782, 1 }, -- Nullifies corrupting effects on the friendly target, removing all Curse and Poison effects.
+    oakskin                     = { 100176, 449191, 1 }, -- Survival Instincts and Barkskin reduce damage taken by an additional 10%.
+    packs_endurance             = {  94615, 441844, 1 }, -- Stampeding Roar's duration is increased by 25%.
+    perfectlyhoned_instincts    = { 104082, 1213597, 1 }, -- Well-Honed Instincts can trigger up to once every 60 sec.
+    primal_fury                 = {  82224, 159286, 1 }, -- While in Cat Form, when you critically strike with an attack that generates a combo point, you gain an additional combo point. Damage over time cannot trigger this effect. Mangle critical strike damage increased by 20%.
+    rake                        = {  82199,   1822, 1 }, -- Rake the target for 6,277 Bleed damage and an additional 35,373 Bleed damage over 15 sec. While stealthed, Rake will also stun the target for 4 sec and deal 60% increased damage. Awards 1 combo point.
+    ravage                      = {  94609, 441583, 1 }, -- Your auto-attacks have a chance to make your next Ferocious Bite become Ravage. Ravage Finishing move that slashes through your target in a wide arc, dealing Physical damage per combo point to your target and consuming up to 25 additional Energy to increase that damage by up to 100%. Hits all other enemies in front of you for reduced damage per combo point spent. 1 point: 9,204 damage, 3,551 in an arc 2 points: 18,409 damage, 7,103 in an arc 3 points: 27,614 damage, 10,655 in an arc 4 points: 36,819 damage, 14,207 in an arc 5 points: 46,023 damage, 17,759 in an arc
+    rejuvenation                = {  82217,    774, 1 }, -- Heals the target for 41,953 over 12 sec.
+    remove_corruption           = {  82241,   2782, 1 }, -- Nullifies corrupting effects on the friendly target, removing all Curse and Poison effects.
     renewal                     = {  82232, 108238, 1 }, -- Instantly heals you for 30% of maximum health. Usable in all shapeshift forms.
-    rip                         = {  82222,   1079, 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 20,702 over 8 sec 2 points: 31,053 over 12 sec 3 points: 41,405 over 16 sec 4 points: 51,756 over 20 sec 5 points: 62,107 over 24 sec
-    rising_light_falling_night  = {  82207, 417712, 1 }, -- Increases your damage and healing by 3% during the day. Increases your Versatility by 2% during the night.
-    skull_bash                  = {  82224, 106839, 1 }, -- You charge and bash the target's skull, interrupting spellcasting and preventing any spell in that school from being cast for 3 sec.
+    resilient_flourishing       = {  94631, 439880, 1 }, -- Bloodseeker Vines and Symbiotic Blooms last 2 additional sec. When a target afflicted by Bloodseeker Vines dies, the vines jump to a valid nearby target for their remaining duration.
+    rip                         = {  82222,   1079, 1 }, -- Finishing move that causes Bleed damage over time. Lasts longer per combo point. 1 point : 27,904 over 8 sec 2 points: 41,856 over 12 sec 3 points: 55,808 over 16 sec 4 points: 69,760 over 20 sec 5 points: 83,712 over 24 sec
+    root_network                = {  94631, 439882, 1 }, -- Each active Bloodseeker Vine increases the damage your abilities deal by 2%. Each active Symbiotic Bloom increases the healing of your spells by 2%.
+    ruthless_aggression         = {  94619, 441814, 1 }, -- Ravage increases your auto-attack speed by 35% for 6 sec.
     soothe                      = {  82229,   2908, 1 }, -- Soothes the target, dispelling all enrage effects.
     stampeding_roar             = {  82234, 106898, 1 }, -- Shift into Bear Form and let loose a wild roar, increasing the movement speed of all friendly players within 15 yards by 60% for 8 sec.
-    starfire                    = {  82201, 194153, 1 }, -- Call down a burst of energy, causing 16,607 Arcane damage to the target, and 5,343 Arcane damage to all other enemies within 10 yards. Deals reduced damage beyond 8 targets. Generates 12 Astral Power.
-    starlight_conduit           = { 100223, 451211, 1 }, -- Wrath, Starsurge, and Starfire damage increased by 5%.
-    starsurge                   = {  82202,  78674, 1 }, -- Launch a surge of stellar energies at the target, dealing 61,315 Astral damage.
-    sunfire                     = {  82208,  93402, 1 }, -- A quick beam of solar light burns the enemy for 4,610 Nature damage and then an additional 63,129 Nature damage over 18 sec to the primary target and all enemies within 8 yards. Generates 6 Astral Power.
+    starfire                    = {  82201, 194153, 1 }, -- Call down a burst of energy, causing 25,745 Arcane damage to the target, and 8,283 Arcane damage to all other enemies within 10 yards. Deals reduced damage beyond 8 targets. Generates 10 Astral Power.
+    starlight_conduit           = { 100223, 451211, 1 }, -- Wrath, Starsurge, and Starfire damage increased by 5%. 
+    starsurge                   = {  82202,  78674, 1 }, -- Launch a surge of stellar energies at the target, dealing 81,158 Astral damage.
+    strategic_infusion          = {  94623, 439890, 1 }, -- Attacking from Prowl increases the chance for Shred, Rake, and Swipe to critically strike by 8% for 6 sec. Casting Regrowth increases the chance for your periodic heals to critically heal by 8% for 10 sec.
+    strike_for_the_heart        = {  94614, 441845, 1 }, -- Shred, Swipe, and Mangle's critical strike chance and critical strike damage are increased by 15%. 
+    sunfire                     = {  93714,  93402, 1 }, -- A quick beam of solar light burns the enemy for 5,628 Nature damage and then an additional 65,372 Nature damage over 18 sec to the primary target and all enemies within 8 yards. Generates 6 Astral Power.
+    symbiotic_relationship      = { 100173, 474750, 1 }, -- Form a bond with an ally. Your self-healing also heals your bonded ally for 10% of the amount healed. Your healing to your bonded ally also heals you for 8% of the amount healed.
+    tear_down_the_mighty        = {  94614, 441846, 1 }, -- The cooldown of Pulverize is reduced by 10 sec.
     thick_hide                  = {  82228,  16931, 1 }, -- Reduces all damage taken by 4%.
     thrash                      = {  82223, 106832, 1 }, -- Thrash all nearby enemies, dealing immediate physical damage and periodic bleed damage. Damage varies by shapeshift form.
+    thriving_growth             = {  94626, 439528, 1 }, -- Rip and Rake damage has a chance to cause Bloodseeker Vines to grow on the victim, dealing 23,583 Bleed damage over 6 sec. Wild Growth, Regrowth, and Efflorescence healing has a chance to cause Symbiotic Blooms to grow on the target, healing for 23,740 over 6 sec. Multiple instances of these can overlap.
     tiger_dash                  = {  82198, 252216, 1 }, -- Shift into Cat Form and increase your movement speed by 200%, reducing gradually over 5 sec.
+    twin_sprouts                = {  94628, 440117, 1 }, -- When Bloodseeker Vines or Symbiotic Blooms grow, they have a 20% chance to cause another growth of the same type to immediately grow on a valid nearby target.
     typhoon                     = {  82209, 132469, 1 }, -- Blasts targets within 20 yards in front of you with a violent Typhoon, knocking them back and reducing their movement speed by 50% for 6 sec. Usable in all shapeshift forms.
-    ursine_vigor                = {  82235, 377842, 1 }, -- For 4 sec after shifting into Bear Form, your health and armor are increased by 15%.
-    ursocs_spirit               = { 100177, 449182, 1 }, -- Stamina in Bear Form is increased by 10%.
-    ursols_vortex               = {  82242, 102793, 1 }, -- Conjures a vortex of wind for 10 sec at the destination, reducing the movement speed of all enemies within 8 yards by 50%. The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center. Usable in all shapeshift forms.
+    ursine_vigor                = { 100174, 377842, 1 }, -- For 4 sec after shifting into Bear Form, your health and armor are increased by 15%.
+    ursocs_spirit               = {  82219, 449182, 1 }, -- Stamina increased by 4%. Stamina in Bear Form is increased by an additional 5%.
+    ursols_vortex               = {  82207, 102793, 1 }, -- Conjures a vortex of wind for 10 sec at the destination, reducing the movement speed of all enemies within 8 yards by 50%. The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center. Usable in all shapeshift forms.
     verdant_heart               = {  82218, 301768, 1 }, -- Frenzied Regeneration and Barkskin increase all healing received by 20%.
-    wellhoned_instincts         = {  82246, 377847, 1 }, -- When you fall below 40% health, you cast Frenzied Regeneration, up to once every 120 sec.
+    vigorous_creepers           = {  94627, 440119, 1 }, -- Bloodseeker Vines increase the damage your abilities deal to affected enemies by 5%. Symbiotic Blooms increase the healing your spells do to affected targets by 20%.
+    wellhoned_instincts         = {  82235, 377847, 1 }, -- When you fall below 40% health, you cast Frenzied Regeneration, up to once every 90 sec.
     wild_charge                 = {  82198, 102401, 1 }, -- Fly to a nearby ally's position.
-    wild_growth                 = {  82241,  48438, 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 22,224 over 7 sec. Healing starts high and declines over the duration.
-
+    wild_growth                 = {  82205,  48438, 1 }, -- Heals up to 5 injured allies within 30 yards of the target for 35,657 over 7 sec. Healing starts high and declines over the duration.
+    wildpower_surge             = {  94612, 441691, 1 }, -- Mangle grants Feline Potential. When you have 6 stacks, the next time you transform into Cat Form, gain 5 combo points and your next Ferocious Bite or Rip deals 225% increased damage for its full duration.
+    wildshape_mastery           = {  94610, 441678, 1 }, -- Ironfur and Frenzied Regeneration persist in Cat Form. When transforming from Bear to Cat Form, you retain 80% of your Bear Form armor and health for 6 sec. For 6 sec after entering Bear Form, you heal for 10% of damage taken over 8 sec. 
+    wildstalkers_power          = {  94621, 439926, 1 }, -- Rip and Ferocious Bite damage increased by 5%. Rejuvenation healing increased by 10%.
+    
     -- Balance
     aetherial_kindling          = {  88209, 327541, 1 }, -- Casting Starfall extends the duration of active Moonfires and Sunfires by 3.0 sec, up to 28 sec.
-    astral_communion            = {  88235, 450598, 1 }, -- Increases maximum Astral Power by 20. Entering Eclipse reduces the Astral Power cost of your next Starsurge or Starfall by 15.
+    astral_communion            = {  88235, 450598, 1 }, -- Increases maximum Astral Power by 20. Entering Eclipse reduces the Astral Power cost of your next Starsurge or Starfall by 15. 
     astral_smolder              = {  88204, 394058, 1 }, -- Your Starfire and Wrath damage has a 35% chance to cause the target to languish for an additional 60% of your spell's damage over 6 sec.
     astronomical_impact         = {  88232, 468960, 1 }, -- The critical strike damage of your Astral spells is increased by 20%.
     balance_of_all_things       = {  88214, 394048, 2 }, -- Entering Eclipse increases your critical strike chance with Arcane or Nature spells by 20%, decreasing by 2% every 1 sec.
     celestial_alignment         = {  88215, 194223, 1 }, -- Celestial bodies align, maintaining both Eclipses and granting 10% haste for 12 sec.
-    convoke_the_spirits         = {  88206, 391528, 1 }, -- Call upon the spirits for an eruption of energy, channeling a rapid flurry of 12 Druid spells and abilities over 3 sec. You will cast Starsurge, Starfall, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
+    convoke_the_spirits         = {  88206, 391528, 1 }, -- Call upon the spirits for an eruption of energy, channeling a rapid flurry of 16 Druid spells and abilities over 4 sec. You will cast Starsurge, Starfall, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
     cosmic_rapidity             = {  88227, 400059, 2 }, -- Your Moonfire, Sunfire, and Stellar Flare deal damage 20% more frequently.
-    crashing_star               = { 103847, 468978, 1 }, -- Shooting Stars has a 15% chance to instead call down a Crashing Star, dealing 20,782 Astral damage to the target and generating 4 Astral Power.
+    crashing_star               = { 103847, 468978, 1 }, -- Shooting Stars has a 15% chance to instead call down a Crashing Star, dealing 31,134 Astral damage to the target and generating 4 Astral Power.
     denizen_of_the_dream        = {  88234, 394065, 1 }, -- Your Moonfire and Sunfire have a chance to summon a Faerie Dragon to assist you in battle for 30 sec.
-    eclipse                     = {  88223,  79577, 1 }, -- Casting 2 Starfires empowers Wrath for 15 sec. Casting 2 Wraths empowers Starfire for 15 sec.  Eclipse (Solar) Nature spells deal 15% additional damage and Wrath damage is increased by 40%.  Eclipse (Lunar) Arcane spells deal 15% additional damage and the damage Starfire deals to nearby enemies is increased by 30%.
+    eclipse                     = {  88223,  79577, 1 }, -- Casting 2 Starfires empowers Wrath for 15 sec. Casting 2 Wraths empowers Starfire for 15 sec.  Eclipse (Solar) Nature spells deal 15% additional damage and Wrath damage is increased by 60%.  Eclipse (Lunar) Arcane spells deal 15% additional damage and the damage Starfire deals to nearby enemies is increased by 60%.
     elunes_guidance             = {  88228, 393991, 1 }, --  Incarnation: Chosen of Elune Reduces the Astral Power cost of Starsurge by 10, and the Astral Power cost of Starfall by 12.  Convoke the Spirits Cooldown is reduced by 50% and its duration and number of spells cast is reduced by 25%. Convoke the Spirits has an increased chance to use an exceptional spell or ability.
     force_of_nature             = {  88210, 205636, 1 }, -- Summons a stand of 3 Treants for 10 sec which immediately taunt and attack enemies in the targeted area. Generates 20 Astral Power.
-    fury_of_elune               = {  88224, 202770, 1 }, -- Calls down a beam of pure celestial energy that follows the enemy, dealing up to 100,901 Astral damage over 8 sec within its area. Damage reduced on secondary targets. Generates 40 Astral Power over its duration.
+    fury_of_elune               = {  88224, 202770, 1 }, -- Calls down a beam of pure celestial energy that follows the enemy, dealing up to 83,967 Astral damage over 8 sec within its area. Damage reduced on secondary targets. Generates 40 Astral Power over its duration.
     hail_of_stars               = { 103846, 469004, 1 }, -- Casting a free Starsurge or Starfall grants Solstice for 3 sec.
     harmony_of_the_heavens      = {  88218, 450558, 1 }, -- Starsurge or Starfall increase your current Eclipse's Arcane or Nature damage bonus by an additional 2%, up to 6%.
-    incarnation                 = {  88206, 102560, 1 }, -- An improved Moonkin Form that grants both Eclipses, any learned Celestial Alignment bonuses, and 10% critical strike chance. Lasts 16 sec. You may shapeshift in and out of this improved Moonkin Form for its duration.
     incarnation_chosen_of_elune = {  88206, 102560, 1 }, -- An improved Moonkin Form that grants both Eclipses, any learned Celestial Alignment bonuses, and 10% critical strike chance. Lasts 16 sec. You may shapeshift in and out of this improved Moonkin Form for its duration.
-    light_of_the_sun            = {  88211, 202918, 1 }, -- Reduces the remaining cooldown on Solar Beam by 15 sec when it interrupts the primary target.
     natures_balance             = {  88226, 202430, 1 }, -- While in combat you generate 2 Astral Power every 3 sec. While out of combat your Astral Power rebalances to 50 instead of depleting to empty.
     natures_grace               = {  88208, 450347, 1 }, -- When Eclipse ends or when you enter combat, enter a Dreamstate, reducing the cast time of your next 2 Starfires or Wraths by 40%.
-    new_moon                    = {  88224, 274281, 1 }, -- Deals 75664.1 Astral damage to the target and empowers New Moon to become Half Moon. Generates 10 Astral Power.
+    new_moon                    = {  88224, 274281, 1 }, -- Deals 73,961 Astral damage to the target and empowers New Moon to become Half Moon. Generates 10 Astral Power.
     orbit_breaker               = {  88199, 383197, 1 }, -- Every 30th Shooting Star calls down a Full Moon at 60% effectiveness upon its target.
-    orbital_strike              = {  88221, 390378, 1 }, -- Incarnation: Chosen of Elune blasts all enemies in a targeted area for 46,180 Astral damage and applies Stellar Flare to them. Reduces the cooldown of Incarnation: Chosen of Elune by 60 sec.
-    power_of_goldrinn           = {  88200, 394046, 1 }, -- Starsurge has a chance to summon the Spirit of Goldrinn, which immediately deals 13,505 Astral damage to the target.
+    orbital_strike              = {  88221, 390378, 1 }, -- Incarnation: Chosen of Elune blasts all enemies in a targeted area for 57,645 Astral damage and applies Stellar Flare to them. Reduces the cooldown of Incarnation: Chosen of Elune by 60 sec.
+    power_of_goldrinn           = {  88200, 394046, 1 }, -- Starsurge has a chance to summon the Spirit of Goldrinn, which immediately deals 16,858 Astral damage to the target.
     radiant_moonlight           = {  88213, 394121, 1 }, -- New Moon, Half Moon, and Full Moon deal 25% increased damage. Full Moon becomes Full Moon once more before resetting to New Moon. Fury of Elune deals 50% increased damage and its cooldown is reduced by 15 sec.
-    rattle_the_stars            = {  88236, 393954, 1 }, -- Starsurge and Starfall deal 10% increased damage and their cost is reduced by 10%.
-    shooting_stars              = {  88225, 202342, 1 }, -- Moonfire and Sunfire damage over time has a chance to call down a falling star, dealing 6,927 Astral damage and generating 2 Astral Power.
+    rattle_the_stars            = {  88236, 393954, 1 }, -- Starsurge and Starfall deal 8% increased damage and their cost is reduced by 10%.
+    shooting_stars              = {  88225, 202342, 1 }, -- Moonfire and Sunfire damage over time has a chance to call down a falling star, dealing 10,376 Astral damage and generating 2 Astral Power.
     solar_beam                  = {  88231,  78675, 1 }, -- Summons a beam of solar light over an enemy target's location, interrupting the target and silencing all enemies within the beam. Lasts 8 sec.
     solstice                    = {  88203, 343647, 1 }, -- During the first 6 sec of every Eclipse, Shooting Stars fall 200% more often.
     soul_of_the_forest          = {  88212, 114107, 1 }, -- Solar Eclipse increases Wrath's Astral Power generation by 60% and Lunar Eclipse increases Starfire's damage and Astral Power generation by 20% for each target hit beyond the first, up to 60%.
     starlord                    = {  88207, 202345, 2 }, -- Starsurge and Starfall grant you 2% Haste for 15 sec. Stacks up to 3 times. Gaining a stack does not refresh the duration.
     starweaver                  = {  88236, 393940, 1 }, -- Starsurge has a 20% chance to make Starfall free. Starfall has a 40% chance to make Starsurge free.
     stellar_amplification       = {  88229, 450212, 1 }, -- Starsurge increases the damage the target takes from your periodic effects and Shooting Stars by 20% for 5 sec. Reapplying this effect extends its duration, up to 20 sec.
-    stellar_flare               = {  91048, 202347, 1 }, -- Burns the target for 4,117 Astral damage, and then an additional 60,940 damage over 24 sec. If dispelled, causes 48,490 damage to the dispeller and blasts them upwards. Generates 12 Astral Power.
+    stellar_flare               = {  91048, 202347, 1 }, -- Burns the target for 5,139 Astral damage, and then an additional 64,532 damage over 24 sec. If dispelled, causes 60,528 damage to the dispeller and blasts them upwards. Generates 12 Astral Power.
     sundered_firmament          = {  88199, 394094, 1 }, -- Every other Eclipse creates a Fury of Elune at 25% effectiveness that follows your current target for 8 sec.
-    sunseeker_mushroom          = {  88202, 468936, 1 }, -- Sunfire damage has a chance to grow a magical mushroom at a target's location. After 1 sec, the mushroom detonates, dealing 47,450 Nature damage and then an additional 26,765 Nature damage over 10 sec. Affected targets are slowed by 50%. Generates up to 20 Astral Power based on targets hit.
-    touch_the_cosmos            = {  88222, 450356, 1 }, -- Casting Wrath in an Eclipse has a 12% chance to make your next Starsurge or Starfall free. Casting Starfire in an Eclipse has a 18% chance to make your next Starsurge or Starfall free.
+    sunseeker_mushroom          = {  88202, 468936, 1 }, -- Sunfire damage has a chance to grow a magical mushroom at a target's location. After 1 sec, the mushroom detonates, dealing 63,714 Nature damage and then an additional 35,939 Nature damage over 10 sec. Affected targets are slowed by 50%. Generates up to 20 Astral Power based on targets hit. 
+    touch_the_cosmos            = {  88222, 450356, 1 }, -- Casting Wrath in an Eclipse has a 15% chance to make your next Starsurge or Starfall free. Casting Starfire in an Eclipse has a 22% chance to make your next Starsurge or Starfall free.
     twin_moons                  = {  88201, 279620, 1 }, -- Moonfire deals 10% increased damage and also hits another nearby enemy within 15 yds of the target.
     umbral_embrace              = {  88216, 393760, 1 }, -- Wrath and Starfire have a 20% chance to cause your next Wrath or Starfire cast during an Eclipse to become Astral and deal 75% additional damage.
     umbral_inspiration          = {  88217, 450418, 1 }, -- Consuming Umbral Embrace increases the damage of your Moonfire, Sunfire, Stellar Flare, Shooting Stars, and Starfall by 30% for 6 sec.
@@ -170,9 +205,9 @@ spec:RegisterTalents( {
     waning_twilight             = {  88220, 393956, 1 }, -- When you have 3 periodic effects from your spells on a target, your damage and healing on them are increased by 6%.
     warrior_of_elune            = {  88210, 202425, 1 }, -- Your next 3 Starfires are instant cast and generate 30% increased Astral Power.
     whirling_stars              = {  88221, 468743, 1 }, -- Incarnation: Chosen of Elune's cooldown is reduced to 100 seconds and it has two charges, but its duration is reduced by 20%.
-    wild_mushroom               = {  88202,  88747, 1 }, -- Grow a magical mushroom at the target enemy's location. After 1 sec, the mushroom detonates, dealing 47,450 Nature damage and then an additional 26,765 Nature damage over 10 sec. Affected targets are slowed by 50%. Generates up to 20 Astral Power based on targets hit.
+    wild_mushroom               = {  88202,  88747, 1 }, -- Grow a magical mushroom at the target enemy's location. After 1 sec, the mushroom detonates, dealing 63,714 Nature damage and then an additional 35,939 Nature damage over 10 sec. Affected targets are slowed by 50%. Generates up to 20 Astral Power based on targets hit.
     wild_surges                 = {  91048, 406890, 1 }, -- Your Wrath and Starfire chance to critically strike is increased by 10% and they generate 2 additional Astral Power.
-
+    
     -- Elune's Chosen
     arcane_affinity             = {  94586, 429540, 1 }, -- All Arcane damage from your spells and abilities is increased by 3%.
     astral_insight              = {  94585, 429536, 1 }, -- Incarnation: Chosen of Elune increases Arcane damage from spells and abilities by 10% while active. Increases the duration and number of spells cast by Convoke the Spirits by 25%.
@@ -183,13 +218,13 @@ spec:RegisterTalents( {
     lunar_amplification         = {  94596, 429529, 1 }, -- Each non-Arcane damaging ability you use increases the damage of your next Arcane damaging ability by 3%, stacking up to 3 times.
     lunar_calling               = {  94590, 429523, 1 }, -- Starfire deals 100% increased damage to its primary target, but no longer triggers Solar Eclipse.
     lunar_insight               = {  94588, 429530, 1 }, -- Moonfire deals 20% additional damage.
-    lunation                    = {  94586, 429539, 1 }, -- Your Arcane abilities reduce the cooldown of Fury of Elune by 2.0 sec and the cooldown of New Moon, Half Moon, and Full Moon by 1.0 sec.
+    lunation                    = {  94586, 429539, 1 }, -- Your Arcane abilities reduce the cooldown of Fury of Elune by 2.0 sec and the cooldown of New Moon, Half Moon, and Full Moon by 1.0 sec. 
     moon_guardian               = {  94598, 429520, 1 }, -- Moonfire and Starfire generate 2 additional Astral Power.
     moondust                    = {  94597, 429538, 1 }, -- Enemies affected by Moonfire are slowed by 20%.
     stellar_command             = {  94590, 429668, 1 }, -- Increases the damage of Fury of Elune by 15% and the damage of Full Moon by 25%.
     the_eternal_moon            = {  94587, 424113, 1 }, -- Further increases the power of Boundless Moonlight.  Fury of Elune The flash of energy now generates 6 Astral Power and its damage is increased by 50%.  Full Moon New Moon and Half Moon now also call down 1 Minor Moon.
-    the_light_of_elune          = {  94585, 428655, 1 }, -- Moonfire damage has a chance to call down a Fury of Elune to follow your target for 3 sec.  Fury of Elune Calls down a beam of pure celestial energy, dealing 37,838 Astral damage over 3 sec within its area. Generates 15 Astral Power over its duration.
-
+    the_light_of_elune          = {  94585, 428655, 1 }, -- Moonfire damage has a chance to call down a Fury of Elune to follow your target for 3 sec.  Fury of Elune Calls down a beam of pure celestial energy, dealing 31,487 Astral damage over 3 sec within its area. Generates 15 Astral Power over its duration.
+    
     -- Keeper of the Grove
     blooming_infusion           = {  94601, 429433, 1 }, -- Every 5 Regrowths you cast makes your next Wrath, Starfire, or Entangling Roots instant and increases damage it deals by 100%. Every 5 Starsurges or Starfalls you cast makes your next Regrowth or Entangling roots instant.
     bounteous_bloom             = {  94591, 429215, 1 }, -- Your Force of Nature treants generate 10 Astral Power every 2 sec.
@@ -208,26 +243,24 @@ spec:RegisterTalents( {
     treants_of_the_moon         = {  94599, 428544, 1 }, -- Your Force of Nature treants cast Moonfire on nearby targets about once every 6 sec.
 } )
 
-
 -- PvP Talents
-spec:RegisterPvpTalents( {
-    celestial_guardian     =  180, -- (233754)
-    crescent_burn          =  182, -- (200567)
-    deep_roots             =  834, -- (233755)
-    dying_stars            =  822, -- (410544)
+spec:RegisterPvpTalents( { 
+    celestial_guardian     =  180, -- (233754) 
+    crescent_burn          =  182, -- (200567) 
+    deep_roots             =  834, -- (233755) Increases the amount of damage required to cancel your Entangling Roots or Mass Entanglement by 75%.
+    dying_stars            =  822, -- (410544) Enemies that dispel your Moonfire or Sunfire suffer 15% additional damage from their effects for 12 sec. If already vulnerable, 50% of the remaining duration is applied to the dispeller.
     faerie_swarm           =  836, -- (209749) Swarms the target with Faeries, disarming the enemy, preventing the use of any weapons or shield and reducing movement speed by 30% for 5 sec.
-    high_winds             = 5383, -- (200931)
-    malornes_swiftness     = 5515, -- (236147)
-    master_shapeshifter    = 5604, -- (411266)
-    moon_and_stars         =  184, -- (233750)
-    moonkin_aura           =  185, -- (209740)
-    owlkin_adept           = 5407, -- (354541)
-    protector_of_the_grove = 3728, -- (209730)
-    star_burst             = 3058, -- (356517)
-    thorns                 = 3731, -- (305497) Sprout thorns for 12 sec on the friendly target. When victim to melee attacks, thorns deals 19,164 Nature damage back to the attacker. Attackers also have their movement speed reduced by 50% for 4 sec.
-    tireless_pursuit       = 5646, -- (377801)
+    high_winds             = 5383, -- (200931) Increases the range of Cyclone, Typhoon, and Entangling Roots by 5 yds.
+    malornes_swiftness     = 5515, -- (236147) Your Travel Form movement speed while within a Battleground or Arena is increased by 20% and you always move at 100% movement speed while in Travel Form.
+    master_shapeshifter    = 5604, -- (411266) 
+    moon_and_stars         =  184, -- (233750) Entering an Eclipse summons a beam of light at your location granting you 50% reduction in silence and interrupts for 6 sec.
+    moonkin_aura           =  185, -- (209740) 
+    owlkin_adept           = 5407, -- (354541) 
+    protector_of_the_grove = 3728, -- (209730) 
+    star_burst             = 3058, -- (356517) 
+    thorns                 = 3731, -- (1217017) Casting Barkskin sprouts thorns on you for until canceled. When victim to melee attacks, thorns deals 27,681 Nature damage back to the attacker. Attackers also have their movement speed reduced by 50% for 4 sec.
+    tireless_pursuit       = 5646, -- (377801) For 3 sec after leaving Cat Form or Travel Form, you retain up to 40% movement speed.
 } )
-
 
 spec:RegisterPower( "lively_spirit", 279642, {
     id = 279648,
@@ -368,7 +401,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=33786
     cyclone = {
         id = 33786,
-        duration = 6,
+        duration = 5,
         mechanic = "banish",
         type = "Magic",
         max_stack = 1
@@ -1800,8 +1833,20 @@ spec:RegisterHook( "spend", function( amt, resource )
 end )
 
 
---Tww set
+--The War Within
 spec:RegisterGear( "tww1", 212059, 212057, 212056, 212055, 212054 )
+spec:RegisterGear( "tww2", 229310, 229308, 229306, 229307, 229305  )
+spec:RegisterAuras( {
+    -- 2-set
+    -- https://www.wowhead.com/spell=1218033
+    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
+    --[[jackpot = {
+        id = 1218033,
+        duration = 10,
+        max_stack = 1,
+    },--]]
+
+} )
 -- Tier 29
 spec:RegisterGear( "tier29", 200351, 200353, 200354, 200355, 200356, 217193, 217195, 217191, 217192, 217194 )
 spec:RegisterSetBonuses( "tier29_2pc", 393632, "tier29_4pc", 393633 )
@@ -1989,6 +2034,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "celestial_alignment" )
+            if set_bonus.tww2 >= 2 then summonTotem( "wild_mushroom" ) end
             stat.haste = stat.haste + 0.1
 
             eclipse.trigger_both( 20 )
@@ -2308,6 +2354,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             shift( "moonkin_form" )
+            if set_bonus.tww2 >= 2 then summonTotem( "wild_mushroom" ) end
 
             applyBuff( "incarnation" )
             stat.crit = stat.crit + 0.10
@@ -2857,9 +2904,7 @@ spec:RegisterAbilities( {
         energize_amount = function() return action.starfire.spend * -1 end,
 
         handler = function ()
-            if talent.fluid_form.enabled then
-                if buff.moonkin_form.down then shift( "moonkin_form" ) end
-            elseif not buff.moonkin_form.up then unshift() end
+            if talent.fluid_form.enabled and not buff.moonkin_form.up then unshift() end
 
             removeBuff( "gathering_starstuff" )
             if talent.natures_grace.enabled and buff.dreamstate.up then removeStack( "dreamstate" ) end
@@ -2882,6 +2927,10 @@ spec:RegisterAbilities( {
             end
 
             if azerite.dawning_sun.enabled then applyBuff( "dawning_sun" ) end
+        end,
+
+        finish = function ()
+            if talent.fluid_form.enabled and buff.moonkin_form.down then shift( "moonkin_form" ) end
         end,
 
         copy = { 194153, 197628 }
@@ -3325,9 +3374,7 @@ spec:RegisterAbilities( {
         energize_amount = function() return action.wrath.spend * -1 end,
 
         handler = function ()
-            if talent.fluid_form.enabled then
-                if buff.moonkin_form.down then shift( "moonkin_form" ) end
-            elseif not buff.moonkin_form.up then unshift() end
+            if talent.fluid_form.enabled and not buff.moonkin_form.up then unshift() end
 
             removeBuff( "blooming_infusion" )
             removeBuff( "gathering_starstuff" )
@@ -3340,6 +3387,10 @@ spec:RegisterAbilities( {
 
             removeBuff( "dawning_sun" )
             if azerite.sunblaze.enabled then applyBuff( "sunblaze" ) end
+        end,
+
+        finish = function ()
+            if talent.fluid_form.enabled and buff.moonkin_form.down then shift( "moonkin_form" ) end
         end,
 
         copy = { "solar_wrath", 5176 }

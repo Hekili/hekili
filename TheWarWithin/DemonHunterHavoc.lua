@@ -1,5 +1,5 @@
 -- DemonHunterHavoc.lua
--- July 2024
+-- January 2025
 
 if UnitClassBase( "player" ) ~= "DEMONHUNTER" then return end
 
@@ -9,7 +9,8 @@ local class, state = Hekili.Class, Hekili.State
 
 local strformat, wipe = string.format, table.wipe
 local GetSpellInfo = ns.GetUnpackedSpellInfo
-
+local IsSpellOverlayed = IsSpellOverlayed
+local GetSpellCastCount = C_Spell.GetSpellCastCount
 local spec = Hekili:NewSpecialization( 577 )
 
 spec:RegisterResource( Enum.PowerType.Fury, {
@@ -27,7 +28,7 @@ spec:RegisterResource( Enum.PowerType.Fury, {
         interval = "mainhand_speed",
 
         stop = function () return state.time == 0 or state.swings.mainhand == 0 end,
-        value = function () return state.talent.demonic_intensity.enabled and state.buff.metamorphosis.up and 12 or 7 end,
+        value = function () return state.talent.demonsurge.enabled and state.buff.metamorphosis.up and 12 or 7 end,
     },
 
     offhand_fury = {
@@ -44,10 +45,10 @@ spec:RegisterResource( Enum.PowerType.Fury, {
         interval = "offhand_speed",
 
         stop = function () return state.time == 0 or state.swings.offhand == 0 end,
-        value = function () return state.talent.demonic_intensity.enabled and state.buff.metamorphosis.up and 12 or 7 end,
+        value = function () return state.talent.demonsurge.enabled and state.buff.metamorphosis.up and 12 or 7 end,
     },
 
-    -- Immolation Aura now grants 20 up front, 60 over 12 seconds (5 fps).
+    -- Immolation Aura now grants 20 up front, then 4 per second with burning hatred talent.
     immolation_aura = {
         talent  = "burning_hatred",
         aura    = "immolation_aura",
@@ -60,7 +61,7 @@ spec:RegisterResource( Enum.PowerType.Fury, {
         end,
 
         interval = 1,
-        value = 5
+        value = 4
     },
 
     student_of_suffering = {
@@ -104,8 +105,8 @@ spec:RegisterResource( Enum.PowerType.Fury, {
             return app + floor( ( t - app ) / state.haste ) * state.haste
         end,
 
-        interval = function () return state.haste end,
-        value = 20,
+        interval = function() return state.haste end,
+        value = function() return 20 * state.talent.blind_fury.rank end
     },
 } )
 
@@ -118,27 +119,27 @@ spec:RegisterTalents( {
     bouncing_glaives         = {  90931, 320386, 1 }, -- Throw Glaive ricochets to 1 additional target.
     champion_of_the_glaive   = {  90994, 429211, 1 }, -- Throw Glaive has 2 charges and 10 yard increased range.
     chaos_fragments          = {  95154, 320412, 1 }, -- Each enemy stunned by Chaos Nova has a 30% chance to generate a Lesser Soul Fragment.
-    chaos_nova               = {  90993, 179057, 1 }, -- Unleash an eruption of fel energy, dealing 5,388 Chaos damage and stunning all nearby enemies for 2 sec.
+    chaos_nova               = {  90993, 179057, 1 }, -- Unleash an eruption of fel energy, dealing 6,882 Chaos damage and stunning all nearby enemies for 2 sec.
     charred_warblades        = {  90948, 213010, 1 }, -- You heal for 3% of all Fire damage you deal.
-    collective_anguish       = {  95152, 390152, 1 }, -- Eye Beam summons an allied Vengeance Demon Hunter who casts Fel Devastation, dealing 25,814 Fire damage over 2 sec. Dealing damage heals you for up to 2,246 health.
+    collective_anguish       = {  95152, 390152, 1 }, -- Eye Beam summons an allied Vengeance Demon Hunter who casts Fel Devastation, dealing 33,070 Fire damage over 2 sec. Dealing damage heals you for up to 3,188 health.
     consume_magic            = {  91006, 278326, 1 }, -- Consume 1 beneficial Magic effect removing it from the target.
     darkness                 = {  91002, 196718, 1 }, -- Summons darkness around you in an 8 yd radius, granting friendly targets a 15% chance to avoid all damage from an attack. Lasts 8 sec. Chance to avoid damage increased by 100% when not in a raid.
     demon_muzzle             = {  90928, 388111, 1 }, -- Enemies deal 8% reduced magic damage to you for 8 sec after being afflicted by one of your Sigils.
     demonic                  = {  91003, 213410, 1 }, -- Eye Beam causes you to enter demon form for 5 sec after it finishes dealing damage.
     disrupting_fury          = {  90937, 183782, 1 }, -- Disrupt generates 30 Fury on a successful interrupt.
     erratic_felheart         = {  90996, 391397, 2 }, -- The cooldown of Fel Rush is reduced by 10%.
-    felblade                 = {  95150, 232893, 1 }, -- Charge to your target and deal 16,007 Fire damage. Demon Blades has a chance to reset the cooldown of Felblade. Generates 40 Fury.
+    felblade                 = {  95150, 232893, 1 }, -- Charge to your target and deal 22,557 Fire damage. Demon Blades has a chance to reset the cooldown of Felblade. Generates 40 Fury.
     felfire_haste            = {  90939, 389846, 1 }, -- Fel Rush increases your movement speed by 10% for 8 sec.
     flames_of_fury           = {  90949, 389694, 2 }, -- Sigil of Flame deals 35% increased damage and generates 1 additional Fury per target hit.
     illidari_knowledge       = {  90935, 389696, 1 }, -- Reduces magic damage taken by 5%.
-    imprison                 = {  91007, 217832, 1 }, -- Imprisons a demon, beast, or humanoid, incapacitating them for 1 min. Damage will cancel the effect. Limit 1.
+    imprison                 = {  91007, 217832, 1 }, -- Imprisons a demon, beast, or humanoid, incapacitating them for 1 min. Damage may cancel the effect. Limit 1.
     improved_disrupt         = {  90938, 320361, 1 }, -- Increases the range of Disrupt to 10 yds.
     improved_sigil_of_misery = {  90945, 320418, 1 }, -- Reduces the cooldown of Sigil of Misery by 30 sec.
-    infernal_armor           = {  91004, 320331, 2 }, -- Immolation Aura increases your armor by 20% and causes melee attackers to suffer 1,727 Fire damage.
+    infernal_armor           = {  91004, 320331, 2 }, -- Immolation Aura increases your armor by 20% and causes melee attackers to suffer 2,212 Fire damage.
     internal_struggle        = {  90934, 393822, 1 }, -- Increases your mastery by 3.6%.
     live_by_the_glaive       = {  95151, 428607, 1 }, -- When you parry an attack or have one of your attacks parried, restore 2% of max health and 10 Fury. This effect may only occur once every 5 sec.
     long_night               = {  91001, 389781, 1 }, -- Increases the duration of Darkness by 3 sec.
-    lost_in_darkness         = {  90947, 389849, 1 }, -- Spectral Sight lasts an additional 6 sec if disrupted by attacking or taking damage.
+    lost_in_darkness         = {  90947, 389849, 1 }, -- Spectral Sight has 5 sec reduced cooldown and no longer reduces movement speed. 
     master_of_the_glaive     = {  90994, 389763, 1 }, -- Throw Glaive has 2 charges and snares all enemies hit by 50% for 6 sec.
     pitch_black              = {  91001, 389783, 1 }, -- Reduces the cooldown of Darkness by 120 sec.
     precise_sigils           = {  95155, 389799, 1 }, -- All Sigils are now placed at your target's location.
@@ -147,64 +148,64 @@ spec:RegisterTalents( {
     rush_of_chaos            = {  95148, 320421, 2 }, -- Reduces the cooldown of Metamorphosis by 30 sec.
     shattered_restoration    = {  90950, 389824, 1 }, -- The healing of Shattered Souls is increased by 10%.
     sigil_of_misery          = {  90946, 207684, 1 }, -- Place a Sigil of Misery at the target location that activates after 1 sec. Causes all enemies affected by the sigil to cower in fear, disorienting them for 15 sec.
-    sigil_of_spite           = {  90997, 390163, 1 }, -- Place a demonic sigil at the target location that activates after 1 sec. Detonates to deal 63,331 Chaos damage and shatter up to 3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond 5 targets.
+    sigil_of_spite           = {  90997, 390163, 1 }, -- Place a demonic sigil at the target location that activates after 1 sec. Detonates to deal 113,479 Chaos damage and shatter up to 3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond 5 targets.
     soul_rending             = {  90936, 204909, 2 }, -- Leech increased by 6%. Gain an additional 6% leech while Metamorphosis is active.
-    soul_sigils              = {  90929, 395446, 1 }, -- Afflicting an enemy with a Sigil generates 1 Lesser Soul Fragment.
+    soul_sigils              = {  90929, 395446, 1 }, -- Afflicting an enemy with a Sigil generates 1 Lesser Soul Fragment. 
     swallowed_anger          = {  91005, 320313, 1 }, -- Consume Magic generates 20 Fury when a beneficial Magic effect is successfully removed from the target.
-    the_hunt                 = {  90927, 370965, 1 }, -- Charge to your target, striking them for 73,198 Chaos damage, rooting them in place for 1.5 sec and inflicting 64,082 Chaos damage over 6 sec to up to 5 enemies in your path. The pursuit invigorates your soul, healing you for 10% of the damage you deal to your Hunt target for 20 sec.
+    the_hunt                 = {  90927, 370965, 1 }, -- Charge to your target, striking them for 144,276 Chaos damage, rooting them in place for 1.5 sec and inflicting 112,062 Chaos damage over 6 sec to up to 5 enemies in your path. The pursuit invigorates your soul, healing you for 10% of the damage you deal to your Hunt target for 20 sec.
     unrestrained_fury        = {  90941, 320770, 1 }, -- Increases maximum Fury by 20.
     vengeful_bonds           = {  90930, 320635, 1 }, -- Vengeful Retreat reduces the movement speed of all nearby enemies by 70% for 3 sec.
-    vengeful_retreat         = {  90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 2,236 Physical damage.
+    vengeful_retreat         = {  90942, 198793, 1 }, -- Remove all snares and vault away. Nearby enemies take 2,865 Physical damage.
     will_of_the_illidari     = {  91000, 389695, 1 }, -- Increases maximum health by 5%.
 
-    -- Aldrachi Reaver
+    -- Havoc
     a_fire_inside            = {  95143, 427775, 1 }, -- Immolation Aura has 1 additional charge and 30% chance to refund a charge when used. You can have multiple Immolation Auras active at a time.
     accelerated_blade        = {  91011, 391275, 1 }, -- Throw Glaive deals 60% increased damage, reduced by 30% for each previous enemy hit.
-    any_means_necessary      = {  90919, 388114, 1 }, -- Mastery: Demonic Presence now also causes your Arcane, Fire, Frost, Nature, and Shadow damage to be dealt as Chaos instead, and increases that damage by 29.0%.
     blind_fury               = {  91026, 203550, 2 }, -- Eye Beam generates 40 Fury every second, and its damage and duration are increased by 10%.
     burning_hatred           = {  90923, 320374, 1 }, -- Immolation Aura generates an additional 40 Fury over 10 sec.
-    burning_wound            = {  90917, 391189, 1 }, -- Demon Blades and Throw Glaive leave open wounds on your enemies, dealing 14,831 Chaos damage over 15 sec and increasing damage taken from your Immolation Aura by 40%. May be applied to up to 3 targets.
+    burning_wound            = {  90917, 391189, 1 }, -- Demon Blades and Throw Glaive leave open wounds on your enemies, dealing 18,945 Chaos damage over 15 sec and increasing damage taken from your Immolation Aura by 40%. May be applied to up to 3 targets.
     chaos_theory             = {  91035, 389687, 1 }, -- Blade Dance causes your next Chaos Strike within 8 sec to have a 14-30% increased critical strike chance and will always refund Fury.
     chaotic_disposition      = {  95147, 428492, 2 }, -- Your Chaos damage has a 7.77% chance to be increased by 17%, occurring up to 3 total times.
     chaotic_transformation   = {  90922, 388112, 1 }, -- When you activate Metamorphosis, the cooldowns of Blade Dance and Eye Beam are immediately reset.
     critical_chaos           = {  91028, 320413, 1 }, -- The chance that Chaos Strike will refund 20 Fury is increased by 30% of your critical strike chance.
-    cycle_of_hatred          = {  91032, 258887, 2 }, -- Blade Dance, Chaos Strike, and Glaive Tempest reduce the cooldown of Eye Beam by 0.5 sec.
+    cycle_of_hatred          = {  91032, 258887, 2 }, -- Activating Eye Beam reduces the cooldown of your next Eye Beam by 2.5 sec, stacking up to 10 sec.
     dancing_with_fate        = {  91015, 389978, 2 }, -- The final slash of Blade Dance deals an additional 25% damage.
     dash_of_chaos            = {  93014, 427794, 1 }, -- For 2 sec after using Fel Rush, activating it again will dash back towards your initial location.
     deflecting_dance         = {  93015, 427776, 1 }, -- You deflect incoming attacks while Blade Dancing, absorbing damage up to 15% of your maximum health.
-    demon_blades             = {  91019, 203555, 1 }, -- Your auto attacks deal an additional 2,429 Shadow damage and generate 7-12 Fury.
+    demon_blades             = {  91019, 203555, 1 }, -- Your auto attacks deal an additional 3,423 Shadow damage and generate 7-12 Fury.
     demon_hide               = {  91017, 428241, 1 }, -- Magical damage increased by 3%, and Physical damage taken reduced by 5%.
     desperate_instincts      = {  93016, 205411, 1 }, -- Blur now reduces damage taken by an additional 10%. Additionally, you automatically trigger Blur with 50% reduced cooldown and duration when you fall below 35% health. This effect can only occur when Blur is not on cooldown.
-    essence_break            = {  91033, 258860, 1 }, -- Slash all enemies in front of you for 55,383 Chaos damage, and increase the damage your Chaos Strike and Blade Dance deal to them by 80% for 4 sec. Deals reduced damage beyond 8 targets.
-    eye_beam                 = {  91018, 198013, 1 }, -- Blasts all enemies in front of you, dealing guaranteed critical strikes for up to 143,506 Chaos damage over 1.6 sec. Deals reduced damage beyond 5 targets. When Eye Beam finishes fully channeling, your Haste is increased by an additional 10% for 10 sec.
-    fel_barrage              = {  95144, 258925, 1 }, -- Unleash a torrent of Fel energy, rapidly consuming Fury to inflict 6,842 Chaos damage to all enemies within 12 yds, lasting 8 sec or until Fury is depleted. Deals reduced damage beyond 5 targets.
-    first_blood              = {  90925, 206416, 1 }, -- Blade Dance deals 44,093 Chaos damage to the first target struck.
+    essence_break            = {  91033, 258860, 1 }, -- Slash all enemies in front of you for 70,744 Chaos damage, and increase the damage your Chaos Strike and Blade Dance deal to them by 80% for 4 sec. Deals reduced damage beyond 8 targets.
+    exergy                   = {  91021, 206476, 1 }, -- The Hunt and Vengeful Retreat increase your damage by 5% for 20 sec.
+    eye_beam                 = {  91018, 198013, 1 }, -- Blasts all enemies in front of you, for up to 302,460 Chaos damage over 1.8 sec. Deals reduced damage beyond 5 targets. When Eye Beam finishes fully channeling, your Haste is increased by an additional 10% for 10 sec.
+    fel_barrage              = {  95144, 258925, 1 }, -- Unleash a torrent of Fel energy, rapidly consuming Fury to inflict 8,741 Chaos damage to all enemies within 12 yds, lasting 8 sec or until Fury is depleted. Deals reduced damage beyond 5 targets.
+    first_blood              = {  90925, 206416, 1 }, -- Blade Dance deals 56,325 Chaos damage to the first target struck.
     furious_gaze             = {  91025, 343311, 1 }, -- When Eye Beam finishes fully channeling, your Haste is increased by an additional 10% for 10 sec.
     furious_throws           = {  93013, 393029, 1 }, -- Throw Glaive now costs 25 Fury and throws a second glaive at the target.
-    glaive_tempest           = {  91035, 342817, 1 }, -- Launch two demonic glaives in a whirlwind of energy, causing 58,928 Chaos damage over 3 sec to all nearby enemies. Deals reduced damage beyond 8 targets.
+    glaive_tempest           = {  91035, 342817, 1 }, -- Launch two demonic glaives in a whirlwind of energy, causing 75,272 Chaos damage over 3 sec to all nearby enemies. Deals reduced damage beyond 8 targets.
     growing_inferno          = {  90916, 390158, 1 }, -- Immolation Aura's damage increases by 10% each time it deals damage.
     improved_chaos_strike    = {  91030, 343206, 1 }, -- Chaos Strike damage increased by 10%.
     improved_fel_rush        = {  93014, 343017, 1 }, -- Fel Rush damage increased by 20%.
-    inertia                  = {  91021, 427640, 1 }, -- When empowered by Unbound Chaos, Fel Rush increases your damage done by 18% for 5 sec.
+    inertia                  = {  91021, 427640, 1 }, -- The Hunt and Vengeful Retreat cause your next Fel Rush or Felblade to empower you, increasing damage by 18% for 5 sec.
     initiative               = {  91027, 388108, 1 }, -- Damaging an enemy before they damage you increases your critical strike chance by 10% for 5 sec. Vengeful Retreat refreshes your potential to trigger this effect on any enemies you are in combat with.
-    inner_demon              = {  91024, 389693, 1 }, -- Entering demon form causes your next Chaos Strike to unleash your inner demon, causing it to crash into your target and deal 41,758 Chaos damage to all nearby enemies. Deals reduced damage beyond 5 targets.
+    inner_demon              = {  91024, 389693, 1 }, -- Entering demon form causes your next Chaos Strike to unleash your inner demon, causing it to crash into your target and deal 53,340 Chaos damage to all nearby enemies. Deals reduced damage beyond 5 targets.
     insatiable_hunger        = {  91019, 258876, 1 }, -- Demon's Bite deals 50% more damage and generates 5 to 10 additional Fury.
     isolated_prey            = {  91036, 388113, 1 }, -- Chaos Nova, Eye Beam, and Immolation Aura gain bonuses when striking 1 target.  Chaos Nova: Stun duration increased by 2 sec.  Eye Beam: Deals 30% increased damage.  Immolation Aura: Always critically strikes.
     know_your_enemy          = {  91034, 388118, 2 }, -- Gain critical strike damage equal to 40% of your critical strike chance.
     looks_can_kill           = {  90921, 320415, 1 }, -- Eye Beam deals guaranteed critical strikes.
-    momentum                 = {  91021, 206476, 1 }, -- Fel Rush, The Hunt, and Vengeful Retreat increase your damage done by 6% for 6 sec, up to a maximum of 30 sec.
     mortal_dance             = {  93015, 328725, 1 }, -- Blade Dance now reduces targets' healing received by 50% for 6 sec.
     netherwalk               = {  93016, 196555, 1 }, -- Slip into the nether, increasing movement speed by 100% and becoming immune to damage, but unable to attack. Lasts 6 sec.
     ragefire                 = {  90918, 388107, 1 }, -- Each time Immolation Aura deals damage, 30% of the damage dealt by up to 3 critical strikes is gathered as Ragefire. When Immolation Aura expires you explode, dealing all stored Ragefire damage to nearby enemies.
     relentless_onslaught     = {  91012, 389977, 1 }, -- Chaos Strike has a 10% chance to trigger a second Chaos Strike.
     restless_hunter          = {  91024, 390142, 1 }, -- Leaving demon form grants a charge of Fel Rush and increases the damage of your next Blade Dance by 50%.
     scars_of_suffering       = {  90914, 428232, 1 }, -- Increases Versatility by 4% and reduces threat generated by 8%.
+    screaming_brutality      = {  90919, 1220506, 1 }, -- Blade Dance automatically triggers Throw Glaive on your primary target for 100% damage and each slash has a 50% chance to Throw Glaive an enemy for 35% damage.
     serrated_glaive          = {  91013, 390154, 1 }, -- Enemies hit by Chaos Strike or Throw Glaive take 15% increased damage from Chaos Strike and Throw Glaive for 15 sec.
     shattered_destiny        = {  91031, 388116, 1 }, -- The duration of your active demon form is extended by 0.1 sec per 12 Fury spent.
     soulscar                 = {  91012, 388106, 1 }, -- Throw Glaive causes targets to take an additional 100% of damage dealt as Chaos over 6 sec.
     tactical_retreat         = {  91022, 389688, 1 }, -- Vengeful Retreat has a 5 sec reduced cooldown and generates 80 Fury over 10 sec.
-    trail_of_ruin            = {  90915, 258881, 1 }, -- The final slash of Blade Dance inflicts an additional 14,115 Chaos damage over 4 sec.
-    unbound_chaos            = {  91020, 347461, 1 }, -- Activating Immolation Aura increases the damage of your next Fel Rush by 250%. Lasts 12 sec.
+    trail_of_ruin            = {  90915, 258881, 1 }, -- The final slash of Blade Dance inflicts an additional 18,030 Chaos damage over 4 sec.
+    unbound_chaos            = {  91020, 347461, 1 }, -- The Hunt and Vengeful Retreat increase the damage of your next Fel Rush or Felblade by 300%. Lasts 12 sec.
 
     -- Aldrachi Reaver
     aldrachi_tactics         = {  94914, 442683, 1 }, -- The second enhanced ability in a pattern shatters an additional Soul Fragment.
@@ -215,12 +216,12 @@ spec:RegisterTalents( {
     incisive_blade           = {  94895, 442492, 1 }, -- Chaos Strike deals 10% increased damage.
     incorruptible_spirit     = {  94896, 442736, 1 }, -- Each Soul Fragment you consume shields you for an additional 15% of the amount healed.
     keen_engagement          = {  94910, 442497, 1 }, -- Reaver's Glaive generates 20 Fury.
-    preemptive_strike        = {  94910, 444997, 1 }, -- Throw Glaive deals 5,434 Physical damage to enemies near its initial target.
+    preemptive_strike        = {  94910, 444997, 1 }, -- Throw Glaive deals 3,443 Physical damage to enemies near its initial target.
     reavers_mark             = {  94903, 442679, 1 }, -- When enhanced by Reaver's Glaive, Chaos Strike applies Reaver's Mark, which causes the target to take 7% increased damage for 20 sec. If cast after Blade Dance, Reaver's Mark is increased to 14%.
     thrill_of_the_fight      = {  94919, 442686, 1 }, -- After consuming both enhancements, gain Thrill of the Fight, increasing your attack speed by 15% for 20 sec and your damage and healing by 20% for 10 sec.
     unhindered_assault       = {  94911, 444931, 1 }, -- Vengeful Retreat resets the cooldown of Felblade.
-    warblades_hunger         = {  94906, 442502, 1 }, -- Consuming a Soul Fragment causes your next Chaos Strike to deal 5,375 additional damage. Felblade consumes up to 5 nearby Soul Fragments.
-    wounded_quarry           = {  94897, 442806, 1 }, -- While Reaver's Mark is on your target, melee attacks strike with an additional glaive slash for 2,795 Physical damage and have a chance to shatter a soul.
+    warblades_hunger         = {  94906, 442502, 1 }, -- Consuming a Soul Fragment causes your next Chaos Strike to deal 6,886 additional Physical damage. Felblade consumes up to 5 nearby Soul Fragments.
+    wounded_quarry           = {  94897, 442806, 1 }, -- Expose weaknesses in the target of your Reaver's Mark, causing your Physical damage to any enemy to also deal 30% of the damage dealt to your marked target as Chaos. 
 
     -- Fel-Scarred
     burning_blades           = {  94905, 452408, 1 }, -- Your blades burn with Fel energy, causing your Chaos Strike, Throw Glaive, and auto-attacks to deal an additional 35% damage as Fire over 6 sec.
@@ -236,23 +237,22 @@ spec:RegisterTalents( {
     student_of_suffering     = {  94902, 452412, 1 }, -- Sigil of Flame applies Student of Suffering to you, increasing Mastery by 21.6% and granting 5 Fury every 2 sec, for 8 sec.
     untethered_fury          = {  94904, 452411, 1 }, -- Maximum Fury increased by 50.
     violent_transformation   = {  94912, 452409, 1 }, -- When you activate Metamorphosis, the cooldowns of your Sigil of Flame and Immolation Aura are immediately reset.
-    wave_of_debilitation     = {  94913, 452403, 1 }, -- Chaos Nova slows enemies by 60% and reduces attack and cast speed 15% for 5 sec after its stun fades.
+    wave_of_debilitation     = {  94913, 452403, 1 }, -- Chaos Nova slows enemies by 60% and reduces attack and cast speed 15% for 5 sec after its stun fades. 
 } )
-
 
 -- PvP Talents
-spec:RegisterPvpTalents( {
-    blood_moon        = 5433, -- (355995)
-    cleansed_by_flame =  805, -- (205625)
-    cover_of_darkness = 1206, -- (357419)
-    detainment        =  812, -- (205596)
-    glimpse           =  813, -- (354489)
-    rain_from_above   =  811, -- (206803) You fly into the air out of harm's way. While floating, you gain access to Fel Lance allowing you to deal damage to enemies below.
+spec:RegisterPvpTalents( { 
+    blood_moon        = 5433, -- (355995) 
+    cleansed_by_flame =  805, -- (205625) 
+    cover_of_darkness = 1206, -- (357419) 
+    detainment        =  812, -- (205596) 
+    glimpse           =  813, -- (354489) 
+    illidans_grasp    = 5691, -- (205630) You strangle the target with demonic magic, stunning them in place and dealing 120,508 Shadow damage over 5 sec while the target is grasped. Can move while channeling. Use Illidan's Grasp again to toss the target to a location within 20 yards.
+    rain_from_above   =  811, -- (206803) You fly into the air out of harm's way. While floating, you gain access to Fel Lance allowing you to deal damage to enemies below. 
     reverse_magic     =  806, -- (205604) Removes all harmful magical effects from yourself and all nearby allies within 10 yards, and sends them back to their original caster if possible.
-    sigil_mastery     = 5523, -- (211489)
-    unending_hatred   = 1218, -- (213480)
+    sigil_mastery     = 5523, -- (211489) 
+    unending_hatred   = 1218, -- (213480) 
 } )
-
 
 -- Auras
 spec:RegisterAuras( {
@@ -260,7 +260,7 @@ spec:RegisterAuras( {
     art_of_the_glaive = {
         id = 444661,
         duration = 30.0,
-        max_stack = 6,
+        max_stack = 6
     },
     -- Dodge chance increased by $s2%.
     -- https://wowhead.com/beta/spell=188499
@@ -273,12 +273,12 @@ spec:RegisterAuras( {
     blade_ward = {
         id = 442715,
         duration = 5.0,
-        max_stack = 1,
+        max_stack = 1
     },
     blazing_slaughter = {
         id = 355892,
         duration = 12,
-        max_stack = 20,
+        max_stack = 20
     },
     -- Versatility increased by $w1%.
     -- https://wowhead.com/beta/spell=355894
@@ -294,24 +294,30 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    -- https://www.wowhead.com/spell=453177
+    burning_blades = {
+        id = 453177,
+        duration = 6,
+        max_stack = 1
+    },
     -- Talent: Taking $w1 Chaos damage every $t1 seconds.  Damage taken from $@auracaster's Immolation Aura increased by $s2%.
     -- https://wowhead.com/beta/spell=391191
     burning_wound_391191 = {
         id = 391191,
         duration = 15,
         tick_time = 3,
-        max_stack = 1,
+        max_stack = 1
     },
     burning_wound_346278 = {
         id = 346278,
         duration = 15,
         tick_time = 3,
-        max_stack = 1,
+        max_stack = 1
     },
     burning_wound = {
         alias = { "burning_wound_391191", "burning_wound_346278" },
         aliasMode = "first",
-        aliasType = "buff",
+        aliasType = "buff"
     },
     -- Talent: Stunned.
     -- https://wowhead.com/beta/spell=179057
@@ -324,28 +330,42 @@ spec:RegisterAuras( {
     chaos_theory = {
         id = 390195,
         duration = 8,
-        max_stack = 1,
+        max_stack = 1
     },
     chaotic_blades = {
         id = 337567,
         duration = 8,
         max_stack = 1
     },
+    cycle_of_hatred = {
+        id = 1214887,
+        duration = 3600,
+        max_stack = 4
+    },
     darkness = {
         id = 196718,
         duration = function () return pvptalent.cover_of_darkness.enabled and 10 or 8 end,
-        max_stack = 1,
+        max_stack = 1
     },
     death_sweep = {
         id = 210152,
         duration = 1,
-        max_stack = 1,
+        max_stack = 1
+    },
+    -- https://www.wowhead.com/spell=427901
+    -- Deflecting Dance Absorbing 1180318 damage.
+    deflecting_dance = {
+        id = 427901,
+        duration = 1,
+        max_stack = 1
     },
     demon_soul = {
         id = 347765,
         duration = 15,
-        max_stack = 1,
+        max_stack = 1
     },
+    -- https://www.wowhead.com/spell=452416
+    -- Demonsurge Damage of your next Demonsurge is increased by 40%.
     demonsurge = {
         id = 452416,
         duration = 12,
@@ -390,6 +410,13 @@ spec:RegisterAuras( {
         duration = function () return talent.quickened_sigils.enabled and 1 or 2 end,
         max_stack = 1,
         copy = "sigil_of_spite"
+    },
+    -- https://www.wowhead.com/spell=453314
+    -- Enduring Torment Chaos Strike and Blade Dance damage increased by 10%. Haste increased by 5%.
+    enduring_torment = {
+        id = 453314,
+        duration = 3600,
+        max_stack = 1
     },
     essence_break = {
         id = 320338,
@@ -450,7 +477,7 @@ spec:RegisterAuras( {
     },
     furious_gaze = {
         id = 343312,
-        duration = 12,
+        duration = 10,
         max_stack = 1,
     },
     -- Talent: Stunned.
@@ -538,7 +565,7 @@ spec:RegisterAuras( {
         alias = { "immolation_aura_1", "immolation_aura_2", "immolation_aura_3", "immolation_aura_4", "immolation_aura_5" },
         aliasMode = "longest",
         aliasType = "buff",
-        max_stack = 5,
+        max_stack = 5
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=217832
@@ -550,15 +577,22 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Damage done increased by $w1%.
-    inertia = {
+    inertia_damage_buff = { -- find out what simc is gonna use
         id = 427641,
         duration = 5,
-        max_stack = 1,
+        max_stack = 1
+    },
+    -- https://www.wowhead.com/spell=1215159
+    -- Inertia Your next Fel Rush or Felblade increases your damage by 18% for 5 sec.
+    inertia_prep_buff = { -- find out what simc is gonna use
+        id = 1215159,
+        duration = 12,
+        max_stack = 1
     },
     initiative = {
         id = 391215,
         duration = 5,
-        max_stack = 1,
+        max_stack = 1
     },
     initiative_tracker = {
         duration = 3600,
@@ -582,18 +616,18 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=162264
     metamorphosis = {
         id = 162264,
-        duration = function () return 24 + ( pvptalent.demonic_origins.enabled and -15 or 0 ) end,
+        duration = 20,
         max_stack = 1,
-        meta = {
+        --[[meta = {
             extended_by_demonic = function ()
                 return false -- disabled in 8.0:  talent.demonic.enabled and ( buff.metamorphosis.up and buff.metamorphosis.duration % 15 > 0 and buff.metamorphosis.duration > ( action.eye_beam.cast + 8 ) )
             end,
-        },
+        },--]]
     },
-    momentum = {
+    exergy = {
         id = 208628,
-        duration = 6,
-        max_stack = 1,
+        duration = 30, -- extends up to 30
+        max_stack = 1
     },
     -- Agility increased by $w1%.
     monster_rising = {
@@ -661,9 +695,6 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     reavers_glaive = {
-        id = 444686,
-        duration = 15,
-        max_stack = 2
     },
     restless_hunter = {
         id = 390212,
@@ -818,7 +849,7 @@ spec:RegisterAuras( {
         id = 347462,
         duration = 20,
         max_stack = 1,
-        copy = "inertia_trigger" -- Hmm.
+        -- copy = "inertia_trigger"
     },
     vengeful_retreat_movement = {
         duration = 1,
@@ -920,7 +951,7 @@ spec:RegisterStateFunction( "create_sigil", function( sigil )
 end )
 
 spec:RegisterStateExpr( "soul_fragments", function ()
-    return buff.soul_fragments.stack
+    return GetSpellCastCount(232893) -- only works with Reaver hero tree
 end )
 
 spec:RegisterStateTable( "fragments", {
@@ -939,20 +970,20 @@ spec:RegisterStateFunction( "purge_fragments", function()
 end )
 
 local last_darkness = 0
-local last_metamorphosis = 0
-local last_eye_beam = 0
+-- local last_metamorphosis = 0
+-- local last_eye_beam = 0
 
 spec:RegisterStateExpr( "darkness_applied", function ()
     return max( class.abilities.darkness.lastCast, last_darkness )
 end )
 
-spec:RegisterStateExpr( "metamorphosis_applied", function ()
+--[[spec:RegisterStateExpr( "metamorphosis_applied", function ()
     return max( class.abilities.darkness.lastCast, last_metamorphosis )
-end )
+end )--]]
 
-spec:RegisterStateExpr( "eye_beam_applied", function ()
+--[[spec:RegisterStateExpr( "eye_beam_applied", function ()
     return max( class.abilities.eye_beam.lastCast, last_eye_beam )
-end )
+end )--]]
 
 spec:RegisterStateExpr( "extended_by_demonic", function ()
     return buff.metamorphosis.up and buff.metamorphosis.extended_by_demonic
@@ -1078,6 +1109,31 @@ spec:RegisterGear( "tier31", 207261, 207262, 207263, 207264, 207266, 217228, 217
 -- (2) Blade Dance automatically triggers Throw Glaive on your primary target for $s3% damage and each slash has a $s2% chance to Throw Glaive an enemy for $s1% damage.
 -- (4) Throw Glaive reduces the remaining cooldown of The Hunt by ${$s1/1000}.1 sec, and The Hunt's damage over time effect lasts ${$s2/1000} sec longer.
 
+spec:RegisterGear( "tww2", 229316, 229314, 229319, 229317, 229315 )
+spec:RegisterAuras( {
+    -- 2-set
+    -- Winning Streak! Increase the DPS of Blade Dance and Chaos Strike by 3% stacking pu to 10 times. Blade Dance and Chaos Strike have 15% chance of removing Winning Streak! .
+    winning_streak = {
+        id = 1217011,
+        duration = 3600,
+        max_stack = 10
+        },
+    --4-set
+    -- Winning Streak persists for 7s after being cancelled. Entering Demon Form sacrifices all Winning Streak! stacks to gain 0% (?) Crit Strike Chance per stack consumed. Lasts 15s
+    necessary_sacrifice = {
+    id = 1217055,
+    duration = 15,
+    max_stack = 10
+    },
+    -- https://www.wowhead.com/spell=1220706
+    -- Winning Streak! Ending a Winning Streak! Blade Dance and Chaos Strike damage increased by 6%.
+    winning_streak_temporary = {
+        id = 1220706,
+        duration = 7,
+        max_stack = 10
+    },
+
+} )
 
 spec:RegisterGear( "tww1", 212068, 212066, 212065, 212064, 212063 )
 spec:RegisterAura( "blade_rhapsody", {
@@ -1098,7 +1154,7 @@ local sigil_types = {
 }
 
 spec:RegisterHook( "reset_precast", function ()
-    last_metamorphosis = nil
+    -- last_metamorphosis = nil
     last_infernal_strike = nil
 
     wipe( initiative_virtual )
@@ -1114,11 +1170,6 @@ spec:RegisterHook( "reset_precast", function ()
         end
     end
 
-    -- Unbound Chaos effect remains even after the buff falls off, so we'll reapply the buff whenever Immo Aura has been used more recently than Fel Rush.
-    if talent.unbound_chaos.enabled and buff.unbound_chaos.remains < gcd.max and action.immolation_aura.lastCast > action.fel_rush.lastCast then
-        applyBuff( "unbound_chaos", nil, gcd.max )
-    end
-
     for s, a in ipairs( sigil_types ) do
         local activation = ( action[ a ].lastCast or 0 ) + ( talent.quickened_sigils.enabled and 2 or 1 )
         if activation > now then sigils[ s ] = activation
@@ -1126,8 +1177,8 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     last_darkness = 0
-    last_metamorphosis = 0
-    last_eye_beam = 0
+    -- last_metamorphosis = 0
+    -- last_eye_beam = 0
 
     local rps = 0
 
@@ -1150,30 +1201,29 @@ spec:RegisterHook( "reset_precast", function ()
 
     meta_cd_multiplier = 1 / ( 1 + rps )
 
-    if IsActiveSpell( 442294 ) then
+    if IsSpellKnownOrOverridesKnown( 442294 ) then
         applyBuff( "reavers_glaive" )
         if Hekili.ActiveDebug then Hekili:Debug( "Applied Reaver's Glaive." ) end
     end
 
     if talent.demonsurge.enabled and buff.metamorphosis.up then
-        if talent.demonic.enabled and action.eye_beam.lastCast >= buff.metamorphosis.applied then applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-        if action.metamorphosis.lastCast >= buff.metamorphosis.applied then applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains ) end
-        if action.annihilation.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains ) end
-        if action.death_sweep.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains ) end
+
+        if IsSpellOverlayed( 201427 ) then applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains ) end
+        if IsSpellOverlayed( 210152 ) then applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains ) end
 
         if talent.demonic_intensity.enabled then
 
-            if action.abyssal_gaze.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_abyssal_gaze", buff.metamorphosis.remains ) end
-            if action.consuming_fire.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_consuming_fire", buff.metamorphosis.remains ) end
-            if action.sigil_of_doom.lastCast < buff.metamorphosis.applied then applyBuff( "demonsurge_sigil_of_doom", buff.metamorphosis.remains ) end
+            if IsSpellOverlayed( 452497 ) then applyBuff( "demonsurge_abyssal_gaze", buff.metamorphosis.remains ) end
+            if IsSpellOverlayed( 452487 ) then applyBuff( "demonsurge_consuming_fire", buff.metamorphosis.remains ) end
+            if IsSpellOverlayed( 469991 ) then applyBuff( "demonsurge_sigil_of_doom", buff.metamorphosis.remains ) end
 
-            setCooldown( "eye_beam", max( cooldown.abyssal_gaze.remains, cooldown.eye_beam.remains, buff.metamorphosis.remains ) ) -- To support cooldown.eye_beam.up checks in SimC priority.
+            -- setCooldown( "eye_beam", max( cooldown.abyssal_gaze.remains, cooldown.eye_beam.remains, buff.metamorphosis.remains ) ) -- To support cooldown.eye_beam.up checks in SimC priority.
         end
 
         if Hekili.ActiveDebug then
             Hekili:Debug( "Demon Surge status:\n" ..
-                " - Hardcast " .. ( buff.demonsurge_hardcast.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
-                " - Demonic " .. ( buff.demonsurge_demonic.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
+                -- " - Hardcast " .. ( buff.demonsurge_hardcast.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
+                -- " - Demonic " .. ( buff.demonsurge_demonic.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Abyssal Gaze " .. ( buff.demonsurge_abyssal_gaze.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Annihilation " .. ( buff.demonsurge_annihilation.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Consuming Fire " .. ( buff.demonsurge_consuming_fire.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
@@ -1263,10 +1313,26 @@ do
     end )
 end
 
--- SimC documentation reflects that there are still the following expressions, which appear unused:
--- greater_soul_fragments, lesser_soul_fragments, blade_dance_worth_using, death_sweep_worth_using
--- They are not implemented becuase that documentation is from mid-2016.
 
+local TriggerDemonic = setfenv( function( )
+
+    if buff.metamorphosis.up then
+        buff.metamorphosis.duration = buff.metamorphosis.duration + 7
+        buff.metamorphosis.expires = buff.metamorphosis.expires + 7
+    else
+        applyBuff( "metamorphosis", 7 )
+        if talent.inner_demon.enabled then
+            applyBuff( "inner_demon" )
+        end
+        stat.haste = stat.haste + 10
+        -- Fel-Scarred
+        if talent.demonsurge.enabled then
+            applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
+            applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
+        end
+    end
+
+end, state )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -1278,7 +1344,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return 40 - buff.thirsting_blades.stack end,
+        spend = 40,
         spendType = "fury",
 
         startsCombat = true,
@@ -1288,15 +1354,12 @@ spec:RegisterAbilities( {
         buff = "metamorphosis",
 
         handler = function ()
-            removeBuff( "thirsting_blades" )
-            removeBuff( "inner_demon" )
-            removeBuff( "demonsurge_annihilation" )
-            if talent.demonic_intensity.enabled and ( buff.demonsurge_demonic.up or buff.demonsurge_hardcast.up ) then addStack( "demonsurge" ) end
-
-            if buff.rending_strike.up then applyDebuff( "target", "rending_strike" ) end
-            if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
-
-            if buff.chaotic_blades.up then gain( 20, "fury" ) end -- legendary
+            spec.abilities.chaos_strike.handler()
+            -- Felscarred
+            if talent.demonic_intensity.enabled and buff.demonsurge_annihilation.up then
+                addStack( "demonsurge" )
+                removeBuff( "demonsurge_annihilation" )
+            end
         end,
     },
 
@@ -1305,7 +1368,8 @@ spec:RegisterAbilities( {
         id = 188499,
         flash = { 188499, 210152 },
         cast = 0,
-        cooldown = function() return ( level > 21 and 10 or 15 ) * haste end,
+        cooldown = 10,
+        hasteCD = true,
         gcd = "spell",
         school = "physical",
 
@@ -1318,18 +1382,24 @@ spec:RegisterAbilities( {
         nobuff = "metamorphosis",
 
         handler = function ()
+            -- Standard and Talents
             applyBuff( "blade_dance" )
-            removeBuff( "blade_rhapsody")
             removeBuff( "restless_hunter" )
-            removeBuff( "glaive_flurry" )
-            removeBuff( "demonsurge_blade_dance" )
-            if talent.demonic_intensity.enabled and buff.demonsurge_hardcast.up then addStack( "demonsurge" ) end
-
             setCooldown( "death_sweep", action.blade_dance.cooldown )
             if talent.chaos_theory.enabled then applyBuff( "chaos_theory" ) end
-            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
-            if set_bonus.tier31_2pc > 0 then spec.abilities.throw_glaive.handler() end
-            if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then applyDebuff( "target", "mortal_dance" ) end
+            if talent.screaming_brutality.enabled then spec.abilities.throw_glaive.handler() end
+            if talent.mortal_dance.enabled then applyDebuff( "target", "mortal_dance" ) end
+
+            -- TWW
+            if set_bonus.tww1 >= 2 then removeBuff( "blade_rhapsody") end
+
+            -- Hero Talents
+            if buff.glaive_flurry.up then
+                removeBuff( "glaive_flurry" )
+                if talent.thrill_of_the_fight.enabled and buff.rending_strike.down then
+                    applyBuff( "thrill_of_the_fight" )
+                end
+            end
         end,
 
         copy = "blade_dance1"
@@ -1382,7 +1452,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "chaos",
 
-        spend = function () return 40 - buff.thirsting_blades.stack end,
+        spend = 40,
         spendType = "fury",
 
         startsCombat = true,
@@ -1393,22 +1463,24 @@ spec:RegisterAbilities( {
         cycle = function () return ( talent.burning_wound.enabled or legendary.burning_wound.enabled ) and "burning_wound" or nil end,
 
         handler = function ()
-            removeBuff( "thirsting_blades" )
             removeBuff( "inner_demon" )
-            if buff.rending_strike.up then
-                applyDebuff( "target", "reavers_mark" )
-                removeBuff( "rending_strike" )
-            end
-            removeBuff( "demonsurge_chaos_strike" )
-            if talent.demonic_intensity.enabled and ( buff.demonsurge_demonic.up or buff.demonsurge_hardcast.up ) then addStack( "demonsurge" ) end
-            if azerite.thirsting_blades.enabled then applyBuff( "thirsting_blades", nil, 0 ) end
-            if talent.burning_wound.enabled then applyDebuff( "target", "burning_wound" ) end
             if buff.chaos_theory.up then
                 gain( 20, "fury" )
                 removeBuff( "chaos_theory" )
             end
+            
+            -- Reaver
+            if buff.rending_strike.up then
+                applyDebuff( "target", "reavers_mark" )
+                removeBuff( "rending_strike" )
+                if talent.thrill_of_the_fight.enabled and buff.glaive_flurry.down then
+                    applyBuff( "thrill_of_the_fight" )
+                end
+            end
+            removeBuff( "warblades_hunger" )
+
+            -- Legacy
             removeBuff( "chaotic_blades" )
-            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
         end,
     },
 
@@ -1457,7 +1529,8 @@ spec:RegisterAbilities( {
         known = 188499,
         flash = { 210152, 188499 },
         cast = 0,
-        cooldown = function() return 9 * haste end,
+        cooldown = 9,
+        hasteCD = true,
         gcd = "spell",
 
         spend = function() return 35 * ( buff.blade_rhapsody.up and 0.5 or 1 ) end,
@@ -1470,22 +1543,14 @@ spec:RegisterAbilities( {
         buff = "metamorphosis",
 
         handler = function ()
+            spec.abilities.blade_dance.handler()
             applyBuff( "death_sweep" )
-            removeBuff( "restless_hunter" )
-            removeBuff( "blade_rhapsody" )
-            removeBuff( "demonsurge_death_sweep" )
-            if talent.demonic_intensity.enabled and ( buff.demonsurge_demonic.up or buff.demonsurge_hardcast.up ) then addStack( "demonsurge" ) end
-
             setCooldown( "blade_dance", action.death_sweep.cooldown )
-            if buff.rending_strike.up then
-                applyDebuff( "target", "reavers_mark" )
-                removeBuff( "rending_strike" )
-            end
 
-            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
-            if set_bonus.tier31_2pc > 0 then spec.abilities.throw_glaive.handler() end
-            if pvptalent.mortal_dance.enabled or talent.mortal_dance.enabled then
-                applyDebuff( "target", "mortal_dance" )
+            -- Hero Talents
+            if talent.demonic_intensity.enabled and buff.demonsurge_death_sweep.up then
+                addStack( "demonsurge" )
+                removeBuff( "demonsurge_death_sweep" )
             end
         end,
     },
@@ -1568,65 +1633,16 @@ spec:RegisterAbilities( {
         nobuff = function () return talent.demonic_intensity.enabled and "metamorphosis" or nil end,
 
         start = function ()
-            last_eye_beam = query_time
-
+            -- last_eye_beam = query_time
             applyBuff( "eye_beam" )
-            removeBuff( "seething_potential" )
-
-            if talent.demonic.enabled then
-                if buff.metamorphosis.up then
-                    buff.metamorphosis.duration = buff.metamorphosis.duration + 8
-                    buff.metamorphosis.expires = buff.metamorphosis.expires + 8
-
-                    if talent.demonsurge.enabled then
-                        if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
-
-                        applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
-
-                        if talent.violent_transformation.enabled then
-                            setCooldown( "sigil_of_flame", 0 )
-                            setCooldown( "sigil_of_doom", 0 )
-                            setCooldown( "immolation_aura", 0 )
-                            setCooldown( "consuming_fire", 0 )
-                        end
-                    end
-                else
-                    applyBuff( "metamorphosis", action.eye_beam.cast + 8 )
-                    buff.metamorphosis.duration = action.eye_beam.cast + 8
-                    stat.haste = stat.haste + 10
-
-                    if talent.demonsurge.enabled then
-                        applyBuff( "demonsurge_demonic", buff.metamorphosis.remains )
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
-
-                        applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
-
-                        if talent.violent_transformation.enabled then
-                            setCooldown( "sigil_of_flame", 0 )
-                            setCooldown( "sigil_of_doom", 0 )
-                            setCooldown( "immolation_aura", 0 )
-                            setCooldown( "consuming_fire", 0 )
-                        end
-                    end
-
-                    if talent.inner_demon.enabled then
-                        applyBuff( "inner_demon" )
-                    end
-                end
+            if talent.cycle_of_hatred.enabled then
+                reduceCooldown( "eye_beam", 2.5 * talent.cycle_of_hatred.rank * buff.cycle_of_hatred.stack )
+                addStack( "cycle_of_hatred" )
+                setCooldown( "abyssal_gaze", action.eye_beam.cooldown )
             end
 
-            if pvptalent.isolated_prey.enabled and active_enemies == 1 then
-                applyDebuff( "target", "isolated_prey" )
-            end
+            if talent.demonic.enabled then TriggerDemonic() end
 
-            -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
-            if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
-                debuff.sinful_brand.expires = debuff.sinful_brand.expires + 0.75
-            end
         end,
 
         finish = function ()
@@ -1653,52 +1669,22 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         start = function ()
-            last_eye_beam = query_time
-
+            -- last_eye_beam = query_time
             applyBuff( "eye_beam" )
+            if talent.cycle_of_hatred.enabled then
+                reduceCooldown( "abyssal_gaze", 2.5 * talent.cycle_of_hatred.rank * buff.cycle_of_hatred.stack )
+                addStack( "cycle_of_hatred" )
+                setCooldown( "eye_beam", action.abyssal_gaze.cooldown )
+            end
+
+            if talent.demonic_intensity.enabled and buff.demonsurge_abyssal_gaze.up then
+                addStack( "demonsurge" )
+                removeBuff( "demonsurge_abyssal_gaze" )
+            end
+
+            if talent.demonic.enabled then TriggerDemonic() end
+
             removeBuff( "seething_potential" )
-            removeBuff( "demonsurge_abyssal_gaze" )
-            if talent.demonic_intensity.enabled and ( buff.demonsurge_demonic.up or buff.demonsurge_hardcast.up ) then addStack( "demonsurge" ) end
-
-            if talent.demonic.enabled then
-                if buff.metamorphosis.up then
-                    buff.metamorphosis.duration = buff.metamorphosis.duration + 8
-                    buff.metamorphosis.expires = buff.metamorphosis.expires + 8
-
-                    if talent.demonsurge.enabled then
-                        if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires
-                        else applyBuff( "demonsurge_demonic", buff.metamorphosis.remains ) end
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
-
-                        applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
-                    end
-                else
-                    applyBuff( "metamorphosis", action.eye_beam.cast + 8 )
-                    buff.metamorphosis.duration = action.eye_beam.cast + 8
-                    stat.haste = stat.haste + 10
-
-                    if talent.demonsurge.enabled then
-                        applyBuff( "demonsurge_demonic", buff.metamorphosis.remains )
-                        if buff.demonsurge_hardcast.up then buff.demonsurge_hardcast.expires = buff.metamorphosis.expires end
-                        applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
-                        applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
-                    end
-
-                    if talent.inner_demon.enabled then
-                        applyBuff( "inner_demon" )
-                    end
-                end
-            end
-
-            if pvptalent.isolated_prey.enabled and active_enemies == 1 then
-                applyDebuff( "target", "isolated_prey" )
-            end
-
-            -- This is likely repeated per tick but it's not worth the CPU overhead to model each tick.
-            if legendary.agony_gaze.enabled and debuff.sinful_brand.up then
-                debuff.sinful_brand.expires = debuff.sinful_brand.expires + 0.75
-            end
         end,
 
         finish = function ()
@@ -1784,13 +1770,12 @@ spec:RegisterAbilities( {
         handler = function ()
             setDistance( 5 )
             setCooldown( "global_cooldown", 0.25 )
-            if buff.unbound_chaos.up then
-                removeBuff( "unbound_chaos" )
-                if talent.inertia.enabled then applyBuff( "inertia" ) end
+
+            if buff.unbound_chaos.up then removeBuff( "unbound_chaos" ) end
+            if buff.inertia_prep_buff.up then
+                removeBuff( "inertia_prep_buff" )
+                applyBuff( "inertia_damage_buff" )
             end
-            if cooldown.vengeful_retreat.remains < 1 then setCooldown( "vengeful_retreat", 1 ) end
-            if talent.momentum.enabled then applyBuff( "momentum" ) end
-            if active_enemies == 1 and talent.isolated_prey.enabled then gain( 25, "fury" ) end
             if conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
         end,
     },
@@ -1813,6 +1798,19 @@ spec:RegisterAbilities( {
 
         handler = function ()
             setDistance( 5 )
+            if buff.unbound_chaos.up then removeBuff( "unbound_chaos" ) end
+            if buff.inertia_prep_buff.up then
+                removeBuff( "inertia_prep_buff" )
+                applyBuff( "inertia_damage_buff" )
+            end
+            if talent.warblades_hunger.enabled then
+                if buff.art_of_the_glaive.stack + soul_fragments >= 6 then
+                    applyBuff( "reavers_glaive" )
+                else
+                    addStack( "art_of_the_glaive", soul_fragments )
+                end
+                addStack( "warblades_hunger", soul_fragments )
+            end
         end,
     },
 
@@ -1831,7 +1829,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            if talent.cycle_of_hatred.enabled and cooldown.eye_beam.remains > 0 then reduceCooldown( "eye_beam", 0.5 * talent.cycle_of_hatred.rank ) end
         end,
     },
 
@@ -1857,10 +1854,15 @@ spec:RegisterAbilities( {
         texture = function() return talent.demonic_intensity.enabled and buff.metamorphosis.up and 135794 or 1344649 end,
 
         handler = function ()
+            if IsSpellKnownOrOverridesKnown(452487) then
+                -- Consuming Fire, needed because they aren't split into 2 separate ability registrations
+                if talent.demonic_intensity.enabled and buff.demonsurge_consuming_fire.up then
+                    removeBuff( "demonsurge_consuming_fire" )
+                    addStack( "demonsurge" )
+                end
+            end
             applyBuff( "immolation_aura" )
-            removeBuff( "demonsurge_consuming_fire" )
-            if talent.demonic_intensity.enabled and ( buff.demonsurge_demonic.up or buff.demonsurge_hardcast.up ) then addStack( "demonsurge" ) end
-            if talent.unbound_chaos.enabled then applyBuff( "unbound_chaos" ) end
+
             if talent.ragefire.enabled then applyBuff( "ragefire" ) end
         end,
 
@@ -1886,7 +1888,7 @@ spec:RegisterAbilities( {
     metamorphosis = {
         id = 191427,
         cast = 0,
-        cooldown = function () return ( 180 - ( talent.rush_of_chaos.enabled and 30 or 0 ) ) * ( essence.vision_of_perfection.enabled and 0.87 or 1 ) - ( pvptalent.demonic_origins.enabled and 120 or 0 ) end,
+        cooldown = function () return ( 180 - ( 30 * talent.rush_of_chaos.rank ) )  end,
         gcd = "spell",
         school = "physical",
 
@@ -1895,23 +1897,14 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff( "metamorphosis" )
-            last_metamorphosis = query_time
+            applyBuff( "metamorphosis", buff.metamorphosis.remains + 20 ) -- it extends demonic now
+            -- last_metamorphosis = query_time
 
             setDistance( 5 )
 
-            if IsSpellKnownOrOverridesKnown( 317009 ) then
-                applyDebuff( "target", "sinful_brand" )
-                active_dot.sinful_brand = active_enemies
-            end
-
-            if talent.demonsurge.enabled then
-                applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
-                if buff.demonsurge_demonic.up then buff.demonsurge_demonic.expires = buff.metamorphosis.expires end
-            end
-
-            if azerite.chaotic_transformation.enabled or talent.chaotic_transformation.enabled then
+            if talent.chaotic_transformation.enabled then
                 setCooldown( "eye_beam", 0 )
+                setCooldown( "abyssal_gaze", 0 )
                 setCooldown( "blade_dance", 0 )
                 setCooldown( "death_sweep", 0 )
             end
@@ -1919,7 +1912,6 @@ spec:RegisterAbilities( {
             if talent.demonic_intensity.enabled then
                 applyBuff( "demonsurge_abyssal_gaze", buff.metamorphosis.remains )
                 setCooldown( "eye_beam", max( cooldown.eye_beam.remains, cooldown.abyssal_gaze.remains, buff.metamorphosis.remains ) )
-
                 applyBuff( "demonsurge_annihilation", buff.metamorphosis.remains )
                 applyBuff( "demonsurge_consuming_fire", buff.metamorphosis.remains )
                 applyBuff( "demonsurge_death_sweep", buff.metamorphosis.remains )
@@ -1933,19 +1925,24 @@ spec:RegisterAbilities( {
                 gainCharges( "consuming_fire", 1 )
             end
 
-            if level > 19 then stat.haste = stat.haste + 10 end
+            stat.haste = stat.haste + 10
+            -- Legacy
+            if IsSpellKnownOrOverridesKnown( 317009 ) then
+                applyDebuff( "target", "sinful_brand" )
+                active_dot.sinful_brand = active_enemies
+            end
 
         end,
 
-        meta = {
+        --[[meta = {
             adjusted_remains = function ()
-                --[[ if level < 116 and ( equipped.delusions_of_grandeur or equipped.convergeance_of_fates ) then
+                -- if level < 116 and ( equipped.delusions_of_grandeur or equipped.convergeance_of_fates ) then
                     return cooldown.metamorphosis.remains * meta_cd_multiplier
-                end ]]
+                end
 
                 return cooldown.metamorphosis.remains
             end
-        }
+        }--]]
     },
 
     -- Talent: Slip into the nether, increasing movement speed by $s3% and becoming immune to damage, but unable to attack. Lasts $d.
@@ -2009,7 +2006,6 @@ spec:RegisterAbilities( {
     sigil_of_flame = {
         id = function ()
             if talent.precise_sigils.enabled then return 389810 end
-            if talent.concentrated_sigils.enabled then return 204513 end -- TODO: Remove?
             return 204596
         end,
         known = 204596,
@@ -2029,7 +2025,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             create_sigil( "flame" )
+            if talent.student_of_suffering.enabled then applyBuff( "student_of_suffering" ) end
             setCooldown( "sigil_of_doom", action.sigil_of_doom.cooldown )
+            if talent.flames_of_fury.enabled then gain( talent.flames_of_fury.rank * active_enemies, "fury" ) end
         end,
 
         copy = { 204596, 204513, 389810 },
@@ -2058,8 +2056,13 @@ spec:RegisterAbilities( {
         handler = function ()
             create_sigil( "flame" )
             setCooldown( "sigil_of_flame", action.sigil_of_doom.cooldown )
-            removeBuff( "demonsurge_sigil_of_doom" )
-            if talent.demonic_intensity.enabled and ( buff.demonsurge_demonic.up or buff.demonsurge_hardcast.up ) then addStack( "demonsurge" ) end
+            if talent.demonic_intensity.enabled and buff.demonsurge_sigil_of_doom.up then
+                removeBuff( "demonsurge_sigil_of_doom" )
+                addStack( "demonsurge" )
+            end
+            if talent.flames_of_fury.enabled then gain( talent.flames_of_fury.rank * active_enemies, "fury" ) end
+            if talent.student_of_suffering.enabled then applyBuff( "student_of_suffering" ) end
+
         end,
 
         bind = "sigil_of_flame"
@@ -2148,8 +2151,17 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "the_hunt_dot" )
             setDistance( 5 )
 
-            if talent.momentum.enabled then applyBuff( "momentum" ) end
+            if talent.exergy.enabled then
+                applyBuff( "exergy", min( 30, buff.exergy.remains + 20 ) )
+            elseif talent.inertia.enabled then -- talent choice node, only 1 or the other
+                applyBuff( "inertia_prep_buff" )
+            end
+            if talent.unbound_chaos.enabled then applyBuff( "unbound_chaos" ) end
 
+            -- Hero Talents
+            if talent.art_of_the_glaive.enabled then applyBuff( "reavers_glaive" ) end
+
+            -- Legacy
             if legendary.blazing_slaughter.enabled then
                 applyBuff( "immolation_aura" )
                 applyBuff( "blazing_slaughter" )
@@ -2192,6 +2204,32 @@ spec:RegisterAbilities( {
         bind = "reavers_glaive"
     },
 
+    reavers_glaive = {
+        id = 442294,
+        cast = 0,
+        charges = function () return talent.champion_of_the_glaive.enabled and 2 or nil end,
+        cooldown = 9,
+        recharge = function () return talent.champion_of_the_glaive.enabled and 9 or nil end,
+        gcd = "spell",
+        school = "physical",
+        known = 442290,
+
+        spend = function() return talent.keen_engagement.enabled and -20 or nil end,
+        spendType = function() return talent.keen_engagement.enabled and "fury" or nil end,
+
+        startsCombat = true,
+        buff = "reavers_glaive",
+
+        handler = function ()
+            removeBuff( "reavers_glaive" )
+            if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
+            applyBuff( "rending_strike" )
+            applyBuff( "glaive_flurry" )
+        end,
+
+        bind = "throw_glaive"
+    },
+
     -- Taunts the target to attack you.
     torment = {
         id = 185245,
@@ -2230,13 +2268,25 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+
+            -- Standard effects/Talents
             applyBuff( "vengeful_retreat_movement" )
             if cooldown.fel_rush.remains < 1 then setCooldown( "fel_rush", 1 ) end
-            applyDebuff( "target", "vengeful_retreat" )
-            applyDebuff( "target", "vengeful_retreat_snare" )
-            -- Assume that we retreated away.
-            setDistance( 15 )
+            if talent.vengeful_bonds.enabled then
+                applyDebuff( "target", "vengeful_retreat" )
+                applyDebuff( "target", "vengeful_retreat_snare" )
+            end
 
+            if talent.tactical_retreat.enabled then applyBuff( "tactical_retreat" ) end
+            if talent.exergy.enabled then
+                applyBuff( "exergy", min( 30, buff.exergy.remains + 20 ) )
+            elseif talent.inertia.enabled then -- talent choice node, only 1 or the other
+                applyBuff( "inertia_prep_buff" )
+            end
+            if talent.unbound_chaos.enabled then applyBuff( "unbound_chaos" ) end
+
+            -- Hero Talents
+            if talent.unhindered_assault.enabled then setCooldown( "felblade", 0 ) end
             if talent.evasive_action.enabled then
                 if buff.evasive_action.down then applyBuff( "evasive_action" )
                 else
@@ -2244,8 +2294,8 @@ spec:RegisterAbilities( {
                     setCooldown( "vengeful_retreat", 0 )
                 end
             end
-            if talent.tactical_retreat.enabled then applyBuff( "tactical_retreat" ) end
-            if talent.momentum.enabled then applyBuff( "momentum" ) end
+
+            -- PvP
             if pvptalent.glimpse.enabled then applyBuff( "glimpse" ) end
         end,
     }
