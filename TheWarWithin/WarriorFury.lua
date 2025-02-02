@@ -794,6 +794,7 @@ spec:RegisterAbilities( {
             applyBuff( "avatar" )
             if talent.berserkers_torment.enabled then applyBuff( "recklessness", 8 ) end
             if talent.titans_torment.enabled then
+                setCooldown( "odyns_fury", 0 )
                 applyBuff( "odyns_fury" )
                 active_dot.odyns_fury = max( active_dot.odyns_fury, active_enemies )
                 if talent.titanic_rage.enabled then
@@ -1451,7 +1452,10 @@ spec:RegisterAbilities( {
                 applyBuff( "enrage" )
                 applyBuff( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
             end
-            if talent.titans_torment.enabled then applyBuff( "avatar", 4 ) end
+            if talent.titans_torment.enabled then 
+                setCooldown( "avatar", 0 )
+                applyBuff( "avatar", 4 ) 
+            end
 
             if state.spec.fury and set_bonus.tier31_2pc > 0 then
                 applyBuff( "furious_bloodthirst", nil, 3 )
