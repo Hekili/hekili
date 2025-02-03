@@ -400,7 +400,7 @@ spec:RegisterAuras( {
         max_stack = 3
     },
     merciless_bonegrinder = {
-        id = 383316,
+        id = 383317,
         duration = 9,
         max_stack = 1,
     },
@@ -554,6 +554,11 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    lethal_blows = {
+        id = 455485,
+        duration = 12,
+        max_stack = 1
+    }
 } )
 
 local rageSpent = 0
@@ -566,6 +571,32 @@ end )
 spec:RegisterStateExpr( "glory_rage", function ()
     return gloryRage
 end )
+
+spec:RegisterStateExpr( "collateral_damage_stacks", function()
+    return buff.collateral_damage and buff.collateral_damage.stack or 0
+end )
+
+spec:RegisterStateExpr( "merciless_bonegrinder_active", function()
+    return buff.merciless_bonegrinder and buff.merciless_bonegrinder.up or false
+end )
+
+spec:RegisterStateExpr( "lethal_blows_active", function()
+    return buff.lethal_blows and buff.lethal_blows.up or false
+end )
+
+spec:RegisterStateExpr( "lethal_blows_remaining", function()
+    return buff.lethal_blows and buff.lethal_blows.remains or 0
+end )
+
+local function ShouldUseExecute()
+    return (buff.sudden_death.up or buff.stone_heart.up or target.health_pct < (talent.massacre.enabled and 35 or 20)) 
+        and (not talent.lethal_blows.enabled or buff.lethal_blows.down or buff.lethal_blows.remains < 3)
+end
+
+local function ShouldUseMortalStrike()
+    return cooldown.mortal_strike.ready 
+        and (not talent.lethal_blows.enabled or buff.lethal_blows.down or buff.lethal_blows.remains < 3)
+end
 
 spec:RegisterHook( "spend", function( amt, resource )
     if resource == "rage" then
@@ -727,6 +758,16 @@ spec:RegisterAuras( {
     lethal_blows = {
         id = 455485,
         duration = 12,
+        max_stack = 1
+    },
+    imminent_demise = {
+        id = 444769,
+        duration = function() return talent.imminent_demise.enabled and 30 or 0 end,
+        max_stack = 3
+    },
+    brutal_finish = {
+        id = 446085,
+        duration = 15,
         max_stack = 1
     }
 } )
@@ -1055,7 +1096,7 @@ spec:RegisterAbilities( {
         usable = function ()
             if buff.sudden_death.up or buff.stone_heart.up then return true end
             if cycle_for_execute then return true end
-           return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
+            return target.health_pct < ( talent.massacre.enabled and 35 or 20 ), "requires < " .. ( talent.massacre.enabled and 35 or 20 ) .. "% health"
         end,
 
         cycle = "execute_ineligible",
@@ -1063,7 +1104,6 @@ spec:RegisterAbilities( {
         indicator = function () if cycle_for_execute then return "cycle" end end,
 
         timeToReady = function()
-            -- Instead of using regular resource requirements, we'll use timeToReady to support the spend system.
             if rage.current >= 20 then return 0 end
             return rage.time_to_20
         end,
@@ -1076,7 +1116,7 @@ spec:RegisterAbilities( {
                     gain( cost * 0.1, "rage" )
                 end
                 if talent.critical_thinking.enabled then
-                    gain( cost * ( talent.critical_thinking.rank * 0.1 ), "rage" ) -- Regain another 10/20% for critical thinking
+                    gain( cost * ( talent.critical_thinking.rank * 0.1 ), "rage" )
                 end
             end
             if buff.sudden_death.up then
@@ -1094,6 +1134,13 @@ spec:RegisterAbilities( {
             if talent.juggernaut.enabled then addStack( "juggernaut" ) end
             if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
             if talent.colossal_might.enabled then addStack( "colossal_might" ) end
+            if talent.lethal_blows.enabled then applyBuff( "lethal_blows" ) end
+            if talent.lethal_blows.enabled then
+                applyBuff( "lethal_blows" )
+                if buff.lethal_blows.down then
+                    stat.crit = stat.crit + 0.10 -- 10% increased crit chance
+                end
+            end
         end,
 
         auras = {
@@ -1280,12 +1327,15 @@ spec:RegisterAbilities( {
             removeBuff( "executioners_precision" )
             removeBuff( "battlelord" )
             if set_bonus.tier30_4pc > 0 then removeBuff( "crushing_advance" ) end
-            -- Patch 10.1 adds auto Rend to target using MS with talent under 35% HP
             if target.health.pct < 35 and talent.bloodletting.enabled then
                 applyDebuff ( "target", "rend" )
             end
             if talent.dominance_of_the_colossus.enabled and buff.colossal_might.stack == 10 then reduceCooldown( "demolish", 2 ) end
             if talent.colossal_might.enabled then addStack( "colossal_might" ) end
+            if talent.lethal_blows.enabled and buff.lethal_blows.down then
+                applyBuff( "lethal_blows" )
+                stat.crit = stat.crit + 0.10 -- 10% increased crit chance
+            end
         end,
     },
 
@@ -1731,8 +1781,10 @@ spec:RegisterAbilities( {
         texture = 132369,
 
         handler = function ()
-            removeBuff ( "collateral_damage" )
-            collateralDmgStacks = 0
+            removeBuff( "collateral_damage" )
+            if talent.merciless_bonegrinder.enabled and (buff.bladestorm.up or buff.ravager.up) then
+                applyBuff( "merciless_bonegrinder", 9 ) -- 9 second duration as per talent
+            end
         end,
     },
 
