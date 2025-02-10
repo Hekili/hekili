@@ -151,10 +151,10 @@ spec:RegisterTalents( {
     spell_reflection             = {  90385,  23920, 1 }, -- Raise your weapon, reflecting the first spell cast on you, and reduce magic damage you take by 20% for 5 sec.
     storm_bolt                   = {  90337, 107570, 1 }, -- Hurls your weapon at an enemy, causing 3,210 Physical damage and stunning for 4 sec.
     thunder_clap                 = {  90343,   6343, 1 }, -- Blasts all enemies within 8 yards for 11,999 Physical damage and reduces their movement speed by 20% for 10 sec. Deals reduced damage beyond 5 targets.
-    thunderous_roar              = {  90359, 384318, 1 }, -- Roar explosively, dealing 28,219 Physical damage to enemies within 12 yds and cause them to bleed for 48,514 physical damage over 10 sec. Deals reduced damage beyond 5 targets.
-    thunderous_words             = {  90358, 384969, 1 }, -- Increases the duration of Thunderous Roar's Bleed effect by 2.0 sec and Thunderous Roar's Bleed effect causes enemies to take 30% increased damage from all your bleeds.
+    thunderous_roar              = {  90359, 384318, 1 }, -- Roar explosively, dealing Physical damage to enemies within 12 yds and causing them to bleed for Physical damage over 8 sec (10 sec with Thunderous Words). Generates 10 Rage. Damage increased by 20% with Bloodborne.
+    thunderous_words             = {  90358, 384969, 1 }, -- Increases the duration of Thunderous Roar's Bleed effect by 2.0 sec and causes enemies affected by Thunderous Roar to take 30% increased damage from your abilities.
     titans_torment               = {  90362, 390135, 1 }, -- Activating Avatar casts Odyn's Fury and activating Odyn's Fury grants 4 sec of Avatar.
-    uproar                       = {  90357, 391572, 1 }, -- Thunderous Roar's cooldown reduced by 45 sec.
+    uproar                       = {  90357, 391572, 1 }, -- Reduces Thunderous Roar's cooldown by 45 sec.
     war_machine                  = {  90386, 346002, 1 }, -- Your auto attacks generate 20% more Rage. Killing an enemy instantly generates 5 Rage, and increases your movement speed by 30% for 8 sec.
     wild_strikes                 = {  90360, 382946, 2 }, -- Haste increased by 1% and your auto-attack critical strikes increase your auto-attack speed by 10% for 10 sec.
     wrecking_throw               = {  90351, 384110, 1 }, -- Hurl your weapon at the enemy, causing 11,057 Physical damage, ignoring armor. Deals up to 500% increased damage to absorb shields.
@@ -163,7 +163,7 @@ spec:RegisterTalents( {
     anger_management             = {  90415, 152278, 1 }, -- Every 20 Rage you spend reduces the remaining cooldown on Recklessness, Bladestorm, and Ravager by 1 sec.
     ashen_juggernaut             = {  90409, 392536, 1 }, -- Execute increases the critical strike chance of Execute by 10% for 15 sec, stacking up to 5 times.
     bladestorm                   = {  90388, 227847, 1 }, -- Become an unstoppable storm of destructive force, striking all nearby enemies for 93,118 Physical damage over 3.5 sec. Deals reduced damage beyond 8 targets. You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks. Generates 10 Rage each time you deal damage.
-    bloodborne                   = {  90401, 385703, 1 }, -- Bleed damage of Odyn's Fury, Thunderous Roar and Gushing Wound increased by 20%.
+    bloodborne                   = {  90401, 385703, 1 }, -- Increases the bleed damage of Odyn's Fury, Thunderous Roar and Gushing Wound by 20%.
     bloodcraze                   = {  90405, 393950, 1 }, -- Raging Blow increases the critical strike chance of your next Bloodthirst by 15% until it critically strikes, stacking up to 5 times.
     bloodthirst                  = {  90392,  23881, 1 }, -- Assault the target in a bloodthirsty craze, dealing 26,445 Physical damage and restoring 3% of your health. Generates 8 Rage.
     cold_steel_hot_blood         = {  90402, 383959, 1 }, -- Bloodthirst critical strikes generate 4 additional Rage, and inflict a Gushing Wound that leeches 16,420 health over 6 sec.
@@ -513,10 +513,64 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     thunderous_roar = {
-        id = 397364,
-        duration = function () return talent.thunderous_words.enabled and 10 or 8 end,
-        tick_time = 2,
-        max_stack = 1
+        id = 384318,
+        cast = 0,
+        cooldown = function() return 90 - ( talent.uproar.enabled and 45 or 0 ) end,
+        gcd = "spell",
+
+        spend = -10,
+        spendType = "rage",
+
+        talent = "thunderous_roar",
+        startsCombat = true,
+        texture = 642418,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyDebuff( "target", "thunderous_roar" )
+            active_dot.thunderous_roar = max( active_dot.thunderous_roar, active_enemies )
+        end,
+    },
+    thunderous_words = {
+        id = 384969,
+        cast = 0,
+        cooldown = function() return 90 - ( talent.uproar.enabled and 45 or 0 ) end,
+        gcd = "spell",
+
+        spend = -10,
+        spendType = "rage",
+
+        talent = "thunderous_words",
+        startsCombat = true,
+        texture = 642419,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyDebuff( "target", "thunderous_words" )
+            active_dot.thunderous_words = max( active_dot.thunderous_words, active_enemies )
+        end,
+    },
+    uproar = {
+        id = 391572,
+        cast = 0,
+        cooldown = function() return 90 - ( talent.uproar.enabled and 45 or 0 ) end,
+        gcd = "spell",
+
+        spend = -10,
+        spendType = "rage",
+
+        talent = "uproar",
+        startsCombat = true,
+        texture = 642420,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyDebuff( "target", "uproar" )
+            active_dot.uproar = max( active_dot.uproar, active_enemies )
+        end,
     },
     victorious = {
             id = 32216,
@@ -1842,6 +1896,49 @@ spec:RegisterAbilities( {
         end,
     },
 
+
+    thunderous_words = {
+        id = 384969,
+        cast = 0,
+        cooldown = function() return 90 - ( talent.uproar.enabled and 45 or 0 ) end,
+        gcd = "spell",
+
+        spend = -10,
+        spendType = "rage",
+
+        talent = "thunderous_words",
+        startsCombat = true,
+        texture = 642419,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyDebuff( "target", "thunderous_words" )
+            active_dot.thunderous_words = max( active_dot.thunderous_words, active_enemies )
+        end,
+    },
+
+
+    uproar = {
+        id = 391572,
+        cast = 0,
+        cooldown = function() return 90 - ( talent.uproar.enabled and 45 or 0 ) end,
+        gcd = "spell",
+
+        spend = -10,
+        spendType = "rage",
+
+        talent = "uproar",
+        startsCombat = true,
+        texture = 642420,
+
+        toggle = "cooldowns",
+
+        handler = function ()
+            applyDebuff( "target", "uproar" )
+            active_dot.uproar = max( active_dot.uproar, active_enemies )
+        end,
+    },
 
 
     victory_rush = {
