@@ -2291,13 +2291,19 @@ spec:RegisterAbilities( {
         usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
         handler = function()
             applyBuff( "felstorm", 5 * haste )
-            if talent.fel_sunder.enabled then 
-                if debuff.fel_sunder.up then
-                    addStack( "fel_sunder" )
-                else
-                    applyDebuff( "target", "fel_sunder" )
-                end
+            if talent.fel_sunder.enabled and debuff.fel_sunder.up then
+                applyDebuff( "target", "fel_sunder", nil, debuff.fel_sunder.stack + 1 )
+            elseif talent.fel_sunder.enabled then
+                applyDebuff( "target", "fel_sunder" )
             end
+            
+            -- Felstorm ticks every 1 sec for 5 sec
+            state:QueueAuraExpiration( "felstorm", function()
+                if talent.fel_sunder.enabled and debuff.fel_sunder.up then
+                    applyDebuff( "target", "fel_sunder", nil, debuff.fel_sunder.stack + 1 )
+                end
+            end, query_time + 1 )
+
             if cooldown.guillotine.remains < 5 then setCooldown( "guillotine", 8 ) end
         end,
     },
