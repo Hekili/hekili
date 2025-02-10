@@ -2290,7 +2290,14 @@ spec:RegisterAbilities( {
 
         usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
         handler = function()
-            applyBuff( "felstorm" )
+            applyBuff( "felstorm", 5 * haste )
+            if talent.fel_sunder.enabled then 
+                if debuff.fel_sunder.up then
+                    addStack( "fel_sunder" )
+                else
+                    applyDebuff( "target", "fel_sunder" )
+                end
+            end
             if cooldown.guillotine.remains < 5 then setCooldown( "guillotine", 8 ) end
         end,
     },
