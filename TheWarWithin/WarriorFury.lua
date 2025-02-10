@@ -1972,22 +1972,26 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
+        -- Improved Whirlwind generates 3 Rage + 1 per target hit (max 5 additional targets)
         spend = function() return talent.improved_whirlwind.enabled and ( -3 - min( 5, active_enemies ) ) or 0 end,
         spendType = "rage",
 
         texture = 132369,
 
+        -- Check range setting to prevent out-of-range casts
         usable = function ()
             if settings.check_ww_range and target.distance > 8 then return false, "target is outside of whirlwind range" end
         end,
 
-        -- Modify Syrif's solution; in multi-target using WW while Meat Cleaver is up is fine; the restriction was only intended for single-target.
-        -- Checking both active_enemies and true_active_enemies lets WW slip through with Meat Cleaver up when single-target mode is active but there are actually more targets.
+        -- Only prevent WW with Meat Cleaver in single-target scenarios
+        -- In multi-target, using WW with Meat Cleaver is fine
         nobuff = function()
             if max( active_enemies, true_active_enemies ) > 1 then return end
             return "meat_cleaver"
         end,
 
+        -- Applies Meat Cleaver buff which causes next 2/4 single-target attacks to cleave
+        -- Meat Cleaver talent increases stacks to 4, base Improved Whirlwind gives 2
         handler = function ()
             if talent.improved_whirlwind.enabled or talent.meat_cleaver.enabled then
                 applyBuff( "meat_cleaver", nil, talent.meat_cleaver.enabled and 4 or 2 )
