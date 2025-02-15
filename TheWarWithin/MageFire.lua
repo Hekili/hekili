@@ -469,7 +469,7 @@ spec:RegisterAuras( {
     },
     hot_streak = {
         id = 48108,
-        duration = 10,
+        duration = 15,
         type = "Magic",
         max_stack = 1,
     },
@@ -487,7 +487,7 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
-    -- Talent: Frozen.
+    -- Talent: Frozen in place.
     -- https://wowhead.com/beta/spell=157997
     ice_nova = {
         id = 157997,
@@ -856,7 +856,7 @@ end )
 
 
 spec:RegisterStateTable( "firestarter", setmetatable( {}, {
-    __index = setfenv( function( t, k )
+    __index = function( t, k )
         if k == "active" then 
             -- Check both talent and health threshold
             return talent.firestarter.enabled and target.health.pct > 90
@@ -875,28 +875,38 @@ spec:RegisterStateTable( "firestarter", setmetatable( {}, {
             -- Special case for checking if we're actively in Firestarter phase
             return talent.firestarter.enabled and target.health.pct > 90 and not buff.combustion.up
         end
-    end, state )
+    end
 } ) )
+
+local ScorchExecuteHandler = setfenv( function()
+    -- Check for Heat Shimmer proc
+    if state.buff.heat_shimmer.up then return true end
+    
+    -- Check execute threshold based on talents
+    local threshold = state.talent.sunfury_execution.enabled and 35 or 30
+    
+    -- Return true if target is below threshold
+    return state.target.health.pct < threshold
+end, state )
 
 spec:RegisterStateTable( "scorch_execute", setmetatable( {}, {
-    __index = setfenv( function( t, k )
-        if k == "active" then
-            return buff.heat_shimmer.up or target.health.pct < 30
-        elseif k == "remains" then
-            if target.health.pct < 30 then return target.time_to_die end
-            if buff.heat_shimmer.up then return buff.heat_shimmer.remains end
-            return 0
-        end
-    end, state )
+    __index = function( t, k )
+        if k == "active" then return ScorchExecuteHandler() end
+        return false
+    end
 } ) )
 
+local ImprovedScorchHandler = setfenv( function()
+    if not state.talent.improved_scorch.enabled then return false end
+    if state.debuff.improved_scorch.stack < 2 then return false end
+    return state.debuff.improved_scorch.remains > ( 4 * state.gcd.max )
+end, state )
+
 spec:RegisterStateTable( "improved_scorch", setmetatable( {}, {
-    __index = setfenv( function( t, k )
-        if k == "active" then return debuff.improved_scorch.up
-        elseif k == "remains" then
-            return debuff.improved_scorch.remains
-        end
-    end, state )
+    __index = function( t, k )
+        if k == "active" then return ImprovedScorchHandler() end
+        return false
+    end
 } ) )
 
 
@@ -930,9 +940,9 @@ spec:RegisterAuras( {
 
 spec:RegisterGear( "tier29", 200318, 200320, 200315, 200317, 200319 )
 
-local TriggerHyperthermia = setfenv( function()
+local function TriggerHyperthermia()
     applyBuff( "hyperthermia", 2 + ( buff.lingering_embers.stacks ) )
-end, state )
+end
 
 spec:RegisterHook( "reset_precast", function ()
 
@@ -971,7 +981,7 @@ spec:RegisterHook( "advance", function ( time )
 end )
 
 
-local ConsumeHotStreak = setfenv( function()
+local function ConsumeHotStreak()
     -- Remove Hot Streak first to prevent any race conditions
     removeBuff( "hot_streak" )
 
@@ -1011,9 +1021,9 @@ local ConsumeHotStreak = setfenv( function()
         applyBuff( "sparking_cinders" )
     end
 
-end, state )
+end
 
-spec:RegisterStateFunction( "hot_streak", function( willCrit )
+local function hot_streak( willCrit )
     -- Check for guaranteed crits
     willCrit = willCrit or buff.combustion.up or stat.crit >= 100 or 
                (talent.firestarter.enabled and target.health.pct > 90) or
@@ -1076,7 +1086,9 @@ spec:RegisterStateFunction( "hot_streak", function( willCrit )
             buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains 
         ) 
     end
-end )
+end
+
+spec:RegisterStateFunction( "hot_streak", hot_streak )
 
 
 local hot_streak_spells = {
@@ -1149,11 +1161,11 @@ spec:RegisterStateExpr( "fire_blast_pooling", function()
         
         -- More aggressive pooling close to Combustion
         if variable.time_to_combustion < 3 then
-            return cooldown.fire_blast.charges_fractional < needed_charges
+            return cooldown.fire_blast.charges_fractional < needed_charges - 1
         end
         
         -- Less strict pooling further from Combustion
-        return cooldown.fire_blast.charges_fractional < (needed_charges - 0.5)
+        return cooldown.fire_blast.charges_fractional < needed_charges - 1.5
     end
     
     -- Don't pool if we have Heating Up and spells in flight
@@ -1162,7 +1174,64 @@ spec:RegisterStateExpr( "fire_blast_pooling", function()
     end
     
     -- Maintain minimum charges for reaction time
-    return cooldown.fire_blast.charges_fractional < 1.2
+    return cooldown.fire_blast.charges_fractional < 0.8
+end )
+
+spec:RegisterStateExpr( "overpool_fire_blasts", function()
+    -- Don't overpool during Combustion
+    if buff.combustion.up then return false end
+    
+    -- Don't overpool if Hyperthermia is imminent
+    if talent.memory_of_alar.enabled and pet.arcane_phoenix.remains < 0.5 then return false end
+    
+    -- Calculate base charge threshold
+    local threshold = 1.5
+    
+    -- Increase threshold if Combustion is coming soon
+    if variable.time_to_combustion < 12 then
+        -- Calculate needed charges for Combustion
+        local needed_charges = 2 -- Base requirement
+        if talent.alexstraszas_fury.enabled then needed_charges = needed_charges + 1 end
+        if talent.sun_kings_blessing.enabled and buff.sun_kings_blessing.stack >= (buff.sun_kings_blessing.max_stack - 1) then
+            needed_charges = needed_charges + 1
+        end
+        
+        -- More aggressive pooling as Combustion approaches
+        if variable.time_to_combustion < 6 then
+            threshold = needed_charges
+        else
+            threshold = needed_charges - 0.5
+        end
+    end
+    
+    -- Increase threshold in cleave/AoE
+    if active_enemies > 2 then
+        if talent.flame_patch.enabled then threshold = threshold + 0.5 end
+        if talent.master_of_flame.enabled then threshold = threshold + 0.5 end
+    end
+    
+    -- Increase threshold if we have strong Ignite spread potential
+    if debuff.ignite.up and debuff.ignite.tick_damage > target.health.current * 0.04 then
+        threshold = threshold + 0.5
+    end
+    
+    -- Increase threshold if we're about to get SKB
+    if talent.sun_kings_blessing.enabled and buff.sun_kings_blessing.stack == buff.sun_kings_blessing.max_stack - 1 then
+        threshold = threshold + 1
+    end
+    
+    -- Reduce threshold if we need instant damage
+    if target.health.pct < 35 and talent.molten_fury.enabled then
+        threshold = max(1, threshold - 1)
+    end
+    
+    -- Don't pool if we have Heating Up and spells in flight
+    if buff.heating_up.up and hot_streak_spells_in_flight > 0 then
+        threshold = max(1, threshold - 1)
+    end
+    
+    -- Return true if we should pool
+    return action.fire_blast.charges_fractional < threshold
 end )
 
 spec:RegisterStateExpr( "phoenix_pooling", function()
@@ -1525,66 +1594,22 @@ spec:RegisterStateExpr( "combustion_window_value", function()
 end )
 
 spec:RegisterStateExpr( "ignite_spread_value", function()
-    local value = 0
+    if not debuff.ignite.up then return 0 end
     
-    -- Base value from current Ignite
-    if debuff.ignite.up then
-        value = value + debuff.ignite.tick_damage
-        
-        -- Value Ignite more during certain conditions
-        if talent.intensifying_flame.enabled and active_enemies <= 3 then
-            value = value * 1.2 -- 20% more value for Intensifying Flame
-        end
+    local value = debuff.ignite.tick_damage or 0
+    
+    -- Increase value based on number of targets
+    if active_enemies > 1 then
+        value = value * min(active_enemies, 5)
     end
     
-    -- Value from target's remaining health
-    if target.health.pct > 80 then
-        value = value + 20 -- Priority to high health targets
-    elseif target.health.pct < 20 then
-        value = value - 10 -- Deprioritize dying targets
-    end
-    
-    -- Value from nearby enemies for spread potential
-    local nearby = min(active_enemies - 1, 4)
-    value = value + (nearby * 15)
-    
-    -- Additional value during Combustion
+    -- Increase value during Combustion
     if buff.combustion.up then
         value = value * 1.5
-        
-        -- Extra value if we have Master of Flame
-        if talent.master_of_flame.enabled then
-            value = value + (nearby * 10)
-        end
-    end
-    
-    -- Value from controlled destruction stacks
-    if talent.controlled_destruction.enabled then
-        value = value + (debuff.controlled_destruction.stack * 5)
-    end
-    
-    -- Value from improved scorch
-    if talent.improved_scorch.enabled and debuff.improved_scorch.up then
-        value = value + (debuff.improved_scorch.stack * 8)
-    end
-    
-    -- Value from Sun King's Blessing
-    if buff.sun_kings_blessing_ready.up then
-        value = value * 1.3 -- 30% more value to spread before SKB usage
-    end
-    
-    -- Value from Hyperthermia
-    if buff.hyperthermia.up then
-        value = value * 1.2 -- 20% more value during Hyperthermia
-    end
-    
-    -- Reduce value if target will die soon
-    if target.time_to_die < 6 then
-        value = value * (target.time_to_die / 6)
     end
     
     return value
-end )
+end)
 
 spec:RegisterStateExpr( "optimal_ignite_target", function()
     if active_enemies < 2 then return "target" end
@@ -1670,63 +1695,6 @@ spec:RegisterStateExpr( "optimal_precast", function()
     
     return nil
 end)
-
-spec:RegisterStateExpr( "scorch_execute", function()
-    --[[ 
-        Manages the execute phase rotation using Scorch.
-        
-        FEATURES
-        ========
-        1. Heat Shimmer proc tracking
-        2. Execute threshold management
-        3. Talent-based threshold adjustment
-        4. Movement optimization
-        
-        THRESHOLDS
-        ==========
-        - Base: 30% health
-        - With Sunfury Execution: 35% health
-        - Heat Shimmer procs override thresholds
-    ]]
-    
-    -- Check for Heat Shimmer proc
-    if buff.heat_shimmer.up then return true end
-    
-    -- Check execute threshold based on talents
-    local threshold = talent.sunfury_execution.enabled and 35 or 30
-    
-    -- Return true if target is below threshold
-    return target.health.pct < threshold
-end )
-
-spec:RegisterStateExpr( "improved_scorch", function()
-    --[[ 
-        Manages the Improved Scorch debuff during execute phase.
-        
-        FEATURES
-        ========
-        1. Debuff stack tracking
-        2. Duration optimization
-        3. GCD efficiency checks
-        4. Talent validation
-        
-        MAINTENANCE
-        ===========
-        - Requires 2 stacks for optimal damage
-        - Needs 4 GCDs worth of remaining time
-        - Only active with talent
-    ]]
-    
-    -- Check if we have the talent
-    if not talent.improved_scorch.enabled then return false end
-    
-    -- Check if the debuff is at max stacks
-    if debuff.improved_scorch.stack < 2 then return false end
-    
-    -- Check if we have enough time left on the debuff
-    -- We want at least 4 GCDs worth of time to make it worth maintaining
-    return debuff.improved_scorch.remains > ( 4 * gcd.max )
-end )
 
 spec:RegisterStateExpr( "skb_flamestrike", function()
     -- Don't cast if we don't have Sun King's Blessing ready
@@ -1829,26 +1797,74 @@ spec:RegisterStateExpr( "skb_flamestrike", function()
 end)
 
 spec:RegisterStateExpr( "skb_expiration_delay", function()
-    --[[ 
-        Manages the expiration delay system for Sun King's Blessing.
-        
-        PURPOSE
-        =======
-        Prevents premature buff consumption by tracking:
-        1. Movement interruptions
-        2. Target switches
-        3. Mechanic handling
-        4. Resource availability
-        
-        DELAY WINDOWS
-        ============
-        - Short delays for movement
-        - Medium delays for target switches
-        - Long delays for mechanics
-    ]]
+    if not buff.sun_kings_blessing_ready.up then return 0 end
     
-    -- Return remaining time on the expiration delay
-    return buff.sun_kings_blessing_ready.expiration_delay_remains or 0
+    local delay = 0
+    
+    -- Movement delays
+    if moving then
+        if buff.ice_floes.up then
+            delay = max( delay, buff.ice_floes.remains )
+        else
+            delay = max( delay, 1.5 ) -- Time to find safe spot to cast
+        end
+    end
+    
+    -- Target switching delays
+    if target.time_to_die < 3 then
+        delay = max( delay, 2.0 ) -- Time to find new target
+    end
+    
+    -- Resource management delays
+    if action.fire_blast.charges_fractional < 1.5 and cooldown.combustion.remains > 10 then
+        delay = max( delay, 1.0 ) -- Wait for Fire Blast charge
+    end
+    
+    -- Mechanic handling delays
+    if incoming_damage_3s > health.max * 0.4 then
+        delay = max( delay, 1.0 ) -- Time to handle defensive
+    end
+    
+    -- Don't delay during Combustion
+    if buff.combustion.up then return 0 end
+    
+    -- Cap maximum delay
+    return min( delay, buff.sun_kings_blessing_ready.remains - 0.5 )
+end )
+
+spec:RegisterStateExpr( "skb_duration", function()
+    if not talent.sun_kings_blessing.enabled then return 0 end
+    
+    -- Base duration of 6 seconds
+    local duration = 6
+    
+    -- Extend duration based on talent interactions
+    if talent.improved_combustion.enabled then duration = duration + 2 end
+    
+    -- Memory of Alar interaction
+    if talent.memory_of_alar.enabled and pet.arcane_phoenix.up then
+        -- Add lingering embers stacks to duration
+        duration = duration + buff.lingering_embers.stack
+    end
+    
+    -- Adjust for Hyperthermia overlap
+    if buff.hyperthermia.up or (talent.memory_of_alar.enabled and pet.arcane_phoenix.remains < 0.5) then
+        duration = duration + 2
+    end
+    
+    -- Adjust for cleave/AoE scenarios
+    if active_enemies > 2 then
+        if talent.master_of_flame.enabled then duration = duration + 1 end
+        if talent.intensifying_flame.enabled then duration = duration + 1 end
+    end
+    
+    -- Reduce duration if we need quick burst
+    if target.health.pct < 35 and talent.molten_fury.enabled then
+        duration = max(4, duration - 1)
+    end
+    
+    -- Cap maximum duration
+    return min(duration, 12)
 end )
 
 spec:RegisterStateExpr( "hyperthermia_available", function()
@@ -1888,17 +1904,74 @@ spec:RegisterStateExpr( "hyperthermia_available", function()
     -- Check if we're about to get Hyperthermia from Phoenix expiring
     if talent.memory_of_alar.enabled and pet.arcane_phoenix.up then
         local phoenix_remains = pet.arcane_phoenix.remains
-        -- Phoenix grants Hyperthermia when it expires
-        if phoenix_remains < 2 then return true end
+        -- Only count as available if Phoenix is about to expire and we have time to cast
+        if phoenix_remains < 2 and phoenix_remains > 0.5 then
+            -- Check if we have enough time for a cast
+            local cast_time = action.pyroblast.cast_time
+            if cast_time == 0 then cast_time = action.flamestrike.cast_time end
+            
+            return phoenix_remains > cast_time
+        end
     end
     
     return false
 end )
 
 spec:RegisterStateExpr( "expected_kindling_reduction", function()
-    -- This only really works well in combat; we'll use the old APL value instead of dynamically updating for now.
-    return 0.4
-end)
+    -- Base reduction per crit is 1.0 sec
+    local base_reduction = 1.0
+    
+    -- Calculate expected crits per minute based on:
+    -- Fireball (every ~2 sec), Fire Blast (~8 sec CD), Phoenix Flames (~25 sec CD)
+    -- Scorch (when moving), Pyroblast (procs)
+    local expected_crits = 0
+    
+    -- During combat, factor in:
+    if combat > 0 then
+        -- Guaranteed crits
+        if buff.combustion.up then
+            expected_crits = expected_crits + (30 / 2) -- All spells crit
+        end
+        
+        if talent.firestarter.enabled and target.health.pct > 90 then
+            expected_crits = expected_crits + (15 / 2) -- All spells crit
+        end
+        
+        -- Base rotation crits
+        local base_crit = stat.crit / 100
+        if talent.critical_mass.enabled then
+            base_crit = base_crit + 0.05
+        end
+        
+        -- Fireball crits
+        expected_crits = expected_crits + (30 / 2) * base_crit
+        
+        -- Fire Blast crits (always crit)
+        expected_crits = expected_crits + (30 / 8)
+        
+        -- Phoenix Flames crits
+        if talent.call_of_the_sun_king.enabled then
+            expected_crits = expected_crits + (30 / 25)
+        end
+        
+        -- Scorch crits during movement
+        if moving then
+            expected_crits = expected_crits + (30 / 2) * base_crit
+        end
+        
+        -- Hot Streak Pyroblasts
+        expected_crits = expected_crits + (30 / 6) -- Assume 1 every 6 sec average
+        
+        -- Factor in haste
+        expected_crits = expected_crits * ( 1 + stat.haste )
+    end
+    
+    -- Convert to average CD reduction per minute
+    local reduction_per_min = expected_crits * base_reduction
+    
+    -- Convert to decimal for SimC
+    return reduction_per_min / 60
+end )
 
 spec:RegisterStateExpr( "combustion_shifting_power", function()
     if talent.firestarter.enabled and target.health.pct > 90 then return false end
@@ -1962,9 +2035,9 @@ end )
 Hekili:EmbedDisciplinaryCommand( spec )
 
 
-local ExpireSKB = setfenv( function()
+local function ExpireSKB()
     removeBuff( "sun_kings_blessing_ready" )
-end, state )
+end
 
 
 spec:RegisterStateTable( "incanters_flow", {
@@ -1993,7 +2066,7 @@ spec:RegisterStateTable( "incanters_flow", {
     f = CreateFrame( "Frame" ),
     fRegistered = false,
 
-    reset = setfenv( function ()
+    reset = function ()
         if talent.incanters_flow.enabled then
             if not incanters_flow.fRegistered then
                 Hekili:ProfileFrame( "Incanters_Flow_Fire", incanters_flow.f )
@@ -2054,7 +2127,7 @@ spec:RegisterStateTable( "incanters_flow", {
             incanters_flow.changed = 0
             incanters_flow.direction = 0
         end
-    end, state ),
+    end,
 } )
 
 spec:RegisterStateExpr( "incanters_flow_stacks", function ()
@@ -2113,14 +2186,6 @@ spec:RegisterStateTable( "incanters_flow_time_to", setmetatable( {}, {
         return incanters_flow_time_obj
     end
 } ) )
-
-spec:RegisterStateTable( "enemy_positions", {
-    nearby = {},
-    reset = function()
-        wipe( enemy_positions.nearby )
-    end
-} )
-
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -2231,7 +2296,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Engulfs you in flames for 10 sec, increasing your spells' critical strike chance by 100% . Castable while casting other spells.
+    -- Talent: Engulfs you in flames for 12 sec, increasing your spells' critical strike chance by 100% and granting you Mastery equal to 75% of your Critical Strike stat. Castable while casting other spells.
     combustion = {
         id = 190319,
         cast = 0,
@@ -2248,16 +2313,21 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        usable = function () return time > 0, "must already be in combat" end,
-        handler = function ()
+        usable = function()
+            -- Change 'variable' to 'state'
+            if state.combustion_window_value < 30 then return false, "combustion value too low" end
+            return true
+        end,
+
+        handler = function()
             applyBuff( "combustion" )
             stat.crit = stat.crit + 100
-            removeBuff( "fires_ire" )
+            state.removeBuff( "fires_ire" )
             if talent.explosivo.enabled then applyBuff( "lit_fuse" ) end
             if talent.spontaneous_combustion.enabled then gainCharges( "fire_blast", min( 3, action.fire_blast.charges ) ) end
             if talent.wildfire.enabled then 
                 applyBuff( "wildfire" )
-                stat.crit_dmg_bonus = stat.crit_dmg_bonus + 2 -- Additional 2% crit damage during Combustion
+                stat.crit_dmg_bonus = stat.crit_dmg_bonus + 2
             end
             if talent.flash_freezeburn.enabled then applyBuff( "frostfire_empowerment" ) end
         end,
@@ -2288,18 +2358,18 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Blasts the enemy for 962 Fire damage. Fire: Castable while casting other spells. Always deals a critical strike.
+    -- Talent: Blasts the enemy for 15,787 Fire damage. Fire: Castable while casting other spells. Always deals a critical strike.
     fire_blast = {
         id = 108853,
         cast = 0,
-        charges = function () return 1 + 2 * talent.flame_on.rank end,
-        cooldown = function ()
-            return ( ( talent.flame_on.enabled and 10 or 12 ) - ( 2 * talent.fervent_flickering.rank ) )
+        charges = function() return 1 + ( talent.flame_on.enabled and 2 or 0 ) end,
+        cooldown = function()
+            return ( ( talent.flame_on.enabled and 10 or 12 ) - ( talent.fervent_flickering.enabled and 2 or 0 ) )
             * ( talent.fiery_rush.enabled and buff.combustion.up and 0.5 or 1 )
             * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * haste
         end,
-        recharge = function ()
-            return ( ( talent.flame_on.enabled and 10 or 12 ) - ( 2 * talent.fervent_flickering.rank ) )
+        recharge = function()
+            return ( ( talent.flame_on.enabled and 10 or 12 ) - ( talent.fervent_flickering.enabled and 2 or 0 ) )
             * ( talent.fiery_rush.enabled and buff.combustion.up and 0.5 or 1 )
             * ( buff.memory_of_lucid_dreams.up and 0.5 or 1 ) * haste
         end,
@@ -2314,12 +2384,22 @@ spec:RegisterAbilities( {
         talent = "fire_blast",
         startsCombat = true,
 
-        usable = function ()
+        cycle = function()
+            -- Cycle to spread high-value Ignites
+            if active_enemies > 1 and debuff.ignite.up and variable.ignite_spread_value > 50 then
+                return "ignite"
+            end
+            return nil
+        end,
+
+        usable = function()
             if time == 0 then return false, "no fire_blast out of combat" end
+            -- Only prevent Fire Blast if we already have Hot Streak and no Heating Up
+            if buff.hot_streak.up and not buff.heating_up.up then return false, "already have hot streak" end
             return true
         end,
 
-        handler = function ()
+        handler = function()
             hot_streak( true )
             applyDebuff( "target", "ignite" )
 
@@ -2350,9 +2430,8 @@ spec:RegisterAbilities( {
 
             if buff.glorious_incandescence.up then
                 removeBuff( "glorious_incandescence" )
-                reduceCooldown( "fire_blast" , 4)
+                reduceCooldown( "fire_blast", 4 )
             end
-
 
             if talent.from_the_ashes.enabled then reduceCooldown( "phoenix_flames", 1 ) end
             if azerite.blaster_master.enabled then addStack( "blaster_master" ) end
@@ -2363,27 +2442,40 @@ spec:RegisterAbilities( {
 
     -- Throws a fiery ball that causes 749 Fire damage. Each time your Fireball fails to critically strike a target, it gains a stacking 10% increased critical strike chance. Effect ends when Fireball critically strikes.
     fireball = {
-        id = function() return talent.frostfire_bolt.enabled and 431044 or 133 end,
+        id = function() 
+            return talent.frostfire_bolt.enabled and 431044 or 133 
+        end,
         cast = function() 
             if buff.frostfire_empowerment.up then return 0 end
-            return 2.25 * ( buff.flame_accelerant.up and 0.6 or 1 ) * haste
+            return ( talent.frostfire_bolt.enabled and 2.0 or 2.25 ) * ( buff.flame_accelerant.up and 0.6 or 1 ) * haste 
         end,
         cooldown = 0,
         gcd = "spell",
         school = "fire",
-
+        copy = { 133, 431044, 468655 },  -- Ensure all spell variants are registered
+        
         spend = 0.02,
         spendType = "mana",
 
-        startsCombat = false,
+        startsCombat = true,
         velocity = function() return talent.frostfire_bolt.enabled and 40 or 45 end,
 
-        usable = function ()
-            if moving and settings.prevent_hardcasts and action.fireball.cast_time > buff.ice_floes.remains then return false, "prevent_hardcasts during movement and ice_floes is down" end
+        damage = function()
+            local d = 25008
+            if target.health.pct > 70 or target.health.pct < 30 then
+                d = d * 1.05 -- Fuel the Fire
+            end
+            return d
+        end,
+
+        usable = function()
+            if moving and settings.prevent_hardcasts and action.fireball.cast_time > buff.ice_floes.remains then 
+                return false, "prevent_hardcasts during movement and ice_floes is down" 
+            end
             return true
         end,
 
-        handler = function ()
+        handler = function()
             removeBuff( "molten_skyfall_ready" )
 
             if buff.frostfire_empowerment.up then
@@ -2646,6 +2738,14 @@ spec:RegisterAbilities( {
         startsCombat = true,
         velocity = 50,
 
+        cycle = function()
+            -- Cycle to spread high-value Ignites
+            if active_enemies > 1 and debuff.ignite.up and variable.ignite_spread_value > 40 then
+                return "ignite"
+            end
+            return nil
+        end,
+
         handler = function()
             if buff.flames_fury.up then
                 removeStack( "flames_fury" )
@@ -2728,10 +2828,11 @@ spec:RegisterAbilities( {
         talent = "pyroblast",
         startsCombat = true,
 
+        -- Track base damage for future APL conditions and damage calculations
         damage = function()
             local d = 25008
             if target.health.pct > 70 or target.health.pct < 30 then
-                d = d * 1.05
+                d = d * 1.05 -- Fuel the Fire
             end
             return d
         end,
@@ -2807,7 +2908,6 @@ spec:RegisterAbilities( {
             end
 
             applyDebuff( "target", "ignite" )
-            applyDebuff( "target", "pyroblast", 6 ) -- Apply DoT effect
 
             if talent.controlled_destruction.enabled then
                 applyDebuff( "target", "controlled_destruction", nil, debuff.controlled_destruction.stack + 1 )
@@ -2850,6 +2950,7 @@ spec:RegisterAbilities( {
         talent = "scorch",
         startsCombat = true,
 
+        -- Track base damage for future APL conditions and execute phase calculations
         damage = function()
             local d = 3600
             if target.health.pct < 30 or buff.heat_shimmer.up then
@@ -2936,6 +3037,114 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "slow" )
+        end,
+    },
+
+    fireball = {
+        id = function() 
+            return talent.frostfire_bolt.enabled and 431044 or 133 
+        end,
+        cast = function() 
+            if buff.frostfire_empowerment.up then return 0 end
+            return ( talent.frostfire_bolt.enabled and 2.0 or 2.25 ) * ( buff.flame_accelerant.up and 0.6 or 1 ) * haste 
+        end,
+        cooldown = 0,
+        gcd = "spell",
+        school = "fire",
+        copy = { 133, 431044, 468655 },  -- Ensure all spell variants are registered
+        
+        spend = 0.02,
+        spendType = "mana",
+
+        startsCombat = true,
+        velocity = 45,
+
+        damage = function()
+            local d = 25008
+            if target.health.pct > 70 or target.health.pct < 30 then
+                d = d * 1.05 -- Fuel the Fire
+            end
+            return d
+        end,
+
+        handler = function ()
+            removeBuff( "molten_skyfall_ready" )
+
+            if buff.frostfire_empowerment.up then
+                applyBuff( "frost_mastery", nil, 6 )
+                if talent.excess_frost.enabled then applyBuff( "excess_frost" ) end
+                applyBuff( "fire_mastery", nil, 6 )
+                if talent.excess_fire.enabled then applyBuff( "excess_fire" ) end
+                removeBuff( "frostfire_empowerment" )
+            end
+
+            if buff.flame_accelerant.up and ( hardcast or cast_time > 0 ) then
+                removeBuff( "flame_accelerant" )
+            end
+        end,
+
+        impact = function ()
+            if hot_streak( firestarter.active or buff.fireball.stack * 10 >= 100 ) then
+                removeBuff( "fireball" )
+                if talent.kindling.enabled then reduceCooldown( "combustion", 1 ) end
+            else
+                addStack( "fireball" )
+                if conduit.flame_accretion.enabled then addStack( "flame_accretion" ) end
+            end
+
+            if buff.firefall_ready.up then
+                class.abilities.meteor.impact()
+                removeBuff( "firefall_ready" )
+            end
+
+            if talent.unleashed_inferno.enabled and buff.combustion.up then reduceCooldown( "combustion", 1.25 ) end
+
+            if talent.firefall.enabled then
+                addStack( "firefall" )
+                if buff.firefall.stack == buff.firefall.max_stack then
+                    applyBuff( "firefall_ready" )
+                    removeBuff( "firefall" )
+                end
+            end
+        end,
+    },
+
+    flamestrike = {
+        id = 2120,
+        cast = function ()
+            if ( buff.hot_streak.up or buff.firestorm.up or buff.hyperthermia.up ) then return 0 end
+            return ( 4 - ( 0.5 * talent.surging_blaze.rank ) - ( buff.majesty_of_the_phoenix.up and 1.5 or 0 ) ) * ( buff.flame_accelerant.up and 0.6 or 1 ) * haste 
+        end,
+        cooldown = 0,
+        gcd = "spell",
+        school = "fire",
+
+        spend = 0.025,
+        spendType = "mana",
+
+        startsCombat = true,
+
+        damage = function()
+            local d = 526
+            if target.health.pct > 70 or target.health.pct < 30 then
+                d = d * 1.05 -- Fuel the Fire
+            end
+            if talent.quickflame.enabled then
+                d = d * 1.25
+            end
+            if talent.surging_blaze.enabled then
+                d = d * 1.05
+            end
+            return d
+        end,
+
+        handler = function ()
+            removeStack( "sparking_cinders" )
+            if buff.majesty_of_the_phoenix.up then removeStack( "majesty_of_the_phoenix" ) end
+            applyDebuff( "target", "flamestrike" )
+            if talent.flame_patch.enabled then
+                applyDebuff( "target", "flame_patch" )
+            end
         end,
     },
 } )
