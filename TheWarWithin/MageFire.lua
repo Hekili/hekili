@@ -1099,27 +1099,80 @@ local hot_streak_spells = {
     "pyroblast",
     "scorch"
 }
-spec:RegisterStateExpr( "hot_streak_spells_in_flight", function ()
-    local count = 0
 
-    for i, spell in ipairs( hot_streak_spells ) do
-        if state:IsInFlight( spell ) then 
-            -- Don't count spells that can't crit
-            if spell == "phoenix_flames" and talent.call_of_the_sun_king.enabled then
-                count = count + 1
-            elseif spell == "fireball" and firestarter.active then
-                count = count + 1
-            elseif buff.combustion.up then
-                count = count + 1
-            else
-                -- Normal crit chance check
-                count = count + 1
+-- Projectile tracking system
+spec:RegisterStateTable( "projectiles", {
+    active = {},
+    
+    add = function( spell, target, time_to_impact, guaranteed_crit )
+        local proj = {
+            spell = spell,
+            target = target,
+            impact_time = query_time + time_to_impact,
+            guaranteed_crit = guaranteed_crit
+        };
+        table.insert( projectiles.active, proj );
+    end,
+    
+    remove = function( index )
+        table.remove( projectiles.active, index );
+    end,
+    
+    update = function()
+        for i = #projectiles.active, 1, -1 do
+            if projectiles.active[i].impact_time <= query_time then
+                projectiles.remove( i );
             end
         end
     end
+} );
 
-    return count
-end )
+-- Update projectiles in advance hook
+spec:RegisterHook( "advance", function( time )
+    projectiles.update();
+end );
+
+-- Add projectile tracking to relevant spells
+local function AddProjectile( spell )
+    local travel_time = action[spell].travel_time;
+    if travel_time == 0 then return end;
+    
+    local guaranteed_crit = buff.combustion.up or 
+                          (talent.firestarter.enabled and target.health.pct > 90) or
+                          (spell == "fire_blast") or
+                          (spell == "phoenix_flames" and talent.call_of_the_sun_king.enabled);
+    
+    projectiles.add( spell, "target", travel_time, guaranteed_crit );
+end
+
+-- Update hot_streak_spells_in_flight to use projectile system
+spec:RegisterStateExpr( "hot_streak_spells_in_flight", function ()
+    projectiles.update();
+    
+    local count = 0;
+    for _, proj in ipairs( projectiles.active ) do
+        if proj.impact_time - query_time < 2.0 then -- Only count spells that will impact within 2 seconds
+            if proj.guaranteed_crit then
+                count = count + 1;
+            else
+                count = count + 1;
+            end
+        end
+    end
+    return count;
+end );
+
+-- Add projectile tracking to spell handlers
+for _, spell in ipairs( hot_streak_spells ) do
+    local ability = class.abilities[ spell ];
+    if ability then
+        local old_handler = ability.handler;
+        ability.handler = function( ... )
+            if old_handler then old_handler( ... ) end;
+            AddProjectile( spell );
+        end
+    end
+end
 
 spec:RegisterStateExpr( "time_to_combustion", function()
     local base = cooldown.combustion.remains_expected
