@@ -1055,34 +1055,73 @@ spec:RegisterStateExpr( "fire_blast_pooling", function()
     -- Don't pool during Combustion
     if buff.combustion.up then return false end
     
-    -- Calculate how many charges we'll have by Combustion
-    local expected_charges = action.fire_blast.charges_fractional + 
-        ((variable.time_to_combustion + action.shifting_power.full_reduction) / action.fire_blast.recharge)
+    -- Don't pool if Hyperthermia is imminent
+    if talent.memory_of_alar.enabled and pet.arcane_phoenix.remains < 0.5 then
+        return false
+    end
     
-    -- Calculate target charges based on Combustion duration and recharge time
-    local target_charges = action.fire_blast.max_charges + 
-        (settings.fire_blast_pooling_offset or 0.2) - 
-        (buff.combustion.duration / action.fire_blast.recharge) % 1
+    -- Check if Combustion is coming soon
+    if variable.time_to_combustion < 8 then
+        -- Calculate needed charges for Combustion
+        local needed_charges = 2 -- Base requirement
+        if talent.alexstraszas_fury.enabled then needed_charges = needed_charges + 1 end
+        if talent.sun_kings_blessing.enabled and buff.sun_kings_blessing.stack >= (buff.sun_kings_blessing.max_stack - 1) then
+            needed_charges = needed_charges + 1
+        end
+        
+        -- More aggressive pooling close to Combustion
+        if variable.time_to_combustion < 3 then
+            return cooldown.fire_blast.charges_fractional < needed_charges
+        end
+        
+        -- Less strict pooling further from Combustion
+        return cooldown.fire_blast.charges_fractional < (needed_charges - 0.5)
+    end
     
-    -- Return true if we need to pool
-    return expected_charges < target_charges
-end)
+    -- Don't pool if we have Heating Up and spells in flight
+    if buff.heating_up.up and hot_streak_spells_in_flight > 0 then
+        return false
+    end
+    
+    -- Maintain minimum charges for reaction time
+    return cooldown.fire_blast.charges_fractional < 1.2
+end )
 
 spec:RegisterStateExpr( "phoenix_pooling", function()
-    -- Don't pool if we have Sun King's Blessing
-    if talent.sun_kings_blessing.enabled then return false end
+    -- Don't pool during Combustion
+    if buff.combustion.up then return false end
     
-    -- Calculate time until we need Phoenix Flames
-    local time_needed = variable.time_to_combustion + buff.combustion.duration - 5
+    -- Check if Combustion is coming soon
+    if variable.time_to_combustion < 6 then
+        -- Calculate needed charges for Combustion
+        local needed_charges = 1 -- Base requirement
+        
+        -- Account for talents that affect Phoenix Flames usage
+        if talent.alexstraszas_fury.enabled then needed_charges = needed_charges + 1 end
+        if talent.improved_phoenix_flames.enabled then needed_charges = needed_charges + 1 end
+        
+        -- More aggressive pooling close to Combustion
+        if variable.time_to_combustion < 3 then
+            return cooldown.phoenix_flames.charges_fractional < needed_charges
+        end
+        
+        -- Less strict pooling further from Combustion
+        return cooldown.phoenix_flames.charges_fractional < (needed_charges - 0.5)
+    end
     
-    -- Calculate if we'll have enough charges by then
-    local expected_charges = action.phoenix_flames.charges_fractional + 
-        ((time_needed - action.shifting_power.full_reduction) / action.phoenix_flames.recharge)
+    -- Don't pool if we have Heating Up and no spells in flight
+    if buff.heating_up.up and hot_streak_spells_in_flight == 0 then
+        return false
+    end
     
-    -- Pool if we won't have enough charges and Combustion is coming up
-    return expected_charges < action.phoenix_flames.max_charges and 
-           variable.time_to_combustion < fight_remains
-end)
+    -- Maintain minimum charges for cleave opportunities
+    if active_enemies > 1 then
+        return cooldown.phoenix_flames.charges_fractional < 1.5
+    end
+    
+    -- Maintain minimum charges for reaction time
+    return cooldown.phoenix_flames.charges_fractional < 1.2
+end )
 
 spec:RegisterStateExpr( "hot_streak_available", function()
     -- Already have Hot Streak
@@ -1110,66 +1149,34 @@ spec:RegisterStateExpr( "next_hot_streak_time", function()
     -- If we already have Hot Streak, return 0
     if buff.hot_streak.up then return 0 end
     
-    local time_to_hs = 999
-    
-    -- Track spells that could generate Hot Streak
-    local potential_hs = {
-        fireball = {
-            crit_chance = function()
-                -- Account for various crit chance sources
-                if buff.combustion.up then return 1 end
-                if target.health.pct > 90 and talent.firestarter.enabled then return 1 end
-                return (stat.crit + (buff.fireball.stack or 0) * 10) / 100
-            end
-        },
-        fire_blast = {
-            crit_chance = function() return 1 end -- Always crits
-        },
-        phoenix_flames = {
-            crit_chance = function()
-                -- Check for guaranteed crit conditions
-                if talent.call_of_the_sun_king.enabled then return 1 end
-                if buff.combustion.up then return 1 end
-                if target.health.pct > 90 and talent.firestarter.enabled then return 1 end
-                return stat.crit / 100
-            end
-        },
-        pyroblast = {
-            crit_chance = function()
-                if buff.combustion.up then return 1 end
-                if target.health.pct > 90 and talent.firestarter.enabled then return 1 end
-                return stat.crit / 100
-            end
-        },
-        scorch = {
-            crit_chance = function()
-                if buff.combustion.up then return 1 end
-                if target.health.pct < 30 then return 1 end
-                return stat.crit / 100
-            end
-        }
-    }
-    
-    -- Check each spell in flight
-    for spell, data in pairs( action ) do
-        if data.in_flight and potential_hs[spell] then
-            local impact_time = data.in_flight_remains
-            local crit_chance = potential_hs[spell].crit_chance()
-            
-            -- Calculate potential Hot Streak timing
-            if crit_chance >= 1 and buff.heating_up.up then
-                time_to_hs = min(time_to_hs, impact_time)
-            elseif crit_chance > 0 then
-                if buff.heating_up.up then
-                    time_to_hs = min(time_to_hs, impact_time)
-                else
-                    time_to_hs = min(time_to_hs, impact_time + 0.2)
-                end
-            end
+    -- If we have Heating Up, check for imminent crits
+    if buff.heating_up.up then
+        -- Check for in-flight spells that could crit
+        if hot_streak_spells_in_flight > 0 then
+            return 0.1 -- Immediate potential for Hot Streak
+        end
+        
+        -- Check if we're casting a spell that could generate Hot Streak
+        if prev_gcd[1].pyroblast or prev_gcd[1].fireball or prev_gcd[1].phoenix_flames then
+            return buff.casting.remains + 0.1
         end
     end
     
-    return time_to_hs < 999 and time_to_hs or nil
+    -- If we don't have Heating Up, we need two crits
+    if not buff.heating_up.up then
+        -- Check for multiple in-flight spells
+        if hot_streak_spells_in_flight > 1 then
+            return 0.2 -- Potential for quick double crit
+        end
+        
+        -- If we're casting and have one spell in flight
+        if hot_streak_spells_in_flight == 1 and buff.casting.up then
+            return buff.casting.remains + 0.1
+        end
+    end
+    
+    -- No immediate Hot Streak potential
+    return 3600
 end )
 
 spec:RegisterStateExpr( "combustion_window_value", function()
@@ -1299,63 +1306,48 @@ spec:RegisterStateExpr( "optimal_ignite_target", function()
 end)
 
 spec:RegisterStateExpr( "spell_queue_delay", function()
-    --[[ 
-        Calculates optimal delay for spell casts based on imminent procs and buffs.
-        
-        DELAY SOURCES
-        =============
-        1. Hyperthermia from Phoenix expiration
-        2. Imminent Hot Streak completions
-        3. Upcoming Combustion windows
-        4. Sun King's Blessing procs
-        5. Flame Accelerant cycles
-        
-        USAGE
-        =====
-        The delay value is used to:
-        - Hold casts for valuable procs
-        - Prevent resource waste
-        - Optimize buff alignments
-        - Maximize damage output
-    ]]
     local delay = 0
     
     -- Check for imminent Hyperthermia
     if talent.memory_of_alar.enabled and pet.arcane_phoenix.up then
         local phoenix_remains = pet.arcane_phoenix.remains
-        if phoenix_remains < 0.5 then
-            delay = max(delay, 0.5 - phoenix_remains)
+        if phoenix_remains < 0.3 then
+            delay = max(delay, 0.3 - phoenix_remains)
         end
     end
     
     -- Check for imminent Hot Streak
     local time_to_hs = next_hot_streak_time
-    if time_to_hs and time_to_hs < 0.3 then
+    if time_to_hs and time_to_hs < 0.2 then
         delay = max(delay, time_to_hs)
     end
     
     -- Check for imminent Combustion
-    if variable.time_to_combustion < 1.5 and variable.time_to_combustion > 0 then
+    if variable.time_to_combustion < 1.0 and variable.time_to_combustion > 0 then
         delay = max(delay, variable.time_to_combustion)
     end
     
     -- Check for imminent Sun King's Blessing
     if talent.sun_kings_blessing.enabled then
         local stacks_to_ready = buff.sun_kings_blessing.max_stack - buff.sun_kings_blessing.stack
-        if stacks_to_ready == 1 then
-            delay = max(delay, 0.5) -- Small delay for potential instant proc
+        if stacks_to_ready == 1 and buff.sun_kings_blessing.remains < 0.3 then
+            delay = max(delay, 0.3)
         end
     end
     
     -- Check for imminent Flame Accelerant
     if talent.flame_accelerant.enabled and not buff.flame_accelerant.up then
         local accelerant_cd = 12 - (query_time % 12)
-        if accelerant_cd < 0.5 then
+        if accelerant_cd < 0.3 then
             delay = max(delay, accelerant_cd)
         end
     end
     
-    return delay
+    -- Don't delay during Combustion
+    if buff.combustion.up then return 0 end
+    
+    -- Cap maximum delay
+    return min(delay, 1.0)
 end )
 
 spec:RegisterStateExpr( "optimal_precast", function()
