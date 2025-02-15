@@ -857,10 +857,23 @@ end )
 
 spec:RegisterStateTable( "firestarter", setmetatable( {}, {
     __index = setfenv( function( t, k )
-        if k == "active" then return talent.firestarter.enabled and target.health.pct > 90
+        if k == "active" then 
+            -- Check both talent and health threshold
+            return talent.firestarter.enabled and target.health.pct > 90
         elseif k == "remains" then
+            -- If talent isn't enabled or we're below threshold, no time remains
             if not talent.firestarter.enabled or target.health.pct <= 90 then return 0 end
+            
+            -- If we're in execute range, return the time until target reaches 90%
+            if target.health.pct > 90 then
             return target.time_to_pct_90
+            end
+            
+            -- If we can't determine time, return 0
+            return 0
+        elseif k == "in_firestarter" then
+            -- Special case for checking if we're actively in Firestarter phase
+            return talent.firestarter.enabled and target.health.pct > 90 and not buff.combustion.up
         end
     end, state )
 } ) )
@@ -959,71 +972,136 @@ end )
 
 
 local ConsumeHotStreak = setfenv( function()
-
+    -- Remove Hot Streak first to prevent any race conditions
     removeBuff( "hot_streak" )
-    -- Sunfury
+
+    -- Handle Spellfire Spheres (Sunfury)
     if talent.spellfire_spheres.enabled then
         if buff.next_blast_spheres.stacks == 5 then
+            -- Convert next_blast_spheres into a Spellfire Sphere
             removeBuff( "next_blast_spheres" )
             addStack( "spellfire_spheres" )
+            -- Apply Burden of Power for next cast
             applyBuff( "burden_of_power" )
-        else addStack( "next_blast_spheres" )
+        else 
+            -- Track progress towards next Spellfire Sphere
+            addStack( "next_blast_spheres" )
         end
     end
-    -- SKB
+
+    -- Handle Sun King's Blessing
     if talent.sun_kings_blessing.enabled then
         if buff.sun_kings_blessing.stack == buff.sun_kings_blessing.max_stack then
+            -- Convert max stacks into Sun King's Blessing proc
             removeBuff( "sun_kings_blessing" )
             applyBuff( "sun_kings_blessing_ready" )
         else
+            -- Track progress towards Sun King's Blessing proc
             addStack( "sun_kings_blessing" )
         end
+    end
+
+    -- Handle Lit Fuse chance
+    if talent.lit_fuse.enabled and math.random() < 0.06 then
+        applyBuff( "lit_fuse" )
+    end
+
+    -- Handle Sparking Cinders chance
+    if talent.sparking_cinders.enabled and math.random() < 0.05 then
+        applyBuff( "sparking_cinders" )
     end
 
 end, state )
 
 spec:RegisterStateFunction( "hot_streak", function( willCrit )
-    willCrit = willCrit or buff.combustion.up or stat.crit >= 100
+    -- Check for guaranteed crits
+    willCrit = willCrit or buff.combustion.up or stat.crit >= 100 or 
+               (talent.firestarter.enabled and target.health.pct > 90) or
+               (talent.call_of_the_sun_king.enabled and action.phoenix_flames.in_flight)
 
-    if Hekili.ActiveDebug then Hekili:Debug( "*** HOT STREAK (Cast/Impact) ***\n    Heating Up: %s, %.2f\n    Hot Streak: %s, %.2f\n    Crit: %s, %.2f", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains, willCrit and "Yes" or "No", stat.crit ) end
+    if Hekili.ActiveDebug then 
+        Hekili:Debug( "*** HOT STREAK (Cast/Impact) ***\n    Heating Up: %s, %.2f\n    Hot Streak: %s, %.2f\n    Crit: %s, %.2f", 
+            buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, 
+            buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains, 
+            willCrit and "Yes" or "No", stat.crit 
+        ) 
+    end
 
     if willCrit then
-        if buff.heating_up.up then removeBuff( "heating_up" ); applyBuff( "hot_streak" )
-        elseif buff.hot_streak.down then applyBuff( "heating_up" ) end
+        -- Convert Heating Up to Hot Streak
+        if buff.heating_up.up then 
+            removeBuff( "heating_up" )
+            applyBuff( "hot_streak" )
+            
+            -- Handle Fevered Incantation
+            if talent.fevered_incantation.enabled then 
+                addStack( "fevered_incantation" ) 
+            end
+        -- Start Heating Up if we don't have Hot Streak
+        elseif buff.hot_streak.down then 
+            applyBuff( "heating_up" ) 
+        end
 
-        if talent.fevered_incantation.enabled then addStack( "fevered_incantation" ) end
-
-        if Hekili.ActiveDebug then Hekili:Debug( "*** HOT STREAK END ***\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains ) end
+        if Hekili.ActiveDebug then 
+            Hekili:Debug( "*** HOT STREAK END ***\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f", 
+                buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, 
+                buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains 
+            ) 
+        end
         return true
     end
 
-    -- Apparently it's safe to not crit within 0.2 seconds.
+    -- Handle non-crit impacts with Heating Up
     if buff.heating_up.up then
+        -- Grace period for multiple impacts (0.2s)
         if query_time - buff.heating_up.applied > 0.2 then
-            if Hekili.ActiveDebug then Hekili:Debug( "May not crit; Heating Up was applied %.2f ago, so removing Heating Up..", query_time - buff.heating_up.applied ) end
+            if Hekili.ActiveDebug then 
+                Hekili:Debug( "May not crit; Heating Up was applied %.2f ago, so removing Heating Up..", 
+                    query_time - buff.heating_up.applied 
+                ) 
+            end
             removeBuff( "heating_up" )
         else
-            if Hekili.ActiveDebug then Hekili:Debug( "May not crit; Heating Up was applied %.2f ago, so ignoring the non-crit impact.", query_time - buff.heating_up.applied ) end
+            if Hekili.ActiveDebug then 
+                Hekili:Debug( "May not crit; Heating Up was applied %.2f ago, so ignoring the non-crit impact.", 
+                    query_time - buff.heating_up.applied 
+                ) 
+            end
         end
     end
 
-    if Hekili.ActiveDebug then Hekili:Debug( "*** HOT STREAK END ***\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f\n***", buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains ) end
+    if Hekili.ActiveDebug then 
+        Hekili:Debug( "*** HOT STREAK END ***\nHeating Up: %s, %.2f\nHot Streak: %s, %.2f\n***", 
+            buff.heating_up.up and "Yes" or "No", buff.heating_up.remains, 
+            buff.hot_streak.up and "Yes" or "No", buff.hot_streak.remains 
+        ) 
+    end
 end )
 
 
 local hot_streak_spells = {
-    -- "dragons_breath",
     "fireball",
-    -- "fire_blast",
     "phoenix_flames",
     "pyroblast",
-    "scorch",
+    "scorch"
 }
 spec:RegisterStateExpr( "hot_streak_spells_in_flight", function ()
     local count = 0
 
     for i, spell in ipairs( hot_streak_spells ) do
-        if state:IsInFlight( spell ) then count = count + 1 end
+        if state:IsInFlight( spell ) then 
+            -- Don't count spells that can't crit
+            if spell == "phoenix_flames" and talent.call_of_the_sun_king.enabled then
+                count = count + 1
+            elseif spell == "fireball" and firestarter.active then
+                count = count + 1
+            elseif buff.combustion.up then
+                count = count + 1
+            else
+                -- Normal crit chance check
+                count = count + 1
+            end
+        end
     end
 
     return count
@@ -1091,6 +1169,9 @@ spec:RegisterStateExpr( "phoenix_pooling", function()
     -- Don't pool during Combustion
     if buff.combustion.up then return false end
     
+    -- Don't pool if we have Flames Fury buff
+    if buff.flames_fury.up then return false end
+    
     -- Check if Combustion is coming soon
     if variable.time_to_combustion < 6 then
         -- Calculate needed charges for Combustion
@@ -1099,6 +1180,7 @@ spec:RegisterStateExpr( "phoenix_pooling", function()
         -- Account for talents that affect Phoenix Flames usage
         if talent.alexstraszas_fury.enabled then needed_charges = needed_charges + 1 end
         if talent.improved_phoenix_flames.enabled then needed_charges = needed_charges + 1 end
+        if talent.phoenix_reborn.enabled then needed_charges = needed_charges + 1 end
         
         -- More aggressive pooling close to Combustion
         if variable.time_to_combustion < 3 then
@@ -1116,7 +1198,11 @@ spec:RegisterStateExpr( "phoenix_pooling", function()
     
     -- Maintain minimum charges for cleave opportunities
     if active_enemies > 1 then
-        return cooldown.phoenix_flames.charges_fractional < 1.5
+        -- More charges needed with certain talents
+        local cleave_charges = 1.5
+        if talent.master_of_flame.enabled then cleave_charges = cleave_charges + 0.5 end
+        if talent.improved_phoenix_flames.enabled then cleave_charges = cleave_charges + 0.5 end
+        return cooldown.phoenix_flames.charges_fractional < cleave_charges
     end
     
     -- Maintain minimum charges for reaction time
@@ -1148,12 +1234,28 @@ end)
 spec:RegisterStateExpr( "next_hot_streak_time", function()
     -- If we already have Hot Streak, return 0
     if buff.hot_streak.up then return 0 end
-    
+
+    -- Track guaranteed crit conditions
+    local guaranteed_crit = buff.combustion.up or 
+                          (talent.firestarter.enabled and target.health.pct > 90) or
+                          (talent.call_of_the_sun_king.enabled and action.phoenix_flames.in_flight)
+
     -- If we have Heating Up, check for imminent crits
     if buff.heating_up.up then
         -- Check for in-flight spells that could crit
         if hot_streak_spells_in_flight > 0 then
-            return 0.1 -- Immediate potential for Hot Streak
+            if guaranteed_crit then
+                return 0.1 -- Immediate potential for Hot Streak
+            end
+            -- Check each spell in flight
+            for _, spell in ipairs( hot_streak_spells ) do
+                if state:IsInFlight( spell ) then
+                    if spell == "fire_blast" then return 0.1 end -- Always crits
+                    if spell == "phoenix_flames" and talent.call_of_the_sun_king.enabled then return 0.1 end
+                    if spell == "fireball" and firestarter.active then return 0.1 end
+                end
+            end
+            return 0.2 -- Normal crit chance
         end
         
         -- Check if we're casting a spell that could generate Hot Streak
@@ -1166,12 +1268,18 @@ spec:RegisterStateExpr( "next_hot_streak_time", function()
     if not buff.heating_up.up then
         -- Check for multiple in-flight spells
         if hot_streak_spells_in_flight > 1 then
-            return 0.2 -- Potential for quick double crit
+            if guaranteed_crit then
+                return 0.2 -- Quick double crit potential
+            end
+            return 0.3 -- Normal double crit chance
         end
         
         -- If we're casting and have one spell in flight
         if hot_streak_spells_in_flight == 1 and buff.casting.up then
-            return buff.casting.remains + 0.1
+            if guaranteed_crit then
+                return buff.casting.remains + 0.1
+            end
+            return buff.casting.remains + 0.2
         end
     end
     
@@ -1180,29 +1288,44 @@ spec:RegisterStateExpr( "next_hot_streak_time", function()
 end )
 
 spec:RegisterStateExpr( "combustion_window_value", function()
+    -- Don't value during active Combustion
     if buff.combustion.up then return 0 end
     
     local value = 0
     
-    -- Base value from resource availability
+    -- Resource value calculations
     local fb_value = action.fire_blast.charges_fractional * 10
+    -- Value Fire Blast charges more with relevant talents
     if talent.flame_on.enabled then fb_value = fb_value * 1.2 end
     if talent.fiery_rush.enabled then fb_value = fb_value * 1.15 end
+    if talent.improved_combustion.enabled then fb_value = fb_value * 1.1 end
     value = value + fb_value
     
     local pf_value = action.phoenix_flames.charges_fractional * 8
+    -- Value Phoenix Flames charges more with relevant talents
     if talent.call_of_the_sun_king.enabled then pf_value = pf_value * 1.2 end
     if talent.from_the_ashes.enabled then pf_value = pf_value * 1.15 end
+    if talent.improved_phoenix_flames.enabled then pf_value = pf_value * 1.1 end
     value = value + pf_value
     
     -- Cooldown synergy values
     if equipped.gladiators_badge then
         local badge_diff = abs(cooldown.gladiators_badge.remains - variable.time_to_combustion)
-        if badge_diff < 5 then value = value + (5 - badge_diff) * 3 end
+        if badge_diff < 5 then 
+            value = value + (5 - badge_diff) * 3 
+            -- Extra value if we're close to perfect alignment
+            if badge_diff < 2 then value = value + 5 end
+        end
     end
     
-    if talent.shifting_power.enabled and cooldown.shifting_power.remains < variable.time_to_combustion then
-        value = value + 8 -- Value having Shifting Power for the window
+    -- Value having Shifting Power available
+    if talent.shifting_power.enabled then
+        if cooldown.shifting_power.remains < variable.time_to_combustion then
+            value = value + 8
+        elseif cooldown.shifting_power.remains < variable.time_to_combustion + 15 then
+            -- Partial value if it will be up during Combustion
+            value = value + 4
+        end
     end
     
     -- Target state considerations
@@ -1261,6 +1384,11 @@ spec:RegisterStateExpr( "ignite_spread_value", function()
     -- Base value from current Ignite
     if debuff.ignite.up then
         value = value + debuff.ignite.tick_damage
+        
+        -- Value Ignite more during certain conditions
+        if talent.intensifying_flame.enabled and active_enemies <= 3 then
+            value = value * 1.2 -- 20% more value for Intensifying Flame
+        end
     end
     
     -- Value from target's remaining health
@@ -1292,6 +1420,21 @@ spec:RegisterStateExpr( "ignite_spread_value", function()
     -- Value from improved scorch
     if talent.improved_scorch.enabled and debuff.improved_scorch.up then
         value = value + (debuff.improved_scorch.stack * 8)
+    end
+    
+    -- Value from Sun King's Blessing
+    if buff.sun_kings_blessing_ready.up then
+        value = value * 1.3 -- 30% more value to spread before SKB usage
+    end
+    
+    -- Value from Hyperthermia
+    if buff.hyperthermia.up then
+        value = value * 1.2 -- 20% more value during Hyperthermia
+    end
+    
+    -- Reduce value if target will die soon
+    if target.time_to_die < 6 then
+        value = value * (target.time_to_die / 6)
     end
     
     return value
