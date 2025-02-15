@@ -1092,7 +1092,9 @@ spec:RegisterStateFunction( "hot_streak", hot_streak )
 
 
 local hot_streak_spells = {
+    "dragons_breath",
     "fireball",
+    "fire_blast",
     "phoenix_flames",
     "pyroblast",
     "scorch"
@@ -1172,6 +1174,7 @@ spec:RegisterStateExpr( "fire_blast_pooling", function()
     if buff.heating_up.up and hot_streak_spells_in_flight > 0 then
         return false
     end
+
     
     -- Maintain minimum charges for reaction time
     return cooldown.fire_blast.charges_fractional < 0.8
@@ -2314,8 +2317,10 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         usable = function()
-            -- Change 'variable' to 'state'
-            if state.combustion_window_value < 30 then return false, "combustion value too low" end
+            -- Ensure we have a valid combustion window value
+            if not state.combustion_window_value or state.combustion_window_value < 30 then 
+                return false, "combustion value too low" 
+            end
             return true
         end,
 
