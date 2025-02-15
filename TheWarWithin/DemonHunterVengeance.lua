@@ -1926,6 +1926,7 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "the_hunt_dot" )
             setDistance( 5 )
 
+            if talent.the_hunt.enabled and talent.art_of_the_glaive.enabled then applyBuff( "reavers_glaive" ) end
             if talent.momentum.enabled then applyBuff( "momentum" ) end
 
             if legendary.blazing_slaughter.enabled then
@@ -1961,6 +1962,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "reavers_glaive" )
+            applyBuff( "glaive_flurry" )
+            applyBuff( "rending_strike" )
             if talent.serrated_glaive.enabled or conduit.serrated_glaive.enabled then applyDebuff( "target", "exposed_wound" ) end
             if talent.master_of_the_glaive.enabled then applyDebuff( "target", "master_of_the_glaive" ) end
         end,
