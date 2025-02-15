@@ -503,22 +503,29 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1,
         generate = function ( t )
-            local name, count, duration, expires, caster, _
+            local debuffIndex = 1
+            while true do
+                local aura = C_UnitAuras.GetDebuffDataByIndex("target", debuffIndex)
+                if not aura then break end  -- Stop if there are no more debuffs
 
-            for i = 1, 40 do
-                name, _, count, _, duration, expires, caster = UnitDebuff( "target", 321538 )
+                if aura.spellId == 321538 then
+                    local name = aura.name
+                    local count = aura.applications or 0
+                    local duration = aura.duration or 0
+                    local expires = aura.expirationTime or 0
+                    local caster = aura.sourceUnit
 
-                if not name then break end
-                if name and UnitIsUnit( caster, "pet" ) then break end
-            end
+                    if caster and UnitIsUnit(caster, "pet") then
+                        t.name = name
+                        t.count = count
+                        t.expires = expires
+                        t.applied = expires - duration
+                        t.caster = "player"
+                        return
+                    end
+                end
 
-            if name then
-                t.name = name
-                t.count = count
-                t.expires = expires
-                t.applied = expires - duration
-                t.caster = "player"
-                return
+                debuffIndex = debuffIndex + 1
             end
 
             t.count = 0
