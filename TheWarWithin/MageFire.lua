@@ -1231,6 +1231,152 @@ spec:RegisterStateExpr( "hot_streak_available", function()
     return false
 end)
 
+spec:RegisterStateExpr( "hot_streak_flamestrike", function()
+    -- Don't cast Flamestrike without Hot Streak
+    if not buff.hot_streak.up then return false end
+    
+    -- Base target count requirement
+    local min_targets = 3
+    
+    -- Adjust for talents
+    if talent.flame_patch.enabled then min_targets = min_targets - 1 end
+    if talent.mark_of_the_firelord.enabled then min_targets = min_targets - 1 end
+    
+    -- Increase value during Combustion
+    if buff.combustion.up then
+        if talent.unleashed_inferno.enabled then min_targets = min_targets - 1 end
+        if talent.master_of_flame.enabled then min_targets = min_targets - 1 end
+    end
+    
+    -- Increase value with Majesty of the Phoenix stacks
+    if buff.majesty_of_the_phoenix.stack > 1 then
+        min_targets = min_targets - 1
+    end
+    
+    -- Increase value with Sparking Cinders
+    if buff.sparking_cinders.up then
+        min_targets = min_targets - 1
+    end
+    
+    -- Increase value if we can spread strong Ignites
+    if debuff.ignite.up and debuff.ignite.tick_damage > target.health.current * 0.03 then
+        min_targets = min_targets - 1
+    end
+    
+    -- Never go below 2 targets unless specifically overridden by user setting
+    min_targets = max( settings.flamestrike_with_hot_streak_targets or 2, min_targets )
+    
+    -- Return true if we have enough targets
+    return active_enemies >= min_targets
+end)
+
+spec:RegisterStateExpr( "combustion_flamestrike", function()
+    -- Don't cast Flamestrike without Hot Streak during Combustion
+    if not buff.hot_streak.up or not buff.combustion.up then return false end
+    
+    -- Base target count requirement during Combustion
+    local min_targets = 2
+    
+    -- Adjust for talents that enhance Flamestrike value
+    if talent.flame_patch.enabled then min_targets = min_targets - 0.5 end
+    if talent.mark_of_the_firelord.enabled then min_targets = min_targets - 0.5 end
+    if talent.unleashed_inferno.enabled then min_targets = min_targets - 0.5 end
+    if talent.master_of_flame.enabled then min_targets = min_targets - 0.5 end
+    
+    -- Value from Phoenix Flames synergy
+    if talent.majesty_of_the_phoenix.enabled and buff.majesty_of_the_phoenix.stack > 1 then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from Sparking Cinders
+    if buff.sparking_cinders.up then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from strong Ignite spread potential
+    if debuff.ignite.up and debuff.ignite.tick_damage > target.health.current * 0.04 then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from Sun King's Blessing
+    if buff.sun_kings_blessing_ready.up then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from Hyperthermia
+    if buff.hyperthermia.up then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Increase value if we have strong Ignite spread targets
+    if active_enemies >= 3 and talent.intensifying_flame.enabled then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Never go below 1.5 targets during Combustion unless specifically overridden
+    min_targets = max( settings.flamestrike_with_combustion_targets or 1.5, min_targets )
+    
+    -- Return true if we have enough targets
+    return active_enemies >= min_targets
+end)
+
+spec:RegisterStateExpr( "hard_cast_flamestrike", function()
+    -- Don't cast if we have instant cast procs
+    if buff.hot_streak.up or buff.firestorm.up or buff.hyperthermia.up then return false end
+    
+    -- Base target count requirement
+    local min_targets = 3
+    
+    -- Adjust for talents
+    if talent.flame_patch.enabled then min_targets = min_targets - 1 end
+    if talent.mark_of_the_firelord.enabled then min_targets = min_targets - 1 end
+    
+    -- Increase value during Combustion
+    if buff.combustion.up then
+        if talent.unleashed_inferno.enabled then min_targets = min_targets - 1 end
+        if talent.master_of_flame.enabled then min_targets = min_targets - 1 end
+    end
+    
+    -- Increase value with Majesty of the Phoenix stacks
+    if buff.majesty_of_the_phoenix.stack > 1 then
+        min_targets = min_targets - 1
+    end
+    
+    -- Increase value with Sparking Cinders
+    if buff.sparking_cinders.up then
+        min_targets = min_targets - 1
+    end
+    
+    -- Increase value if we can spread strong Ignites
+    if debuff.ignite.up and debuff.ignite.tick_damage > target.health.current * 0.03 then
+        min_targets = min_targets - 1
+    end
+    
+    -- Increase value if we have Flame Accelerant
+    if buff.flame_accelerant.up then
+        min_targets = min_targets - 1
+    end
+    
+    -- Never go below 2 targets unless specifically overridden by user setting
+    min_targets = max( settings.flamestrike_with_hardcast_targets or 2, min_targets )
+    
+    -- Check if we have enough targets
+    if active_enemies < min_targets then return false end
+    
+    -- Don't cast if movement will interrupt
+    if moving and settings.prevent_hardcasts and action.flamestrike.cast_time > buff.ice_floes.remains then 
+        return false 
+    end
+    
+    -- Don't cast if we're about to get an instant cast proc
+    if spell_queue_delay() > 0 then return false end
+    
+    -- Don't cast if Combustion is coming very soon
+    if variable.time_to_combustion < action.flamestrike.cast_time then return false end
+    
+    return true
+end )
+
 spec:RegisterStateExpr( "next_hot_streak_time", function()
     -- If we already have Hot Streak, return 0
     if buff.hot_streak.up then return 0 end
@@ -1582,38 +1728,105 @@ spec:RegisterStateExpr( "improved_scorch", function()
     return debuff.improved_scorch.remains > ( 4 * gcd.max )
 end )
 
-spec:RegisterStateExpr( "skb_flamestrike_ready", function()
-    --[[ 
-        Manages Sun King's Blessing usage for Flamestrike.
-        
-        FEATURES
-        ========
-        1. Buff availability tracking
-        2. Cast time validation
-        3. Expiration delay handling
-        4. Target count thresholds
-        
-        OPTIMIZATION
-        ===========
-        - Prevents buff expiration during cast
-        - Ensures sufficient targets for AoE
-        - Manages delay windows for better timing
-        - Integrates with movement handling
-    ]]
-    
-    -- Check if we have Sun King's Blessing ready
+spec:RegisterStateExpr( "skb_flamestrike", function()
+    -- Don't cast if we don't have Sun King's Blessing ready
     if not buff.sun_kings_blessing_ready.up then return false end
     
-    -- Check if we have enough time to cast Flamestrike
+    -- Don't cast if we don't have enough time to complete the cast
     if buff.sun_kings_blessing_ready.remains <= action.flamestrike.cast_time then return false end
     
-    -- Check if we're in a delay window
+    -- Don't cast if we're in a delay window
     if buff.sun_kings_blessing_ready.expiration_delay_remains > 0 then return false end
     
-    -- Check if we have enough targets for Flamestrike
-    local min_targets = settings.flamestrike_with_skb_targets or 2
-    return active_enemies >= min_targets
-end )
+    -- Base target count requirement
+    local min_targets = 2
+    
+    -- Adjust for talents that enhance Flamestrike value
+    if talent.flame_patch.enabled then min_targets = min_targets - 0.5 end
+    if talent.mark_of_the_firelord.enabled then min_targets = min_targets - 0.5 end
+    if talent.quickflame.enabled then min_targets = min_targets - 0.5 end
+    
+    -- Value from Phoenix Flames synergy
+    if talent.majesty_of_the_phoenix.enabled and buff.majesty_of_the_phoenix.stack > 1 then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from Sparking Cinders
+    if buff.sparking_cinders.up then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from strong Ignite spread potential
+    if debuff.ignite.up and debuff.ignite.tick_damage > target.health.current * 0.04 then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from Burden of Power
+    if buff.burden_of_power.up then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from Flame Accelerant
+    if buff.flame_accelerant.up then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from Intensifying Flame
+    if active_enemies <= 3 and talent.intensifying_flame.enabled then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Value from Combustion
+    if buff.combustion.up then
+        if talent.unleashed_inferno.enabled then min_targets = min_targets - 0.5 end
+        if talent.master_of_flame.enabled then min_targets = min_targets - 0.5 end
+    end
+    
+    -- Value from execute phase
+    if target.health.pct < 35 and talent.molten_fury.enabled then
+        min_targets = min_targets - 0.5
+    end
+    
+    -- Never go below 1.5 targets unless specifically overridden
+    min_targets = max( settings.flamestrike_with_skb_targets or 1.5, min_targets )
+    
+    -- Check if we have enough targets
+    if active_enemies < min_targets then return false end
+    
+    -- Don't cast if movement will interrupt
+    if moving and settings.prevent_hardcasts and action.flamestrike.cast_time > buff.ice_floes.remains then 
+        return false 
+    end
+    
+    -- Don't cast if we're about to get an instant cast proc
+    if spell_queue_delay() > 0 then return false end
+    
+    -- Don't cast if Combustion is coming very soon
+    if variable.time_to_combustion < action.flamestrike.cast_time then return false end
+    
+    -- Don't cast if we're about to cap Fire Blast charges and Combustion isn't ready
+    if cooldown.fire_blast.charges_fractional > 2.7 and cooldown.combustion.remains > 10 then return false end
+    
+    -- Don't cast if we need to spread Ignite to high-priority targets
+    if active_enemies > 2 and debuff.ignite.up and debuff.ignite.tick_damage > target.health.current * 0.06 then
+        local spread_targets = min(active_enemies - 1, 4)
+        if active_dot.ignite < spread_targets then return false end
+    end
+    
+    -- Prefer using SKB on Pyroblast in certain scenarios
+    if active_enemies < 3 then
+        -- If target is in execute range and we have Molten Fury
+        if target.health.pct < 35 and talent.molten_fury.enabled then return false end
+        
+        -- If target has high Controlled Destruction stacks
+        if talent.controlled_destruction.enabled and debuff.controlled_destruction.stack > 35 then return false end
+        
+        -- If target has max Improved Scorch stacks
+        if talent.improved_scorch.enabled and debuff.improved_scorch.stack == 2 then return false end
+    end
+    
+    return true
+end)
 
 spec:RegisterStateExpr( "skb_expiration_delay", function()
     --[[ 
@@ -1686,6 +1899,64 @@ spec:RegisterStateExpr( "expected_kindling_reduction", function()
     -- This only really works well in combat; we'll use the old APL value instead of dynamically updating for now.
     return 0.4
 end)
+
+spec:RegisterStateExpr( "combustion_shifting_power", function()
+    if talent.firestarter.enabled and target.health.pct > 90 then return false end
+    if variable.time_to_combustion > 30 then return false end
+    if variable.time_to_combustion < action.shifting_power.cast_time then return false end
+    if action.fire_blast.charges_fractional > 1.5 and action.phoenix_flames.charges_fractional > 1 then return false end
+    if buff.combustion.up then
+        if action.fire_blast.charges_fractional < 0.5 then return true end
+        if talent.phoenix_reborn.enabled and action.phoenix_flames.charges_fractional < 0.5 then return true end
+        return false
+    end
+    if variable.time_to_combustion < 20 then
+        local needed_charges = 2
+        if talent.alexstraszas_fury.enabled then needed_charges = needed_charges + 1 end
+        if talent.sun_kings_blessing.enabled and buff.sun_kings_blessing.stack >= (buff.sun_kings_blessing.max_stack - 1) then needed_charges = needed_charges + 1 end
+        if action.fire_blast.charges_fractional < needed_charges then return true end
+        if talent.phoenix_reborn.enabled then
+            local pf_needed = 1
+            if talent.improved_phoenix_flames.enabled then pf_needed = pf_needed + 1 end
+            if action.phoenix_flames.charges_fractional < pf_needed then return true end
+        end
+    end
+    return false
+end )
+
+spec:RegisterStateExpr( "combustion_cast_remains", function()
+    if variable.time_to_combustion > 10 then return 0 end
+    local cast_time = 0
+    cast_time = cast_time + gcd.remains
+    if buff.casting.up then
+        cast_time = cast_time + buff.casting.remains
+    end
+    if hot_streak_spells_in_flight > 0 then
+        cast_time = cast_time + (0.5 * hot_streak_spells_in_flight)
+    end
+    if variable.combustion_shifting_power then
+        cast_time = cast_time + action.shifting_power.cast_time
+    end
+    if talent.sun_kings_blessing.enabled then
+        if buff.sun_kings_blessing_ready.down then
+            local stacks_needed = buff.sun_kings_blessing.max_stack - buff.sun_kings_blessing.stack
+            if stacks_needed > 0 then
+                cast_time = cast_time + (stacks_needed * 3 * gcd.max)
+            end
+        end
+    end
+    local fb_deficit = 2 - action.fire_blast.charges_fractional
+    if fb_deficit > 0 then
+        cast_time = max(cast_time, fb_deficit * action.fire_blast.recharge)
+    end
+    if talent.phoenix_reborn.enabled then
+        local pf_deficit = 1 - action.phoenix_flames.charges_fractional
+        if pf_deficit > 0 then
+            cast_time = max(cast_time, pf_deficit * action.phoenix_flames.recharge)
+        end
+    end
+    return cast_time
+end )
 
 
 Hekili:EmbedDisciplinaryCommand( spec )
