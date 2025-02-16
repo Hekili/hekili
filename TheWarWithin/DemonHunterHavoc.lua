@@ -1098,7 +1098,7 @@ local sigil_types = {
 }
 
 spec:RegisterHook( "reset_precast", function ()
-    last_metamorphosis = nil
+    last_metamorphosis = 0
     last_infernal_strike = nil
 
     wipe( initiative_virtual )
