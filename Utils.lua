@@ -40,6 +40,8 @@ ns.UnitBuffByID = function( unitToken, spellID, filter )
     end, unitToken, filter )
 end
 
+ns.FindUnitBuffByID = ns.UnitBuffByID
+
 ns.UnitDebuffByID = function( unitToken, spellID, filter )
     local playerOrPet = UnitIsUnit( "player", unitToken ) or UnitIsUnit( "pet", unitToken )
     filter = filter or "HARMFUL"
@@ -49,6 +51,8 @@ ns.UnitDebuffByID = function( unitToken, spellID, filter )
         return id == spellID and ( not playerOrPet or isFromPlayerOrPet )
     end, unitToken, filter )
 end
+
+ns.FindUnitDebuffByID = ns.UnitDebuffByID
 
 local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 local UnitBuffByID, UnitDebuffByID = ns.UnitBuffByID, ns.UnitDebuffByID
@@ -251,7 +255,7 @@ local function orderedNext( t, state )
         t.__orderedIndex = __genOrderedIndex( t )
         key = t.__orderedIndex[ 1 ]
     else
-        for i = 1, table.getn( t.__orderedIndex ) do
+        for i = 1, #t.__orderedIndex do
             if t.__orderedIndex[ i ] == state then
                 key = t.__orderedIndex[ i+1 ]
             end
@@ -575,27 +579,9 @@ end
 
 function ns.FindUnitDebuffByID( unit, id, filter )
     if unit == "player" then return FindPlayerAuraByID( id ) end
-
-    local playerOrPet = false
-
-    if filter == "PLAYER|PET" then
-        playerOrPet = true
-        filter = nil
-    end
-
-    local i = 1
-    local name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitDebuff( unit, i, filter )
-
-    while( name ) do
-        if spellID == id and ( not playerOrPet or UnitIsUnit( caster, "player" ) or UnitIsUnit( caster, "pet" ) ) then break end
-        i = i + 1
-        name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3 = UnitDebuff( unit, i, filter )
-    end
-
-    if name and name ~= nil then
-        return name, icon, count, debuffType, duration, expirationTime, caster, stealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, nameplateShowAll, timeMod, value1, value2, value3
-    end
+    return UnitDebuffByID( unit, id, filter )
 end
+
 
 function ns.IsActiveSpell( id )
     local slot = FindSpellBookSlotBySpellID( id )

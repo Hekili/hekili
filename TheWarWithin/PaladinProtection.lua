@@ -9,7 +9,7 @@ local class, state = Hekili.Class, Hekili.State
 local FindUnitBuffByID = ns.FindUnitBuffByID
 
 local spec = Hekili:NewSpecialization( 66 )
-
+local QueenGlyphed = IsSpellKnownOrOverridesKnown
 local strformat = string.format
 
 local GetSpellInfo = ns.GetUnpackedSpellInfo
@@ -494,7 +494,7 @@ spec:RegisterAuras( {
     -- Talent: Damage taken reduced by $86657s2%.
     -- https://wowhead.com/beta/spell=86659
     guardian_of_ancient_kings = {
-        id = 86659,
+        id = function() return QueenGlyphed( 212641 ) and 212641 or 86659 end,
         duration = 8,
         max_stack = 1
     },
@@ -1440,7 +1440,7 @@ spec:RegisterAbilities( {
 
     -- Talent: Empowers you with the spirit of ancient kings, reducing all damage you take by 50% for 8 sec.
     guardian_of_ancient_kings = {
-        id = 86659,
+        id = function() return QueenGlyphed( 212641 ) and 212641 or 86659 end,
         cast = 0,
         cooldown = function () return 300 - ( conduit.royal_decree.mod * 0.001 ) end,
         gcd = "off",

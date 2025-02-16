@@ -100,7 +100,8 @@ actions.cds_aoe+=/apocalypse,cycle_targets=1,if=active_enemies>1&rune<=3
 actions.cds_aoe+=/abomination_limb,if=active_enemies>1
 
 # San'layn AoE Cooldowns
-actions.cds_aoe_san+=/dark_transformation,if=variable.adds_remain&(buff.death_and_decay.up|active_enemies<=3)
+# [edited] - active_enemies > 1 in the first line is replacing a SIMC variable, leave in place
+actions.cds_aoe_san+=/dark_transformation,if=active_enemies>1&(buff.death_and_decay.up|active_enemies<=3)
 actions.cds_aoe_san+=/unholy_assault,cycle_targets=1,if=active_enemies>1&(cooldown.vile_contagion.remains<6|cooldown.vile_contagion.remains>40|!talent.vile_contagion)|boss&fight_remains<20
 actions.cds_aoe_san+=/vile_contagion,cycle_targets=1,if=debuff.festering_wound.stack>=4&(raid_event.adds.remains>4|!raid_event.adds.exists&fight_remains>4)&(raid_event.adds.exists&raid_event.adds.remains<=11|cooldown.any_dnd.remains<3|buff.death_and_decay.up&debuff.festering_wound.stack>=4)|active_enemies>1&debuff.festering_wound.stack=6
 actions.cds_aoe_san+=/outbreak,if=(dot.virulent_plague.refreshable|talent.morbidity&!buff.gift_of_the_sanlayn.up&talent.superstrain&dot.frost_fever.refreshable&dot.blood_plague.refreshable)&(!talent.unholy_blight|talent.unholy_blight&cooldown.dark_transformation.remains>15%((2*talent.superstrain)+(2*talent.ebon_fever)+(2*talent.plaguebringer)))&(!talent.raise_abomination|talent.raise_abomination&cooldown.raise_abomination.remains>15%((2*talent.superstrain)+(2*talent.ebon_fever)+(2*talent.plaguebringer)))

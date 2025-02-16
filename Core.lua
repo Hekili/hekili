@@ -1503,7 +1503,10 @@ local aoeDisplayRule = function( p )
     local spec = rawget( p.specs, state.spec.id )
     if not spec or not class.specs[ state.spec.id ] then return false end
 
-    if Hekili:GetToggleState( "mode" ) == "reactive" and ns.getNumberTargets() < ( spec.aoe or 3 ) then
+    local mode = Hekili:GetToggleState( "mode" )
+
+    if mode == "dual" then return true end
+    if mode == "reactive" and ns.getNumberTargets() < ( spec.aoe or 3 ) then
         if HekiliDisplayAOE.RecommendationsStr then
             HekiliDisplayAOE.RecommendationsStr = nil
             HekiliDisplayAOE.NewRecommendations = true
@@ -1515,17 +1518,17 @@ local aoeDisplayRule = function( p )
 end
 
 local displayRules = {
-    Interrupts = { function( p ) return p.toggles.interrupts.value and p.toggles.interrupts.separate end, true, "Defensives" },
+    Interrupts = { function( p ) return p.toggles.interrupts.value and p.toggles.interrupts.separate end, true , "Defensives" },
     Defensives = { function( p ) return p.toggles.defensives.value and p.toggles.defensives.separate end, false, "Cooldowns"  },
     Cooldowns  = { function( p ) return p.toggles.cooldowns.value  and p.toggles.cooldowns.separate  end, false, "Primary"    },
     Primary    = { function(   ) return true                                                         end, false, "AOE"        },
-    AOE        = { aoeDisplayRule                                                                       , false, "Interrupts" },
+    AOE        = { aoeDisplayRule                                                                       , true , "Interrupts" },
 }
 
 local hasSnapped
 local lastSnapshot = {}
 
-function Hekili.Update( initial )
+function Hekili.Update()
     if not Hekili:ScriptsLoaded() then
         Hekili:LoadScripts()
         return

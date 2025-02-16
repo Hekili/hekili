@@ -2016,7 +2016,7 @@ do
             d.Buttons[ i ] = self:CreateButton( id, i )
             d.Buttons[ i ]:Hide()
 
-            if conf.enabled and self:IsDisplayActive( id ) and i <= conf.numIcons then
+            if self:IsDisplayActive( id ) and i <= conf.numIcons then
                 if d.Recommendations[ i ] and d.Recommendations[ i ].actionName then
                     d.Buttons[ i ]:Show()
                 end

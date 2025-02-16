@@ -897,7 +897,7 @@ spec:RegisterStateTable( "time_to_imps", setmetatable( {}, {
 
 
 spec:RegisterStateTable( "imps_spawned_during", setmetatable( {}, {
-    __index = function( t, k, v )
+    __index = function( t, k )
         local cap = query_time
 
         if type(k) == "number" then cap = cap + ( k / 1000 )
@@ -2284,7 +2284,7 @@ spec:RegisterAbilities( {
         gcd = "off", -- Pet ability, no GCD
 
         startsCombat = true,
-        texture = 236298,
+        texture = 236303,
 
         readyTime = function() return buff.fiendish_wrath.remains end,
 

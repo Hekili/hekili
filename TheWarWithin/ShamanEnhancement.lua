@@ -886,7 +886,7 @@ local recall_totems = {
 
 local recallTotem1
 local recallTotem2
-local tiWindow, tiSpell, tiTarget = 0, "lightning_bolt"
+local tiWindow, tiSpell, tiTarget = 0, "lightning_bolt", nil
 local recent_spell_hits = {}
 local actual_spirits, virtual_spirits = {}, {}
 local molten_weapons, virtual_molten_weapons = {}, {}
@@ -1191,9 +1191,9 @@ spec:RegisterHook( "reset_precast", function ()
         vesper_used = 0
     end
 
-    vesper_totem_heal_charges = nil
-    vesper_totem_dmg_charges = nil
-    vesper_totem_used_charges = nil
+    vesper_totem_heal_charges = 0
+    vesper_totem_dmg_charges = 0
+    vesper_totem_used_charges = 0
 
     if totem.vesper_totem.up then
         applyBuff( "vesper_totem", totem.vesper_totem.remains )

@@ -769,8 +769,10 @@ spec:RegisterAbilities( {
             if talent.immovable_object.enabled then
                 applyBuff( "shield_wall", 4 )
             end
-            if talent.violent_outburst.enabled then
-                applyBuff( "violent_outburst" )
+            if talent.avatar_of_the_storm.enabled then
+                setCooldown( "thunder_clap", 0 )
+                setCooldown( "thunder_blast", 0 )
+                applyBuff( "thunder_blast", 15, 2 )
             end
         end,
     },
@@ -1807,7 +1809,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         hasteCD = true,
 
-        spend = function () return -15
+        spend = function () return ( ( talent.thorims_might.enabled and talent.flashing_skies.enabled ) and -11 or -8 )
             * ( buff.violent_outburst.up and 2 or 1 )
             * ( buff.unnerving_focus.up and 1.5 or 1 ) end,
         spendType = "rage",
