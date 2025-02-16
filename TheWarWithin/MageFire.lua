@@ -1,6 +1,4 @@
-
 -- MageFire.lua
--- October 2024
 
 if UnitClassBase( "player" ) ~= "MAGE" then return end
 
@@ -990,22 +988,65 @@ spec:RegisterStateFunction( "hot_streak", function( willCrit )
 end )
 
 
+-- Spell velocities for spells that can trigger Hot Streak
 local hot_streak_spells = {
-    -- "dragons_breath",
-    "fireball",
-    -- "fire_blast",
-    "phoenix_flames",
-    "pyroblast",
-    "scorch",
+    fireball         = { velocity = 45 },
+    frostfire_bolt   = { velocity = 40 },
+    pyroblast       = { velocity = 35 },
+    phoenix_flames  = { velocity = 50 },
+    scorch         = { velocity = 35 }
 }
+
+-- Tracks spells currently in flight that could trigger Hot Streak
 spec:RegisterStateExpr( "hot_streak_spells_in_flight", function ()
     local count = 0
-
-    for i, spell in ipairs( hot_streak_spells ) do
-        if state:IsInFlight( spell ) then count = count + 1 end
+    local currentTime = state.query_time
+    
+    -- Keep track of when our next Hot Streak might proc
+    local nextCritTime
+    local heatingUpActive = state.buff.heating_up.up
+    
+    for spell, data in pairs( hot_streak_spells ) do
+        if state:IsInFlight( spell ) then
+            local travelTime = state.action[spell].travel_time
+            
+            -- Only count spells that are actually traveling (not just queued)
+            if state.action[spell].in_flight and state.action[spell].in_flight_remains > 0 then
+                count = count + 1
+                
+                local impactTime = currentTime + state.action[spell].in_flight_remains
+                
+                -- Check if this spell will crit from Combustion or 100% crit chance
+                local willCrit = state.buff.combustion.up or state.stat.crit >= 100
+                if spell == "fireball" then
+                    -- Account for Fireball's stacking crit buff
+                    willCrit = willCrit or (state.buff.fireball.stack * 10 + state.stat.crit >= 100)
+                end
+                
+                -- Figure out if this will give us Heating Up or Hot Streak
+                if willCrit then
+                    if heatingUpActive then
+                        -- This will give us Hot Streak - track earliest possible proc
+                        if not nextCritTime or impactTime < nextCritTime then
+                            nextCritTime = impactTime
+                        end
+                    else
+                        -- First crit will give us Heating Up
+                        heatingUpActive = true
+                    end
+                end
+            end
+        end
     end
 
+    -- Store predicted Hot Streak time for other functions
+    state.predicted_hot_streak_time = nextCritTime
+    
     return count
+end )
+
+spec:RegisterStateExpr( "predicted_hot_streak_time", function()
+    return state.predicted_hot_streak_time
 end )
 
 spec:RegisterStateExpr( "expected_kindling_reduction", function ()
