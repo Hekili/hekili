@@ -994,7 +994,6 @@ local hot_streak_spells = {
     frostfire_bolt   = { velocity = 40 },
     pyroblast       = { velocity = 35 },
     phoenix_flames  = { velocity = 50 },
-    scorch         = { velocity = 35 }
 }
 
 -- Tracks spells currently in flight that could trigger Hot Streak
@@ -1006,6 +1005,24 @@ spec:RegisterStateExpr( "hot_streak_spells_in_flight", function ()
     local nextCritTime
     local heatingUpActive = state.buff.heating_up.up
     
+    -- First check Scorch cast in progress since it has no travel time
+    if state.prev.scorch and state.prev_gcd.scorch and state.casting.scorch then
+        count = count + 1
+        local impactTime = currentTime + state.action.scorch.execute_remains
+        
+        -- Check if this Scorch will crit (during Combustion or other guaranteed crit effects)
+        local willCrit = state.buff.combustion.up or state.stat.crit >= 100 or target.health.pct < 30
+        
+        if willCrit then
+            if heatingUpActive then
+                nextCritTime = impactTime
+            else
+                heatingUpActive = true
+            end
+        end
+    end
+    
+    -- Then check other spells in flight
     for spell, data in pairs( hot_streak_spells ) do
         if state:IsInFlight( spell ) then
             local travelTime = state.action[spell].travel_time
