@@ -2028,8 +2028,10 @@ do
         end
 
         if d.forceElvUpdate then
-            local E = _G.ElvUI and ElvUI[1]
-            E:UpdateCooldownOverride( 'global' )
+            if _G["ElvUI"] then
+                local E = unpack(_G["ElvUI"])
+                E:UpdateCooldownOverride('global')
+            end
             d.forceElvUpdate = nil
         end
 
@@ -2961,8 +2963,7 @@ function ns.primeTooltipColors()
         "coroutine",
         "math",
         "string",
-        "table"
-    )
+        "table" )
     Color( "|cffddaaff", -- Some of WoW's aliases for standard Lua functions
         -- math
         "abs",
