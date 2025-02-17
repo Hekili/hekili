@@ -479,10 +479,15 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Armor increased by $s1%.
+    -- https://wowhead.com/spell=387792/empyreal-ward
+    -- Buff applied by talent Empyreal Ward (387791)
     empyreal_ward = {
         id = 387792,
-        duration = 60.0,
+        duration = 60,
         max_stack = 1,
+        copy = 287731
+        -- Copy of older version for backwards compatibility
+        -- https://wowhead.com/spell=287731/empyreal-ward
     },
     -- Damage done to $@auracaster is reduced by $w3%.
     empyrean_hammer = {
@@ -908,13 +913,6 @@ spec:RegisterAuras( {
         duration = 3600,
     },
 
-    empyreal_ward = {
-        id = 387792,
-        duration = 60,
-        max_stack = 1,
-        copy = 287731
-    },
-    -- Power: 335069
     negative_energy_token_proc = {
         id = 345693,
         duration = 5,
