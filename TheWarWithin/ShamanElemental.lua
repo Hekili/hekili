@@ -548,17 +548,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Fire damage dealt increased by ${$W1}.1%.
-    improved_flametongue_weapon = {
-        id = 382028,
-        duration = 3600.0,
-        max_stack = 1,
-
-        -- Affected by:
-        -- enhanced_imbues[462796] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
-        -- enhanced_imbues[462796] #3: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
-        -- enhanced_imbues[462796] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER_BY_LABEL, 'points': 30.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_3_VALUE, }
-    },
     -- Talent: Your next Lava Burst casts instantly.
     -- https://wowhead.com/beta/spell=77762
     lava_surge = {
