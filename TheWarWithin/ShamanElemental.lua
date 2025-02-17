@@ -1298,9 +1298,9 @@ spec:RegisterHook( "reset_precast", function ()
         vesper_used = 0
     end
 
-    vesper_totem_heal_charges = 0
-    vesper_totem_dmg_charges = 0
-    vesper_totem_used_charges = 0
+    vesper_totem_heal_charges = nil
+    vesper_totem_dmg_charges = nil
+    vesper_totem_used_charges = nil
 
     recall_totem_1 = nil
     recall_totem_2 = nil
