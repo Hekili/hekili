@@ -27,7 +27,7 @@ actions.mitigation+=/word_of_glory,if=health.pct<wog_health&(holy_power.deficit=
 actions.mitigation+=/divine_shield,if=talent.final_stand.enabled&tanking&incoming_damage_5s>ds_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
 actions.mitigation+=/guardian_of_ancient_kings,if=tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
 actions.mitigation+=/sentinel,if=defensive_sentinel&tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
-actions.mitigation+=/ardent_defender,if=tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
+actions.mitigation+=/ardent_defender,if=tanking&incoming_damage_5s>ad_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
 actions.mitigation+=/lay_on_hands,if=health.pct<15
 
 actions.standard+=/judgment,cycle_targets=1,if=charges>=2|full_recharge_time<=gcd.max
