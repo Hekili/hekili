@@ -21,6 +21,7 @@ paladin:RegisterGear( "libram_of_three_truths", 50455 )
 -- TODO: Update for Cataclysm
 paladin:RegisterGear( "tier7ret", 43794, 43796, 43801, 43803, 43805, 40574, 40575, 40576, 40577, 40578 )
 paladin:RegisterGear( "tier10ret", 50324, 50325, 50326, 50327, 50328, 51160, 51161, 51162, 51163, 51164, 51275, 51276, 51277, 51278, 51279 )
+paladin:RegisterGear( "tier13", 78822, 78770, 78788, 78807, 78837, 76874, 76875, 76876, 76877, 76878, 78727, 78675, 78693, 78712, 78742 )
 
 -- Hooks
 local aura_assigned
@@ -1345,6 +1346,9 @@ paladin:RegisterAbilities( {
             if talent.judgements_of_the_bold.enabled then applyBuff( "judgements_of_the_bold" ) end
             if talent.judgements_of_the_just.enabled then applyDebuff( "target", "judgements_of_the_just" ) end
             if spec.retribution and buff.guardian_of_ancient_kings.up and buff.ancient_power.stacks < 20 then addStack( "ancient_power", 1 ) end
+            if set_bonus.tier13_4pc then
+                gain( 1, "holy_power" )
+            end
         end,
     },
     -- Heals a friendly target for an amount equal to your maximum health. Cannot be used on a target with Forbearance. Causes Forbearance for 1 min.
