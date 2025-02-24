@@ -30,8 +30,6 @@ local function rage_amount( isOffhand )
 end
 
 
-
-
 spec:RegisterResource( Enum.PowerType.Rage, {
     anger_management = {
         talent = "anger_management",
@@ -597,8 +595,7 @@ spec:RegisterAuras( {
         friendly = true,
         dot = "buff",
     },
-
-
+    
     -- Aliases / polybuffs.
     stance = {
         alias = { "battle_stance", "defensive_stance", "berserker_stance" },
@@ -609,7 +606,7 @@ spec:RegisterAuras( {
         alias = { "my_battle_shout", "my_commanding_shout" },
         aliasMode = "first",
         aliasType = "buff"
-    }
+    },
 } )
 
 
@@ -915,7 +912,6 @@ end)
 
 -- Abilities
 spec:RegisterAbilities( {
-    
     -- The warrior shouts, increasing attack power of all raid and party members within 30 yards by 550.  Lasts 2 min.
     battle_shout = {
         id = 6673,
@@ -948,7 +944,6 @@ spec:RegisterAbilities( {
         copy = { 6673, 2048, 25289, 11551, 11550, 11549, 6192, 5242 }
     },
 
-
     -- A balanced combat stance that increases the armor penetration of all of your attacks by 10%.
     battle_stance = {
         id = 2457,
@@ -970,7 +965,6 @@ spec:RegisterAbilities( {
         end
     },
 
-
     -- The warrior enters a berserker rage, removing and granting immunity to Fear, Sap and Incapacitate effects and generating extra rage when taking damage.  Lasts 10 sec.
     berserker_rage = {
         id = 18499,
@@ -990,7 +984,6 @@ spec:RegisterAbilities( {
             applyBuff( "berserker_rage" )
         end
     },
-
 
     -- An aggressive stance.  Critical hit chance is increased by 3% and all damage taken is increased by 5%.
     berserker_stance = {
@@ -1014,7 +1007,6 @@ spec:RegisterAbilities( {
         end
     },
 
-
     -- Instantly Whirlwind up to 4 nearby targets and for the next 6 sec you will perform a whirlwind attack every 1 sec.  While under the effects of Bladestorm, you can move but cannot perform any other abilities but you do not feel pity or remorse or fear and you cannot be stopped unless killed.
     bladestorm = {
         id = 46924,
@@ -1037,7 +1029,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     -- Instantly attack the target causing 1092 damage.  In addition, the next 3 successful melee attacks will restore 1% of max health.  This effect lasts 8 sec.  Damage is based on your attack power.
     bloodthirst = {
         id = 23881,
@@ -1056,7 +1047,6 @@ spec:RegisterAbilities( {
             applyBuff( "bloodthirst", nil, 5 )
         end,
     },
-
 
     -- Forces all enemies within 10 yards to focus attacks on you for 6 sec.
     challenging_shout = {
@@ -1077,7 +1067,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "challenging_shout" )
         end
     },
-
 
     -- Charge an enemy, generate 15 rage, and stun it for 1.50 sec.  Cannot be used in combat.
     charge = {
@@ -1438,7 +1427,6 @@ spec:RegisterAbilities( {
         copy = { 78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286, 29707, 30324 }
     },
 
-
     -- Throws your weapon at the enemy causing 1104 damage (based on attack power).  This ability causes high threat.
     heroic_throw = {
         id = 57755,
@@ -1504,7 +1492,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     -- Run at high speed towards a party member, intercepting the next melee or ranged attack made against them as well as reducing their total threat by 10%.
     intervene = {
         id = 3411,
@@ -1522,12 +1509,11 @@ spec:RegisterAbilities( {
             if talent.warbringer.enabled then return end
             return "defensive_stance"
         end,
-    
+
         handler = function()
             active_dot.intervene = 1
         end
     },
-
 
     -- The warrior shouts, causing up to 5 enemies within 8 yards to cower in fear.  The targeted enemy will be unable to move while cowering.  Lasts 8 sec.
     intimidating_shout = {
@@ -1546,7 +1532,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "intimidating_shout" )
         end
     },
-
 
     -- When activated, this ability temporarily grants you 30% of your maximum health for 20 sec.  After the effect expires, the health is lost.
     last_stand = {
@@ -1589,7 +1574,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     -- Instantly overpower the enemy, causing weapon damage.  Only useable after the target dodges.  The Overpower cannot be blocked, dodged or parried.
     overpower = {
         id = 7384,
@@ -1615,7 +1599,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     -- Causes all enemies within 10 yards to be Dazed, reducing movement speed by 50% for 6 sec.
     piercing_howl = {
         id = 12323,
@@ -1634,7 +1617,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "piercing_howl" )
         end
     },
-
 
     -- Pummel the target, interrupting spellcasting and preventing any spell in that school from being cast for 4 sec.
     pummel = {
@@ -1671,10 +1653,11 @@ spec:RegisterAbilities( {
         talent = "raging_blow",
         startsCombat = true,
 
-        buff = "enrage",
+        usable = function()
+            return buff.enrage.up or buff.death_wish.up or buff.berserker_rage.up, "requires any enrage effect"
+        end,
 
         handler = function()
-            removeBuff( "enrage" )
         end,
     },
 
@@ -1721,7 +1704,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
     -- Wounds the target causing them to bleed for 380 damage plus an additional 780 (based on weapon damage) over 15 sec.  If used while your target is above 75% health, Rend does 35% more damage.
     rend = {
         id = 772,
@@ -1741,7 +1723,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "rend" )
         end,
     },
-
 
     -- Instantly counterattack any enemy that strikes you in melee for 12 sec.  Melee attacks made from behind cannot be counterattacked.  A maximum of 20 attacks will cause retaliation.
     retaliation = {
@@ -1787,7 +1768,6 @@ spec:RegisterAbilities( {
             removeBuff( "revenge_usable" )
         end,
     },
-
 
     -- Throws your weapon at the enemy causing 1104 damage (based on attack power), reducing the armor on the target by 20% for 10 sec or removing any invulnerabilities.
     shattering_throw = {
@@ -1854,7 +1834,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-
    -- Reduces all damage taken by 40% for 12 sec.
     shield_wall = {
         id = 871,
@@ -1874,7 +1853,6 @@ spec:RegisterAbilities( {
             applyBuff( "shield_wall" )
         end
     },
-
 
     -- Sends a wave of force in front of the warrior, causing 1638 damage (based on attack power) and stunning all enemy targets within 10 yards in a frontal cone for 4 sec.
     shockwave = {
@@ -1896,7 +1874,6 @@ spec:RegisterAbilities( {
             if not target.is_boss then interrupt() end
         end,
     },
-
 
     -- Slams the opponent, causing weapon damage plus 250.
     slam = {
@@ -2088,7 +2065,6 @@ spec:RegisterAbilities( {
             gain( 0.2 * health.max, "health" )
         end
     },
-
 
     vigilance = {
         id = 50720,

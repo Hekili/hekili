@@ -12,30 +12,28 @@ actions.precombat+=/mind_spike
 actions+=/shadowform,if=buff.shadowform.down
 actions+=/dispersion,if=mana.pct<5
 actions+=/run_action_list,name=aoe,if=active_enemies>=2
-actions+=/run_action_list,name=opener,if=time<45&!debuff.vampiric_touch.up&!debuff.devouring_plague.up&!set_bonus.tier13_4pc=1
-actions+=/run_action_list,name=t13,if=(cooldown.shadowfiend.remains=0|pet.alive)&set_bonus.tier13_4pc=1
+actions+=/run_action_list,name=t13,if=(cooldown.shadowfiend.remains=0|pet.alive|buff.shadowfiend.up)&set_bonus.tier13_4pc=1
 actions+=/run_action_list,name=st
 
 # Tier 13 4pc Sequence
-actions.t13+=/mind_flay,interrupt_if=buff.dark_evangelism.stack=5,if=buff.dark_evangelism.stack<5
-actions.t13+=/shadowfiend,if=(!pet.alive|!buff.shadowfiend.up)
+actions.t13+=/mind_flay,interrupt_if=buff.dark_evangelism.stack>=5,if=buff.dark_evangelism.stack<5&!pet.alive
+actions.t13+=/shadowfiend,if=!pet.alive
 actions.t13+=/archangel,if=buff.dark_evangelism.stack=5
-actions.t13+=/mind_flay,interrupt_if=ticks>=2,if=mind_spike_count=5
+actions.t13+=/mind_blast,if=prev_gcd.shadowfiend|prev_gcd.archangel
+actions.t13+=/mind_flay,interrupt_if=ticks>=2,if=mind_spike_count>=4&prev_gcd.mind_spike
 actions.t13+=/mind_blast,if=prev_gcd.mind_flay
-actions.t13+=/mind_spike,if=mind_spike_count<5
+actions.t13+=/mind_spike,if=mind_spike_count<4
 actions.t13+=/mind_blast
 
-## Opener Sequence
-actions.opener+=/mind_spike,if=!debuff.mind_spike.up&!debuff.shadow_word_pain.up&!debuff.devouring_plague.up&!debuff.vampiric_touch.up
-actions.opener+=/shadow_word_pain,if=!debuff.shadow_word_pain.up&time_to_die>10
-actions.opener+=/mind_flay,interrupt_if=buff.shadow_orb.stack>=1&buff.dark_evangelism.stack>=5,if=!(buff.shadow_orb.stack>=1&buff.dark_evangelism.stack>=5)&time<=(2*gcd+2.5*action.mind_flay.duration)
-
 ## Single Target Rotation
+actions.st+=/mind_spike,if=!debuff.mind_spike.up&!debuff.shadow_word_pain.up&!debuff.devouring_plague.up&!debuff.vampiric_touch.up
+actions.st+=/shadow_word_pain,if=!debuff.shadow_word_pain.up&time_to_die>10
+actions.st+=/mind_flay,interrupt_if=buff.shadow_orb.stack>=1&buff.dark_evangelism.stack>=5,if=!(buff.shadow_orb.stack>=1&buff.dark_evangelism.stack>=5)&time<=(2*gcd+2.5*action.mind_flay.duration)
 actions.st+=/shadowfiend,if=!pet.alive
-actions.st+=/archangel,if=buff.dark_evangelism.stack=5&(debuff.vampiric_touch.remains>5&debuff.devouring_plague.remains>5)&settings.show_archangel_cooldown&(set_bonus.tier13_4pc=1&cooldown.shadowfiend.remains>30)
+actions.st+=/archangel,if=buff.dark_evangelism.stack=5&(debuff.vampiric_touch.remains>5&debuff.devouring_plague.remains>5)&settings.show_archangel_cooldown&((set_bonus.tier13_4pc=1&cooldown.shadowfiend.remains>90)|!set_bonus.tier13_4pc=1)
 actions.st+=/mind_blast,if=buff.shadow_orb.up
-actions.st+=/vampiric_touch,if=debuff.vampiric_touch.remains<debuff.vampiric_touch.tick_time&time_to_die>10
-actions.st+=/devouring_plague,if=debuff.devouring_plague.remains<debuff.devouring_plague.tick_time&time_to_die>10
+actions.st+=/vampiric_touch,if=(debuff.vampiric_touch.remains<debuff.vampiric_touch.tick_time)&time_to_die>10
+actions.st+=/devouring_plague,if=(debuff.devouring_plague.remains<debuff.devouring_plague.tick_time)&time_to_die>10
 actions.st+=/shadow_word_death,if=target.health.pct<25
 actions.st+=/mind_blast
 actions.st+=/dispersion,if=mana.pct<10

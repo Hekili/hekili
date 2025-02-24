@@ -6,6 +6,7 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 5 )
 
+
 -- Sets
 spec:RegisterGear( "tier7", 39521, 39530, 39529, 39528, 39523, 40456, 40454, 40459, 40457, 40458 )
 spec:RegisterGear( "tier9", 48755, 48756, 48757, 48758, 48759, 48078, 48077, 48081, 48079, 48080, 48085, 48086, 48082, 48084, 48083 )
@@ -352,7 +353,7 @@ spec:RegisterAuras( {
     -- Chance for the next Mind Blast from the Priest to critically hit increased by 30%.
     mind_spike = { 
         id = 73510,
-        duration = 3600,
+        duration = 12,
         max_stack = 3,
         copy = { 87178, 87179 },
     },
@@ -463,7 +464,7 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1,
     },
-    active_shadow_fiend = {
+    active_shadowfiend = {
         duration = 15,
         max_stack = 1,
 
@@ -1096,7 +1097,7 @@ spec:RegisterAbilities( {
         start = function ()
             applyDebuff( "target", "mind_flay" )
             if talent.pain_and_suffering.rank == 3 then
-                applyDebuff( "shadow_word_pain" )
+                applyDebuff( "target", "shadow_word_pain" )
             end
         end,
 
@@ -1216,11 +1217,10 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
-        texture = 457655    ,
+        texture = 457655,
 
         handler = function ()
             applyDebuff("target", "mind_spike")
-            variable.mind_spike_count = (variable.mind_spike_count or 0) + 1
         end,
     },
 
@@ -1458,7 +1458,8 @@ spec:RegisterAbilities( {
         toggle = "cooldowns",
 
         handler = function ()
-            applyBuff( "active_shadow_fiend" )
+            applyBuff( "shadowfiend" )
+            applyBuff( "active_shadowfiend" )
         end,
 
         copy = {},
@@ -1637,17 +1638,33 @@ spec:RegisterStateExpr( "shadowfiend_active", function ()
     return active_dot.shadowfiend > 0
 end )
 
---Track how many times Mind Spike has been cast in a row
-spec:RegisterStateExpr( "mind_spike_count", function()
-    if prev_gcd.mind_spike then
-        return variable.mind_spike_count or 0
+-- Tracker for Mind Spike casts with Tier 13 4pc
+spec:RegisterStateTable("mind_spike", {
+    counter = 0
+})
+local cast_events = {
+    SPELL_CAST_SUCCESS = true
+}
+spec:RegisterCombatLogEvent(function(_, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName)
+    if sourceGUID ~= state.GUID then return end
+    if not cast_events[subtype] then return end
+
+    if spellID == 73510 then -- Mind Spike
+        state.mind_spike.counter = state.mind_spike.counter + 1
+    else
+        state.mind_spike.counter = 0
     end
-    return 0
-end )
+end, false)
+spec:RegisterStateExpr("mind_spike_count", function()
+    return state.mind_spike.counter
+end)
+spec:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+    state.mind_spike.counter = 0
+end)
 
 -- Hooks
-spec:RegisterHook( "reset_precast", function ()
-end )
+spec:RegisterHook("reset_precast", function()
+end)
 
 -- Settings
 spec:RegisterSetting( "priest_description", nil, {
@@ -1707,7 +1724,7 @@ spec:RegisterOptions( {
 
 
 -- Packs
-spec:RegisterPack( "Shadow", 20250223, [[Hekili:1MvBVTTnq4FlgfWiPnvZ2jUDVyBG2Hc02p0vmLH(HHkjAj6yIO3MevsnGH(TVJKwsuuKuUzDFOn2KNU74Dp3dVt2BU3TEUrik27tlMTy5SflU2z28BMTCPNl9qo2ZnhfEp6o4dPOe4)D3JIYEKT8H4mue7XlZQkcHT(s2xCjjL1btRdGp)EmST72ksm9dPEB1BMBGhphh69jWE7jrryHK4Yqp3B3taLX(hQo4KBuhKTd(EiLKLwhetkPW27YkQdEp(EsmXb8SISDKyWFE2ZQdeUBDWNli4sA9hzR9wujocuuk3nvD56pkK6Zf4FplzlI(Y3WTwz9hfMT0jVahY36fR)PsUbapi5kYU1BR2TZPBjh4VP6FU8ShXf(pMve5dssj0QiCRg0TPfDrstbX3rk4AysvUEXEaLKtkiH(4KTfOq7cNqsJ8lZj3J5bK6G3LsXfnbu2HdsnqQinJc5J4ciYDawbIPeARg)(IpG0reanuucFJjDckf5KhsxTuwMIQuFX38z5)Ry4Y1Om(XHT(dyFCkobY3BwVy0hmlheUG9SuscE1nlNojcZDZ2WfnRkCVtvE7or4haipj9o)8y0Dvy(ELyQ)2S0Qshkbxm)A)BYdxpFu7tNFnZ4xeMLfZIgnrhconYPaNGiPLRND8yoM6GIHd3LtFIwIb)5zYBjSe58RRdGheYO4)PcNgI7WbGp1Ga2fJoCfHL6lQYP(nPWiuX9(4hqP3HbdK4usHYZ1lVY6(sPXtMq6SYdctApLhporgRWJgv5xQQaur4EUrSB51dSSHdhLeEpd2WrFTva(HzvPudkzBmcIWG8q1Zd(3fg50QBTYZ1Oo9pm80P)gsP)GJw1LZe44bgPbY2TQmqweDfen5asBuqUPsdn(HQUL9gD2Lv(b6ZpIG3mFMPdMb84jfMvSvKW3SE(uZWHncK6KlEAp7LCFD16lw8CiD)IfolFUWz7Y8orvfi2sx2K5CHizmC91TOI7WaL5FMr5c0DqlPdRi6kiuK7Sb(tVqFo7e1YMLtnLVBLGZ4qHDaBVhIuT22VH0A6f65KMAJvBZ1ZUu5u1VGsn7idZk7DHg)iXEeRN1v63LvZ7ZYOgHGCJPgFKmNPq3kt7FMMuUmjcJO8JiLdGC2JrX098BhxS0yyu9mO)61bgwQuJvMypQc1ahpowKGlulAOZbLfqlAOLjtksXDyrz1BYENUAjODGwfGrfAAnyPQWd4RcpegdwKhUlxp)Qe0387VgNfPT2ikJw6tGlEZWtnXZPamgSFlWq17uG6)a8TNAnIa(jJBnu11qbQEu0vizZrF6vxAXdNf9IK82BsWYfAJHby3DedJeLgEWgw0AH)0(O6v3C8yxv9aiEB9GN7dcAG2XXw45(iQiLLdAg860CuIjWsiLLWM1bLv55WijNg66o2DZeOjskKaUhWDo1b1bFGkEi(4ejaLpBCl6EeSmgm8bMUjzfekFIHWyy6gqAmHUhx8RqLDWlRd(7)QeZ0eoP8Rxvh84Es4EzPrPh6S6PXqWFlpMesOXD6nsmtcO5oJ(BWSFfnM5wHkG(H)ktPrYlTqYYpsIJLorNujTruE0GVuAvYwCbZWLXzuN6p(HewaJTWRuMCf20ZL)j2y0IgDGp9j(q54u02yCK3B9CdbVgcZip3j1b6AOJp)A3EAqJksOP5ofjg0INNRW39C7mThfaqNHZAYHKyrQd2a5GzDwr9zy26AB26I6aT9ZbAEnOAUbn3PKqQL1bx26z1bRwZv7I6GNdy9qif(c4Bol5F3ypFGoucwST9CLjryVyKNsVNquGYE)i7qvXuDyL(Hp2q2IxNsbjxSX3XC8Ybyj3TDYD7P)gIiimcb2opRRje7P0(uBI8ZIo1OmJROqYx8sQa6oMUVXOUpLEHjGxogU)8RC01dCDad7DEE9jcak7LHzYXb0OTEQ5MBwDWXJaDx7OdNW0)x9pyOuMZ9kdioBpAjvaCBFdt2P50c20bTTca5AX4RsRtF6ezu2gzcXU3)MDuNYJP((4AZ8AiALuipqYq4wdHdQE6vd21jGMiOrgy3ETyYSU7Ggp9Cxk7g6ASJdghP7iEX5ODjRllni6YlK))W313bTSNBQlAXvmd6KwWXzVBA7iSXCzt9sl70M7NwIdxrg7Kwd70wbjY7jxh3sNogPtIZbo1Cb(PMUpJ7OB60N5AV28LjQnMZT2cXnlQ1HS7Ce8Z9UFC(s91D8U)zM)NhsmWBKxHxOCeM1js3lmGrLDtYzqPAO)jr7tt5DmnsfYMgrhfwUrQNSXElung389CCjSF)jyWRN1RdUwdz)oHZhKBU89heXILUQvyfTw2oAY5C4mg1J0rLyMgWuT2ivpVEq1JiB0R8ruJnEVS98(EnZ(lJmFY45xohfJD4Cc(TcB5fR1jO2HsaNgoo2AtUnVPCY7nfiv0D44n1zG7qmHGMbKm8wT1YD3Bmhd)ix2P3UG3hVuJZSG7KEZv28tr1lEQWFocjHf(tdSoMzmu)rKuvZzD1MzkGH)MwF)3Cp0fxPPx0MxNWzvPkAbUIUpdUb89aifXxY7Fd]] )
+spec:RegisterPack( "Shadow", 20250224, [[Hekili:1I1BVTTnt8plgfWWPnvZw2QDDZ2aTdfOnViOykd9fdvs0s0Xer)Buuj1ag6Z(oszjrjtrPK98GH1wtD8UJ397(X7OZcN7CSdqmSZTMZnTMBAUYyXQLlnFNJn7yk2Xof5)a6E4FeJIG)0(aki5j(Yhdtqb8TNLKt9Hp99KVBtIYk8Mw4b)7VGHpBVlNeY(ASZovMX069W2tX(o3A5yFGeeGlLeN57yF3bcOm()Jk8o7gfEj7HF7ZijXfEHKmg859j0cVVGFGesmapJMSNec(ZREvHxP7w49nkbNXkUHV2Nqz4aqrXc3SRlxCtPuFJI)JKODi2B)OWAzf3uA2mJuk2x8P3S5xYega8GORj73SlF)EJMLmG)ow9(stEctDFkHg4csYiS8aCTgu9rn6IehdIVNqfAysEQAXEefLsOeFxC0okYxVWrK4a3SuYdyraPW7ZXmmTkGYpCqQbsfXjmiFesHi3ryfiMsy1A85fFaPdiaAGMb)IlDekgzK6ZwBjldnp2T8xU88)1CC5guI44Wx)rSloghb57TBmhCJSfl5BCMFssi3BQ8ocooWGIJqK4SnZpDkfZmqHGYpDs(qielp9QPzyM7UK48mdgbtxS0DvQ)MfdAEoMueEVJWJUlww4bBecZ4)jhh7JBsoGJwLw2hIoEnHNpO5Pm3Q4AaI(Gl(ru89yWargzmOMz7gRR1kWARPtQpCDnN0PuGw6vqe1)GqV6n2glLhODHiiGa7eqGp6EVFGC4fI9vRwBLrgwye)h4OabyQgq76NKhZ2Uz10AflJ2hL)vBqLYl0KkJUEv)6VI4XMeFFiq0DhIEpgkU(Zegsq3vVZm2fgAsawe1BwfqLtRwTmAwsOKciA5VfGFe4VbB6MgIUpV1(Qzmyj5(hmK5kYAi)A0RSNOYMmseg0LBabVDXCvhOEG2NvwcDxfQEX0bX8tM9Y27vc)C9MzMVgs1VX0W61LoAtw3iiNkskxPmIOTGri3ORxMotDU4m10wRP9LhRLqqoXGVa2(aejQTTBfP30zZuZFnvhT42pm)QtNMOENDdmTRJ6MyUaz1(0kyO1ghwR(RCcaxE28k9yVUbpzd2xGDDFFFSgvUcjaJyIJjtu1BCaJczhex(zA1BOS7Pq9TN6Q04vj6dSqjWPtdfkecvJvACqzbuIiQjWKIuchUKl8JjFwfbiCBFTcWiQIB(T6k8fuv(h9dblkc3zBwCDe6NUTxtqIux6eKWYCjWv4j4P9rX1bzCX3RrgD9UoW9)h4BVSYKPNHFY42nQ3tfdy3JIQsjDo6lV8sjEyuumsYRVPbn3LnegGF1rimXtS)rDyrTf(tBJQxV60PMQ6lG411do2pwsdupT1sh7Nq0yEoOAUQZJjvoGvejld(yHxwEAkmXX5zQUhmmKXl8yqc4ba3zu4v49vw5MetlebxiWNMIDablJbdFKRBscLWede4hcdVasJjSdy6Vbv2EVTW7V)Rmmxt4OSFCDH3thi(hKLgfFSXQNNYa)Z0qIpHf2O3GYroan3y0FhgTJwzM7kvb0z9p4knqEjtjl)ejmu6eDwLSkrfrdXsX5r7WuUHZctygf381iEaJVGvNbtHp6yJYzhsGmYxaalYXw8b(qZq3FWFDRy(BCmAxioW5to2(Wjac5i(GZ91uqH3AHXGzwNah7QomCSLHX6ua0Jd4ycx1XUUkOCSBkjTC9EgiXHbGQED62(tLjK6DGV9LVOZ8g4m3OY6Ey4kCvVku18efENoXrlDNPOtirqKW1UvVAVB39fEBbVCLiZOy0cLX825SkUhUDF3WNkj9O23F)ZW3bq1Qo6P0Tb98RC9OWes6MBpabThLhYuHS7agGP)7a4EgpWWfyMopPGEqAffAzDuJN10(KEuABs5YKUzJA6mNFznVB5RNbe16bSZk801YTOmy(zeC9OfIFkhho)QefExjWIQ6qxOPfJZR5CvkkegZwfWqMaYw(0sJG0RBYuf0rBcwOLEFdTg9Pse9PEGFlpTrbnp8M(SANT19H4QdUkk(6wHXrqAdHxGoBHXB6rqreSDCUPNgq9YnFYTU9fTK6yBj7gQA5taghOVjrr5G9pRklDr0v0N6)p8D19wl7591FTqlx2JDjhI((S1JWgYL7RlBzNU)oTL4i7iJ(liVSh8(UOQ)l76Vf8rdNGRkl8Ed0vwz74pZ7H7)o0lAzxynZYwZ6whUw0zaNPU19plSux3jMlq9vVLT43HxiBaM1j1HQwpryvxKdeLN0pi5cjU4rd7RPcTTroGd1U4bcJZ1qFneL(Sw3E28sHLLLleguxRPCPSQUSTSmF9gHAnl8EDd(Z0Ws87shvXRjc6yeGtL(6GVQ5G3qnCJ7duORPXDrKz2GeOBReDqwRTsr8HEDZkJptxNqcH036fyZpmxyuEv8e9Atkr2AwL(j6gpzz)msdhIhZDuxnyjwN7yROPgWN(VDj0y8lvxp9HNn)9amYGbhX0q3UOFY423amVVrqwOLHCu5Ab1dhUoMuqTWAEj3gbvsvX96(5ABL66C0BD3q1)58V]] )
 
 
 spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
