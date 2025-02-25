@@ -2,73 +2,50 @@
 ## Based on WoWSims & WoWHead
 
 ## PreCombat-Actions
-# Enter Shadowform if not already in it
 actions.precombat+=/shadowform,if=buff.shadowform.down
-# Cast Power Word: Fortitude if not active
 actions.precombat+=/power_word_fortitude,if=buff.power_word_fortitude.down
-# Cast Inner Fire if not active
 actions.precombat+=/inner_fire,if=!up
-# Cast Vampiric Embrace if not active
 actions.precombat+=/vampiric_embrace,if=!up
-# Start precombat with Mind Spike
 actions.precombat+=/mind_spike
-
 
 # Enter Shadowform if not already in it
 actions+=/shadowform,if=buff.shadowform.down
-# Switch to AoE rotation if 2 or more enemies are present
+actions+=/dispersion,if=mana.pct<5
 actions+=/run_action_list,name=aoe,if=active_enemies>=2
-# Default to single-target rotation
+actions+=/run_action_list,name=t13,if=(cooldown.shadowfiend.remains=0|pet.alive|buff.shadowfiend.up)&set_bonus.tier13_4pc=1
 actions+=/run_action_list,name=st
 
+# Tier 13 4pc Sequence
+actions.t13+=/mind_flay,interrupt_if=buff.dark_evangelism.stack>=5,if=buff.dark_evangelism.stack<5&!pet.alive
+actions.t13+=/shadowfiend,if=!pet.alive
+actions.t13+=/archangel,if=buff.dark_evangelism.stack=5
+actions.t13+=/mind_blast,if=prev_gcd.shadowfiend|prev_gcd.archangel
+actions.t13+=/mind_flay,interrupt_if=ticks>=2,if=mind_spike_count>=4&prev_gcd.mind_spike
+actions.t13+=/mind_blast,if=prev_gcd.mind_flay
+actions.t13+=/mind_spike,if=mind_spike_count<4
+actions.t13+=/mind_blast
+
 ## Single Target Rotation
-
-## Opener sequence for single target
-# Cast Mind Spike if none of the main debuffs are present
 actions.st+=/mind_spike,if=!debuff.mind_spike.up&!debuff.shadow_word_pain.up&!debuff.devouring_plague.up&!debuff.vampiric_touch.up
-# Summon Shadowfiend if it is not alive and it is early in the fight
-actions.st+=/shadowfiend,if=!pet.alive&time<5
-# Emergency Mind Flay to maintain Shadow Word: Pain
-actions.st+=/mind_flay,if=debuff.shadow_word_pain.up&debuff.shadow_word_pain.remains<gcd+latency
-# Apply Shadow Word: Pain if its not up
-actions.st+=/shadow_word_pain,if=!debuff.shadow_word_pain.up
-# Cast Mind Flay to start generating Shadow Orbs and Dark Evangelism stacks
+actions.st+=/shadow_word_pain,if=!debuff.shadow_word_pain.up&time_to_die>10
 actions.st+=/mind_flay,interrupt_if=buff.shadow_orb.stack>=1&buff.dark_evangelism.stack>=5,if=!(buff.shadow_orb.stack>=1&buff.dark_evangelism.stack>=5)&time<=(2*gcd+2.5*action.mind_flay.duration)
-
-## Main Rotation
-# Cast Mind Blast if Shadow Orbs are available
-actions.st+=/mind_blast,if=buff.shadow_orb.up
-# Reapply Vampiric Touch if its duration is about to expire
-actions.st+=/vampiric_touch,if=debuff.vampiric_touch.remains<debuff.vampiric_touch.tick_time
-# Reapply Devouring Plague if its duration is about to expire
-actions.st+=/devouring_plague,if=debuff.devouring_plague.remains<debuff.devouring_plague.tick_time
-# Cast Mind Blast as a filler
-actions.st+=/mind_blast
-# Use Archangel when Dark Evangelism stacks are maxed and main DoTs have sufficient duration
-actions.st+=/archangel,if=buff.dark_evangelism.stack=5&(debuff.vampiric_touch.remains>5&debuff.devouring_plague.remains>5)
-# Summon Shadowfiend if it is not alive
 actions.st+=/shadowfiend,if=!pet.alive
-# Use Shadow Word: Death if the target is below 25% health or mana is low
-actions.st+=/shadow_word_death,if=target.health.pct<25|mana.pct<20
-# Use Dispersion if mana is very low
+actions.st+=/archangel,if=buff.dark_evangelism.stack=5&(debuff.vampiric_touch.remains>5&debuff.devouring_plague.remains>5)&settings.show_archangel_cooldown&((set_bonus.tier13_4pc=1&cooldown.shadowfiend.remains>90)|!set_bonus.tier13_4pc=1)
+actions.st+=/mind_blast,if=buff.shadow_orb.up
+actions.st+=/vampiric_touch,if=(debuff.vampiric_touch.remains<debuff.vampiric_touch.tick_time)&time_to_die>10
+actions.st+=/devouring_plague,if=(debuff.devouring_plague.remains<debuff.devouring_plague.tick_time)&time_to_die>10
+actions.st+=/shadow_word_death,if=target.health.pct<25
+actions.st+=/mind_blast
 actions.st+=/dispersion,if=mana.pct<10
-# Cast Mind Flay if none of the main debuffs are about to expire and Mind Blast is on cooldown
 actions.st+=/mind_flay,if=!(debuff.vampiric_touch.remains<gcd|debuff.devouring_plague.remains<gcd|cooldown.mind_blast.remains<gcd)
+actions.st+=/mind_spike,if=time_to_die<10
 
 ## AoE Rotation
-# Cast Mind Sear if there are more than 5 enemies
 actions.aoe+=/mind_sear,if=active_enemies>5
-# Apply Shadow Word: Pain to multiple targets if it is about to expire
 actions.aoe+=/shadow_word_pain,cycle_targets=1,max_cycle_targets=5,if=settings.dots_in_aoe&debuff.shadow_word_pain.remains<debuff.shadow_word_pain.tick_time
-# Apply Vampiric Touch to multiple targets if it is about to expire and the target will live long enough
 actions.aoe+=/vampiric_touch,cycle_targets=1,max_cycle_targets=5,if=settings.dots_in_aoe&debuff.vampiric_touch.remains<debuff.vampiric_touch.tick_time&target.time_to_die>=debuff.vampiric_touch.duration
-# Reapply Devouring Plague if its duration is about to expire
 actions.aoe+=/devouring_plague,if=settings.dots_in_aoe&debuff.devouring_plague.remains<debuff.devouring_plague.tick_time
-# Cast Mind Blast if Shadow Orbs are available
 actions.aoe+=/mind_blast,if=buff.shadow_orb.up
-# Use Mind Flay to maintain Shadow Word: Pain if it is about to expire
 actions.aoe+=/mind_flay,interrupt_if=ticks>=2,if=debuff.shadow_word_pain.up&debuff.shadow_word_pain.remains<gcd+latency
-# Use Shadow Word: Death if the target is below 25% health or mana is low and there are less than 4 enemies
 actions.aoe+=/shadow_word_death,if=target.health.pct<25&active_enemies<4|mana.pct<15
-# Cast Mind Sear as a filler
 actions.aoe+=/mind_sear
