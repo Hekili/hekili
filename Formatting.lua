@@ -139,14 +139,18 @@ do
     end
   end
 
-  --- @return True if successfully disabled for this editbox.
+  --- @return boolean True if successfully disabled for this editbox.
   function lib:Disable ()
     if ( not Enabled[ self ] ) then
-      return;
+      return false;
     end
     Enabled[ self ] = false;
-    self.GetText, self.SetText, self.Insert = nil;
-    self.GetCursorPosition, self.SetCursorPosition, self.HighlightText = nil;
+    self.GetText = nil;
+    self.SetText = nil;
+    self.Insert = nil;
+    self.GetCursorPosition = nil;
+    self.SetCursorPosition = nil;
+    self.HighlightText = nil;
 
     local Code, Cursor = lib.StripColors( self:GetText(),
       self:GetCursorPosition() );
@@ -155,9 +159,12 @@ do
 
     self:SetMaxBytes( self.faiap_maxBytes );
     self:SetCountInvisibleLetters( self.faiap_countInvisible );
-    self.faiap_maxBytes, self.faiap_countInvisible = nil;
-    self.faiap_tabWidth, self.faiap_colorTable = nil;
-    CodeCache[ self ], ColoredCache[ self ] = nil;
+    self.faiap_maxBytes = nil;
+    self.faiap_countInvisible = nil;
+    self.faiap_tabWidth = nil;
+    self.faiap_colorTable = nil;
+    CodeCache[ self ] = nil;
+    ColoredCache[ self ] = nil;
     NumLinesCache[ self ] = nil;
     return true;
   end
@@ -183,7 +190,7 @@ do
     return lib.Update( self, true );
   end
 
-  --- @return Cached plain text contents.
+  --- @return string Plain text contents from cache.
   local function GetCodeCached ( self )
     local Code = CodeCache[ self ];
     if ( not Code ) then
@@ -193,7 +200,7 @@ do
     return Code;
   end
 
-  --- @return Un-colored text as if FAIAP wasn't there.
+  --- @return string Text without color codes as if FAIAP wasn't there.
   -- @param Raw  True to return fully formatted contents.
   local function GetText( self, Raw )
     if ( Raw ) then
@@ -216,7 +223,7 @@ do
     return InsertBackup( self, ... );
   end
 
-  --- @return Cursor position within un-colored text.
+  --- @return number Cursor position within un-colored text.
   local function GetCursorPosition ( self, ... )
     local _, Cursor = lib.StripColors( GetTextBackup( self ),
       GetCursorPositionBackup( self, ... ) );
@@ -289,6 +296,8 @@ do
       if ( Enabled[ self ] == nil ) then -- Never hooked before
         -- Note: Animation must not be parented to EditBox, or else lots of
         -- text will cause huge framerate drops after Updater:Play().
+        --- @class FormattingUpdater : AnimationGroup
+        --- @field EditBox Frame
         local Updater = CreateFrame( "Frame", nil, self ):CreateAnimationGroup();
         Updaters[ self ], Updater.EditBox = Updater, self;
         Updater:CreateAnimation( "Animation" ):SetDuration( UPDATE_INTERVAL );
@@ -310,7 +319,7 @@ lib.Tokens = {}; --- Token names to TokenTypeIDs, used to define custom ColorTab
 local NewToken;
 do
   local Count = 0;
-  --- @return A new token ID assigned to Name.
+  --- @return number A new token ID assigned to Name.
   function NewToken ( Name )
     Count = Count + 1;
     lib.Tokens[ Name ] = Count;
@@ -492,7 +501,8 @@ local function NextNumber ( Text, Pos )
   end
 end
 
---- @return PosNext, EqualsCount if next token is a long string.
+--- @return number|nil nextPosition The next position after the opening bracket, or nil if not a long string
+--- @return number|nil equalsCount The number of equal signs in the opening bracket, or nil if not a long string
 local function NextLongStringStart ( Text, Pos )
   local Start, End = strfind( Text, "^%[=*%[", Pos );
   if ( End ) then
@@ -522,7 +532,8 @@ local strchar = string.char;
 --- Reads the next single/double quoted string beginning at its opening quote.
 -- Note: Strings with unescaped newlines aren't properly terminated.
 local function NextString ( Text, Pos, QuoteByte )
-  local Pattern, Start = [[\*]]..strchar( QuoteByte );
+  local Pattern = [[\*]]..strchar( QuoteByte );
+  local Start;
   while ( Pos ) do
     Start, Pos = strfind( Text, Pattern, Pos + 1 );
     if ( Pos and ( Pos - Start ) % 2 == 0 ) then -- Not escaped
@@ -532,11 +543,12 @@ local function NextString ( Text, Pos, QuoteByte )
   return TK_STRING, #Text + 1;
 end
 
---- @return Token type or nil if end of string, position of char after token.
+--- @return number|nil tokenType Token type or nil if end of string
+--- @return number position Position of char after token
 local function NextToken ( Text, Pos )
   local Byte = strbyte( Text, Pos );
   if ( not Byte ) then
-    return;
+    return nil, Pos;
   end
 
   if ( Linebreaks[ Byte ] ) then
@@ -685,9 +697,10 @@ function lib:FormatCode ( TabWidth, ColorTable, CursorOld )
   local LineLast, PassedIndent = 0, false;
   local Depth, DepthNext = 0, 0;
 
-  local TokenType, PosNext, Pos = TK_UNKNOWN, 1;
+  local TokenType, PosNext = TK_UNKNOWN, 1;
   while ( TokenType ) do
-    Pos, TokenType, PosNext = PosNext, NextToken( self, PosNext );
+    Pos = PosNext;
+    TokenType, PosNext = NextToken( self, PosNext );
 
     if ( TokenType
       and ( PassedIndent or not TabWidth or TokenType ~= TK_WHITESPACE )
