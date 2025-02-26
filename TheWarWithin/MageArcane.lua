@@ -204,11 +204,11 @@ spec:RegisterAuras( {
         duration = 180,
         max_stack = 3
     },
-    --[[aethervision = {
+    aethervision = {
         id = 467634,
         duration = 10,
         max_stack = 2
-    },--]]
+    },
     -- Talent: Altering Time. Returning to past location and health when duration expires.
     -- https://wowhead.com/beta/spell=342246
     alter_time = {
@@ -1285,14 +1285,15 @@ spec:RegisterAbilities( {
                 removeBuff( "intuition" )
             end
 
-            --[[if buff.aethervision.up then
+            if buff.aethervision.up then
                 gain( 2*buff.aethervision.stacks, "arcane_charges" )
                 removeBuff( "aethervision" )
-            end--]]
+            end
 
             if buff.nether_precision.up then
                 removeStack( "nether_precision" )
                 if talent.dematerialize.enabled then applyDebuff( "target", "dematerialize" ) end
+                if talent.aethervision.enabled then addStack( "aethervision" ) end
             end
 
             if debuff.magis_spark_arcane_barrage.up then
@@ -1349,7 +1350,7 @@ spec:RegisterAbilities( {
             if buff.nether_precision.up then
                 removeStack( "nether_precision" )
                 if talent.dematerialize.enabled then applyDebuff( "target", "dematerialize" ) end
-                -- if talent.aethervision.enabled then addStack( "aethervision" ) end
+                if talent.aethervision.enabled then addStack( "aethervision" ) end
             end
 
             if debuff.magis_spark_arcane_blast.up then
