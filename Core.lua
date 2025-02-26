@@ -91,7 +91,9 @@ function Hekili:OnInitialize()
     end
 
     local function GetDataText()
-        local p = Hekili.DB.profile
+        local p = Hekili.DB and Hekili.DB.profile
+        if not p or not p.toggles or not p.toggles.mode then return "N/A" end
+        
         local m = p.toggles.mode.value
         local color = "FFFFD100"
 
@@ -113,7 +115,7 @@ function Hekili:OnInitialize()
     end
 
     Hekili_OnAddonCompartmentEnter = function( addonName, button )
-        GameTooltip:SetOwner( AddonCompartmentFrame )
+        GameTooltip:SetOwner( AddonCompartmentFrame, "ANCHOR_BOTTOM" )
         GameTooltip:AddDoubleLine( "Hekili", GetDataText() )
         GameTooltip:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
         GameTooltip:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
@@ -141,20 +143,20 @@ function Hekili:OnInitialize()
             icon = "Interface\\ICONS\\spell_nature_bloodlust",
             OnClick = Hekili_OnAddonCompartmentClick,
             OnEnter = function( self )
-                GameTooltip:SetOwner( self )
+                GameTooltip:SetOwner( self, "ANCHOR_BOTTOM" )
                 GameTooltip:AddDoubleLine( "Hekili", ns.UI.Minimap.text )
                 GameTooltip:AddLine( "|cFFFFFFFFLeft-click to make quick adjustments.|r" )
                 GameTooltip:AddLine( "|cFFFFFFFFRight-click to open the options interface.|r" )
                 GameTooltip:Show()
             end,
-            OnLeave = Hekili_OnAddonCompartmentLeave
+            OnLeave = Hekili_OnAddonCompartmentLeave,
+            RefreshDataText = function(self)
+                self.text = GetDataText()
+            end
         } )
 
-        function ns.UI.Minimap:RefreshDataText()
-            self.text = GetDataText()
-        end
-
-        ns.UI.Minimap:RefreshDataText()
+        -- Set initial text directly
+        ns.UI.Minimap.text = GetDataText()
 
         if LDBIcon then
             LDBIcon:Register( "Hekili", ns.UI.Minimap, self.DB.profile.iconStore )
@@ -1254,7 +1256,12 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             local extra_amt   = state.args.extra_amount or 0
 
                                                             local next_known  = next_action and state:IsKnown( next_action )
-                                                            local next_usable, next_why = next_action and state:IsUsable( next_action )
+                                                            local next_usable, next_why
+                                                            if next_action then
+                                                                next_usable, next_why = state:IsUsable( next_action )
+                                                            else
+                                                                next_usable, next_why = false, "No next action available"
+                                                            end
                                                             local next_cost   = next_action and state.action[ next_action ] and state.action[ next_action ].cost or 0
                                                             local next_res    = next_action and state.GetResourceType( next_action ) or class.primaryResource
 
@@ -1433,7 +1440,7 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     if not pack then return end
 
-    local action, wait, depth = nil, 10, 0
+    local action, wait, depth = 0, 10, 0
 
     state.this_action = nil
     state.this_list = nil
@@ -1461,7 +1468,8 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         local listName = "precombat"
 
         if debug then self:Debug( 1, "\nProcessing precombat action list [ %s - %s ].", packName, listName ); self:Debug( 2, "" ) end
-        action, wait, depth = self:GetPredictionFromAPL( dispName, packName, "precombat", slot, action, wait, depth )
+        local a, w, d = self:GetPredictionFromAPL( dispName, packName, "precombat", slot, action or 0, wait or 0, depth or 0 )
+        action, wait, depth = a or action, w or wait, d or depth
         if debug then self:Debug( 1, "\nCompleted precombat action list [ %s - %s ].", packName, listName ) end
     else
         if debug then
@@ -1475,14 +1483,15 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
         local listName = "default"
 
         if debug then self:Debug( 1, "\nProcessing default action list [ %s - %s ].", packName, listName ); self:Debug( 2, "" ) end
-        action, wait, depth = self:GetPredictionFromAPL( dispName, packName, "default", slot, action, wait, depth )
+        local a, w, d = self:GetPredictionFromAPL( dispName, packName, "default", slot, action or 0, wait or 0, depth or 0 )
+        action, wait, depth = a or action, w or wait, d or depth
         if debug then self:Debug( 1, "\nCompleted default action list [ %s - %s ].", packName, listName ) end
     end
 
     state:SetWhitelist( nil )
     if debug then self:Debug( "Recommendation is %s at %.2f + %.2f.", action or "NO ACTION", state.offset, wait ) end
 
-    return action, wait, depth
+    return action or 0, wait or 0, depth or 0
 end
 
 Hekili:ProfileCPU( "GetNextPrediction", Hekili.GetNextPrediction )
@@ -1539,12 +1548,13 @@ function Hekili.Update()
     end
 
     local profile = Hekili.DB.profile
+    if not profile then return end
 
     local specID = state.spec.id
     if not specID then return end
 
+    if not profile.specs then return end
     local spec = rawget( profile.specs, specID )
-    if not spec then return end
 
     local packName = spec.package
     if not packName then return end
@@ -2134,7 +2144,7 @@ function Hekili.Update()
                 end
             end
 
-            if round < 5 then Hekili:Yield( "Recommendations finished for " .. dispName .. ".", nil, true ) end
+            if round < 5 then Hekili:Yield( "Recommendations finished for " .. dispName .. "." ) end
 
             dispName = nextDisplay
             state.display = dispName
