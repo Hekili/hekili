@@ -89,8 +89,8 @@ actions.single_totemic+=/crash_lightning,if=talent.unrelenting_storms.enabled&ta
 actions.single_totemic+=/lava_burst,if=!talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>=5
 actions.single_totemic+=/primordial_wave,if=(raid_event.adds.in>action.primordial_wave.cooldown)|raid_event.adds.in<6
 actions.single_totemic+=/lava_lash,if=buff.whirling_fire.up&buff.legacy_of_the_frost_witch.up
-actions.single_totemic+=/elemental_blast,if=(buff.maelstrom_weapon.stack>=10)&!buff.primordial_storm.remains<=4
-actions.single_totemic+=/lightning_bolt,if=(buff.maelstrom_weapon.stack>=10)&!buff.primordial_storm.remains<=4
+actions.single_totemic+=/elemental_blast,if=(buff.maelstrom_weapon.stack>=10)&(buff.primordial_storm.down|buff.primordial_storm.remains>4)
+actions.single_totemic+=/lightning_bolt,if=(buff.maelstrom_weapon.stack>=10)&(buff.primordial_storm.down|buff.primordial_storm.remains>4)
 actions.single_totemic+=/lava_lash
 actions.single_totemic+=/windstrike
 actions.single_totemic+=/stormstrike
@@ -168,7 +168,7 @@ actions.aoe_totemic+=/crash_lightning,if=talent.crashing_storms.enabled&(active_
 actions.aoe_totemic+=/doom_winds,if=!talent.elemental_spirits.enabled
 actions.aoe_totemic+=/primordial_storm,if=(buff.maelstrom_weapon.stack>=10)&(cooldown.doom_winds.remains>3)
 actions.aoe_totemic+=/lava_lash,if=talent.molten_assault.enabled&(talent.primordial_wave.enabled|talent.fire_nova.enabled)&dot.flame_shock.ticking&(active_dot.flame_shock<active_enemies)&active_dot.flame_shock<6
-actions.aoe_totemic+=/primordial_wave,cycle_targets=1,if=!buff.primordial_wave.up
+actions.aoe_totemic+=/primordial_wave,if=!buff.primordial_wave.up
 actions.aoe_totemic+=/windstrike
 actions.aoe_totemic+=/elemental_blast,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
 actions.aoe_totemic+=/lava_lash,if=buff.hot_hand.up

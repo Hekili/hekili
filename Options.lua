@@ -10959,6 +10959,7 @@ function Hekili:CmdLine( input )
     -- Execute the corresponding command handler or show error message
     if commandHandlers[ command ] then
         commandHandlers[ command ]()
+        self:UpdateDisplayVisibility()
         return true
     elseif command == "help" then
         self:DisplayChatCommandList( "all" )
@@ -12278,7 +12279,7 @@ do
     function Hekili:FireToggle( name, explicitState )
         local toggle = name and self.DB.profile.toggles[ name ]
         if not toggle then return end
-    
+
         -- Handle mode toggle with explicitState if provided
         if name == 'mode' then
             if explicitState then
@@ -12288,11 +12289,11 @@ do
                 local current = toggle.value
                 local c_index = modeIndex[ current ][1]
                 local i = c_index + 1
-    
+
                 while true do
                     if i > #modes then i = i % #modes end
                     if i == c_index then break end
-    
+
                     local newMode = modes[i]
                     if toggle [ newMode ] then
                         toggle.value = newMode
@@ -12306,15 +12307,15 @@ do
                     self:Print( modeIndex[ toggle.value ][2] .. " mode activated." )
                 end
             end
-    
+
         elseif name == 'pause' then
             self:TogglePause()
             return
-    
+
         elseif name == 'snapshot' then
             self:MakeSnapshot()
             return
-    
+
         else
             -- Handle other toggles with explicit state if provided
             if explicitState == "on" then
@@ -12329,16 +12330,16 @@ do
                 self:Print( "Invalid state specified. Use 'on' or 'off'." )
                 return
             end
-    
+
             if toggle.name then toggles[ name ] = toggle.name end
-    
+
             if self.DB.profile.notifications.enabled then
                 self:Notify( toggles[ name ] .. ": " .. ( toggle.value and "ON" or "OFF" ) )
             else
                 self:Print( toggles[ name ] .. ( toggle.value and " |cFF00FF00ENABLED|r." or " |cFFFF0000DISABLED|r." ) )
             end
         end
-    
+
         if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_TOGGLE", name, toggle.value ) end
         if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
         self:UpdateDisplayVisibility()
