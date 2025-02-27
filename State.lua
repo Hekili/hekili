@@ -1192,6 +1192,47 @@ end
 
 state.removeDebuffStack = removeDebuffStack
 
+-- Modify aura remaining duration function. Extends or reduces the duration of an aura. 
+  local function auraDuration( aura, duration, unit )
+    if not aura then
+        Error( "Invalid arguments passed to auraDuration: '%s'.\n\n%s", tostring( aura ), debugstack() )
+        return 0
+    end
+
+    duration = duration or 1
+    if duration == 0 then return 0 end
+    unit = unit or "target"
+
+    -- Buff handling.
+    local b = state.buff[ aura ]
+    if b and b.remains > 0 then
+        b.expires = b.expires + duration
+
+        if b.remains <= 0 then
+            state.removeBuff( aura )
+            return -1
+        end
+
+        return 1
+    end
+
+    -- Debuff handling.
+    local d = state.debuff[ aura ]
+    if d and d.remains > 0 then
+        d.expires = d.expires + duration
+
+        if d.remains <= 0 then
+            state.removeDebuff( unit, aura )
+            return -1
+        end
+
+        return 1
+    end
+
+    return 0
+end
+
+state.auraDuration = auraDuration
 
 local function setStance( stance )
     for k in pairs( state.stance ) do
