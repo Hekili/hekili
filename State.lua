@@ -1189,9 +1189,36 @@ local function removeDebuffStack( unit, aura, stacks )
 
     return removed
 end
-
 state.removeDebuffStack = removeDebuffStack
 
+local function spreadActiveDots( aura, count, limit, target )
+    if not aura or not count or count < 1 then
+        Error( "Invalid arguments passed to spreadActiveDots: aura='%s', count='%s'.\n\n%s", tostring( aura ), tostring( count ), debugstack() )
+        return 0
+    end
+
+    limit = limit or state.true_active_enemies
+    target = target or false
+
+    state.active_dot[ aura ] = state.active_dot[ aura ] or 0
+
+    local auraInfo = class.auras[ aura ]
+    local isFriendly = auraInfo and auraInfo.friendly
+
+    if not isFriendly then
+        limit = min( limit, state.true_active_enemies )
+    end
+
+    if target then
+        state.applyDebuff( "target", aura )
+    end
+
+    state.active_dot[ aura ] = min( state.active_dot[ aura ] + count, limit )
+
+    -- Return the new number of active dots for the aura.
+    return state.active_dot[ aura ]
+end
+state.spreadActiveDots = spreadActiveDots
 
 local function setStance( stance )
     for k in pairs( state.stance ) do
