@@ -38,9 +38,10 @@ ns.getClassID = function( class )
 end
 
 
+-- Power types reference: https://warcraft.wiki.gg/wiki/Enum.PowerType
 local ResourceInfo = {
     -- health       = Enum.PowerType.HealthCost,
-    none            = Enum.PowerType.None,
+    none            = -1,
     mana            = Enum.PowerType.Mana,
     rage            = Enum.PowerType.Rage,
     focus           = Enum.PowerType.Focus,
@@ -55,8 +56,6 @@ local ResourceInfo = {
     maelstrom       = Enum.PowerType.Maelstrom,
     chi             = Enum.PowerType.Chi,
     insanity        = Enum.PowerType.Insanity,
-    obsolete        = Enum.PowerType.Obsolete,
-    obsolete2       = Enum.PowerType.Obsolete2,
     arcane_charges  = Enum.PowerType.ArcaneCharges,
     fury            = Enum.PowerType.Fury,
     pain            = Enum.PowerType.Pain,
