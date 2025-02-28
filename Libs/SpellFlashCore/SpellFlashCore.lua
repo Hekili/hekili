@@ -51,7 +51,7 @@ local GetSpellInfo, GetSpellSubtext = C_Spell.GetSpellInfo, C_Spell.GetSpellSubt
 
 local ItemCache = setmetatable({}, {__index = function(t, v) if C_Item.GetItemInfo(v) then t[v] = {C_Item.GetItemInfo(v)} return t[v] end return EmptyTable end})
 function SpellFlashCore.GetItemInfo(id)
-    if type(id) == "string" then return GetItemInfo(id) end
+    if type(id) == "string" then return C_Item.GetItemInfo(id) end
     return unpack(ItemCache[id])
 end
 local GetItemInfo = SpellFlashCore.GetItemInfo
@@ -72,7 +72,7 @@ end
 
 function SpellFlashCore.ItemName(ItemID)
     if type(ItemID) == "number" then
-        return (GetItemInfo(ItemID))
+        return (C_Item.GetItemInfo(ItemID))
     end
     return ItemID
 end
@@ -694,7 +694,7 @@ local function StartUp()
     if LOADING then
         a:SetTimer("RegisterFrames", 2, 0, RegisterFrames)
         a:SetTimer("RegisterButtons", 2, 0, RegisterButtons)
-        LOADING = nil
+        LOADING = false
     end
 end
 Event.PLAYER_ENTERING_WORLD = StartUp
