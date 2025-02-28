@@ -807,8 +807,9 @@ spec:RegisterHook( "reset_precast", function ()
 
         if talent.demonic_intensity.enabled then
 
-            if ( action.metamorphosis.lastCast > 0 and ( buff.metamorphosis.expires >= ( action.metamorphosis.lastCast + spec.auras.metamorphosis.duration ) ) ) then
-                applyBuff( "demonsurge_hardcast", buff.metamorphosis.remains )
+            local metaApplied = ( buff.metamorphosis.applied - 0.005 ) -- fudge-factor because GetTime has ms precision
+            if action.metamorphosis.lastCast >= metaApplied or action.fel_desolation.lastCast >= metaApplied then
+                applyBuff( "demonsurge_hardcast", metaRemains )
             end
 
 
