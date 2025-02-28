@@ -1,33 +1,62 @@
-Smufriks Combat
-actions.precombat+=/tricks_of_the_trade,if=settings.t12_4pc&cooldown.tricks_of_the_trade.ready
+# Combat Rogue APL for Cataclysm
 
+# Precombat actions
+
+actions.precombat+=/tricks_of_the_trade
+actions.precombat+=/tol_vir_potion
+actions.precombat+=/stealth,if=!stealthed.all
+actions.precombat+=/slice_and_dice,if=buff.slice_and_dice.down
+
+# Main rotation
 actions+=/shiv,if=debuff.dispellable_enrage.up
-actions+=/kick
+actions+=/kick,if=target.debuff.casting.up
+actions+=/tricks_of_the_trade,if=time>30
 actions+=/call_action_list,name=cds
 actions+=/run_action_list,name=finish,if=combo_points=5
+actions+=/run_action_list,name=aoe,if=spell_targets.blade_flurry>=3
 actions+=/call_action_list,name=build
-actions+=/run_action_list,name=aoe,if=active_enemies>3
-actions+=/recuperate,if=health.pct<30&combo_points>=3
+actions+=/call_action_list,name=defensives
 
-actions.build+=/sinister_strike,strict=1,if=buff.slice_and_dice.down&combo_points=0
-actions.build+=/slice_and_dice,strict=1,if=buff.slice_and_dice.down&combo_points>0
-actions.build+=/revealing_strike,if=combo_points<4&debuff.revealing_strike.down&buff.slice_and_dice.remains>5
-actions.build+=/gouge,if=combo_points<5&!debuff.revealing_strike.up
+# AoE rotation
+actions.aoe+=/blade_flurry,if=!buff.blade_flurry.up
+actions.aoe+=/redirect,if=target.time_to_die<5&active_enemies>2
+actions.aoe+=/revealing_strike,if=debuff.revealing_strike.down&combo_points<5
+actions.aoe+=/slice_and_dice,if=buff.slice_and_dice.remains<5&combo_points>=2
+actions.aoe+=/rupture,if=combo_points>=4&target.time_to_die>12&target.debuff.rupture.down&active_enemies<=4
+actions.aoe+=/fan_of_knives,if=spell_targets.fan_of_knives>=4&combo_points<5
+actions.aoe+=/eviscerate,if=combo_points=5
+actions.aoe+=/sinister_strike,if=combo_points<5
+
+# Build rotation
+actions.build+=/sinister_strike,if=buff.slice_and_dice.down&combo_points=0
+actions.build+=/slice_and_dice,if=buff.slice_and_dice.down&combo_points>0
+actions.build+=/revealing_strike,if=combo_points<=3&debuff.revealing_strike.down&buff.slice_and_dice.remains>5
 actions.build+=/sinister_strike,if=combo_points<5
-actions.build+=/killing_spree,if=energy<50&buff.deep_insight.up
-actions.build+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points<3|buff.slice_and_dice.down
+actions.build+=/slice_and_dice,if=(buff.slice_and_dice.remains<2&combo_points>=2)
+actions.build+=/use_item,name=synapse_springs,if=buff.deep_insight.up|buff.adrenaline_rush.up
 
-actions.finish+=/eviscerate,if=combo_points=5
-actions.finish+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1|solo)&!buff.deep_insight.up&!buff.blade_flurry.up&!buff.adrenaline_rush.up&time_to_die>12&!buff.bloodlust.up
-actions.finish+=/eviscerate,if=combo_points=5&target.time_to_die<12
+# Finish rotation
+actions.finish+=/slice_and_dice,if=buff.slice_and_dice.remains<5&combo_points>=2
+actions.finish+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1)&!buff.blade_flurry.up&target.time_to_die>12&buff.deep_insight.up
+actions.finish+=/eviscerate,if=combo_points=5&buff.deep_insight.up
+actions.finish+=/eviscerate,if=combo_points=5&buff.moderate_insight.up&buff.deep_insight.down
+actions.finish+=/eviscerate,if=combo_points=5&buff.shallow_insight.up&buff.moderate_insight.down
+actions.finish+=/eviscerate,if=combo_points=5&buff.no_insight.up
+actions.finish+=/eviscerate,if=target.time_to_die<6&combo_points>=4
 
-actions.cds+=/adrenaline_rush,if=energy<80&cooldown.killing_spree.remains>15
-actions.cds+=/blood_fury
-actions.cds+=/berserking
-actions.cds+=/tricks_of_the_trade,if=settings.t12_4pc&cooldown.tricks_of_the_trade.ready
+# Cooldowns
+actions.cds+=/use_item,slot=trinket1,if=buff.deep_insight.up|buff.adrenaline_rush.up
+actions.cds+=/use_item,slot=trinket2,if=buff.deep_insight.up|buff.adrenaline_rush.up
+actions.cds+=/adrenaline_rush,if=energy<35&!buff.killing_spree.up&debuff.revealing_strike.up&(buff.deep_insight.up|buff.bloodlust.up)
+actions.cds+=/killing_spree,if=energy<35&buff.slice_and_dice.up&!buff.adrenaline_rush.up&(buff.deep_insight.up|debuff.find_weakness.up)
+actions.cds+=/blade_flurry,if=spell_targets.blade_flurry>=2&!buff.blade_flurry.up
+actions.cds+=/cancel_buff,name=blade_flurry,if=spell_targets.blade_flurry<2&buff.blade_flurry.up
+actions.cds+=/blood_fury,if=buff.deep_insight.up|buff.adrenaline_rush.up
+actions.cds+=/berserking,if=buff.deep_insight.up|buff.adrenaline_rush.up
+actions.cds+=/lifeblood,if=buff.deep_insight.up|buff.adrenaline_rush.up
 
-
-actions.aoe+=/blade_flurry,if=active_enemies>1&!buff.blade_flurry.up
-actions.aoe+=/fan_of_knives,if=active_enemies>3&energy<50&buff.deep_insight.up
-actions.aoe+=/cancel_buff,name=blade_flurry,if=active_enemies=1&buff.blade_flurry.up
-actions.aoe+=/call_action_list,name=build
+# Defensives
+actions.defensives+=/cloak_of_shadows,if=health.pct<=20&!buff.cloak_of_shadows.up
+actions.defensives+=/evasion,if=health.pct<=35&!buff.evasion.up
+actions.defensives+=/feint,if=incoming_damage_5s>health.max*0.2
+actions.defensives+=/recuperate,if=health.pct<10&combo_points>=3&!buff.recuperate.up
