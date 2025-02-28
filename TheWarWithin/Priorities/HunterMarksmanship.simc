@@ -28,7 +28,8 @@ actions.cds+=/potion,if=buff.trueshot.up&(buff.bloodlust.up|target.health.pct<20
 actions.cds+=/salvo,if=active_enemies>2|cooldown.volley.remains<10
 
 actions.st+=/volley,if=!talent.double_tap
-actions.st+=/rapid_fire,if=hero_tree.sentinel&buff.lunar_storm_ready.up|talent.bulletstorm&buff.bulletstorm.down
+## [Edited by Syrif] - Using lunar_storm_cooldown.down is better for us than lunar_storm_ready.up, prediction-wise
+actions.st+=/rapid_fire,if=hero_tree.sentinel&buff.lunar_storm_cooldown.down|talent.bulletstorm&buff.bulletstorm.down
 actions.st+=/trueshot,if=variable.trueshot_ready
 actions.st+=/volley,if=talent.double_tap&buff.double_tap.down
 actions.st+=/black_arrow,if=talent.headshot&buff.precise_shots.up|!talent.headshot&buff.razor_fragments.up
