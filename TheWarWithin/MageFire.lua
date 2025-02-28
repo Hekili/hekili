@@ -1358,12 +1358,9 @@ spec:RegisterAbilities( {
             if talent.spontaneous_combustion.enabled then gainCharges( "fire_blast", min( 3, action.fire_blast.charges ) ) end
             if talent.wildfire.enabled or azerite.wildfire.enabled then applyBuff( "wildfire" ) end
             if talent.flash_freezeburn.enabled then applyBuff( "frostfire_empowerment" ) end
-            if set_bonus.tww2 >= 2 then
-                reduceCooldown( "combustion", 4 )
-                if set_bonus.tww2 >= 4 then
-                    -- 4pc: Apply jackpot with doubled duration (24s) when from combustion for 7% increased damage
-                    applyBuff( "jackpot", 24 )
-                end
+            if set_bonus.tww2 >= 4 then
+                -- 4pc: Apply jackpot with doubled duration (24s) when from combustion for 7% increased damage
+                applyBuff( "jackpot", 24 )
             end
         end,
     },
