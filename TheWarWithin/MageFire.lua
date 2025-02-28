@@ -1361,9 +1361,8 @@ spec:RegisterAbilities( {
             if set_bonus.tww2 >= 2 then
                 reduceCooldown( "combustion", 4 )
                 if set_bonus.tww2 >= 4 then
-                    -- Apply jackpot with doubled duration when from combustion
+                    -- 4pc: Apply jackpot with doubled duration (24s) when from combustion for 7% increased damage
                     applyBuff( "jackpot", 24 )
-                    applyBuff( "rolling_hot", 15 )
                 end
             end
         end,
