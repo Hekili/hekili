@@ -2,7 +2,7 @@
 -- July 2024
 
 local addon, ns = ...
-Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceConsole-3.0", "AceSerializer-3.0" )
+Hekili = LibStub("AceAddon-3.0"):NewAddon( "Hekili", "AceComm-3.0", "AceConsole-3.0", "AceSerializer-3.0" )
 Hekili.Version = C_AddOns.GetAddOnMetadata( "Hekili", "Version" )
 Hekili.Flavor = C_AddOns.GetAddOnMetadata( "Hekili", "X-Flavor" ) or "Retail"
 

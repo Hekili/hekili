@@ -78,6 +78,9 @@ function Hekili:OnInitialize()
     self:RegisterChatCommand( "hekili", "CmdLine" )
     self:RegisterChatCommand( "hek", "CmdLine" )
 
+    -- Use the AddOn name as the CHAT_MSG_ADDON prefix.
+    self:RegisterComm( addon, "OnCommReceived" )
+
     local LDB = LibStub( "LibDataBroker-1.1", true )
     local LDBIcon = LDB and LibStub( "LibDBIcon-1.0", true )
 

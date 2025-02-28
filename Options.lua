@@ -10954,6 +10954,7 @@ function Hekili:CmdLine( input )
         stress   = function () self:RunStressTest() end,
         dotinfo  = function () self:DumpDotInfo( args[2] ) end,
         recover  = function () self:HandleRecoverCommand() end,
+        ping     = function () self:HandlePingCommand( args ) end,
     }
 
     -- Execute the corresponding command handler or show error message
@@ -11503,6 +11504,78 @@ function Hekili:HandlePriorityCommand( args )
     end
     self:Print( output )
     return true
+end
+
+do
+    local PROTOCOL_VERSION = 1
+    local lastPing = 0
+    local replies = {
+        versions = {},
+    }
+    local output = {}
+
+    local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
+
+    local function PrintVersions()
+        wipe( output )
+
+        if next( replies.versions ) then
+            for sender, version in pairs( replies.versions ) do
+                table.insert( output, "  - " .. sender .. ": " .. version )
+            end
+            table.sort( output )
+            table.insert( output, 1, "ping version:" )
+        end
+
+        Hekili:Print( table.concat( output, "\n" ) )
+    end
+
+    function Hekili:OnCommReceived( prefix, message, channel, sender )
+        local ok, msgType, protocol, data = Serializer:Deserialize( message )
+
+        if not ok then return end
+
+        if msgType == "V" then
+            local msg = Serializer:Serialize( "VR", PROTOCOL_VERSION, self.Version )
+            self:SendCommMessage( addon, msg, channel )
+        elseif msgType == "VR" then
+            replies.versions[ sender ] = data
+        end
+    end
+
+    function Hekili:HandlePingCommand( args )
+        local replyWait = 2 -- number of seconds to wait for replies
+        local now = GetTime()
+
+        if now < lastPing + replyWait then
+            self:Print( "Ping failed: waiting on reply." )
+            return
+        end
+
+        local channel
+
+        if IsInGroup( LE_PARTY_CATEGORY_INSTANCE ) then
+            channel = "INSTANCE_CHAT"
+        elseif IsInRaid() then
+            channel = "RAID"
+        elseif IsInGroup() then
+            channel = "PARTY"
+        else
+            self:Print( "Ping failed: player not in a group." )
+            return
+        end
+
+        if not args[ 2 ] or args[ 2 ] == "version" then
+            wipe( replies.versions )
+
+            local msg = Serializer:Serialize( "V", PROTOCOL_VERSION, self.Version )
+
+            lastPing = now
+            self:SendCommMessage( addon, msg, channel )
+            self:Print( "ping version: awaiting reply..." )
+            C_Timer.After( replyWait, PrintVersions )
+        end
+    end
 end
 
 
