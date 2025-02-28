@@ -23,9 +23,7 @@ actions.cleave+=/barbed_shot,cycle_targets=1,if=pet.main.buff.frenzy.up&pet.main
 actions.cleave+=/multishot,if=buff.beast_cleave.remains<0.25+gcd&(!talent.bloody_frenzy|cooldown.call_of_the_wild.remains)
 actions.cleave+=/black_arrow,if=buff.beast_cleave.up
 actions.cleave+=/call_of_the_wild
-actions.cleave+=/bestial_wrath
 actions.cleave+=/bloodshed
-actions.cleave+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd+0.25
 actions.cleave+=/dire_beast,if=talent.shadow_hounds|talent.dire_cleave
 actions.cleave+=/explosive_shot,if=talent.thundering_hooves
 actions.cleave+=/kill_command,cycle_targets=1
@@ -52,8 +50,6 @@ actions.st+=/explosive_shot,if=talent.thundering_hooves
 actions.st+=/lights_judgment,if=buff.bestial_wrath.down|target.time_to_die<5
 actions.st+=/cobra_shot
 actions.st+=/dire_beast
-actions.st+=/explosive_shot
-actions.st+=/kill_shot
 actions.st+=/bag_of_tricks,if=buff.bestial_wrath.down|target.time_to_die<5
 actions.st+=/arcane_pulse,if=buff.bestial_wrath.down|target.time_to_die<5
 actions.st+=/arcane_torrent,if=(focus+focus.regen+15)<focus.max
