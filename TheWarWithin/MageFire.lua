@@ -1,12 +1,5 @@
-
 -- MageFire.lua
 -- January 2025
-
---[[ 11.1 TODO List 
-- Implement tier set effects
-    - Combustion guaranteed jackpot CDR
-
---]]
 
 if UnitClassBase( "player" ) ~= "MAGE" then return end
 
@@ -848,6 +841,20 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
+    -- 2-set
+    rollin_hot = {
+        id = 1219035,
+        duration = 7,
+        max_stack = 1
+    },
+    -- 4-set: Mage Fire 11.1 Class Set 4pc bonus
+    jackpot = {
+        id = 1215632,
+        duration = 12,
+        type = "Magic",
+        max_stack = 1,
+        tooltip = "Grants 7% increased damage for 12s. Duration is doubled (24s) when activated via Combustion.",
+    },
 } )
 
 
@@ -894,16 +901,23 @@ spec:RegisterStateTable( "improved_scorch", setmetatable( {}, {
 spec:RegisterGear( "tww2", 229346, 229344, 229342, 229343, 229341 )
 spec:RegisterAuras( {
    -- 2-set
+   -- https://www.wowhead.com/spell=1219035/rollin-hot
+   -- Your spells have a chance to grant Rolling Hot, increasing your Fire spell damage by 15% for 7 sec.
 rollin_hot = {
     id = 1219035,
-    duration = 15,
+    duration = 7,
     max_stack = 1
 },
-   --[[ 4-set
+   -- 4-set
+   -- https://www.wowhead.com/spell=1215632/mage-fire-11-1-class-set-4pc
+   -- When you hit Jackpot you gain 7% more damage for 12s. If you gain jackpot from combustion the duration is increased by 100%.
     jackpot = {
-        -- When you hit Jackpot you gain 7% more dps for 12s. If you gain jackpot from combustion the duration is increased by 100%
-    }, ]]--
-
+        id = 1215632,
+        duration = 12,
+        type = "Magic",
+        max_stack = 1,
+        tooltip = "Grants 7% increased damage for 12s. Duration is doubled (24s) when activated via Combustion.",
+    },
 } )
 
 -- Dragonflight
@@ -1347,6 +1361,8 @@ spec:RegisterAbilities( {
             if set_bonus.tww2 >= 2 then
                 reduceCooldown( "combustion", 4 )
                 if set_bonus.tww2 >= 4 then
+                    -- Apply jackpot with doubled duration when from combustion
+                    applyBuff( "jackpot", 24 )
                     applyBuff( "rolling_hot", 15 )
                 end
             end
