@@ -1111,7 +1111,11 @@ spec:RegisterAbilities( {
 
         handler = function ()
             gain( energy.max, "energy" )
-            setCooldown( "celestial_brew", 0 )
+            if talent.endless_draught.enabled then
+                gainCharges( "celestial_brew", class.abilities.celestial_brew.charges )
+            else
+                setCooldown( "celestial_brew", 0 )
+            end
             gainCharges( "purifying_brew", class.abilities.purifying_brew.charges )
         end,
     },
@@ -1177,7 +1181,13 @@ spec:RegisterAbilities( {
     celestial_brew = {
         id = 322507,
         cast = 0,
+        charges = function() return talent.endless_draught.enabled and 2 or nil end,
         cooldown = function() return talent.light_brewing.enabled and 36 or 45 end,
+        recharge = function()
+            if talent.endless_draught.enabled then
+                return talent.light_brewing.enabled and 36 or 45
+            end
+        end,
         gcd = "totem",
         school = "physical",
 
@@ -1498,7 +1508,11 @@ spec:RegisterAbilities( {
 
             applyBuff( "shuffle" )
 
-            reduceCooldown( "celestial_brew", 4 + ( buff.blackout_combo.up and 2 or 0 ))
+            if talent.endless_draught.enabled then
+                gainChargeTime( "celestial_brew", 4 + ( buff.blackout_combo.up and 2 or 0 ))
+            else
+                reduceCooldown( "celestial_brew", 4 + ( buff.blackout_combo.up and 2 or 0 ))
+            end
             reduceCooldown( "fortifying_brew", 4 + ( buff.blackout_combo.up and 2 or 0 ))
             gainChargeTime( "purifying_brew", 4 + ( buff.blackout_combo.up and 2 or 0 ))
 
@@ -1877,7 +1891,11 @@ spec:RegisterAbilities( {
             removeBuff( "blackout_combo" )
             removeBuff( "counterstrike" )
 
-            reduceCooldown( "celestial_brew", 1 )
+            if talent.endless_draught.enabled then
+                gainChargeTime( "celestial_brew", 1 )
+            else
+                reduceCooldown( "celestial_brew", 1 )
+            end
             reduceCooldown( "fortifying_brew", 1 )
             gainChargeTime( "purifying_brew", 1 )
 
