@@ -791,7 +791,7 @@ end )
 -- TheWarWithin
 spec:RegisterGear( "tww2", 229283, 229281, 229279, 229280, 229278 )
 spec:RegisterAuras( {
-    jackpot = { -- Need the ID and name
+    jackpot = {
         id = 1217769,
         duration = 40,
         max_stack = 2
@@ -1176,6 +1176,8 @@ spec:RegisterAbilities( {
 
         talent = "engulf",
         startsCombat = true,
+
+        cycle = "fire_breath_dot",
 
         handler = function()
             -- Assume damage occurs.
