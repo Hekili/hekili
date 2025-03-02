@@ -594,11 +594,6 @@ spec:RegisterAuras( {
         id = 162264,
         duration = 20,
         max_stack = 1,
-        --[[meta = {
-            extended_by_demonic = function ()
-                return false -- disabled in 8.0:  talent.demonic.enabled and ( buff.metamorphosis.up and buff.metamorphosis.duration % 15 > 0 and buff.metamorphosis.duration > ( action.eye_beam.cast + 8 ) )
-            end,
-        },--]]
     },
     exergy = {
         id = 208628,
@@ -949,31 +944,9 @@ spec:RegisterStateFunction( "purge_fragments", function()
     fragments.realTime = 0
 end )
 
-local last_darkness = 0
--- local last_metamorphosis = 0
--- local last_eye_beam = 0
-
-spec:RegisterStateExpr( "darkness_applied", function ()
-    return max( class.abilities.darkness.lastCast, last_darkness )
-end )
-
---[[spec:RegisterStateExpr( "metamorphosis_applied", function ()
-    return max( class.abilities.darkness.lastCast, last_metamorphosis )
-end )--]]
-
---[[spec:RegisterStateExpr( "eye_beam_applied", function ()
-    return max( class.abilities.eye_beam.lastCast, last_eye_beam )
-end )--]]
-
-spec:RegisterStateExpr( "extended_by_demonic", function ()
-    return buff.metamorphosis.up and buff.metamorphosis.extended_by_demonic
-end )
-
-local activation_time = function ()
+spec:RegisterStateExpr( "activation_time", function()
     return talent.quickened_sigils.enabled and 1 or 2
-end
-
-spec:RegisterStateExpr( "activation_time", activation_time )
+end )
 
 local sigil_placed = function ()
     return sigils.flame > query_time
@@ -1134,7 +1107,6 @@ local sigil_types = {
 }
 
 spec:RegisterHook( "reset_precast", function ()
-    -- last_metamorphosis = nil
     last_infernal_strike = nil
 
     wipe( initiative_virtual )
@@ -1156,12 +1128,9 @@ spec:RegisterHook( "reset_precast", function ()
         else sigils[ s ] = 0 end
     end
 
-    last_darkness = 0
-    -- last_metamorphosis = 0
-    -- last_eye_beam = 0
-
     local rps = 0
 
+    --[[ 20250301: Legacy items from Legion that reduce the cooldown of Metamorphosis.
     if equipped.convergence_of_fates then
         rps = rps + ( 3 / ( 60 / 4.35 ) )
     end
@@ -1178,8 +1147,7 @@ spec:RegisterHook( "reset_precast", function ()
 
         rps = rps + ( fps / 30 ) * ( 1 )
     end
-
-    meta_cd_multiplier = 1 / ( 1 + rps )
+    --]]
 
     if IsSpellKnownOrOverridesKnown( 442294 ) then
         applyBuff( "reavers_glaive" )
@@ -1501,7 +1469,6 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         handler = function ()
-            last_darkness = query_time
             applyBuff( "darkness" )
         end,
     },
@@ -1616,7 +1583,6 @@ spec:RegisterAbilities( {
         nobuff = function () return talent.demonic_intensity.enabled and "metamorphosis" or nil end,
 
         start = function ()
-            -- last_eye_beam = query_time
             applyBuff( "eye_beam" )
             if talent.cycle_of_hatred.enabled then
                 reduceCooldown( "eye_beam", 5 * talent.cycle_of_hatred.rank * buff.cycle_of_hatred.stack )
@@ -1652,7 +1618,6 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         start = function ()
-            -- last_eye_beam = query_time
             applyBuff( "eye_beam" )
             if talent.cycle_of_hatred.enabled then
                 reduceCooldown( "abyssal_gaze", 5 * talent.cycle_of_hatred.rank * buff.cycle_of_hatred.stack )
@@ -1879,7 +1844,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "metamorphosis", buff.metamorphosis.remains + 20 ) -- it extends demonic now
-            -- last_metamorphosis = query_time
 
             setDistance( 5 )
 
@@ -1917,16 +1881,6 @@ spec:RegisterAbilities( {
             end
 
         end,
-
-        --[[meta = {
-            adjusted_remains = function ()
-                -- if level < 116 and ( equipped.delusions_of_grandeur or equipped.convergeance_of_fates ) then
-                    return cooldown.metamorphosis.remains * meta_cd_multiplier
-                end
-
-                return cooldown.metamorphosis.remains
-            end
-        }--]]
     },
 
     -- Talent: Slip into the nether, increasing movement speed by $s3% and becoming immune to damage, but unable to attack. Lasts $d.
@@ -2356,15 +2310,6 @@ spec:RegisterSetting( "fel_rush_charges", 0, {
     width = "full"
 } )
 
-spec:RegisterSetting( "fel_rush_filler", true, {
-    name = strformat( "%s: Filler and Movement", Hekili:GetSpellLinkWithTexture( 195072 ) ),
-    desc = strformat( "When enabled, %s may be recommended as a filler ability or for movement.\n\n"
-        .. "These recommendations may occur with %s talented, when your other abilities are on cooldown, and/or because you are out of range of your target.",
-        Hekili:GetSpellLinkWithTexture( 195072 ), Hekili:GetSpellLinkWithTexture( 203555 ) ),
-    type = "toggle",
-    width = "full"
-} )
-
 -- Throw Glaive
 spec:RegisterSetting( "throw_glaive_head", nil, {
     name = Hekili:GetSpellLinkWithTexture( 185123, 20 ),
@@ -2389,16 +2334,6 @@ spec:RegisterSetting( "throw_glaive_charges", 0, {
     step = 0.1,
     width = "full"
 } )
-
---[[ Retired 20240712:
-spec:RegisterSetting( "footloose", true, {
-    name = strformat( "%s before %s", Hekili:GetSpellLinkWithTexture( 185123 ) , Hekili:GetSpellLinkWithTexture( 188499 ) ),
-    desc = strformat( "When enabled, %s may be recommended without having %s on cooldown.\n\n"
-        .. "This setting deviates from the default SimulationCraft profile, but performs equally on average with higher top-end damage.",
-        Hekili:GetSpellLinkWithTexture( 185123 ) , Hekili:GetSpellLinkWithTexture( 188499 ) ),
-    type = "toggle",
-    width = "full"
-} ) ]]
 
 -- Vengeful Retreat
 spec:RegisterSetting( "retreat_head", nil, {
@@ -2432,17 +2367,6 @@ spec:RegisterSetting( "retreat_and_return", "off", {
         felblade = "Require " .. Hekili:GetSpellLinkWithTexture( 232893 ),
         either = "Either " .. Hekili:GetSpellLinkWithTexture( 195072 ) .. " or " .. Hekili:GetSpellLinkWithTexture( 232893 )
     },
-    width = "full"
-} )
-
-spec:RegisterSetting( "retreat_filler", false, {
-    name = strformat( "%s: Filler and Movement", Hekili:GetSpellLinkWithTexture( 198793 ) ),
-    desc = function()
-        return strformat( "When enabled, %s may be recommended as a filler ability or for movement.\n\n"
-            .. "These recommendations may occur with %s talented, when your other abilities being on cooldown, and/or because you are out of range of your target.",
-            Hekili:GetSpellLinkWithTexture( 198793 ), Hekili:GetSpellLinkWithTexture( 203555 ) )
-    end,
-    type = "toggle",
     width = "full"
 } )
 
