@@ -8561,38 +8561,6 @@ do
                                     order = 2,
                                 },
 
-                        funnel = {
-                            type = "group",
-                            name = "",
-                            inline = true,
-                            order = 8,
-                            args = {
-                                key = {
-                                    type = "keybinding",
-                                    name = "Funnel Priority",
-                                    desc = "Set a key to toggle Funnel Priority on or off, for specializations which support it.",
-                                    width = 1,
-                                    order = 1,
-                                        },
-
-                                value = {
-                                    type = "toggle",
-                                    name = "Enable Funnel Priority",
-                                    desc = "If checked, priorities for funnel specializations may change slightly to use single target spenders in AoE.\n\n",
-                                    width = 2,
-                                    order = 2,
-                                        },
-                                    
-                                supportedSpecs = {
-                                    type = "description",
-                                    name = "Supported Specializations: Subtlety, Assassination, Enhancement, Destruction",
-                                    desc = "",
-                                    width = "full",
-                                    order = 3,
-                                        },
-                                },
-                        },
-
                                 --[[ potLineBreak1 = {
                                     type = "description",
                                     name = "",
@@ -8640,7 +8608,39 @@ do
                                 },
                             }
                         },
-                    }
+
+                        funnel = {
+                            type = "group",
+                            name = "",
+                            inline = true,
+                            order = 8,
+                            args = {
+                                key = {
+                                    type = "keybinding",
+                                    name = "Funnel Priority",
+                                    desc = "Set a key to toggle Funnel Priority on or off, for specializations which support it.",
+                                    width = 1,
+                                    order = 1,
+                                },
+
+                                value = {
+                                    type = "toggle",
+                                    name = "Enable Funnel Priority",
+                                    desc = "If checked, priorities for funnel specializations may change slightly to use single target spenders in AoE.\n\n",
+                                    width = 2,
+                                    order = 2,
+                                },
+
+                                supportedSpecs = {
+                                    type = "description",
+                                    name = "Supported Specializations: Subtlety, Assassination, Enhancement, Destruction",
+                                    desc = "",
+                                    width = "full",
+                                    order = 3,
+                                },
+                            },
+                        },
+                    },
                 },
 
                 interrupts = {

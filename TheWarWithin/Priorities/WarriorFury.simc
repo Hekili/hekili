@@ -20,7 +20,7 @@ actions.precombat+=/variable,name=on_gcd_racials,value=buff.recklessness.down&bu
 actions+=/pummel,if=target.debuff.casting.react
 actions+=/charge,if=time<=0.5|movement.distance>5
 actions+=/heroic_leap,if=movement.distance>25
-actions+=/potion,if=boss&(fight_remains>300|fight_remains<300&fight_remains<35&buff.recklessness.up|fight_remains<25)
+actions+=/potion,if=boss&(fight_remains>300|boss&fight_remains<35&buff.recklessness.up|boss&fight_remains<25)
 actions+=/use_item,name=treacherous_transmitter
 
 ## Trinkets The trinket with the highest estimated value, will be used first and paired with Avatar.
@@ -39,8 +39,8 @@ actions+=/blood_fury
 actions+=/fireblood
 actions+=/ancestral_call
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.avatar.remains>15&fight_remains>=135|variable.execute_phase&buff.avatar.up|fight_remains<=25
-actions+=/run_action_list,name=slayer,if=!talent.lightning_strikes
-actions+=/run_action_list,name=thane,if=talent.lightning_strikes
+actions+=/run_action_list,name=slayer,strict=1,if=!talent.lightning_strikes
+actions+=/run_action_list,name=thane,strict=1,if=talent.lightning_strikes
 
 actions.slayer+=/recklessness
 actions.slayer+=/avatar,if=cooldown.recklessness.remains

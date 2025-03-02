@@ -213,8 +213,8 @@ spec:RegisterTalents( {
     pyrogenics                     = {  71975, 387095, 1 }, -- Enemies affected by your Rain of Fire take 3% increased damage from your Fire spells.
     raging_demonfire               = {  72063, 387166, 1 }, -- Channel Demonfire fires an additional 2 bolts. Each bolt increases the remaining duration of Immolate on all targets hit by 0.5 sec.
     rain_of_chaos                  = {  71960, 266086, 1 }, -- While your initial Infernal is active, every Soul Shard you spend has a 15% chance to summon an additional Infernal that lasts 8 sec.
-    rain_of_fire                   = {  72069, 1214467, 1 }, -- Calls down a rain of hellfire upon your target, dealing 42,138 Fire damage over 6.1 sec to enemies in the area. This spell is cast at your target.
-    rain_of_fire_2                 = {  72069,   5740, 1 }, -- Calls down a rain of hellfire the target location, dealing 42,138 Fire damage over 6.1 sec to enemies in the area. This spell is cast at a selected location.
+    rain_of_fire_targeted          = {  72069, 1214467, 1 }, -- Calls down a rain of hellfire upon your target, dealing 42,138 Fire damage over 6.1 sec to enemies in the area. This spell is cast at your target.
+    rain_of_fire_ground            = {  72069,   5740, 1 }, -- Calls down a rain of hellfire the target location, dealing 42,138 Fire damage over 6.1 sec to enemies in the area. This spell is cast at a selected location.
     reverse_entropy                = {  71980, 205148, 1 }, -- Your spells have a chance to grant you 15% Haste for 8 sec.
     ritual_of_ruin                 = {  71970, 387156, 1 }, -- Every 15 Soul Shards spent grants Ritual of Ruin, making your next Chaos Bolt or Rain of Fire consume no Soul Shards and have its cast time reduced by 50%.
     roaring_blaze                  = {  72065, 205184, 1 }, -- Conflagrate increases your Soul Fire, Immolate, Incinerate, and Conflagrate damage to the target by 25% for 8 sec.
@@ -272,6 +272,9 @@ spec:RegisterPvpTalents( {
     soul_rip         = 5607, -- (410598) Fracture the soul of up to 3 target players within 20 yds into the shadows, reducing their damage done by 25% and healing received by 25% for 8 sec. Souls are fractured up to 20 yds from the player's location. Players can retrieve their souls to remove this effect.
 } )
 
+spec:RegisterHook( "TALENTS_UPDATED", function()
+    talent.rain_of_fire = talent.rain_of_fire_targeted.enabled and talent.rain_of_fire_targeted or talent.rain_of_fire_ground
+end )
 
 -- Auras
 spec:RegisterAuras( {
@@ -1807,7 +1810,7 @@ spec:RegisterAbilities( {
 
     -- Calls down a rain of hellfire, dealing ${$42223m1*8} Fire damage over $d to enemies in the area.
     rain_of_fire = {
-        id = 5740,
+        id = function() return talent.rain_of_fire_targeted.enabled and 1214467 or 5740 end,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
@@ -1821,9 +1824,7 @@ spec:RegisterAbilities( {
 
 
         usable = function() return raid_event.adds.remains > 4 end,
-        talent = function()
-            return talent.rain_of_fire_2.enabled and "rain_of_fire_2" or "rain_of_fire"
-        end,
+        talent = "rain_of_fire",
         startsCombat = true,
 
         handler = function ()

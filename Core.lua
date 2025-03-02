@@ -1190,6 +1190,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         if debug then
                                                             -- scripts:ImplantDebugData( slot )
                                                             self:Debug( "Action chosen:  %s at %.2f!", rAction, rWait )
+                                                            self:Debug( "Texture shown:  %s", slot.texture )
                                                         end
 
                                                         -- slot.indicator = ( entry.Indicator and entry.Indicator ~= "none" ) and entry.Indicator
@@ -1240,6 +1241,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                                             if debug then
                                                                 self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
+                                                                self:Debug( "Texture shown:  %s", slot.texture )
                                                             end
                                                         end
 
@@ -1365,6 +1367,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         if debug then
                                                             -- scripts:ImplantDebugData( slot )
                                                             self:Debug( "Action chosen:  %s at %.2f!", rAction, state.delay )
+                                                            self:Debug( "Texture shown:  %s", slot.texture )
                                                         end
 
                                                         if state.IsCycling( nil, true ) then

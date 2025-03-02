@@ -1105,8 +1105,7 @@ spec:RegisterAbilities( {
         timeToReady = function()
             if buff.sudden_death.up then return 0 end
             local threshold = settings.reserve_rage + 40
-            if rage.current >= threshold or ( buff.shield_block.remains > 3 and buff.ignore_pain.remains > 3 ) or not tanking then return 0 end
-            return rage[ "time_to_" .. ( settings.reserve_rage + 40 ) ]
+            return ( tanking and rage.current < threshold ) and rage[ "time_to_" .. threshold ] or 0
         end,
 
         handler = function()
@@ -1188,13 +1187,6 @@ spec:RegisterAbilities( {
         texture = 1377132,
 
         toggle = "defensives",
-
-        readyTime = function ()
-            if settings.overlap_ignore_pain then return end
-            if buff.ignore_pain.up and buff.ignore_pain.v1 >= 0.3 * health.max then
-                return buff.ignore_pain.remains - gcd.max
-            end
-        end,
 
         handler = function ()
             if buff.ignore_pain.up then
@@ -1293,7 +1285,7 @@ spec:RegisterAbilities( {
         texture = 135871,
 
         toggle = function()
-            if settings.last_stand_offensively and ( talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled or set_bonus.tier30_2pc > 0 ) then
+            if talent.unnerving_focus.enabled or conduit.unnerving_focus.enabled or set_bonus.tier30_2pc > 0 then
                 return "cooldowns"
             end
             return "defensives"
@@ -1446,9 +1438,8 @@ spec:RegisterAbilities( {
 
         readyTime = function()
             if buff.revenge.up then return 0 end
-            local threshold = action.revenge.cost + ( settings.reserve_rage or 40 )
-            if rage.current >= threshold or ( buff.shield_block.remains > 3 and buff.ignore_pain.remains > 3 ) or not tanking then return 0 end
-            return rage[ "time_to_" .. threshold ]
+            local threshold = settings.reserve_rage + 40
+            return ( tanking and rage.current < threshold ) and rage[ "time_to_" .. threshold ] or 0
         end,
 
         handler = function ()
@@ -1921,13 +1912,6 @@ spec:RegisterSetting( "shockwave_interrupt", true, {
     width = "full"
 } )
 
-spec:RegisterSetting( "overlap_ignore_pain", false, {
-    name = "Overlap |T1377132:0|t Ignore Pain",
-    desc = "If checked, |T1377132:0|t Ignore Pain can be recommended while it is already active even if its remaining absorb is greater than 30% of your maximum health.  This setting may cause you to spend more Rage on mitigation.",
-    type = "toggle",
-    width = "full"
-} )
-
 spec:RegisterSetting( "stack_shield_block", false, {
     name = "Overlap |T132110:0|t Shield Block",
     desc = function()
@@ -2004,18 +1988,6 @@ spec:RegisterSetting( "rallying_cry_health", 80, {
     step = 1,
     width = "full",
 } )
-
--- Not used in TWW onwards
---[[spec:RegisterSetting( "last_stand_offensively", false, {
-    name = "Use |T135871:0|t Last Stand Offensively",
-    desc = function()
-        return "If checked, the addon will recommend |T135871:0|t Last Stand as an offensive cooldown instead of a defensive cooldown.\n\n"
-            .. "Requires " .. ( state.set_bonus.tier30_2pc > 0 and "|cFF00FF00" or "|cFFFF0000" ) .. "2-piece Tier 30|r or "
-            .. "|W|T571316:0|t " .. ( ( state.talent.unnerving_focus.enabled or state.conduit.unnerving_focus.enabled ) and "|cFF00FF00" or "|cFFFF0000" ) .. " Unnerving Focus|r|w"
-    end,
-    type = "toggle",
-    width = "full"
-} ) ]]--
 
 spec:RegisterSetting( "last_stand_amount", 25, {
     name = "|T135871:0|t Last Stand Damage Required",
