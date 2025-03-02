@@ -1114,16 +1114,21 @@ do
                                 -- print( "Changing", GetTime() )
                             end ]]
 
-                            if action ~= b.lastAction or self.NewRecommendations or not b.Image then
-                                if ability.item then
-                                    b.Image = b.Recommendation.texture or ability.texture or select( 5, GetItemInfoInstant( ability.item ) )
-                                else
-                                    local override = options and rawget( options, action )
-                                    b.Image = override and override.icon or b.Recommendation.texture or ability.texture or GetSpellTexture( ability.id )
-                                end
+                            local image -- texture to be shown on the button for the current action
+
+                            if ability.item then
+                                image = b.Recommendation.texture or ability.texture or select( 5, GetItemInfoInstant( ability.item ) )
+                            else
+                                local override = options and rawget( options, action )
+                                image = override and override.icon or b.Recommendation.texture or ability.texture or GetSpellTexture( ability.id )
+                            end
+
+                            if action ~= b.lastAction or image ~= b.lastImage or self.NewRecommendations or not b.Image then
+                                b.Image = image
                                 b.Texture:SetTexture( b.Image )
                                 b.Texture:SetTexCoord( unpack( b.texCoords ) )
                                 b.lastAction = action
+                                b.lastImage = image
                             end
 
                             b.Texture:Show()

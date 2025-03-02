@@ -29,10 +29,12 @@ actions+=/adaptive_swarm,cycle_targets=1,if=dot.adaptive_swarm_damage.stack<3&(!
 actions+=/adaptive_swarm,cycle_targets=1,if=buff.cat_form.up&dot.adaptive_swarm_damage.stack<3&talent.unbridled_swarm.enabled&spell_targets.swipe_cat>1&dot.rip.ticking
 actions+=/ferocious_bite,if=buff.apex_predators_craving.up&!(variable.need_bt&active_bt_triggers=2)
 actions+=/call_action_list,name=cooldown,strict=1,if=dot.rip.ticking
-# with wildstalker and not both raging fury + veinripper, low cp rips for snapshot reasons is worth
-actions+=/rip,if=spell_targets=1&hero_tree.wildstalker&!(talent.raging_fury&talent.veinripper)&(buff.bloodtalons.up|!talent.bloodtalons)&(dot.rip.remains<5&buff.tigers_fury.remains>10&combo_points>=3|((buff.tigers_fury.remains<3&combo_points=5)|buff.tigers_fury.remains<=1)&buff.tigers_fury.up&combo_points>=3&remains<cooldown.tigers_fury.remains)
+# keep using this archaic 'nonsense' for veinripper because its better idk ill fix soon tm
+actions+=/rip,if=talent.veinripper&spell_targets=1&hero_tree.wildstalker&!(talent.raging_fury&talent.veinripper)&(buff.bloodtalons.up|!talent.bloodtalons)&(dot.rip.remains<5&buff.tigers_fury.remains>10&combo_points>=3|((buff.tigers_fury.remains<3&combo_points=5)|buff.tigers_fury.remains<=1)&buff.tigers_fury.up&combo_points>=3&remains<cooldown.tigers_fury.remains)
+# fix to work with veinripper idk
+actions+=/rip,if=!talent.veinripper&spell_targets=1&hero_tree.wildstalker&buff.tigers_fury.up&(buff.bloodtalons.up|!talent.bloodtalons)&(combo_points>=3&refreshable&cooldown.tigers_fury.remains>25|buff.tigers_fury.remains<5&variable.rip_duration>cooldown.tigers_fury.remains&cooldown.tigers_fury.remains>=dot.rip.remains)
 actions+=/call_action_list,name=finisher,if=combo_points=5
-actions+=/call_action_list,name=builder,if=spell_targets.swipe_cat=1&combo_points<5&(variable.time_to_pool<=0|!variable.need_bt|variable.proccing_bt)
+actions+=/call_action_list,name=builder,if=spell_targets.swipe_cat=1&(variable.time_to_pool<=0|!variable.need_bt|variable.proccing_bt)
 actions+=/call_action_list,name=aoe_builder,if=spell_targets.swipe_cat>=2&combo_points<5&(variable.time_to_pool<=0|!variable.need_bt|variable.proccing_bt)
 actions+=/regrowth,if=buff.predatory_swiftness.up&variable.regrowth&selection_time>gcd.max
 
@@ -50,7 +52,9 @@ actions.aoe_builder+=/shadowmeld,if=dot.rake.refreshable|dot.rake.pmultiplier<1.
 actions.aoe_builder+=/rake,cycle_targets=1,if=refreshable&talent.doubleclawed_rake&!(variable.need_bt&buff.bt_rake.up)&!variable.cc_capped
 # at 3t with wild slashes, swipe is better than moonfiring/st rake
 actions.aoe_builder+=/swipe_cat,if=talent.wild_slashes&spell_targets.swipe_cat>2&!(variable.need_bt&buff.bt_swipe.up)
-# li moonfire is better than non-dcr rake in aoe
+# if wildstalker make sure you have at least one rake up
+actions.aoe_builder+=/rake,cycle_targets=1,if=!dot.rake.ticking&hero_tree.wildstalker
+# li moonfire is better than non-dcr rake in aoe if we already have 1 rake
 actions.aoe_builder+=/moonfire_cat,cycle_targets=1,if=refreshable&!(variable.need_bt&buff.bt_moonfire.up)&!variable.cc_capped
 actions.aoe_builder+=/rake,cycle_targets=1,if=refreshable&!(variable.need_bt&buff.bt_rake.up)&!variable.cc_capped
 # fillers
@@ -69,15 +73,17 @@ actions.aoe_builder+=/thrash_cat,if=variable.need_bt&buff.bt_shred.down
 actions.builder+=/prowl,if=gcd.remains=0&energy>=35&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)*!(variable.need_bt&buff.bt_rake.up)&buff.tigers_fury.up&!buff.shadowmeld.up
 actions.builder+=/shadowmeld,if=gcd.remains=0&energy>=35&!buff.sudden_ambush.up&(dot.rake.refreshable|dot.rake.pmultiplier<1.4)*!(variable.need_bt&buff.bt_rake.up)&buff.tigers_fury.up&!buff.prowl.up
 # upgrade to stealth rakes, otherwise refresh in pandemic. Delay rake as long as possible if it would downgrade
-actions.builder+=/rake,if=((refreshable&persistent_multiplier>=dot.rake.pmultiplier|dot.rake.remains<3.5)|buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier)&!(variable.need_bt&buff.bt_rake.up)
+actions.builder+=/rake,if=((refreshable&persistent_multiplier>=dot.rake.pmultiplier|dot.rake.remains<3.5)|buff.sudden_ambush.up&persistent_multiplier>dot.rake.pmultiplier)&!(variable.need_bt&buff.bt_rake.up)&(hero_tree.wildstalker|!buff.bs_inc.up)
+actions.builder+=/shred,if=buff.sudden_ambush.up&buff.bs_inc.up
 actions.builder+=/brutal_slash,if=cooldown.brutal_slash.full_recharge_time<4&!(variable.need_bt&buff.bt_swipe.up)
 actions.builder+=/moonfire_cat,if=refreshable
-actions.builder+=/thrash_cat,if=refreshable&!talent.thrashing_claws
+actions.builder+=/thrash_cat,if=refreshable&!talent.thrashing_claws&!buff.bs_inc.up
 actions.builder+=/shred,if=buff.clearcasting.up&!(variable.need_bt&buff.bt_shred.up)
 # pool energy if we need to refresh dot in the next 1.5s [Hekili] TODO: Sim character to see how frequently this fires, determine if `wait` value should be adjusted.
 actions.builder+=/pool_resource,wait=0.2,if=variable.dot_refresh_soon&energy.deficit>70&!variable.need_bt&!buff.bs_inc.up&cooldown.tigers_fury.remains>3
 actions.builder+=/brutal_slash,if=!(variable.need_bt&buff.bt_swipe.up)
 actions.builder+=/shred,if=!(variable.need_bt&buff.bt_shred.up)
+actions.builder+=/thrash_cat,if=refreshable&!talent.thrashing_claws
 actions.builder+=/swipe_cat,if=variable.need_bt&buff.bt_swipe.down
 # clip rake for bt if it wont downgrade its snapshot
 actions.builder+=/rake,if=variable.need_bt&buff.bt_rake.down&persistent_multiplier>=dot.rake.pmultiplier
@@ -99,7 +105,7 @@ actions.cooldown+=/use_items
 actions.cooldown+=/use_item,slot=trinket1,if=variable.trinket_1_buffs&(buff.bs_inc.up|((buff.tigers_fury.up&cooldown.tigers_fury.remains>25)&(cooldown.convoke_the_spirits.remains<6|(variable.trinket_2_buffs&cooldown.convoke_the_spirits.remains-trinket.2.cooldown.remains>0)|!talent.convoke_the_spirits&cooldown.bs_inc.remains-trinket.2.cooldown.remains>0)))&(!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1)|trinket.1.proc.any_dps.duration>=fight_remains&boss
 actions.cooldown+=/use_item,slot=trinket2,if=variable.trinket_2_buffs&(buff.bs_inc.up|((buff.tigers_fury.up&cooldown.tigers_fury.remains>25)&(cooldown.convoke_the_spirits.remains<6|(variable.trinket_1_buffs&cooldown.convoke_the_spirits.remains-trinket.1.cooldown.remains>0)|!talent.convoke_the_spirits&cooldown.bs_inc.remains-trinket.1.cooldown.remains>0)))&(!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2)|trinket.2.proc.any_dps.duration>=fight_remains&boss
 ## actions.cooldown+=/do_treacherous_transmitter_task,if=buff.tigers_fury.up|fight_remains<22
-actions.cooldown+=/feral_frenzy,if=combo_points<=1|buff.bs_inc.up&combo_points<=2
+actions.cooldown+=/feral_frenzy,if=combo_points<=1+buff.bs_inc.up&(buff.tigers_fury.up|!talent.savage_fury|!hero_tree.wildstalker|boss&fight_remains<cooldown.tigers_fury.remains)
 # always line up convoke with berserk if you can
 actions.cooldown+=/convoke_the_spirits,if=boss&fight_remains<5|(cooldown.bs_inc.remains>45|buff.bs_inc.up|!talent.berserk_heart_of_the_lion)&(buff.tigers_fury.up&(combo_points<=4|buff.bs_inc.up&combo_points<=3)&(target.time_to_die>5-talent.ashamanes_guidance.enabled|boss))
 
@@ -109,8 +115,12 @@ actions.finisher+=/primal_wrath,if=spell_targets.primal_wrath>1&((dot.primal_wra
 actions.finisher+=/rip,cycle_targets=1,if=refreshable&(!talent.primal_wrath|spell_targets=1)&(buff.bloodtalons.up|!talent.bloodtalons)&(buff.tigers_fury.up|dot.rip.remains<cooldown.tigers_fury.remains)&(remains<fight_remains|remains<4&buff.ravage.up)
 actions.finisher+=/pool_resource,for_next=1
 actions.finisher+=/ferocious_bite,max_energy=1,cycle_targets=1,if=!buff.bs_inc.up
+actions.finisher+=/pool_resource,for_next=1
 actions.finisher+=/ferocious_bite,cycle_targets=1,if=buff.bs_inc.up
 
+# what rips new duration would be if applied in current state
+actions.variable+=/variable,name=rip_duration,value=((4+(4*combo_points))*(1-(0.2*talent.circle_of_life_and_death))*(1+(0.25*talent.veinripper)))+(variable.rip_max_pandemic_duration>?dot.rip.remains)
+actions.variable+=/variable,name=rip_max_pandemic_duration,value=((4+(4*combo_points))*(1-(0.2*talent.circle_of_life_and_death))*(1+(0.25*talent.veinripper)))*0.3
 # most expensive bt cycle is Shred + Thrash + Rake, 40+40+35 for 115 energy. During incarn it is 32+32+28 for 92energy
 actions.variable+=/variable,name=effective_energy,op=set,value=energy+(40*buff.clearcasting.stack)+(3*energy.regen)+(50*(cooldown.tigers_fury.remains<3.5))
 # estimated time until we have enough energy to proc bloodtalons.

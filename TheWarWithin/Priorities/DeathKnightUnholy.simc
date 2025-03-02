@@ -63,7 +63,7 @@ actions.aoe+=/wound_spender,cycle_targets=1,if=debuff.festering_wound.stack>=1&c
 
 # AoE Burst
 actions.aoe_burst+=/festering_strike,if=buff.festering_scythe.up
-actions.aoe_burst+=/death_coil,if=!buff.vampiric_strike.react&active_enemies<variable.epidemic_targets&(!talent.bursting_sores|talent.bursting_sores&death_knight.fwounded_targets<active_enemies&death_knight.fwounded_targets<active_enemies*0.4&buff.sudden_doom.react|buff.sudden_doom.react&(talent.doomed_bidding&talent.menacing_magus|talent.rotten_touch|debuff.death_rot.remains<gcd))
+actions.aoe_burst+=/death_coil,if=!buff.vampiric_strike.up&active_enemies<variable.epidemic_targets&(!talent.bursting_sores|talent.bursting_sores&death_knight.fwounded_targets<active_enemies&death_knight.fwounded_targets<active_enemies*0.4&buff.sudden_doom.up|buff.sudden_doom.up&(talent.doomed_bidding&talent.menacing_magus|talent.rotten_touch|debuff.death_rot.remains<gcd))
 actions.aoe_burst+=/epidemic,if=!buff.vampiric_strike.up&(!talent.bursting_sores|talent.bursting_sores&death_knight.fwounded_targets<cycle_enemies&death_knight.fwounded_targets<active_enemies*0.4&buff.sudden_doom.up|buff.sudden_doom.up&(buff.a_feast_of_souls.up|debuff.death_rot.remains<gcd|debuff.death_rot.stack<10))
 actions.aoe_burst+=/wound_spender,cycle_targets=1,if=debuff.chains_of_ice_trollbane_slow.up
 actions.aoe_burst+=/wound_spender,cycle_targets=1,if=debuff.festering_wound.stack>=1|buff.vampiric_strike.up
@@ -78,7 +78,7 @@ actions.aoe_setup+=/any_dnd,if=!death_and_decay.ticking&(!talent.bursting_sores&
 actions.aoe_setup+=/wound_spender,cycle_targets=1,if=debuff.chains_of_ice_trollbane_slow.up
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=!talent.vile_contagion
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=cooldown.vile_contagion.remains<5|death_knight.fwounded_targets>=cycle_enemies&debuff.festering_wound.stack<=4
-actions.aoe_setup+=/death_coil,if=!variable.pooling_runic_power&buff.sudden_doom.react&active_enemies<variable.epidemic_targets
+actions.aoe_setup+=/death_coil,if=!variable.pooling_runic_power&buff.sudden_doom.up&active_enemies<variable.epidemic_targets
 actions.aoe_setup+=/epidemic,if=!variable.pooling_runic_power&buff.sudden_doom.up
 actions.aoe_setup+=/festering_strike,cycle_targets=1,if=cooldown.apocalypse.remains<gcd&debuff.festering_wound.stack=0|death_knight.fwounded_targets<cycle_enemies
 actions.aoe_setup+=/death_coil,if=!variable.pooling_runic_power&active_enemies<variable.epidemic_targets
@@ -125,7 +125,7 @@ actions.cleave+=/wound_spender,if=variable.pop_wounds
 # San'layn Fishing
 actions.san_fishing+=/antimagic_shell,if=death_knight.ams_absorb_percent>0&runic_power<40
 actions.san_fishing+=/any_dnd,if=!buff.death_and_decay.up&!buff.vampiric_strike.up
-actions.san_fishing+=/death_coil,if=buff.sudden_doom.react&talent.doomed_bidding|set_bonus.tww2_4pc&buff.essence_of_the_blood_queen.at_max_stacks&talent.frenzied_bloodthirst&!buff.vampiric_strike.react
+actions.san_fishing+=/death_coil,if=buff.sudden_doom.up&talent.doomed_bidding|set_bonus.tww2_4pc&buff.essence_of_the_blood_queen.at_max_stacks&talent.frenzied_bloodthirst&!buff.vampiric_strike.up
 actions.san_fishing+=/soul_reaper,if=target.health.pct<=35&fight_remains>5
 actions.san_fishing+=/death_coil,if=!buff.vampiric_strike.up
 actions.san_fishing+=/wound_spender,if=(debuff.festering_wound.stack>=3-pet.abomination.active&cooldown.apocalypse.remains>variable.apoc_timing)|buff.vampiric_strike.up
@@ -133,7 +133,7 @@ actions.san_fishing+=/festering_strike,if=debuff.festering_wound.stack<3-pet.abo
 
 # Single Target San'layn
 actions.san_st+=/any_dnd,if=!death_and_decay.ticking&talent.unholy_ground&cooldown.dark_transformation.remains<5
-actions.san_st+=/death_coil,if=buff.sudden_doom.react&buff.gift_of_the_sanlayn.remains&(talent.doomed_bidding|talent.rotten_touch)|rune<3&!buff.runic_corruption.up|set_bonus.tww2_4pc&runic_power>80|buff.gift_of_the_sanlayn.up&buff.essence_of_the_blood_queen.at_max_stacks&talent.frenzied_bloodthirst&set_bonus.tww2_4pc&buff.winning_streak.at_max_stacks&rune<=3&buff.essence_of_the_blood_queen.remains>3
+actions.san_st+=/death_coil,if=buff.sudden_doom.up&buff.gift_of_the_sanlayn.remains&(talent.doomed_bidding|talent.rotten_touch)|rune<3&!buff.runic_corruption.up|set_bonus.tww2_4pc&runic_power>80|buff.gift_of_the_sanlayn.up&buff.essence_of_the_blood_queen.at_max_stacks&talent.frenzied_bloodthirst&set_bonus.tww2_4pc&buff.winning_streak.at_max_stacks&rune<=3&buff.essence_of_the_blood_queen.remains>3
 actions.san_st+=/wound_spender,if=buff.gift_of_the_sanlayn.up&buff.vampiric_strike.up|talent.gift_of_the_sanlayn&buff.dark_transformation.up&buff.dark_transformation.remains<gcd
 actions.san_st+=/soul_reaper,if=target.health.pct<=35&!buff.gift_of_the_sanlayn.up&fight_remains>5
 actions.san_st+=/wound_spender,if=buff.vampiric_strike.up&debuff.festering_wound.stack>=1
