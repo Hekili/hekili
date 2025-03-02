@@ -1,5 +1,6 @@
 actions.precombat+=/mark_of_the_wild
-actions.precombat+=/moonkin_form
+actions.precombat+=/bear_form,if=talent.lycaras_meditation&talent.fluid_form
+actions.precombat+=/moonkin_form,if=!talent.lycaras_meditation|!talent.fluid_form
 actions.precombat+=/variable,name=no_cd_talent,value=!talent.celestial_alignment&!talent.incarnation_chosen_of_elune|druid.no_cds
 actions.precombat+=/variable,name=on_use_trinket,value=0
 actions.precombat+=/variable,name=on_use_trinket,op=add,value=(trinket.1.has_proc&trinket.1.cooldown.duration|trinket.1.is.spymasters_web|trinket.1.is.signet_of_the_priory)&!trinket.1.is.arakara_sacbrood
@@ -14,30 +15,33 @@ actions.precombat+=/stellar_flare
 actions+=/solar_beam
 # [Edited] Trigger Lunar Eclipse if we failed to precast Wrath x2
 actions+=/wrath,if=time<2&eclipse.lunar_in_1
+# VARIABLES
 actions+=/variable,name=passive_asp,value=6%spell_haste+talent.natures_balance+talent.orbit_breaker*dot.moonfire.ticking*(buff.orbit_breaker.stack>(27-2*buff.solstice.up))*24
-actions+=/variable,name=ca_effective_cd,value=cooldown.ca_inc.remains<?cooldown.force_of_nature.remains
+actions+=/variable,name=ca_effective_cd,value=cooldown.ca_inc.full_recharge_time<?cooldown.force_of_nature.remains
 actions+=/variable,name=last_ca_inc,value=boss&fight_remains<cooldown.ca_inc.duration+variable.ca_effective_cd
 actions+=/variable,name=cd_condition,value=(boss&fight_remains<(15+5*talent.incarnation_chosen_of_elune)*(1-talent.whirling_stars*0.2)|fight_remains>10&(!hero_tree.keeper_of_the_grove|((!talent.harmony_of_the_grove|buff.harmony_of_the_grove.up)&cooldown.convoke_the_spirits.remains<60&(!talent.new_moon|cooldown.new_moon.charges_fractional>=2)))&(!talent.whirling_stars|!talent.convoke_the_spirits|talent.whirling_stars&cooldown.convoke_the_spirits.remains<gcd.max*2|cooldown.convoke_the_spirits.remains>cooldown.ca_inc.full_recharge_time))&cooldown.ca_inc.ready&!buff.ca_inc.up
-## actions+=/invoke_external_buff,name=power_infusion,if=variable.cd_condition
-actions+=/use_item,name=aberrant_spellforge
-## actions+=/do_treacherous_transmitter_task,if=cooldown.ca_inc.remains>10
-actions+=/use_item,name=spymasters_web,if=variable.cd_condition&(buff.spymasters_report.stack>29|boss&fight_remains<cooldown.ca_inc.duration)|boss&fight_remains<20
-actions+=/use_item,name=imperfect_ascendancy_serum,if=dot.sunfire.remains>4&(dot.moonfire.remains>4|talent.treants_of_the_moon&(cooldown.force_of_nature.remains<3|buff.harmony_of_the_grove.up)&variable.ca_effective_cd<1|boss&fight_remains<20|fight_remains<variable.ca_effective_cd&(buff.harmony_of_the_grove.up|cooldown.convoke_the_spirits.ready))&buff.spymasters_report.stack<=29
-actions+=/use_item,name=treacherous_transmitter,if=((cooldown.force_of_nature.remains<3&(trinket.1.is.spymasters_web|trinket.2.is.spymasters_web)&buff.spymasters_report.stack>=29)|(cooldown.convoke_the_spirits.remains<2&cooldown.ca_inc.ready&cooldown.force_of_nature.remains<3&buff.spymasters_report.stack<=29|fight_remains<20|fight_remains<variable.ca_effective_cd&(buff.harmony_of_the_grove.up|cooldown.convoke_the_spirits.ready)))
-actions+=/variable,name=generic_trinket_condition,value=variable.no_cd_talent|fight_remains<variable.ca_effective_cd&(buff.harmony_of_the_grove.up|cooldown.convoke_the_spirits.ready)|((buff.spymasters_report.stack+variable.ca_effective_cd%6)>29|boss&fight_remains<cooldown.ca_inc.duration+variable.ca_effective_cd)&variable.ca_effective_cd>20|variable.on_use_trinket=0
-actions+=/use_item,slot=trinket1,if=!trinket.1.is.spymasters_web&!trinket.1.is.imperfect_ascendancy_serum&!trinket.1.is.treacherous_transmitter&(variable.on_use_trinket!=1&trinket.2.cooldown.remains>20|boss&fight_remains<(20+20*(trinket.2.cooldown.remains<25))|variable.generic_trinket_condition)
-actions+=/use_item,slot=trinket2,if=!trinket.2.is.spymasters_web&!trinket.2.is.imperfect_ascendancy_serum&!trinket.2.is.treacherous_transmitter&(variable.on_use_trinket!=2&trinket.1.cooldown.remains>20|boss&fight_remains<(20+20*(trinket.1.cooldown.remains<25))|variable.generic_trinket_condition)
-actions+=/use_items
-actions+=/potion,if=boss&fight_remains<=30
-actions+=/berserking,if=variable.no_cd_talent|fight_remains<15actions+=/berserking,if=variable.no_cd_talent|boss&fight_remains<15
+actions+=/variable,name=convoke_condition,value=boss&fight_remains<5|(buff.ca_inc.up|cooldown.ca_inc.remains>40)&(!hero_tree.keeper_of_the_grove|buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>15)
 actions+=/variable,name=eclipse,value=buff.eclipse_lunar.up|buff.eclipse_solar.up
 actions+=/variable,name=eclipse_remains,value=buff.eclipse_lunar.remains<?buff.eclipse_solar.remains
 actions+=/variable,name=enter_lunar,value=talent.lunar_calling|spell_targets.starfire>2-(talent.umbral_intensity.rank+talent.soul_of_the_forest>1)
 actions+=/variable,name=boat_stacks,value=buff.balance_of_all_things_arcane.stack+buff.balance_of_all_things_nature.stack
-actions+=/warrior_of_elune,if=talent.lunar_calling|!talent.lunar_calling&variable.eclipse_remains>=7&cooldown.ca_inc.remains>20
+# ITEMS
+actions+=/use_item,name=spymasters_web,if=variable.cd_condition&(buff.spymasters_report.stack>29|boss&fight_remains<cooldown.ca_inc.duration)|boss&fight_remains<20
+actions+=/use_item,name=imperfect_ascendancy_serum,if=dot.sunfire.remains>4&(dot.moonfire.remains>4|talent.treants_of_the_moon&(cooldown.force_of_nature.remains<3|buff.harmony_of_the_grove.up)&variable.ca_effective_cd<1|boss&fight_remains<20|fight_remains<variable.ca_effective_cd&(buff.harmony_of_the_grove.up|cooldown.convoke_the_spirits.ready))&buff.spymasters_report.stack<=29
+actions+=/use_item,name=treacherous_transmitter,if=((cooldown.force_of_nature.remains<3&(trinket.1.is.spymasters_web|trinket.2.is.spymasters_web)&buff.spymasters_report.stack>=29)|(cooldown.convoke_the_spirits.remains<2&cooldown.ca_inc.ready&cooldown.force_of_nature.remains<3&buff.spymasters_report.stack<=29|fight_remains<20|fight_remains<variable.ca_effective_cd&(buff.harmony_of_the_grove.up|cooldown.convoke_the_spirits.ready)))
+actions+=/use_item,slot=trinket1,if=!trinket.1.is.spymasters_web&!trinket.1.is.imperfect_ascendancy_serum&!trinket.1.is.treacherous_transmitter&variable.on_use_trinket=1&variable.cd_condition
+actions+=/use_item,slot=trinket2,if=!trinket.2.is.spymasters_web&!trinket.2.is.imperfect_ascendancy_serum&!trinket.2.is.treacherous_transmitter&variable.on_use_trinket=2&variable.cd_condition
+actions+=/use_item,name=bestinslots,if=hero_tree.keeper_of_the_grove&buff.harmony_of_the_grove.up|hero_tree.elunes_chosen&(cooldown.ca_inc.full_recharge_time>20|buff.ca_inc.up)
+actions+=/use_item,name=neural_synapse_enhancer,if=variable.on_use_trinket=1&!trinket.1.cooldown.ready&(buff.harmony_of_the_grove.up|hero_tree.elunes_chosen)|!trinket.1.has_use_buff&(buff.harmony_of_the_grove.up|hero_tree.elunes_chosen)
+actions+=/use_item,name=neural_synapse_enhancer,if=variable.on_use_trinket=2&!trinket.2.cooldown.ready&(buff.harmony_of_the_grove.up|hero_tree.elunes_chosen)|!trinket.2.has_use_buff&(buff.harmony_of_the_grove.up|hero_tree.elunes_chosen)
+actions+=/potion,if=boss&fight_remains<=30
+## PI & RUN APL
+## actions+=/invoke_external_buff,name=power_infusion,if=variable.cd_condition
+actions+=/berserking,if=variable.no_cd_talent|boss&fight_remains<15
 actions+=/run_action_list,name=aoe,strict=1,if=spell_targets>1
 actions+=/run_action_list,name=st
 
+# AOE
 actions.aoe+=/wrath,if=variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time&!variable.cd_condition
 actions.aoe+=/starfire,if=!variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time&!variable.cd_condition
 actions.aoe+=/starfall,if=astral_power.deficit<=variable.passive_asp+6
@@ -64,11 +68,21 @@ actions.aoe+=/convoke_the_spirits,if=(!buff.dreamstate.up&!buff.umbral_embrace.u
 actions.aoe+=/new_moon
 actions.aoe+=/half_moon
 actions.aoe+=/full_moon
-actions.aoe+=/wild_mushroom
+actions.aoe+=/wild_mushroom,if=!prev_gcd.1.wild_mushroom&!dot.fungal_growth.ticking
 actions.aoe+=/force_of_nature,if=!hero_tree.keeper_of_the_grove
 actions.aoe+=/starfire,if=talent.lunar_calling|buff.eclipse_lunar.up&spell_targets.starfire>1
 actions.aoe+=/wrath
 
+# PRE_CD
+actions.pre_cd+=/use_item,name=spymasters_web,if=variable.cd_condition&(buff.spymasters_report.stack>29|boss&fight_remains<cooldown.ca_inc.duration)
+## actions.pre_cd+=/do_treacherous_transmitter_task,if=variable.cd_condition|buff.harmony_of_the_grove.up&(buff.spymasters_report.stack>29|!trinket.1.is.spymasters_web|!trinket.2.is.spymasters_web)
+actions.pre_cd+=/berserking,if=variable.cd_condition
+actions.pre_cd+=/potion,if=variable.cd_condition
+actions.pre_cd+=/use_item,slot=trinket1,if=!trinket.1.is.spymasters_web&!trinket.1.is.imperfect_ascendancy_serum&!trinket.1.is.treacherous_transmitter&(variable.on_use_trinket=1|variable.on_use_trinket=3)&variable.cd_condition
+actions.pre_cd+=/use_item,slot=trinket2,if=!trinket.2.is.spymasters_web&!trinket.2.is.imperfect_ascendancy_serum&!trinket.2.is.treacherous_transmitter&variable.on_use_trinket=2&variable.cd_condition
+
+# ST
+actions.st+=/warrior_of_elune,if=talent.lunar_calling|!talent.lunar_calling&variable.eclipse_remains<=7
 actions.st+=/wrath,if=variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time&!variable.cd_condition
 actions.st+=/starfire,if=!variable.enter_lunar&variable.eclipse&variable.eclipse_remains<cast_time&!variable.cd_condition
 actions.st+=/sunfire,cycle_targets=1,if=remains<3|refreshable&(hero_tree.keeper_of_the_grove&cooldown.force_of_nature.ready|!hero_tree.keeper_of_the_grove&variable.cd_condition)
@@ -85,7 +99,6 @@ actions.st+=/starsurge,if=talent.starlord&buff.starlord.stack<3
 actions.st+=/sunfire,cycle_targets=1,if=refreshable
 actions.st+=/moonfire,cycle_targets=1,if=refreshable&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)
 actions.st+=/stellar_flare,cycle_targets=1,if=refreshable&(target.time_to_die-remains-target>7+spell_targets)
-actions.st+=/variable,name=convoke_condition,value=boss&fight_remains<5|(buff.ca_inc.up|cooldown.ca_inc.remains>40)&(!hero_tree.keeper_of_the_grove|buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>15)
 actions.st+=/starsurge,if=cooldown.convoke_the_spirits.remains<gcd.max*2&variable.convoke_condition
 actions.st+=/convoke_the_spirits,if=variable.convoke_condition
 actions.st+=/starsurge,if=buff.starlord.remains>4&variable.boat_stacks>=3|fight_remains<4
@@ -98,10 +111,3 @@ actions.st+=/starsurge,if=astral_power.deficit<variable.passive_asp+action.wrath
 actions.st+=/force_of_nature,if=!hero_tree.keeper_of_the_grove
 actions.st+=/starfire,if=talent.lunar_calling
 actions.st+=/wrath
-
-actions.pre_cd+=/use_item,name=spymasters_web,if=variable.cd_condition&(buff.spymasters_report.stack>29|boss&fight_remains<cooldown.ca_inc.duration)
-## actions.pre_cd+=/do_treacherous_transmitter_task,if=variable.cd_condition|buff.harmony_of_the_grove.up&(buff.spymasters_report.stack>29|!trinket.1.is.spymasters_web|!trinket.2.is.spymasters_web)
-actions.pre_cd+=/berserking,if=variable.cd_condition
-actions.pre_cd+=/potion,if=variable.cd_condition
-actions.pre_cd+=/use_item,slot=trinket1,if=!trinket.1.is.spymasters_web&!trinket.1.is.imperfect_ascendancy_serum&!trinket.1.is.treacherous_transmitter&(variable.on_use_trinket=1|variable.on_use_trinket=3)&variable.cd_condition
-actions.pre_cd+=/use_item,slot=trinket2,if=!trinket.2.is.spymasters_web&!trinket.2.is.imperfect_ascendancy_serum&!trinket.2.is.treacherous_transmitter&variable.on_use_trinket=2&variable.cd_condition

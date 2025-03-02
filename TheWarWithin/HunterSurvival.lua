@@ -875,7 +875,7 @@ local HowlOfThePackLeaderHandler = setfenv( function( isCoordinatedAssault )
         if buff.howl_of_the_pack_leader_cooldown.up then
             -- Scenario 2A: Cooldown buff is active.
             -- Consume all active buffs (summoning them) and reduce the cooldown buff.
-            for _, buffName in ipairs( pack_leader__buff_cycle ) do
+            for _, buffName in ipairs( pack_leader_buff_cycle ) do
                 if buff[ buffName ].up then
                     removeBuff( buffName )
                     summonCount = summonCount + 1
@@ -891,7 +891,7 @@ local HowlOfThePackLeaderHandler = setfenv( function( isCoordinatedAssault )
         else
             -- Scenario 2B: Cooldown buff is not active.
             -- Consume all active buffs (summoning them) and apply a new cooldown buff.
-            for _, buffName in ipairs( pack_leader__buff_cycle ) do
+            for _, buffName in ipairs( pack_leader_buff_cycle ) do
                 if buff[ buffName ].up then
                     removeBuff( buffName )
                     summonCount = summonCount + 1
