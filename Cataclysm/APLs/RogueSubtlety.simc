@@ -17,7 +17,7 @@ actions.opener+=/rupture,if=combo_points>=4&debuff.rupture.down&target.time_to_d
 actions.opener+=/hemorrhage,if=debuff.hemorrhage.down
 actions.opener+=/shadow_dance,if=buff.shadow_dance.down&energy>=60
 actions.opener+=/shadowstep,if=buff.shadow_dance.up
-actions.opener+=/ambush,if=buff.shadow_dance.up&combo_points<5
+actions.opener+=/ambush,if=buff.shadow_dance.remains<2&buff.fury_of_the_destroyer.up
 actions.opener+=/eviscerate,if=combo_points>=5
 actions.opener+=/recuperate,if=combo_points>=3&buff.recuperate.down
 
@@ -26,9 +26,15 @@ actions.mr+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points>=2
 actions.mr+=/rupture,if=combo_points>=4&target.debuff.rupture.remains<2&target.time_to_die>18
 actions.mr+=/eviscerate,if=combo_points>=5|target.time_to_die<10&combo_points>=4
 actions.mr+=/hemorrhage,if=target.debuff.hemorrhage.remains<4.5
-actions.mr+=/ambush,if=stealthed.all
+actions.mr+=/shadowstep,if=stealthed.all
+actions.mr+=/ambush,if=prev_gcd.1.shadowstep|stealthed.all
 actions.mr+=/backstab,if=combo_points<5&(energy>=60|buff.shadow_dance.up)
 actions.mr+=/hemorrhage,if=combo_points<5&energy.time_to_max<=1.5
+actions.mr+=/shadow_dance,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points>=2&energy>=70
+actions.mr+=/vanish,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points<=3&energy>=60&!buff.shadow_dance.up
+actions.mr+=/shadowmeld,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points<=3&energy>=60&!shadow_dance.ready&!buff.shadow_dance.up
+
+
 
 # Standard Rotation (Find Weakness Downtime)
 actions+=/run_action_list,name=opener,if=time<5
@@ -37,21 +43,22 @@ actions+=/call_action_list,name=cooldowns
 actions+=/use_item,name=synapse_springs,if=buff.shadow_dance.up|cooldown.shadow_dance.remains<2|buff.bloodlust.react
 actions+=/use_item,slot=trinket1,if=buff.shadow_dance.up|target.time_to_die<20
 actions+=/use_item,slot=trinket2,if=buff.shadow_dance.up|target.time_to_die<20
+actions+=/ambush,if=prev_gcd.1.shadowstep
 actions+=/call_action_list,name=mr,if=debuff.find_weakness.up
-actions+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points>=2
-actions+=/rupture,if=combo_points>=4&target.debuff.rupture.remains<2&target.time_to_die>18
-actions+=/recuperate,if=combo_points>=3&buff.recuperate.remains<3
-actions+=/eviscerate,if=combo_points>=5|target.time_to_die<10&combo_points>=4
+actions+=/slice_and_dice,if=buff.slice_and_dice.remains<=5&combo_points>=4&target.time_to_die>=8&(buff.slice_and_dice.remains<=3|energy<=40)
+actions+=/rupture,if=debuff.rupture.down&combo_points>=5&target.time_to_die>10|combo_points>=5&debuff.rupture.remains<=8&!buff.shadow_dance.up&energy>=75
+actions+=/recuperate,if=combo_points>=5&buff.recuperate.remains<6&target.time_to_die>10
+actions+=/eviscerate,if=combo_points>=5|target.time_to_die<10&combo_points>=4|combo_points>=5&debuff.rupture.remains<=8
 actions+=/call_action_list,name=aoe,if=active_enemies>=3
-actions+=/hemorrhage,if=combo_points<5&target.debuff.hemorrhage.remains<4.5
-actions+=/backstab,if=combo_points<5&energy>=60
+actions+=/hemorrhage,if=dot.hemorrhage.remains<3&!buff.shadow_dance.up&!buff.stealth.up&target.time_to_die<10&combo_points>=4&combo_points<5&energy>=80&buff.honor_among_thieves.remains>=1
+actions+=/backstab,if=combo_points<4|(combo_points<5&energy>=80)|(combo_points<5&energy>=60&cooldown.honor_among_thieves.remains>=1)
 actions+=/hemorrhage,if=combo_points<5&energy.time_to_max<=1.5
 
 # Cooldowns (Shadow Dance and Vanish)
 actions.cooldowns+=/shadow_dance,if=energy>=60&combo_points<=3&!debuff.find_weakness.up
 actions.cooldowns+=/preparation,if=cooldown.vanish.remains>60&cooldown.shadow_dance.remains>30
 actions.cooldowns+=/vanish,if=time>10&energy>=60&combo_points<=3&!buff.shadow_dance.up&!debuff.find_weakness.up
-actions.cooldowns+=/shadowstep,if=buff.shadow_dance.up
+actions.cooldowns+=/shadowstep,if=buff.shadow_dance.up|buff.vanish.up
 actions.cooldowns+=/premeditation,if=combo_points<=2&(buff.shadow_dance.up|buff.vanish.up|buff.stealth.up)
 actions.cooldowns+=/potion,if=buff.bloodlust.react|target.time_to_die<30|buff.shadow_dance.up
 
