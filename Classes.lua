@@ -1707,7 +1707,14 @@ all:RegisterAuras( {
         shared = "target",
     },
     -- Increases damage taken from Bleed effects by 30%.
-    hemorrhage = {
+	hemorrhage = {
+        alias = { "mangle_bear", "mangle_cat", "trauma", "stampede", "hemorrhage_debuff" },
+        aliasType = "debuff",
+        aliasMode = "longest"
+    },
+	
+
+    hemorrhage_debuff = {
         id = 16511,
         duration = 60,
         max_stack = 1,
@@ -1715,7 +1722,7 @@ all:RegisterAuras( {
     },
 
     mangle = {
-        alias = { "mangle_bear", "mangle_cat", "trauma", "stampede", "hemorrhage" },
+        alias = { "mangle_bear", "mangle_cat", "trauma", "stampede", "hemorrhage_debuff" },
         aliasType = "debuff",
         aliasMode = "longest"
     },

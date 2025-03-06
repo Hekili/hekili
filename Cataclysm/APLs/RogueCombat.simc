@@ -28,6 +28,7 @@ actions.aoe+=/eviscerate,if=combo_points=5
 actions.aoe+=/sinister_strike,if=combo_points<5
 
 # Build rotation
+actions.build+=/gouge,if=combo_points=4
 actions.build+=/sinister_strike,if=buff.slice_and_dice.down&combo_points=0
 actions.build+=/slice_and_dice,if=buff.slice_and_dice.down&combo_points>0
 actions.build+=/revealing_strike,if=combo_points<=3&debuff.revealing_strike.down&buff.slice_and_dice.remains>5
@@ -38,11 +39,7 @@ actions.build+=/use_item,name=synapse_springs,if=buff.deep_insight.up|buff.adren
 # Finish rotation
 actions.finish+=/slice_and_dice,if=buff.slice_and_dice.remains<5&combo_points>=2
 actions.finish+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1)&!buff.blade_flurry.up&target.time_to_die>12&buff.deep_insight.up
-actions.finish+=/eviscerate,if=combo_points=5&buff.deep_insight.up
-actions.finish+=/eviscerate,if=combo_points=5&buff.moderate_insight.up&buff.deep_insight.down
-actions.finish+=/eviscerate,if=combo_points=5&buff.shallow_insight.up&buff.moderate_insight.down
-actions.finish+=/eviscerate,if=combo_points=5&buff.no_insight.up
-actions.finish+=/eviscerate,if=target.time_to_die<6&combo_points>=4
+actions.finish+=/eviscerate,if=combo_points=5|target.time_to_die<6&combo_points>=4|combo_points=5&(buff.shallow_insight.up&buff.moderate_insight.down)|combo_points=5&buff.deep_insight.up
 
 # Cooldowns
 actions.cds+=/use_item,slot=trinket1,if=buff.deep_insight.up|buff.adrenaline_rush.up
