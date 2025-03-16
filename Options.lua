@@ -10140,8 +10140,8 @@ do
 
                     disableAllItems = {
                         type = "toggle",
-                        name = "Disable All Items For This Specialization",
-                        desc = "If checked, no items will be recommended for this specialization. This will not affect individual item settings, which will remain the same if you uncheck this box. This setting does not affect potions, which have their own toggle.",
+                        name = "Disable All Equippable Item Recommendations",
+                        desc = "If checked, no equippable items (trinkets, main hands, etc) will be recommended. This will not affect individual item settings, which will remain the same if you uncheck this box. This setting does not affect potions, which have their own toggle.",
                         order = 0.2,
                         width = "full",
                         set = function(info, val)
