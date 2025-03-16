@@ -598,10 +598,11 @@ spec:RegisterAuras({
 })
 
 --------------------------------------------------------------------------------
--- Fan the Hammer / Roll the Bones Logging
+-- Fan the Hammer / Roll the Bones / Escalating Blae Logging
 --------------------------------------------------------------------------------
 local lastShot, numShots = 0, 0
 local lastRoll, rollDuration = 0, 30
+local lastEscalatingBlade = 0
 
 spec:RegisterCombatLogEvent(function(_, subtype, _, sourceGUID, _, _, _, destGUID, _, _, _, spellID)
     -- Only process if it's from us
@@ -1401,42 +1402,56 @@ spec:RegisterAbilities({
         texture = 136189,
 
         cp_gain = function()
+            -- 1 combo point + 1 more if broadside is up
             return 1 + (buff.broadside.up and 1 or 0)
         end,
 
         handler = function()
+            -- Normal CP generation, removing snake_eyes, etc.
             gain(action.sinister_strike.cp_gain, "combo_points")
             removeStack("snake_eyes")
 
-            if talent.unseen_blade.enabled and debuff.unseen_blade.down then
-                applyDebuff("target", "fazed")
-                applyDebuff("player", "unseen_blade")
-                if buff.escalating_blade.stack == 3 then
-                    removeBuff("escalating_blade")
-                    applyBuff("coup_de_grace")
-                else
-                    addStack("escalating_blade")
+            local settings = Hekili.DB.profile.specs[260].settings
+
+            -- If the user toggles the ICD on:
+            if settings.track_escalating_blade_icd then
+                -- We only call GetTime() here, after confirming it's needed.
+                local now = GetTime()
+                if (now - lastEscalatingBlade) >= 20 then
+                    applyBuff("escalating_blade")
+                    applyDebuff("target", "fazed", 10)
+                    lastEscalatingBlade = now
                 end
+            else
+                -- If user doesn't want the ICD, skip GetTime() entirely.
+                applyBuff("escalating_blade")
+                applyDebuff("target", "fazed", 10)
             end
 
+            -- If we have 'echoing_reprimand' up, remove it here if desired.
+            -- (If you do NOT need it, just delete these lines.)
             if talent.echoing_reprimand.enabled then
                 removeBuff("echoing_reprimand")
             end
 
+            -- If disorienting_strikes is up, remove 1 stack and add 1 stack of 'escalating_blade'.
+            -- This bypasses the 20s internal cooldown.
             if buff.disorienting_strikes.up then
                 removeStack("disorienting_strikes")
                 if Hekili.ActiveDebug then
                     Hekili:Debug("Sinister Strike consumed 1 stack of Disorienting Strikes.")
                 end
+                addStack("escalating_blade")
             end
         end,
 
         copy = 1752,
+
         bind = function()
+            -- If 'audacity' is up, we use Ambush instead of normal Sinister Strike.
             return buff.audacity.down and "ambush" or nil
         end,
     },
-
     smoke_bomb = {
         id = 212182,
         cast = 0,
@@ -1530,6 +1545,13 @@ spec:RegisterSetting("vanish_charges_reserved", 0, {
     max = 2,
     step = 0.1,
     width = 1.5,
+})
+
+spec:RegisterSetting("track_escalating_blade_icd", true, {
+    name = "Enforce Escalating Blade 20s ICD",
+    desc = "If enabled, Sinister Strike only applies Escalating Blade once every 20 seconds. Disorienting Strikes can still add stacks anytime.",
+    type = "toggle",
+    width = "full",
 })
 
 local assassin = class.specs[259]
