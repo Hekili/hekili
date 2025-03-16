@@ -732,6 +732,7 @@ do
 
                 clashes = {
                 },
+                disableAllItems = false,
                 trinkets = {
                     ['**'] = {
                         disabled = false,
@@ -4589,7 +4590,6 @@ found = true end
 
         db.args.items.plugins.equipment[ v ] = option
     end
-
 
     function Hekili:EmbedItemOptions( db )
         db = db or self.Options
@@ -10136,6 +10136,20 @@ do
                         set = SetCurrentSpec,
                         get = GetCurrentSpec,
                         values = GetCurrentSpecList,
+                    },
+
+                    disableAllItems = {
+                        type = "toggle",
+                        name = "Disable All Items For This Specialization",
+                        desc = "If checked, no items will be recommended for this specialization. This will not affect individual item settings, which will remain the same if you uncheck this box. This setting does not affect potions, which have their own toggle.",
+                        order = 0.2,
+                        width = "full",
+                        set = function(info, val)
+                            Hekili.DB.profile.disableAllItems = val
+                        end,
+                        get = function(info)
+                            return Hekili.DB.profile.disableAllItems or false
+                        end,
                     },
                 },
                 plugins = {

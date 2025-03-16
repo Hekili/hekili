@@ -7275,11 +7275,16 @@ do
 
         local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
 
+        -- 🔹 NEW: Global Disable Check for All Items
+        if ability.item and profile.disableAllItems and ability.toggle ~= "potions" then
+            return true, "preference - global item disable"
+        end
+
         if not strict then
             local toggle = option.toggle
             if not toggle or toggle == "default" then toggle = ability.toggle end
 
-            if ( toggle == "potion" or toggle == "essences" ) and profile.toggles[ toggle ].separate and not profile.toggles[ toggle ].value then toggle = "cooldowns" end
+            if ( toggle == "potions" or toggle == "essences" ) and profile.toggles[ toggle ].separate and not profile.toggles[ toggle ].value then toggle = "cooldowns" end
 
             if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, format( "toggle %s", toggle ) end
 
