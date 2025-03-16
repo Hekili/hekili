@@ -1410,30 +1410,32 @@ spec:RegisterAbilities({
             -- Normal CP generation, removing snake_eyes, etc.
             gain(action.sinister_strike.cp_gain, "combo_points")
             removeStack("snake_eyes")
-
-            local settings = Hekili.DB.profile.specs[260].settings
-
-            -- If the user toggles the ICD on:
-            if settings.track_escalating_blade_icd then
-                -- We only call GetTime() here, after confirming it's needed.
-                local now = GetTime()
-                if (now - lastEscalatingBlade) >= 20 then
-                    applyBuff("escalating_blade")
-                    applyDebuff("target", "fazed", 10)
-                    lastEscalatingBlade = now
-                end
-            else
-                -- If user doesn't want the ICD, skip GetTime() entirely.
-                applyBuff("escalating_blade")
-                applyDebuff("target", "fazed", 10)
-            end
-
             -- If we have 'echoing_reprimand' up, remove it here if desired.
             -- (If you do NOT need it, just delete these lines.)
             if talent.echoing_reprimand.enabled then
                 removeBuff("echoing_reprimand")
             end
 
+            -- Check if 'unseen_blade' is talented.
+            if talent.unseen_blade.enabled then
+                local settings = Hekili.DB.profile.specs[260].settings
+
+                -- If user wants to enforce the 20s ICD:
+                if settings.track_escalating_blade_icd then
+                    -- We only call GetTime() if we need the ICD logic
+                    local now = GetTime()
+                    if (now - lastEscalatingBlade) >= 20 then
+                        -- Apply the buff if 20s have passed
+                        applyBuff("escalating_blade")
+                        applyDebuff("target", "fazed", 10)  -- 10s, or remove if you don't want it
+                        lastEscalatingBlade = now
+                    end
+                else
+                    -- No ICD, apply every time
+                    applyBuff("escalating_blade")
+                    applyDebuff("target", "fazed", 10)
+                end
+            end
             -- If disorienting_strikes is up, remove 1 stack and add 1 stack of 'escalating_blade'.
             -- This bypasses the 20s internal cooldown.
             if buff.disorienting_strikes.up then
