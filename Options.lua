@@ -1658,6 +1658,13 @@ return "Position" end,
                                 },
                             },
 
+                            abilityTooltipToggle = {
+                                type = "toggle",
+                                name = "Ability Tooltip",
+                                desc = "If enabled, icons will display ability tooltips when moused over.",
+                                order = 100,
+                            },
+
                             queuedElvuiCooldown = {
                                 type = "toggle",
                                 name = "Apply ElvUI Cooldown Style to Queued Icons",
