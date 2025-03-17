@@ -2834,11 +2834,7 @@ do
 
         Hekili:ProfileFrame( bName, b )
 
-        if conf.iconTooltipToggle then
-            b:EnableMouse( true )
-        else
-            b:EnableMouse( false )
-        end
+        b:EnableMouse( conf.iconTooltipToggle )
         b:SetMovable( false )
 
         return b
