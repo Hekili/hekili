@@ -2814,15 +2814,17 @@ do
             else ]]
             if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
                 H:ShowDiagnosticTooltip( b.Recommendation )
-            elseif not Hekili.Config and conf.iconTooltipToggle then
+            elseif conf.iconTooltipToggle then
                 if b.Ability then
-                    HekiliTooltip:SetOwner(self)
                     if b.Ability.item then
+                        HekiliTooltip:SetOwner(self)
                         HekiliTooltip:SetItemByID(b.Ability.item)
-                    else
+                        HekiliTooltip:Show()
+                    elseif b.Ability.id then
+                        HekiliTooltip:SetOwner(self)
                         HekiliTooltip:SetSpellByID(b.Ability.id)
+                        HekiliTooltip:Show()
                     end
-                    HekiliTooltip:Show()
                 end
             end
         end )
