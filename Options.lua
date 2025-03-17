@@ -1658,10 +1658,10 @@ return "Position" end,
                                 },
                             },
 
-                            abilityTooltipToggle = {
+                            iconTooltipToggle = {
                                 type = "toggle",
-                                name = "Ability Tooltip",
-                                desc = "If enabled, icons will display ability tooltips when moused over.",
+                                name = "Icon Tooltip",
+                                desc = "If enabled, icons will display ability/item tooltips when moused over.",
                                 order = 100,
                             },
 

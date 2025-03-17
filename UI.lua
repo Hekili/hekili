@@ -368,7 +368,7 @@ function ns.StopConfiguration()
             display.Backdrop:Hide()
         end
 
-        mouseInteract = Hekili.Pause or Hekili.DB.profile.displays[ id ].abilityTooltipToggle
+        mouseInteract = Hekili.Pause or Hekili.DB.profile.displays[ id ].iconTooltipToggle
         for i, btn in ipairs( display.Buttons ) do
             btn:EnableMouse( mouseInteract )
             btn:SetMovable( false )
@@ -2814,10 +2814,14 @@ do
             else ]]
             if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
                 H:ShowDiagnosticTooltip( b.Recommendation )
-            elseif conf.abilityTooltipToggle then
+            elseif not Hekili.Config and conf.iconTooltipToggle then
                 if b.Ability then
                     HekiliTooltip:SetOwner(self)
-                    HekiliTooltip:SetSpellByID(b.Ability.id)
+                    if b.Ability.item then
+                        HekiliTooltip:SetItemByID(b.Ability.item)
+                    else
+                        HekiliTooltip:SetSpellByID(b.Ability.id)
+                    end
                     HekiliTooltip:Show()
                 end
             end
