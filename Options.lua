@@ -11915,10 +11915,10 @@ function Hekili:TogglePause( ... )
 
     local MouseInteract = self.Pause or self.Config
 
-    for _, group in pairs( ns.UI.Buttons ) do
+    for id, group in pairs( ns.UI.Buttons ) do
         for _, button in pairs( group ) do
             if button:IsShown() then
-                button:EnableMouse( MouseInteract )
+                button:EnableMouse( MouseInteract or Hekili.DB.profile.displays[ id ].iconTooltipToggle )
             end
         end
     end

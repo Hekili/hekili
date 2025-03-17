@@ -2814,28 +2814,31 @@ do
             else ]]
             if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
                 H:ShowDiagnosticTooltip( b.Recommendation )
-            elseif conf.iconTooltipToggle then
-                if b.Ability then
-                    if b.Ability.item then
-                        HekiliTooltip:SetOwner(self)
-                        HekiliTooltip:SetItemByID(b.Ability.item)
-                        HekiliTooltip:Show()
-                    elseif b.Ability.id then
-                        HekiliTooltip:SetOwner(self)
-                        HekiliTooltip:SetSpellByID(b.Ability.id)
-                        HekiliTooltip:Show()
-                    end
+            elseif b.Ability then
+                if b.Ability.item then
+                    GameTooltip:SetOwner(self)
+                    GameTooltip:SetItemByID(b.Ability.item)
+                    GameTooltip:Show()
+                elseif b.Ability.id then
+                    GameTooltip:SetOwner(self)
+                    GameTooltip:SetSpellByID(b.Ability.id)
+                    GameTooltip:Show()
                 end
             end
         end )
 
         b:SetScript( "OnLeave", function(self)
             HekiliTooltip:Hide()
+            GameTooltip:Hide()
         end )
 
         Hekili:ProfileFrame( bName, b )
 
-        b:EnableMouse( true )
+        if conf.iconTooltipToggle then
+            b:EnableMouse( true )
+        else
+            b:EnableMouse( false )
+        end
         b:SetMovable( false )
 
         return b
