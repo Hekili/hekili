@@ -2017,6 +2017,83 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "slow" )
         end,
     },
+
+    ring_of_fire = {
+        id = 353082,
+        cast = 2,
+        cooldown = 30,
+        gcd = "spell",
+
+        spend = 0.02,
+        spendType = "mana",
+
+        pvptalent = "ring_of_fire",
+        startsCombat = false,
+        texture = 4067368,
+
+        handler = function ()
+        end,
+    },
+
+    -- Talent: Summons a Ring of Frost for 10 sec at the target location. Enemies entering the ring are incapacitated for 10 sec. Limit 10 targets. When the incapacitate expires, enemies are slowed by 65% for 4 sec.
+    ring_of_frost = {
+        id = 113724,
+        cast = 2,
+        cooldown = 45,
+        gcd = "spell",
+        school = "frost",
+
+        spend = 0.08,
+        spendType = "mana",
+
+        talent = "ring_of_frost",
+        startsCombat = true,
+
+        handler = function ()
+        end,
+    },
+
+    -- Talent: Steals a beneficial magic effect from the target. This effect lasts a maximum of 2 min.
+    spellsteal = {
+        id = 30449,
+        cast = 0,
+        cooldown = 0,
+        gcd = "spell",
+        school = "arcane",
+
+        spend = 0.21,
+        spendType = "mana",
+
+        talent = "spellsteal",
+        startsCombat = true,
+        debuff = "stealable_magic",
+
+        handler = function ()
+            applyBuff( "time_warp" )
+            applyDebuff( "player", "temporal_displacement" )
+        end,
+    },
+    -- Counters the enemy's spellcast, preventing any spell from that school of magic from being cast for 6 sec.
+    counterspell = {
+        id = 2139,
+        cast = 0,
+        cooldown = function () return 24 - ( conduit.grounding_surge.mod * 0.1 ) end,
+        gcd = "off",
+        school = "arcane",
+
+        spend = 0.02,
+        spendType = "mana",
+
+        startsCombat = true,
+        toggle = "interrupts",
+        debuff = function () return not runeforge.disciplinary_command.enabled and "casting" or nil end,
+        readyTime = function () if debuff.casting.up then return state.timeToInterrupt() end end,
+
+        handler = function ()
+            interrupt()
+            if talent.quick_witted.enabled then reduceCooldown( "counterspell", 4 ) end
+        end,
+    },
 } )
 
 spec:RegisterRanges( "fireball", "polymorph", "phoenix_flames" )
