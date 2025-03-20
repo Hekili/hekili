@@ -8218,30 +8218,6 @@ do
                                     order = 2,
                                 },
 
-                                --[[ essLineBreak1 = {
-                                    type = "description",
-                                    name = "",
-                                    width = "full",
-                                    order = 2.1
-                                },
-
-                                essIndent1 = {
-                                    type = "description",
-                                    name = "",
-                                    width = 1,
-                                    order = 2.2
-                                },
-
-                                separate = {
-                                    type = "toggle",
-                                    name = format( "Show in Separate %s Cooldowns Display", AtlasToString( "chromietime-32x32" ) ),
-                                    desc = format( "If checked, abilities that require the |cFFFFD100Minor Cooldowns|r toggle will be shown separately in your |W%s "
-                                        .. "|cFFFFD100Cooldowns|r|w display when the toggle is enabled.\n\n"
-                                        .. "This is an experimental feature and may not work well for some specializations.", AtlasToString( "chromietime-32x32" ) ),
-                                    width = 2,
-                                    order = 3,
-                                }, ]]
-
                                 essLineBreak2 = {
                                     type = "description",
                                     name = "",
@@ -8286,30 +8262,6 @@ do
                                     width = 2,
                                     order = 2,
                                 },
-
-                                --[[ potLineBreak1 = {
-                                    type = "description",
-                                    name = "",
-                                    width = "full",
-                                    order = 2.1
-                                },
-
-                                potIndent1 = {
-                                    type = "description",
-                                    name = "",
-                                    width = 1,
-                                    order = 2.2
-                                },
-
-                                separate = {
-                                    type = "toggle",
-                                    name = format( "Show in Separate %s Cooldowns Display", AtlasToString( "chromietime-32x32" ) ),
-                                    desc = format( "If checked, abilities that require the |cFFFFD100Potions|r toggle will be shown separately in your |W%s "
-                                        .. "|cFFFFD100Cooldowns|r|w display when the toggle is enabled.\n\n"
-                                        .. "This is an experimental feature and may not work well for some specializations.", AtlasToString( "chromietime-32x32" ) ),
-                                    width = 2,
-                                    order = 3,
-                                }, ]]
 
                                 potLineBreak2 = {
                                     type = "description",
@@ -8366,7 +8318,39 @@ do
                                 },
                             },
                         },
+                        items = {
+                            type = "group",
+                            name = "",
+                            inline = true,
+                            order = 8,
+                            args = {
+                                key = {
+                                    type = "keybinding",
+                                    name = "Enable/Disable all trinkets",
+                                    desc = "Set a key to toggle items on or off globally, excluding potions.",
+                                    width = 1,
+                                    order = 1,
+                                },
+
+                                value = {
+                                    type = "toggle",
+                                    name = "Enable Items",
+                                    desc = "If checked, priorities for funnel specializations may change slightly to use single target spenders in AoE.\n\n",
+                                    width = 2,
+                                    order = 2,
+                                },
+
+                                supportedSpecs = {
+                                    type = "description",
+                                    name = "test description",
+                                    desc = "",
+                                    width = "full",
+                                    order = 3,
+                                },
+                            },
+                        },
                     },
+                    
                 },
 
                 interrupts = {
@@ -11531,6 +11515,7 @@ do
         { "target"                                          , "target.unit"                             },
         { "player"                                          , "player.unit"                             },
         { "gcd"                                             , "gcd.max"                                 },
+        { "howl_summon%.([%w_]+)%.([%w_]+)"                 , "howl_summon.%1_%2"                       },
 
         { "equipped%.(%d+)", nil, function( item )
             item = tonumber( item )
