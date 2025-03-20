@@ -8318,39 +8318,8 @@ do
                                 },
                             },
                         },
-                        items = {
-                            type = "group",
-                            name = "",
-                            inline = true,
-                            order = 8,
-                            args = {
-                                key = {
-                                    type = "keybinding",
-                                    name = "Enable/Disable all trinkets",
-                                    desc = "Set a key to toggle items on or off globally, excluding potions.",
-                                    width = 1,
-                                    order = 1,
-                                },
-
-                                value = {
-                                    type = "toggle",
-                                    name = "Enable Items",
-                                    desc = "If checked, priorities for funnel specializations may change slightly to use single target spenders in AoE.\n\n",
-                                    width = 2,
-                                    order = 2,
-                                },
-
-                                supportedSpecs = {
-                                    type = "description",
-                                    name = "test description",
-                                    desc = "",
-                                    width = "full",
-                                    order = 3,
-                                },
-                            },
-                        },
                     },
-                    
+
                 },
 
                 interrupts = {
