@@ -469,12 +469,13 @@ spec:RegisterAuras( {
         max_stack = 1,
 
         generate = function( ah )
-            ah.duration = 15
+            local lastCast = action.shadowfiend.lastCast
+            local currentTime = query_time
 
-            if active_dot.shadowfiend > 0 then
+            if lastCast and currentTime - lastCast < 15 then
                 ah.count = 1
-                ah.applied = action.shadowfiend.lastCast
-                ah.expires = ah.applied + ah.duration
+                ah.applied = lastCast
+                ah.expires = lastCast + 15
                 ah.caster = "player"
                 return
             end
@@ -597,6 +598,8 @@ spec:RegisterAbilities( {
         startsCombat = false,
         texture = 458225,
         talent = "archangel",
+
+        toggle = "cooldowns",
 
         handler = function ()
             if buff.dark_evangelism.stacks > 0 then
@@ -1621,7 +1624,8 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "vampiric_touch" )
         end,
     },
-} )
+})
+
 
 -- Track the last time the Shadowfiend was cast
 spec:RegisterStateExpr( "last_shadowfiend", function ()
@@ -1629,38 +1633,16 @@ spec:RegisterStateExpr( "last_shadowfiend", function ()
 end )
 spec:RegisterStateExpr( "shadowfiend_remains", function()
     local lastCast = action.shadowfiend.lastCast
-    if lastCast and lastCast > 0 then
-        return max( 0, lastCast + 15 - query_time )
+    local currentTime = query_time
+
+    if lastCast and currentTime - lastCast < 15 then
+        return max( 0, lastCast + 15 - currentTime )
     end
     return 0
 end )
 spec:RegisterStateExpr( "shadowfiend_active", function ()
     return active_dot.shadowfiend > 0
 end )
-
--- Tracker for Mind Spike casts with Tier 13 4pc
-spec:RegisterStateTable("mind_spike", {
-    counter = 0
-})
-local cast_events = {
-    SPELL_CAST_SUCCESS = true
-}
-spec:RegisterCombatLogEvent(function(_, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName)
-    if sourceGUID ~= state.GUID then return end
-    if not cast_events[subtype] then return end
-
-    if spellID == 73510 then -- Mind Spike
-        state.mind_spike.counter = state.mind_spike.counter + 1
-    else
-        state.mind_spike.counter = 0
-    end
-end, false)
-spec:RegisterStateExpr("mind_spike_count", function()
-    return state.mind_spike.counter
-end)
-spec:RegisterEvent("PLAYER_REGEN_ENABLED", function()
-    state.mind_spike.counter = 0
-end)
 
 -- Hooks
 spec:RegisterHook("reset_precast", function()
@@ -1684,7 +1666,7 @@ spec:RegisterSetting( "general_header", nil, {
 })
 spec:RegisterSetting( "show_archangel_cooldown", true, {
     type = "toggle",
-    name = "Show Archangel Cooldown",
+    name = "|T458225:0|t Show Archangel Cooldown",
     desc = "When enabled, the cooldown for Archangel will be recommended at 5 stacks of evangelism.",
     width = "full",
 })
@@ -1693,7 +1675,7 @@ spec:RegisterSetting( "dots_in_aoe", true, {
     name = "|T252997:0|t|T136207:0|t|T135978:0|t Apply DoTs in AOE",
     desc = "When enabled, the Shadow priority will recommend applying DoTs to your current target in multi-target scenarios before channeling |T237565:0|t Mind Sear.",
     width = "full",
-} )
+})
 
 spec:RegisterSetting( "general_footer", nil, {
     type = "description",
@@ -1724,7 +1706,7 @@ spec:RegisterOptions( {
 
 
 -- Packs
-spec:RegisterPack( "Shadow", 20250224, [[Hekili:1I1BVTTnt8plgfWWPnvZw2QDDZ2aTdfOnViOykd9fdvs0s0Xer)Buuj1ag6Z(oszjrjtrPK98GH1wtD8UJ397(X7OZcN7CSdqmSZTMZnTMBAUYyXQLlnFNJn7yk2Xof5)a6E4FeJIG)0(aki5j(Yhdtqb8TNLKt9Hp99KVBtIYk8Mw4b)7VGHpBVlNeY(ASZovMX069W2tX(o3A5yFGeeGlLeN57yF3bcOm()Jk8o7gfEj7HF7ZijXfEHKmg859j0cVVGFGesmapJMSNec(ZREvHxP7w49nkbNXkUHV2Nqz4aqrXc3SRlxCtPuFJI)JKODi2B)OWAzf3uA2mJuk2x8P3S5xYega8GORj73SlF)EJMLmG)ow9(stEctDFkHg4csYiS8aCTgu9rn6IehdIVNqfAysEQAXEefLsOeFxC0okYxVWrK4a3SuYdyraPW7ZXmmTkGYpCqQbsfXjmiFesHi3ryfiMsy1A85fFaPdiaAGMb)IlDekgzK6ZwBjldnp2T8xU88)1CC5guI44Wx)rSloghb57TBmhCJSfl5BCMFssi3BQ8ocooWGIJqK4SnZpDkfZmqHGYpDs(qielp9QPzyM7UK48mdgbtxS0DvQ)MfdAEoMueEVJWJUlww4bBecZ4)jhh7JBsoGJwLw2hIoEnHNpO5Pm3Q4AaI(Gl(ru89yWargzmOMz7gRR1kWARPtQpCDnN0PuGw6vqe1)GqV6n2glLhODHiiGa7eqGp6EVFGC4fI9vRwBLrgwye)h4OabyQgq76NKhZ2Uz10AflJ2hL)vBqLYl0KkJUEv)6VI4XMeFFiq0DhIEpgkU(Zegsq3vVZm2fgAsawe1BwfqLtRwTmAwsOKciA5VfGFe4VbB6MgIUpV1(Qzmyj5(hmK5kYAi)A0RSNOYMmseg0LBabVDXCvhOEG2NvwcDxfQEX0bX8tM9Y27vc)C9MzMVgs1VX0W61LoAtw3iiNkskxPmIOTGri3ORxMotDU4m10wRP9LhRLqqoXGVa2(aejQTTBfP30zZuZFnvhT42pm)QtNMOENDdmTRJ6MyUaz1(0kyO1ghwR(RCcaxE28k9yVUbpzd2xGDDFFFSgvUcjaJyIJjtu1BCaJczhex(zA1BOS7Pq9TN6Q04vj6dSqjWPtdfkecvJvACqzbuIiQjWKIuchUKl8JjFwfbiCBFTcWiQIB(T6k8fuv(h9dblkc3zBwCDe6NUTxtqIux6eKWYCjWv4j4P9rX1bzCX3RrgD9UoW9)h4BVSYKPNHFY42nQ3tfdy3JIQsjDo6lV8sjEyuumsYRVPbn3LnegGF1rimXtS)rDyrTf(tBJQxV60PMQ6lG411do2pwsdupT1sh7Nq0yEoOAUQZJjvoGvejld(yHxwEAkmXX5zQUhmmKXl8yqc4ba3zu4v49vw5MetlebxiWNMIDablJbdFKRBscLWede4hcdVasJjSdy6Vbv2EVTW7V)Rmmxt4OSFCDH3thi(hKLgfFSXQNNYa)Z0qIpHf2O3GYroan3y0FhgTJwzM7kvb0z9p4knqEjtjl)ejmu6eDwLSkrfrdXsX5r7WuUHZctygf381iEaJVGvNbtHp6yJYzhsGmYxaalYXw8b(qZq3FWFDRy(BCmAxioW5to2(Wjac5i(GZ91uqH3AHXGzwNah7QomCSLHX6ua0Jd4ycx1XUUkOCSBkjTC9EgiXHbGQED62(tLjK6DGV9LVOZ8g4m3OY6Ey4kCvVku18efENoXrlDNPOtirqKW1UvVAVB39fEBbVCLiZOy0cLX825SkUhUDF3WNkj9O23F)ZW3bq1Qo6P0Tb98RC9OWes6MBpabThLhYuHS7agGP)7a4EgpWWfyMopPGEqAffAzDuJN10(KEuABs5YKUzJA6mNFznVB5RNbe16bSZk801YTOmy(zeC9OfIFkhho)QefExjWIQ6qxOPfJZR5CvkkegZwfWqMaYw(0sJG0RBYuf0rBcwOLEFdTg9Pse9PEGFlpTrbnp8M(SANT19H4QdUkk(6wHXrqAdHxGoBHXB6rqreSDCUPNgq9YnFYTU9fTK6yBj7gQA5taghOVjrr5G9pRklDr0v0N6)p8D19wl7591FTqlx2JDjhI((S1JWgYL7RlBzNU)oTL4i7iJ(liVSh8(UOQ)l76Vf8rdNGRkl8Ed0vwz74pZ7H7)o0lAzxynZYwZ6whUw0zaNPU19plSux3jMlq9vVLT43HxiBaM1j1HQwpryvxKdeLN0pi5cjU4rd7RPcTTroGd1U4bcJZ1qFneL(Sw3E28sHLLLleguxRPCPSQUSTSmF9gHAnl8EDd(Z0Ws87shvXRjc6yeGtL(6GVQ5G3qnCJ7duORPXDrKz2GeOBReDqwRTsr8HEDZkJptxNqcH036fyZpmxyuEv8e9Atkr2AwL(j6gpzz)msdhIhZDuxnyjwN7yROPgWN(VDj0y8lvxp9HNn)9amYGbhX0q3UOFY423amVVrqwOLHCu5Ab1dhUoMuqTWAEj3gbvsvX96(5ABL66C0BD3q1)58V]] )
+spec:RegisterPack( "Shadow", 20250320, [[Hekili:9MvBVTnos4FlffWiTj1NTC8DT3AhGElkqB)qXItzX(HdRKOLOJjIEdsujRbm0V9BiPmfLejLCAUdf1oMKAMhY5zEJYBP39EUrik27holCwVyLZI5lxTy1chpx6XCSNBok8r0dWFKIsGpDpGIYEMn8X4mue7XlZQkcHP(JS)WLKuwhmRoa(7VIHPD3vrIPFl1BNo14S(JWJNJd9(XAp3dKOiSyL4Yqp37pqaHX(pQoObg1bz7HFhsjzP1bXKskm9(SI6GVIFKetMdiRiBpjgWZBFBDGaU1b)wbbxsR)oBmjo)wsEwbmOy4FRa)Rzj7q0p8zU4lR)UqpLZZlWH8PUE7FRKlrqLj3q2VDx1(9ZBhAo8DQ(Nlp7zCH)Zzfr(WkPeAvewkbDtArwK0uy57jfCj8MQC9l7jusoPGe6Jt2vGcTV48m(zQ25siPr(L5Kh5IicRSRfGohrs54DwZKsvtZQcp0zQi8taHHK(GFEm6HQZ7tHr4lPuCXzZg7efiaGbpnJcw94cGsDegbm9eQeQxMrbwDeb4CfLWVyRobLIMNhs3SEOef7UimIEOZsx2zTfvP(IF5ZyK3W8u2sxUI9iSXFc7JtXjadCZQzLyQ)US0QY5ucUy5k)BZd3UCuXbFpuAo6L2IrLgkdpuC3T15Sz4EcZkSCvDaiV6G)Dgf1LDa7oq2OIWdO0hWX3uEmnCBZrobNgjndrOIh9XpXxfPmzEjfCK3UEgFYg9R8CZRYNvEao4LI2pmllURRGq5xG26)OcUo7POOIhW05hWOy6bUP1z9SZACUkWkWjajV8UpTygLKGbITFebZ(P5TYaiFmfLxcRkNX)lLWEspm3jCFm64neMtsrvo1FK9T9ZLnMTc6oV56FxmsWeBfR0sXSDQrgYk21aKv6TD98U6ye0QDziiPfQfusd054tYZlW1i8rFMr79oxGXYW5TfvVDXOy7HWOpSyUn6)eo2N0ZTdIWHlEe4zJ5Dm7kLCqK09vSiJCkWPt8z2fNLffxb7d2GVZCuGUPZKIQkFGGAhscZl21Vn1ZOzLSXZN9giv3t(GLz(Y5T0S(6SBgnMgVYCUUtN0pxdpytiyo5mYRLCZ3DroJ9tIQIhTjyLiAWSNX0lejA4Nk()t2TIP9sFbw2iZd5c4mgk67EEyADjIkPDtf0BM(v1OS8PtF694tAhipmWjCVbCuZjPcHu5CQDqdHQ1HHUN6AvuJxMblsjvlX(vLx3tB6iUVs82EAAyyjtX)SUNUBTXcxBxXOXTgW7glR30zAN9v(C2x05GaL6jtFIrfAk7BD)fpW)i8yymuXd3jSC7YBsq)LF3X4LAafJsz11agoAje(3he3mtowNnFMMxJzvGUE81xbSzGmRFwjUM1u7OA1GMCDQk0Av05mydOg9bmnVXdXPh1wz9gyIqFd2IGcP1hJda5EVogrXPHhTXfL(mARAVlREZTNoPRDT((dEUpjAfS5MjCCU1Z9zurkZgC(oiAUsbXLrKqklHjRdkRY53FG4(hEaumyXRdOGb4rG3nVoOo4BuXdXBMobYpHJGvCabdJbfFKjBswbHYBRnmg67hwnMqpGl(NGNDWhQd(p)EjMjjCs5FEtDWZhiHhuxnk9yRwB6vg)x5XKqcnUvUrIgNbj3Q0FPoaWEJAUxicOVV)Kj0i1HCu08ZK4yLDuJiPNxk)0GpuAvYowcj4OkoJoV(7IlCHnW6ExIdmPNlQIEidSiFfiSipx(eSlyckCa(6h87QcNI2fJJ8(xWY5ca((CCxp3qytbwbe7ENmfWVoylx)ZQdmvNdW)ztBiQUNlRBx4Z2NWJc0NEWB6yPDR0tKRmkYbEa1bBaRKyBzR)16G7Qd(0c(6uICPoS5tLwGkQRIHXBTVThro96iMjW1VOZXnJztfwUZ6vgpZZvnGMnDSDndD)9jGo1oIBXKs81wB)QEqIhsMPN)Hr9mWM3N(OeSKjPpAusw6uf4da6m3jDDW7bvpz6sBBvme9PxoIGmf8Gvqp0xMY1zRT2kpdOlx8trU7Arx2p(10i2YGvx1SB10NEDWPtnZ2Tx96G31cN2wT5WzK4vd6HxRs6oSAV82JGom2ndsMJ3zT9SXC75l4nSSEA6ZxV3dt4Cizo82vs)dnnkjovSwFj37v2WuDW1SaYs3R3n6UQf4DLph2MdI2cB9xeVkWnvVjh6VqW2xMC4osu1oLMA0)IhYSRhE3oL0gsOvRmPaWBpQkMQREdTGs(cggKehMWEzbNlpvK8s5es(6jSxdqNNF5yPbmtKBmznfoZL2kH3RMxUapG0YwD171liQAZx8Ucz1TznHUgn7yxZlMMMfmcZSQ(kMLAXzAIg6FqWuKVGS)FWvucjR5TeQwx2WLyNfbXfv9PAF1I2jn9ES(VQrPDVfyIVvD3SyGgnEVTqVZShIZqzjuHT1QXCaVPJJBBtLASLgZY4252kyA3DWDy45Uwfg6UJa1TTPgT5EyJEHl64lgs18)aSBjz5ixiJONMbxktNsznCXm256JbzRPjh9QzSNACKUHMuMXl3nRP8TPqN4vKd1U0C)nAZXQjP8DBDS3MJ1oC1K44wrLlxwsXpQgIs5oH6vuqzBm(EbU5DQ3nOMZOH9EzL5AjeIv2lxIAF5aA7nT7ew62EQw62YVgNoBaMYomEDO7V(1RBmaPvk(RCD42dKy(AaSzOLDFoYrZD9wNzelx5L1BO57m4sVpert9)K9ji(N3)9p]] )
 
 
 spec:RegisterPackSelector( "discipline", "none", "|T135987:0|t Discipline",
