@@ -24,7 +24,7 @@ actions.t13+=/potion,if=target.health.pct<25&cooldown.shadowfiend.remains>90&tim
 actions.t13+=/synapse_springs,if=buff.active_shadowfiend.up
 actions.t13+=/mind_flay,interrupt_if=buff.dark_evangelism.stack=5,if=buff.dark_evangelism.stack<5&buff.active_shadowfiend.down
 actions.t13+=/mind_blast,if=buff.dark_archangel.up&buff.shadow_orb.stack=3
-actions.t13+=/shadow_word_death,if=health.pct<25
+actions.t13+=/shadow_word_death,if=target.health.pct<25
 actions.t13+=/mind_spike,if=cooldown.mind_blast.remains>=debuff.mind_flay.tick_time*2&buff.active_shadowfiend.up
 actions.t13+=/mind_flay,interrupt_if=cooldown.mind_blast.remains=0,if=cooldown.mind_blast.remains>=gcd-0.5&buff.active_shadowfiend.up
 actions.t13+=/mind_blast,if=buff.active_shadowfiend.up
@@ -45,7 +45,7 @@ actions.st+=/mind_blast,if=buff.empowered_shadow.down|buff.shadow_orb.up
 actions.st+=/vampiric_touch,if=debuff.vampiric_touch.down|debuff.vampiric_touch.remains<cast_time+tick_time
 actions.st+=/devouring_plague,if=debuff.devouring_plague.down|debuff.devouring_plague.remains<tick_time
 actions.st+=/archangel,if=buff.dark_evangelism.stack=5&debuff.vampiric_touch.remains>5&debuff.devouring_plague.remains>5&show_archangel_cooldown
-actions.st+=/shadow_word_death,if=health.pct<25
+actions.st+=/shadow_word_death,if=target.health.pct<25
 actions.st+=/mind_flay,interrupt_if=ticks_remain<2
 
 ## AoE Rotation
