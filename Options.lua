@@ -10108,8 +10108,10 @@ do
 
                     disableAllItems = {
                         type = "toggle",
-                        name = "Disable All Equippable Item Recommendations",
-                        desc = "If checked, no equippable items (trinkets, main hands, etc) will be recommended. This will not affect individual item settings, which will remain the same if you uncheck this box. This setting does not affect potions, which have their own toggle.",
+                        name = "Disable All Gear and Items",
+                        desc = "If checked, no usable gear or items (i.e., trinkets and weapons/armor with On Use effects) will be recommended for this Specialization."
+                        ..  "\n\nIndividual item settings can be updated below, but will be ignored when this option is checked."
+                        .. "\n\nThis option does not apply to potions, which are controlled by Toggles > Potions.",
                         order = 0.2,
                         width = "full",
                         set = function(info, val)
