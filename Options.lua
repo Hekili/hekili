@@ -9846,40 +9846,55 @@ break end
     end
 
 
-    return format( "build: %s\n" ..
-        "level: %d (%d)\n" ..
-        "class: %s\n" ..
-        "spec: %s\n\n" ..
-        "talents: %s\n\n" ..
-        "pvptalents: %s\n\n" ..
-        "covenant: %s\n\n" ..
-        "conduits: %s\n\n" ..
-        "soulbinds: %s\n\n" ..
-        "sets: %s\n\n" ..
-        "gear: %s\n\n" ..
-        "legendaries: %s\n\n" ..
-        "itemIDs: %s\n\n" ..
-        "settings: %s\n\n" ..
-        "toggles: %s\n\n" ..
-        "keybinds: %s\n\n" ..
-        "warnings: %s\n\n",
-        self.Version or "no info",
-        UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
-        class.file or "NONE",
-        spec or "none",
-        talents or "none",
-        pvptalents or "none",
-        covenant or "none",
-        conduits or "none",
-        soulbinds or "none",
-        sets or "none",
-        gear or "none",
-        legendaries or "none",
-        items or "none",
-        settings or "none",
-        toggles or "none",
-        keybinds or "none",
-        warnings or "none" )
+    return format(
+    "build: %s\n" ..
+    "level: %d (%d)\n" ..
+    "class: %s\n" ..
+    "spec: %s\n\n" ..
+
+    "### Talents ###\n\n" ..
+    "In-Game Import: %s\n" ..
+
+    "\nPvP Talents: %s\n\n" ..
+
+    "### Legacy Content ###\n\n" ..
+    "covenant: %s\n" ..
+    "conduits: %s\n" ..
+    "soulbinds: %s\n" ..
+    "legendaries: %s\n\n" ..
+
+    "### Gear & Items ###\n\n" ..
+    "sets:\n    %s\n\n" ..
+    "gear:\n    %s\n\n" ..
+    "itemIDs: %s\n\n" ..
+
+    "### Settings ###\n\n" ..
+    "Settings:\n    %s\n\n" ..
+
+    "Toggles:\n    %s\n\n" ..
+
+    "Keybinds:%s\n\n" ..
+
+    "### Warnings ###\n\n%s\n",
+    self.Version or "no info",
+    UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
+    class.file or "NONE",
+    spec or "none",
+    talents or "none",
+    pvptalents or "none",
+    covenant or "none",
+    conduits or "none",
+    soulbinds or "none",
+    legendaries or "none",
+    sets or "none",
+    gear or "none",
+    items or "none",
+    settings or "none",
+    toggles or "none",
+    keybinds or "none",
+    warnings or "none"
+)
+
 end
 
 

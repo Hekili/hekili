@@ -1345,7 +1345,7 @@ end )
 
 -- The War Within
 
-spec:RegisterGear( "tww2", 200396, 200398, 200400, 200401, 200399 )
+spec:RegisterGear( "tww2", 229260, 229261, 229262, 229263, 229265 )
 spec:RegisterAuras( {
     -- https://www.wowhead.com/spell=1218616
     -- Winning Streak! Stormstrike, Lava Lash and Doom Winds damage increased by 5.0%.  

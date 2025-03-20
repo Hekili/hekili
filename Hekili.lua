@@ -278,7 +278,10 @@ function Hekili:SaveDebugSnapshot( dispName )
             insert( v.log, 1, prevString )
 
             -- Store aura data.
-            local auraString = "\nplayer_buffs:"
+            local auraString = "\n### Auras ###\n"
+            auraString =  auraString .. "\nplayer_buffs:"
+            auraString = auraString .. "\n   id      - name                                 - stacks - remaining duration\n"
+
             local now = GetTime()
 
             local class = Hekili.Class
@@ -292,10 +295,11 @@ function Hekili:SaveDebugSnapshot( dispName )
                 local key = aura and aura.key
                 if key and not state.auras.player.buff[ key ] then key = key .. " [MISSING]" end
 
-                auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                auraString = format( "%s   %-7d - %-36s - %3d    - %.2f\n", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
             end
 
-            auraString = auraString .. "\n\nplayer_debuffs:"
+            auraString = auraString .. "\n\nplayer_debuffs:\n"
+            -- auraString = auraString .. "\n   id      - name                                 - stacks - remaining duration\n"
 
             for i = 1, 40 do
                 local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetDebuffDataByIndex( "player", i ) )
@@ -306,13 +310,14 @@ function Hekili:SaveDebugSnapshot( dispName )
                 local key = aura and aura.key
                 if key and not state.auras.player.debuff[ key ] then key = key .. " [MISSING]" end
 
-                auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                auraString = format( "%s   %-7d - %-36s - %3d    - %.2f\n", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
             end
 
             if not UnitExists( "target" ) then
                 auraString = auraString .. "\n\ntarget_auras:  target does not exist"
             else
-                auraString = auraString .. "\n\ntarget_buffs:"
+                auraString = auraString .. "\n\ntarget_buffs:\n"
+                -- auraString = auraString .. "\n   id      - name                                 - stacks - remaining duration\n"
 
                 for i = 1, 40 do
                     local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetBuffDataByIndex( "target", i ) )
@@ -323,10 +328,11 @@ function Hekili:SaveDebugSnapshot( dispName )
                     local key = aura and aura.key
                     if key and not state.auras.target.buff[ key ] then key = key .. " [MISSING]" end
 
-                    auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                    auraString = format( "%s   %-7d - %-36s - %3d    - %.2f\n", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
                 end
 
-                auraString = auraString .. "\n\ntarget_debuffs:"
+                auraString = auraString .. "\n\ntarget_debuffs:\n"
+                -- auraString = auraString .. "\n   id      - name                                 - stacks - remaining duration\n"
 
                 for i = 1, 40 do
                     local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetDebuffDataByIndex( "target", i, "PLAYER" ) )
@@ -337,12 +343,12 @@ function Hekili:SaveDebugSnapshot( dispName )
                     local key = aura and aura.key
                     if key and not state.auras.target.debuff[ key ] then key = key .. " [MISSING]" end
 
-                    auraString = format( "%s\n   %6d - %-40s - %3d - %-6.2f", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                    auraString = format( "%s   %-7d - %-36s - %3d    - %.2f\n", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
                 end
             end
 
             insert( v.log, 1, auraString )
-            insert( v.log, 1, "targets:  " .. ( Hekili.TargetDebug or "no data" ) )
+            insert( v.log, 1, "\n### Targets ###\n\ndetected_targets:  " .. ( Hekili.TargetDebug or "no data" ) )
             insert( v.log, 1, self:GenerateProfile() )
 
 
