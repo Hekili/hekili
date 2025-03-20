@@ -1592,7 +1592,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
             if eclipse.wrath_counter == 0 then eclipse.trigger_eclipse( "lunar", 15 ) end
         elseif spell == "starfire" then
             eclipse.starfire_counter = eclipse.starfire_counter - 1
-            if starfire == 0 then eclipse.trigger_eclipse( "solar", 15 ) end
+            if eclipse.starfire_counter == 0 then eclipse.trigger_eclipse( "solar", 15 ) end
         end
 
     end, state ),

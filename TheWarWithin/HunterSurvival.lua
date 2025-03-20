@@ -194,13 +194,13 @@ spec:RegisterAuras( {
      aspect_of_the_chameleon = {
         id = 61648,
         duration = 60.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Movement speed increased by $w1%.
     aspect_of_the_cheetah = {
         id = 356781,
         duration = 3.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- The range of $?s259387[Mongoose Bite][Raptor Strike] and and Mastery: Spirit Bond is increased to $265189r yds.
     aspect_of_the_eagle = {
@@ -212,7 +212,7 @@ spec:RegisterAuras( {
     aspect_of_the_turtle = {
         id = 186265,
         duration = 8.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent:
     -- https://wowhead.com/beta/spell=120360
@@ -225,7 +225,7 @@ spec:RegisterAuras( {
     bleeding_gash = {
         id = 361049,
         duration = 6,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Bleeding for $w1 Physical damage every $t1 sec.  Taking $s2% increased damage from the Hunter's pet.
     -- https://wowhead.com/beta/spell=321538
@@ -245,18 +245,18 @@ spec:RegisterAuras( {
     bombardier = {
         id = 459859,
         duration = 60.0,
-        max_stack = 2,
+        max_stack = 2
     },
     -- Disoriented.
     bursting_shot = {
         id = 224729,
         duration = 4.0,
-        max_stack = 1,
+        max_stack = 1
     },
     camouflage = {
         id = 199483,
         duration = 60,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Bleeding.
     careful_aim = {
@@ -264,13 +264,13 @@ spec:RegisterAuras( {
         duration = 8.0,
         tick_time = 1.0,
         pandemic = true,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Rooted.
     catch_out = {
         id = 451517,
         duration = 3.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- You and your pet's bond is strengthened, increasing you and your pet's damage by $s2% and increasing your chance to reset Kill Command's cooldown.$?a459922[; Kill Command is generating $459962s4 additional stack of Tip of the Spear, your Haste is increased by $459962s1%, and Tip of the Spear's damage bonus is increased by $459962s2%.]
     coordinated_assault = {
@@ -282,18 +282,18 @@ spec:RegisterAuras( {
     coordinated_assault_empower = {
         id = 361738,
         duration = 5,
-        max_stack = 1,
+        max_stack = 1
     },
     -- While Coordinated Assault is active, the cooldown of Wildfire Bomb is reduced by 25%, Wildfire Bomb generates 5 Focus when thrown, Kill Shot's cooldown is reduced by 25%, and Kill Shot can be used against any target, regardless of their current health.
     coordinated_kill = {
-        id = 385739,
+        id = 385739
     },
     -- Bleeding for $w1 damage every $t1 sec.
     cull_the_herd = {
         id = 1217430,
         duration = function() return 6 + ( 2 * talent.born_to_kill.rank ) end,
         tick_time = 2.0,
-        max_stack = 1,
+        max_stack = 1
     },
     deadly_duo = {
         id = 397568,
@@ -310,46 +310,27 @@ spec:RegisterAuras( {
     entrapment = {
         id = 393456,
         duration = 4.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Exploding for $212680s1 Fire damage after $t1 sec.
     explosive_shot = {
         id = 212431,
         duration = 3.0,
         tick_time = 3.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Suffering $w2 Fire damage every $t2 sec.
     explosive_trap = {
         id = 13812,
         duration = 10.0,
         tick_time = 1.0,
-        max_stack = 1,
-
-        -- Affected by:
-        -- mastery_spirit_bond[263135] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.85, 'radius': 25.0, 'target': TARGET_UNIT_CASTER_AND_SUMMONS, 'modifies': DAMAGE_HEALING, }
-        -- mastery_spirit_bond[263135] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'sp_bonus': 0.85, 'radius': 25.0, 'target': TARGET_UNIT_CASTER_AND_SUMMONS, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- survival_hunter[137017] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- survival_hunter[137017] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- coordinated_assault[360952] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- coordinated_assault[360952] #4: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'points': 20.0, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- freezing_trap[3355] #1: { 'type': APPLY_AURA, 'subtype': MOD_CRIT_CHANCE_FOR_CASTER_WITH_ABILITIES, 'value': 7, 'schools': ['physical', 'holy', 'fire'], 'target': TARGET_UNIT_TARGET_ENEMY, }
-        -- beast_mastery_hunter[137015] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': DAMAGE_HEALING, }
-        -- beast_mastery_hunter[137015] #1: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': PERIODIC_DAMAGE_HEALING, }
-        -- spearhead[378957] #1: { 'type': APPLY_AURA, 'subtype': MOD_CRIT_CHANCE_FOR_CASTER_WITH_ABILITIES, 'points': 30.0, 'target': TARGET_UNIT_TARGET_ENEMY, }
-        -- spearhead[378957] #2: { 'type': APPLY_AURA, 'subtype': MOD_CRITICAL_DAMAGE_TAKEN_FROM_CASTER, 'target': TARGET_UNIT_TARGET_ENEMY, }
+        max_stack = 1
     },
-    -- Your Kill Command hits $s1 targets.
-    --[[exposed_flank = {
-        id = 459864,
-        duration = 10.0,
-        max_stack = 1,
-    },--]]
     -- All abilities are guaranteed to apply Sentinel.
     eyes_closed = {
         id = 451180,
         duration = 8.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Directly controlling pet.
     -- https://wowhead.com/beta/spell=321297
@@ -371,7 +352,7 @@ spec:RegisterAuras( {
     frenzy_strikes = {
         id = 1217377,
         duration = 12,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Rooted.
     -- https://wowhead.com/beta/spell=190925
@@ -385,37 +366,27 @@ spec:RegisterAuras( {
     howl_of_the_pack_leader_cooldown = {
         id = 471877,
         duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
-        max_stack = 1,
+        max_stack = 1
     },
     howl_of_the_pack_leader_bear = {
         id = 472325,
-        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
-        max_stack = 1,
+        duration = 30,
+        max_stack = 1
     },
     howl_of_the_pack_leader_boar = {
         id = 472324,
-        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
-        max_stack = 1,
+        duration = 30,
+        max_stack = 1
     },
     howl_of_the_pack_leader_wyvern = {
         id = 471878,
-        duration = function() return 30 - ( 5 * talent.better_together.rank ) end,
-        max_stack = 1,
+        duration = 30,
+        max_stack = 1
     },
     -- The next hostile spell cast on the target will cause hostile spells for the next 3 sec. to be redirected to your pet. Your pet must be within 10 yards of the target for spells to be redirected.
     interlope = {
         id = 248518,
     },
-    --[[ Suffering $w1 Bleed damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=270343
-    internal_bleeding = {
-        id = 270343,
-        duration = 9,
-        tick_time = 3,
-        mechanic = "bleed",
-        type = "Ranged",
-        max_stack = 3
-    }, ]]
     -- Talent: Bleeding for $w2 damage every $t2 sec.
     -- https://wowhead.com/beta/spell=259277
     kill_command = {
@@ -429,7 +400,7 @@ spec:RegisterAuras( {
         duration = 12.0,
         tick_time = 1.0,
         pandemic = true,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Injected with Latent Poison. $?s137015[Barbed Shot]?s137016[Aimed Shot]?s137017&!s259387[Raptor Strike][Mongoose Bite]  consumes all stacks of Latent Poison, dealing ${$378016s1/$s1} Nature damage per stack consumed.
     -- https://wowhead.com/beta/spell=378015
@@ -443,24 +414,24 @@ spec:RegisterAuras( {
     lunar_storm = {
         id = 450884,
         duration = 8.0,
-        max_stack = 1,
+        max_stack = 1
     },
     lunar_storm_cooldown = {
         id = 451803,
         duration = 30,
-        max_stack = 1,
+        max_stack = 1
     },
     masters_call = {
         id = 54216,
         duration = 4,
         type = "Magic",
-        max_stack = 1,
+        max_stack = 1
     },
     -- The bond between you and your pet is strong, granting you both $s3% increased effectiveness from Mastery: Spirit Bond.
     mastery_spirit_bond = {
         id = 459722,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Butchery Version
     merciless_blows = {
@@ -469,7 +440,7 @@ spec:RegisterAuras( {
         tick_time = 1,
         mechanic = "bleed",
         type = "melee",
-        max_stack = 1,
+        max_stack = 1
     },
     -- Flanking Strike Version
     merciless_blow = {
@@ -478,9 +449,8 @@ spec:RegisterAuras( {
         tick_time = 1,
         mechanic = "bleed",
         type = "melee",
-        max_stack = 1,
+        max_stack = 1
     },
-
     -- Talent: Threat redirected from Hunter.
     -- https://wowhead.com/beta/spell=34477
     misdirection_buff = {
@@ -491,7 +461,7 @@ spec:RegisterAuras( {
     misdirection = {
         id = 35079,
         duration = 8,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Mongoose Bite damage increased by $s1%.$?$w2>0[  Kill Command reset chance increased by $w2%.][]
     -- https://wowhead.com/beta/spell=259388
@@ -504,20 +474,19 @@ spec:RegisterAuras( {
     no_hard_feelings = {
         id = 459547,
         duration = 5.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Damage taken from $@auracaster's critical strikes increased by $w1%.
     outland_venom = {
         id = 459941,
         duration = 3600,
         tick_time = 1.0,
-        max_stack = 1,
+        max_stack = 1
     },
-
     pathfinding = {
         id = 264656,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Increased movement speed by $s1%.
     -- https://wowhead.com/beta/spell=118922
@@ -529,7 +498,7 @@ spec:RegisterAuras( {
     predator = {
         id = 260249,
         duratinon = 3600,
-        max_stack = 10,
+        max_stack = 10
     },
     -- Recently benefitted from Quick Load.
     quick_load = {
@@ -542,19 +511,18 @@ spec:RegisterAuras( {
     relentless_primal_ferocity = {
         id = 459962,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
     },
-
     ruthless_marauder = {
         id = 470070,
         duration = 10,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Sentinel from $@auracaster has a chance to start dealing $450412s1 Arcane damage every sec.
     sentinel = {
         id = 450387,
         duration = 1200.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Suffering $s2 Nature damage every $t2 sec.
     -- https://wowhead.com/beta/spell=271788
@@ -562,19 +530,13 @@ spec:RegisterAuras( {
         id = 259491,
         duration = 12,
         tick_time = 3,
-        max_stack = 1,
+        max_stack = 1
     },
-    -- Kill Shot usable on any target and it hits up to ${$s2-1} additional targets.
-    --[[sic_em = {
-        id = 461409,
-        duration = 3600,
-        max_stack = 1,
-    },--]]
     -- Movement slowed by $w1%.
     sideline = {
         id = 450845,
         duration = 3.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Pet damage dealt increased by $s1%.  $?s259387[Mongoose Bite][Raptor Strike] deals an additional $s2% of damage dealt as a bleed over $389881d.  Kill Command has a $s3% increased chance to reset its cooldown.$?$w4!=0&?s259387[  Mongoose Bite Focus cost reduced by $w4.]?$w4!=0&!s259387[  Raptor Strike Focus cost reduced by $w4.][]
     -- https://wowhead.com/beta/spell=360966
@@ -596,13 +558,13 @@ spec:RegisterAuras( {
     steel_trap_immobilize = {
         id = 162480,
         duration = 20,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Building up to an Explosive Shot...
     sulfurlined_pockets = {
         id = 459830,
         duration = 120.0,
-        max_stack = 3,
+        max_stack = 3
     },
     sulfurlined_pockets_ready = {
         id = 459834,
@@ -612,7 +574,7 @@ spec:RegisterAuras( {
     terms_of_engagement = {
         id = 265898,
         duration = 10,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Your next $?s259387[Mongoose Bite][Raptor Strike] deals $s1% increased damage.
     -- https://wowhead.com/beta/spell=260286
@@ -624,11 +586,11 @@ spec:RegisterAuras( {
     trailblazer = {
         id = 231390,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Call in help from one of your dismissed Cunning pets for 10 sec. Your current pet is dismissed to rest and heal 30% of maximum health.
     wild_kingdom = {
-        id = 356707,
+        id = 356707
     },
     wildfire_arsenal = {
         id = 1223701,
@@ -652,24 +614,22 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 1
     },
-
     -- AZERITE POWERS
     blur_of_talons = {
         id = 277969,
         duration = 6,
-        max_stack = 5,
+        max_stack = 5
     },
     primeval_intuition = {
         id = 288573,
         duration = 12,
-        max_stack = 5,
+        max_stack = 5
     },
-
     -- Legendaries
     butchers_bone_fragments = {
         id = 336908,
         duration = 12,
-        max_stack = 6,
+        max_stack = 6
     },
     latent_poison_injection = {
         id = 336903,
@@ -682,7 +642,6 @@ spec:RegisterAuras( {
         max_stack = 1,
         copy = { "nesingwarys_trapping_apparatus", "nesingwarys_apparatus", "nessingwarys_apparatus" }
     },
-
     -- Conduits
     flame_infusion = {
         id = 341401,
@@ -702,15 +661,14 @@ spec:RegisterPets({
     wyvern = {
         id = 234170,
         spell = "kill_command",
-        duration = 15,
+        duration = 15
     },
-    --[[ Not yet detectable in combatlogs?
-    boar = {
-
-    },
+    -- boar isn't a real pet
     bear = {
-
-    }--]]
+        id = 234018,
+        spell = "kill_command",
+        duration = 15
+    }
 } )
 
 -- The War Within
@@ -762,14 +720,12 @@ spec:RegisterAuras( {
 } )
 
 local pack_leader_buff_cycle = {
-    "howl_of_the_pack_leader_wyvern",
-    "howl_of_the_pack_leader_boar",
-    "howl_of_the_pack_leader_bear",
+    "wyvern",
+    "boar",
+    "bear",
 }
 
 -- This variable represents the true index in the above table of the next buff that will be applied to you, whether by the natural cycle or by bestial wrath
--- We don't need to virtually manage the current buff, as it is visible on the character. 
--- But the next buff is technically "invisible", so this will allow us to have access to things such as a "time_to_next_boar", "next_summon", etc via expressions, if necessary depending on APLs
 -- The index should always initially start at "1" (Wyvern), and is also reset to 1 upon:
   -- Aura Interrupt: Leave World (19), Enter World (22), Change Specialization (38), Raid Encounter Start or M+ Start (40), Raid Encounter End or M+ Start (41), Disconnect (42), Enter Instance (43), Leave Arena or Battleground (45), Change Talent (46), Encounter End (56)
 local PackLeaderBuffNextIndex = 1
@@ -811,9 +767,92 @@ local TriggerBombardier = setfenv( function()
     applyBuff( "bombardier", nil, 2 )
 end, state )
 
+spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if sourceGUID == GUID then
+        if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" then
+            -- Detect REAL cycle events and update the index accordingly
+            for index, animal in ipairs( pack_leader_buff_cycle ) do
+                local buffName = "howl_of_the_pack_leader_" .. animal
+                local aura = spec.auras[ buffName ]
+                if aura and spellID == aura.id then
+                    PackLeaderBuffNextIndex = ( index % #pack_leader_buff_cycle ) + 1
+                    break
+                end
+            end
+        end
+    end
+end )
+
+-- To support SimC Expressions
+spec:RegisterStateTable( "howl_summon", setmetatable( {
+
+    refresh_cycle = setfenv( function()
+        -- reset_precast function
+        pack_leader_buff_next_index = nil
+    end, state ),
+
+    raid_boss_reset = setfenv( function()
+        pack_leader_buff_next_index = 1
+    end, state ),
+
+    trigger_summon = setfenv( function( isCoordinatedAssault )
+
+        local summonCount = 0
+        if isCoordinatedAssault then
+            -- Scenario 1: Coordinated Assault prepares the next summon without summoning anything that is currently ready or modifying the CD buff
+            applyBuff( "howl_of_the_pack_leader_" .. pack_leader_buff_cycle[ pack_leader_buff_next_index ] )
+            pack_leader_buff_next_index = ( pack_leader_buff_next_index % #pack_leader_buff_cycle) + 1  -- Advance to the next buff index virtually, will be reset / synced in reset_precast
+            applyBuff( "lead_from_the_front" )
+        else
+            -- Scenario 2: Kill Command summons + other effects
+            for _, animal in ipairs( pack_leader_buff_cycle ) do
+                local buffName = "howl_of_the_pack_leader_" .. animal
+                if buff[ buffName ].up then
+                    removeBuff( buffName )
+                    summonCount = summonCount + 1
+                    if buffName == "boar" and talent.hogstrider.enabled and buff.mongoose_fury.up then
+                        applyBuff( "mongoose_fury", spec.auras.mongoose_fury.duration, buff.mongoose_fury.stack )
+                    end
+                end
+            end
+
+            if summonCount > 0 then
+                addStack( "tip_of_the_spear" )
+                if talent.pack_mentality.enabled then reduceCooldown( "wildfire_bomb", 10 * summonCount ) end
+            end
+
+            if buff.howl_of_the_pack_leader_cooldown.down then applyBuff( "howl_of_the_pack_leader_cooldown" )
+            elseif talent.dire_summons.enabled then buff.howl_of_the_pack_leader_cooldown.expires = buff.howl_of_the_pack_leader_cooldown.expires - 1
+            end
+        end
+    end, state ),
+
+}, {
+    __index = function( t, k )
+
+        if k == "ready" then
+            return buff.howl_of_the_pack_leader_bear.up or buff.howl_of_the_pack_leader_boar.up or buff.howl_of_the_pack_leader_wyvern.up or false
+        elseif k == "ready_bear"  then
+            return buff.howl_of_the_pack_leader_bear.up
+        elseif k == "ready_boar" then
+            return buff.howl_of_the_pack_leader_boar.up
+        elseif k == "ready_wyvern" then
+            return buff.howl_of_the_pack_leader_wyvern.up
+        elseif k == "next" then
+            return pack_leader_buff_cycle[ pack_leader_buff_next_index ]
+        elseif k == "next_bear" then
+            return pack_leader_buff_next_index == 3
+        elseif k == "next_boar" then
+            return pack_leader_buff_next_index == 2
+        elseif k == "next_wyvern" then
+            return pack_leader_buff_next_index == 1
+        end
+    end
+} ) )
+
 spec:RegisterHook( "reset_precast", function()
-    
-    pack_leader_buff_next_index = nil
+
+    if talent.howl_of_the_pack_leader.enabled then howl_summon.refresh_cycle() end
 
     if buff.coordinated_assault.up and talent.bombardier.enabled then
         state:QueueAuraEvent( "coordinated_assault", TriggerBombardier, buff.coordinated_assault.expires, "AURA_EXPIRATION" )
@@ -846,74 +885,6 @@ spec:RegisterHook( "reset_precast", function()
     end
 end )
 
-spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if sourceGUID == GUID then
-        if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" then
-            -- Detect REAL cycle events and update the index accordingly
-            for index, buffName in ipairs( pack_leader_buff_cycle ) do
-                local aura = spec.auras[ buffName ]  -- Safely store the aura reference
-                if aura and spellID == aura.id then  -- Ensure it's a valid aura before using it
-                    PackLeaderBuffNextIndex = ( index % #pack_leader_buff_cycle) + 1
-                    break
-                end
-            end
-        end
-    end
-end )
-
-local HowlOfThePackLeaderHandler = setfenv( function( isCoordinatedAssault )
-    -- Track the number of summons triggered.
-    local summonCount = 0
-
-    if isCoordinatedAssault then
-        -- Scenario 1: Coordinated Assault grants the next buff without triggering summons.
-        applyBuff( pack_leader_buff_cycle[ pack_leader_buff_next_index ] )
-        pack_leader_buff_next_index = ( pack_leader_buff_next_index % #pack_leader_buff_cycle) + 1  -- Advance to the next buff index virtually, will be reset / synced in reset_precast
-        applyBuff( "lead_from_the_front" )
-    else
-        -- Scenario 2: Triggered by Kill Command (summoning is possible).
-        if buff.howl_of_the_pack_leader_cooldown.up then
-            -- Scenario 2A: Cooldown buff is active.
-            -- Consume all active buffs (summoning them) and reduce the cooldown buff.
-            for _, buffName in ipairs( pack_leader_buff_cycle ) do
-                if buff[ buffName ].up then
-                    removeBuff( buffName )
-                    summonCount = summonCount + 1
-                    -- Refresh Mongoose Fury if summoning the pig.
-                    if buffName == "howl_of_the_pack_leader_pig" and talent.hogstrider.enabled then
-                        applyBuff( "mongoose_fury", spec.auras.mongoose_fury.duration, buff.mongoose_fury.stack )
-                    end
-                end
-            end
-            if talent.dire_summons.enabled then 
-                reduceCooldown( "howl_of_the_pack_leader", 1 )
-            end
-        else
-            -- Scenario 2B: Cooldown buff is not active.
-            -- Consume all active buffs (summoning them) and apply a new cooldown buff.
-            for _, buffName in ipairs( pack_leader_buff_cycle ) do
-                if buff[ buffName ].up then
-                    removeBuff( buffName )
-                    summonCount = summonCount + 1
-                    -- Refresh Mongoose Fury if summoning the pig.
-                    if buffName == "howl_of_the_pack_leader_pig" and talent.hogstrider.enabled then
-                        applyBuff( "mongoose_fury", spec.auras.mongoose_fury.duration, buff.mongoose_fury.stack )
-                    end
-                end
-            end
-            applyBuff( "howl_of_the_pack_leader_cooldown" )
-        end
-        -- Apply the Wildfire Bomb cooldown reduction based on the number of summons.
-        if talent.pack_mentality.enabled then reduceCooldown( "wildfire_bomb", 10 * summonCount ) end
-        if summonCount > 0 then addStack( "tip_of_the_spear" ) end
-    end
-end, state )
-
--- SIMC expression
-spec:RegisterStateExpr( "howl_summon_ready", function ()
-    return buff.howl_of_the_pack_leader_bear.up or buff.howl_of_the_pack_leader_boar.up or buff.howl_of_the_pack_leader_wyvern.up or false
-end )
-
 spec:RegisterHook( "spend", function( amt, resource )
     if set_bonus.tier30_4pc > 0 and amt >= 30 and resource == "focus" then
         local sec = floor( amt / 30 )
@@ -941,9 +912,14 @@ spec:RegisterStateTable( "bloodseeker", setmetatable( {}, {
     end,
 } ) )
 
-
 spec:RegisterStateExpr( "bloodseeker", function () return debuff.bloodseeker end )
 
+spec:RegisterHook( "runHandler_startCombat", function()
+    if talent.howl_of_the_pack_leader.enabled then
+        if buff.howl_of_the_pack_leader_cooldown.down then applyBuff( "howl_of_the_pack_leader_cooldown" ) end
+        if raid and boss then howl_summon.raid_boss_reset() end
+    end
+end )
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -1035,6 +1011,7 @@ spec:RegisterAbilities( {
         id = 212436,
         cast = 0,
         cooldown = 15,
+        hasteCD = true,
         gcd = "spell",
         school = "physical",
 
@@ -1103,7 +1080,7 @@ spec:RegisterAbilities( {
             if talent.wildfire_arsenal.enabled then addStack( "wildfire_arsenal", nil, 3 ) end
 
             -- Hero Talents
-            if talent.lead_from_the_front.enabled then HowlOfThePackLeaderHandler( true ) end
+            if talent.lead_from_the_front.enabled then howl_summon.trigger_summon( true ) end
         end,
     },
 
@@ -1217,7 +1194,8 @@ spec:RegisterAbilities( {
         cast = 0,
         charges = function () return talent.alpha_predator.enabled and 2 or nil end,
         cooldown = 6,
-        recharge = function () return talent.alpha_predator.enabled and 6 or nil end,
+        recharge = function () return talent.alpha_predator.enabled and 6 * haste or nil end,
+        hasteCD = true,
         gcd = "spell",
         school = "physical",
 
@@ -1232,8 +1210,8 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "deadly_duo" )
 
-            if talent.howl_of_the_pack_leader.enabled then HowlOfThePackLeaderHandler( false ) end
-            
+            if talent.howl_of_the_pack_leader.enabled then howl_summon.trigger_summon( false ) end
+
             if buff.sulfurlined_pockets_ready.up then
                 buff.sulfurlined_pockets_ready.v1 = 259489
                 class.abilities.explosive_shot.handler()
@@ -1388,7 +1366,7 @@ spec:RegisterAbilities( {
                 reduceCooldown( "wildfire_bomb", 10 )
             end
 
-            if talent.dire_summons.enabled then reduceCooldown( "howl_of_the_pack_leader", 1 ) end
+            if talent.dire_summons.enabled and buff.howl_of_the_pack_leader_cooldown.up then buff.howl_of_the_pack_leader_cooldown.expires = buff.howl_of_the_pack_leader_cooldown.expires - 1 end
 
             removeStack( "tip_of_the_spear" )
 
@@ -1417,8 +1395,6 @@ spec:RegisterAbilities( {
 
         end,
 
-        
-
         copy = { "raptor_strike_eagle", 265189 },
     },
 
@@ -1444,8 +1420,9 @@ spec:RegisterAbilities( {
         id = 259495,
         cast = 0,
         charges = function () if talent.guerrilla_tactics.enabled then return 2 end end,
-        cooldown = function() return ( 18 - talent.explosives_expert.rank ) * ( 1 - 0.25 * talent.coordinated_kill.rank * ( buff.coordinated_assault.up and 1 or 0 ) ) * haste end,
-        recharge = function() if talent.guerrilla_tactics.enabled then return ( 18 - talent.explosives_expert.rank ) * ( 1 - 0.25 * talent.coordinated_kill.rank * ( buff.coordinated_assault.up and 1 or 0 ) ) * haste end end,
+        cooldown = 18,
+        recharge = function() if talent.guerrilla_tactics.enabled then return 18 * haste end end,
+        hasteCD = true,
         gcd = "spell",
         school = "physical",
 
@@ -1463,7 +1440,7 @@ spec:RegisterAbilities( {
                 removeBuff( "contained_explosion" )
                 gainCharges( 1, "wildfire_bomb" )
             end
-            if talent.lunar_storm.enabled and cooldown.lunar_storm.ready then
+            if talent.lunar_storm.enabled and buff.lunar_storm_cooldown.down then
                 applyDebuff( "target", "lunar_storm" )
                 applyBuff( "lunar_storm_cooldown" )
             end
@@ -1489,7 +1466,6 @@ spec:RegisterAbilities( {
         copy = { "raptor_bite_stub", "mongoose_strike" }
     }
 } )
-
 
 spec:RegisterRanges( "raptor_strike", "muzzle", "arcane_shot" )
 
@@ -1540,8 +1516,6 @@ spec:RegisterSetting( "allow_focus_overcap", false, {
     type = "toggle",
     width = "full"
 } )
-
-
 
 spec:RegisterSetting( "mark_any", false, {
     name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
