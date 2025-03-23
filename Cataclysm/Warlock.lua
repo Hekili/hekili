@@ -2410,7 +2410,7 @@ spec:RegisterOptions( {
     damage = true,
     damageExpiration = 6,
 
-    potion = "wild_magic",
+    potion = "volcanic_potion",
 
     package = "Affliction",
     usePackSelector = true
