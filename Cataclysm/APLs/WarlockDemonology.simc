@@ -23,8 +23,7 @@ actions+=/life_tap,if=mana.pct<25
 actions+=/soulburn,if=soul_shard>1&buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
 actions+=/summon_felguard,if=buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
 # Curse of the Elements:If no one else provides the debuff
-actions+=/group_curse,if=debuff.my_curse.down&curse_grouped
-actions+=/solo_curse,if=debuff.my_curse.down
+actions+=/curse_of_the_elements,if=debuff.spell_vulnerability.down
 
 # Spell boost with Metamorphosis
 actions+=/call_action_list,name=spell_damage_rotation,if=buff.metamorphosis.up&buff.metamorphosis.remains>2
