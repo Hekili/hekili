@@ -34,19 +34,19 @@ actions.t13+=/shadow_word_pain,if=debuff.shadow_word_pain.down&buff.active_shado
 actions.t13+=/vampiric_touch,if=(debuff.vampiric_touch.down|debuff.vampiric_touch.remains<cast_time+tick_time)&buff.active_shadowfiend.down
 actions.t13+=/devouring_plague,if=(debuff.devouring_plague.down|debuff.devouring_plague.remains<tick_time)&buff.active_shadowfiend.down
 actions.t13+=/mind_blast,if=buff.shadow_orb.up
-actions.t13+=/mind_flay,interrupt_if=ticks_remain<2
+actions.t13+=/mind_flay,interrupt_if=ticks_remain<1
 
 ## Single Target Rotation
 actions.st+=/shadowfiend
 actions.st+=/potion
 actions.st+=/shadow_word_pain,if=debuff.shadow_word_pain.down
-actions.st+=/mind_flay,interrupt_if=ticks_remain<2,if=buff.empowered_shadow.down&buff.shadow_orb.down&buff.dark_evangelism.stack<5
+actions.st+=/mind_flay,interrupt_if=ticks_remain<1,if=buff.empowered_shadow.down&buff.shadow_orb.down&buff.dark_evangelism.stack<5
 actions.st+=/mind_blast,if=buff.empowered_shadow.down|buff.shadow_orb.up
 actions.st+=/vampiric_touch,if=debuff.vampiric_touch.down|debuff.vampiric_touch.remains<cast_time+tick_time
 actions.st+=/devouring_plague,if=debuff.devouring_plague.down|debuff.devouring_plague.remains<tick_time
 actions.st+=/archangel,if=buff.dark_evangelism.stack=5&debuff.vampiric_touch.remains>5&debuff.devouring_plague.remains>5&show_archangel_cooldown
 actions.st+=/shadow_word_death,if=target.health.pct<25
-actions.st+=/mind_flay,interrupt_if=ticks_remain<2
+actions.st+=/mind_flay,interrupt_if=ticks_remain<1
 
 ## AoE Rotation
 actions.aoe+=/mind_sear,if=active_enemies>5
@@ -54,6 +54,6 @@ actions.aoe+=/shadow_word_pain,cycle_targets=1,max_cycle_targets=5,if=settings.d
 actions.aoe+=/vampiric_touch,cycle_targets=1,max_cycle_targets=5,if=settings.dots_in_aoe&debuff.vampiric_touch.remains<debuff.vampiric_touch.tick_time&target.time_to_die>=debuff.vampiric_touch.duration
 actions.aoe+=/devouring_plague,if=settings.dots_in_aoe&debuff.devouring_plague.remains<debuff.devouring_plague.tick_time
 actions.aoe+=/mind_blast,if=buff.shadow_orb.up
-actions.aoe+=/mind_flay,interrupt_if=ticks>=2,if=debuff.shadow_word_pain.up&debuff.shadow_word_pain.remains<gcd+latency
+actions.aoe+=/mind_flay,interrupt_if=ticks>=1,if=debuff.shadow_word_pain.up&debuff.shadow_word_pain.remains<gcd+latency
 actions.aoe+=/shadow_word_death,if=target.health.pct<25&active_enemies<4|mana.pct<15
 actions.aoe+=/mind_sear
