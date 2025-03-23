@@ -1,7 +1,7 @@
 # Opener
 actions.precombat+=/soul_harvest,if=soul_shards<3
 actions.precombat+=/fel_armor,if=buff.armor.down
-actions.precombat+=/volcanic_potion
+actions.precombat+=/potion
 actions.precombat+=/summon_felhunter,if=!pet.alive
 
 # Default

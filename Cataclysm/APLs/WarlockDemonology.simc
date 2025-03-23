@@ -6,7 +6,7 @@ actions.precombat+=/summon_felhunter,if=!settings.pet_twisting&!pet.alive
 actions.precombat+=/fel_armor,if=buff.fel_armor.down
 actions.precombat+=/soul_link,if=!buff.soul_link.up
 actions.precombat+=/demon_soul,if=pet.alive&settings.pet_twisting
-actions.precombat+=/volcanic_potion
+actions.precombat+=/potion
 
 # Demonology Warlock DPS Opener
 # Shadow and Flame	By pre-casting  Incinerate or  Shadow Bolt (Filler spell depending on your build)
@@ -18,7 +18,7 @@ actions.precombat+=/volcanic_potion
 actions+=/synapse_springs,if=cooldown.metamorphosis.remains>61
 actions+=/metamorphosis,use_off_gcd=1
 actions+=/fel_flame,if=buff.fel_spark.up
-actions+=/volcanic_potion,if=buff.metamorphosis.up 
+actions+=/potion,if=buff.metamorphosis.up 
 actions+=/life_tap,if=mana.pct<25
 actions+=/soulburn,if=soul_shard>1&buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
 actions+=/summon_felguard,if=buff.fel_intelligence.up&cooldown.demon_soul.remains<6&settings.pet_twisting
