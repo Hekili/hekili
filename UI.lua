@@ -2835,6 +2835,7 @@ do
         Hekili:ProfileFrame( bName, b )
 
         b:EnableMouse( conf.iconTooltipToggle )
+        b:SetMouseClickEnabled(false)
         b:SetMovable( false )
 
         return b
