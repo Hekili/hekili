@@ -312,6 +312,12 @@ spec:RegisterAuras( {
         duration = 15,
         max_stack = 2,
     },
+    fof_consumed = {
+        -- Virtual buff to track if FoF is consumed (by Ice Lance) so we know whether to (virtually) consume Winter's Chill stacks.
+        -- Appears to only happen during the addon's forecasting, need to determine if we need to also apply this buff in reset_precast to avoid recommendation flicker between IL cast and impact.
+        duration = function() return gcd.max * 1.5 end,
+        max_stack = 1
+    },
     fire_mastery = {
         id = 431040,
         duration = 14,
@@ -1459,7 +1465,11 @@ spec:RegisterAbilities( {
             end
 
             if buff.fingers_of_frost.up or debuff.frozen.up then
-                removeStack( "fingers_of_frost" )
+                if buff.fingers_of_frost.up then
+                    removeStack( "fingers_of_frost" )
+                    applyBuff( "fof_consumed", gcd.max * 1.5 )
+                end
+
                 if talent.hailstones.enabled then
                     addStack( "icicles" )
                     if talent.glacial_spike.enabled and buff.icicles.stack_pct == 100 then
@@ -1481,7 +1491,9 @@ spec:RegisterAbilities( {
                     BrainFreeze()
                 end
             end
-            removeDebuffStack( "target", "winters_chill" )
+            if not buff.fof_consumed.up then
+                removeDebuffStack( "target", "winters_chill" )
+            end
         end,
 
         copy = 228598

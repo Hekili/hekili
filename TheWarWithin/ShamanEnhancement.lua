@@ -849,9 +849,6 @@ spec:RegisterAuras( {
     },
 } )
 
-
-
-
 spec:RegisterStateTable( "feral_spirit", setmetatable( {}, {
     __index = function( t, k )
         return buff.feral_spirit[ k ]
@@ -867,7 +864,6 @@ spec:RegisterStateTable( "twisting_nether", setmetatable( { onReset = function( 
         return 0
     end
 } ) )
-
 
 local death_events = {
     UNIT_DIED               = true,
@@ -1078,8 +1074,6 @@ spec:RegisterStateFunction( "trigger_vesper_damage", function ()
         vesper_totem_used_charges = vesper_totem_used_charges + 1
     end
 end )
-
-
 
 spec:RegisterStateExpr( "active_feral_spirits", function()
     local count = 0
@@ -1343,67 +1337,76 @@ spec:RegisterHook( "runHandler", function( action )
     end
 end )
 
--- The War Within
 
-spec:RegisterGear( "tww2", 200396, 200398, 200400, 200401, 200399 )
-spec:RegisterAuras( {
-    -- https://www.wowhead.com/spell=1218616
-    -- Winning Streak! Stormstrike, Lava Lash and Doom Winds damage increased by 5.0%.  
-    winning_streak = {
-        id = 1218616,
-        duration = 30,
-        max_stack = 5
+spec:RegisterGear({
+    tww2 = {
+        items = { 229260, 229261, 229262, 229263, 229265 },
+        auras = {
+            -- https://www.wowhead.com/spell=1218616
+            -- Winning Streak! Stormstrike, Lava Lash and Doom Winds damage increased by 5.0%.  
+            winning_streak = {
+                id = 1218616,
+                duration = 30,
+                max_stack = 5
+            },
+            -- https://www.wowhead.com/spell=1223410
+            -- Electrostatic Wager Crash Lightning damage increased by 120%.  
+            electrostatic_wager = {
+                id = 1223410,
+                duration = 30,
+                max_stack = 10,
+            },
+        }
     },
-    -- https://www.wowhead.com/spell=1223410
-    -- Electrostatic Wager Crash Lightning damage increased by 120%.  
-    electrostatic_wager = {
-        id = 1223410,
-        duration = 30,
-        max_stack = 10,
+    tier29 = {
+        items = { 200396, 200398, 200400, 200401, 200399 },
+        auras = {
+            maelstrom_of_elements = {
+                id = 394677,
+                duration = 15,
+                max_stack = 1
+            },
+            fury_of_the_storm = {
+                id = 396006,
+                duration = 3,
+                max_stack = 10
+            }
+        }
     },
-} )
-
-spec:RegisterGear( "tier29", 200396, 200398, 200400, 200401, 200399 )
-spec:RegisterAuras( {
-    maelstrom_of_elements = {
-        id = 394677,
-        duration = 15,
-        max_stack = 1
+    tier30 = {
+        items = { 202473, 202471, 202470, 202469, 202468 },
+        auras = {
+            earthen_might = {
+                id = 409689,
+                duration = 15,
+                max_stack = 1,
+                copy = "t30_2pc_enh"
+            },
+            volcanic_strength = {
+                id = 409833,
+                duration = 15,
+                max_stack = 1,
+                copy = "t30_4pc_enh_damage"
+            },
+            crackling_thunder = {
+                id = 409834,
+                duration = 15,
+                max_stack = 2,
+                copy = "t30_4pc_enh_cl"
+            }
+        }
     },
-    fury_of_the_storm = {
-        id = 396006,
-        duration = 3,
-        max_stack = 10
+    tier31 = {
+        items = { 207207, 207208, 207209, 207210, 207212, 217238, 217240, 217236, 217237, 217239 },
+    },
+    waycrest_legacy = {
+        items = { 158362, 159631 },
+    },
+    electric_mail = {
+        items = { 161031, 161034, 161032, 161033, 161035 },
     }
 } )
 
--- Tier 30
-spec:RegisterGear( "tier30", 202473, 202471, 202470, 202469, 202468 )
-spec:RegisterAuras( {
-    earthen_might = {
-        id = 409689,
-        duration = 15,
-        max_stack = 1,
-        copy = "t30_2pc_enh"
-    },
-    volcanic_strength = {
-        id = 409833,
-        duration = 15,
-        max_stack = 1,
-        copy = "t30_4pc_enh_damage"
-    },
-    crackling_thunder = {
-        id = 409834,
-        duration = 15,
-        max_stack = 2,
-        copy = "t30_4pc_enh_cl"
-    }
-} )
-
-spec:RegisterGear( "tier31", 207207, 207208, 207209, 207210, 207212, 217238, 217240, 217236, 217237, 217239 )
-
-spec:RegisterGear( "waycrest_legacy", 158362, 159631 )
-spec:RegisterGear( "electric_mail", 161031, 161034, 161032, 161033, 161035 )
 
 spec:RegisterStateFunction( "consume_maelstrom", function( cap )
     local stacks = min( buff.maelstrom_weapon.stack, cap or ( talent.overflowing_maelstrom.enabled and 10 or 5 ) )

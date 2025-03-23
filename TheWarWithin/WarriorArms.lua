@@ -697,7 +697,7 @@ spec:RegisterAuras( {
     -- https://www.wowhead.com/ptr-2/spell=1216552/winning-streak
     -- Mortal Strike and Cleave damage increased by 2%. = {
     winning_streak = {
-        id = 1216562,
+        id = 1216552,
         duration = 30,
         max_stack = 10,
         copy = "winning_streak_arms"

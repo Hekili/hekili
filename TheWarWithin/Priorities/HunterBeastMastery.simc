@@ -1,5 +1,5 @@
 ## https://github.com/simulationcraft/simc/commits/thewarwithin/ActionPriorityLists/hunter_beast_mastery.simc
-## Up to date with SimC: March 4 2025 - 66e22c9
+## Up to date with SimC: March 18 2025 - c8cb5fc
 
 actions.precombat+=/summon_pet
 # Determine the stronger trinket to sync with cooldowns. In descending priority: buff effects > damage effects, longer > shorter cooldowns, longer > shorter cast times. Special case to consider Mirror of Fractured Tomorrows weaker than other buff effects since its power is split between the dmg effect and the buff effect.
@@ -24,8 +24,10 @@ actions.cds+=/fireblood,if=buff.call_of_the_wild.up|talent.bloodshed&(prev_gcd.1
 actions.cds+=/potion,if=buff.call_of_the_wild.up|talent.bloodshed&(prev_gcd.1.bloodshed)|!talent.call_of_the_wild&!talent.bloodshed&buff.bestial_wrath.up|boss&fight_remains<31
 
 actions.cleave+=/bestial_wrath
-actions.cleave+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd|charges_fractional>=cooldown.kill_command.charges_fractional|talent.call_of_the_wild&cooldown.call_of_the_wild.ready|howl_summon_ready&full_recharge_time<8
-actions.cleave+=/multishot,if=buff.beast_cleave.remains<0.25+gcd&(!talent.bloody_frenzy|cooldown.call_of_the_wild.remains)
+actions.cleave+=/dire_beast,if=talent.huntmasters_call&buff.huntmasters_call.stack=2
+actions.cleave+=/black_arrow,if=buff.beast_cleave.remains&buff.withering_fire.up
+actions.cleave+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd|charges_fractional>=cooldown.kill_command.charges_fractional|talent.call_of_the_wild&cooldown.call_of_the_wild.ready|howl_summon.ready&full_recharge_time<8
+actions.cleave+=/multishot,if=buff.beast_cleave.down&(!talent.bloody_frenzy|cooldown.call_of_the_wild.remains)
 actions.cleave+=/black_arrow,if=buff.beast_cleave.up
 actions.cleave+=/call_of_the_wild
 actions.cleave+=/bloodshed
@@ -42,10 +44,11 @@ actions.cleave+=/arcane_torrent,if=(focus+focus.regen+30)<focus.max
 
 actions.st+=/dire_beast,if=talent.huntmasters_call
 actions.st+=/bestial_wrath
-actions.st+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd|charges_fractional>=cooldown.kill_command.charges_fractional|talent.call_of_the_wild&cooldown.call_of_the_wild.ready|howl_summon_ready&full_recharge_time<8
-actions.st+=/kill_command,if=charges_fractional>=cooldown.barbed_shot.charges_fractional
+actions.st+=/black_arrow,if=buff.withering_fire.up
+actions.st+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd|charges_fractional>=cooldown.kill_command.charges_fractional|talent.call_of_the_wild&cooldown.call_of_the_wild.ready|howl_summon.ready&full_recharge_time<8
 actions.st+=/call_of_the_wild
 actions.st+=/bloodshed
+actions.st+=/kill_command
 actions.st+=/black_arrow
 actions.st+=/explosive_shot,if=talent.thundering_hooves
 actions.st+=/lights_judgment,if=buff.bestial_wrath.down|target.time_to_die<5

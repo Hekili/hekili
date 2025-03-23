@@ -1720,9 +1720,9 @@ spec:RegisterAbilities( {
             setCooldown( "global_cooldown", 0.25 )
 
             if buff.unbound_chaos.up then removeBuff( "unbound_chaos" ) end
-            if buff.inertia_prep_buff.up then
-                removeBuff( "inertia_prep_buff" )
-                applyBuff( "inertia_damage_buff" )
+            if buff.inertia_trigger.up then
+                removeBuff( "inertia_trigger" )
+                applyBuff( "inertia" )
             end
             if conduit.felfire_haste.enabled then applyBuff( "felfire_haste" ) end
         end,
@@ -1747,9 +1747,9 @@ spec:RegisterAbilities( {
         handler = function ()
             setDistance( 5 )
             if buff.unbound_chaos.up then removeBuff( "unbound_chaos" ) end
-            if buff.inertia_prep_buff.up then
-                removeBuff( "inertia_prep_buff" )
-                applyBuff( "inertia_damage_buff" )
+            if buff.inertia_trigger.up then
+                removeBuff( "inertia_trigger" )
+                applyBuff( "inertia" )
             end
             if talent.warblades_hunger.enabled then
                 if buff.art_of_the_glaive.stack + soul_fragments >= 6 then
@@ -2103,7 +2103,7 @@ spec:RegisterAbilities( {
             if talent.exergy.enabled then
                 applyBuff( "exergy", min( 30, buff.exergy.remains + 20 ) )
             elseif talent.inertia.enabled then -- talent choice node, only 1 or the other
-                applyBuff( "inertia_prep_buff" )
+                applyBuff( "inertia_trigger" )
             end
             if talent.unbound_chaos.enabled then applyBuff( "unbound_chaos" ) end
 
@@ -2230,7 +2230,7 @@ spec:RegisterAbilities( {
             if talent.exergy.enabled then
                 applyBuff( "exergy", min( 30, buff.exergy.remains + 20 ) )
             elseif talent.inertia.enabled then -- talent choice node, only 1 or the other
-                applyBuff( "inertia_prep_buff" )
+                applyBuff( "inertia_trigger" )
             end
             if talent.unbound_chaos.enabled then applyBuff( "unbound_chaos" ) end
 

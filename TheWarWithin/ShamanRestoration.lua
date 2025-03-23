@@ -302,7 +302,7 @@ spec:RegisterAuras( {
 } )
 
 -- The War Within
-spec:RegisterGear( "tww2", 200396, 200398, 200400, 200401, 200399 )
+spec:RegisterGear( "tww2", 229260, 229261, 229262, 229263, 229265 )
 
 -- Dragonflight
 spec:RegisterGear( "tier29", 200399, 200401, 200396, 200398, 200400, 217238, 217240, 217236, 217237, 217239 )

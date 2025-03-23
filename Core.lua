@@ -1623,6 +1623,10 @@ function Hekili.Update()
                 numRecs = 1
             end
 
+            if debug then 
+            Hekili:Debug( "Combat Timer: %.2f", state.time )
+            end
+
             for i = 1, numRecs do
                 local chosen_depth = 0
 

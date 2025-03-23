@@ -207,6 +207,7 @@ local enemyExclusions = {
     [204560] = true,      -- Incorporeal Being
     [229296] = true,      -- Orb of Ascendance (TWW S1 Affix)
     [218884] = true,      -- Silken Court: Scattershell Scarab
+    [235187] = true,      -- Cauldron: Voltaic Image
 }
 
 local requiredForInclusion = {

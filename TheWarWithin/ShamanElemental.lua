@@ -1247,7 +1247,7 @@ spec:RegisterAura( "maelstrom_surge", {
     max_stack = 1
 } )
 
-spec:RegisterGear( "tww2", 200396, 200398, 200400, 200401, 200399 )
+spec:RegisterGear( "tww2", 229260, 229261, 229262, 229263, 229265 )
 spec:RegisterAuras( {
     -- https://www.wowhead.com/spell=1218612
     jackpot = {

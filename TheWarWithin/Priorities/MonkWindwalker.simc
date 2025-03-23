@@ -1,5 +1,5 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/monk_windwalker.simc
-## Up to date with SimC: March 11 2025 - 4cd97b4
+## Up to date with SimC: March 17 2025 - c02ee75
 
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
 actions.precombat+=/variable,name=sef_condition,value=target.time_to_die>6&(cooldown.rising_sun_kick.remains|active_enemies>2|!talent.ordered_elements)&(prev.invoke_xuen_the_white_tiger|(talent.celestial_conduit|!talent.last_emperors_capacitor)&buff.bloodlust.up&(cooldown.strike_of_the_windlord.remains<5|!talent.strike_of_the_windlord)&talent.sequenced_strikes|buff.invokers_delight.remains>15|(cooldown.strike_of_the_windlord.remains<5|!talent.strike_of_the_windlord)&cooldown.storm_earth_and_fire.full_recharge_time<cooldown.invoke_xuen_the_white_tiger.remains&cooldown.fists_of_fury.remains<5&(!talent.last_emperors_capacitor|talent.celestial_conduit)|talent.last_emperors_capacitor&buff.the_emperors_capacitor.stack>17&cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time)|boss&fight_remains<30|buff.invokers_delight.remains>15&(cooldown.rising_sun_kick.remains|active_enemies>2|!talent.ordered_elements)|boss&buff.bloodlust.up&(cooldown.rising_sun_kick.remains|active_enemies>2|!talent.ordered_elements)&talent.celestial_conduit&time>10
@@ -36,7 +36,6 @@ actions.aoe_opener+=/tiger_palm,if=chi<6&(combo_strike|!talent.hit_combo)
 
 ## actions.cooldowns=invoke_external_buff,name=power_infusion,if=pet.xuen_the_white_tiger.active&(!buff.bloodlust.up|buff.bloodlust.up&cooldown.strike_of_the_windlord.remains)
 ## actions.cooldowns+=/storm_earth_and_fire,if=fight_style.dungeonroute&buff.invokers_delight.remains>15&(active_enemies>2|!talent.ordered_elements|cooldown.rising_sun_kick.remains)
-actions.cooldowns+=/slicing_winds,if=talent.celestial_conduit&variable.sef_condition
 actions.cooldowns+=/tiger_palm,if=(target.time_to_die>14)&!cooldown.invoke_xuen_the_white_tiger.remains&(chi<5&!talent.ordered_elements|chi<3)&(combo_strike|!talent.hit_combo)
 actions.cooldowns+=/invoke_xuen_the_white_tiger,if=variable.xuen_condition
 actions.cooldowns+=/storm_earth_and_fire,if=variable.sef_condition
@@ -50,12 +49,14 @@ actions.cooldowns+=/berserking,if=buff.invoke_xuen_the_white_tiger.remains>15|!t
 actions.default_aoe+=/tiger_palm,if=(energy>55&talent.inner_peace|energy>60&!talent.inner_peace)&combo_strike&chi.max-chi>=2&buff.teachings_of_the_monastery.stack<buff.teachings_of_the_monastery.max_stack&(talent.energy_burst&!buff.bok_proc.up)&!buff.ordered_elements.up|(talent.energy_burst&!buff.bok_proc.up)&!buff.ordered_elements.up&!cooldown.fists_of_fury.remains&chi<3|(prev.strike_of_the_windlord|cooldown.strike_of_the_windlord.remains)&cooldown.celestial_conduit.remains<2&buff.ordered_elements.up&chi<5&combo_strike
 actions.default_aoe+=/touch_of_death,if=!buff.heart_of_the_jade_serpent_cdr.up&!buff.heart_of_the_jade_serpent_cdr_celestial.up
 actions.default_aoe+=/spinning_crane_kick,if=combo_strike&((buff.chi_energy.stack>29&cooldown.fists_of_fury.remains<5)|(buff.dance_of_chiji.stack=2))
-actions.default_aoe+=/whirling_dragon_punch,if=buff.heart_of_the_jade_serpent_cdr.up
+actions.default_aoe+=/whirling_dragon_punch,if=buff.heart_of_the_jade_serpent_cdr.up&buff.dance_of_chiji.stack<2
+actions.default_aoe+=/whirling_dragon_punch,if=buff.dance_of_chiji.stack<2
+actions.default_aoe+=/slicing_winds,if=buff.heart_of_the_jade_serpent_cdr.up|buff.heart_of_the_jade_serpent_cdr_celestial.up
 actions.default_aoe+=/celestial_conduit,if=buff.storm_earth_and_fire.up&cooldown.strike_of_the_windlord.remains&(!buff.heart_of_the_jade_serpent_cdr.up|debuff.gale_force.remains<5)&(talent.xuens_bond|!talent.xuens_bond&buff.invokers_delight.up)|boss&fight_remains<15
 actions.default_aoe+=/rising_sun_kick,if=cooldown.whirling_dragon_punch.remains<2&cooldown.fists_of_fury.remains>1&buff.dance_of_chiji.stack<2|!buff.storm_earth_and_fire.up&buff.pressure_point.up
 actions.default_aoe+=/whirling_dragon_punch,if=!talent.revolving_whirl|talent.revolving_whirl&buff.dance_of_chiji.stack<2&active_enemies>2
 actions.default_aoe+=/blackout_kick,if=combo_strike&buff.bok_proc.up&chi<2&talent.energy_burst&energy<55
-actions.default_aoe+=/strike_of_the_windlord,if=time>5&(cooldown.invoke_xuen_the_white_tiger.remains>15|talent.flurry_strikes)
+actions.default_aoe+=/strike_of_the_windlord,if=(time>5|buff.invokers_delight.up&buff.storm_earth_and_fire.up)&(cooldown.invoke_xuen_the_white_tiger.remains>15|talent.flurry_strikes)
 actions.default_aoe+=/slicing_winds
 actions.default_aoe+=/blackout_kick,if=buff.teachings_of_the_monastery.stack=8&talent.shadowboxing_treads
 actions.default_aoe+=/crackling_jade_lightning,if=buff.the_emperors_capacitor.stack>19&combo_strike&talent.power_of_the_thunder_king&cooldown.invoke_xuen_the_white_tiger.remains>10
@@ -91,7 +92,9 @@ actions.default_cleave+=/rising_sun_kick,if=(buff.pressure_point.up&active_enemi
 actions.default_cleave+=/spinning_crane_kick,if=combo_strike&buff.dance_of_chiji.stack=2&active_enemies>3
 actions.default_cleave+=/tiger_palm,if=(energy>55&talent.inner_peace|energy>60&!talent.inner_peace)&combo_strike&chi.max-chi>=2&buff.teachings_of_the_monastery.stack<buff.teachings_of_the_monastery.max_stack&(talent.energy_burst&!buff.bok_proc.up|!talent.energy_burst)&!buff.ordered_elements.up|(talent.energy_burst&!buff.bok_proc.up|!talent.energy_burst)&!buff.ordered_elements.up&!cooldown.fists_of_fury.remains&chi<3|(prev.strike_of_the_windlord|cooldown.strike_of_the_windlord.remains)&cooldown.celestial_conduit.remains<2&buff.ordered_elements.up&chi<5&combo_strike|(!buff.heart_of_the_jade_serpent_cdr.up|!buff.heart_of_the_jade_serpent_cdr_celestial.up)&combo_strike&chi.deficit>=2&!buff.ordered_elements.up
 actions.default_cleave+=/touch_of_death,if=!buff.heart_of_the_jade_serpent_cdr.up&!buff.heart_of_the_jade_serpent_cdr_celestial.up
-actions.default_cleave+=/whirling_dragon_punch,if=buff.heart_of_the_jade_serpent_cdr.up
+actions.default_cleave+=/whirling_dragon_punch,if=buff.heart_of_the_jade_serpent_cdr.up&buff.dance_of_chiji.stack<2
+actions.default_cleave+=/whirling_dragon_punch,if=buff.dance_of_chiji.stack<2
+actions.default_cleave+=/slicing_winds,if=buff.heart_of_the_jade_serpent_cdr.up|buff.heart_of_the_jade_serpent_cdr_celestial.up
 actions.default_cleave+=/celestial_conduit,if=buff.storm_earth_and_fire.up&cooldown.strike_of_the_windlord.remains&(!buff.heart_of_the_jade_serpent_cdr.up|debuff.gale_force.remains<5)&(talent.xuens_bond|!talent.xuens_bond&buff.invokers_delight.up)|boss&fight_remains<15
 actions.default_cleave+=/rising_sun_kick,if=!pet.xuen_the_white_tiger.active&prev.tiger_palm&time<5|buff.heart_of_the_jade_serpent_cdr_celestial.up&buff.pressure_point.up&cooldown.fists_of_fury.remains&(talent.glory_of_the_dawn|active_enemies<3)
 actions.default_cleave+=/fists_of_fury,if=buff.heart_of_the_jade_serpent_cdr_celestial.up
@@ -132,31 +135,27 @@ actions.default_cleave+=/tiger_palm,if=!combo_strike&chi<3&!cooldown.fists_of_fu
 
 # 1 target
 actions.default_st+=/fists_of_fury,if=buff.heart_of_the_jade_serpent_cdr_celestial.up|buff.heart_of_the_jade_serpent_cdr.up
-actions.default_st+=/rising_sun_kick,if=buff.pressure_point.up&!buff.heart_of_the_jade_serpent_cdr.up&buff.heart_of_the_jade_serpent_cdr_celestial.up|buff.ordered_elements.remains<=gcd.max*3&buff.storm_earth_and_fire.up&talent.ordered_elements
-actions.default_st+=/celestial_conduit,if=buff.storm_earth_and_fire.up&(!buff.heart_of_the_jade_serpent_cdr.up|debuff.gale_force.remains<5)&cooldown.strike_of_the_windlord.remains&(talent.xuens_bond|!talent.xuens_bond&buff.invokers_delight.up)|boss&fight_remains<15
+actions.default_st+=/rising_sun_kick,if=buff.pressure_point.up&!buff.heart_of_the_jade_serpent_cdr.up&buff.heart_of_the_jade_serpent_cdr_celestial.up|buff.invokers_delight.up|buff.bloodlust.up|buff.pressure_point.up&cooldown.fists_of_fury.remains|buff.power_infusion.up
+actions.default_st+=/whirling_dragon_punch,if=!buff.heart_of_the_jade_serpent_cdr_celestial.up&!buff.dance_of_chiji.stack=2
 actions.default_st+=/slicing_winds,if=buff.heart_of_the_jade_serpent_cdr.up|buff.heart_of_the_jade_serpent_cdr_celestial.up
+actions.default_st+=/celestial_conduit,if=buff.storm_earth_and_fire.up&(!buff.heart_of_the_jade_serpent_cdr.up|debuff.gale_force.remains<5)&cooldown.strike_of_the_windlord.remains&(talent.xuens_bond|!talent.xuens_bond&buff.invokers_delight.up)|boss&fight_remains<15
 actions.default_st+=/spinning_crane_kick,if=buff.dance_of_chiji.stack=2&combo_strike
-actions.default_st+=/rising_sun_kick,if=buff.pressure_point.up|buff.ordered_elements.remains<=gcd.max*3&buff.storm_earth_and_fire.up&talent.ordered_elements
 actions.default_st+=/tiger_palm,if=(energy>55&talent.inner_peace|energy>60&!talent.inner_peace)&combo_strike&chi.max-chi>=2&buff.teachings_of_the_monastery.stack<buff.teachings_of_the_monastery.max_stack&(talent.energy_burst&!buff.bok_proc.up|!talent.energy_burst)&!buff.ordered_elements.up
 # [Hekili] This Tiger Palm entry specifically allows Hit Combo breakage if you don't have enough Chi for Fists of Fury.
 actions.default_st+=/tiger_palm,if=(talent.energy_burst&!buff.bok_proc.up|!talent.energy_burst)&!buff.ordered_elements.up&!cooldown.fists_of_fury.remains&chi<3
 actions.default_st+=/tiger_palm,if=(prev.strike_of_the_windlord|!buff.heart_of_the_jade_serpent_cdr_celestial.up)&combo_strike&chi.deficit>=2&!buff.ordered_elements.up
 actions.default_st+=/touch_of_death
-actions.default_st+=/rising_sun_kick,if=buff.invokers_delight.up&!buff.storm_earth_and_fire.up&talent.ordered_elements
 actions.default_st+=/rising_sun_kick,if=!pet.xuen_the_white_tiger.active&prev.tiger_palm&time<5|buff.storm_earth_and_fire.up&talent.ordered_elements
 actions.default_st+=/strike_of_the_windlord,if=talent.celestial_conduit&!buff.invokers_delight.up&!buff.heart_of_the_jade_serpent_cdr_celestial.up&cooldown.fists_of_fury.remains<5&cooldown.invoke_xuen_the_white_tiger.remains>15|boss&fight_remains<12
 actions.default_st+=/strike_of_the_windlord,if=talent.gale_force&buff.invokers_delight.up&(buff.bloodlust.up|!buff.heart_of_the_jade_serpent_cdr_celestial.up)
 actions.default_st+=/strike_of_the_windlord,if=time>5&talent.flurry_strikes
-actions.default_st+=/rising_sun_kick,if=buff.power_infusion.up&buff.bloodlust.up
-actions.default_st+=/fists_of_fury,if=buff.power_infusion.up&buff.bloodlust.up
+actions.default_st+=/fists_of_fury,if=buff.power_infusion.up&buff.bloodlust.up&time>5
 actions.default_st+=/blackout_kick,if=buff.teachings_of_the_monastery.stack>3&buff.ordered_elements.up&cooldown.rising_sun_kick.remains>1&cooldown.fists_of_fury.remains>2
-actions.default_st+=/spinning_crane_kick,if=buff.dance_of_chiji.stack=2&combo_strike&buff.power_infusion.up&buff.bloodlust.up
-actions.default_st+=/whirling_dragon_punch,if=buff.power_infusion.up&buff.bloodlust.up
 actions.default_st+=/tiger_palm,if=combo_strike&energy.time_to_max<=gcd.max*3&talent.flurry_strikes&buff.power_infusion.up&buff.bloodlust.up
 actions.default_st+=/blackout_kick,if=buff.teachings_of_the_monastery.stack>4&cooldown.rising_sun_kick.remains>1&cooldown.fists_of_fury.remains>2
 actions.default_st+=/whirling_dragon_punch,if=!buff.heart_of_the_jade_serpent_cdr_celestial.up&!buff.dance_of_chiji.stack=2|buff.ordered_elements.up|talent.knowledge_of_the_broken_temple
-actions.default_st+=/crackling_jade_lightning,if=buff.the_emperors_capacitor.stack>19&!buff.heart_of_the_jade_serpent_cdr.up&!buff.heart_of_the_jade_serpent_cdr_celestial.up&combo_strike&cooldown.invoke_xuen_the_white_tiger.remains>10
-actions.default_st+=/slicing_winds
+actions.default_st+=/crackling_jade_lightning,if=buff.the_emperors_capacitor.stack>19&!buff.heart_of_the_jade_serpent_cdr.up&!buff.heart_of_the_jade_serpent_cdr_celestial.up&combo_strike&cooldown.invoke_xuen_the_white_tiger.remains>10|buff.the_emperors_capacitor.stack>15&!buff.heart_of_the_jade_serpent_cdr.up&!buff.heart_of_the_jade_serpent_cdr_celestial.up&combo_strike&(boss|target.time_to_die>20)&cooldown.invoke_xuen_the_white_tiger.remains<10&cooldown.invoke_xuen_the_white_tiger.remains>2
+actions.default_st+=/slicing_winds,if=target.time_to_die>10
 actions.default_st+=/fists_of_fury,if=(talent.xuens_battlegear|!talent.xuens_battlegear&(cooldown.strike_of_the_windlord.remains>1|buff.heart_of_the_jade_serpent_cdr.up|buff.heart_of_the_jade_serpent_cdr_celestial.up))&(talent.xuens_battlegear&cooldown.invoke_xuen_the_white_tiger.remains>5|cooldown.invoke_xuen_the_white_tiger.remains>10)&(!buff.invokers_delight.up|buff.invokers_delight.up&cooldown.strike_of_the_windlord.remains>4&cooldown.celestial_conduit.remains)|fight_remains<5|talent.flurry_strikes
 actions.default_st+=/rising_sun_kick,if=chi>4|chi>2&energy>50|cooldown.fists_of_fury.remains>2
 actions.default_st+=/tiger_palm,if=combo_strike&energy.time_to_max<=gcd.max*3&talent.flurry_strikes&buff.wisdom_of_the_wall_flurry.up

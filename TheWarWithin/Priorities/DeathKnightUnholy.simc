@@ -1,9 +1,12 @@
+## https://github.com/simulationcraft/simc/commits/thewarwithin/ActionPriorityLists/deathknight_unholy.simc
+## Up to date with SimC: March 21 2025 - 1b0deed
+
 actions.precombat+=/raise_dead
 actions.precombat+=/army_of_the_dead,precombat_time=2
 actions.precombat+=/variable,name=trinket_1_buffs,value=trinket.1.has_use_buff|trinket.1.is.mirror_of_fractured_tomorrows|trinket.1.is.treacherous_transmitter
 actions.precombat+=/variable,name=trinket_2_buffs,value=trinket.2.has_use_buff|trinket.2.is.mirror_of_fractured_tomorrows|trinket.2.is.treacherous_transmitter
-actions.precombat+=/variable,name=trinket_1_duration,op=setif,value=20,value_else=trinket.1.proc.any_dps.duration,condition=trinket.1.is.mirror_of_fractured_tomorrows|trinket.1.is.treacherous_transmitter
-actions.precombat+=/variable,name=trinket_2_duration,op=setif,value=20,value_else=trinket.2.proc.any_dps.duration,condition=trinket.2.is.mirror_of_fractured_tomorrows|trinket.2.is.treacherous_transmitter
+actions.precombat+=/variable,name=trinket_1_duration,op=setif,value=trinket.1.is.treacherous_transmitter*15+trinket.1.is.funhouse_lens*15+trinket.1.is.signet_of_the_priory*20,value_else=trinket.1.proc.any_dps.duration,condition=trinket.1.is.mirror_of_fractured_tomorrows|trinket.1.is.treacherous_transmitter|trinket.1.is.funhouse_lens|trinket.1.is.signet_of_the_priory
+actions.precombat+=/variable,name=trinket_2_duration,op=setif,value=trinket.2.is.treacherous_transmitter*15+trinket.2.is.funhouse_lens*15+trinket.2.is.signet_of_the_priory*20,value_else=trinket.2.proc.any_dps.duration,condition=trinket.2.is.mirror_of_fractured_tomorrows|trinket.2.is.treacherous_transmitter|trinket.2.is.funhouse_lens|trinket.2.is.signet_of_the_priory
 actions.precombat+=/variable,name=trinket_1_high_value,op=setif,value=2,value_else=1,condition=trinket.1.is.treacherous_transmitter
 actions.precombat+=/variable,name=trinket_2_high_value,op=setif,value=2,value_else=1,condition=trinket.2.is.treacherous_transmitter
 actions.precombat+=/variable,name=trinket_1_sync,op=setif,value=1,value_else=0.5,condition=variable.trinket_1_buffs&(talent.apocalypse&trinket.1.cooldown.duration%%cooldown.apocalypse.duration=0|talent.dark_transformation&trinket.1.cooldown.duration%%cooldown.dark_transformation.duration=0)|trinket.1.is.treacherous_transmitter
@@ -18,7 +21,8 @@ actions+=/variable,name=apoc_timing,op=set,value=3,value_else=0,condition=cooldo
 actions+=/variable,name=pop_wounds,op=set,value=(cooldown.apocalypse.remains>variable.apoc_timing|!talent.apocalypse)&(debuff.festering_wound.stack>=1&cooldown.unholy_assault.remains<20&talent.unholy_assault&active_enemies=1|debuff.rotten_touch.up&debuff.festering_wound.stack>=1|debuff.festering_wound.stack>=4-pet.abomination.active)|fight_remains<5&debuff.festering_wound.stack>=1
 actions+=/variable,name=pooling_runic_power,op=set,value=talent.vile_contagion&cooldown.vile_contagion.remains<5&runic_power<30
 actions+=/variable,name=spend_rp,op=setif,value=(!talent.rotten_touch|talent.rotten_touch&!debuff.rotten_touch.up|runic_power.deficit<20)&((talent.improved_death_coil&(active_enemies=2|talent.coil_of_devastation)|rune<3|pet.gargoyle.active|buff.sudden_doom.up|!variable.pop_wounds&debuff.festering_wound.stack>=4))
-actions+=/variable,name=epidemic_targets,value=3+talent.improved_death_coil+(talent.frenzied_bloodthirst&buff.essence_of_the_blood_queen.stack>5)+(talent.hungering_thirst&talent.harbinger_of_doom&buff.sudden_doom.up)
+actions.variables+=/variable,name=san_coil_mult,op=setif,value=2,value_else=1,condition=buff.essence_of_the_blood_queen.stack>=4
+actions.variables+=/variable,name=epidemic_targets,value=3+talent.improved_death_coil+(talent.frenzied_bloodthirst*variable.san_coil_mult)+(talent.hungering_thirst&talent.harbinger_of_doom&buff.sudden_doom.up)
 # Call Action Lists
 actions+=/call_action_list,name=san_trinkets,strict=1,if=talent.vampiric_strike
 actions+=/call_action_list,name=trinkets,strict=1,if=!talent.vampiric_strike
