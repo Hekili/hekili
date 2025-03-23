@@ -156,12 +156,6 @@ spec:RegisterAuras( {
         aliasMode = "first",
         aliasType = "buff",
     },
-    -- Enable Cleanse Toxins.
-    can_cure_toxins = {
-        alias = { "dispellable_poison", "dispellable_disease" },
-        aliasMode = "first",
-        aliasType = "buff",
-    },
     -- Your next $n damage or healing spells have their mana cost reduced by $s1%.
     clearcasting = {
         id = 16246,
@@ -466,26 +460,6 @@ spec:RegisterAuras( {
         aliasType = "buff",
     },
 
-    flametongue_totem = {
-        duration = 120,
-        max_stack = 1,
-        generate = function( t )
-            local up, name, start, duration, texture = GetTotemInfo( 1 )
-
-            if up and texture == 136040 then
-                t.count = 1
-                t.expires = start + duration
-                t.applied = start
-                t.caster = "player"
-                return
-            end
-
-            t.count = 0
-            t.expires = 0
-            t.applied = 0
-            t.caster = "nobody"
-        end,
-    },
     magma_totem = {
         duration = 20,
         max_stack = 1,
@@ -587,7 +561,7 @@ spec:RegisterAuras( {
         end,
     },
     fire_totem = {
-        alias = { "flametongue_totem", "magma_totem", "searing_totem", "frost_resistance_totem", "fire_elemental_totem", "totem_of_wrath" },
+        alias = { "magma_totem", "searing_totem", "fire_elemental_totem" },
         aliasMode = "first",
         aliasType = "buff",
     },
@@ -718,46 +692,6 @@ spec:RegisterAuras( {
             t.caster = "nobody"
         end,
     },
-    nature_resistance_totem = {
-        duration = 300,
-        max_stack = 1,
-        generate = function( t )
-            local up, name, start, duration, texture = GetTotemInfo( 4 )
-
-            if up and texture == 136061 then
-                t.count = 1
-                t.expires = start + duration
-                t.applied = start
-                t.caster = "player"
-                return
-            end
-
-            t.count = 0
-            t.expires = 0
-            t.applied = 0
-            t.caster = "nobody"
-        end,
-    },
-    sentry_totem = {
-        duration = 300,
-        max_stack = 1,
-        generate = function( t )
-            local up, name, start, duration, texture = GetTotemInfo( 4 )
-
-            if up and texture == 136082 then
-                t.count = 1
-                t.expires = start + duration
-                t.applied = start
-                t.caster = "player"
-                return
-            end
-
-            t.count = 0
-            t.expires = 0
-            t.applied = 0
-            t.caster = "nobody"
-        end,
-    },
     windfury_totem = {
         duration = 300,
         max_stack = 1,
@@ -799,7 +733,7 @@ spec:RegisterAuras( {
         end,
     },
     air_totem = {
-        alias = { "grounding_totem", "nature_resistance_totem", "sentry_totem", "windfury_totem", "wrath_of_air_totem" },
+        alias = { "grounding_totem", "windfury_totem", "wrath_of_air_totem" },
         aliasMode = "first",
         aliasType = "buff",
     },
@@ -1190,49 +1124,6 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Summons a Cleansing Totem with 5 health at the feet of the caster that attempts to remove 1 disease and 1 poison effect from party members within 30 yards every 3 seconds.  Lasts 5 min.
-    cleansing_totem = {
-        id = 8170,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136019,
-
-        totem = "water",
-
-        handler = function ()
-            removeBuff( "water_totem" )
-            summonTotem( "cleansing_totem" )
-            applyBuff( "cleansing_totem" )
-        end,
-    },
-
-    -- Cures 1 poison effect and 1 disease effect on a friendly target.
-    cure_toxins = {
-        id = 526,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.07,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136067,
-
-        buff = "can_cleanse_toxins",
-
-        handler = function ()
-            removeBuff( "can_cleanse_toxins" )
-        end,
-    },
-
-
     -- Summon an elemental totem that calls forth a greater earth elemental to protect the caster and his allies.  Lasts 2 min.
     earth_elemental_totem = {
         id = 2062,
@@ -1517,31 +1408,6 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Summons a Flametongue Totem with 5 health at the feet of the caster.  Party and raid members within 30 yards of the totem have their spell damage and healing increased by up to 144.  Lasts 5 min.
-    flametongue_totem = {
-        id = 58656,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = 0.11,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136040,
-
-        totem = "fire",
-
-        handler = function ()
-            removeBuff( "fire_totem" )
-            summonTotem( "flametongue_totem" )
-            applyBuff( "flametongue_totem" )
-        end,
-
-        copy = { 8249, 10526, 16387, 25557, 58649, 58652, 58656 },
-    },
-
-
     -- Imbue the Shaman's weapon with fire, increasing total spell damage by 211. Each hit causes 89.0 to 274 additional Fire damage, based on the speed of the weapon.  Slower weapons cause more fire damage per swing.  Lasts 30 minutes.
     flametongue_weapon = {
         id = 8024,
@@ -1569,31 +1435,6 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 8027, 8030, 16339, 16341, 16342, 25489, 58785, 58789, 58790 },
-    },
-
-
-    -- Summons a Frost Resistance Totem with 5 health at the feet of the caster for 5 min.  The totem increases party and raid members' frost resistance by 130, if within 30 yards.
-    frost_resistance_totem = {
-        id = 8181,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 135866,
-
-        totem = "fire",
-
-        handler = function ()
-            removeBuff( "fire_totem" )
-            summonTotem( "frost_resistance_totem" )
-            applyBuff( "frost_resistance_totem" )
-        end,
-
-        copy = { 10478, 10479, 25560, 58741, 58745 },
     },
 
 
@@ -1950,31 +1791,6 @@ spec:RegisterAbilities( {
     },
 
 
-    -- Summons a Nature Resistance Totem with 5 health at the feet of the caster for 5 min that increases the nature resistance of party and raid members within 30 yards by 130.
-    nature_resistance_totem = {
-        id = 10595,
-        cast = 0,
-        cooldown = 0,
-        gcd = "spell",
-
-        spend = 0.08,
-        spendType = "mana",
-
-        startsCombat = true,
-        texture = 136061,
-
-        totem = "air",
-
-        handler = function ()
-            removeBuff( "air_totem" )
-            summonTotem( "nature_resistance_totem" )
-            applyBuff( "nature_resistance_totem" )
-        end,
-
-        copy = { 10600, 10601, 25574, 58746, 58749 },
-    },
-
-
     -- When activated, your next Nature spell with a base casting time less than 10 sec. becomes an instant cast spell. Nature's Swiftness shares a cooldown with Elemental Mastery.
     natures_swiftness = {
         id = 16188,
@@ -2089,30 +1905,6 @@ spec:RegisterAbilities( {
         end,
 
         copy = { 6363, 6364, 6365, 10437, 10438, 25533, 58699, 58703, 58704 },
-    },
-
-
-    -- Summons an immobile Sentry Totem with 100 health at your feet for 5 min that allows vision of nearby area and warns of enemies that attack it.  Right-Click on buff to switch back and forth between totem sight and shaman sight.
-    sentry_totem = {
-        id = 6495,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = 0.02,
-        spendType = "mana",
-
-        startsCombat = false,
-        texture = 136082,
-
-        totem = "air",
-
-        handler = function ()
-            removeBuff( "air_totem" )
-            applyBuff( "sentry_totem" )
-        end,
-
-        copy = { 6363, 6364, 6365, 10437, 10438, 25533 },
     },
 
 
@@ -2265,30 +2057,6 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "tidal_force" )
-        end,
-    },
-
-
-    -- Summons a Totem of Wrath with 5 health at the feet of the caster.  The totem increases spell power by 100 for all party and raid members, and increases the critical strike chance of all attacks by 3% against all enemies within 40 yards.  Lasts 5 min.
-    totem_of_wrath = {
-        id = 30706,
-        cast = 0,
-        cooldown = 0,
-        gcd = "totem",
-
-        spend = 0.05,
-        spendType = "mana",
-
-        talent = "totem_of_wrath",
-        startsCombat = false,
-        texture = 135829,
-
-        totem = "fire",
-
-        handler = function ()
-            removeBuff( "fire_totem" )
-            summonTotem( "totem_of_wrath" )
-            applyBuff( "totem_of_wrath" )
         end,
     },
 
@@ -2573,7 +2341,7 @@ spec:RegisterOptions( {
 
 spec:RegisterPack( "Elemental", 20240701, [[Hekili:fFvBVTTnq4FlbfWTfRv121nzPloaTOfdjFiBOkR5ddvw0s0weLsuJKkEgiq)23DK6fkfz74cuSVyyrE3dV3EoEmysWTb(Xenn4MPJNoB8zJN4n50ztFxGVEBonWpNe9DYA4pzKu43pZPP0mnHJ7SLliXiakrHmc2nWFzbJRVkly5GOo5uq2CAuWnNf4NWIJPwjPQOa)BtyQYWCjtiz6TW)Gt(vLHWMS1z04YWvczzyJbug(ILf6YqjnsKclf3iYxOkTOm8t)PFzibGCdLZFzziI(sIcfRixKvgEv02x)vklt98oW6NqsjW2RlyX0kiVts0jEb(CMsRmEmlBnNc)7gteKMrwYPXbFmWNePzISa)vmjDbTg2fAHMMADvjl3kIVbKxRjY1u0teAIDdqenvYiy8C1kVCbUSxrEz4dpugAL3tZsPaSlIzGvEX8YWjthhOHiEpdQhyuIuNynhVyXgWrhbXfChJfp0gBGmPCWDim31BD(icNVqSAHoPjgOqB7T7326zbT4PaRgcwvrraOziq172gLtjkaVTUNbi8725PgtTNlhkUxOserF3tstjqnHnKo1jF2kdI5P)qyEzhi5K7jlwwivAeXZ2FSHZwNOZWGGkHr5XEknqqaibZ8mNyHj92yM)6obfQXjE5rqD3fLHNoUfbDsbqMaJsinH6Z3VDvznDZx9nweNjJ3jqOA3dvkz0ug1gMMykYoPmmvCpGJtPvcekx0CagK7ZbD8sJ21yTMVnpXRiJtjQeAClkE1k3Cmvc1P6DYu3QUwFCPGR7wYbFse7T9GldHKfHTSKQE9h(G4Z7PRWptICDBK93mRdj7ThdJC2pET(5gJUFfdswNTtwWUBaSZ4vvt2nmDcl70wKtjRtjT9H2DBGNm)6a8(Nm)Apu9wsWrWa6vFx3jyx8W(1)X0vKcqVb4a7L4pThhX(Xc8Mx79VlStIG8RbUT7jPB1T3g7m3maXsYGwANM)Ar26c6InusoUwhQ6hTdwGJvCN4oFwQ6n1Zr8jMksiJDDBSTge9sizXlyPllOX7)IBqEXQvUIVpl7W3Z(KRPoap9NzlOdolX7CRgTJi1ViesV3dmnChCq0PJphhSDdrIUj0T9Up8LBU6MF)9LHLH3MaJrXsZfsD1qFp3wM8CCgZ)PaCiibRePGyKcTifCeybGgKTMQ8kV2aWkbNl2yyBKcPD6tjSEHP8GbURgfZA2LHynj6(6A5YeMth6q4kDCmkmmqnbhG99Lxxg(AyazJpdFCD9OZIvmo1oPBktPmMHQi3XNwdunjlcagMN67uny4GVFL2QuNzP1jeyzkea36owollIxeJKvk0BKkRTM)(VuuejAQ6BWy7BsyrjUstY22EQvok9FZ5SiMM3IRRFxFO)gu(lRpMBTqati8ne0y3LM6CYByCUJhvbPUwut0WSuwr6sQn5YfAirELPiaxyw3mfMLHsUcDIqAESds6)JmNxfvg(MUV)4fx91xI9ymzMa)N9SHEQX1WQhUbcMOlV2ApkVM2w)Y8384EaVITA(j9AXCu62TDZWQ2VHbQy)2ldR5qu6gT73uz0qnugnyZKrd0izylOL7uTBTv5CLXRWllMd3ZGMw3BQUC6Hv029apci9UJN61ACwPXeYaJA1eBAEj4dp84xbEXC4fGdG4)pr7MJVZB3Ao3(xq8y9E0mKdfSAFKfI8UF61fZNoG6TpaB)AF5qk7mJzJxn8GRxo)Sb03DoqeG6bgV40HsIhhzRn33DkTbQKNm6KQ5dFS29FeKXmncp6Kdoj5EDcCKYkQrNx50QeW76v728mPF(fV2dFiQyFz2tvALahrzY5J6MCUy(S(W58(JDXLg19Tl9r4jv3zf94k66RdMJDQyoIcMQC)JEPVoi4)o]] )
 
-spec:RegisterPack( "Enhancement", 20240413, [[Hekili:nJvxVTUnp4FlNBc25So)gN0pofOPxmGbS23HUl8W2DYwXwowOYwgsYnRaf(3(OKtSLL)Qh0HTHcuKsrrsr(q(WgKp63qbjyfb90M1BUC9L(B92S(YnxDlkq9AjbfuIJFgFa(qboh(9pvKHlIj5KcL(SxzCCI2gsELigohfSVIYupuG2pUH3IcWvQmUafeuvsefvsjkiJMKqAUdrgJc(dU6x()1rKoVvhjZW54I6ibxHvuo8PuUOo6Njptzuiye8ukdcbCS(uPxPGeZZ3JvF)U)3rArsAL41WJeCjV4cA6UpLJPAZNesZ3xrsw1jidldLLegRKFKiQFCmlMYG8HIxCOIC2OcCXZ7A01B4XE54)muRYp4pQ7)OExBtEAQLjh)Qm6HmvbT4qOmJsyj6lUVkn1R5p9s4hlg)MXyglKNgQYiHeMPQiBVnbluzHkUIKBmXBVzeNsfKHspcadXqXyQTWXdIsUP2)y7PNQUWRbcbxPF4A()gv6V56lCHMMdQurJbxFGOvxsuH75qdMNIse(RT6Mc3ugVZ32avssifs9sBHNt2wbMUEEQ4JznvRENteGyzjvqvty(bMRG)cwhVAXVawVGKtjY77fEXzqslSf72c7YXeMuj45NZ9sfmWA3vRMZyhXu1yoCvmNZ0qpV24Ytq0Ll5D7w7DZkxi9PdVF67DHKeVB6JTJQUgZ9CMAXx4a4c0bWJF(I4xJzq8Hfhik5o)l0GX(Y2yWsas5zWzRAKcqKC9RkmHsUF3T9s9Z1270FVAq79583M1Jw37HHvCro8uPpt6gk1jR)qbq)C8HCCJBglEARCmiCkIFToAvDuNsoG4bwVzGMjNoEvQB8jyeWs6cJU9ZCfpsbEpdA2NC0A)hCpxGFbhYWYSLESwY8Qkxnq25mW2)UEagO3D2s0OlJ0VS2B72LMiDcRDKQYOf(RHjHfyVYy1DWOkfessVMBzUaa4eeiwyjOGxicjyxZYeB99xFnk4iwOFfWYdpKxYfkyEy0M6OMaOoIbEw6v)iSAsjjg90nWMjyjj5xl6TetD039WV)z43B(mkWChZgrKuCftbF8jZgsngf8zlrdk4u(b9JifewAT6KeedJ)ickgf8P6iN5)gCOT4(0a99MfbM2pBD8ZzvhYx8oIHjdan31zBpp)MoMUCU3EFgRzdyWuxnPPwGlRoAxDKFN5DbFAJFTDLSLpYPqEJTsn0FoA8vBngBsIJ(32tFl6rh98x)EIpF)jtr9zZQJUVxgPDIRXktJxNHZXKKVYaDM3xoK1gp6ICbErqXjjgx6HzIIz4vJUdIvGY2zOFV5Iglnxi02ic7lyEetd1xmT1zT(88g76I771L0mpgCMnjUEWuWaQDuWgN(VtS8M0WqMEidaX2TMy465FBoe9D51ri7HSpmlETfGyKvimo9MbntgiQdM)RZhAU7iyngO7eJHU9D)g7HJE)lq05AlEydbrVUBRDlCjsMU)Egs6UiZAtJXqCnhBC0g7aYor5eqBT1RD1exTwSZWEtLUWDKTvmGNTtNiNMJ4BjbDQZ8U(sB3MPo6l6XhB3UqsC6MgNvDor42SUJXVlTYZmuz6V6LZ)lXT7O8pW2hUSg)xy7dxELpW2hlGHF3TwtJqh9BkPo6T3gYr5CI73yI1r9)wtwEO71lTIZ5Fq)f]] )
+spec:RegisterPack( "Enhancement", 20240413, [[Hekili:fJvBVTTnq4FlffizflZl(LST0fhGvGI1KvKbmLU8HIkjAjklctrQrszp)f9BFhPEJswYVeeSGa4ytE3ZD8E5HhO7y3hDDcrkS7dtUCYvxoDY0rxoz2SXUoQTPyxNuuWk0s4lmuc85hzXiwaobZu692s5OqnesEMia231zrgHQUJ5UOxCV8AxhuMkMlCD(ejbJCDIjHH4c5XYaxNN4Qp)h5(4glL7lJrjiwUVGRqkch(wexK7)j8kcLaoIGhrOG5F7BZ9)OTIofkEVEJpGK4WCFT2pXFYHKiZVx)hkqdPCuQahWtwGuF)8FCdHfgLj26TbJs5SlirZFtcIOHo0JKSidqQxfJOqCsXzlZW26YJIoOQuYYyfJWw6jJjyAOwXfzrrJk(5Oq(g2lTMbik1Jh5PIXEyQjOjR1gJeQypfxHtmqCMz1iIaVZIBGuTyNvre7163dksTePIe4jGknlFV9g7bJiSar9KPebrzc3Py1ieLSgpGn3YqPsmOHacAYEfQaTni6kSq6TuGcSCTD3BpExk3uY2uPvf3l(PhfoJxOBVMJ4gBOxFnKpy4ecwE7KdROeoguSDXCXkVAz4AZlbtOlmncvB3UwO9j(MP9bKIlsKkbzfUNDPO1ipksg33E1Dhl4uvTpKGWuapEszF6iPc46UD(0ZKq3)YrjXJeyDpV82aKu5Pa6QYT49SvpgUi6wg0Hc02XafNUgIEOLafMA7OS0EqWWMan18GvA9cXfrVMvTsfzmkgcaEMD7hUkrQQd6RCjgowE1HSdgTg)IfTo8zTeLBMF9rFIlsbg17ZKhbVXXxjx5EJVYUre6PFncRfMnbTmbDs9Eq9FxqoHeZKU6w3xoGM2jTsRPDpgFn6yz9CDwdSWWoMrnMD5SXtDD2Ge64SegN43(RhU7HF)95(5(pgJZ9jjPCHQCcIZRjQphMUa)pzG1HzeKCiw6ddQWtaApybi)XwILJYV)ZegS11aEFHjZs1yPfOW5aa75UHZb1mMoItPCDYtJTajZ93GfW6zMbtiG6kTyvyPpP5(lYuvYX4g)oJ1s6WqTWWWwOfWeoVhk(8)b4iSRFOllFmMaMTCGjaf4hjeP04tLhNYqZsOIqqcaRaL9RWk4WdHW7ufkzcBajsO2ZvXiyzmKh2QXMWblVv7Ib0myOoylc4QIkx7RFrI1iHtKF7c4SftcITLgX22y1Ytn(FtPKaII2GRDqOYO)kmFNOYmpwarU)4VPbn0EPjwwEdHsTorLqQQe1enmlXYswGlkqOCfKvVlPk)pRDAtxP46y(ME8yO0g(3dMPTXm0cko09dUobGldXyKEQ5bjdY9VDoCeY9pdmBhsbypO2SU7Vre(aIaUIXlbB3MrYvbTp7396qCySwBYJcxDAJrS4F0gy6GgyysLC)BamN0GPLmAmNDkyML2Gtn1KgLRmzPklurbzdSc(ZPKX5WPYUdwzcwdgf7DaRMDApKLvkSNr7EHYJ30kn26QV6ez9UntM1oGvKB2nE3wORE(nftFPBkApQO27(P97D7mexdw9o9NgYF(uQyBxj0DINb7k(f7iF3X(6KaU(5Na()GvA8LNs8QfRX1pJi34X2HoR5h7e1gpCx2BG7JQgK0YowdBAayy2WbMS00wo(QH7lv6qsekdkD3lf1oS2Tiy7oSvX9yEfpaK(MSEOyokDlzp75IGttD9tpvn22(pOqMOZR20yRopXZ(jobGA)eoDQFA9Ip7)QotY16Hz6J9Py79F92PHZbyzFvVV6aCS9(qqwnbD2E)uShxVzl6ZoVw0PXEo0tfzb)Us0q7vjuXBi1DEeOrqpYF4FYA9YS5(F3D)97GpN8on84aDarlT7)n]] )
 
 
 spec:RegisterPackSelector( "elemental", "Elemental", "|T136048:0|t Elemental",

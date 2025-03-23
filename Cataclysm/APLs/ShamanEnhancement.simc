@@ -1,25 +1,38 @@
+## Enhancement Shaman
+## Based on WoWSims
+
+
 actions.precombat+=/windfury_weapon,if=!mainhand_imbued
 actions.precombat+=/flametongue_weapon,if=!offhand_imbued
 actions.precombat+=/lightning_shield,if=buff.shield.down
+actions.precombat+=/lightning_shield,if=buff.shield.down
 actions.precombat+=/call_of_the_elements,if=buff.earth_totem.down&buff.fire_totem.down&buff.water_totem.down&buff.air_totem.down
+actions.precombat+=/shamanistic_rage,if=buff.shamanistic_rage.down
+actions.precombat+=/feral_spirit,if=!pet.alive
+actions.precombat+=/synapse_springs
+actions.precombat+=spiritwalkers_grace,if=buff.spiritwalkers_grace.down
 actions.precombat+=/potion
 
-actions+=/wind_shear
-actions+=/windfury_weapon,if=!mainhand_imbued
-actions+=/flametongue_weapon,if=!offhand_imbued
-actions+=/use_items
-actions+=/potion
-actions+=/feral_spirit
-actions+=/call_of_the_elements,if=buff.earth_totem.down&buff.fire_totem.down&buff.water_totem.down&buff.air_totem.down
-actions+=/lightning_shield,if=buff.shield.remains<=3
+actions+=/call_action_list,name=aoe,if=active_enemies>2
+actions+=/call_action_list,name=single
 
-actions+=/flame_shock,cycle_targets=1,max_cycle_targets=2,if=debuff.flame_shock.remains<4&target.time_to_die>=9
-actions+=/searing_totem,if=buff.fire_totem.remains<5
-actions+=/fire_nova,if=active_enemies>1&active_dot.flame_shock>0
-actions+=/chain_lightning,if=buff.maelstrom_weapon.stack=5&active_enemies>1
-actions+=/lightning_bolt,if=buff.maelstrom_weapon.stack=5
-actions+=/stormstrike
-actions+=/lava_lash
-actions+=/unleash_elements
-actions+=/earth_shock,if=debuff.flame_shock.remains>5
-actions+=/lightning_bolt,if=buff.maelstrom_weapon.stack>3
+actions.single+=/call_of_the_elements,if=buff.earth_totem.down&buff.fire_totem.down&buff.water_totem.down&buff.air_totem.down
+actions.single+=/searing_totem,if=buff.fire_totem.down&active_enemies<3
+actions.single+=/stormstrike
+actions.single+=/lava_lash
+actions.single+=/lightning_bolt,if=buff.maelstrom_weapon.stack>=3&swing.mh.remains>cast_time&swing.oh.remains>cast_time
+actions.single+=/earth_elemental_totem,if=buff.tolvir_agility.up
+actions.single+=/flame_shock,if=debuff.flame_shock.down&buff.unleash_flame.up
+actions.single+=/unleash_elements
+actions.single+=/chain_lightning,if=buff.maelstrom_weapon.stack>=1&swing.mh.remains>cast_time&swing.oh.remains>cast_time
+actions.single+=/flame_shock,if=debuff.flame_shock.remains<=9&buff.unleash_flame.up
+actions.single+=/earth_shock
+actions.single+=/feral_spirit,if=!pet.alive
+actions.single+=/searing_totem,if=buff.fire_totem.remains<15
+
+actions.aoe+=/chain_lightning,if=buff.maelstrom_weapon.stack>=1&swing.mh.remains>cast_time&swing.oh.remains>cast_time
+actions.aoe+=/magma_totem,if=buff.fire_totem.down&active_enemies>=3
+actions.aoe+=/flame_shock,if=debuff.flame_shock.remains<=2
+actions.aoe+=/lava_lash,if=debuff.flame_shock.up
+actions.aoe+=/fire_nova
+actions+=/call_action_list,name=single
