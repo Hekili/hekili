@@ -1,7 +1,9 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/rogue_outlaw.simc
-## Up to date with SimC: March 15 2025 - b539d20
+## Up to date with SimC: March 22 2025 - 43785a0
 
 actions.precombat+=/apply_poison
+## [Syrif] - Use internal state expression to determine whether or not a couble coup is actually possible. Sims simply use a true/false flag to decide but we can't do that
+actions.precombat+=/variable,name=double_coup,value=coup_de_bug
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
 actions.precombat+=/stealth,precombat_seconds=2
 # Builds with Keep it Rolling+Loaded Dice prepull Adrenaline Rush before Roll the Bones to consume Loaded Dice immediately instead of on the next pandemic roll.
@@ -19,7 +21,7 @@ actions+=/variable,name=finish_condition,value=combo_points>=cp_max_spend-1-(ste
 actions+=/call_action_list,name=cds
 # High priority stealth list, will fall through if no conditions are met.
 actions+=/call_action_list,name=stealth,strict=1,if=stealthed.all
-actions+=/call_action_list,name=finish,strict=1,if=variable.finish_condition|coup_de_bug
+actions+=/call_action_list,name=finish,strict=1,if=variable.finish_condition
 actions+=/call_action_list,name=build
 actions+=/arcane_torrent,if=energy.base_deficit>=15+energy.regen
 actions+=/arcane_pulse
@@ -43,6 +45,8 @@ actions.build+=/sinister_strike
 
 # Cooldowns  Maintain Adrenaline Rush. Recast while already active if using Improved ADR and at low CPs.
 actions.cds+=/adrenaline_rush,if=!buff.adrenaline_rush.up&(!variable.finish_condition|!talent.improved_adrenaline_rush)|talent.improved_adrenaline_rush&combo_points<=2
+# Enable the possibility to chain cast Coup de Grace if the bug option is enabled, as a higher priority than other cooldowns except Adrenaline Rush
+actions.cds+=/coup_de_grace,if=variable.double_coup&prev_gcd.1.coup_de_grace
 # Sprint to further benefit from Scroll of Momentum trinket.
 actions.cds+=/sprint,if=(trinket.1.is.scroll_of_momentum|trinket.2.is.scroll_of_momentum)&buff.full_momentum.up
 # Maintain Blade Flurry on 2+ targets.
@@ -51,18 +55,18 @@ actions.cds+=/blade_flurry,if=spell_targets>=2&buff.blade_flurry.remains<gcd
 actions.cds+=/blade_flurry,if=talent.deft_maneuvers&!variable.finish_condition&(spell_targets>=3&combo_points.deficit=spell_targets+buff.broadside.up|spell_targets>=5)
 # With a natural 5 buff roll, use Keep it Rolling when you obtain the remaining buff from Count the Odds and all buffs are within 30s remaining.
 actions.cds+=/keep_it_rolling,if=rtb_buffs.normal>=5&rtb_buffs=6&rtb_buffs.max_remains<=30
-# Without a natural 5 buff roll, use Keep it Rolling at 4+ buffs, unless you only have one of BS/RP/TB, then wait until the last second in an attempt to obtain the others from Count the Odds.
-actions.cds+=/keep_it_rolling,if=rtb_buffs>=4&rtb_buffs.normal<=2&(rtb_buffs.min_remains<1|(buff.broadside.up+buff.ruthless_precision.up+buff.true_bearing.up>=2))
-# Without a natural 5 buff roll, use Keep it Rolling at 3+ buffs if you have at least two of BS/RP/TB. If missing one of those three buffs, then wait until the last second in an attempt to obtain it from Count the Odds.
-actions.cds+=/keep_it_rolling,if=rtb_buffs>=3&rtb_buffs.normal<=2&(buff.broadside.up+buff.ruthless_precision.up+buff.true_bearing.up>=2)&(rtb_buffs.min_remains<1|(buff.broadside.up+buff.ruthless_precision.up+buff.true_bearing.up=3))
+# Without a natural 5 buff roll, use Keep it Rolling at any 4+ buffs.
+actions.cds+=/keep_it_rolling,if=rtb_buffs>=4&rtb_buffs.normal<=2
+# Without a natural 5 buff roll, use Keep it Rolling at 3 buffs if you have the combination of Ruthless Precision + Broadside + True Bearing.
+actions.cds+=/keep_it_rolling,if=rtb_buffs>=3&rtb_buffs.normal<=2&buff.broadside.up&buff.ruthless_precision.up&buff.true_bearing.up
 # Variable that counts how many buffs are ahead of RtB's pandemic range, which is only possible by using KIR.
 actions.cds+=/variable,name=buffs_above_pandemic,value=(buff.broadside.remains>39)+(buff.ruthless_precision.remains>39)+(buff.true_bearing.remains>39)+(buff.grand_melee.remains>39)+(buff.buried_treasure.remains>39)+(buff.skull_and_crossbones.remains>39)
 # Maintain Roll the Bones: cast without any buffs.
 actions.cds+=/roll_the_bones,if=rtb_buffs=0
 # With TWW2 set, recast Roll the Bones if we will roll away between 0-1 buffs. If KIR was recently used on a natural 5 buff, then wait until all buffs are below around 41s remaining.
 actions.cds+=/roll_the_bones,if=set_bonus.tww2_4pc&rtb_buffs.will_lose<=1&(variable.buffs_above_pandemic<5|rtb_buffs.max_remains<42)
-# With TWW2 set, recast Roll the Bones with at most 2 buffs active regardless of duration, or if we will roll away between 0-4 buffs and all buffs are within 10s remaining.
-actions.cds+=/roll_the_bones,if=set_bonus.tww2_4pc&(rtb_buffs<=2|rtb_buffs.max_remains<11&rtb_buffs.will_lose<5)
+# With TWW2 set, recast Roll the Bones with at most 2 buffs active regardless of duration. Supercharger builds will also roll if we will lose between 0-4 buffs, but KIR Supercharger builds wait until they are all below 11s remaining.
+actions.cds+=/roll_the_bones,if=set_bonus.tww2_4pc&(rtb_buffs<=2|(rtb_buffs.max_remains<11|!talent.keep_it_rolling)&rtb_buffs.will_lose<5&talent.supercharger)
 # Without TWW2 set or Sleight of Hand, recast Roll the Bones to override 1 buff into 2 buffs with Loaded Dice, or reroll any 2 buffs with Loaded Dice+Supercharger. Hidden Opportunity builds can also reroll 2 buffs with Loaded Dice to try for BS/RP/TB.
 actions.cds+=/roll_the_bones,if=!set_bonus.tww2_4pc&(rtb_buffs.will_lose<=buff.loaded_dice.up|talent.supercharger&buff.loaded_dice.up&rtb_buffs<=2|talent.hidden_opportunity&buff.loaded_dice.up&rtb_buffs<=2&!buff.broadside.up&!buff.ruthless_precision.up&!buff.true_bearing.up)
 actions.cds+=/ghostly_strike,if=combo_points<cp_max_spend
@@ -87,13 +91,13 @@ actions.cds+=/ancestral_call
 actions.cds+=/use_items,slots=trinket1,if=buff.between_the_eyes.up|trinket.1.has_stat.any_dps|boss&fight_remains<=20
 actions.cds+=/use_items,slots=trinket2,if=buff.between_the_eyes.up|trinket.2.has_stat.any_dps|boss&fight_remains<=20
 
-# Finishers Use Between the Eyes to keep the crit buff up, but on cooldown if Improved/Greenskins, and avoid overriding Greenskins
-actions.finish+=/between_the_eyes,if=!talent.crackshot&(buff.between_the_eyes.remains<4|talent.improved_between_the_eyes|talent.greenskins_wickers)&!buff.greenskins_wickers.up
+# Finishers
+actions.finish+=/coup_de_grace
+# Use Between the Eyes outside of Stealth to maintain the buff, or with Ruthless Precision active, or to proc Greenskins Wickers if not active. Trickster builds can also send BtE on cooldown.
+actions.finish+=/between_the_eyes,if=(buff.ruthless_precision.up|buff.between_the_eyes.remains<4|!talent.mean_streak)&(!buff.greenskins_wickers.up|!talent.greenskins_wickers)
 # Crackshot builds use Between the Eyes outside of Stealth to refresh the Between the Eyes crit buff or on cd with the Ruthless Precision buff
 actions.finish+=/between_the_eyes,if=talent.crackshot&(buff.ruthless_precision.up|buff.between_the_eyes.remains<4|!talent.keep_it_rolling|!talent.mean_streak)
 actions.finish+=/cold_blood
-## actions.finish+=/coup_de_grace,if=!debuff.fazed.up
-actions.finish+=/coup_de_grace
 actions.finish+=/dispatch
 
 # Stealth
