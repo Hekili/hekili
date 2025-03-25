@@ -229,6 +229,7 @@ function ns.StartConfiguration( external )
 
                 for id, btn in ipairs( ns.UI.Buttons[ i ] ) do
                     btn:EnableMouse( false )
+                    btn:SetMouseClickEnabled( false )
                 end
 
                 local left, right, top, bottom = v:GetPerimeterButtons()
@@ -372,6 +373,7 @@ function ns.StopConfiguration()
         for i, btn in ipairs( display.Buttons ) do
             btn:EnableMouse( mouseInteract )
             btn:SetMovable( false )
+            btn:SetMouseClickEnabled( false )
         end
     end
 
@@ -2835,7 +2837,7 @@ do
         Hekili:ProfileFrame( bName, b )
 
         b:EnableMouse( conf.iconTooltipToggle )
-        b:SetMouseClickEnabled(false)
+        b:SetMouseClickEnabled( false )
         b:SetMovable( false )
 
         return b
