@@ -179,7 +179,6 @@ spec:RegisterPvpTalents( {
     wrench_evil                     = 5652, -- (460720) Turn Evil's cast time is reduced by 100%.
 } )
 
-
 -- Auras
 spec:RegisterAuras( {
     -- The Guardian of Ancient Kings is protecting you, reducing all damage taken by $s2%.
@@ -321,35 +320,12 @@ spec:RegisterAuras( {
         duration = function() return talent.consecration_in_flame.enabled and 14 or 12 end,
         tick_time = 1,
         type = "Magic",
-        max_stack = 1,
-        generate = function( c, type )
-            if type == "buff" and FindUnitBuffByID( "player", 188370 ) then
-                local dropped, expires
-
-                for i = 1, 5 do
-                    local up, name, start, duration = GetTotemInfo( i )
-
-                    if up and name == class.abilities.consecration.name then
-                        dropped = start
-                        expires = dropped + duration
-                        break
-                    end
-                end
-
-                if dropped and expires > query_time then
-                    c.expires = expires
-                    c.applied = dropped
-                    c.count = 1
-                    c.caster = "player"
-                    return
-                end
-            end
-
-            c.count = 0
-            c.expires = 0
-            c.applied = 0
-            c.caster = "unknown"
-        end
+        max_stack = 1
+    },
+    standing_in_consecration = {
+        id = 188370,
+        duration = 3600,
+        max_stack = 1
     },
     consecration_dot = {
         id = 204242,
@@ -753,7 +729,7 @@ spec:RegisterAuras( {
     -- Haste increased by $w1%
     undisputed_ruling = {
         id = 432629,
-        duration = 6.0,
+        duration = 6,
         max_stack = 1,
     },
     -- Movement speed reduced by $s2%.; $?$w3!=0[Suffering $s3 Radiant damage every $t3 sec.][]
@@ -868,14 +844,53 @@ spec:RegisterGear( "uthers_guard", 137105 )
 spec:RegisterGear( "soul_of_the_highlord", 151644 )
 spec:RegisterGear( "pillars_of_inmost_light", 151812 )
 
-
-spec:RegisterStateExpr( "last_consecration", function () return action.consecration.lastCast end )
 spec:RegisterStateExpr( "last_blessed_hammer", function () return action.blessed_hammer.lastCast end )
 spec:RegisterStateExpr( "last_shield", function () return action.shield_of_the_righteous.lastCast end )
 
-spec:RegisterStateExpr( "consecration", function () return buff.consecration end )
-
 local holy_power_generators_used = 0
+local lastUndisputedRuling = 0
+local consecrationLost = 0
+
+spec:RegisterStateExpr( "last_hol_consecration", function () return lastUndisputedRuling end )
+spec:RegisterStateExpr( "consecration_lost", function () return consecrationLost end )
+
+spec:RegisterTotem( "consecration", 43499 )
+
+spec:RegisterStateTable( "consecration", setmetatable( {
+
+    sanctuary_duration = 4,
+
+    refresh_hol_tracker = setfenv( function()
+        -- reset_precast function to sync with gamestate
+        last_hol_consecration, consecration_lost = nil
+
+    end, state ),
+
+}, {
+    __index = function( t, k )
+
+        if k == "hardcast_active" then
+            return totem.consecration.up
+        elseif k == "hammer_of_light_active" then
+            return ( query_time - last_hol_consecration < 12 )
+        elseif k == "active" then
+            return consecration.hardcast_active or consecration.hammer_of_light_active
+        elseif k == "standing_in_consecration" or k == "up" then
+            return state.buff.standing_in_consecration.remains > 20
+        elseif k == "hardcast_remains" then
+            return totem.consecration.remains
+        elseif k == "hammer_of_light_remains" then
+            return max( 0, 12 - ( query_time - last_hol_consecration ) )
+        elseif k == "remains" then
+                return max( consecration.hardcast_remains, consecration.hol_remains )
+        elseif k == "lockout" then
+            return max( 0, settings.consecration_lockout_time - ( query_time - consecration_lost )  )
+        elseif k == "last_hardcast" then
+            return action.consecration.lastCast
+        end
+
+    end
+} ) )
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, overEnergize, powerType )
     if sourceGUID ~= state.GUID then return end
@@ -890,7 +905,16 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
     elseif spellID == class.auras.blessing_of_dawn.id and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
         holy_power_generators_used = max( 0, holy_power_generators_used - 3 )
         return
+    elseif subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" then
+        if spellID == 432629 then -- checking this buff instead of hol casts gets rid of the need for a talent check
+            lastUndisputedRuling = GetTime()
+            Hekili:Print( "Hammer Detected. " .. lastUndisputedRuling )
+        end
+    elseif subtype == "SPELL_AURA_REMOVED" and spellID == 188370 then
+        consecrationLost = GetTime()
+        Hekili:Print( "Conc lost. " .. consecrationLost )
     end
+
 end )
 
 spec:RegisterStateExpr( "hpg_used", function() return holy_power_generators_used end )
@@ -905,8 +929,68 @@ rawset( state, "sacred_weapon", "sacred_weapon" )
 local ld_stacks = 0
 local free_hol_triggered = 0
 
+spec:RegisterStateExpr( "next_armament", function()
+    if buff.sacred_weapon_ready.up then return "sacred_weapon" end
+    return "holy_bulwark"
+end )
+
+spec:RegisterStateExpr( "judgment_holy_power", function()
+    return 1 + ( buff.bastion_of_light.up and 2 or 0 ) + ( ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.sanctified_wrath.enabled and 1 or 0 )
+end )
+
+spec:RegisterHook( "spend", function( amt, resource )
+    if amt > 0 and resource == "holy_power" then
+        if talent.righteous_protector.enabled then
+            reduceCooldown( "avenging_wrath", 1.5 )
+            reduceCooldown( "guardian_of_ancient_kings", 1.5 )
+            applyBuff( "righteous_protector_icd" )
+        end
+        if buff.blessing_of_dawn.up then
+            removeBuff( "blessing_of_dawn" )
+            applyBuff( "blessing_of_dusk" )
+        end
+        if talent.relentless_inquisitor.enabled or legendary.relentless_inquisitor.enabled then
+            addStack( "relentless_inquisitor" )
+        end
+        if talent.resolute_defender.enabled and amt > 2 then
+            reduceCooldown( "ardent_defender", talent.resolute_defender.rank )
+            reduceCooldown( "divine_shield", talent.resolute_defender.rank )
+        end
+        if talent.tirions_devotion.enabled then
+            reduceCooldown( "lay_on_hands", amt )
+        end
+        if talent.divine_guidance.enabled then
+            addStack( "divine_guidance", nil, 1 )
+        end
+        if legendary.uthers_devotion.enabled then
+            reduceCooldown( "blessing_of_freedom", 1 )
+            reduceCooldown( "blessing_of_protection", 1 )
+            reduceCooldown( "blessing_of_sacrifice", 1 )
+            reduceCooldown( "blessing_of_spellwarding", 1 )
+        end
+    end
+end )
+
+-- TODO: Need to count HoPo generators and stack Blessing of Dawn on third cast.
+spec:RegisterHook( "gain", function( amt, resource, overcap )
+    if amt > 0 and resource == "holy_power" then
+        if buff.blessing_of_dusk.up then
+            applyBuff( "fading_light" )
+        end
+
+        if this_action ~= "arcane_torrent" and this_action ~= "divine_toll" then
+            if hpg_used == 2 then
+                hpg_used = 0
+                addStack( "blessing_of_dawn" )
+            else
+                hpg_used = hpg_used + 1
+            end
+        end
+    end
+end )
+
 spec:RegisterHook( "reset_precast", function ()
-    last_consecration = nil
+    consecration.refresh_hol_tracker()
     last_blessed_hammer = nil
     last_shield = nil
 
@@ -968,70 +1052,6 @@ spec:RegisterHook( "reset_precast", function ()
     hpg_used = nil
     hpg_to_2dawn = nil
 end )
-
-
-spec:RegisterStateExpr( "next_armament", function()
-    if buff.sacred_weapon_ready.up then return "sacred_weapon" end
-    return "holy_bulwark"
-end )
-
-spec:RegisterStateExpr( "judgment_holy_power", function()
-    return 1 + ( buff.bastion_of_light.up and 2 or 0 ) + ( ( buff.avenging_wrath.up or buff.sentinel.up ) and talent.sanctified_wrath.enabled and 1 or 0 )
-end )
-
-
-spec:RegisterHook( "spend", function( amt, resource )
-    if amt > 0 and resource == "holy_power" then
-        if talent.righteous_protector.enabled then
-            reduceCooldown( "avenging_wrath", 1.5 )
-            reduceCooldown( "guardian_of_ancient_kings", 1.5 )
-            applyBuff( "righteous_protector_icd" )
-        end
-        if buff.blessing_of_dawn.up then
-            removeBuff( "blessing_of_dawn" )
-            applyBuff( "blessing_of_dusk" )
-        end
-        if talent.relentless_inquisitor.enabled or legendary.relentless_inquisitor.enabled then
-            addStack( "relentless_inquisitor" )
-        end
-        if talent.resolute_defender.enabled and amt > 2 then
-            reduceCooldown( "ardent_defender", talent.resolute_defender.rank )
-            reduceCooldown( "divine_shield", talent.resolute_defender.rank )
-        end
-        if talent.tirions_devotion.enabled then
-            reduceCooldown( "lay_on_hands", amt )
-        end
-        if talent.divine_guidance.enabled then
-            addStack( "divine_guidance", nil, 1 )
-        end
-        if legendary.uthers_devotion.enabled then
-            reduceCooldown( "blessing_of_freedom", 1 )
-            reduceCooldown( "blessing_of_protection", 1 )
-            reduceCooldown( "blessing_of_sacrifice", 1 )
-            reduceCooldown( "blessing_of_spellwarding", 1 )
-        end
-    end
-end )
-
-
--- TODO: Need to count HoPo generators and stack Blessing of Dawn on third cast.
-spec:RegisterHook( "gain", function( amt, resource, overcap )
-    if amt > 0 and resource == "holy_power" then
-        if buff.blessing_of_dusk.up then
-            applyBuff( "fading_light" )
-        end
-
-        if this_action ~= "arcane_torrent" and this_action ~= "divine_toll" then
-            if hpg_used == 2 then
-                hpg_used = 0
-                addStack( "blessing_of_dawn" )
-            else
-                hpg_used = hpg_used + 1
-            end
-        end
-    end
-end )
-
 
 -- Abilities
 spec:RegisterAbilities( {
@@ -1309,9 +1329,12 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
+        readyTime = function() return consecration.lockout end,
+
         handler = function ()
             if buff.divine_guidance.up then removeBuff( "divine_guidance" ) end
-            applyBuff( "consecration" )
+            applyBuff( "standing_in_consecration" )
+            summonTotem( "consecration" )
             applyDebuff( "target", "consecration_dot" )
             last_consecration = query_time
         end,
@@ -1529,10 +1552,11 @@ spec:RegisterAbilities( {
             handler = function ()
                 removeBuff( "divine_purpose" )
                 if talent.undisputed_ruling.enabled then
-                    spec.abilities.consecration.handler()
                     applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
+                    applyBuff( "standing_in_consecration" )
+                    applyBuff( "undisputed_ruling" )
                 end
-                
+
 
                 if buff.hammer_of_light_free.up then
                     removeBuff( "hammer_of_light_free" )
@@ -1640,24 +1664,6 @@ spec:RegisterAbilities( {
             applyDebuff( "target", "hand_of_reckoning" )
         end,
     },
-
-    --[[ Talent: Your Holy Power generation is tripled for 20 sec.
-    holy_avenger = {
-        id = 105809,
-        cast = 0,
-        cooldown = 180,
-        gcd = "off",
-        school = "physical",
-
-        talent = "holy_avenger",
-        startsCombat = false,
-
-        toggle = "cooldowns",
-
-        handler = function ()
-            applyBuff( "holy_avenger" )
-        end,
-    }, ]]
 
     -- [432496] While wielding a Holy Bulwark, gain an absorb shield for ${$s2/10}.1% of your max health and an additional ${$s4/10}.1% every $t2 sec. Lasts $d.
     holy_armaments = {
@@ -1991,6 +1997,23 @@ spec:RegisterStateExpr( "defensive_sentinel", function()
     return false
 end )
 
+
+spec:RegisterSetting( "consecration_lockout_time", 0, {
+    name = string.format( "%s Recast Lockout", Hekili:GetSpellLinkWithTexture( spec.abilities.consecration.id ) ),
+    desc = string.format(
+        "When set above zero, %s will not be recommended again until this many seconds have passed after you move out of its area.\n\n" ..
+        "If talented into %s, the delay begins *after* the 4 second Sanctuary buff has ended.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.consecration.id ),
+        Hekili:GetSpellLinkWithTexture( spec.talents.sanctuary.id )
+    ),
+    icon = 135926,
+    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    type = "range",
+    min = 0,
+    max = 5,
+    step = 0.1,
+    width = 1.5
+} )
 
 spec:RegisterRanges( "shield_of_the_righteous", "rebuke", "avengers_shield" )
 
