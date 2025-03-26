@@ -492,7 +492,7 @@ spec:RegisterAuras( {
         }
     },
     intuition = {
-        id = 455681,
+        id = 1223797,
         duration = 3,
         max_stack = 1
     },
