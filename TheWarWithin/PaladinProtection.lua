@@ -313,16 +313,16 @@ spec:RegisterAuras( {
         duration = 3600,
         max_stack = 1
     },
-    -- Damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=26573
-    consecration = {
+    -- Not a real aura? Can be used for duration checks if needed
+    consecration_ground = {
         id = 26573,
         duration = function() return talent.consecration_in_flame.enabled and 14 or 12 end,
         tick_time = 1,
         type = "Magic",
         max_stack = 1
     },
-    standing_in_consecration = {
+    -- Actual buff on player
+    consecration = {
         id = 188370,
         duration = 3600,
         max_stack = 1
@@ -851,42 +851,33 @@ local holy_power_generators_used = 0
 local lastUndisputedRuling = 0
 local consecrationLost = 0
 
-spec:RegisterStateExpr( "last_hol_consecration", function () return lastUndisputedRuling end )
-spec:RegisterStateExpr( "consecration_lost", function () return consecrationLost end )
+spec:RegisterStateExpr( "hol_consecration_remains"  , function () return max( 0, 12 - ( lastUndisputedRuling ) )    end )
+spec:RegisterStateExpr( "last_hol_consecration"     , function () return lastUndisputedRuling                       end )
+spec:RegisterStateExpr( "consecration_lost"         , function () return consecrationLost                           end )
+spec:RegisterStateExpr( "sanctuary"                 , function () return talent.sanctuary.rank * 4                  end )
 
 spec:RegisterTotem( "consecration", 43499 )
 
 spec:RegisterStateTable( "consecration", setmetatable( {
 
-    sanctuary_duration = 4,
-
-    refresh_hol_tracker = setfenv( function()
-        -- reset_precast function to sync with gamestate
-        last_hol_consecration, consecration_lost = nil
-
-    end, state ),
-
 }, {
     __index = function( t, k )
 
-        if k == "hardcast_active" then
-            return totem.consecration.up
-        elseif k == "hammer_of_light_active" then
-            return ( query_time - last_hol_consecration < 12 )
-        elseif k == "active" then
-            return consecration.hardcast_active or consecration.hammer_of_light_active
-        elseif k == "standing_in_consecration" or k == "up" then
-            return state.buff.standing_in_consecration.remains > 20
-        elseif k == "hardcast_remains" then
-            return totem.consecration.remains
-        elseif k == "hammer_of_light_remains" then
-            return max( 0, 12 - ( query_time - last_hol_consecration ) )
+        -- refers to the ground effect
+        if k == "active" then
+            return max( totem.consecration.remains, max( 0, 12 - ( query_time - last_hol_consecration ) ) ) > 0
+        elseif k == "active_remains" then
+            return max( totem.consecration.remains, max( 0, 12 - ( query_time - last_hol_consecration ) ) )
+
+       -- refers to the buff on the player
+        elseif k == "up" then 
+            return buff.consecration.up
         elseif k == "remains" then
-                return max( consecration.hardcast_remains, consecration.hol_remains )
-        elseif k == "lockout" then
-            return max( 0, settings.consecration_lockout_time - ( query_time - consecration_lost )  )
-        elseif k == "last_hardcast" then
-            return action.consecration.lastCast
+            return buff.consecration.remains < 30 and buff.consecration.remains or ( max( totem.consecration.remains, max( 0, 12 - ( query_time - last_hol_consecration ) ) ) + sanctuary )
+
+        -- Check for whether or not you're inside it, physically
+        elseif k == "standing_in_consecration" then
+            return buff.consecration.remains > 30
         end
 
     end
@@ -908,11 +899,9 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
     elseif subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" then
         if spellID == 432629 then -- checking this buff instead of hol casts gets rid of the need for a talent check
             lastUndisputedRuling = GetTime()
-            Hekili:Print( "Hammer Detected. " .. lastUndisputedRuling )
         end
     elseif subtype == "SPELL_AURA_REMOVED" and spellID == 188370 then
         consecrationLost = GetTime()
-        Hekili:Print( "Conc lost. " .. consecrationLost )
     end
 
 end )
@@ -990,7 +979,7 @@ spec:RegisterHook( "gain", function( amt, resource, overcap )
 end )
 
 spec:RegisterHook( "reset_precast", function ()
-    consecration.refresh_hol_tracker()
+    last_hol_consecration, consecration_lost, hol_consecration_remains = nil
     last_blessed_hammer = nil
     last_shield = nil
 
@@ -1333,7 +1322,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if buff.divine_guidance.up then removeBuff( "divine_guidance" ) end
-            applyBuff( "standing_in_consecration" )
+            applyBuff( "consecration" )
             summonTotem( "consecration" )
             applyDebuff( "target", "consecration_dot" )
             last_consecration = query_time
@@ -1553,7 +1542,7 @@ spec:RegisterAbilities( {
                 removeBuff( "divine_purpose" )
                 if talent.undisputed_ruling.enabled then
                     applyBuff( "shield_of_the_righteous", buff.shield_of_the_righteous.remains + 4.5 )
-                    applyBuff( "standing_in_consecration" )
+                    applyBuff( "consecration" )
                     applyBuff( "undisputed_ruling" )
                 end
 
