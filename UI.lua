@@ -1131,7 +1131,11 @@ do
                                 b.lastImage = image
                             end
 
-                            b.Texture:Show()
+                            if conf.keybindings.keybindsOnly then
+                                b.Texture:Hide()
+                            else
+                                b.Texture:Show()
+                            end
 
                             if i == 1 then
                                 if conf.glow.highlight then
