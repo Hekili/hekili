@@ -1,78 +1,78 @@
 # Rogue Subtlety
 
-# Precombat actions
-actions.precombat+=/tricks_of_the_trade,if=settings.Tott
-actions.precombat+=/recuperate
-actions.precombat+=/potion
+# Precombat actions - improved sequencing
 actions.precombat+=/stealth,if=!stealthed.all
 actions.precombat+=/premeditation
+actions.precombat+=/tricks_of_the_trade,if=settings.Tott
 actions.precombat+=/slice_and_dice,if=buff.slice_and_dice.down
+actions.precombat+=/recuperate
+actions.precombat+=/potion
 actions.precombat+=/ambush,if=combo_points<5&stealthed.all
 
-# Opener sequence
+# Opener sequence - tighter burst window
 actions.opener+=/premeditation
 actions.opener+=/ambush,if=stealthed.all
+actions.opener+=/hemorrhage,if=debuff.hemorrhage.down|debuff.glyph_of_hemorrhage.down
 actions.opener+=/slice_and_dice,if=buff.slice_and_dice.down|buff.slice_and_dice.remains<6
 actions.opener+=/rupture,if=combo_points>=4&debuff.rupture.down&target.time_to_die>18
-actions.opener+=/hemorrhage,if=debuff.hemorrhage.down|debuff.glyph_of_hemorrhage.down
-actions.opener+=/shadow_dance,if=buff.shadow_dance.down&energy>=60
+actions.opener+=/shadow_dance,if=buff.shadow_dance.down&energy>=85
 actions.opener+=/shadowstep,if=buff.shadow_dance.up
-actions.opener+=/ambush,if=buff.shadow_dance.remains<2&buff.fury_of_the_destroyer.up
+actions.opener+=/ambush,if=buff.shadow_dance.up
 actions.opener+=/eviscerate,if=combo_points>=5
 actions.opener+=/recuperate,if=combo_points>=3&buff.recuperate.down
 
-# Main Rotation (Find Weakness Uptime)
+# Main Rotation (Find Weakness Uptime) - sequenced for fluidity
+actions.mr+=/shadowstep,if=stealthed.all
+actions.mr+=/ambush,if=prev_gcd.1.shadowstep|stealthed.all
 actions.mr+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points>=2
 actions.mr+=/rupture,if=combo_points>=4&target.debuff.rupture.remains<2&target.time_to_die>18
 actions.mr+=/hemorrhage,if=debuff.hemorrhage.remains<4.5|debuff.glyph_of_hemorrhage.remains<6
-actions.mr+=/shadowstep,if=stealthed.all
-actions.mr+=/ambush,if=prev_gcd.1.shadowstep|stealthed.all
-actions.mr+=/backstab,if=combo_points<5&(energy>=60|buff.shadow_dance.up)&settings.backstab
-actions.mr+=/hemorrhage,if=combo_points<5&energy.time_to_max<=1.5&debuff.hemorrhage.remains>8&(!debuff.glyph_of_hemorrhage.remains>10)
-actions.mr+=/shadow_dance,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points>=2&energy>=70
-actions.mr+=/vanish,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points<=3&energy>=60&!buff.shadow_dance.up
-actions.mr+=/shadowmeld,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points<=3&energy>=60&!shadow_dance.ready&!buff.shadow_dance.up
-actions.mr+=/ambush,if=buff.fury_of_the_destroyer.up&buff.shadow_dance.remains<=1
+actions.mr+=/shadow_dance,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points<=3&energy>=85
+actions.mr+=/vanish,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points<=3&energy>=65&!buff.shadow_dance.up
+actions.mr+=/shadowmeld,if=!stealthed.all&buff.find_weakness.remains<=2&combo_points<=3&energy>=65&!shadow_dance.ready&!buff.shadow_dance.up
 actions.mr+=/eviscerate,if=combo_points>=5|target.time_to_die<10&combo_points>=4
-actions.mr+=/vanish,if=combo_points>=2&buff.find_weakness.remains<1&energy>=60
+actions.mr+=/backstab,if=combo_points<5&(energy>=65|buff.shadow_dance.up)&settings.backstab
+actions.mr+=/hemorrhage,if=combo_points<5&energy.time_to_max<=1.5&debuff.hemorrhage.remains>8&(!debuff.glyph_of_hemorrhage.remains>10)
+actions.mr+=/ambush,if=buff.fury_of_the_destroyer.up&buff.shadow_dance.remains<=1
+actions.mr+=/vanish,if=combo_points>=2&buff.find_weakness.remains<1&energy>=65
 
-# Standard Rotation (Find Weakness Downtime)
-actions+=/run_action_list,name=opener,if=time<5
+# Standard Rotation (Find Weakness Downtime) - ordered for smooth rotation
 actions+=/kick,if=target.debuff.casting.up
 actions+=/ambush,if=stealthed.all
 actions+=/call_action_list,name=cooldowns
+actions+=/run_action_list,name=opener,if=time<5
+actions+=/call_action_list,name=mr,if=debuff.find_weakness.up
+actions+=/call_action_list,name=aoe,if=active_enemies>=3
+actions+=/slice_and_dice,if=buff.slice_and_dice.remains<=5&combo_points>=3&target.time_to_die>=8&(buff.slice_and_dice.remains<=3|energy<=40)
+actions+=/rupture,if=(debuff.rupture.down&combo_points>=4&target.time_to_die>10)|combo_points>=5&debuff.rupture.remains<=8&!buff.shadow_dance.up&energy>=75
+actions+=/recuperate,if=combo_points>=5&buff.recuperate.remains<6&target.time_to_die>10
+actions+=/hemorrhage,if=(debuff.hemorrhage.down|debuff.hemorrhage.remains<3)&!buff.shadow_dance.up&combo_points<5|debuff.glyph_of_hemorrhage.down&!buff.shadow_dance.up&combo_points<5
 actions+=/use_item,name=synapse_springs,if=buff.shadow_dance.up|cooldown.shadow_dance.remains<2|buff.bloodlust.react
 actions+=/use_item,slot=trinket1,if=buff.shadow_dance.up|target.time_to_die<20
 actions+=/use_item,slot=trinket2,if=buff.shadow_dance.up|target.time_to_die<20
-actions+=/call_action_list,name=mr,if=debuff.find_weakness.up
-actions+=/slice_and_dice,if=buff.slice_and_dice.remains<=5&combo_points>=4&target.time_to_die>=8&(buff.slice_and_dice.remains<=3|energy<=40)
-actions+=/rupture,if=debuff.rupture.down&combo_points>=5&target.time_to_die>10|combo_points>=5&debuff.rupture.remains<=8&!buff.shadow_dance.up&energy>=75
-actions+=/recuperate,if=combo_points>=5&buff.recuperate.remains<6&target.time_to_die>10
 actions+=/ambush,if=buff.fury_of_the_destroyer.up&buff.shadow_dance.remains<=1
-actions+=/call_action_list,name=aoe,if=active_enemies>=3
-actions+=/hemorrhage,if=(debuff.hemorrhage.down|debuff.hemorrhage.remains<3)&!buff.shadow_dance.up&combo_points<5|debuff.glyph_of_hemorrhage.down&!buff.shadow_dance.up&combo_points<5
-actions+=/backstab,if=(combo_points<4|(combo_points<5&energy>=80)|(combo_points<5&energy>=60&cooldown.honor_among_thieves.remains>=1))&settings.backstab
-actions+=/hemorrhage,if=combo_points<5&energy.time_to_max<=1.5&debuff.hemorrhage.remains>8&!debuff.glyph_of_hemorrhage.remains>10
+actions+=/backstab,if=(combo_points<4|(combo_points<5&energy>=85)|(combo_points<5&energy>=65&cooldown.honor_among_thieves.remains>=1))&settings.backstab
+actions+=/hemorrhage,if=combo_points<5&energy.time_to_max<=1.5&debuff.hemorrhage.remains>8&(!debuff.glyph_of_hemorrhage.remains>10)
 actions+=/eviscerate,if=combo_points>=5|target.time_to_die<10&combo_points>=4|combo_points>=5&debuff.rupture.remains<=8
 
-# Cooldowns (Shadow Dance and Vanish)
+# Cooldowns (Shadow Dance and Vanish) - sequenced for synergy
 actions.cooldowns+=/tricks_of_the_trade,if=settings.Tott
 actions.cooldowns+=/expose_armor,if=settings.maintain_expose&debuff.expose_armor.down&combo_points>=1&target.time_to_die>10
-actions.cooldowns+=/shadow_dance,if=energy>=60&combo_points<=3&!debuff.find_weakness.up
+actions.cooldowns+=/shadow_dance,if=energy>=85&combo_points<=3&!debuff.find_weakness.up
 actions.cooldowns+=/preparation,if=cooldown.vanish.remains>60&cooldown.shadow_dance.remains>30
-actions.cooldowns+=/vanish,if=time>10&energy>=60&combo_points<=3&!buff.shadow_dance.up&!debuff.find_weakness.up
+actions.cooldowns+=/vanish,if=time>10&energy>=75&combo_points<=3&!buff.shadow_dance.up&!debuff.find_weakness.up
 actions.cooldowns+=/shadowstep,if=buff.shadow_dance.up|buff.vanish.up
-actions.cooldowns+=/use_item,name=synapse_springs,if=buff.shadow_dance.up|cooldown.shadow_dance.remains<2|buff.bloodlust.react
-actions.cooldowns+=/use_item,slot=trinket1,if=buff.shadow_dance.up|target.time_to_die<20
-actions.cooldowns+=/use_item,slot=trinket2,if=buff.shadow_dance.up|target.time_to_die<20
-actions.cooldowns+=/ambush,if=stealthed.all
 actions.cooldowns+=/premeditation,if=combo_points<=2&(buff.shadow_dance.up|buff.vanish.up|buff.stealth.up)
+actions.cooldowns+=/ambush,if=stealthed.all
 actions.cooldowns+=/potion,if=buff.bloodlust.react|target.time_to_die<30|buff.shadow_dance.up
 actions.cooldowns+=/use_item,name=synapse_springs,if=buff.shadow_dance.up&buff.find_weakness.up
+actions.cooldowns+=/use_item,slot=trinket1,if=buff.shadow_dance.up|target.time_to_die<20
+actions.cooldowns+=/use_item,slot=trinket2,if=buff.shadow_dance.up|target.time_to_die<20
 
-# AoE Rotation
-actions.aoe+=/fan_of_knives,if=combo_points<5&active_enemies>=4
+# AoE Rotation - priority based
 actions.aoe+=/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points>=2
+actions.aoe+=/fan_of_knives,if=combo_points<5&active_enemies>=4
+actions.aoe+=/crimson_tempest,if=combo_points>=4&active_enemies>=5
 actions.aoe+=/rupture,target=2,if=combo_points>=4&target.time_to_die>18&target.debuff.rupture.down
 actions.aoe+=/rupture,target=3,if=combo_points>=4&target.time_to_die>18&target.debuff.rupture.down
 actions.aoe+=/eviscerate,if=combo_points>=5
