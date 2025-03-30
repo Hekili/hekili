@@ -11,9 +11,10 @@ actions.precombat+=/slice_and_dice,if=buff.slice_and_dice.down
 actions+=/shiv,if=debuff.dispellable_enrage.up
 actions+=/kick,if=target.debuff.casting.up
 actions+=/tricks_of_the_trade,if=time>30
+actions+=/cancel_buff,name=blade_flurry,if=spell_targets.blade_flurry<2&buff.blade_flurry.up
 actions+=/call_action_list,name=cds
 actions+=/run_action_list,name=finish,if=combo_points=5
-actions+=/run_action_list,name=aoe,if=spell_targets.blade_flurry>=3
+actions+=/run_action_list,name=aoe,if=spell_targets.fan_of_knives>=2
 actions+=/call_action_list,name=build
 actions+=/call_action_list,name=defensives
 
@@ -46,11 +47,8 @@ actions.cds+=/use_item,slot=trinket1,if=buff.deep_insight.up|buff.adrenaline_rus
 actions.cds+=/use_item,slot=trinket2,if=buff.deep_insight.up|buff.adrenaline_rush.up
 actions.cds+=/adrenaline_rush,if=energy<35&!buff.killing_spree.up&debuff.revealing_strike.up&(buff.deep_insight.up|buff.bloodlust.up)
 actions.cds+=/killing_spree,if=energy<35&buff.slice_and_dice.up&!buff.adrenaline_rush.up&(buff.deep_insight.up|debuff.find_weakness.up)
-actions.cds+=/blade_flurry,if=spell_targets.blade_flurry>=2&!buff.blade_flurry.up
-actions.cds+=/cancel_buff,name=blade_flurry,if=spell_targets.blade_flurry<2&buff.blade_flurry.up
 actions.cds+=/blood_fury,if=buff.deep_insight.up|buff.adrenaline_rush.up
 actions.cds+=/berserking,if=buff.deep_insight.up|buff.adrenaline_rush.up
-actions.cds+=/lifeblood,if=buff.deep_insight.up|buff.adrenaline_rush.up
 
 # Defensives
 actions.defensives+=/cloak_of_shadows,if=health.pct<=20&!buff.cloak_of_shadows.up
