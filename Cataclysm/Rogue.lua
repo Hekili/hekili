@@ -1106,7 +1106,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 132287,
-     
+
         usable = function() return combo_points.current > 0, "requires combo_points" end,
 
 
