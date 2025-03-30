@@ -3,7 +3,7 @@ Smufrik assassination rogue
 # Assassination Rogue Optimized APL for Cataclysm
 
 # Precombat actions
-actions.precombat+=/tricks_of_the_trade
+actions.precombat+=/tricks_of_the_trade,if=settings.Tott
 actions.precombat+=/stealth,if=!stealthed.all
 actions.precombat+=/tol_vir_potion,if=!stealthed.all
 actions.precombat+=/slice_and_dice,if=buff.slice_and_dice.down
@@ -13,51 +13,61 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_sta
 
 # Variable initialization
 actions+=/variable,name=single_target,value=spell_targets.fan_of_knives<2
-actions+=/variable,name=envenom_condition,value=(energy>80&combo_points>4)|(buff.envenom.remains<1.8&energy>55&combo_points>4)
+actions+=/variable,name=envenom_condition,value=(energy>75&combo_points>3)|(buff.envenom.remains<1.8&energy>55&combo_points>3)|(combo_points=5&energy>=40)
+actions+=/variable,name=opener_done,value=time>20
+actions+=/variable,name=execute_phase,value=target.health.pct<35
 actions+=/variable,name=regen_saturated,value=energy.regen_combined>settings.regen_threshold
 actions+=/variable,name=cold_blood_casted,value=1,if=prev_gcd.1.cold_blood
 actions+=/variable,name=priority_rotation,value=priority_rotation
-actions+=/variable,name=not_pooling,if=(debuff.shiv.up|cooldown.thistle_tea.full_recharge_time<20)|(buff.envenom.up&buff.envenom.remains<=2)|energy.pct>=80|fight_remains<=90,value_else=|debuff.shiv.up|cooldown.thistle_tea.full_recharge_time<20)|energy.pct>=80
+actions+=/variable,name=not_pooling,value=(debuff.shiv.up|cooldown.thistle_tea.full_recharge_time<20)|(buff.envenom.up&buff.envenom.remains<=2)|energy.pct>=80|fight_remains<=90
 
 # Main rotation
 actions+=/kick,if=target.debuff.casting.up&!stealthed.all
 actions+=/stealth,if=!stealthed.all
 actions+=/garrote,if=stealthed.all
-actions+=/tricks_of_the_trade,if=!stealthed.all&time>10
+actions+=/tricks_of_the_trade,if=!stealthed.all&time>10&settings.Tott
 actions+=/call_action_list,name=cds
-actions+=/slice_and_dice,if=!buff.slice_and_dice.up
+actions+=/slice_and_dice,if=!buff.slice_and_dice.up|remains<2&combo_points>=1
 actions+=/envenom,if=talent.cut_to_the_chase.enabled&buff.slice_and_dice.up&buff.slice_and_dice.remains<5&combo_points>=2
-actions+=/rupture,if=combo_points>=4&target.time_to_die>6&refreshable
-actions+=/run_action_list,name=aoe,if=spell_targets.fan_of_knives>=3
+actions+=/rupture,if=combo_points>=4&target.time_to_die>6&(refreshable|!ticking)
+actions+=/rupture,if=combo_points>=4&target.time_to_die>20&remains<6&!ticking
+actions+=/expose_armor,if=combo_points>=1&target.time_to_die>15&!debuff.weakened_armor.up&settings.maintain_expose
+actions+=/run_action_list,name=execute,if=variable.execute_phase
+actions+=/run_action_list,name=aoe,if=spell_targets.fan_of_knives>=2
 actions+=/call_action_list,name=st
 actions+=/call_action_list,name=defensives,if=health.pct<60
 
+# Execute phase
+actions.execute+=/envenom,if=combo_points>=3&buff.envenom.remains<1.8
+actions.execute+=/envenom,if=combo_points>=5&((!buff.envenom.up&energy>=65)|(buff.envenom.up&energy>=65)|buff.fury_of_the_destroyer.up)
+actions.execute+=/backstab,if=combo_points.deficit>0&energy>65&settings.backstab
+actions.execute+=/mutilate,if=combo_points.deficit>0&energy>65&!settings.backstab
+
 # Single target
-actions.st+=/envenom,if=variable.envenom_condition
+actions.st+=/envenom,if=combo_points>=4&buff.slice_and_dice.remains>6&(energy>75|buff.envenom.remains<1.5)|((!buff.envenom.up&energy>=55)|(buff.envenom.up&energy>=80)|buff.fury_of_the_destroyer.up)
 actions.st+=/mutilate,if=combo_points.deficit>1&(energy>80|buff.envenom.up)
 actions.st+=/backstab,if=combo_points.deficit>1&target.health.pct<35&energy>80
-actions.st+=/dispatch,if=combo_points.deficit>0&target.health.pct<35&energy>80
 actions.st+=/pool_resource,for_next=1
 actions.st+=/mutilate,if=combo_points.deficit>1
 
 # AoE rotation
-actions.aoe+=/rupture,cycle_targets=1,if=combo_points>=4&refreshable&target.time_to_die>6
-actions.aoe+=/fan_of_knives,if=combo_points<5&spell_targets.fan_of_knives>=4
-actions.aoe+=/envenom,if=combo_points>=4
+actions.aoe+=/rupture,cycle_targets=1,max_cycle_targets=3,if=combo_points>=4&refreshable&target.time_to_die>6
 actions.aoe+=/fan_of_knives,if=combo_points<5&spell_targets.fan_of_knives>=3
+actions.aoe+=/envenom,if=combo_points>=4&(buff.slice_and_dice.remains>4|buff.envenom.remains<2)
+actions.aoe+=/fan_of_knives,if=combo_points<5&spell_targets.fan_of_knives>=2
 actions.aoe+=/mutilate,if=combo_points<4
 
 # Cooldowns
-actions.cds+=/vendetta,if=target.time_to_die>30&buff.slice_and_dice.up&debuff.rupture.up
-actions.cds+=/cold_blood,if=combo_points=5&(debuff.vendetta.up|target.time_to_die<20)
-actions.cds+=/vanish,if=time>10&energy<50&!buff.stealth.up&!buff.overkill.up&(cooldown.vendetta.remains<10|target.time_to_die<30)
+actions.cds+=/vendetta,if=target.time_to_die>30&buff.slice_and_dice.up&debuff.rupture.up&energy<60&!talent.shadow_dance.enabled
+actions.cds+=/cold_blood,if=combo_points>=4&(debuff.vendetta.up|target.time_to_die<20)
+actions.cds+=/vanish,if=time>15&energy<50&!buff.stealth.up&!buff.overkill.up&cooldown.vendetta.up&debuff.rupture.remains>8
+actions.cds+=/thistle_tea,if=energy.deficit>=80&(debuff.vendetta.up|cooldown.vendetta.remains>60)
 actions.cds+=/use_item,name=synapse_springs,if=buff.vendetta.up
 actions.cds+=/use_item,slot=trinket1,if=buff.vendetta.up|target.time_to_die<20
 actions.cds+=/use_item,slot=trinket2,if=buff.vendetta.up|target.time_to_die<20
 actions.cds+=/blood_fury,if=buff.vendetta.up
 actions.cds+=/berserking,if=buff.vendetta.up|target.time_to_die<20
-actions.cds+=/lifeblood,if=buff.vendetta.up|target.time_to_die<20
-actions.cds+=/tol_vir_potion,if=buff.vendetta.up|target.time_to_die<30
+actions.cds+=/tol_vir_potion,if=buff.vendetta.up|target.time_to_die<30|buff.bloodlust.react
 
 actions.cds+=/call_action_list,name=misc_cds
 
@@ -70,6 +80,6 @@ actions.misc_cds+=/synapse_springs,if=buff.swordguard_embroidery.down&debuff.ven
 
 # Defensives
 actions.defensives+=/cloak_of_shadows,if=health.pct<=20&!buff.cloak_of_shadows.up
-actions.defensives+=/evasion,if=health.pct<=35&!buff.evasion.up
+actions.defensives+=/evasion,if=health.pct<=35&!buff.evasion.up&target.target=player
 actions.defensives+=/feint,if=incoming_damage_5s>health.max*0.2
 actions.defensives+=/recuperate,if=health.pct<30&combo_points>=3&!buff.recuperate.up
