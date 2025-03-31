@@ -22,7 +22,7 @@ actions+=/run_action_list,name=single
 ## Single
 actions.single+=/rebuke
 actions.single+=/seal_of_truth,if=buff.seal.down|(buff.seal_of_righteousness.up&active_enemies=1)
-actions.single+=/judgement,if=!buff.judgements_of_the_pure.up
+actions.single+=/judgement,if=!buff.judgements_of_the_pure.up&talent.judgements_of_the_pure.active
 actions.single+=/guardian_of_ancient_kings,if=cooldown.zealotry.remains<=10|cooldown.zealotry.remains>=time_to_die
 # also activate all other cooldowns if buff.zealotry.up&buff.inquisition.up
 actions.single+=/use_items,if=buff.zealotry.up&buff.inquisition.up
