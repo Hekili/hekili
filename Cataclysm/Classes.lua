@@ -134,6 +134,8 @@ all:RegisterAuras({
         },
         aliasMode = "latest",
         aliasType = "debuff",
+        shared = "target",
+        shared_aura = true
     },
 
     curse_of_the_elements = {
@@ -142,30 +144,35 @@ all:RegisterAuras({
         tick_time = 2,
         max_stack = 1,
         shared = "target",
+        shared_aura = true
     },
     master_poisoner = {
         id = 60433,
         duration = 15,
         max_stack = 1,
         shared = "target",
+        shared_aura = true
     },
     earth_and_moon = {
         id = 48506,
         duration = 15,
         max_stack = 1,
         shared = "target",
+        shared_aura = true
     },
     ebon_plaguebringer = {
         id = 65142,
         duration = 21,
         max_stack = 1,
         shared = "target",
+        shared_aura = true
     },
     fire_breath = {
         id = 34889,
         duration = 15,
         max_stack = 1,
         shared = "target",
+        shared_aura = true
     },
 
     -- Alysrazor Flight (Used for ignoring movement logic)
@@ -213,7 +220,9 @@ all:RegisterAuras({
             "combat_trance",
             "titanic_strength",
             "find_weakness",
-            "master_tactician"
+            "master_tactician",
+            "surge_of_dominance",
+            "slowing_the_sands"
         },
         aliasMode = "latest",
         aliasType = "buff",
@@ -262,6 +271,24 @@ all:RegisterAuras({
         duration = 20,
         max_stack = 1,
         copy = {109774, 109776}
+    },
+
+    -- Gladiator's Dominance Trinket
+    -- Increases spell power by %/s for 20 sec.
+    surge_of_dominance = {
+        id = 102435,
+        duration = 20,
+        max_stack = 1,
+        copy = {85027, 92218, 99719, 99742, 105137}
+    },
+
+    -- Ti'Tahk the Steps of Time
+    -- Increases the caster's haste rating by %/s and haste rating of up to 3 allies by %s.
+    slowing_the_sands = {
+        id = 109842,
+        duration = 10,
+        max_stack = 1,
+        copy = {107804, 109844}
     }
 })
 

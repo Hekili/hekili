@@ -2,10 +2,11 @@
 ## WoWSims Import
 
 ## PreCombat-Actions
+actions.precombat+=/inner_fire,if=buff.inner_fire.down
+actions.precombat+=/vampiric_embrace,if=buff.vampiric_embrace.down
+actions.precombat+=/holy_nova,if=buff.shadowform.down&buff.trinket_proc.down&settings.swap_set_opener
 actions.precombat+=/shadowform,if=buff.shadowform.down
 actions.precombat+=/power_word_fortitude,if=buff.power_word_fortitude.down
-actions.precombat+=/inner_fire,if=!up
-actions.precombat+=/vampiric_embrace,if=!up
 actions.precombat+=/potion
 actions.precombat+=/mind_spike,if=debuff.shadow_word_pain.down&debuff.vampiric_touch.down&debuff.devouring_plague.down
 
@@ -18,15 +19,15 @@ actions+=/run_action_list,name=st,if=active_enemies<2&set_bonus.tier13_4pc=0
 actions+=/run_action_list,name=aoe,if=active_enemies>=2
 
 ## Tier 13 4pc Rotation
-actions.t13+=/archangel,sync=shadowfiend,if=buff.dark_evangelism.stack=5&buff.active_shadowfiend.up&show_archangel_cooldown
-actions.t13+=/shadowfiend,if=buff.dark_evangelism.stack=5
-actions.t13+=/potion,if=target.health.pct<25&cooldown.shadowfiend.remains>90&time_to_die>90&buff.active_shadowfiend.up
+actions.t13+=/shadowfiend,if=buff.dark_evangelism.stack=5&cooldown.archangel.up
+actions.t13+=/archangel,if=buff.dark_evangelism.stack=5&buff.active_shadowfiend.up&show_archangel_cooldown
 actions.t13+=/synapse_springs,if=buff.active_shadowfiend.up
+actions.t13+=/potion,if=(buff.archangel.up&buff.trinket_proc.up&buff.active_shadowfiend.up)|(time_to_die<90&cooldown.shadowfiend.remains>90&target.health.pct<25)
 actions.t13+=/mind_flay,interrupt_if=buff.dark_evangelism.stack=5,if=buff.dark_evangelism.stack<5&buff.active_shadowfiend.down
 actions.t13+=/mind_blast,if=buff.dark_archangel.up&buff.shadow_orb.stack=3
 actions.t13+=/shadow_word_death,if=target.health.pct<25
 actions.t13+=/mind_spike,if=cooldown.mind_blast.remains>=debuff.mind_flay.tick_time*2&buff.active_shadowfiend.up
-actions.t13+=/mind_flay,interrupt_if=cooldown.mind_blast.remains=0,if=cooldown.mind_blast.remains>=gcd-0.5&buff.active_shadowfiend.up
+actions.t13+=/mind_flay,interrupt_if=cooldown.mind_blast.up,if=cooldown.mind_blast.remains>=gcd&buff.active_shadowfiend.up
 actions.t13+=/mind_blast,if=buff.active_shadowfiend.up
 actions.t13+=/berserking,if=buff.dark_evangelism.stack=5&(buff.power_infusion.down|buff.bloodlust.down)
 actions.t13+=/archangel,if=buff.power_infusion.up|buff.bloodlust.up|buff.berserking.up&show_archangel_cooldown
