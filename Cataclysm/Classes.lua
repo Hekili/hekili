@@ -290,7 +290,7 @@ all:RegisterAuras({
         max_stack = 1,
         copy = {107804, 109844}
     }
-})
+} )
 
 all:RegisterAbilities( {
     -- Cataclysm Trinkets
