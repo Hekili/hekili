@@ -34,7 +34,7 @@ actions.single+=/synapse_springs,if=cooldown.avenging_wrath.remains>=35
 actions.single+=/word_of_glory,if=buff.selfless.down&(holy_power=3|buff.divine_purpose.up)&settings.selfless_healer&(can_spend_holy_power|!settings.zealotry_save)
 actions.single+=/templars_verdict,if=holy_power>=3|buff.divine_purpose.up&cooldown.crusader_strike.remains
 actions.single+=/crusader_strike,if=holy_power<3
-actions.single+=/judgement,if=set_bonus.tier13_2pc_melee&!buff.zealotry.up&holy_power<3
+actions.single+=/judgement,if=set_bonus.tier13_2pc&!buff.zealotry.up&holy_power<3
 actions.single+=/exorcism,if=(cooldown.crusader_strike.remains>=1|!buff.bloodlust.up)&buff.the_art_of_war.up
 actions.single+=/hammer_of_wrath
 actions.single+=/judgement,if=cooldown.crusader_strike.remains>=1|!buff.bloodlust.up
@@ -63,7 +63,7 @@ actions.cleave+=/consecration,if=(settings.ignore_consecration_movement|!moving)
 actions.cleave+=/judgement,if=buff.zealotry.down&holy_power<3
 actions.cleave+=/exorcism,if=buff.the_art_of_war.up
 actions.cleave+=/hammer_of_wrath
-actions.cleave+=/judgement,if=set_bonus.tier13_2pc_melee&buff.zealotry.up&holy_power<3
+actions.cleave+=/judgement,if=set_bonus.tier13_2pc&buff.zealotry.up&holy_power<3
 actions.cleave+=/crusader_strike
 actions.cleave+=/holy_wrath
 actions.cleave+=/divine_plea,if=mana.percent<settings.divine_plea_threshold
