@@ -16,7 +16,7 @@ actions.st+=/demon_soul,if=buff.bloodlust.up|buff.trinket_proc.up|buff.volcanic_
 actions.st+=/summon_doomguard,if=buff.trinket_proc.up
 actions.st+=/soulburn
 actions.st+=/soul_fire,if=buff.soulburn.up|buff.empowered_imp.up|buff.improved_soul_fire.remains<3
-actions.st+=/immolate,if=debuff.immolate.remains<cast_time+tick_time&time_to_die>5|buff.bloodlust.remains<2&debuff.immolate.remains<12&buff.bloodlust.up
+actions.st+=/immolate,if=(debuff.immolate.remains<cast_time+tick_time&time_to_die>5)|(buff.bloodlust.remains<2&debuff.immolate.remains<12&buff.bloodlust.up)
 actions.st+=/conflagrate,if=debuff.immolate.up
 actions.st+=/bane_of_doom,if=target.time_to_die>60&((debuff.my_bane.down&buff.active_doom.down)|(debuff.bane_of_doom.up&debuff.bane_of_doom.ticks_remain<1))
 actions.st+=/bane_of_agony,if=target.time_to_die>15&((debuff.bane_of_agony.up&debuff.bane_of_agony.ticks_remain<1)|debuff.my_bane.down)
