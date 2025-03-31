@@ -2080,6 +2080,14 @@ return "Position" end,
                                 disabled = function () return data.keybindings.enabled == false end,
                             },
 
+                            keybindsOnly = {
+                                type = "toggle",
+                                name = "Keybinds Only",
+                                desc = "When enabled, icons will be hidden and only keybindings will be shown.",
+                                order = 3,
+                                width = 1.49,
+                            },
+
                             pos = {
                                 type = "group",
                                 inline = true,
