@@ -15,8 +15,8 @@ actions.st+=/synapse_springs,sync=demon_soul,if=buff.bloodlust.up|buff.trinket_p
 actions.st+=/demon_soul,if=buff.bloodlust.up|buff.trinket_proc.up|buff.volcanic_power.up
 actions.st+=/summon_doomguard,if=buff.trinket_proc.up
 actions.st+=/soulburn
-actions.st+=/soul_fire,if=buff.soulburn.up&buff.improved_soul_fire.remains<3
-actions.st+=/immolate,if=debuff.immolate.down|debuff.immolate.remains<(tick_time+cast_time)
+actions.st+=/soul_fire,if=buff.soulburn.up|buff.empowered_imp.up|buff.improved_soul_fire.remains<3
+actions.st+=/immolate,if=(debuff.immolate.remains<cast_time+tick_time&time_to_die>5)|(buff.bloodlust.remains<2&debuff.immolate.remains<12&buff.bloodlust.up)
 actions.st+=/conflagrate,if=debuff.immolate.up
 actions.st+=/bane_of_doom,if=target.time_to_die>60&((debuff.my_bane.down&buff.active_doom.down)|(debuff.bane_of_doom.up&debuff.bane_of_doom.ticks_remain<1))
 actions.st+=/bane_of_agony,if=target.time_to_die>15&((debuff.bane_of_agony.up&debuff.bane_of_agony.ticks_remain<1)|debuff.my_bane.down)
@@ -24,7 +24,7 @@ actions.st+=/corruption,if=!ticking&debuff.corruption.remains<tick_time&target.t
 actions.st+=/shadowflame,if=target.distance<8
 actions.st+=/shadowburn,if=target.health.pct<20
 actions.st+=/chaos_bolt,if=!buff.backdraft.react
-actions.st+=/life_tap,if=moving&mana.pct<80|mana.pct<10
+actions.st+=/life_tap,if=(moving&mana.pct<80&buff.alysrazor_movement.down)|mana.pct<10
 actions.st+=/fel_flame,if=buff.fel_spark.up
 actions.st+=/curse_of_the_elements,if=debuff.spell_vulnerability.down
 actions.st+=/incinerate,if=!moving|buff.alysrazor_movement.up
