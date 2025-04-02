@@ -65,6 +65,7 @@ local specTemplate = {
             clash = 0,
             targetMin = 0,
             targetMax = 0,
+            dotCap = 0,
             boss = false
         }
     },
@@ -797,7 +798,7 @@ local HekiliSpecMixin = {
                     local link = actionItem:GetItemLink()
                     local texture = actionItem:GetItemIcon()
 
-                   
+
                     if name then
                         if not a.name or a.name == a.key then a.name = name end
                         if not a.link or a.link == a.key then a.link = link end
@@ -916,7 +917,7 @@ local HekiliSpecMixin = {
             -- Hekili:ContinueOnSpellLoad( a.id, function( success )
             a.onLoad = function()
                 local spellInfo = GetSpellInfo( a.id )
-                
+
                 if spellInfo == nil then
                     spellInfo = GetItemInfo( a.id )
                 end
@@ -1067,24 +1068,35 @@ local HekiliSpecMixin = {
 
     RegisterPet = function( self, token, id, spell, duration, ... )
         CommitKey( token )
-    
-        -- Register the main pet.
-        self.pets[ token ] = {
+
+        -- Prepare the main model
+        local model = {
             id = type( id ) == "function" and setfenv( id, state ) or id,
             token = token,
             spell = spell,
             duration = type( duration ) == "function" and setfenv( duration, state ) or duration
         }
-    
-        -- Process copies.
+
+        -- Register the main pet token
+        self.pets[ token ] = model
+
+        -- Register copies, but avoid overwriting unrelated registrations
         local n = select( "#", ... )
         if n and n > 0 then
             for i = 1, n do
-                local copy = select( i, ... )
-                self.pets[ copy ] = self.pets[ token ]
+                local alias = select( i, ... )
+
+                if self.pets[ alias ] and self.pets[ alias ] ~= model then
+                    if Hekili.ActiveDebug then
+                        Hekili:Debug( "RegisterPet: Alias '%s' already assigned to a different pet. Skipping for token '%s'.", tostring( alias ), tostring( token ) )
+                    end
+                else
+                    self.pets[ alias ] = model
+                end
             end
         end
     end,
+
 
     RegisterPets = function( self, pets )
         for token, data in pairs( pets ) do
@@ -1093,7 +1105,7 @@ local HekiliSpecMixin = {
             local spell = data.spell
             local duration = data.duration
             local copy = data.copy
-    
+
             -- Register the pet and handle the copy field if it exists.
             if copy then
                 self:RegisterPet( token, id, spell, duration, copy )
@@ -1107,7 +1119,7 @@ local HekiliSpecMixin = {
         -- Register the primary totem.
         self.totems[ token ] = id
         self.totems[ id ] = token
-    
+
         -- Handle copies if provided.
         local n = select( "#", ... )
         if n and n > 0 then
@@ -1117,7 +1129,7 @@ local HekiliSpecMixin = {
                 self.totems[ id ] = copy
             end
         end
-    
+
         -- Commit the primary token.
         CommitKey( token )
     end,
@@ -1126,11 +1138,11 @@ local HekiliSpecMixin = {
         for token, data in pairs( totems ) do
             local id = data.id
             local copy = data.copy
-    
+
             -- Register the primary totem.
             self.totems[ token ] = id
             self.totems[ id ] = token
-    
+
             -- Register any copies (aliases).
             if copy then
                 if type( copy ) == "string" then
@@ -1143,7 +1155,7 @@ local HekiliSpecMixin = {
                     end
                 end
             end
-    
+
             CommitKey( token )
         end
     end,
@@ -1873,12 +1885,48 @@ all:RegisterAuras( {
         duration = 3600,
     },
 
+    empowering = {
+        name = "Empowering",
+        duration = 3600,
+        generate = function( t )
+            local e = state.empowerment
+            local spell = e.spell
+
+            local ability = class.abilities[ spell ]
+
+            t.name = ability and ability.name or "Empowering"
+            t.count = e.start > 0 and 1 or 0
+            t.expires = e.hold
+            t.applied = e.start
+            t.duration = e.hold - e.start
+            t.v1 = ability and ability.id or 0
+            t.v2 = 0
+            t.v3 = 0
+            t.spell = spell
+            t.caster = "player"
+
+            if t.expires > 0 then
+                local timeDiff = state.now - t.applied
+                state.now = state.now - timeDiff
+
+                if Hekili.ActiveDebug then
+                    Hekili:Debug( "Empowerment spell: %s[%.2f], unit: %s; rewinding %.2f...", t.name, t.remains, t.caster, timeDiff )
+                end
+            end
+        end,
+    },
+
     casting = {
         name = "Casting",
         generate = function( t, auraType )
             local unit = auraType == "debuff" and "target" or "player"
 
-            if unit == "player" or UnitCanAttack( "player", "target" ) then
+            if unit == "player" and state.buff.empowering.up then
+                removeBuff( "casting" )
+                return
+            end
+
+            if unit == "player" or UnitCanAttack( "player", unit ) then
                 local spell, _, _, startCast, endCast, _, _, notInterruptible, spellID = UnitCastingInfo( unit )
 
                 if spell then
@@ -1917,16 +1965,17 @@ all:RegisterAuras( {
                 end
 
                 spell, _, _, startCast, endCast, _, notInterruptible, spellID = UnitChannelInfo( unit )
+                startCast = ( startCast or 0 ) / 1000
+                endCast = ( endCast or 0 ) / 1000
+                duration = endCast - startCast
 
-                if spell then
-                    startCast = startCast / 1000
-                    endCast = endCast / 1000
-
+                -- Channels greater than 10 seconds are nonsense.  Probably.
+                if spell and duration <= 10 then
                     t.name = spell
                     t.count = 1
                     t.expires = endCast
                     t.applied = startCast
-                    t.duration = endCast - startCast
+                    t.duration = duration
                     t.v1 = spellID
                     t.v2 = notInterruptible and 1 or 0
                     t.v3 = 1 -- channeled.
@@ -1969,44 +2018,6 @@ all:RegisterAuras( {
             t.caster = unit
         end,
     },
-
-    --[[ player_casting = {
-        name = "Casting",
-        generate = function ()
-            local aura = buff.player_casting
-
-            local name, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitCastingInfo( "player" )
-
-            if name then
-                aura.name = name
-                aura.count = 1
-                aura.expires = endCast / 1000
-                aura.applied = startCast / 1000
-                aura.v1 = spell
-                aura.caster = "player"
-                return
-            end
-
-            name, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitChannelInfo( "player" )
-
-            if notInterruptible == false then
-                aura.name = name
-                aura.count = 1
-                aura.expires = endCast / 1000
-                aura.applied = startCast / 1000
-                aura.v1 = spell
-                aura.caster = "player"
-                return
-            end
-
-            aura.name = "Casting"
-            aura.count = 0
-            aura.expires = 0
-            aura.applied = 0
-            aura.v1 = 0
-            aura.caster = "target"
-        end,
-    }, ]]
 
     movement = {
         duration = 5,
@@ -2644,6 +2655,13 @@ all:RegisterAuras( {
         end,
         copy = "unravel_absorb"
     },
+
+    devouring_rift = {
+        id = 440313,
+        duration = 15,
+        shared = "player",
+        max_stack = 1
+    }
 } )
 
 do

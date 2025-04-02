@@ -1396,7 +1396,7 @@ all:RegisterAbilities( {
 
         usable = function() return buff.core_recycling_unit.stack > 10 and health.pct < 60 end,
 
-        proc = "heal",
+        proc = "healing",
         self_buff = "core_recycling_unit",
 
         handler = function ()
@@ -1421,6 +1421,30 @@ all:RegisterAbilities( {
         toggle = "cooldowns",
 
         proc = "damage",
+    },
+
+    anodized_deflectors = {
+        cast = 0,
+        cooldown = 30,
+        gcd = "off",
+
+        item = 168978,
+        toggle = "defensives",
+
+        proc = "avoidance",
+        self_buff = "anodized_deflectors",
+
+        handler = function ()
+            applyBuff( "anodized_deflectors" )
+        end,
+
+        auras = {
+            anodized_deflectors = {
+                id = 300140,
+                duration = 6,
+                max_stack = 1,
+            }
+        }
     },
 } )
 

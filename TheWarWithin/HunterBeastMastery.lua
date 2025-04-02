@@ -1294,6 +1294,12 @@ spec:RegisterStateExpr( "pack_leader_buff_next_index", function()
     return PackLeaderBuffNextIndex
 end )
 
+local lastBoarSummoned = 0
+
+spec:RegisterStateExpr( "last_boar_summoned", function()
+    return lastBoarSummoned
+end )
+
 local trapUnits = { "target", "focus" }
 local trappableClassifications = {
     rare = true,
@@ -1323,6 +1329,10 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
                     break
                 end
             end
+        elseif subtype == "SPELL_AURA_REMOVED" and spellID == 472324 then
+            local now = GetTime()
+            -- use lastcast to make sure it wasn't a natural buff disappearing
+            if now - action.kill_command.lastCast <= 1 then lastBoarSummoned = now end
         end
     end
 
@@ -1405,10 +1415,46 @@ spec:RegisterStateTable( "howl_summon", setmetatable( {
     end
 } ) )
 
+-- To support SimC Expressions
+spec:RegisterStateTable( "boar_charge", setmetatable( {
+
+    boar_duration = 6,
+    boar_interval = 3,
+
+    refresh_tracker = setfenv( function()
+        -- reset_precast function
+        last_boar_summoned = nil
+    end, state ),
+
+}, {
+    __index = function( t, k )
+        local elapsed = query_time - last_boar_summoned
+
+        if k == "remains" then
+            return max( 0, boar_charge.boar_duration - elapsed )
+        elseif k == "next_charge"  then
+            if elapsed < 0 or elapsed > boar_charge.boar_duration then
+                return 3600
+            else
+                return ( boar_charge.boar_interval * ( floor( elapsed / boar_charge.boar_interval ) + 1 ) ) - elapsed
+            end
+        elseif k == "charges_remaining" then
+            if elapsed < 0 or elapsed >= boar_charge.boar_duration then
+                return 0
+            else
+                return max( 0, 2 - ( floor( elapsed / boar_charge.boar_interval ) ) )
+            end
+        end
+    end
+} ) )
 
 spec:RegisterHook( "reset_precast", function()
 
-    if talent.howl_of_the_pack_leader.enabled then howl_summon.refresh_cycle() end
+    if talent.howl_of_the_pack_leader.enabled then
+        howl_summon.refresh_cycle()
+        boar_charge.refresh_tracker()
+    end
+
 
     if debuff.tar_trap.up then
         debuff.tar_trap.expires = debuff.tar_trap.applied + 30

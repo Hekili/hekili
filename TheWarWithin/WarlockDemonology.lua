@@ -1753,7 +1753,7 @@ spec:RegisterAbilities( {
         debuff = "casting",
         readyTime = state.timeToInterrupt,
 
-        usable = function () return pet.exists, "requires felguard" end,
+        usable = function() return pet.felguard.alive, "requires a living felguard" end,
         handler = function ()
             interrupt()
             applyDebuff( "target", "axe_toss", 4 )
@@ -1917,7 +1917,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         readyTime = function() return max( buff.fiendish_wrath.remains, buff.felstorm.remains ) end,
 
-        usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
+        usable = function() return pet.felguard.alive, "requires a living felguard" end,
         handler = function ()
             applyBuff( "felstorm" )
             applyBuff( "demonic_strength" )
@@ -1986,7 +1986,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         nobuff = "felstorm",
 
-        usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
+        usable = function() return pet.felguard.alive, "requires a living felguard" end,
         handler = function()
             removeBuff( "felstorm" )
             applyBuff( "fiendish_wrath" )
@@ -2327,7 +2327,7 @@ spec:RegisterAbilities( {
 
         readyTime = function() return buff.fiendish_wrath.remains end,
 
-        usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
+        usable = function() return pet.felguard.alive, "requires a living felguard" end,
         handler = function()
             applyBuff( "felstorm" )
             if cooldown.guillotine.remains < 5 then setCooldown( "guillotine", 8 ) end

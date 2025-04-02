@@ -223,7 +223,7 @@ spec:RegisterAuras( {
     finality_rupture = {
         id = 385951,
         duration = 30,
-        max_stack = 1,
+        max_stack = 1
     },
     flagellation = {
         id = 323654,
@@ -242,7 +242,6 @@ spec:RegisterAuras( {
         copy = 345569
     },
     -- Your finishing moves cost no Energy.
-    -- TODO: Does Goremaw's Bite track by value or by stacks?
     goremaws_bite = {
         id = 426593,
         duration = 30,
@@ -420,20 +419,13 @@ spec:RegisterAuras( {
     },
 } )
 
-local true_stealth_change = 0
-local emu_stealth_change = 0
+local true_stealth_change, emu_stealth_change = 0, 0
+local last_mh, last_oh, last_shadow_techniques, swings_since_sht, sht = 0, 0, 0, 0, {} -- Shadow Techniques
+local danse_ends, danse_macabre_actual = 0, {}
 
 spec:RegisterEvent( "UPDATE_STEALTH", function ()
     true_stealth_change = GetTime()
 end )
-
-local last_mh = 0
-local last_oh = 0
-local last_shadow_techniques = 0
-local swings_since_sht = 0
-
-local danse_ends = 0
-local danse_macabre_actual = {}
 
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike )
     if not sourceGUID == state.GUID then return end
@@ -472,8 +464,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
         end
     end
 end )
-
-local sht = {}
 
 spec:RegisterStateTable( "time_to_sht", setmetatable( {}, {
     __index = function( t, k )
@@ -991,7 +981,7 @@ spec:RegisterAbilities( {
             if talent.shadowcraft.enabled and buff.symbols_of_death.up then Shadowcraft() end
 
             if talent.deeper_daggers.enabled or conduit.deeper_daggers.enabled then applyBuff( "deeper_daggers" ) end
-        end,
+        end
     },
 
     -- Stuns the target for 4 sec. Awards 1 combo point.
@@ -1030,7 +1020,7 @@ spec:RegisterAbilities( {
             removeBuff( "premeditation" )
 
             if buff.the_rotten.up then removeStack( "the_rotten" ) end
-        end,
+        end
     },
 
     -- Finishing move that disembowels the target, causing damage per combo point. Targets with Find Weakness suffer an additional 20% damage as Shadow. 1 point : 273 damage 2 points: 546 damage 3 points: 818 damage 4 points: 1,091 damage 5 points: 1,363 damage 6 points: 1,636 damage
@@ -1205,8 +1195,7 @@ spec:RegisterAbilities( {
 
             applyBuff( "goremaws_bite" )
             if buff.the_rotten.up then removeStack( "the_rotten" ) end
-        end,
-
+        end
     },
 
     -- Talent: Finishing move that creates shadow clones of yourself. You and your shadow clones each perform a piercing attack on all enemies near your target, dealing Physical damage to the primary target and reduced damage to other targets. 1 point : 692 total damage 2 points: 1,383 total damage 3 points: 2,075 total damage 4 points: 2,767 total damage 5 points: 3,458 total damage 6 points: 4,150 total damage Cooldown is reduced by 1 sec for every combo point you spend.
@@ -1232,7 +1221,7 @@ spec:RegisterAbilities( {
             if talent.goremaws_bite.enabled and buff.goremaws_bite.up then removeStack( "goremaws_bite" ) end
             spend( combo_points.current, "combo_points" )
             if talent.shadowcraft.enabled and buff.symbols_of_death.up then Shadowcraft() end
-        end,
+        end
     },
 
     -- Draws upon surrounding shadows to empower your weapons, causing your attacks to deal $s1% additional damage as Shadow and causing your combo point generating abilities to generate full combo points for $d.
@@ -1251,7 +1240,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "shadow_blades" )
 
-        end,
+        end
     },
 
     -- Talent: Allows use of all Stealth abilities and grants all the combat benefits of Stealth for $d$?a245687[, and increases damage by $s2%][]. Effect not broken from taking damage or attacking.$?s137035[    If you already know $@spellname185313, instead gain $394930s1 additional $Lcharge:charges; of $@spellname185313.][]
@@ -1294,7 +1283,7 @@ spec:RegisterAbilities( {
                 gain( 2, "combo_points" )
                 applyBuff( "the_first_dance" )
             end
-        end,
+        end
     },
 
     -- Strike the target, dealing 1,118 Physical damage. While Stealthed, you strike through the shadows and appear behind your target up to 25 yds away, dealing 25% additional damage. Awards 3 combo points.
@@ -1386,7 +1375,7 @@ spec:RegisterAbilities( {
             removeBuff( "premeditation" )
             removeDebuff( "target", "dispellable_enrage" )
             if talent.improved_shiv.enabled then applyDebuff( "target", "shiv" ) end
-        end,
+        end
     },
 
     -- Sprays shurikens at all enemies within 13 yards, dealing 369 Physical damage. Deals reduced damage beyond 8 targets. Critical strikes with Shuriken Storm apply Find Weakness for 10 sec. Awards 1 combo point per target hit.
@@ -1433,8 +1422,7 @@ spec:RegisterAbilities( {
                 active_dot.find_weakness = active_enemies
                 removeBuff( "silent_storm" )
             end
-
-        end,
+        end
     },
 
     -- Talent: Focus intently, then release a Shuriken Storm every sec for the next 4 sec.
@@ -1445,9 +1433,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function ()
-            return 60 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.95 or 1 )
-        end,
+        spend = function () return 60 * ( ( talent.shadow_focus.enabled and ( buff.shadow_dance.up or buff.stealth.up ) ) and 0.95 or 1 ) end,
         spendType = "energy",
 
         talent = "shuriken_tornado",
@@ -1464,7 +1450,7 @@ spec:RegisterAbilities( {
                 state:QueueAuraEvent( "shuriken_tornado", class.abilities.shuriken_storm.handler, moment, "AURA_PERIODIC" )
                 moment = moment - 1
             end
-        end,
+        end
     },
 
     -- Throws a shuriken at an enemy target for 230 Physical damage. Awards 1 combo point.
@@ -1489,7 +1475,7 @@ spec:RegisterAbilities( {
 
             removeBuff( "premeditation" )
             removeStack( "the_rotten" )
-        end,
+        end
     },
 
     -- Invoke ancient symbols of power, generating 40 Energy and increasing damage done by 10% for 10 sec.

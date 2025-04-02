@@ -1,3 +1,6 @@
+## Updated 2025-03-27
+## Non-SimC edits to resolve Ascendance/trinket sync logic.
+
 # Ensure weapon enchant is applied if you've selected Improved Flametongue Weapon.
 actions.precombat+=/flametongue_weapon,if=talent.improved_flametongue_weapon.enabled
 actions.precombat+=/skyfury
@@ -38,6 +41,8 @@ actions+=/natures_swiftness
 ### Use Power Infusion on Cooldown.
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.ascendance.up|cooldown.ascendance.remains>30
 actions+=/potion,if=buff.bloodlust.up|buff.spymasters_web.up|buff.ascendance.remains>12|fight_remains<31&boss
+# [Hekili] Ascendance/trinket sync logic; revised to recover when a trinket is used *before* Ascendance.
+actions+=/variable,name=ascendance_trinket,value=buff.spymasters_web.up|(trinket.1.has_use_buff&!trinket.1.is.spymasters_web|trinket.1.is.funhouse_lens)&(trinket.1.ready_cooldown|trinket.1.cooldown.remains>20)|(trinket.2.has_use_buff&!trinket.2.is.spymasters_web|trinket.2.is.funhouse_lens)&(trinket.2.ready_cooldown|trinket.2.cooldown.remains>20)|equipped.neural_synapse_enhancer&(cooldown.neural_synapse_enhancer.remains=0|cooldown.neural_synapse_enhancer.remains>20)|equipped.best_in_slots&(cooldown.best_in_slots.remains=0|cooldown.best_in_slots.remains>20)
 actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.chain_lightning>1
 actions+=/run_action_list,name=single_target
 
@@ -49,8 +54,8 @@ actions.aoe+=/liquid_magma_totem,if=(cooldown.primordial_wave.remains<5*gcd|!tal
 actions.aoe+=/flame_shock,cycle_targets=1,if=cooldown.primordial_wave.remains<gcd&!dot.flame_shock.ticking&(talent.primordial_wave|spell_targets.chain_lightning<=3)&cooldown.ascendance.remains>10
 actions.aoe+=/primordial_wave,if=active_dot.flame_shock=active_enemies>?6|cooldown.liquid_magma_totem.remains>15|!talent.liquid_magma_totem
 actions.aoe+=/ancestral_swiftness
-# JUST DO IT! https://i.kym-cdn.com/entries/icons/mobile/000/018/147/Shia_LaBeouf__Just_Do_It__Motivational_Speech_(Original_Video_by_LaBeouf__R%C3%B6nkk%C3%B6___Turner)_0-4_screenshot.jpg
-actions.aoe+=/ascendance,if=(talent.first_ascendant|fight_remains>200|fight_remains<80|buff.spymasters_web.up|(trinket.1.has_use_buff&!trinket.1.is.spymasters_web|trinket.1.is.funhouse_lens)&trinket.1.ready_cooldown|(trinket.2.has_use_buff&!trinket.2.is.spymasters_web|trinket.2.is.funhouse_lens)&trinket.2.ready_cooldown|equipped.neural_synapse_enhancer&cooldown.neural_synapse_enhancer.remains=0|equipped.best_in_slots&cooldown.best_in_slots.remains=0)&(buff.fury_of_storms.up|!talent.fury_of_the_storms)
+# [Hekili] Revised trinket sync to recover when trinket is used before Ascendance.
+actions.aoe+=/ascendance,if=(talent.first_ascendant|fight_remains>200|fight_remains<80|variable.ascendance_trinket)&(buff.fury_of_storms.up|cooldown.stormkeeper.remains>12|!talent.fury_of_the_storms)
 # Surge of Power is strong and should be used. ??
 actions.aoe+=/tempest,cycle_targets=1,if=buff.arc_discharge.stack<2&(buff.surge_of_power.up|!talent.surge_of_power)
 actions.aoe+=/lightning_bolt,if=buff.stormkeeper.up&buff.surge_of_power.up&spell_targets.chain_lightning=2
@@ -94,8 +99,8 @@ actions.single_target+=/flame_shock,if=!dot.flame_shock.ticking&!buff.surge_of_p
 # Use Primordial Wave as much as possible.
 actions.single_target+=/primordial_wave
 actions.single_target+=/ancestral_swiftness
-##[Syrif] Sim specific timing restrictions changed
-actions.single_target+=/ascendance,if=(talent.first_ascendant|(!trinket.1.has_use_buff&!trinket.2.has_use_buff)|buff.spymasters_web.up|(trinket.1.has_use_buff&!trinket.1.is.spymasters_web|trinket.1.is.funhouse_lens)&trinket.1.ready_cooldown|(trinket.2.has_use_buff&!trinket.2.is.spymasters_web|trinket.2.is.funhouse_lens)&trinket.2.ready_cooldown|equipped.neural_synapse_enhancer&cooldown.neural_synapse_enhancer.remains=0|equipped.best_in_slots&cooldown.best_in_slots.remains=0)&(buff.fury_of_storms.up|!talent.fury_of_the_storms)&(cooldown.primordial_wave.remains>25|!talent.primordial_wave)
+# [Hekili] Revised trinket sync to recover when trinket is used before Ascendance.
+actions.single_target+=/ascendance,if=(talent.first_ascendant|variable.ascendance_trinket)&(buff.fury_of_storms.up|cooldown.stormkeeper.remains>12|!talent.fury_of_the_storms)&(cooldown.primordial_wave.remains>25|!talent.primordial_wave)
 # Surge of Power is strong and should be used.??
 actions.single_target+=/tempest,if=buff.surge_of_power.up
 actions.single_target+=/lightning_bolt,if=buff.surge_of_power.up

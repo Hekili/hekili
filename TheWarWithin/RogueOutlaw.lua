@@ -12,7 +12,7 @@ local state = Hekili.State
 local GetUnitChargedPowerPoints = GetUnitChargedPowerPoints
 local PTR = ns.PTR
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
-local strformat = string.format
+local strformat, abs = string.format, math.abs
 local IsSpellOverlayed = IsSpellOverlayed
 
 local spec = Hekili:NewSpecialization( 260 )
@@ -196,7 +196,6 @@ spec:RegisterPvpTalents( {
     veil_of_midnight     = 5516, -- (198952) Cloak of Shadows now also removes harmful physical effects.
 } )
 
-
 local rtb_buff_list = {
     "broadside", "buried_treasure", "grand_melee", "ruthless_precision", "skull_and_crossbones", "true_bearing", "rtb_buff_1", "rtb_buff_2"
 }
@@ -223,12 +222,12 @@ spec:RegisterAuras( {
         id = 392388,
         duration = 10,
         type = "Magic",
-        max_stack = 1,
+        max_stack = 1
     },
     alacrity = {
         id = 193538,
         duration = 15,
-        max_stack = 5,
+        max_stack = 5
     },
     audacity = {
         id = 386270,
@@ -239,14 +238,14 @@ spec:RegisterAuras( {
     between_the_eyes = {
         id = 315341,
         duration = function() return 3 * effective_combo_points end,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Attacks striking nearby enemies.
     -- https://wowhead.com/beta/spell=13877
     blade_flurry = {
         id = 13877,
         duration = function () return talent.dancing_steel.enabled and 13 or 10 end,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Generates $s1 Energy every sec.
     -- https://wowhead.com/beta/spell=271896
@@ -304,7 +303,7 @@ spec:RegisterAuras( {
     },
     -- Increase the remaining duration of your active Roll the Bones combat enhancements by 30 sec.
     keep_it_rolling = {
-        id = 381989,
+        id = 381989
     },
     -- Talent: Attacking an enemy every $t1 sec.
     -- https://wowhead.com/beta/spell=51690
@@ -368,29 +367,29 @@ spec:RegisterAuras( {
     riposte = {
         id = 199754,
         duration = 10,
-        max_stack = 1,
+        max_stack = 1
     },
     sharpened_sabers = {
         id = 252285,
         duration = 15,
-        max_stack = 2,
+        max_stack = 2
     },
     soothing_darkness = {
         id = 393971,
         duration = 6,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Movement speed increased by $w1%.$?s245751[    Allows you to run over water.][]
     -- https://wowhead.com/beta/spell=2983
     sprint = {
         id = 2983,
         duration = 8,
-        max_stack = 1,
+        max_stack = 1
     },
     subterfuge = {
         id = 115192,
         duration = function() return 3 * talent.subterfuge.rank end,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Damage taken increased by $w1%.
     stinging_vulnerability = {
@@ -401,7 +400,7 @@ spec:RegisterAuras( {
     summarily_dispatched = {
         id = 386868,
         duration = 8,
-        max_stack = 5,
+        max_stack = 5
     },
     -- Talent: Haste increased by $w1%.
     -- https://wowhead.com/beta/spell=385907
@@ -422,39 +421,37 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 1
     },
-
     -- Real RtB buffs.
     broadside = {
         id = 193356,
-        duration = 30,
+        duration = 30
     },
     buried_treasure = {
         id = 199600,
-        duration = 30,
+        duration = 30
     },
     grand_melee = {
         id = 193358,
-        duration = 30,
+        duration = 30
     },
     ruthless_precision = {
         id = 193357,
-        duration = 30,
+        duration = 30
     },
     skull_and_crossbones = {
         id = 199603,
-        duration = 30,
+        duration = 30
     },
     true_bearing = {
         id = 193359,
-        duration = 30,
+        duration = 30
     },
-
     -- Fake buffs for forecasting.
     rtb_buff_1 = {
-        duration = 30,
+        duration = 30
     },
     rtb_buff_2 = {
-        duration = 30,
+        duration = 30
     },
     supercharged_combo_points = {
         -- todo: Find a way to find a true buff / ID for this as a failsafe? Currently fully emulated.
@@ -462,15 +459,13 @@ spec:RegisterAuras( {
         max_stack = function() return combo_points.max end,
         copy = { "supercharge", "supercharged", "supercharger" }
     },
-
     -- Roll the dice of fate, providing a random combat enhancement for 30 sec.
     roll_the_bones = {
         alias = rtb_buff_list,
         aliasMode = "longest", -- use duration info from the buff with the longest remaining time.
         aliasType = "buff",
-        duration = 30,
+        duration = 30
     },
-
     lethal_poison = {
         alias = { "instant_poison", "wound_poison" },
         aliasMode = "first",
@@ -493,7 +488,7 @@ spec:RegisterAuras( {
     deathly_shadows = {
         id = 341202,
         duration = 15,
-        max_stack = 1,
+        max_stack = 1
     },
     greenskins_wickers = {
         id = 340573,
@@ -512,25 +507,33 @@ spec:RegisterAuras( {
     snake_eyes = {
         id = 275863,
         duration = 30,
-        max_stack = 1,
+        max_stack = 1
     },
 } )
 
-
-local lastShot = 0
-local numShots = 0
-local lastUnseenBlade = 0
-local disorientStacks = 0
-
+local lastShot, numShots = 0, 0
+local lastUnseenBlade, disorientStacks = 0, 0
+local lastRoll = 0
+local rollDuration = 30
 local rtbApplicators = {
     roll_the_bones = true,
     ambush = true,
     dispatch = true,
     keep_it_rolling = true,
 }
-
-local lastRoll = 0
-local rollDuration = 30
+local restless_blades_list = {
+    "adrenaline_rush",
+    "between_the_eyes",
+    "blade_flurry",
+    "blade_rush",
+    "ghostly_strike",
+    "grappling_hook",
+    "keep_it_rolling",
+    "killing_spree",
+    "roll_the_bones",
+    "sprint",
+    "vanish"
+}
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= state.GUID then return end
@@ -636,8 +639,6 @@ spec:RegisterStateExpr( "rtb_primary_remains", function ()
     local baseTime = max( lastRoll or 0, action.roll_the_bones.lastCast or 0 )
     return max( 0, baseTime + rollDuration - query_time )
 end )
-
-local abs = math.abs
 
 --[[   local remains = 0
 
@@ -746,55 +747,6 @@ spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, uni
     end
 end )
 
--- The War Within
-spec:RegisterGear( "tww2", 229290, 229288, 229289, 229287, 229292 )
-spec:RegisterAuras( {
-    -- 2-set
-    -- https://www.wowhead.com/spell=1218439
-    -- Winning Streak!  
-    winning_streak = {
-        id = 1217078,
-        duration = 3600,
-        max_stack = 10,
-    },
-} )
-
--- Dragonflight
-spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207239, 217208, 217210, 217206, 217207, 217209 )
-spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )
-spec:RegisterAuras( {
-    soulrip = {
-        id = 409604,
-        duration = 8,
-        max_stack = 1
-    },
-    soulripper = {
-        id = 409606,
-        duration = 15,
-        max_stack = 1
-    }
-} )
-spec:RegisterGear( "tier29", 200372, 200374, 200369, 200371, 200373 )
-spec:RegisterAuras( {
-    vicious_followup = {
-        id = 394879,
-        duration = 15,
-        max_stack = 1
-    },
-    brutal_opportunist = {
-        id = 394888,
-        duration = 15,
-        max_stack = 1
-    }
-} )
-
--- Legendary from Legion, shows up in APL still.
-spec:RegisterGear( "mantle_of_the_master_assassin", 144236 )
-spec:RegisterAura( "master_assassins_initiative", {
-    id = 235027,
-    duration = 3600
-} )
-
 spec:RegisterStateExpr( "mantle_duration", function ()
     return legendary.mark_of_the_master_assassin.enabled and 4 or 0
 end )
@@ -863,21 +815,6 @@ spec:RegisterHook( "runHandler", function( ability )
 
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 end )
-
-local restless_blades_list = {
-    "adrenaline_rush",
-    "between_the_eyes",
-    "blade_flurry",
-    "blade_rush",
-    "ghostly_strike",
-    "grappling_hook",
-    "keep_it_rolling",
-    "killing_spree",
-    -- "marked_for_death",
-    "roll_the_bones",
-    "sprint",
-    "vanish"
-}
 
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "combo_points" then
@@ -1000,6 +937,67 @@ spec:RegisterHook( "reset_precast", function()
 
 end )
 
+spec:RegisterGear( {
+    -- The War Within
+    tww2 = {
+        items = { 229290, 229288, 229289, 229287, 229292 },
+        auras = {
+            -- 2-set
+            winning_streak = {
+                id = 1217078,
+                duration = 3600,
+                max_stack = 10
+            }
+        }
+    },
+
+    -- Dragonflight
+    tier31 = {
+        items = { 207234, 207235, 207236, 207237, 207239, 217208, 217210, 217206, 217207, 217209 }
+    },
+    tier30 = {
+        items = { 202500, 202498, 202497, 202496, 202495 },
+        auras = {
+            soulrip = {
+                id = 409604,
+                duration = 8,
+                max_stack = 1
+            },
+            soulripper = {
+                id = 409606,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+    tier29 = {
+        items = { 200372, 200374, 200369, 200371, 200373 },
+        auras = {
+            vicious_followup = {
+                id = 394879,
+                duration = 15,
+                max_stack = 1
+            },
+            brutal_opportunist = {
+                id = 394888,
+                duration = 15,
+                max_stack = 1
+            }
+        }
+    },
+
+    -- Legion Legendary
+    mantle_of_the_master_assassin = {
+        items = { 144236 },
+        auras = {
+            master_assassins_initiative = {
+                id = 235027,
+                duration = 3600
+            }
+        }
+    }
+} )
+
 -- Abilities
 spec:RegisterAbilities( {
     -- Talent: Increases your Energy regeneration rate by $s1%, your maximum Energy by $s4, and your attack speed by $s2% for $d.
@@ -1015,9 +1013,7 @@ spec:RegisterAbilities( {
 
         toggle = "cooldowns",
 
-        cp_gain = function ()
-            return talent.improved_adrenaline_rush.enabled and combo_points.max or 0
-        end,
+        cp_gain = function () return talent.improved_adrenaline_rush.enabled and combo_points.max or 0 end,
 
         handler = function ()
             applyBuff( "adrenaline_rush" )
@@ -1044,7 +1040,7 @@ spec:RegisterAbilities( {
             if azerite.brigands_blitz.enabled then
                 applyBuff( "brigands_blitz" )
             end
-        end,
+        end
     },
 
     -- Finishing move that deals damage with your pistol, increasing your critical strike chance by $s2%.$?a235484[ Critical strikes with this ability deal four times normal damage.][];    1 point : ${$<damage>*1} damage, 3 sec;    2 points: ${$<damage>*2} damage, 6 sec;    3 points: ${$<damage>*3} damage, 9 sec;    4 points: ${$<damage>*4} damage, 12 sec;    5 points: ${$<damage>*5} damage, 15 sec$?s193531|((s394320|s394321)&!s193531)[;    6 points: ${$<damage>*6} damage, 18 sec][]$?s193531&(s394320|s394321)[;    7 points: ${$<damage>*7} damage, 21 sec][]
@@ -1061,9 +1057,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         texture = 135610,
 
-        usable = function()
-            return combo_points.current > 0, "requires combo points"
-        end,
+        usable = function() return combo_points.current > 0, "requires combo points" end,
 
         handler = function ()
             if talent.alacrity.rank > 1 and effective_combo_points > 9 then addStack( "alacrity" ) end
@@ -1090,7 +1084,7 @@ spec:RegisterAbilities( {
 
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
-        end,
+        end
     },
 
     -- Strikes up to $?a272026[$331850i][${$331850i-3}] nearby targets for $331850s1 Physical damage$?a381878[ that generates 1 combo point per target][], and causes your single target attacks to also strike up to $?a272026[${$s3+$272026s3}][$s3] additional nearby enemies for $s2% of normal damage for $d.
@@ -1106,15 +1100,12 @@ spec:RegisterAbilities( {
 
         startsCombat = false,
 
-        -- 20231108: Deprecated; we use Blade Flurry more now.
-        -- readyTime = function() return buff.blade_flurry.remains - gcd.execute end,
-
         cp_gain = function() return talent.deft_maneuvers.enabled and true_active_enemies or 0 end,
         handler = function ()
             applyBuff( "blade_flurry" )
             if talent.deft_maneuvers.enabled then gain( action.blade_flurry.cp_gain, "combo_points" ) end
             if talent.underhanded_upper_hand.enabled and buff.adrenaline_rush.up then buff.blade_flurry.expires = buff.blade_flurry.expires + buff.adrenaline_rush.remains end
-        end,
+        end
     },
 
     -- Talent: Charge to your target with your blades out, dealing ${$271881sw1*$271881s2/100} Physical damage to the target and $271881sw1 to all other nearby enemies.    While Blade Flurry is active, damage to non-primary targets is increased by $s1%.    |cFFFFFFFFGenerates ${$271896s1*$271896d/$271896t1} Energy over $271896d.
@@ -1129,11 +1120,11 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         usable = function () return not settings.check_blade_rush_range or target.distance < ( talent.acrobatic_strikes.enabled and 9 or 6 ), "no gap-closer blade rush is on, target too far" end,
-            
+
         handler = function ()
             applyBuff( "blade_rush" )
             setDistance( 5 )
-        end,
+        end
     },
 
     death_from_above = {
@@ -1154,7 +1145,7 @@ spec:RegisterAbilities( {
         handler = function ()
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
-        end,
+        end
     },
 
     dismantle = {
@@ -1171,7 +1162,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "dismantle" )
-        end,
+        end
     },
 
     dispatch = {
@@ -1211,7 +1202,6 @@ spec:RegisterAbilities( {
 
         bind = "coup_de_grace"
     },
-
 
     -- Finishing move that dispatches the enemy, dealing damage per combo point:     1 point  : ${$m1*1} damage     2 points: ${$m1*2} damage     3 points: ${$m1*3} damage     4 points: ${$m1*4} damage     5 points: ${$m1*5} damage$?s193531|((s394320|s394321)&!s193531)[     6 points: ${$m1*6} damage][]$?s193531&(s394320|s394321)[     7 points: ${$m1*7} damage][]
     coup_de_grace = {
@@ -1264,7 +1254,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "ghostly_strike" )
             gain( action.ghostly_strike.cp_gain, "combo_points" )
-        end,
+        end
     },
 
      -- Talent: Launch a grappling hook and pull yourself to the target location.
@@ -1279,7 +1269,7 @@ spec:RegisterAbilities( {
         texture = 1373906,
 
         handler = function ()
-        end,
+        end
     },
 
     -- Talent: Increase the remaining duration of your active Roll the Bones combat enhancements by $s1 sec.
@@ -1299,17 +1289,17 @@ spec:RegisterAbilities( {
         handler = function ()
            for _, v in pairs( rtb_buff_list ) do
                 if buff[ v ].up then
-                -- Add 30 seconds but cap the total duration at 60 seconds.
-                local newExpires = buff[ v ].expires + 30
-                buff[ v ].expires = min( newExpires, query_time + 60 )
-                
-                -- Optional Debugging
-                if Hekili.ActiveDebug then
-                    Hekili:Debug( "Keep It Rolling applied to '%s': New expires = %.2f (capped at 60 seconds).", v, buff[ v ].expires )
+                    -- Add 30 seconds but cap the total duration at 60 seconds.
+                    local newExpires = buff[ v ].expires + 30
+                    buff[ v ].expires = min( newExpires, query_time + 60 )
+
+                    -- Optional Debugging
+                    if Hekili.ActiveDebug then
+                        Hekili:Debug( "Keep It Rolling applied to '%s': New expires = %.2f (capped at 60 seconds).", v, buff[ v ].expires )
+                    end
                 end
             end
         end
-    end,
     },
 
     -- Talent: Teleport to an enemy within 10 yards, attacking with both weapons for a total of $<dmg> Physical damage over $d.    While Blade Flurry is active, also hits up to $s5 nearby enemies for $s2% damage.
@@ -1341,7 +1331,7 @@ spec:RegisterAbilities( {
             end
 
             if talent.flawless_form.enabled then addStack( "flawless_form" ) end
-        end,
+        end
     },
 
     -- Draw a concealed pistol and fire a quick shot at an enemy, dealing ${$s1*$<CAP>/$AP} Physical damage and reducing movement speed by $s3% for $d.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
@@ -1378,7 +1368,7 @@ spec:RegisterAbilities( {
                 gain( shots * ( action.pistol_shot.cp_gain - 1 ), "combo_points" )
                 removeStack( "opportunity", shots )
             end
-        end,
+        end
     },
 
     -- Talent: Roll the dice of fate, providing a random combat enhancement for $d.
@@ -1393,11 +1383,6 @@ spec:RegisterAbilities( {
         spendType = "energy",
 
         startsCombat = false,
-        --[[nobuff = function()
-            if settings.never_roll_in_window and buff.roll_the_bones.up then
-                return "subterfuge"
-            end
-        end, --]]
 
         handler = function ()
             local pandemic = 0
@@ -1428,7 +1413,7 @@ spec:RegisterAbilities( {
                 applyBuff( "take_your_cut" )
             end
 
-        end,
+        end
     },
 
 
@@ -1450,9 +1435,8 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( action.shiv.cp_gain, "combo_points" )
             removeDebuff( "target", "dispellable_enrage" )
-        end,
+        end
     },
-
 
     shroud_of_concealment = {
         id = 114018,
@@ -1467,7 +1451,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "shroud_of_concealment" )
-        end,
+        end
     },
 
     ambush = {
@@ -1509,7 +1493,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         texture = 136189,
-        
+
 
         cp_gain = function () return 1 + ( buff.broadside.up and 1 or 0 ) end,
 
@@ -1523,7 +1507,7 @@ spec:RegisterAbilities( {
 
         copy = 1752,
 
-        bind = "ambush",
+        bind = "ambush"
     },
 
     smoke_bomb = {
@@ -1539,7 +1523,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "smoke_bomb" )
-        end,
+        end
     },
 } )
 
@@ -1553,7 +1537,7 @@ spec:RegisterAbility( "shadowmeld", {
     usable = function () return boss and group end,
     handler = function ()
         applyBuff( "shadowmeld" )
-    end,
+    end
 } )
 
 spec:RegisterRanges( "pick_pocket", "kick", "blind", "shadowstep" )

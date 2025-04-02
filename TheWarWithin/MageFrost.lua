@@ -61,23 +61,23 @@ spec:RegisterTalents( {
     quick_witted              = {  62104, 382297, 1 }, -- Successfully interrupting an enemy with Counterspell reduces its cooldown by 4 sec.
     reabsorption              = {  62125, 382820, 1 }, -- You are healed for 3% of your maximum health whenever a Mirror Image dissipates due to direct damage.
     reduplication             = {  62125, 382569, 1 }, -- Mirror Image's cooldown is reduced by 10 sec whenever a Mirror Image dissipates due to direct damage.
-    remove_curse              = {  62116,    475, 1 }, -- Removes all Curses from a friendly target. 
+    remove_curse              = {  62116,    475, 1 }, -- Removes all Curses from a friendly target.
     rigid_ice                 = {  62110, 382481, 1 }, -- Frost Nova can withstand 80% more damage before breaking.
     ring_of_frost             = {  62088, 113724, 1 }, -- Summons a Ring of Frost for 10 sec at the target location. Enemies entering the ring are incapacitated for 10 sec. Limit 10 targets. When the incapacitate expires, enemies are slowed by 75% for 4 sec.
     rondurmancy               = {  94648, 449596, 1 }, -- Spellfire Spheres can now stack up to 5 times.
     savor_the_moment          = {  94650, 449412, 1 }, -- When you cast Combustion, its duration is extended by 0.5 sec for each Spellfire Sphere you have, up to 2.5 sec.
     shifting_power            = {  62113, 382440, 1 }, -- Draw power from within, dealing 194,452 Arcane damage over 3.0 sec to enemies within 18 yds. While channeling, your Mage ability cooldowns are reduced by 12 sec over 3.0 sec.
     shimmer                   = {  62105, 212653, 1 }, -- Teleports you 20 yds forward, unless something is in the way. Unaffected by the global cooldown and castable while casting.
-    slow                      = {  62097,  31589, 1 }, -- Reduces the target's movement speed by 60% for 15 sec. 
+    slow                      = {  62097,  31589, 1 }, -- Reduces the target's movement speed by 60% for 15 sec.
     spellfire_spheres         = {  94647, 448601, 1 }, -- Every 6 times you consume Hot Streak, conjure a Spellfire Sphere. While you're out of combat, you will slowly conjure Spellfire Spheres over time.  Spellfire Sphere Increases your spell damage by 1%. Stacks up to 3 times.
-    spellsteal                = {  62084,  30449, 1 }, -- Steals a beneficial magic effect from the target. This effect lasts a maximum of 2 min. 
+    spellsteal                = {  62084,  30449, 1 }, -- Steals a beneficial magic effect from the target. This effect lasts a maximum of 2 min.
     sunfury_execution         = {  94650, 449349, 1 }, -- Scorch's critical strike threshold is increased to 35%.  Scorch Scorches an enemy for 23,925 Fire damage. When cast on a target below 30% health, Scorch is a guaranteed critical strike and increases your movement speed by 30% for 3 sec. Castable while moving.
     supernova                 = { 101883, 157980, 1 }, -- Pulses arcane energy around the target enemy or ally, dealing 27,514 Arcane damage to all enemies within 8 yds, and knocking them upward. A primary enemy target will take 100% increased damage.
     tempest_barrier           = {  62111, 382289, 2 }, -- Gain a shield that absorbs 3% of your maximum health for 15 sec after you Blink.
     temporal_velocity         = {  62099, 382826, 2 }, -- Increases your movement speed by 5% for 3 sec after casting Blink and 20% for 6 sec after returning from Alter Time.
     time_anomaly              = {  62094, 383243, 1 }, -- At any moment, you have a chance to gain Icy Veins for 8 sec, Brain Freeze, or Time Warp for 6 sec.
     time_manipulation         = {  62129, 387807, 1 }, -- Casting Ice Lance on Frozen targets reduces the cooldown of your loss of control abilities by 2 sec.
-    tome_of_antonidas         = {  62098, 382490, 1 }, -- Increases Haste by 2%. 
+    tome_of_antonidas         = {  62098, 382490, 1 }, -- Increases Haste by 2%.
     tome_of_rhonin            = {  62127, 382493, 1 }, -- Increases Critical Strike chance by 2%.
     volatile_detonation       = {  62089, 389627, 1 }, -- Greatly increases the effect of Blast Wave's knockback. Blast Wave's cooldown is reduced by 5 sec
     winters_protection        = {  62123, 382424, 2 }, -- The cooldown of Ice Block is reduced by 30 sec.
@@ -108,9 +108,9 @@ spec:RegisterTalents( {
     ice_caller                = {  62170, 236662, 1 }, -- Each time Blizzard deals damage, the cooldown of Frozen Orb is reduced by 0.5 sec.
     ice_lance                 = {  62176,  30455, 1 }, -- Quickly fling a shard of ice at the target, dealing 77,989 Frost damage. Ice Lance damage is tripled against frozen targets.
     icy_veins                 = {  62171,  12472, 1 }, -- Accelerates your spellcasting for 30 sec, granting 20% haste and preventing damage from delaying your spellcasts. Activating Icy Veins summons a water elemental to your side for its duration. The water elemental's abilities grant you Frigid Empowerment, increasing the Frost damage you deal by 3%, up to 15%.
-    lonely_winter             = {  62173, 205024, 1 }, -- Frostbolt, Ice Lance, and Flurry deal 15% increased damage. 
+    lonely_winter             = {  62173, 205024, 1 }, -- Frostbolt, Ice Lance, and Flurry deal 15% increased damage.
     permafrost_lances         = {  62169, 460590, 1 }, -- Frozen Orb increases Ice Lance's damage by 15% for 15 sec.
-    perpetual_winter          = {  62181, 378198, 1 }, -- Flurry now has 2 charges. 
+    perpetual_winter          = {  62181, 378198, 1 }, -- Flurry now has 2 charges.
     piercing_cold             = {  62166, 378919, 1 }, -- Frostbolt and Icicle critical strike damage increased by 20%.
     ray_of_frost              = {  62153, 205021, 1 }, -- Channel an icy beam at the enemy for 3.7 sec, dealing 251,369 Frost damage every 0.7 sec and slowing movement by 70%. Each time Ray of Frost deals damage, its damage and snare increases by 10%. Generates 2 charges of Fingers of Frost over its duration.
     shatter                   = {  62165,  12982, 1 }, -- Multiplies the critical strike chance of your spells against frozen targets by 1.5, and adds an additional 50% critical strike chance.
@@ -132,7 +132,7 @@ spec:RegisterTalents( {
     reactive_barrier          = {  94660, 444827, 1 }, -- Your Ice Barrier can absorb up to 50% more damage based on your missing Health. Max effectiveness when under 50% health.
     shifting_shards           = {  94657, 444675, 1 }, -- Shifting Power fires a barrage of 8 Frost Splinters at random enemies within 40 yds over its duration.
     signature_spell           = {  94657, 470021, 1 }, -- Consuming Winter's Chill with Glacial Spike conjures 2 additional Frost Splinters.
-    slippery_slinging         = {  94659, 444752, 1 }, -- You have 40% increased movement speed during Alter Time. 
+    slippery_slinging         = {  94659, 444752, 1 }, -- You have 40% increased movement speed during Alter Time.
     spellfrost_teachings      = {  94655, 444986, 1 }, -- Direct damage from Frost Splinters has a 2.5% chance to reset the cooldown of Frozen Orb and increase all damage dealt by Frozen Orb by 15% for 10 sec.
     splintering_orbs          = {  94661, 444256, 1 }, -- Enemies damaged by your Frozen Orb conjure 1 Frost Splinter, up to 5. Frozen Orb damage is increased by 10%.
     splintering_sorcery       = {  94664, 443739, 1, "spellslinger" }, -- When you consume Winter's Chill, conjure a Frost Splinter that fires at your target. Frost Splinter: Conjure raw Frost magic into a sharp projectile that deals 3,747 Frost damage. Frost Splinters embed themselves into their target, dealing 3,747 Frost damage over 18 sec. This effect stacks.
@@ -158,13 +158,13 @@ spec:RegisterTalents( {
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
-    concentrated_coolness      =  632, -- (198148) 
+spec:RegisterPvpTalents( {
+    concentrated_coolness      =  632, -- (198148)
     ethereal_blink             = 5600, -- (410939) Blink and Shimmer apply Slow at 100% effectiveness to all enemies you Blink through. For each enemy you Blink through, the cooldown of Blink and Shimmer are reduced by 1 sec, up to 5 sec.
     frost_bomb                 = 5496, -- (390612) Places a Frost Bomb on the target. After 5 sec, the bomb explodes, dealing 530,352 Frost damage to the target and 265,287 Frost damage to all other enemies within 10 yards. All affected targets are slowed by 80% for 4 sec. If Frost Bomb is dispelled before it explodes, gain a charge of Brain Freeze.
     ice_form                   =  634, -- (198144) Your body turns into Ice, increasing your Frostbolt damage done by 30% and granting immunity to stun and knockback effects. Lasts 17 sec.
     ice_wall                   = 5390, -- (352278) Conjures an Ice Wall 30 yards long that obstructs line of sight. The wall has 40% of your maximum health and lasts up to 15 sec.
-    icy_feet                   =   66, -- (407581) 
+    icy_feet                   =   66, -- (407581)
     improved_mass_invisibility = 5622, -- (415945) The cooldown of Mass Invisibility is reduced by 4 min and can affect allies in combat.
     master_shepherd            = 5581, -- (410248) While an enemy player is affected by your Polymorph or Mass Polymorph, your movement speed is increased by 25% and your Versatility is increased by 12%. Additionally, Polymorph and Mass Polymorph no longer heal enemies.
     overpowered_barrier        = 5708, -- (1220739) Your barriers absorb 100% more damage and have an additional effect, but last 5 sec.  Ice Barrier If the barrier is fully absorbed, enemies within 10 yds suffer 518,389 Frost damage and are slowed by 70% for 4 sec.
@@ -310,13 +310,14 @@ spec:RegisterAuras( {
     fingers_of_frost = {
         id = 44544,
         duration = 15,
-        max_stack = 2,
+        max_stack = 2
     },
     fof_consumed = {
         -- Virtual buff to track if FoF is consumed (by Ice Lance) so we know whether to (virtually) consume Winter's Chill stacks.
         -- Appears to only happen during the addon's forecasting, need to determine if we need to also apply this buff in reset_precast to avoid recommendation flicker between IL cast and impact.
-        duration = function() return gcd.max * 1.5 end,
-        max_stack = 1
+        -- Duration = 0.1 + max_range[ 40 ] / velocity[ 47 ]
+        duration = 0.95,
+        max_stack = 2
     },
     fire_mastery = {
         id = 431040,
@@ -607,7 +608,7 @@ spec:RegisterAuras( {
         id = 228358,
         duration = 8,
         type = "Magic",
-        max_stack = 2,
+        max_stack = 2
     },
     wintertide = {
         id = 1222865,
@@ -700,17 +701,47 @@ local wc_spenders = {
 }
 
 spec:RegisterStateExpr( "remaining_winters_chill", function ()
-    local wc = debuff.winters_chill.stack
+    local wc = debuff.winters_chill
+    local stacks, remains = wc.stack, wc.remains
 
-    if wc == 0 then return 0 end
-
-    local projectiles = 0
-
-    for spender in pairs( wc_spenders ) do
-        if action[ spender ].in_flight and action[ spender ].in_flight_remains < wc then projectiles = projectiles + 1 end
+    if stacks == 0 or remains == 0 then
+        if Hekili.ActiveDebug then Hekili:Debug( "Remaining Winters Chill(%s): No stacks or remaining time.", this_action ) end
+        return 0
     end
 
-    return max( 0, wc - projectiles )
+    local ability = class.abilities[ this_action ]
+    local cast = ability and ability.cast or 0
+
+    if remains < cast then
+        if Hekili.ActiveDebug then Hekili:Debug( "Remaining Winters Chill(%s): No time to cast.", this_action ) end
+        return 0
+    end
+    --[[ if stacks > 1 and remains < cast + gcd.max then
+        if Hekili.ActiveDebug then
+            Hekili:Debug( "Remaining Winters Chill(%s): Stacks reduced as cast time + GCD (%.2f) exceeds remaining time (%.2f).", this_action, cast + gcd.max, remains )
+        end
+        stacks = stacks - 1
+    end ]]
+
+    local projectiles = 0
+    local fof_consumed = buff.fof_consumed.remains
+
+    for spender in pairs( wc_spenders ) do
+        if action[ spender ].in_flight and action[ spender ].in_flight_remains < remains then
+            projectiles = projectiles + ( ( spender ~= "ice_lance" or fof_consumed < remains ) and 1 or 0 )
+        end
+    end
+
+    local result = max( 0, stacks - projectiles )
+
+    if Hekili.ActiveDebug then
+        Hekili:Debug( "Remaining Winters Chill(%s): FoF Consumed[%s], Winter's Chill[%d => %d, %.2f vs. %.2f], Projectiles[%d]; Value[%d]",
+            this_action, buff.fof_consumed.up and "true" or "false",
+            wc.stack, stacks, remains, cast,
+            projectiles,
+            result )
+    end
+    return result
 end )
 
 
@@ -746,16 +777,48 @@ spec:RegisterStateTable( "frost_info", {
 local lastCometCast = 0
 local lastAutoComet = 0
 
+local consumedFingersExpires = 0
+local pendingFinger = false
+
+local auraChanged = {
+    SPELL_AURA_APPLIED = true,
+    SPELL_AURA_REFRESH = true,
+    SPELL_AURA_REMOVED = true,
+    SPELL_AURA_APPLIED_DOSE = true,
+    SPELL_AURA_REMOVED_DOSE = true
+}
+
+local auraSpent = {
+    SPELL_AURA_REMOVED = true,
+    SPELL_AURA_REMOVED_DOSE = true
+}
+
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
         if subtype == "SPELL_CAST_SUCCESS" then
-            if spellID == 116 then
-                frost_info.last_target_actual = destGUID
+            if spellID == 116 then frost_info.last_target_actual = destGUID
+            elseif spellID == 30455 then
+                -- There appears to be a consistent ~0.1s delay between Ice Lance's cast and Fingers of Frost being consumed.
+                local fof = GetPlayerAuraBySpellID( 44544 )
+
+                if fof then
+                    consumedFingersExpires = GetTime() + 1
+                    pendingFinger = true
+                end
+
+                -- print( "Ice Lance:", GetTime(), fof and max( 1, fof.applications ) or 0, pendingFinger )
             end
         end
 
-        if state.talent.glacial_spike.enabled and ( spellID == 205473 or spellID == 199844 ) and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+        if state.talent.glacial_spike.enabled and ( spellID == 205473 or spellID == 199844 ) and auraChanged[ subtype ] then
             Hekili:ForceUpdate( "ICICLES_CHANGED", true )
+        end
+
+        if spellID == 44544 and auraSpent[ subtype ] then
+            local fof = GetPlayerAuraBySpellID( 44544 )
+            pendingFinger = false
+
+            -- print( "Fingers of Frost: ", subtype, spellID, spellName, fof and fof.expires or 0, fof and max( 1, fof.applications ) or 0, pendingFinger )
         end
 
         if ( spellID == 153595 or spellID == 153596 ) then
@@ -915,16 +978,40 @@ end, state )
 spec:RegisterHook( "reset_precast", function ()
     frost_info.last_target_virtual = frost_info.last_target_actual
 
-    if now - action.flurry.lastCast < gcd.execute and debuff.winters_chill.stack < 2 then applyDebuff( "target", "winters_chill", nil, 2 ) end
+    if Hekili.ActiveDebug then
+        Hekili:Debug( "Fingers of Frost status: finger_consumed_expires[%.2f, %.2f], pending finger[%s].", consumedFingersExpires, consumedFingersExpires - now, pendingFinger and "true" or "false" )
+    end
+
+    if consumedFingersExpires > 0 and consumedFingersExpires < now then
+        consumedFingersExpires = 0
+        pendingFinger = false
+        if Hekili.ActiveDebug then Hekili:Debug( "Reset actuals for Fingers of Frost consumed." ) end
+    else
+        local lance_flight_remains = action.ice_lance.in_flight_remains
+        if lance_flight_remains > 0 then
+            applyBuff( "fof_consumed", 0.1 + lance_flight_remains )
+            if pendingFinger then
+                removeStack( "fingers_of_frost" )
+                if Hekili.ActiveDebug then Hekili:Debug( "Fingers of Frost virtually consumed; fof_consumed[%.2f], fingers_of_frost[x%d, %.2f].", buff.fof_consumed.remains, buff.fingers_of_frost.stack, buff.fingers_of_frost.remains ) end
+            else
+                if Hekili.ActiveDebug then Hekili:Debug( "Fingers of Frost was already consumed; fof_consumed[%.2f], fingers_of_frost[x%d, %.2f].", buff.fof_consumed.remains, buff.fingers_of_frost.stack, buff.fingers_of_frost.remains ) end
+            end
+        else
+            consumedFingersExpires = 0
+            pendingFinger = false
+            if Hekili.ActiveDebug then Hekili:Debug( "Rested actuals for Fingers of Frost consumed as no Ice Lance in flight." ) end
+        end
+    end
+
+    if action.flurry.in_flight then
+        if Hekili.ActiveDebug then Hekili:Debug( "Flurry is in-flight, keep Winter's Chill stacks at 2." ) end
+        applyDebuff( "target", "winters_chill", nil, 2 )
+    end
 
     -- Icicles take a second to get used.
     if not state.talent.glacial_spike.enabled and now - action.ice_lance.lastCast < gcd.max then removeBuff( "icicles" ) end
 
     incanters_flow.reset()
-
-    if Hekili.ActiveDebug then
-        Hekili:Debug( "Ice Lance in-flight?  %s\nWinter's Chill Actual Stacks?  %d\nremaining_winters_chill:  %d", state:IsInFlight( "ice_lance" ) and "Yes" or "No", state.debuff.winters_chill.stack, state.remaining_winters_chill )
-    end
 
     local remaining_pet = class.auras.icy_veins.duration - action.icy_veins.time_since
     if remaining_pet > 0 then
@@ -939,6 +1026,8 @@ spec:RegisterHook( "reset_precast", function ()
         active_dot.frozen = active_dot.frozen + 1
     end
 
+    -- Trigger expr function for debug text.
+    if Hekili.ActiveDebug then spec.stateExprs.remaining_winters_chill() end
 end )
 
 spec:RegisterHook( "runHandler", function( action )
@@ -1087,10 +1176,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
         flightTime = 1,
 
-
         handler = function ()
             removeBuff( "brain_freeze" )
             applyDebuff( "target", "winters_chill", nil, 2 )
+            if Hekili.ActiveDebug then Hekili:Debug( "Winter's Chill applied by Flurry." ) end
             applyDebuff( "target", "flurry" )
 
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
@@ -1129,7 +1218,8 @@ spec:RegisterAbilities( {
         end,
 
         impact = function()
-            Hekili:Debug( "Winter's Chill applied by Flurry." )
+            -- This wipes out the effect of a prior projectile impacting and wiping out a stack when Flurry will re-max it.
+            if Hekili.ActiveDebug then Hekili:Debug( "Winter's Chill reapplied by Flurry impact." ) end
             applyDebuff( "target", "winters_chill", nil, 2 )
             applyDebuff( "target", "flurry" )
             applyBuff( "bone_chilling", nil, 3 )
@@ -1237,7 +1327,7 @@ spec:RegisterAbilities( {
 
         impact = function ()
             applyDebuff( "target", "chilled" )
-            removeDebuffStack( "target", "winters_chill" )
+            if not action.flurry.in_flight then removeDebuffStack( "target", "winters_chill" ) end
         end,
 
         bind = "frostfire_bolt",
@@ -1320,7 +1410,7 @@ spec:RegisterAbilities( {
 
         impact = function ()
             applyDebuff( "target", "chilled" )
-            removeDebuffStack( "target", "winters_chill" )
+            if not action.flurry.in_flight then removeDebuffStack( "target", "winters_chill" ) end
             applyDebuff( "target", "frostfire_bolt" )
         end,
 
@@ -1392,7 +1482,7 @@ spec:RegisterAbilities( {
 
         impact = function()
             applyDebuff( "target", "glacial_spike" )
-            removeDebuffStack( "target", "winters_chill" )
+            if not action.flurry.in_flight then removeDebuffStack( "target", "winters_chill" ) end
         end,
 
         copy = 228600
@@ -1467,7 +1557,7 @@ spec:RegisterAbilities( {
             if buff.fingers_of_frost.up or debuff.frozen.up then
                 if buff.fingers_of_frost.up then
                     removeStack( "fingers_of_frost" )
-                    applyBuff( "fof_consumed", gcd.max * 1.5 )
+                    addStack( "fof_consumed" )
                 end
 
                 if talent.hailstones.enabled then
@@ -1484,6 +1574,7 @@ spec:RegisterAbilities( {
 
         impact = function ()
             removeDebuff( "target", "frozen" )
+
             if talent.frostfire_mastery.enabled then
                 if buff.excess_fire.up then
                     removeStack( "excess_fire" )
@@ -1491,8 +1582,17 @@ spec:RegisterAbilities( {
                     BrainFreeze()
                 end
             end
-            if not buff.fof_consumed.up then
-                removeDebuffStack( "target", "winters_chill" )
+
+            if buff.fof_consumed.up then
+                if Hekili.ActiveDebug then Hekili:Debug( "Fingers of Frost consumed by Ice Lance." ) end
+                removeStack( "fof_consumed" )
+            else
+                if action.flurry.in_flight then
+                    if Hekili.ActiveDebug then Hekili:Debug( "Winter's Chill not consumed by Ice Lance because Flurry is in-flight." ) end
+                else
+                    if Hekili.ActiveDebug then Hekili:Debug( "Winter's Chill consumed by Ice Lance." ) end
+                    removeDebuffStack( "target", "winters_chill" )
+                end
             end
         end,
 

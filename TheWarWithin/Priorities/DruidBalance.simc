@@ -1,5 +1,5 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/druid_balance.simc
-## Up to date with SimC: March 12 2025 - ecf3680
+## Up to date with SimC: March 26 2025 - d16cac1
 
 actions.precombat+=/mark_of_the_wild
 ## actions.precombat+=/bear_form,if=talent.lycaras_meditation&talent.fluid_form
@@ -27,7 +27,7 @@ actions+=/variable,name=cd_condition,value=(boss&fight_remains<(15+5*talent.inca
 actions+=/variable,name=convoke_condition,value=boss&fight_remains<5|(buff.ca_inc.up|cooldown.ca_inc.remains>40)&(!hero_tree.keeper_of_the_grove|buff.harmony_of_the_grove.up|cooldown.force_of_nature.remains>15)
 # [Syrif] - Variable replaced with eclipse metatable expression
 ## actions+=/variable,name=eclipse_remains,value=buff.eclipse_lunar.remains<?buff.eclipse_solar.remains
-actions+=/variable,name=enter_lunar,value=talent.lunar_calling|spell_targets.starfire>2-(talent.umbral_intensity.rank+talent.soul_of_the_forest>1)
+actions+=/variable,name=enter_lunar,value=talent.lunar_calling|spell_targets.starfire>3-(talent.umbral_intensity.rank|talent.soul_of_the_forest)
 actions+=/variable,name=boat_stacks,value=buff.balance_of_all_things_arcane.stack+buff.balance_of_all_things_nature.stack
 # ITEMS
 actions+=/use_item,name=spymasters_web,if=variable.cd_condition&(buff.spymasters_report.stack>29|boss&fight_remains<cooldown.ca_inc.duration)|boss&fight_remains<20
@@ -75,7 +75,7 @@ actions.aoe+=/half_moon
 actions.aoe+=/full_moon
 actions.aoe+=/wild_mushroom,if=!prev_gcd.1.wild_mushroom&!dot.fungal_growth.ticking
 actions.aoe+=/force_of_nature,if=!hero_tree.keeper_of_the_grove
-actions.aoe+=/starfire,if=talent.lunar_calling|buff.eclipse_lunar.up&spell_targets.starfire>1
+actions.aoe+=/starfire,if=talent.lunar_calling|buff.eclipse_lunar.up&spell_targets.starfire>(3-(talent.umbral_intensity|talent.soul_of_the_forest))
 actions.aoe+=/wrath
 
 # PRE_CD

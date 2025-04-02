@@ -145,7 +145,7 @@ actions.main+=/shadow_crash,cycle_targets=1,if=!variable.holding_crash&dot.vampi
 # Acquire UFD
 actions.main+=/vampiric_touch,cycle_targets=1,if=buff.unfurling_darkness_cd.remains<execute_time&talent.unfurling_darkness&!buff.dark_ascension.up&talent.inner_quietus&active_dot.vampiric_touch<=5
 # Put out Vampiric Touch on enemies that will live at least 12s and Shadow Crash is not available soon
-actions.main+=/vampiric_touch,targecycle_targets=1,if=(dot.vampiric_touch.ticking|!variable.dots_up)&refreshable&target.time_to_die>12&(dot.vampiric_touch.ticking|!variable.dots_up)&(variable.max_vts>0|active_enemies=1)&(cooldown.shadow_crash.remains>=dot.vampiric_touch.remains|variable.holding_crash|!talent.whispering_shadows)&(!action.shadow_crash.in_flight|!talent.whispering_shadows)
+actions.main+=/vampiric_touch,cycle_targets=1,if=(dot.vampiric_touch.ticking|!variable.dots_up)&refreshable&target.time_to_die>12&(dot.vampiric_touch.ticking|!variable.dots_up)&(variable.max_vts>0|active_enemies=1)&(cooldown.shadow_crash.remains>=dot.vampiric_touch.remains|variable.holding_crash|!talent.whispering_shadows)&(!action.shadow_crash.in_flight|!talent.whispering_shadows)
 # Use all charges of Mind Blast if Vampiric Touch and Shadow Word: Pain are active and Mind Devourer is not active or you are prepping Void Eruption
 actions.main+=/mind_blast,cycle_targets=1,if=(!buff.mind_devourer.up|!talent.mind_devourer|cooldown.void_eruption.up&talent.void_eruption)&!variable.pooling_mindblasts
 actions.main+=/devouring_plague,cycle_targets=1,if=buff.voidform.up&talent.perfected_form&talent.void_eruption

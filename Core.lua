@@ -597,6 +597,17 @@ do
     local disabledReasonCache = {}
 
     function Hekili:IsSpellEnabled( spell )
+        local ability = class.abilities[ spell ]
+        if not ability then return false, "ability not in class table" end
+
+        if ability.id > -100 and ability.id < 0 then
+            return true, "internal function"
+        end
+
+        if state.buff.empowering.up and not state.empowering[ spell ] then
+            return false, "empowerment: " .. state.buff.empowering.spell
+        end
+
         local disabled, reason = state:IsDisabled( spell )
         return not disabled, reason
     end
@@ -947,7 +958,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
                                             elseif name and pack.lists[ name ] then
                                                 if debug then self:Debug( "Action list (%s) was found.", name ) end
-                                                self:AddToStack( scriptID, name, caller, action == "run_action_list" )
+                                                self:AddToStack( scriptID, name, caller, not ts and action == "run_action_list" )
 
                                                 rAction, rWait, rDepth = self:GetPredictionFromAPL( dispName, packName, name, slot, rAction, rWait, rDepth, scriptID )
                                                 if debug then self:Debug( "Returned from list (%s), current recommendation is %s (+%.2f).", name, rAction or "NO ACTION", rWait ) end
@@ -1271,7 +1282,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             elseif state.cooldown[ next_action ].remains > 0 then
                                                                 if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but the next entry is on cooldown.  Skipping.", next_action ) end
                                                             elseif state[ next_res ].current >= next_cost + extra_amt then
-                                                                if debut then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we already have all the resources needed ( %.2f > %.2f + %.2f ).  Skipping.", next_ation, state[ next_res ].current, next_cost, extra_amt ) end
+                                                                if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we already have all the resources needed ( %.2f > %.2f + %.2f ).  Skipping.", next_ation, state[ next_res ].current, next_cost, extra_amt ) end
                                                             else
                                                                 -- Oops.  We only want to wait if
                                                                 local next_wait = state[ next_res ][ "time_to_" .. ( next_cost + extra_amt ) ]
@@ -1332,7 +1343,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.actionName = ability.key
                                                         slot.actionID = ability.id
 
-                                                        slot.caption = not ability.empowered and ( ability.caption or entry.caption )
+                                                        slot.caption = ability.caption or entry.caption
                                                         slot.texture = ability.texture
                                                         slot.indicator = ability.indicator
 
@@ -1355,7 +1366,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         state.selection_time = state.delay
                                                         state.selected_action = rAction
 
-                                                        slot.empower_to = ability.empowered and ( ability.caption or state.args.empower_to or state.max_empower ) or nil
+                                                        slot.empower_to = ability.empowered and ( state.args.empower_to or ability.empowerment_default or state.max_empower ) or nil
 
                                                         if debug then
                                                             -- scripts:ImplantDebugData( slot )
@@ -1394,6 +1405,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
             actID = actID + 1
 
         end
+
+        action = rAction
+        wait = rWait
+        depth = rDepth
 
     else
         if debug then self:Debug( "ListActive: N (%s-%s)", packName, listName ) end
@@ -1623,9 +1638,7 @@ function Hekili.Update()
                 numRecs = 1
             end
 
-            if debug then 
-            Hekili:Debug( "Combat Timer: %.2f", state.time )
-            end
+            if debug then Hekili:Debug( "Combat Timer: %.2f", state.time ) end
 
             for i = 1, numRecs do
                 local chosen_depth = 0
@@ -1929,6 +1942,45 @@ function Hekili.Update()
                 end
 
                 state.delay = wait
+                if not action and state.buff.empowering.up and not state:IsFiltered( state.buff.empowering.spell ) then
+                    state.delay = 0
+                    action = state.buff.empowering.spell
+
+                    local ability = class.abilities[ action ]
+                    wait = ability.cast or 0
+
+                    slot.scriptType = "simc"
+                    slot.script = nil
+                    slot.hook = nil
+
+                    slot.display = state.display
+                    slot.pack = "Fallthrough"
+                    slot.list = "Fallthrough"
+                    slot.listName = "Empowerment"
+                    slot.action = 1
+                    slot.actionName = ability.key
+                    slot.actionID = ability.id
+
+                    slot.caption = nil
+                    slot.texture = ability.texture
+                    slot.indicator = ability.indicator
+
+                    slot.wait = wait
+                    slot.waitSec = nil
+
+                    slot.resource = state.GetResourceType( action )
+
+                    slot.empower_to = ability.empowerment_default or state.max_empower
+
+                    slot.hook = nil
+                    slot.script = nil
+
+                    if debug then
+                        -- scripts:ImplantDebugData( slot )
+                        Hekili:Debug( "Fallthrough Empowerment:  %s at %.2f!", action, state.delay )
+                        Hekili:Debug( "Texture shown:  %s", slot.texture or "NOT SET" )
+                    end
+                end
 
                 if debug then
                     Hekili:Debug( "Recommendation #%d is %s at %.2fs (%.2fs).", i, action or "NO ACTION", wait or state.delayMax, state.offset + state.delay )
