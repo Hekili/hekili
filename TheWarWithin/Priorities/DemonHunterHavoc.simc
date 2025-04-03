@@ -21,6 +21,8 @@ actions+=/variable,name=fury_gen,op=set,value=talent.demon_blades*(1%(2.6*attack
 actions+=/variable,name=tier33_4piece,value=(buff.initiative.up|!talent.initiative)&(buff.necessary_sacrifice.up|!set_bonus.thewarwithin_season_2_4pc)
 # Double on use trinket holding for using a stat cooldown trinket and an on use damage trinket
 actions+=/variable,name=double_on_use,value=!equipped.signet_of_the_priory&!equipped.house_of_cards|(trinket.1.is.house_of_cards|trinket.1.is.signet_of_the_priory)&trinket.1.cooldown.remains>20|(trinket.2.is.house_of_cards|trinket.2.is.signet_of_the_priory)&trinket.2.cooldown.remains>20
+# [Syrif] - Addon-specific variable to try and stop the opener from running inappropriately in dungeons, delves, outdoor content.
+actions+=/variable,name=fresh_opener,op=setif,value=true,value_else=(cooldown.metamorphosis.remains=0|cooldown.metamorphosis.remains>45)&(cooldown.eye_beam.remains=0|cooldown.eye_beam.remains>20)&(cooldown.essence_break.remains=0|cooldown.essence_break.remains>20),condition=boss&raid
 # Separate actionlists for each hero tree
 actions+=/run_action_list,name=ar,if=hero_tree.aldrachi_reaver
 ## [Syrif] - Fallback for people levelling
@@ -38,7 +40,7 @@ actions.ar+=/annihilation,if=buff.rending_strike.up&buff.glaive_flurry.up&(varia
 actions.ar+=/reavers_glaive,if=buff.glaive_flurry.down&buff.rending_strike.down&buff.thrill_of_the_fight_damage.remains<gcd.max*4+(variable.rg_ds=2)+(cooldown.the_hunt.remains<gcd.max*3)*3+(cooldown.eye_beam.remains<gcd.max*3&talent.shattered_destiny)*3&(variable.rg_ds=0|variable.rg_ds=1&cooldown.blade_dance.up|variable.rg_ds=2&cooldown.blade_dance.remains)&(buff.thrill_of_the_fight_damage.up|!prev_gcd.1.death_sweep|!variable.rg_inc)&active_enemies<3&debuff.essence_break.down&(buff.metamorphosis.remains>2|cooldown.eye_beam.remains<10|fight_remains<10)
 actions.ar+=/reavers_glaive,if=buff.glaive_flurry.down&buff.rending_strike.down&buff.thrill_of_the_fight_damage.remains<4&(buff.thrill_of_the_fight_damage.up|!prev_gcd.1.death_sweep|!variable.rg_inc)&active_enemies>2|fight_remains<10
 actions.ar+=/call_action_list,name=ar_cooldown
-actions.ar+=/run_action_list,name=ar_opener,if=(cooldown.eye_beam.up|cooldown.metamorphosis.up|cooldown.essence_break.up)&time<15&(raid_event.adds.in>40)
+actions.ar+=/run_action_list,name=ar_opener,if=(cooldown.eye_beam.up|cooldown.metamorphosis.up|cooldown.essence_break.up)&time<15&variable.fresh_opener
 actions.ar+=/sigil_of_spite,if=debuff.essence_break.down&debuff.reavers_mark.remains>=2-talent.quickened_sigils
 actions.ar+=/run_action_list,name=ar_fel_barrage,if=variable.fel_barrage&raid_event.adds.up
 actions.ar+=/immolation_aura,if=active_enemies>2&talent.ragefire&(!talent.fel_barrage|cooldown.fel_barrage.remains>recharge_time)&debuff.essence_break.down&(buff.metamorphosis.down|buff.metamorphosis.remains>5)
@@ -173,7 +175,7 @@ actions.ar_opener+=/demons_bite
 ## [Hekili] `pick_up_fragments` is not implemented.
 ## actions.fs=pick_up_fragment,use_off_gcd=1,if=fury.deficit>=30
 actions.fs+=/call_action_list,name=fs_cooldown
-actions.fs+=/run_action_list,name=fs_opener,if=(cooldown.eye_beam.up|cooldown.metamorphosis.up|cooldown.essence_break.up|buff.demonsurge.stack<3+talent.student_of_suffering+talent.a_fire_inside)&time<15&raid_event.adds.in>40
+actions.fs+=/run_action_list,name=fs_opener,if=(cooldown.eye_beam.up|cooldown.metamorphosis.up|cooldown.essence_break.up|buff.demonsurge.stack<3+talent.student_of_suffering+talent.a_fire_inside)&time<15&variable.fresh_opener
 actions.fs+=/felblade,if=talent.unbound_chaos&buff.unbound_chaos.up&!talent.inertia&active_enemies<=2&(talent.student_of_suffering&cooldown.eye_beam.remains-gcd.max*2<=buff.unbound_chaos.remains|hero_tree.aldrachi_reaver)
 actions.fs+=/fel_rush,if=talent.unbound_chaos&buff.unbound_chaos.up&!talent.inertia&active_enemies>3&(talent.student_of_suffering&cooldown.eye_beam.remains-gcd.max*2<=buff.unbound_chaos.remains)
 actions.fs+=/run_action_list,name=fs_meta,if=buff.metamorphosis.up
