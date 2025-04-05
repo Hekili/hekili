@@ -506,6 +506,25 @@ do
                 autoSnapshot = true,
                 screenshot = true,
 
+                smart_toggles = {
+                    user = {},
+
+                    builtin = {
+                        {
+                            id = 1,
+                            enabled = true,
+                            toggle = "cooldowns",
+                            mode = "on",
+                            condition = "buff.bloodlust.up",
+                            description = "Enable Major CDs during Bloodlust (Built-In)"
+                        }
+                    },
+
+                    mythic_plus = {},
+
+                    raid = {},
+                },
+
                 flashTexture = "Interface\\Cooldown\\star4",
 
                 toggles = {
@@ -600,6 +619,29 @@ do
 
                     width = 600,
                     height = 40,
+                },
+                toggleBar = {
+                    enabled = false,
+
+                    x = 0,
+                    y = -200,
+
+                    direction = "HORIZONTAL",
+                    style = "default",
+
+                    -- Example buttons
+                    [1] = {
+                        toggle = "cooldowns",
+                        iconType = "spell",
+                        icon = 13750,  -- Example: Adrenaline Rush
+                        label = "Cooldowns"
+                    },
+                    [2] = {
+                        toggle = "defensives",
+                        iconType = "spell",
+                        icon = 108271, -- Example: Astral Shift
+                        label = "Defensives"
+                    }
                 },
 
                 displays = {
@@ -3027,6 +3069,23 @@ return "Position" end,
         db = db or self.Options
         if not db then return end
 
+        local function GetToggleBarOption( info )
+            local settings = Hekili.DB.profile.toggleBar
+            return settings and settings[ info[ #info ] ]
+        end
+
+        local function SetToggleBarOption( info, value )
+            local settings = Hekili.DB.profile.toggleBar
+            if not settings then
+                Hekili.DB.profile.toggleBar = {}
+                settings = Hekili.DB.profile.toggleBar
+            end
+
+            settings[ info[ #info ] ] = value
+            Hekili:BuildToggleStatusBar()
+        end
+
+
         local section = db.args.displays or {
             type = "group",
             name = "Displays",
@@ -3053,7 +3112,6 @@ return "Position" end,
                     name = "Displays",
                     order = 10,
                 },
-
 
                 nPanelHeader = {
                     type = "header",
@@ -3162,6 +3220,65 @@ return "Position" end,
 
                             order = 5,
                             args = tableCopy( fontElements ),
+                        },
+                    }
+                },
+                tBar = {
+                    type = "group",
+                    name = "|cFF1EFF00Toggle Bar|r",
+                    desc = "Configure the Toggle Bar display for enabling/disabling options like CDs, Defensives, etc.",
+                    order = 953,
+                    get = GetToggleBarOption,
+                    set = SetToggleBarOption,
+                    args = {
+                        enabled = {
+                            type = "toggle",
+                            name = "Enabled",
+                            order = 1,
+                            width = "full",
+                        },
+                        anchor = {
+                            type = "group",
+                            name = "Position",
+                            inline = true,
+                            order = 2,
+                            args = {
+                                x = {
+                                    type = "range",
+                                    name = "X",
+                                    min = -960, max = 960, step = 1,
+                                    width = 1.49,
+                                    order = 1,
+                                },
+                                y = {
+                                    type = "range",
+                                    name = "Y",
+                                    min = -540, max = 540, step = 1,
+                                    width = 1.49,
+                                    order = 2,
+                                },
+                            },
+                        },
+                        direction = {
+                            type = "select",
+                            name = "Direction",
+                            order = 3,
+                            width = "full",
+                            values = {
+                                HORIZONTAL = "Horizontal",
+                                VERTICAL = "Vertical"
+                            },
+                        },
+                        style = {
+                            type = "select",
+                            name = "Style",
+                            order = 4,
+                            width = "full",
+                            values = {
+                                none = "None",
+                                default = "Default",
+                                elvui = "ElvUI (if available)"
+                            },
                         },
                     }
                 },
@@ -8487,6 +8604,143 @@ do
                         },
                     },
                 },
+              --[[  toggleStatusIndicator = {
+                    type = "group",
+                    name = "Toggle Status Indicator",
+                    order = 4, -- adjust as needed
+                    desc = "Configure an optional status bar that displays the current state of selected toggles.",
+                    args = {
+                        enabled = {
+                            type = "toggle",
+                            name = "Enable Toggle Display",
+                            order = 1,
+                            desc = "If enabled, a UI element will display the current status of your chosen toggles.",
+                            get = function() return Hekili.DB.profile.toggleBarEnabled end,
+                            set = function(_, val)
+                                Hekili.DB.profile.toggleBarEnabled = val
+                                Hekili:UpdateToggleBarVisibility()
+                            end,
+                            width = "full"
+                        },
+                        direction = {
+                            type = "select",
+                            name = "Orientation",
+                            order = 2,
+                            values = {
+                                HORIZONTAL = "Horizontal",
+                                VERTICAL = "Vertical"
+                            },
+                            desc = "Choose how the toggle icons are aligned."
+                        },
+                        style = {
+                            type = "select",
+                            name = "Backdrop Style",
+                            order = 3,
+                            values = {
+                                none = "None (WA-style)",
+                                default = "Default UI Frame",
+                                elvui = "ElvUI Style"
+                            },
+                            desc = "Choose how the backdrop should look."
+                        },
+                        toggles = {
+                            type = "group",
+                            name = "Buttons",
+                            inline = true,
+                            order = 10,
+                            args = {}
+                        },
+                        addButton = {
+                            type = "execute",
+                            name = "Add Button",
+                            order = 99,
+                            func = function()
+                                local profile = Hekili.DB.profile
+                                profile.toggleBar = profile.toggleBar or {}
+                                table.insert( profile.toggleBar, {
+                                    toggle = "cooldowns",
+                                    iconType = "spell",
+                                    icon = 12345, -- default to some spell
+                                    label = "Cooldowns"
+                                })
+                                Hekili:EmbedToggleStatusButtons( db )
+                            end
+                        }
+                    }
+                },--]]
+
+                smart = {
+                    type = "group",
+                    name = "SmartToggle",
+                    desc = "Define automatic logic rules to temporarily override toggle behavior.",
+                    order = 3,
+                    -- childGroups = "none", -- optional, flat list
+                    args = {
+                        user_rules = {
+                            type = "group",
+                            name = "Your Rules",
+                            order = 1,
+                            inline = false,
+                            args = {}
+                        },
+
+
+                        builtin_rules = {
+                            type = "group",
+                            name = "Built-In Rules",
+                            order = 2,
+                            inline = false,
+                            args = {}
+                        },
+
+                        mythic_plus_rules = {
+                            type = "group",
+                            name = "Mythic+ Rules",
+                            order = 3,
+                            inline = false,
+                            args = {}
+                        },
+
+                        raid_rules = {
+                            type = "group",
+                            name = "Raid Rules",
+                            order = 4,
+                            inline = false,
+                            args = {}
+                        },
+
+                        addRule = {
+                            type = "execute",
+                            name = "Add Rule",
+                            order = 99,
+                            func = function()
+                                local newRule = {
+                                    id = math.random( 100000, 999999 ),
+                                    enabled = true,
+                                    toggle = "cooldowns",
+                                    mode = "on",
+                                    condition = ""
+                                }
+
+                                local profile = Hekili.DB.profile
+                                profile.smart_toggles.user = profile.smart_toggles.user or {}
+                                table.insert( profile.smart_toggles.user, newRule )
+
+                                -- Reinject using the global options reference
+                                if Hekili.Options then
+                                    Hekili:InjectSmartToggleRules( Hekili.Options, "user" )
+                                end
+                            end
+                        }
+
+
+                    }
+                },
+
+                self:InjectSmartToggleRules( db, "user" ),
+                self:InjectSmartToggleRules( db, "builtin" ),
+                self:InjectSmartToggleRules( db, "mythic_plus" ),
+                self:InjectSmartToggleRules( db, "raid" ),
 
                 interrupts = {
                     type = "group",
@@ -8997,10 +9251,14 @@ do
                             }
                         }
                     }
-                }
-            }
+                },
+
+            },
+            -- self:EmbedToggleStatusButtons( db ),
         }
+
     end
+
 end
 
 
@@ -12340,3 +12598,171 @@ do
 end
 
 -- End Toggles
+function Hekili:InjectSmartToggleRules( db, source )
+    local profile = self.DB.profile
+    source = source or "user"
+
+    local rules = profile.smart_toggles[ source ]
+    if not rules then return end
+
+    local key = source .. "_rules"
+    local smartArgs = db and db.args and db.args.smart and db.args.smart.args
+    if not smartArgs or not smartArgs[ key ] or not smartArgs[ key ].args then return end
+
+    local rulesUI = smartArgs[ key ].args
+    wipe( rulesUI )
+
+    for i, rule in ipairs( rules ) do
+        local id = tostring( rule.id or i )
+        rulesUI["rule" .. id] = {
+            type = "group",
+            name = rule.description or ( "Rule " .. id ),
+            inline = true,
+            order = i,
+            args = {
+                enabled = {
+                    type = "toggle",
+                    name = "Enabled",
+                    order = 1,
+                    get = function() return rule.enabled end,
+                    set = function( _, val ) rule.enabled = val end,
+                    width = 0.6,
+                    disabled = source == "builtin"
+                },
+                toggle = {
+                    type = "select",
+                    name = "Toggle",
+                    order = 2,
+                    values = {
+                        cooldowns = "Major CDs",
+                        essences = "Minor CDs",
+                        potions = "Potions",
+                        funnel = "Funnel",
+                        defensives = "Defensives",
+                        interrupts = "Interrupts"
+                    },
+                    get = function() return rule.toggle end,
+                    set = function( _, val ) rule.toggle = val end,
+                    width = 1.5,
+                    disabled = source == "builtin"
+                },
+                mode = {
+                    type = "select",
+                    name = "Override",
+                    order = 3,
+                    values = {
+                        on = "Force ON",
+                        off = "Force OFF"
+                    },
+                    get = function() return rule.mode end,
+                    set = function( _, val ) rule.mode = val end,
+                    width = 1,
+                    disabled = source == "builtin"
+                },
+                condition = {
+                    type = "input",
+                    name = "Condition",
+                    order = 4,
+                    get = function() return rule.condition end,
+                    set = function( _, val ) rule.condition = val end,
+                    width = 2.5,
+                    disabled = source == "builtin"
+                },
+                delete = {
+                    type = "execute",
+                    name = "×",
+                    desc = "Delete this rule.",
+                    order = 5,
+                    func = function()
+                        tremove( rules, i )
+                        Hekili:EmbedToggleOptions()
+                    end,
+                    width = 0.3,
+                    hidden = source == "builtin"
+                }
+            }
+        }
+    end
+end
+
+function Hekili:EmbedToggleStatusButtons( db )
+    local profile = self.DB.profile
+    local tsiArgs = db and db.args and db.args.toggles and db.args.toggles.args and db.args.toggles.args.toggleStatusIndicator and db.args.toggles.args.toggleStatusIndicator.args
+
+    if not tsiArgs or not tsiArgs.toggles or not tsiArgs.toggles.args then return end
+
+    local buttonUI = db.args and db.args.buttons
+    if not buttonUI then return end
+    wipe( buttonUI )
+    -- proceed with populating as before
+
+
+    -- You can now safely loop through and populate the buttons:
+    for i, button in ipairs( profile.toggleBar or {} ) do
+        local id = tostring( i )
+
+        buttonUI[ "button" .. id ] = {
+            type = "group",
+            name = button.label or "Button " .. id,
+            inline = true,
+            order = i,
+            args = {
+                toggle = {
+                    type = "select",
+                    name = "Toggle",
+                    order = 1,
+                    values = {
+                        cooldowns = "Major CDs",
+                        essences = "Minor CDs",
+                        potions = "Potions",
+                        funnel = "Funnel",
+                        defensives = "Defensives",
+                        interrupts = "Interrupts"
+                    },
+                    get = function() return button.toggle end,
+                    set = function( _, val ) button.toggle = val end,
+                    width = 1.5
+                },
+                iconType = {
+                    type = "select",
+                    name = "Icon Type",
+                    order = 2,
+                    values = {
+                        spell = "Spell",
+                        atlas = "Atlas"
+                    },
+                    get = function() return button.iconType end,
+                    set = function( _, val ) button.iconType = val end,
+                    width = 1
+                },
+                icon = {
+                    type = "input",
+                    name = "Icon",
+                    order = 3,
+                    get = function() return tostring( button.icon or "" ) end,
+                    set = function( _, val ) button.icon = val end,
+                    width = 1.5
+                },
+                label = {
+                    type = "input",
+                    name = "Label",
+                    order = 4,
+                    get = function() return button.label or "" end,
+                    set = function( _, val ) button.label = val end,
+                    width = 2
+                },
+                delete = {
+                    type = "execute",
+                    name = "×",
+                    desc = "Remove this button.",
+                    order = 5,
+                    func = function()
+                        tremove( profile.toggleBar, i )
+                        Hekili:EmbedToggleStatusButtons( db )
+                    end,
+                    width = 0.3
+                }
+            }
+        }
+    end
+end
