@@ -89,7 +89,7 @@ spec:RegisterTalents( {
     scouts_instincts           = { 102424, 459455, 1 }, -- You cannot be slowed below 80% of your normal movement speed while Aspect of the Cheetah is active.
     scrappy                    = { 102408, 459533, 1 }, -- Casting Wildfire Bomb reduces the cooldown of Intimidation and Binding Shot by 0.5 sec.
     serrated_tips              = { 102384, 459502, 1 }, -- You gain 5% more critical strike from critical strike sources.
-    specialized_arsenal        = { 102390, 459542, 1 }, -- Wildfire Bomb deals 10% increased damage. 
+    specialized_arsenal        = { 102390, 459542, 1 }, -- Wildfire Bomb deals 10% increased damage.
     survival_of_the_fittest    = { 102422, 264735, 1 }, -- Reduces all damage you and your pet take by 30% for 8 sec.
     tar_trap                   = { 102393, 187698, 1 }, -- Hurls a tar trap to the target location that creates a 8 yd radius pool of tar around itself for 30 sec when the first enemy approaches. All enemies have 50% reduced movement speed while in the area of effect. Limit 1. Trap will exist for 1 min.
     tarcoated_bindings         = { 102417, 459460, 1 }, -- Binding Shot's stun duration is increased by 1 sec.
@@ -127,7 +127,7 @@ spec:RegisterTalents( {
     quick_shot                 = { 102279, 378940, 1 }, -- When you cast Kill Command, you have a 30% chance to fire an Arcane Shot at your target at 100% of normal value.
     ranger                     = { 102256, 385695, 1 }, -- Kill Shot, Serpent Sting, Arcane Shot, Steady Shot, and Explosive Shot deal 20% increased damage.
     raptor_strike              = { 102262, 186270, 1 }, -- A vicious slash dealing 341,513 Physical damage.
-    relentless_primal_ferocity = { 102258, 459922, 1 }, -- Coordinated Assault sends you and your pet into a state of primal power. For the duration of Coordinated Assault, Kill Command generates 2 additional stack of Tip of the Spear, you gain 10% Haste, and Tip of the Spear's damage bonus is increased by 50%. 
+    relentless_primal_ferocity = { 102258, 459922, 1 }, -- Coordinated Assault sends you and your pet into a state of primal power. For the duration of Coordinated Assault, Kill Command generates 2 additional stack of Tip of the Spear, you gain 10% Haste, and Tip of the Spear's damage bonus is increased by 50%.
     ruthless_marauder          = { 102261, 470068, 1 }, -- Fury of the Eagle's damage is increased by 10% and has a 20% chance to generate a stack of Tip of the Spear. When Fury of the Eagle ends, your Haste is increased by 8%.
     sic_em                     = { 102280, 459920, 1 }, -- Kill Command's chance to grant Deathblow is increased by 5% and Deathblow now makes Kill Shot strike up to 2 additional targets. Your chance to gain Deathblow is doubled during Coordinated Assault.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     spearhead                  = { 102291, 360966, 1 }, -- You give the signal, and your pet charges your target, bleeding them for 361,794 damage over 10 sec and increasing you and your pet's chance to critically strike your target by 30% for 10 sec.
@@ -164,23 +164,23 @@ spec:RegisterTalents( {
     extrapolated_shots         = {  94973, 450374, 1 }, -- When you apply Sentinel to a target not affected by Sentinel, you apply 1 additional stack.
     eyes_closed                = {  94970, 450381, 1 }, -- For 8 sec after activating Coordinated Assault, all abilities are guaranteed to apply Sentinel.
     invigorating_pulse         = {  94971, 450379, 1 }, -- Each time Sentinel deals damage to an enemy it has an up to 15% chance to generate 5 Focus. Chances decrease with each additional Sentinel currently imploding applied to enemies.
-    lunar_storm                = {  94978, 450385, 1 }, -- Every 30 sec your next Wildfire Bomb launches a celestial arrow that conjures a 12 yd radius Lunar Storm at the target's location dealing 94,395 Arcane damage. For the next 12 sec, a random enemy affected by Sentinel within your Lunar Storm gets struck for 88,495 Arcane damage every 0.4 sec. Any target struck by this effect takes 10% increased damage from you and your pet for 8 sec. 
+    lunar_storm                = {  94978, 450385, 1 }, -- Every 30 sec your next Wildfire Bomb launches a celestial arrow that conjures a 12 yd radius Lunar Storm at the target's location dealing 94,395 Arcane damage. For the next 12 sec, a random enemy affected by Sentinel within your Lunar Storm gets struck for 88,495 Arcane damage every 0.4 sec. Any target struck by this effect takes 10% increased damage from you and your pet for 8 sec.
     overwatch                  = {  94980, 450384, 1 }, -- All Sentinel debuffs implode when a target affected by more than 3 stacks of your Sentinel falls below 20% health. This effect can only occur once every 15 sec per target.
     release_and_reload         = {  94958, 450376, 1 }, -- When you apply Sentinel on a target, you have a 15% chance to apply a second stack.
-    sentinel                   = {  94976, 450369, 1, "sentinel" }, -- Your attacks have a chance to apply Sentinel on the target, stacking up to 10 times. While Sentinel stacks are higher than 3, applying Sentinel has a chance to trigger an implosion, causing a stack to be consumed on the target every sec to deal 84,588 Arcane damage. 
-    sentinel_precision         = {  94981, 450375, 1 }, -- Raptor Strike, Mongoose Bite and Wildfire Bomb deal 10% increased damage. 
+    sentinel                   = {  94976, 450369, 1, "sentinel" }, -- Your attacks have a chance to apply Sentinel on the target, stacking up to 10 times. While Sentinel stacks are higher than 3, applying Sentinel has a chance to trigger an implosion, causing a stack to be consumed on the target every sec to deal 84,588 Arcane damage.
+    sentinel_precision         = {  94981, 450375, 1 }, -- Raptor Strike, Mongoose Bite and Wildfire Bomb deal 10% increased damage.
     sentinel_watch             = {  94970, 451546, 1 }, -- Whenever a Sentinel deals damage, the cooldown of Coordinated Assault is reduced by 1 sec, up to 15 sec.
     sideline                   = {  94990, 450378, 1 }, -- When Sentinel starts dealing damage, the target is snared by 40% for 3 sec.
     symphonic_arsenal          = {  94965, 450383, 1 }, -- Multi-Shot and Butchery discharge arcane energy from all targets affected by your Sentinel, dealing 84,956 Arcane damage to up to 5 targets within 8 yds of your Sentinel targets.
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     chimaeral_sting  = 3609, -- (356719) Stings the target, dealing 117,636 Nature damage and initiating a series of venoms. Each lasts 3 sec and applies the next effect after the previous one ends.  Scorpid Venom: 90% reduced movement speed.  Spider Venom: Silenced.  Viper Venom: 20% reduced damage and healing.
     diamond_ice      =  686, -- (203340) Victims of Freezing Trap can no longer be damaged or healed. Freezing Trap is now undispellable, but has a 4 sec duration.
     explosive_powder = 5690, -- (1218150) Bursting Shot now also knocks you back and snares enemies by an additional 20%.
     hunting_pack     =  661, -- (203235) Aspect of the Cheetah has 50% reduced cooldown and grants its effects to allies within 15 yds.
-    interlope        = 5532, -- (248518) Misdirection now causes the next 3 hostile spells cast on your target within 10 sec to be redirected to your pet, but its cooldown is increased by 15 sec. Your pet must be within 20 yards of the target for spells to be redirected. 
+    interlope        = 5532, -- (248518) Misdirection now causes the next 3 hostile spells cast on your target within 10 sec to be redirected to your pet, but its cooldown is increased by 15 sec. Your pet must be within 20 yards of the target for spells to be redirected.
     mending_bandage  =  662, -- (212640) Instantly clears all bleeds, poisons, and diseases from the target, and heals for 18% damage over 6 sec. Being attacked will stop you from using Mending Bandage.
     sticky_tar_bomb  =  664, -- (407028) Throw a Sticky Tar Bomb that coats your target's weapons with tar, disarming them for 4 sec. After 4 sec, Sticky Tar Bomb explodes onto nearby enemies. Other enemies that are hit by the explosion are affected by Sticky Tar Bomb but this effect cannot spread further.
     survival_tactics = 3607, -- (202746) Feign Death reduces damage taken by 90% for 2 sec.
@@ -348,7 +348,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- https://www.wowhead.com/spell=1217377
-    -- Frenzy Strikes Attack speed increased by 25%.  
+    -- Frenzy Strikes Attack speed increased by 25%.
     frenzy_strikes = {
         id = 1217377,
         duration = 12,
@@ -419,6 +419,14 @@ spec:RegisterAuras( {
     lunar_storm_cooldown = {
         id = 451803,
         duration = 30,
+        max_stack = 1,
+        onRemove = function()
+            applyBuff( "lunar_storm_ready" )
+        end,
+    },
+    lunar_storm_ready = {
+        id = 451805,
+        duration = 3600,
         max_stack = 1
     },
     masters_call = {
@@ -681,7 +689,7 @@ spec:RegisterGear( "tww2", 229271, 229269, 229274, 229272, 229270 )
 spec:RegisterAuras( {
     -- 2-set
     -- https://www.wowhead.com/spell=1216874
-    -- Winning Streak! Wildfire Bomb damage increased by 6%.  
+    -- Winning Streak! Wildfire Bomb damage increased by 6%.
     winning_streak = {
         id = 1216874,
         duration = 30,
@@ -1488,7 +1496,18 @@ spec:RegisterAbilities( {
 
         talent = "wildfire_bomb",
         startsCombat = true,
+        texture = 2065634,
         velocity = 35,
+
+        toggle = function ()
+            if buff.lunar_storm_ready.up then
+                local dyn = state.settings.lunar_toggle
+                if dyn == "none" then return "none" end
+                if dyn == "default" then return nil end
+                return dyn
+            end
+            return "none"
+        end,
 
         start = function ()
             removeBuff( "flame_infusion" )
@@ -1567,15 +1586,6 @@ spec:RegisterSetting( "use_harpoon", true, {
     width = "full"
 } )
 
-spec:RegisterSetting( "allow_focus_overcap", false, {
-    name = "Allow Focus Overcap",
-    desc = "The default priority tries to avoid overcapping Focus by default. In simulations, this helps to avoid wasting Focus. However, in actual gameplay, this can " ..
-        "result in using Focus spenders when other important abilities (Wildfire Bomb, Kill Command) are available. On average, enabling this feature appears to be DPS neutral " ..
-        "but has higher variance. Your experience may vary.\n\nThe default setting is |cFFFFD100unchecked|r.",
-    type = "toggle",
-    width = "full"
-} )
-
 spec:RegisterSetting( "mark_any", false, {
     name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
     desc = strformat( "If checked, %s may be recommended for any target rather than only bosses.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
@@ -1583,8 +1593,32 @@ spec:RegisterSetting( "mark_any", false, {
     width = "full"
 } )
 
-spec:RegisterStateExpr( "coordinated_assault_kill_shot", function()
-    return false -- ( settings.manual_kill_shot or false ) and buff.coordinated_assault.up
-end )
+spec:RegisterSetting( "lunar_toggle", "none", {
+    name = strformat( "|T2065634:0|t %s: Special Toggle", Hekili:GetSpellLinkWithTexture( spec.talents.lunar_storm[2] ) ),
+    desc = strformat(
+        "When %s is talented and is not on cooldown, %s will only be recommended if the selected toggle is active.\n\n" ..
+        "This setting will be ignored if you have set %s's toggle in |cFFFFD100Abilities and Items|r.\n\n" ..
+        "Select |cFFFFD100Do Not Override|r to disable this feature.",
+        Hekili:GetSpellLinkWithTexture( spec.talents.lunar_storm[2] ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.wildfire_bomb.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.wildfire_bomb.id )
+    ),
+    type = "select",
+    width = 2,
+    values = function ()
+        local toggles = {
+            none       = "Do Not Override",
+            default    = "Default |cffffd100(" .. ( spec.abilities.wildfire_bomb.toggle or "none" ) .. ")|r",
+            cooldowns  = "Cooldowns",
+            essences   = "Minor CDs",
+            defensives = "Defensives",
+            interrupts = "Interrupts",
+            potions    = "Potions",
+            custom1    = spec.custom1Name or "Custom 1",
+            custom2    = spec.custom2Name or "Custom 2",
+        }
+        return toggles
+    end
+} )
 
 spec:RegisterPack( "Survival", 20250321, [[Hekili:TZvBZnkos4FlP2QyC2nXXGZR754QYLj7EZSzZm16m18ndem2MlyWlGtMSLl(TFDlWGaKaHnoVCv(YUtSK6UvR(LNwiPHYdVD4Gr6bMdVrPJYrD6Qi3wPB3JKpB4GGNMBoCWCDJ71Na)dh9zW)DWcVhSEq3gB4jBx9rib8Dx4zan(tHAtdcM7)RhCWeRGPlURTH7Sd8TMTWwpWY1XWtFCa(3ghmCWDlSSd(KZW7yjahE0PdhOViyQRhWtRzxoCWuRrJmJ6UPVXWby33Vt39vK)1qnOlgHAFBosPqTwtDF0w1FXSzUoQEM6JEkuB)97dsx6V3M877g(5WpVIsYDIO0LLrjQrOSVYPWiU97FhgMPUVRtOMsO2IOXs1n5tGU9vptBRzwo6EG0il3wou7IVEDC3oC)oNTVIYEqlDsMrxMJwqNoDFLdHobDUZPjDAUNLRNvWtS6USc0TFZ6hHA)HLTDO2LUZMP7mc6QpSQgQzbY8fF5QqThHfSqTz6)WeA83Cnw4ttMoOi9xM(Znncc1(plCcm9(GFO2FQ7DFOMVzqGLZK0bCY(k4u(pTCC9GMTMTs0(xiJnlqb6b2fvPtH(8DDySFhellNHdST8d8j2AMobg2M6pyc)1ne7xth97Snhn8FdMmgOD2WbpAzpASLNP6DUZITy8SMh12GRU52pDZvxhQTCzO2hV63U4BxFBSw4IlV9tF5MR)0aGSWiaz0sF4GDc1UBX4XTTxaREQ(bUEZunCDTh5(iAhnt3YXFyaybZrAUhu9WaiAEA6sikywatjBtFFvyHCMUT6ytpxdy9S9I5HAsX8oWAUQ7y1GPMQWQGUxB)aWZmuRhyYa08jqNOgO7nXeutGAbKMU5KMC8Lhbb3Koe2MmdZOmBBmf5IV6yVOPNUnzmYTpjsHw3HDw0WAfQfOJAI2y319gzz61ow6ZkoW)aA1bSMgPQ77RVWoy1IarDaUG)CO2eJrTbR5qTDJO)kIViWyQP3tSjDsR00lMs8mUan9HCw390Nd2kQ3b69cQF)apR7nvTcu9SmMMzPoxtmLfwl4hHIXkEVAQqlyqFoMRrXoLUaqRcRy9P619iB2vskJ1tuspz9nFtP94fEpTQBM6tSnrkFkxk3QcNTZjwxOUOQUbr33LsmS1DUhIqQgT0IcXz1mwXysizTFbu06(GLH5ethIMK0aFJc5o0wfM)yUTRV1dGap1niNTHC(OPRLkVG3HC(WI5i7it9GP3z7(yQLUuIXMVLHQ5SvgA5utK5aYH8H6QWbm1u3W1jqFIL7cFm7oOsd8t5ft1Py(6fhzaMfAmX4EvERvdD2I)5FalZSlgk09iWt35Vb8sw)dXiQ4sh)y9TsspJgjE3RQ780k3zu8AB5dRu((KaLGEhzjyEmYnO9ussAF1zKK8NVkVq84cSMbtrx15gbQN2HyfOqzgqpywXitLW5aXMAQBhmfPfXMg(jv8NaPMsnz6msfAjjuhJvbdDWSi6puridrahuJWUAmYV8qGXZDthZzwMrbC7sBmsadg7bG4IvbCiJsddcGta3Bd0krqjAUTFfX6Yls9jrG2QIum6QsduYvtTZ2tYqKFrQR8XofqDTLLRuDwu82kdSNbr63qiX5WNBngKyibUjcs2XfrbpjuZ0g7AGlc6hqmYjgvMOl6Eg6oONQNhiO5d5NjmZD6tiAgy(FVF(E2LUN2wtMg4R(FxmAYScuf(tq6mqycfd2fxlf6hZiGhLEls5AnBUP3yOQdaAGbeaq3X4jvFtVfZsjzj95nzOXOzUUnqka8K6Cs6bqsOGGYQXifVn)IJsN5IGLMAjdt2dHJhXAzQIuTBowxk8wtDNG9h9wtesrQ8HTl4ZvDy8Z8vjQQ6cSUbQdtetdwLz1i1yfrMc7stjGlZdeqqLBnaYpSmu8hpS6sU4NC)1wjx8Z3xPLkLwIvjxVxTttxTdZ4U5YcJaElztYaZK5U4)idyKl)YxU(JF573mG3UHLKZCHVPAmnitciP)dTZSIYiFro1bROmy4w04NUmTI9IPJqsQQuTBwkL2b6XleNOC0TDDhPIg6LdW4T7meGqzcr5GKGi0xbYI9MCwIoUK1sbYK8gAcgN6igekK1ik8Fxkdya(PPhMlByPfehH(f47yeVVAM0)hrL)8nKYjvjm3L8)zKHwGclgGb)ChpwfqUqkvS6YvsvRiANKzwFk0p7d5wAlxEQyXaOLbkxb9z6ueNgaLN5ZklDktJlSzeu1lgAaKAaA0XuXliFzO8P9dI3HJsYbLdaq(u6m2B2gaNEYhfOfdWMRQ2lV)dwbxMeLF9Il)JqTRV6IpE1FfrUbF6MF)6Rc1U9I)63V6w68NTlpvOyRPs1aDEHpAroSqLM3seUWP8qX2EuAeWy50GhYCyrfawdHKGLoJ7j72rXkQjlgy5kr7QtRSo9C3l3OLhQ63ZWWvfWVlBmL82RrotjrKgPYeMEjnMSnwsSutLwc8MvysPLMlIhghh8QRXyDzAwu50lnLgxRYQ)eRirLslsSWwcki)t2bGiZCpDRrQMpGgx6Jgbwt)a)M4rciV2Kk2e(f)bkFyNSFHkwvTTjLiv3cuj7bXHViBDHuLLHxNDKOKcafwafi6DHV51R3TvG73mB9R(NYTqeqbX56fPRvfOPxsqHyPe)0hDiGg4K)qEn3JQTQ7V8rzC)lAfNVOGQtKxDIpo6hEWVR6tQEJ8P0z5s3KKCB0ZzdfCpHcs(itLU75cDCG4RAR7PeQrnC5yJ(SGfSg29LMpTc)P1fcr54wkPizryk7kKtzhKzzIRlum2kml8bN1saZpIwC8cyk4zgf3wfHqtQWK(KrjLgxSYWq1iTWg(DisRotWevvLpn)rcReVZtfa4mF8KV6s9UbqpRl4WQIJvPZxwnqohF24JyMvOUbyFHHBuLdyVKVvvreh8bDuXUsNeVbxBzPBtdDLTRmnqke9QaKpbndsc2S(r4EPamvrwjMk8Y0GhlkQLyauvcdkFL3BreD8(CFvIOtH3PNznoq3LTBC1fnhkA1nEN4raQY9NpUnLnRytoa3u2GJoEPi3uQiSqvOOwpOBkBiGXAJDtHpyX3bVTnbVPCIaO3u4VfKV2GVPSM7CPaW36k25uuqg2GW36w34S))i8TUvCSj2YW36UbjaEBcFRBfzMQl8TUhjm8TUhlc8TUITlznb8TUIHuK1DCaK6hm98XEhFFoHkqh8OUNdEIHgoGCX(SMn31la9h8c1(q0oU9byLZ8VxaljqKuFx0sqFrG7mmIi4ypv3bcG2o8ZxB5anHxUWlDDawrA(dfIkdKdpK0fBy1mh6ql5FSBcfp7nafLpLnjzSaNJ2LycKNjkh34YTch5(1fj7YXOQH0UHFMHTF8ncQEg)CwG4CVgYjRvC7hYRu4Ot2k8IZs6wHxCCoByEXCnF1j0VEl6hYXEpgIBER9CNaBbxw3aVNMNIKBUodsgDgzZrUShC2kwbmg5xpLphjHbO9crg4Eo0kerJZSDvD55NW5pbCcsVgvM7(YXJ1wV8CiZCCwFo4XARxEoK5JE54XARxEoKzoz0Fo4XARx2UYmNmN1TobUg1ncKUkmqAqEil38Px5ei8vgj5AM1iAxMMzP3N36zS18ZEEuC9a918f218uSra9vU1yJz68jIvds6tIoXU41GI8ofbnJxbA3Xw4Z6WpvJNflC7nTc8pakT4rDVhjp(rhCbH2Fn(vE6AKdheDhIv9JFoUAJJo8ZiR(28Ozt0dyv0Z6e(or9RK3AjJP4(iGNMD8cCSpyfFQXDhn2aNqrZb)2jxE7F58dsVU2SBF19hyp8(pCo)R)a7rtFtO3ZA85TkCFSxUm7DXExjKomUf2N3rI5TVUVshrKCgxOAkvc09OhPd6FP4JYbDRpZtnucJFFmqUL9n1Oh17Pb9iY)SgePkGYJQUtyU49IEPeoxg5ySShFK171vk2zItXYIWHOGWLWL(kBmxI29XYNj70emrKjtLmcDVx33kcAXK(tPSxMnY9Cz6(L9TJGULmpve0nK7LHaDIaPM5Lkn1Vem5qxMO7skQAyDhtLkC)sZtG07LjsJs(2TlxUdF0OsgCV3uPJlPjPsOuua5SYOLZdU3dl6)aCVD0TvrPm2G39riIULZ4f4(N)AzgKv6ZEVqFDkJj3QZxNIx6DV81H8bPHsVCv9K7MxEJUMKezfssjL5MG2t5OLlF5Nc5fzrbLSh1L4mkKm1nZSF8xsD)oTL5XaFCmgcCqgwUK)KTGpMFH7sjYMCxbZ(NFmj2AXBHyHNYsk8pX5urGDRedrNcmPc1xemFEKeR7cV(lsLCQB6bA9ytQIV2lmfHYYLLidL(z8Lk5BA3tMjtZ89Jt4cBs0VtQLEvNlK(YTpHYwrGUFgv3lz1RNYpt0S5QvmvYY)SSeTqu82XYsBK7SEuH(4CL4fyonZwJVs(y2iJjoke7uOUZufqYpj(IdhBHchVMkThwl7yYPh5xspIl9spElSix2JCqdyeZxOrgKm8cVVjszQwVQOiX4fR1DRMMM(bcOkBTPXe2D5YwfFlPLOtKMPSZiXk7sIOXDLePtO3Ab(TrH4juOIW77W9UBNVGvqJ0xwrQ1o83ILLlrMZ6krFENDRRKXNns84sV4gIlhtI7fUUGSWk0ur7qoPdxTklCoOct)1NW9lAJwZq5YLhkxPi9RDWsWOH9X9A5s2)UuXJaw)dzycvVWFINMaskF4wmhUeJKALMMEdI9WmSYlrYwHcRZpdjydvDiFiME1DQC)0LljSSx3o7UX2BnHzV8r1oYzjrORdPyV4LhkcdtZyaaI9i9NsR0TyJLMoA1V0ZJkBkvLj3MAWi6eO5cnv)YlAvIxCLrR2TMLCWrHSvQZKdVkMoptZp)H)YW(6NaLhHkMPV1Mu12URPlKi11KHG8QSzd8Gkt0xVQBQJ1RqHCfLGK4N1)gXLLr(bNVXXqfkL9gNXDxgmDdQ7jHg1dhCElOTf6)eAN5(gieXzn9xmNbPlSW3QYf((fVih7JX(LklGYwoV1UBAIlgQg2zgEHafNAQUHzeeYrTud00jaNB9vXSTcX0Nfa9LzJ2tHgrpltc2oImVTqOsqIrZ8xuQxsmP1XpT5lZyDunmgDzz55vqrsBnvc3Qiw5fRuJ0Tnrrlc5sjIhX7jCf1y(9eUVNW99eUVNWTg(PVNWDts4sEOsmWN0JJi324H)Vd]] )

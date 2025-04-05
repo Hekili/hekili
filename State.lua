@@ -711,8 +711,6 @@ local function setCooldown( action, duration )
 
     cd.charge = 0
     cd.recharge_began = state.query_time
-    cd.next_charge = cd.expires
-    cd.recharge = duration > 0 and duration or cd.recharge
 
     state.cooldown[ action ] = cd
 end
@@ -730,17 +728,21 @@ local function spendCharges( action, charges )
     if not state.cooldown[ action ] then state.cooldown[ action ] = {} end
     local cd = state.cooldown[ action ]
 
-    if cd.next_charge <= state.query_time then
-        cd.recharge_began = state.query_time
-        cd.next_charge = state.query_time + ( ability.recharge or ability.cooldown )
-        cd.recharge = ability.recharge > 0 and ability.recharge or cd.recharge
+    if cd.charges == ability.charges then
+        cd.charge = ability.charges
+        cd.recharge_began = 0
+    elseif cd.charges > cd.charge then
+        local addl = cd.charges_fractional - cd.charges
+        cd.charge = cd.charges
+        cd.recharge_began = state.query_time - ( addl * ability.recharge )
     end
 
     cd.charge = max( 0, cd.charge - charges )
+    if cd.recharge_began == 0 then cd.recharge_began = state.query_time end
 
     local dur = ability.recharge or ability.cooldown
     cd.duration = dur > 0 and dur or cd.duration
-    cd.expires = cd.charge == 0 and cd.next_charge or 0
+    cd.expires = cd.charge == 0 and ( cd.recharge_began + dur ) or 0
 end
 state.spendCharges = spendCharges
 
@@ -757,8 +759,6 @@ local function gainCharges( action, charges )
         end
 
         if state.cooldown[ action ].charge == class.abilities[ action ].charges then
-            state.cooldown[ action ].next_charge = 0
-            -- state.cooldown[ action ].recharge = 0
             state.cooldown[ action ].recharge_began = 0
         end
 
@@ -786,29 +786,9 @@ function state.gainChargeTime( action, time, debug )
     end
 
     if cooldown.charge == ability.charges then return end
-
-    cooldown.next_charge = cooldown.next_charge - time
     cooldown.recharge_began = cooldown.recharge_began - time
 
     if cooldown.expires > 0 then cooldown.expires = max( 0, cooldown.expires - time ) end
-
-    if cooldown.next_charge <= state.query_time then
-        cooldown.charge = min( ability.charges, cooldown.charge + 1 )
-
-        -- We have a charge, reset cooldown.
-        -- cooldown.duration = 0
-        cooldown.expires = 0
-
-        if cooldown.charge == ability.charges then
-            cooldown.next_charge = 0
-            -- cooldown.recharge = 0
-            cooldown.recharge_began = 0
-        else
-            cooldown.recharge_began = cooldown.next_charge
-            cooldown.next_charge = cooldown.next_charge + ability.recharge
-            -- cooldown.recharge = ability.recharge
-        end
-    end
 end
 
 
@@ -1104,7 +1084,15 @@ state.removeStack = removeStack
 -- Add a debuff to the simulated game state.
 -- Needs to actually use "unit" !
 local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
-    if not aura then aura = unit; unit = "target" end
+    -- Off by 1.
+    if not aura or type( aura ) == "number" then
+        noPandemic = value
+        value = stacks
+        stacks = duration
+        duration = aura
+        aura = unit
+        unit = "target"
+    end
 
     if not class.auras[ aura ] then
         Error( "Attempted to apply unknown aura '%s'.", aura )
@@ -3120,7 +3108,7 @@ do
                 raw = true
             end
 
-            if k == "duration" or k == "expires" or k == "next_charge" or k == "charge" or k == "recharge_began" then
+            if k == "duration" or k == "expires" or k == "charge" or k == "recharge_began" then
                 local start, duration = 0, 0
 
                 if id > 0 then
@@ -3182,16 +3170,18 @@ do
                     t.duration = duration
                     t.recharge = duration
 
-                    if charges and charges < maxCharges then
+                    --[[ if charges and charges < maxCharges then
+                        -- t.recharge_began = start
                         t.next_charge = start + duration
                     else
                         t.next_charge = 0
-                    end
+                    end ]]
                     t.recharge_began = start or t.expires - t.duration
+                    -- t.recharge_began = max( 0, start or t.expires - t.duration )
 
                 else
                     t.charge = t.expires < state.query_time and 1 or 0
-                    t.next_charge = t.expires > state.query_time and t.expires or 0
+                    -- t.next_charge = t.expires > state.query_time and t.expires or 0
                     t.recharge_began = t.expires - t.duration
                 end
 
@@ -3203,6 +3193,7 @@ do
                     if not state:IsKnown( t.key ) then return ability.charges or 1 end
                 end
 
+                if t.charge == ( ability.charges or 1 ) then return t.charge end
                 return floor( t[ raw and "true_charges_fractional" or "charges_fractional" ] )
 
             elseif k == "charges_max" or k == "max_charges" then
@@ -3218,7 +3209,7 @@ do
                     if not state:IsKnown( t.key ) then return 0 end
                 end
 
-                return ( ( ability.charges or 1 ) - t.true_charges_fractional ) * max( ability.cooldown, t.true_duration )
+                return ( ( ability.charges or 1 ) - t.true_charges_fractional ) * max( ability.recharge or ability.cooldown, t.true_duration )
 
             elseif k == "remains" then
                 if t.key == "global_cooldown" then
@@ -3243,28 +3234,8 @@ do
                     if not state:IsKnown( t.key ) then return ability.charges or 1 end
                 end
 
-                if ability.charges and ability.charges > 1 then
-                    -- run this ad-hoc rather than with every advance.
-                    while t.next_charge > 0 and t.next_charge < state.query_time do
-                        -- if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
-                        t.charge = t.charge + 1
-                        if t.charge < ability.charges then
-                            t.recharge_began = t.next_charge
-                            t.next_charge = t.next_charge + ability.recharge
-                        else
-                            t.recharge_began = 0
-                            t.next_charge = 0
-                        end
-                    end
-
-                    if t.charge < ability.charges and t.recharge > 0 then
-                        return min( ability.charges, t.charge + ( max( 0, state.query_time - t.recharge_began ) / t.recharge ) )
-                        -- return t.charges + ( 1 - ( class.abilities[ t.key ].recharge - t.recharge_time ) / class.abilities[ t.key ].recharge )
-                    end
-                    return t.charge
-                end
-
-                return t.remains > 0 and ( 1 - ( t.remains / ability.cooldown ) ) or 1
+                if t.charge == ability.charges then return t.charge end
+                return min( ability.charges, t.charge + max( 0, ( state.query_time - t.recharge_began ) / ability.recharge ) )
 
             elseif k == "recharge_time" then
                 if not ability.charges then return t.duration or 0 end
@@ -5995,6 +5966,7 @@ do
             e.time   = nil
             e.type   = nil
             e.target = nil
+            e.real   = nil
             e.func   = nil
 
             insert( eventPool, e )
@@ -6032,6 +6004,7 @@ do
             e.time   = time
             e.type   = type
             e.target = target
+            e.real   = real
             e.func   = nil
 
             insert( queue, e )
@@ -6059,6 +6032,7 @@ do
         e.time   = time
         e.type   = eType
         e.target = "nobody"
+        e.real   = false
         e.data   = data
 
         insert( queue, e )
@@ -6125,7 +6099,7 @@ do
                ( not type   or event.type   == type   ) and
                ( not target or event.target == target ) then
 
-               return event.action, event.start, event.time, event.type, event.target
+               return event.action, event.start, event.time, event.type, event.target, event.real
             end
         end
     end
@@ -6330,7 +6304,7 @@ do
                 self.SetupCycle( ability )
             end
 
-            if ability.impact then ability.impact() end
+            if ability.impact then ability.impact( e.real ) end
             self:StartCombat()
 
             if wasCycling then
@@ -7026,37 +7000,7 @@ function state.advance( time )
     end
 
     state.offset = state.offset + time
-
-    local bonus_cdr = 0 -- ns.callHook( "advance_bonus_cdr", 0 )
-
-    --[[ for k, cd in pairs( state.cooldown ) do
-        if state:IsKnown( k ) then
-            if bonus_cdr > 0 then
-                if cd.next_charge > 0 then
-                    cd.next_charge = cd.next_charge - bonus_cdr
-                end
-                cd.expires = max( 0, cd.expires - bonus_cdr )
-                cd.true_expires = max( 0, cd.expires - bonus_cdr )
-            end
-
-            local ability = class.abilities[ k ]
-
-            while ability.charges and ability.charges > 1 and cd.next_charge > 0 and cd.next_charge < state.now + state.offset do
-                -- if class.abilities[ k ].charges and cd.next_charge > 0 and cd.next_charge < state.now + state.offset then
-                cd.charge = cd.charge + 1
-                if cd.charge < class.abilities[ k ].charges then
-                    cd.recharge_began = cd.next_charge
-                    cd.next_charge = cd.next_charge + class.abilities[ k ].recharge
-                else
-                    cd.recharge_began = 0
-                    cd.next_charge = 0
-                end
-            end
-        end
-    end ]]
-
     time = ns.callHook( "advance_end", time ) or time
-
     return time
 end
 

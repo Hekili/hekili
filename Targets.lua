@@ -23,6 +23,7 @@ local counted = {}
 local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
 local FeignEvent, RegisterEvent = ns.FeignEvent, ns.RegisterEvent
+local TargetDummies = ns.TargetDummies
 
 local format = string.format
 local insert, remove, wipe = table.insert, table.remove, table.wipe
@@ -389,11 +390,10 @@ do
         if spec then
             if checkPets or checkPlates then
                 for unit, guid in pairs( npGUIDs ) do
-                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                        local excluded = not UnitIsUnit( unit, "target" )
-                        local npcid = guid:match( "(%d+)-%x-$" )
-                        npcid = tonumber( npcid )
+                    local npcid = tonumber( guid:match( "(%d+)-%x-$" ) or 0 )
 
+                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitHealth( unit ) > 1 or TargetDummies[ npcid ] ) and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                        local excluded = not UnitIsUnit( unit, "target" )
                         local _, range = nil, -1
 
                         if debugging then details = format( "%s\n - Checking nameplate list for %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
@@ -466,11 +466,10 @@ do
                     local guid = UnitGUID( unit )
 
                     if guid and counted[ guid ] == nil then
-                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitAffectingCombat( unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                            local excluded = not UnitIsUnit( unit, "target" )
+                        local npcid = tonumber( guid:match( "(%d+)-%x-$" ) or 0 )
 
-                            local npcid = guid:match( "(%d+)-%x-$" )
-                            npcid = tonumber(npcid)
+                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitAffectingCombat( unit ) and UnitInPhase( unit ) and ( UnitHealth( unit ) > 1 or TargetDummies[ npcid ] ) and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                            local excluded = not UnitIsUnit( unit, "target" )
 
                             local _, range = nil, -1
 
@@ -533,14 +532,12 @@ do
         end
 
         if not spec or spec.damage or not checkPets and not checkPlates then
-            local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
+            local db = spec and ( spec.myTargetsOnly and myTargets or targets ) or targets
 
-            for guid, seen in pairs(db) do
+            for guid, seen in pairs( db ) do
                 if counted[ guid ] == nil then
-                    local npcid = guid:match("(%d+)-%x-$")
-                    npcid = tonumber(npcid)
-
-                    local range
+                    local npcid = guid:match( "(%d+)-%x-$" ) or 0
+                    npcid = tonumber( npcid )
 
                     local unit = Hekili:GetUnitByGUID( guid ) or UnitTokenFromGUID( guid )
                     local excluded = false

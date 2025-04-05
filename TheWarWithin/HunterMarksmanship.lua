@@ -92,7 +92,7 @@ spec:RegisterTalents( {
     serrated_tips           = { 102384, 459502, 1 }, -- You gain 5% more critical strike from critical strike sources.
     shell_cover             = {  94967, 472707, 1 }, -- When dropping below 60% health, summon the aid of a Turtle, reducing the damage you take by 10% for 6 sec. This effect can only occur once every 1.5 min.
     slicked_shoes           = {  94979, 472719, 1 }, -- When Disengage removes a movement impairing effect, its cooldown is reduced by 4 sec.
-    specialized_arsenal     = { 102390, 459542, 1 }, -- Aimed Shot deals 10% increased damage. 
+    specialized_arsenal     = { 102390, 459542, 1 }, -- Aimed Shot deals 10% increased damage.
     survival_of_the_fittest = { 102422, 264735, 1 }, -- Reduces all damage you and your pet take by 30% for 8 sec.
     tar_trap                = { 102393, 187698, 1 }, -- Hurls a tar trap to the target location that creates a 8 yd radius pool of tar around itself for 30 sec when the first enemy approaches. All enemies have 50% reduced movement speed while in the area of effect. Limit 1. Trap will exist for 1 min.
     tarcoated_bindings      = { 102417, 459460, 1 }, -- Binding Shot's stun duration is increased by 1 sec.
@@ -120,7 +120,7 @@ spec:RegisterTalents( {
     focused_aim             = { 103987, 378767, 1 }, -- Consuming Precise Shots reduces the cooldown of Aimed Shot by 0.75 sec.
     headshot                = { 103972, 471363, 1 }, -- Kill Shot can now benefit from Precise Shots at 25% effectiveness. Kill Shot consumes Precise Shots.
     improved_deathblow      = { 103969, 378769, 1 }, -- Aimed Shot now has a 15% chance and Rapid Fire now has a 25% chance to grant Deathblow. Kill Shot critical strike damage is increased by 25%.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
-    improved_spotters_mark  = { 104127, 466867, 1 }, -- The damage bonus of Spotter's Mark is increased by 20%.  Spotter's Mark Damaging an enemy with abilities empowered by Precise Shots has a 30% chance to apply Spotter's Mark to the primary target, causing your next Aimed Shot to deal 30% increased damage to the target. 
+    improved_spotters_mark  = { 104127, 466867, 1 }, -- The damage bonus of Spotter's Mark is increased by 20%.  Spotter's Mark Damaging an enemy with abilities empowered by Precise Shots has a 30% chance to apply Spotter's Mark to the primary target, causing your next Aimed Shot to deal 30% increased damage to the target.
     improved_streamline     = { 103987, 471427, 1 }, -- Streamline's cast time reduction effect is increased to 30%.
     in_the_rhythm           = { 103948, 407404, 1 }, -- When Rapid Fire finishes channeling, the time between your Auto Shots is reduced by 1.0 sec for 12 sec.
     incendiary_ammunition   = { 103985, 471428, 1 }, -- Bulletstorm now increases your critical strike damage by 2%. Additionally, Bulletstorm now stacks 5 more times.
@@ -140,7 +140,7 @@ spec:RegisterTalents( {
     quickdraw               = { 103963, 473380, 1 }, -- Lock and Load now increases the damage of Aimed Shot by 15%.
     rapid_fire              = { 103961, 257044, 1 }, -- Shoot a stream of 10 shots at your target over 1.7 sec, dealing a total of 803,344 Physical damage. Usable while moving. Rapid Fire causes your next Aimed Shot to cast 20% faster. Each shot generates 2 Focus.
     razor_fragments         = { 103965, 384790, 1 }, -- After gaining Deathblow, your next Kill Shot will deal 75% increased damage, and shred up to 5 targets near your Kill Shot target for 35% of the damage dealt by Kill Shot over 6 sec.
-    salvo                   = { 103960, 400456, 1 }, -- Volley now also applies Explosive Shot to up to 2 targets hit. 
+    salvo                   = { 103960, 400456, 1 }, -- Volley now also applies Explosive Shot to up to 2 targets hit.
     shrapnel_shot           = { 104126, 473520, 1 }, -- Damaging an enemy with Explosive Shot increases the damage they receive from your next Arcane Shot or Multi-Shot by 30%.
     small_game_hunter       = { 103978, 459802, 1 }, -- Multi-Shot deals 75% increased damage and Explosive Shot deals 15% increased damage.
     streamline              = { 103983, 260367, 1 }, -- Rapid Fire's damage is increased by 15%. Casting Rapid Fire grants Streamline.  Streamline Your next Aimed Shot has its Focus cost and cast time reduced by 20%. Stacks up to 2 times.
@@ -156,7 +156,7 @@ spec:RegisterTalents( {
     windrunner_quiver       = { 103952, 473523, 1 }, -- Precise Shots can now stack up to 2 times, but its damage bonus is reduced to 80%. Casting Aimed Shot has a 50% chance to grant an additional stack of Precise Shots.
 
     -- Dark Ranger
-    banshees_mark           = {  94957, 467902, 1 }, -- Murder of Crows now deals Shadow damage. Black Arrow's initial damage has a 25% chance to summon a Murder of Crows on your target.  A Murder of Crows 
+    banshees_mark           = {  94957, 467902, 1 }, -- Murder of Crows now deals Shadow damage. Black Arrow's initial damage has a 25% chance to summon a Murder of Crows on your target.  A Murder of Crows
     black_arrow             = {  94987, 466932, 1, "dark_ranger" }, -- Your Kill Shot is replaced with Black Arrow.  Black Arrow You attempt to finish off a wounded target, dealing 358,172 Shadow damage and 35,873 Shadow damage over 10 sec. Only usable on enemies above 80% health or below 20% health.
     bleak_arrows            = {  94961, 467749, 1 }, -- Your auto shot now deals Shadow damage, allowing it to bypass armor. Your auto shot has a 8% chance to grant Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     bleak_powder            = {  94974, 467911, 1 }, -- Casting Black Arrow while Trick Shots is active causes Black Arrow to explode upon hitting its target, dealing 323,501 Shadow damage to other nearby enemies.
@@ -179,27 +179,27 @@ spec:RegisterTalents( {
     extrapolated_shots      = {  94973, 450374, 1 }, -- When you apply Sentinel to a target not affected by Sentinel, you apply 1 additional stack.
     eyes_closed             = {  94970, 450381, 1 }, -- For 8 sec after activating Trueshot, all abilities are guaranteed to apply Sentinel.
     invigorating_pulse      = {  94971, 450379, 1 }, -- Each time Sentinel deals damage to an enemy it has an up to 15% chance to generate 5 Focus. Chances decrease with each additional Sentinel currently imploding applied to enemies.
-    lunar_storm             = {  94978, 450385, 1 }, -- Every 30 sec your next Rapid Fire launches a celestial arrow that conjures a 12 yd radius Lunar Storm at the target's location dealing 104,729 Arcane damage. For the next 12 sec, a random enemy affected by Sentinel within your Lunar Storm gets struck for 98,184 Arcane damage every 0.4 sec. Any target struck by this effect takes 10% increased damage from you and your pet for 8 sec. 
+    lunar_storm             = {  94978, 450385, 1 }, -- Every 30 sec your next Rapid Fire launches a celestial arrow that conjures a 12 yd radius Lunar Storm at the target's location dealing 104,729 Arcane damage. For the next 12 sec, a random enemy affected by Sentinel within your Lunar Storm gets struck for 98,184 Arcane damage every 0.4 sec. Any target struck by this effect takes 10% increased damage from you and your pet for 8 sec.
     overwatch               = {  94980, 450384, 1 }, -- All Sentinel debuffs implode when a target affected by more than 3 stacks of your Sentinel falls below 20% health. This effect can only occur once every 15 sec per target.
     release_and_reload      = {  94958, 450376, 1 }, -- When you apply Sentinel on a target, you have a 15% chance to apply a second stack.
-    sentinel                = {  94976, 450369, 1, "sentinel" }, -- Your attacks have a chance to apply Sentinel on the target, stacking up to 10 times. While Sentinel stacks are higher than 3, applying Sentinel has a chance to trigger an implosion, causing a stack to be consumed on the target every sec to deal 84,588 Arcane damage. 
-    sentinel_precision      = {  94981, 450375, 1 }, -- Aimed Shot and Rapid Fire deal 5% increased damage. 
+    sentinel                = {  94976, 450369, 1, "sentinel" }, -- Your attacks have a chance to apply Sentinel on the target, stacking up to 10 times. While Sentinel stacks are higher than 3, applying Sentinel has a chance to trigger an implosion, causing a stack to be consumed on the target every sec to deal 84,588 Arcane damage.
+    sentinel_precision      = {  94981, 450375, 1 }, -- Aimed Shot and Rapid Fire deal 5% increased damage.
     sentinel_watch          = {  94970, 451546, 1 }, -- Whenever a Sentinel deals damage, the cooldown of Trueshot is reduced by 1 sec, up to 15 sec.
     sideline                = {  94990, 450378, 1 }, -- When Sentinel starts dealing damage, the target is snared by 40% for 3 sec.
     symphonic_arsenal       = {  94965, 450383, 1 }, -- Multi-Shot discharges arcane energy from all targets affected by your Sentinel, dealing 30,350 Arcane damage to up to 5 targets within 8 yds of your Sentinel targets.
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
-    aspect_of_the_fox      = 5700, -- (1219162) 
+spec:RegisterPvpTalents( {
+    aspect_of_the_fox      = 5700, -- (1219162)
     chimaeral_sting        =  653, -- (356719) Stings the target, dealing 117,636 Nature damage and initiating a series of venoms. Each lasts 3 sec and applies the next effect after the previous one ends.  Scorpid Venom: 90% reduced movement speed.  Spider Venom: Silenced.  Viper Venom: 20% reduced damage and healing.
-    consecutive_concussion = 5440, -- (357018) 
-    diamond_ice            = 5533, -- (203340) 
-    explosive_powder       = 5688, -- (1218150) 
-    hunting_pack           = 3729, -- (203235) 
-    rangers_finesse        =  659, -- (248443) 
+    consecutive_concussion = 5440, -- (357018)
+    diamond_ice            = 5533, -- (203340)
+    explosive_powder       = 5688, -- (1218150)
+    hunting_pack           = 3729, -- (203235)
+    rangers_finesse        =  659, -- (248443)
     snipers_advantage      =  660, -- (1217102) Trueshot and Volley increase the range of all shots by 30% for their duration.
-    survival_tactics       =  651, -- (202746) 
+    survival_tactics       =  651, -- (202746)
 } )
 
 -- Auras
@@ -481,10 +481,13 @@ spec:RegisterAuras( {
         id = 451803,
         duration = 30,
         max_stack = 1,
+        onRemove = function()
+            applyBuff( "lunar_storm_ready" )
+        end,
     },
     lunar_storm_ready = {
         id = 451805,
-        duration = 30,
+        duration = 3600,
         max_stack = 1
     },
     -- https://www.wowhead.com/spell=269576
@@ -500,7 +503,7 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
-    -- 
+    --
     moving_target = {
         id = 474293,
         duration = 15,
@@ -815,7 +818,7 @@ spec:RegisterGear( "tww2", 229271, 229269, 229274, 229272, 229270 )
 spec:RegisterAuras( {
     -- 2-set
     -- https://www.wowhead.com/spell=1218033
-    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
+    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.
     jackpot = {
         id = 1218033,
         duration = 10,
@@ -968,8 +971,8 @@ spec:RegisterAbilities( {
             if talent.precise_shots.enabled then addStack( "precise_shots", nil, 1 + talent.windrunner_quiver.rank ) end
             if debuff.explosive_shot.up and talent.precision_detonation.enabled then removeDebuff( "target", "explosive_shot" ) end
             if debuff.spotters_mark.up then SpottersMarkConsumer( action.aimed_shot.max_targets ) end
-            
-            if buff.lock_and_load.up then 
+
+            if buff.lock_and_load.up then
                 removeBuff( "lock_and_load" )
                 if talent.magnetic_gunpowder.enabled then reduceCooldown( "explosive_shot", 8 ) end
                 if set_bonus.tww2 >= 4 then spec.abilities.explosive_shot.handler() end
@@ -984,7 +987,7 @@ spec:RegisterAbilities( {
 
             -- Trick Shots
             if buff.trick_shots.up then
-                if buff.volley.down then 
+                if buff.volley.down then
                     removeBuff( "trick_shots" )
                     end
             end
@@ -996,7 +999,7 @@ spec:RegisterAbilities( {
                     applyDebuff( "target", "hit_the_mark" )
                 end
             end
-            if legendary.secrets_of_the_unblinking_vigil.enabled then 
+            if legendary.secrets_of_the_unblinking_vigil.enabled then
                 if buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
             end
             if pvptalent.rangers_finesse.enabled then addStack( "rangers_finesse" ) end
@@ -1356,17 +1359,17 @@ spec:RegisterAbilities( {
             cast = 0,
             cooldown = function() return pvptalent.kindred_beasts.enabled and 22.5 or 45 end,
             gcd = "spell",
-    
+
             startsCombat = false,
             texture = off,
             talent = "cunning",
-    
+
             handler = function ()
                 applyBuff( "masters_call" )
             end,
-    
+
             copy = 53271, -- Pet's version.
-    
+
             auras = {
                 masters_call = {
                     id = 62305,
@@ -1412,13 +1415,25 @@ spec:RegisterAbilities( {
         cooldown = function() return 20 * ( buff.trueshot.up and 0.4 or 1 ) end,
         gcd = "spell",
         school = "physical",
+
         max_targets = function() return ( trick_shots and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
         shots = function() return ( 7 + 3 * talent.ammo_conservation.rank ) * ( buff.double_tap.up and 1.8 or 1 ) end,
+
         talent = "rapid_fire",
         startsCombat = true,
+        texture = 461115,
+
+        toggle = function ()
+            if buff.lunar_storm_ready.up then
+                local dyn = state.settings.lunar_toggle
+                if dyn == "none" then return "none" end
+                if dyn == "default" then return nil end  -- let the base toggle apply
+                return dyn
+            end
+            return "none"
+        end,
 
         start = function ()
-
             if talent.bulletstorm.enabled and trick_shots then
                 addStack( "bulletstorm", nil, action.rapid_fire.max_targets * action.rapid_fire.shots )
             end
@@ -1433,7 +1448,6 @@ spec:RegisterAbilities( {
             if conduit.brutal_projectiles.enabled then removeBuff( "brutal_projectiles" ) end
             if set_bonus.tier31_2pc > 0 then applyBuff( "volley", 2 * haste ) end
             removeBuff( "double_tap" )
-
         end,
 
         finish = function ()
@@ -1481,7 +1495,7 @@ spec:RegisterAbilities( {
             reduceCooldown( "aimed_shot", 2 )
         end,
     },
- 
+
     -- Talent: Reduces the cooldown of your Aimed Shot and Rapid Fire by ${100*(1-(100/(100+$m1)))}%, and causes Aimed Shot to cast $s4% faster for $d.    While Trueshot is active, you generate $s5% additional Focus$?s386878[ and you gain $386877s1% critical strike chance and $386877s2% increased critical damage dealt every $386876t1 sec, stacking up to $386877u times.][].$?s260404[    Every $260404s2 Focus spent reduces the cooldown of Trueshot by ${$260404m1/1000}.1 sec.][]
     trueshot = {
         id = 288613,
@@ -1599,7 +1613,10 @@ local beastMastery = class.specs[ 253 ]
 
 spec:RegisterSetting( "pet_healing", 0, {
     name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
-    desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage. Setting to |cFFFFD1000|r disables this feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
+    desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage.\n\n"
+        .. "Setting to |cFFFFD1000|r disables this feature.",
+        Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id )
+    ),
     icon = 132179,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
@@ -1610,24 +1627,54 @@ spec:RegisterSetting( "pet_healing", 0, {
 } )
 
 spec:RegisterSetting( "mark_any", false, {
-    name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ), 
+    name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
     desc = strformat( "If checked, %s may be recommended for any target rather than only bosses.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "trueshot_rapid_fire", true, {
-    name = strformat( "%s Indicator During %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ) ),
-    desc = strformat( "If checked, when %s is recommended during %s, a %s indicator will also be shown. This icon means that you should attempt to queue %s during the cast, in case %s's cooldown is reset by %s / %s. Otherwise, use the next recommended ability in the queue.",
+    name = strformat( "|T135130:0|t %s Icon in %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ) ),
+    desc = strformat( "If checked, when %s is recommended during %s, a %s indicator will also be shown.\n\n"
+        .. "This icon means that you should attempt to queue %s during the cast, in case %s's cooldown is reset by %s.\n\n"
+        .. "Otherwise, follow the next recommendation.",
         Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ),
-        Hekili:GetSpellLinkWithTexture( spec.talents.improved_deathblow[ 2 ] ),
+        spec.abilities.rapid_fire.name,
+        spec.abilities.rapid_fire.name,
+        -- Hekili:GetSpellLinkWithTexture( spec.talents.improved_deathblow[ 2 ] ), -- no longer resets Rapid Fire?
         Hekili:GetSpellLinkWithTexture( spec.talents.surging_shots[ 2 ] ) ),
     type = "toggle",
     width = "full"
+} )
+
+spec:RegisterSetting( "lunar_toggle", "none", {
+    name = strformat( "|T461115:0|t %s: Special Toggle", Hekili:GetSpellLinkWithTexture( spec.talents.lunar_storm[2] ) ),
+    desc = strformat(
+        "When %s is talented and is not on cooldown, %s will only be recommended if the selected toggle is active.\n\n" ..
+        "This setting will be ignored if you have set %s's toggle in |cFFFFD100Abilities and Items|r.\n\n" ..
+        "Select |cFFFFD100Do Not Override|r to disable this feature.",
+        Hekili:GetSpellLinkWithTexture( spec.talents.lunar_storm[2] ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
+        spec.abilities.rapid_fire.name
+    ),
+    type = "select",
+    width = 2,
+    values = function ()
+        local toggles = {
+            none       = "Do Not Override",
+            default    = "Default |cffffd100(" .. ( spec.abilities.rapid_fire.toggle or "none" ) .. ")|r",
+            cooldowns  = "Cooldowns",
+            essences   = "Minor CDs",
+            defensives = "Defensives",
+            interrupts = "Interrupts",
+            potions    = "Potions",
+            custom1    = spec.custom1Name or "Custom 1",
+            custom2    = spec.custom2Name or "Custom 2",
+        }
+        return toggles
+    end
 } )
 
 spec:RegisterSetting( "prevent_hardcasts", false, {

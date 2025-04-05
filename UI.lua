@@ -2707,6 +2707,9 @@ do
         b.EmpowerLevel:SetText( nil )
         b.EmpowerLevel:SetText( empText )
 
+        if conf.empowerment.enabled then b.EmpowerLevel:Show()
+        else b.EmpowerLevel:Hide() end
+
         -- Mover Stuff.
         b:SetScript( "OnMouseDown", Button_OnMouseDown )
         b:SetScript( "OnMouseUp", Button_OnMouseUp )

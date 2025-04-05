@@ -577,9 +577,11 @@ local HekiliSpecMixin = {
             if type( arg2 ) == "table" then
                 if arg2.items then
                     for _, item in ipairs( arg2.items ) do
-                        table.insert( gear, item )
-                        gear[ item ] = true
-                        found = true
+                        if not gear[ item ] then
+                            table.insert( gear, item )
+                            gear[ item ] = true
+                            found = true
+                        end
                     end
                 end
 
@@ -592,25 +594,21 @@ local HekiliSpecMixin = {
             -- If the second arg is a number, this is a legacy registration with a single set/item
             if type( arg2 ) == "number" then
                 local n = select( "#", ... )
-                local i = 2
-                local item = select( i, ... )
 
-                while item do
-                    table.insert( gear, item )
-                    gear[ item ] = true
-                    found = true
+                for i = 2, n do
+                    local item = select( i, ... )
 
-                    i = i + 1
-                    item = select( i, ... )
+                    if not gear[ item ] then
+                        table.insert( gear, item )
+                        gear[ item ] = true
+                        found = true
+                    end
                 end
             end
 
             if found then
                 self.gear[ arg1 ] = gear
                 CommitKey( arg1 )
-            else
-                -- No valid items found, remove the set.
-                self.gear[ arg1 ] = nil
             end
 
             return
@@ -790,6 +788,15 @@ local HekiliSpecMixin = {
 
             -- Register the item if it doesn't already exist.
             class.specs[0]:RegisterGear( ability, item )
+            if data.copy then
+                if type( data.copy ) == "table" then
+                    for _, iID in ipairs( data.copy ) do
+                        if type( iID ) == "number" and iID < 0 then class.specs[0]:RegisterGear( ability, -iID ) end
+                    end
+                else
+                    if type( data.copy ) == "number" and data.copy < 0 then class.specs[0]:RegisterGear( ability, -data.copy ) end
+                end
+            end
 
             local actionItem = Item:CreateFromItemID( item )
             if not actionItem:IsItemEmpty() then
@@ -875,6 +882,7 @@ local HekiliSpecMixin = {
                                 local copyItem = Item:CreateFromItemID( id )
 
                                 if not copyItem:IsItemEmpty() then
+                                    self:RegisterGear( a.key, id )
                                     copyItem:ContinueOnItemLoad( function()
                                         local name = copyItem:GetItemName()
                                         local link = copyItem:GetItemLink()
@@ -1965,16 +1973,17 @@ all:RegisterAuras( {
                 end
 
                 spell, _, _, startCast, endCast, _, notInterruptible, spellID = UnitChannelInfo( unit )
+                startCast = ( startCast or 0 ) / 1000
+                endCast = ( endCast or 0 ) / 1000
+                duration = endCast - startCast
 
-                if spell then
-                    startCast = startCast / 1000
-                    endCast = endCast / 1000
-
+                -- Channels greater than 10 seconds are nonsense.  Probably.
+                if spell and duration <= 10 then
                     t.name = spell
                     t.count = 1
                     t.expires = endCast
                     t.applied = startCast
-                    t.duration = endCast - startCast
+                    t.duration = duration
                     t.v1 = spellID
                     t.v2 = notInterruptible and 1 or 0
                     t.v3 = 1 -- channeled.
@@ -2017,44 +2026,6 @@ all:RegisterAuras( {
             t.caster = unit
         end,
     },
-
-    --[[ player_casting = {
-        name = "Casting",
-        generate = function ()
-            local aura = buff.player_casting
-
-            local name, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitCastingInfo( "player" )
-
-            if name then
-                aura.name = name
-                aura.count = 1
-                aura.expires = endCast / 1000
-                aura.applied = startCast / 1000
-                aura.v1 = spell
-                aura.caster = "player"
-                return
-            end
-
-            name, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitChannelInfo( "player" )
-
-            if notInterruptible == false then
-                aura.name = name
-                aura.count = 1
-                aura.expires = endCast / 1000
-                aura.applied = startCast / 1000
-                aura.v1 = spell
-                aura.caster = "player"
-                return
-            end
-
-            aura.name = "Casting"
-            aura.count = 0
-            aura.expires = 0
-            aura.applied = 0
-            aura.v1 = 0
-            aura.caster = "target"
-        end,
-    }, ]]
 
     movement = {
         duration = 5,

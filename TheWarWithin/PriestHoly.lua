@@ -23,9 +23,9 @@ spec:RegisterTalents( {
     binding_heals              = {  82678, 368275, 1 }, -- 20% of Heal or Flash Heal healing on other targets also heals you.
     blessed_recovery           = {  82720, 390767, 1 }, -- After being struck by a melee or ranged critical hit, heal 20% of the damage taken over 6 sec.
     body_and_soul              = {  82706,  64129, 1 }, -- Power Word: Shield and Leap of Faith increase your target's movement speed by 40% for 3 sec.
-    cauterizing_shadows        = {  82687, 459990, 1 }, -- When your Shadow Word: Pain expires or is refreshed with less than 5 sec remaining, a nearby ally within 46 yards is healed for 168,494. 
+    cauterizing_shadows        = {  82687, 459990, 1 }, -- When your Shadow Word: Pain expires or is refreshed with less than 5 sec remaining, a nearby ally within 46 yards is healed for 168,494.
     crystalline_reflection     = {  82681, 373457, 2 }, -- Power Word: Shield instantly heals the target for 31,116 and reflects 10% of damage absorbed.
-    death_and_madness          = {  82711, 321291, 1 }, -- If your Shadow Word: Death fails to kill a target at or below 20% health, its cooldown is reset. Cannot occur more than once every 10 sec. 
+    death_and_madness          = {  82711, 321291, 1 }, -- If your Shadow Word: Death fails to kill a target at or below 20% health, its cooldown is reset. Cannot occur more than once every 10 sec.
     dispel_magic               = {  82715,    528, 1 }, -- Dispels Magic on the enemy target, removing 1 beneficial Magic effect.
     divine_star                = {  82682, 110744, 1 }, -- Throw a Divine Star forward 31 yds, healing allies in its path for 45,212 and dealing 65,137 Holy damage to enemies. After reaching its destination, the Divine Star returns to you, healing allies and damaging enemies in its path again. Healing reduced beyond 6 targets.
     dominate_mind              = {  82710, 205364, 1 }, -- Controls a mind up to 1 level above yours for 30 sec while still controlling your own mind. Does not work versus Demonic, Mechanical, or Undead beings or players. This spell shares diminishing returns with other disorienting effects.
@@ -40,9 +40,9 @@ spec:RegisterTalents( {
     inspiration                = {  82696, 390676, 1 }, -- Reduces your target's physical damage taken by 5% for 15 sec after a critical heal with Flash Heal, Heal, or Holy Word: Serenity.
     leap_of_faith              = {  82716,  73325, 1 }, -- Pulls the spirit of a party or raid member, instantly moving them directly in front of you.
     lights_inspiration         = {  82679, 373450, 2 }, -- Increases the maximum health gained from Desperate Prayer by 8%.
-    manipulation               = {  82672, 459985, 1 }, -- You take 2% less damage from enemies affected by your Shadow Word: Pain or Holy Fire. 
+    manipulation               = {  82672, 459985, 1 }, -- You take 2% less damage from enemies affected by your Shadow Word: Pain or Holy Fire.
     mass_dispel                = {  82699,  32375, 1 }, -- Dispels magic in a 15 yard radius, removing all harmful Magic from 5 friendly targets and 1 beneficial Magic effect from 5 enemy targets. Potent enough to remove Magic that is normally undispellable.
-    mental_agility             = {  82698, 341167, 1 }, -- Reduces the mana cost of Purify and Mass Dispel by 50% and Dispel Magic by 10%. 
+    mental_agility             = {  82698, 341167, 1 }, -- Reduces the mana cost of Purify and Mass Dispel by 50% and Dispel Magic by 10%.
     mind_control               = {  82710,    605, 1 }, -- Controls a mind up to 1 level above yours for 30 sec. Does not work versus Demonic, Undead, or Mechanical beings. Shares diminishing returns with other disorienting effects.
     move_with_grace            = {  82702, 390620, 1 }, -- Reduces the cooldown of Leap of Faith by 30 sec.
     petrifying_scream          = {  82695,  55676, 1 }, -- Psychic Scream causes enemies to tremble in place instead of fleeing in fear.
@@ -129,18 +129,18 @@ spec:RegisterTalents( {
     assured_safety             = {  94691, 440766, 1 }, -- Prayer of Mending casts apply a Power Word: Shield to your target at 100% effectiveness.
     clairvoyance               = {  94687, 428940, 1 }, -- Casting Premonition of Solace invokes Clairvoyance, expanding your mind and opening up all possibilities of the future.  Premonition of Clairvoyance Grants Premonition of Insight, Piety, and Solace at 100% effectiveness.
     desperate_measures         = {  94690, 458718, 1 }, -- Desperate Prayer lasts an additional 10 sec. Angelic Bulwark's absorption effect is increased by 15% of your maximum health.
-    divine_feathers            = {  94675, 440670, 1 }, -- Your Angelic Feathers increase movement speed by an additional 10%. When an ally walks through your Angelic Feather, you are also granted 100% of its effect. 
+    divine_feathers            = {  94675, 440670, 1 }, -- Your Angelic Feathers increase movement speed by an additional 10%. When an ally walks through your Angelic Feather, you are also granted 100% of its effect.
     fatebender                 = {  94700, 440743, 1 }, -- Increases the effects of Premonition by 40%.
     foreseen_circumstances     = {  94689, 440738, 1 }, -- Guardian Spirit lasts an additional 2 sec.
-    miraculous_recovery        = {  94679, 440674, 1 }, -- Reduces the cooldown of Power Word: Life by 3 sec and allows it to be usable on targets below 50% health. 
-    perfect_vision             = {  94700, 440661, 1 }, -- Reduces the cooldown of Premonition by 15 sec. 
-    preemptive_care            = {  94674, 440671, 1 }, -- Increases the duration of all Renews by 25%. 
+    miraculous_recovery        = {  94679, 440674, 1 }, -- Reduces the cooldown of Power Word: Life by 3 sec and allows it to be usable on targets below 50% health.
+    perfect_vision             = {  94700, 440661, 1 }, -- Reduces the cooldown of Premonition by 15 sec.
+    preemptive_care            = {  94674, 440671, 1 }, -- Increases the duration of all Renews by 25%.
     premonition                = {  94683, 428924, 1, "oracle" }, -- Gain access to a spell that gives you an advantage against your fate. Premonition rotates to the next spell when cast.  Premonition of Insight Reduces the cooldown of your next 3 spell casts by 7 sec.  Premonition of Piety Increases your healing done by 15% and causes 70% of overhealing on players to be redistributed to up to 4 nearby allies for 15 sec.  Premonition of Solace Your next single target healing spell grants your target a shield that absorbs 301,473 damage and reduces their damage taken by 15% for 15 sec.
-    preventive_measures        = {  94698, 440662, 1 }, -- Increases the healing done by Prayer of Mending by 25%. All damage dealt by Smite, Holy Fire and Holy Nova increased by 25%. 
+    preventive_measures        = {  94698, 440662, 1 }, -- Increases the healing done by Prayer of Mending by 25%. All damage dealt by Smite, Holy Fire and Holy Nova increased by 25%.
     prophets_will              = {  94690, 433905, 1 }, -- Your Flash Heal, Heal, and Holy Word: Serenity are 30% more effective when cast on yourself.
     save_the_day               = {  94675, 440669, 1 }, -- For 6 sec after casting Leap of Faith you may cast it a second time for free, ignoring its cooldown.
     twinsight                  = {  94673, 440742, 1 }, -- An additional 2 stacks of Prayer of Mending is placed on a second ally within 46 yards when casting Prayer of Mending.
-    waste_no_time              = {  94679, 440681, 1 }, -- Premonition causes your next Heal or Prayer of Healing cast to be instant and cost 15% less mana. 
+    waste_no_time              = {  94679, 440681, 1 }, -- Premonition causes your next Heal or Prayer of Healing cast to be instant and cost 15% less mana.
 
     -- Archon
     concentrated_infusion      = {  94676, 453844, 1 }, -- Your Power Infusion effect grants you an additional 10% haste.
@@ -160,19 +160,19 @@ spec:RegisterTalents( {
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
-    absolute_faith         = 1927, -- (408853) 
-    catharsis              = 5485, -- (391297) 
+spec:RegisterPvpTalents( {
+    absolute_faith         = 1927, -- (408853)
+    catharsis              = 5485, -- (391297)
     divine_ascension       = 5366, -- (328530) You ascend into the air out of harm's way. While floating, your spell range is increased by 50%, but you are only able to cast Holy spells.
-    greater_heal           =  112, -- (289666) An exceptional spell that heals an ally for 40% of their maximum health, ignoring healing reduction effects. 
+    greater_heal           =  112, -- (289666) An exceptional spell that heals an ally for 40% of their maximum health, ignoring healing reduction effects.
     holy_ward              =  101, -- (213610) Wards the friendly target against the next full loss of control effect.
-    improved_mass_dispel   = 5634, -- (426438) 
+    improved_mass_dispel   = 5634, -- (426438)
     mindgames              = 5639, -- (375901) Assault an enemy's mind, dealing 222,263 Shadow damage and briefly reversing their perception of reality. For 7 sec, the next 777,921 damage they deal will heal their target, and the next 777,921 healing they deal will damage their target.
-    phase_shift            = 5569, -- (408557) 
-    purification           = 5479, -- (196439) 
+    phase_shift            = 5569, -- (408557)
+    purification           = 5479, -- (196439)
     ray_of_hope            =  127, -- (197268) For the next 6 sec, all damage and healing dealt to the target is delayed until Ray of Hope ends. All healing that is delayed by Ray of Hope is increased by 50%.
-    sanctified_ground      =  108, -- (357481) 
-    spirit_of_the_redeemer =  124, -- (215982) 
+    sanctified_ground      =  108, -- (357481)
+    spirit_of_the_redeemer =  124, -- (215982)
     thoughtsteal           = 5365, -- (316262) Peer into the mind of the enemy, attempting to steal a known spell. If stolen, the victim cannot cast that spell for 20 sec. Can only be used on Humanoids with mana. If you're unable to find a spell to steal, the cooldown of Thoughtsteal is reset.
 } )
 
@@ -718,15 +718,16 @@ spec:RegisterAbilities( {
             end
         end,
     },
+
     heal = {
         id = 2060,
-        cast = function() if buff.divinity.up then return 0 end
-                    return 2.25
-                end,
+        cast = function() if buff.divinity.up or buff.waste_no_time.up then return 0 end
+            return 2.25
+        end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = function() return 0.02 * ( buff.divine_favor_serenity.up and 0.8 or 1 ) end,
+        spend = function() return 0.02 * ( buff.divine_favor_serenity.up and 0.8 or 1 ) * ( buff.waste_no_time.up and 0.85 or 1 ) end,
         spendType = "mana",
 
         startsCombat = false,
@@ -736,9 +737,11 @@ spec:RegisterAbilities( {
             reduceCooldown( "holy_word_serenity", 6 * naaruMulti * ( buff.apotheosis.up and 3 or 1 ) )
             removeStack( "lightweaver" )
             removeBuff( "resonant_words" )
-            removeStack( "divinity" )
+            if buff.divinity.up then removeStack( "divinity" )
+            elseif buff.waste_no_time.up then removeStack( "waste_no_time" ) end
         end,
     },
+
     holy_fire = {
         id = 14914,
         cast = function() return buff.empyreal_blaze.up and 0 or 1.5 end,
@@ -1128,13 +1131,13 @@ spec:RegisterAbilities( {
 
     prayer_of_healing = {
         id = 596,
-        cast = function() if buff.divinity.up then return 0 end
+        cast = function() if buff.divinity.up or buff.waste_no_time.up then return 0 end
             return 2.5
         end,
         cooldown = 0,
         gcd = "spell",
 
-        spend = 0.06,
+        spend = function() return 0.06 * ( buff.waste_no_time.up and 0.85 or 1 ) end,
         spendType = "mana",
 
         talent = "prayer_of_healing",
@@ -1142,7 +1145,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             reduceCooldown( "holy_word_sanctify", 6 * naaruMulti * ( buff.apotheosis.up and 3 or 1 ) )
-            removeStack( "divinity" )
+            if buff.divinity.up then removeStack( "divinity" )
+            elseif buff.waste_no_time.up then removeStack( "waste_no_time" ) end
         end,
     },
 

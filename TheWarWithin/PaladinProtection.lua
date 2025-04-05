@@ -6,7 +6,7 @@ if UnitClassBase( "player" ) ~= "PALADIN" then return end
 local addon, ns = ...
 local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
-local FindUnitBuffByID = ns.FindUnitBuffByID
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 
 local spec = Hekili:NewSpecialization( 66 )
 local QueenGlyphed = IsSpellKnownOrOverridesKnown
@@ -318,36 +318,36 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=26573
     consecration = {
         id = 26573,
-        duration = function() return talent.consecration_in_flame.enabled and 14 or 12 end,
+        duration = function() return 12 + ( talent.consecration_in_flame.enabled and 2 or 0 ) + ( talent.sanctuary.enabled and 4 or 0 ) end,
         tick_time = 1,
         type = "Magic",
         max_stack = 1,
         generate = function( c, type )
-            if type == "buff" and FindUnitBuffByID( "player", 188370 ) then
-                local dropped, expires
+            local cons = GetPlayerAuraBySpellID( 188370 )
 
-                for i = 1, 5 do
-                    local up, name, start, duration = GetTotemInfo( i )
+            if type == "buff" and cons then
+                local expires = 0
+                local duration = class.auras.consecration.duration
 
-                    if up and name == class.abilities.consecration.name then
-                        dropped = start
-                        expires = dropped + duration
-                        break
-                    end
+                if cons.expirationTime == 0 then
+                    expires = action.consecration.lastCast + duration
+                    if talent.undisputed_ruling.enabled then expires = max( expires, action.hammer_of_light.lastCast + duration ) end
+                else
+                    expires = cons.expirationTime
                 end
 
-                if dropped and expires > query_time then
-                    c.expires = expires
-                    c.applied = dropped
-                    c.count = 1
-                    c.caster = "player"
-                    return
-                end
+                c.expires = expires
+                c.applied = expires - duration
+                c.duration = duration
+                c.count = 1
+                c.caster = "player"
+                return
             end
 
             c.count = 0
             c.expires = 0
             c.applied = 0
+
             c.caster = "unknown"
         end
     },

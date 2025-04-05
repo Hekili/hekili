@@ -22,9 +22,9 @@ spec:RegisterTalents( {
     binding_heals              = {  82678, 368275, 1 }, -- 20% of Flash Heal healing on other targets also heals you.
     blessed_recovery           = {  82720, 390767, 1 }, -- After being struck by a melee or ranged critical hit, heal 20% of the damage taken over 6 sec.
     body_and_soul              = {  82706,  64129, 1 }, -- Power Word: Shield and Leap of Faith increase your target's movement speed by 40% for 3 sec.
-    cauterizing_shadows        = {  82687, 459990, 1 }, -- When your Shadow Word: Pain expires or is refreshed with less than 5 sec remaining, a nearby ally within 40 yards is healed for 183,145. 
+    cauterizing_shadows        = {  82687, 459990, 1 }, -- When your Shadow Word: Pain expires or is refreshed with less than 5 sec remaining, a nearby ally within 40 yards is healed for 183,145.
     crystalline_reflection     = {  82681, 373457, 2 }, -- Power Word: Shield instantly heals the target for 31,116 and reflects 10% of damage absorbed.
-    death_and_madness          = {  82711, 321291, 1 }, -- If your Shadow Word: Death fails to kill a target at or below 20% health, its cooldown is reset. Cannot occur more than once every 10 sec. 
+    death_and_madness          = {  82711, 321291, 1 }, -- If your Shadow Word: Death fails to kill a target at or below 20% health, its cooldown is reset. Cannot occur more than once every 10 sec.
     dispel_magic               = {  82715,    528, 1 }, -- Dispels Magic on the enemy target, removing 1 beneficial Magic effect.
     divine_star                = {  82682, 110744, 1 }, -- Throw a Divine Star forward 27 yds, healing allies in its path for 53,417 and dealing 49,786 Holy damage to enemies. After reaching its destination, the Divine Star returns to you, healing allies and damaging enemies in its path again. Healing reduced beyond 6 targets.
     dominate_mind              = {  82710, 205364, 1 }, -- Controls a mind up to 1 level above yours for 30 sec while still controlling your own mind. Does not work versus Demonic, Mechanical, or Undead beings or players. This spell shares diminishing returns with other disorienting effects.
@@ -39,9 +39,9 @@ spec:RegisterTalents( {
     inspiration                = {  82696, 390676, 1 }, -- Reduces your target's physical damage taken by 5% for 15 sec after a critical heal with Flash Heal or Penance.
     leap_of_faith              = {  82716,  73325, 1 }, -- Pulls the spirit of a party or raid member, instantly moving them directly in front of you.
     lights_inspiration         = {  82679, 373450, 2 }, -- Increases the maximum health gained from Desperate Prayer by 8%.
-    manipulation               = {  82672, 459985, 1 }, -- You take 2% less damage from enemies affected by your Shadow Word: Pain. 
+    manipulation               = {  82672, 459985, 1 }, -- You take 2% less damage from enemies affected by your Shadow Word: Pain.
     mass_dispel                = {  82699,  32375, 1 }, -- Dispels magic in a 15 yard radius, removing all harmful Magic from 5 friendly targets and 1 beneficial Magic effect from 5 enemy targets. Potent enough to remove Magic that is normally undispellable.
-    mental_agility             = {  82698, 341167, 1 }, -- Reduces the mana cost of Purify and Mass Dispel by 50% and Dispel Magic by 10%. 
+    mental_agility             = {  82698, 341167, 1 }, -- Reduces the mana cost of Purify and Mass Dispel by 50% and Dispel Magic by 10%.
     mind_control               = {  82710,    605, 1 }, -- Controls a mind up to 1 level above yours for 30 sec. Does not work versus Demonic, Undead, or Mechanical beings. Shares diminishing returns with other disorienting effects.
     move_with_grace            = {  82702, 390620, 1 }, -- Reduces the cooldown of Leap of Faith by 30 sec.
     petrifying_scream          = {  82695,  55676, 1 }, -- Psychic Scream causes enemies to tremble in place instead of fleeing in fear.
@@ -73,7 +73,7 @@ spec:RegisterTalents( {
     void_shift                 = {  82674, 108968, 1 }, -- Swap health percentages with your ally. Increases the lower health percentage of the two to 25% if below that amount.
     void_tendrils              = {  82708, 108920, 1 }, -- Summons shadowy tendrils, rooting all enemies within 8 yards for 15 sec or until the tendril is killed.
     words_of_the_pious         = {  82721, 377438, 1 }, -- For 12 sec after casting Power Word: Shield, you deal 10% additional damage and healing with Smite and Holy Nova.
-    
+
     -- Discipline
     abyssal_reverie            = {  82583, 373054, 2 }, -- Atonement heals for 10% more when activated by Shadow spells.
     atonement                  = {  82594,  81749, 1 }, -- Power Word: Shield, Flash Heal, Renew, Power Word: Radiance, and Power Word: Life apply Atonement to your target for 15 sec. Your spell damage heals all targets affected by Atonement for 35% of the damage done. Healing increased by 100% when not in a raid.
@@ -87,7 +87,7 @@ spec:RegisterTalents( {
     encroaching_shadows        = {  82590, 472568, 1 }, -- Shadow Word: Pain Spreads to 2 nearby enemies when you cast Penance on the target.
     enduring_luminescence      = {  82591, 390685, 1 }, -- Reduces the cast time of Power Word: Radiance by 30% and causes it to apply Atonement at an additional 10% of its normal duration.
     eternal_barrier            = {  86730, 238135, 1 }, -- Power Word: Shield absorbs 20% additional damage and lasts 5 sec longer.
-    evangelism                 = {  82598, 472433, 1 }, -- Extends Atonement on all allies by 6 sec and heals for 3.2 million, split evenly among them. 
+    evangelism                 = {  82598, 472433, 1 }, -- Extends Atonement on all allies by 6 sec and heals for 3.2 million, split evenly among them.
     expiation                  = {  82585, 390832, 2 }, -- Increases the damage of Mind Blast and Shadow Word: Death by 10%. Mind Blast and Shadow Word: Death consume 3 sec of Shadow Word: Pain, instantly dealing that damage.
     harsh_discipline           = {  82572, 373180, 2 }, -- Power Word: Radiance causes your next Penance to fire 3 additional bolts, stacking up to 2 times.
     indemnity                  = {  82576, 373049, 1 }, -- Atonements granted by Power Word: Shield last an additional 4 sec.
@@ -117,24 +117,24 @@ spec:RegisterTalents( {
     ultimate_penitence         = {  82577, 421453, 1 }, -- Ascend into the air and unleash a massive barrage of Penance bolts, causing 2.4 million Holy damage to enemies or 6 million healing to allies over 5.1 sec. While ascended, gain a shield for 100% of your health. In addition, you are unaffected by knockbacks or crowd control effects.
     void_summoner              = {  82570, 390770, 1 }, -- Mind Blast and Penance casts reduce the cooldown of Mindbender by 4.0 sec.
     weal_and_woe               = {  82569, 390786, 1 }, -- Your Penance bolts increase the damage of your next Smite by 20%, or the absorb of your next Power Word: Shield by 10%. Stacks up to 8 times.
-    
+
     -- Oracle
     assured_safety             = {  94691, 440766, 1 }, -- Power Word: Shield casts apply 4 stacks of Prayer of Mending to your target.
     clairvoyance               = {  94687, 428940, 1 }, -- Casting Premonition of Solace invokes Clairvoyance, expanding your mind and opening up all possibilities of the future.  Premonition of Clairvoyance Grants Premonition of Insight, Piety, and Solace at 100% effectiveness.
     desperate_measures         = {  94690, 458718, 1 }, -- Desperate Prayer lasts an additional 10 sec. Angelic Bulwark's absorption effect is increased by 15% of your maximum health.
-    divine_feathers            = {  94675, 440670, 1 }, -- Your Angelic Feathers increase movement speed by an additional 10%. When an ally walks through your Angelic Feather, you are also granted 100% of its effect. 
+    divine_feathers            = {  94675, 440670, 1 }, -- Your Angelic Feathers increase movement speed by an additional 10%. When an ally walks through your Angelic Feather, you are also granted 100% of its effect.
     fatebender                 = {  94700, 440743, 1 }, -- Increases the effects of Premonition by 40%.
     foreseen_circumstances     = {  94689, 440738, 1 }, -- Pain Suppression reduces damage taken by an additional 10%.
-    miraculous_recovery        = {  94679, 440674, 1 }, -- Reduces the cooldown of Power Word: Life by 3 sec and allows it to be usable on targets below 50% health. 
-    perfect_vision             = {  94700, 440661, 1 }, -- Reduces the cooldown of Premonition by 15 sec. 
-    preemptive_care            = {  94674, 440671, 1 }, -- Increases the duration of Atonement and Renew by 4 sec. 
+    miraculous_recovery        = {  94679, 440674, 1 }, -- Reduces the cooldown of Power Word: Life by 3 sec and allows it to be usable on targets below 50% health.
+    perfect_vision             = {  94700, 440661, 1 }, -- Reduces the cooldown of Premonition by 15 sec.
+    preemptive_care            = {  94674, 440671, 1 }, -- Increases the duration of Atonement and Renew by 4 sec.
     premonition                = {  94683, 428924, 1, "oracle" }, -- Gain access to a spell that gives you an advantage against your fate. Premonition rotates to the next spell when cast.  Premonition of Insight Reduces the cooldown of your next 3 spell casts by 7 sec.  Premonition of Piety Increases your healing done by 15% and causes 70% of overhealing on players to be redistributed to up to 4 nearby allies for 15 sec.  Premonition of Solace Your next single target healing spell grants your target a shield that absorbs 301,473 damage and reduces their damage taken by 15% for 15 sec.
-    preventive_measures        = {  94698, 440662, 1 }, -- Power Word: Shield absorbs 40% additional damage. All damage dealt by Penance, Smite and Holy Nova increased by 40%. 
+    preventive_measures        = {  94698, 440662, 1 }, -- Power Word: Shield absorbs 40% additional damage. All damage dealt by Penance, Smite and Holy Nova increased by 40%.
     prophets_will              = {  94690, 433905, 1 }, -- Your Flash Heal and Power Word: Shield are 30% more effective when cast on yourself.
     save_the_day               = {  94675, 440669, 1 }, -- For 6 sec after casting Leap of Faith you may cast it a second time for free, ignoring its cooldown.
     twinsight                  = {  94673, 440742, 1 }, -- 3 additional Penance bolts are fired at an enemy within 40 yards when healing an ally with Penance, or fired at an ally within 40 yards when damaging an enemy with Penance.
-    waste_no_time              = {  94679, 440681, 1 }, -- Premonition causes your next Power Word: Radiance cast to be instant and cost 15% less mana. 
-    
+    waste_no_time              = {  94679, 440681, 1 }, -- Premonition causes your next Power Word: Radiance cast to be instant and cost 15% less mana.
+
     -- Voidweaver
     collapsing_void            = {  94694, 448403, 1 }, -- Each time Penance damages or heals, Entropic Rift is empowered, increasing its damage and size by 10%. After Entropic Rift ends it collapses, dealing 242,533 Shadow damage split amongst enemy targets within 15 yds.
     dark_energy                = {  94693, 451018, 1 }, -- While Entropic Rift is active, you move 20% faster.
@@ -154,7 +154,7 @@ spec:RegisterTalents( {
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     absolute_faith         = 5480, -- (408853) Leap of Faith also pulls the spirit of the 3 furthest allies within 40 yards and shields you and the affected allies for 555,659.
     archangel              =  123, -- (197862) Evangelism healing increased by 30%, and Evangelism increases your healing and absorption effects by 20% for 15 sec.
     catharsis              = 5487, -- (391297) 15% of all damage you take is stored. The stored amount cannot exceed 12% of your maximum health. The initial damage of your next Shadow Word: Pain deals this stored damage to your target.
@@ -164,10 +164,10 @@ spec:RegisterPvpTalents( {
     mindgames              = 5640, -- (375901) Assault an enemy's mind, dealing 266,715 Shadow damage and briefly reversing their perception of reality. For 7 sec, the next 777,921 damage they deal will heal their target, and the next 777,921 healing they deal will damage their target.
     phase_shift            = 5570, -- (408557) Step into the shadows when you cast Fade, avoiding all attacks and spells for 1 sec. Interrupt effects are not affected by Phase Shift.
     purification           =  100, -- (196439) Purify now has a maximum of 2 charges. Removing harmful effects with Purify grants your target an absorption shield equal to 5% of their maximum health. Lasts 8 sec.
-    strength_of_soul       =  111, -- (197535) 
+    strength_of_soul       =  111, -- (197535)
     thoughtsteal           =  855, -- (316262) Peer into the mind of the enemy, attempting to steal a known spell. If stolen, the victim cannot cast that spell for 20 sec. Can only be used on Humanoids with mana. If you're unable to find a spell to steal, the cooldown of Thoughtsteal is reset.
-    trinity                =  109, -- (214205) 
-    ultimate_radiance      =  114, -- (236499) 
+    trinity                =  109, -- (214205)
+    ultimate_radiance      =  114, -- (236499)
 } )
 
 -- Auras
@@ -443,6 +443,11 @@ spec:RegisterAuras( {
         duration = 0.5,
         max_stack = 1
     },
+    waste_no_time = {
+        id = 440683,
+        duration = 20,
+        max_stack = 1
+    },
     weal_and_woe = {
         id = 390787,
         duration = 20,
@@ -553,7 +558,7 @@ end )
 local InescapableTorment = setfenv( function ()
     if buff.mindbender.up then buff.mindbender.expires = buff.mindbender.expires + 0.7
     elseif buff.shadowfiend.up then buff.shadowfiend.expires = buff.shadowfiend.expires + 0.7
-    elseif buff.voidwraith.up then buff.voidwraith.expires = buff.voidwraith.expires + 0.7 
+    elseif buff.voidwraith.up then buff.voidwraith.expires = buff.voidwraith.expires + 0.7
     end
 end, state )
 
@@ -965,14 +970,14 @@ spec:RegisterAbilities( {
 
     power_word_radiance = {
         id = 194509,
-        cast = function() return buff.radiant_providence.up and 0 or ( 2 * ( talent.enduring_luminescence.enabled and 0.7 or 1 ) ) end,
+        cast = function() return ( buff.radiant_providence.up or buff.waste_no_time.up ) and 0 or ( 2 * ( talent.enduring_luminescence.enabled and 0.7 or 1 ) ) end,
         charges = function() if talent.lights_promise.enabled then return 2 end end,
         cooldown = function() return 18 - ( 3 * talent.bright_pupil.rank ) end,
         recharge = function() if talent.lights_promise.enabled then return 18 - ( 3 * talent.bright_pupil.rank ) end end,
         gcd = "spell",
         school = "radiant",
 
-        spend = function() return buff.radiant_providence.up and 0.03 or 0.06 end,
+        spend = function() return ( buff.radiant_providence.up and 0.03 or 0.06 ) * ( buff.waste_no_time.up and 0.85 or 1 ) end,
         spendType = "mana",
 
         talent = "power_word_radiance",
@@ -988,6 +993,12 @@ spec:RegisterAbilities( {
             end
 
             if talent.harsh_discipline.enabled then addStack( "harsh_discipline" ) end
+
+            if buff.radiant_providence.up then
+                removeStack( "radiant_providence" )
+            elseif buff.waste_no_time.up then
+                removeStack( "waste_no_time" )
+            end
         end,
     },
 
@@ -1043,7 +1054,7 @@ spec:RegisterAbilities( {
         cooldown = function() return talent.perfect_vision.enabled and 45 or 60 end,
         recharge = function() return action.premonition_of_insight.cooldown end,
         gcd = "off",
-            
+
         talent = "premonition",
 
         handler = function()
@@ -1059,7 +1070,7 @@ spec:RegisterAbilities( {
         cooldown = function() return talent.perfect_vision.enabled and 45 or 60 end,
         recharge = function() return action.premonition_of_insight.cooldown end,
         gcd = "off",
-            
+
         talent = "premonition",
 
         handler = function()
@@ -1073,7 +1084,7 @@ spec:RegisterAbilities( {
         cooldown = function() return talent.perfect_vision.enabled and 45 or 60 end,
         recharge = function() return action.premonition_of_insight.cooldown end,
         gcd = "off",
-            
+
         talent = "premonition",
 
         handler = function()

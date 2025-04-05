@@ -928,6 +928,14 @@ spec:RegisterAuras( {
     }
 } )
 
+spec:RegisterHook( "prespend", function( amount, resource )
+    -- You still need the holy power in order to cast, but it won't be consumed. It does trigger other effects as though it were consumed, though.
+    if resource == "holy_power" and buff.all_in.up then
+        ns.callHook( "spend", amount, resource )
+        return 0, resource
+    end
+end )
+
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "holy_power" then
         if buff.blessing_of_dawn.up then
@@ -1152,7 +1160,7 @@ spec:RegisterHook( "reset_precast", function ()
 
         if last_ability and action[ last ].timeSince < 0.5 then
             local spend, spendType = last_ability.spend
-            spendType = not spendType and ability.spendType or "mana"
+            spendType = not spendType and last_ability.spendType or "mana"
             if spendType == "holy_power" then gain( spend, "holy_power" ) end
         end
     end

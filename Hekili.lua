@@ -383,7 +383,7 @@ function Hekili:SaveDebugSnapshot( dispName )
                     end
                     break
                 end
-                overview = format( "%s%s%s|cFFFFD100(%0.2f)|r", overview, ( i == 1 and " - " or ", " ), class.abilities[ rec.actionName ].name, rec.time )
+                overview = format( "%s%s%s|cFFFFD100(%0.2f)|r", overview, ( i == 1 and " - " or ", " ), rec.actionName, rec.time )
             end
 
             insert( v.log, 1, overview )

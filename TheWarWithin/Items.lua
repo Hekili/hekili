@@ -945,7 +945,7 @@ all:RegisterAbilities( {
 
 all:RegisterGear( "bestinslots_melee", 232526 )
 all:RegisterGear( "bestinslots_caster", 232805 )
-all:RegisterGear( "bestinslots", 232526, 232805 )
+-- all:RegisterGear( "bestinslots", 232526, 232805 )
 
 all:RegisterAbilities( {
     -- 11.1
@@ -1072,17 +1072,16 @@ all:RegisterAbilities( {
     },--]]
 
     bestinslots = {
-        id = 473402,
         cast = 0,
         cooldown = 120,
         gcd = "off",
         texture = 6218212,
 
-        known = function() return equipped.bestinslots end,
-
+        -- known = function() return equipped.bestinslots end,
         usable = function() return time > 0, "Not usable out of combat" end,
 
         item = function() return equipped.bestinslots_caster and 232805 or 232526 end,
+        items = { 232526, 232805 },
         toggle ="cooldowns",
 
         proc = "secondary",
@@ -1098,7 +1097,7 @@ all:RegisterAbilities( {
                 duration = 15,
                 max_stack = 1
             }
-        }
+        },
     },
 
     test_pilots_gopack = {
