@@ -55,19 +55,17 @@ local movementData = {}
 
 local function startScreenMovement( frame )
     movementData.origX, movementData.origY = select( 4, frame:GetPoint() )
-    movementData.fromX, movementData.fromY = movementData.origX, movementData.origY -- Set BEFORE StartMoving
     frame:StartMoving()
+    movementData.fromX, movementData.fromY = select( 4, frame:GetPoint() )
     frame.Moving = true
 end
 
 local function stopScreenMovement( frame )
-    frame:StopMovingOrSizing()
-    frame.Moving = false
-
     local resolution = C_VideoOptions.GetCurrentGameWindowSize()
     local scrW, scrH = resolution.x, resolution.y
 
     local scale, pScale = Hekili:GetScale(), UIParent:GetScale()
+
     scrW = scrW / ( scale * pScale )
     scrH = scrH / ( scale * pScale )
 
@@ -76,6 +74,8 @@ local function stopScreenMovement( frame )
 
     movementData.toX, movementData.toY = select( 4, frame:GetPoint() )
 
+    frame:StopMovingOrSizing()
+    frame.Moving = false
     frame:ClearAllPoints()
     frame:SetPoint( "CENTER", nil, "CENTER",
         max( -limitX, min( limitX, movementData.origX + ( movementData.toX - movementData.fromX ) ) ),
@@ -147,6 +147,41 @@ local function Button_OnMouseDown(self, btn)
     end
 end
 
+function ns.CreateConfigBackdrop( anchorFrame, labelText, strata, borderColor, backdropName )
+    local backdrop = CreateFrame( "Frame", backdropName, UIParent, "BackdropTemplate" )
+    backdrop:SetFrameStrata( strata or anchorFrame:GetFrameStrata() )
+    backdrop:SetFrameLevel( anchorFrame:GetFrameLevel() + 1 )
+    backdrop:SetBackdrop( {
+        bgFile = "Interface/Buttons/WHITE8X8",
+        edgeFile = "Interface/Buttons/WHITE8X8",
+        tile = false, tileSize = 0, edgeSize = 1,
+        insets = { left = 0, right = 0, top = 0, bottom = 0 }
+    } )
+    backdrop:SetBackdropColor( 0, 0, 0, 0.8 )
+
+    local c = borderColor or RAID_CLASS_COLORS[ select( 2, UnitClass( "player" ) ) ]
+    backdrop:SetBackdropBorderColor( c.r, c.g, c.b, 1 )
+
+    backdrop.moveObj = anchorFrame
+
+    backdrop:SetScript( "OnMouseDown", Mover_OnMouseDown )
+    backdrop:SetScript( "OnMouseUp", Mover_OnMouseUp )
+
+    if not backdrop.Header then
+        backdrop.Header = backdrop:CreateFontString( nil, "OVERLAY", "GameFontNormal" )
+        local path = backdrop.Header:GetFont()
+        backdrop.Header:SetFont( path, 18, "OUTLINE" )
+    end
+
+    backdrop.Header:ClearAllPoints()
+    backdrop.Header:SetPoint( "BOTTOMLEFT", backdrop, "TOPLEFT", 2, 4 )
+    backdrop.Header:SetJustifyH( "LEFT" )
+    backdrop.Header:SetText( labelText )
+    backdrop.Header:Show()
+
+    return backdrop
+end
+
 function ns.StartConfiguration( external )
     Hekili.Config = true
 
@@ -154,37 +189,19 @@ function ns.StartConfiguration( external )
     local ccolor = RAID_CLASS_COLORS[ select( 2, UnitClass( "player" ) ) ]
 
     -- Notification Panel Mover
-    ns.UI.Notification.Mover = ns.UI.Notification.Mover or CreateFrame( "Frame", "HekiliNotificationMover", ns.UI.Notification, "BackdropTemplate" )
+    ns.UI.Notification.Mover = ns.CreateConfigBackdrop(
+        HekiliNotification,
+        "Notifications",
+        HekiliNotification:GetFrameStrata(),
+        ccolor,
+        "HekiliNotificationMover"
+    )
     ns.UI.Notification.Mover:SetAllPoints( HekiliNotification )
-    ns.UI.Notification.Mover:SetBackdrop( {
-        bgFile = "Interface/Buttons/WHITE8X8",
-        edgeFile = "Interface/Buttons/WHITE8X8",
-        tile = false, tileSize = 0, edgeSize = 1,
-        insets = { left = 0, right = 0, top = 0, bottom = 0 }
-    } )
-    ns.UI.Notification.Mover:SetBackdropColor( 0, 0, 0, 0.8 )
-    ns.UI.Notification.Mover:SetBackdropBorderColor( ccolor.r, ccolor.g, ccolor.b, 1 )
     ns.UI.Notification.Mover:Show()
-
-    local f = ns.UI.Notification.Mover
-    if not f.Header then
-        f.Header = f:CreateFontString( "HekiliNotificationHeader", "OVERLAY", "GameFontNormal" )
-        local path = f.Header:GetFont()
-        f.Header:SetFont( path, 18, "OUTLINE" )
-    end
-    f.Header:SetAllPoints( HekiliNotificationMover )
-    f.Header:SetText( "Notifications" )
-    f.Header:SetJustifyH( "CENTER" )
-    f.Header:Show()
-
-    if HekiliNotificationMover:GetFrameLevel() > HekiliNotification:GetFrameLevel() then
-        local level = HekiliNotificationMover:GetFrameLevel()
-        HekiliNotification:SetFrameLevel( level )
-        HekiliNotificationMover:SetFrameLevel( level - 1 )
-    end
 
     ns.UI.Notification:EnableMouse( true )
     ns.UI.Notification:SetMovable( true )
+
     HekiliNotification:SetScript( "OnMouseDown", Mover_OnMouseDown )
     HekiliNotification:SetScript( "OnMouseUp", Mover_OnMouseUp )
     HekiliNotification:SetScript( "OnEnter", function()
@@ -200,12 +217,48 @@ function ns.StartConfiguration( external )
 
     Hekili:ProfileFrame( "NotificationFrame", HekiliNotification )
 
-    -- Displays (unchanged from your original code)
+    -- Display Frames (Primary, AOE, etc.)
     for i, v in pairs( ns.UI.Displays ) do
-        -- existing display backdrop logic...
+        if v.Backdrop then v.Backdrop:Hide() end
+        if v.Header then v.Header:Hide() end
+
+        if ns.UI.Buttons[ i ][ 1 ] and Hekili.DB.profile.displays[ i ] then
+            v.Backdrop = ns.CreateConfigBackdrop(
+                v,
+                (i == "Defensives" and AtlasToString( "nameplates-InterruptShield" )) or
+                (i == "Interrupts" and AtlasToString( "voicechat-icon-speaker-mute" )) or
+                (i == "Cooldowns" and AtlasToString( "chromietime-32x32" )) or i,
+                v:GetFrameStrata(),
+                Hekili:IsDisplayActive( v.id, true ) and ccolor or { r = 0.5, g = 0.5, b = 0.5 },
+                v:GetName() .. "_Backdrop"
+            )
+
+            local left, right, top, bottom = v:GetPerimeterButtons()
+            if left and right and top and bottom then
+                v.Backdrop:SetPoint( "LEFT", left, "LEFT", -2, 0 )
+                v.Backdrop:SetPoint( "RIGHT", right, "RIGHT", 2, 0 )
+                v.Backdrop:SetPoint( "TOP", top, "TOP", 0, 2 )
+                v.Backdrop:SetPoint( "BOTTOM", bottom, "BOTTOM", 0, -2 )
+            else
+                v.Backdrop:SetWidth( v:GetWidth() + 2 )
+                v.Backdrop:SetHeight( v:GetHeight() + 2 )
+                v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
+            end
+
+            v:EnableMouse( true )
+            v:SetMovable( true )
+            for _, btn in ipairs( ns.UI.Buttons[ i ] ) do
+                btn:EnableMouse( false )
+            end
+
+            v.Backdrop:Show()
+            v:Show()
+        else
+            v:Hide()
+        end
     end
 
-    -- Options panel open behavior
+    -- Open Options UI
     if not external then
         if not Hekili.OptionsReady then Hekili:RefreshOptions() end
 
@@ -247,12 +300,23 @@ function ns.StartConfiguration( external )
 
         local bar = Hekili.ToggleStatusBar
         if bar then
-            bar:SetMovable( true )
-            bar:EnableMouse( true )
-            bar:SetScript( "OnMouseDown", Mover_OnMouseDown )
-            bar:SetScript( "OnMouseUp", Mover_OnMouseUp )
-
+            bar.Mover = bar.Mover or ns.CreateConfigBackdrop(
+                bar,
+                "Toggle Bar",
+                bar:GetFrameStrata(),
+                ccolor
+            )
+            bar.Mover:SetAllPoints( bar )
             bar.Mover:Show()
+
+            -- Setup mouse interaction on the bar *itself*.
+            bar:EnableMouse( true )
+            bar:SetMovable( true )
+
+            -- Mouse events should go to the mover, not the bar directly.
+            bar.Mover.moveObj = bar
+            bar.Mover:SetScript( "OnMouseDown", Mover_OnMouseDown )
+            bar.Mover:SetScript( "OnMouseUp", Mover_OnMouseUp )
         end
     end
 
@@ -294,8 +358,6 @@ function ns.StopConfiguration()
     if Hekili.ToggleStatusBar and Hekili.ToggleStatusBar.Mover then
         Hekili.ToggleStatusBar.Mover:Hide()
     end
-
-
 end
 
 local function MasqueUpdate( Addon, Group, SkinID, Gloss, Backdrop, Colors, Disabled )
@@ -3062,18 +3124,23 @@ function Hekili:ShowDiagnosticTooltip( q )
 end
 
 function Hekili:SaveCoordinates()
-    for i in pairs(Hekili.DB.profile.displays) do
-        local display = ns.UI.Displays[i]
+    for i in pairs( self.DB.profile.displays ) do
+        local display = ns.UI.Displays[ i ]
         if display then
-            local rel, x, y = select( 3, display:GetPoint() )
+            local _, _, _, x, y = display:GetPoint()
 
-            self.DB.profile.displays[i].rel = "CENTER"
-            self.DB.profile.displays[i].x = x
-            self.DB.profile.displays[i].y = y
+            self.DB.profile.displays[ i ].rel = "CENTER"
+            self.DB.profile.displays[ i ].x = x
+            self.DB.profile.displays[ i ].y = y
         end
     end
 
     self.DB.profile.notifications.x, self.DB.profile.notifications.y = select( 4, HekiliNotification:GetPoint() )
+
+    if self.ToggleStatusBar then
+        self.DB.profile.toggleBar.anchor = self.DB.profile.toggleBar.anchor or {}
+        self.DB.profile.toggleBar.anchor.x, self.DB.profile.toggleBar.anchor.y = select( 4, self.ToggleStatusBar:GetPoint() )
+    end
 end
 
 function Hekili:BuildToggleStatusBar()
@@ -3092,9 +3159,9 @@ function Hekili:BuildToggleStatusBar()
     bar:SetClampedToScreen( true )
     bar:SetFrameStrata( "MEDIUM" )
 
-    -- Style: Basic backdrops
+    --[[ Style: Basic backdrops
     local backdropStyle = barSettings.style or "none"
-    if backdropStyle == "default" then
+    if backdropStyle == "default" and Hekili.Config then
         bar:SetBackdrop({
             bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -3107,7 +3174,7 @@ function Hekili:BuildToggleStatusBar()
         bar:SetBackdrop( nil )
     else
         bar:SetBackdrop( nil )
-    end
+    end--]]
 
     -- Sizing and positioning
     local buttonSize = 32
@@ -3120,7 +3187,9 @@ function Hekili:BuildToggleStatusBar()
 
     bar:SetSize( width, height )
     bar:ClearAllPoints()
-    bar:SetPoint( "CENTER", nil, "CENTER", barSettings.anchor and barSettings.anchor.x or 0, barSettings.anchor and barSettings.anchor.y or 0 )
+    local anchor = barSettings.anchor or {}
+    bar:SetPoint( "CENTER", nil, "CENTER", anchor.x or 0, anchor.y or 0 )
+
 
     bar:Show()
 
@@ -3205,6 +3274,7 @@ function Hekili:BuildToggleStatusBar()
         btn:SetParent( bar )
 
         -- Positioning
+        btn:ClearAllPoints()
         if isVertical then
             btn:SetPoint( "TOP", bar, "TOP", 0, - ( i - 1 ) * ( buttonSize + spacing ) )
         else
