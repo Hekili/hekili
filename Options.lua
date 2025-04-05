@@ -8711,7 +8711,7 @@ do
                     }
                 },--]]
 
-                smart = {
+                --[[smart = {
                     type = "group",
                     name = "SmartToggle",
                     desc = "Define automatic logic rules to temporarily override toggle behavior.",
@@ -8782,7 +8782,7 @@ do
                 self:InjectSmartToggleRules( db, "user" ),
                 self:InjectSmartToggleRules( db, "builtin" ),
                 self:InjectSmartToggleRules( db, "mythic_plus" ),
-                self:InjectSmartToggleRules( db, "raid" ),
+                self:InjectSmartToggleRules( db, "raid" ),--]]
 
                 interrupts = {
                     type = "group",
@@ -12641,7 +12641,7 @@ do
 end
 
 -- End Toggles
-function Hekili:InjectSmartToggleRules( db, source )
+--[[function Hekili:InjectSmartToggleRules( db, source )
     local profile = self.DB.profile
     source = source or "user"
 
@@ -12726,9 +12726,9 @@ function Hekili:InjectSmartToggleRules( db, source )
             }
         }
     end
-end
+end--]]
 
-function Hekili:EmbedToggleStatusButtons( db )
+--[[function Hekili:EmbedToggleStatusButtons( db )
     local profile = self.DB.profile
     local tsiArgs = db and db.args and db.args.toggles and db.args.toggles.args and db.args.toggles.args.toggleStatusIndicator and db.args.toggles.args.toggleStatusIndicator.args
 
@@ -12808,4 +12808,4 @@ function Hekili:EmbedToggleStatusButtons( db )
             }
         }
     end
-end
+end--]]
