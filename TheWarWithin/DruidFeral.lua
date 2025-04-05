@@ -1456,6 +1456,11 @@ end )
 spec:RegisterStateFunction( "check_bloodtalons", function ()
     if buff.bt_triggers.stack > 2 then
         removeBuff( "bt_triggers" )
+        for bt_aura in pairs(bt_auras) do
+            if buff[bt_aura].up then
+                removeBuff(bt_aura)
+            end
+        end
         applyBuff( "bloodtalons", nil, 3 )
     end
 end )
