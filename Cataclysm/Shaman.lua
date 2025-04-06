@@ -6,7 +6,8 @@ local class, state = Hekili.Class, Hekili.State
 
 local spec = Hekili:NewSpecialization( 7 )
 
-spec:RegisterGear( "tier10enhancement", 50830, 50831, 50832, 50833, 50834, 51195, 51196, 51197, 51198, 51199, 51244, 51243, 51242, 51241, 51240 )
+spec:RegisterGear( "tier13enhancement", 77034, 77035, 77036, 77037, 77038, 78785, 78786, 78787, 78788, 78789, 78830, 78831, 78832, 78833, 78834 )
+spec:RegisterGear( "tier13elemental", 77019, 77020, 77021, 77022, 77023, 78780, 78781, 78782, 78783, 78784, 78825, 78826, 78827, 78828, 78829 )
 
 local LastConsumedStackTS, LastSwingTimestamp, last_consumed_stack_ts = 0,0,0
 spec:RegisterResource( Enum.PowerType.Mana, {
@@ -2284,6 +2285,24 @@ spec:RegisterAbilities( {
             removeBuff( "air_totem" )
             summonTotem( "wrath_of_air_totem" )
             applyBuff( "wrath_of_air_totem" )
+        end,
+    },
+
+    -- Adding Healing Rain ability
+    healing_rain = {
+        id = 73920,
+        cast = 2,
+        cooldown = 10,
+        gcd = "spell",
+
+        spend = 0.22,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 136037,
+
+        handler = function()
+            -- Logic for Healing Rain
         end,
     },
 } )
