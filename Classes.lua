@@ -1730,7 +1730,7 @@ all:RegisterAuras( {
     },
 	
     mangle = {
-        alias = "bleed_vulnerability",
+        alias = { "bleed_vulnerability" },
         aliasType = "debuff",
         aliasMode = "longest"
     },
