@@ -319,7 +319,7 @@ function Hekili:SaveDebugSnapshot( dispName )
                 custom = format( " |cFFFFA700(Custom: %s[%d])|r", state.spec.name, state.spec.id )
             end
 
-            local overview = format( "%s%s; %s|r", state.system.packName, custom, dispName )
+            local overview = format( "%s%s; %s|r", state.system.packName, custom, dispName or "Unknown" )
             local recs = Hekili.DisplayPool[ dispName ].Recommendations
 
             for i, rec in ipairs( recs ) do
