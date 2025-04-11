@@ -845,7 +845,7 @@ spec:RegisterAbilities( {
     -- Reduces all damage taken by a friendly target by $s1% for $d. Castable while stunned.
     pain_suppression = {
         id = 33206,
-        cast = 0.0,,
+        cast = 0.0,
         charges = function() if talent.protector_of_the_frail.enabled then return 2 end end,
         cooldown = 180,
         recharge = function() if talent.protector_of_the_frail.enabled then return 180 end end,
