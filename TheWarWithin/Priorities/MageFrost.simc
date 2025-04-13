@@ -1,7 +1,11 @@
+## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/mage_frost.simc
+## Up to date with SimC: March 21 2025 - 19f3b05
+
 actions.precombat+=/arcane_intellect
 actions.precombat+=/mirror_image
-actions.precombat+=/variable,name=treacherous_transmitter_precombat_cast,value=12
+actions.precombat+=/variable,name=treacherous_transmitter_precombat_cast,value=12,if=equipped.treacherous_transmitter
 actions.precombat+=/use_item,name=treacherous_transmitter
+actions.precombat+=/use_item,name=ingenious_mana_battery
 actions.precombat+=/blizzard,if=active_enemies>=3
 actions.precombat+=/frostbolt,if=active_enemies<=2
 
@@ -54,10 +58,12 @@ actions.cds+=/use_item,name=treacherous_transmitter,if=boss&fight_remains<32+20*
 actions.cds+=/use_item,name=spymasters_web,if=boss&fight_remains<20|buff.icy_veins.remains<19&(boss&fight_remains<105|buff.spymasters_report.stack>=32)&(buff.icy_veins.remains>15|trinket.treacherous_transmitter.cooldown.remains>50)
 actions.cds+=/use_item,name=imperfect_ascendancy_serum,if=buff.icy_veins.remains>15|boss&fight_remains<20
 actions.cds+=/use_item,name=burst_of_knowledge,if=buff.icy_veins.remains>15|boss&fight_remains<20
+actions.cds+=/use_item,name=ratfang_toxin,if=time>10
 actions.cds+=/potion,if=boss&fight_remains<35|buff.icy_veins.remains>9&(fight_remains>315|cooldown.icy_veins.remains+12>fight_remains)
 actions.cds+=/icy_veins,if=buff.icy_veins.remains<gcd.max*2
 # Manual change from time=0, which the sims use but the addon cannot
 actions.cds+=/flurry,if=time<0.2&active_enemies<=2
+actions.cds+=/use_item,name=neural_synapse_enhancer,if=active_enemies<=2|prev_gcd.1.comet_storm|boss&fight_remains<20
 actions.cds+=/use_items
 ## actions.cds+=/invoke_external_buff,name=power_infusion,if=buff.power_infusion.down
 ## actions.cds+=/invoke_external_buff,name=blessing_of_summer,if=buff.blessing_of_summer.down

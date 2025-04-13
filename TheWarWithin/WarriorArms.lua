@@ -76,7 +76,7 @@ spec:RegisterTalents( {
     barbaric_training               = {  90340, 383082, 1 }, -- Slam, Cleave, and Whirlwind deal 10% more damage and 10% increased critical strike damage.
     battle_stance                   = {  90327, 386164, 1 }, -- A balanced combat state that increases the critical strike chance of your abilities by 3% and reduces the duration of movement impairing effects by 10%. Lasts until canceled.
     berserker_shout                 = {  90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also remove fear effects from group members within 12 yds.
-    bitter_immunity                 = {  90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you. 
+    bitter_immunity                 = {  90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you.
     blademasters_torment            = {  90363, 390138, 1 }, -- Activating Avatar grants 8 sec of Sweeping Strikes and while Avatar is active the cooldown of Cleave is reduced by 1.5 sec.
     bounding_stride                 = {  90355, 202163, 1 }, -- Reduces the cooldown of Heroic Leap by 15 sec, and Heroic Leap now also increases your movement speed by 70% for 3 sec.
     cacophonous_roar                = {  90383, 382954, 1 }, -- Intimidating Shout can withstand 200% more damage before breaking.
@@ -84,7 +84,7 @@ spec:RegisterTalents( {
     champions_spear                 = {  90380, 376079, 1 }, -- Throw a spear at the target location, dealing 16,818 Physical damage instantly and an additional 17,819 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 10 Rage.
     concussive_blows                = {  90354, 383115, 1 }, -- Cooldown of Pummel reduced by 1.0 sec. Successfully interrupting an enemy increases the damage you deal to them by 5% for 10 sec.
     crackling_thunder               = {  95959, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
-    cruel_strikes                   = {  90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%. 
+    cruel_strikes                   = {  90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%.
     crushing_force                  = {  90347, 382764, 2 }, -- Mortal Strike deals an additional 5% damage and deals 5% increased critical strike damage.
     defensive_stance                = {  92537, 386208, 1 }, -- A defensive combat state that reduces all damage you take by 15%, and all damage you deal by 10%. Lasts until canceled.
     double_time                     = {  90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
@@ -126,7 +126,7 @@ spec:RegisterTalents( {
     battlelord                      = {  92615, 386630, 1 }, -- Overpower has a 35% chance to reset the cooldown of Mortal Strike and generate 10 Rage.
     bladestorm                      = {  90441, 227847, 1 }, -- Become an unstoppable storm of destructive force, striking all nearby enemies for 68,785 Physical damage over 5.1 sec. Deals reduced damage beyond 8 targets. You are immune to movement impairing and loss of control effects, but can use defensive abilities and can avoid attacks.
     bloodborne                      = {  90283, 383287, 2 }, -- Deep Wounds, Rend, and Thunderous Roar's Bleed effects deal 5% increased damage.
-    bloodletting                    = {  90438, 383154, 1 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects last 6.0 sec longer and have a 5% increased critical strike chance. If you have Rend, Mortal Strike inflicts Rend on targets below 35% health. 
+    bloodletting                    = {  90438, 383154, 1 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects last 6.0 sec longer and have a 5% increased critical strike chance. If you have Rend, Mortal Strike inflicts Rend on targets below 35% health.
     bloodsurge                      = {  90277, 384361, 1 }, -- Damage from Deep Wounds has a chance to generate 5 Rage.
     blunt_instruments               = {  90287, 383442, 1 }, -- Colossus Smash damage increased by 30% and its effect duration is increased by 3.0 sec.
     cleave                          = {  90293,    845, 1 }, -- Strikes all enemies in front of you for 16,837 Physical damage, inflicting Deep Wounds. Cleave will consume your Overpower effect to deal increased damage. Deals reduced damage beyond 5 targets.
@@ -141,7 +141,7 @@ spec:RegisterTalents( {
     exhilarating_blows              = {  90286, 383219, 1 }, -- Mortal Strike and Cleave have a 20% chance to instantly reset their own cooldowns.
     fatality                        = {  90439, 383703, 1 }, -- Your Mortal Strikes and Cleaves against enemies above 30% health have a high chance to apply Fatal Mark. When an enemy falls below 30% health, your next Execute inflicts an additional 19,401 Physical damage per stack.
     fervor_of_battle                = {  90272, 202316, 1 }, -- If Cleave or Whirlwind hit 2 or more targets you also Slam your primary target.
-    finishing_blows                 = {  92614, 400205, 1 }, -- Overpower generates 8 Rage when used on enemies below 35% health. 
+    finishing_blows                 = {  92614, 400205, 1 }, -- Overpower generates 8 Rage when used on enemies below 35% health.
     fueled_by_violence              = {  90275, 383103, 1 }, -- You are healed for 85% of the damage dealt by Deep Wounds.
     ignore_pain                     = {  90269, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken until 42,084 damage has been prevented. Repeated uses of Ignore Pain accumulate, up to 146,016 total damage prevented.
     impale                          = {  90292, 383430, 1 }, -- Critical strike damage of your abilities is increased by 10%.
@@ -151,7 +151,7 @@ spec:RegisterTalents( {
     in_for_the_kill                 = {  90288, 248621, 1 }, -- Colossus Smash increases your Haste by 10%, or by 20% if the target is below 35% health. Lasts for the duration of Colossus Smash.
     juggernaut                      = {  90446, 383292, 1 }, -- Execute increases Execute's damage dealt by 3% for 12 sec, stacking up to 15 times.
     martial_prowess                 = {  90278, 316440, 1 }, -- Overpower increases the damage of your next Mortal Strike or Cleave by 15%, stacking up to 2 times.
-    massacre                        = {  90291, 281001, 1 }, -- Execute is now usable on targets below 35% health. 
+    massacre                        = {  90291, 281001, 1 }, -- Execute is now usable on targets below 35% health.
     merciless_bonegrinder           = {  90266, 383317, 1 }, -- Whirlwind and Cleave deal 50% increased damage during Ravager or for 9 sec after Bladestorm ends.
     mortal_strike                   = {  90270,  12294, 1 }, -- A vicious strike that deals 44,886 Physical damage and reduces the effectiveness of healing on the target by 50% for 10 sec.
     overpower                       = {  90271,   7384, 1 }, -- Overpower the enemy, dealing 23,616 Physical damage. Cannot be blocked, dodged, or parried. Increases the damage of your next Mortal Strike or Cleave by 15%, stacking up to 2 times
@@ -162,11 +162,11 @@ spec:RegisterTalents( {
     spiteful_serenity               = {  90289, 400314, 1 }, -- Colossus Smash and Avatar's base durations are increased by 100% but their damage bonuses are reduced by 40%.
     storm_of_swords                 = {  90267, 385512, 1 }, -- Cleave and Whirlwind have a 30% chance to make your next Cleave or Whirlwind cost 100% less Rage.
     storm_wall                      = {  90269, 388807, 1 }, -- Whenever you Parry, you heal for 5.00% of your maximum health. Can only occur once per second.
-    strength_of_arms                = {  90285, 400803, 1 }, -- Overpower deals 15% additional damage, has 10% increased critical strike chance, and deals 10% increased critical strike damage. 
+    strength_of_arms                = {  90285, 400803, 1 }, -- Overpower deals 15% additional damage, has 10% increased critical strike chance, and deals 10% increased critical strike damage.
     sudden_death                    = {  90274,  29725, 1 }, -- Your attacks have a chance to make your next Execute cost no Rage, be usable on any target regardless of their health, and deal damage as if you spent 40 Rage.
     tactician                       = {  90282, 184783, 1 }, -- You have a 2.00% chance per Rage spent on attacks to reset the remaining cooldown on Overpower.
     test_of_might                   = {  90288, 385008, 1 }, -- When Colossus Smash expires, your Strength is increased by 1% for every 10 Rage you spent on attacks during Colossus Smash. Lasts 12 sec.
-    unhinged                        = {  90440, 386628, 1 }, -- Every other time Bladestorm or Ravager deal damage, you automatically cast a Mortal Strike at your target or random nearby enemy. 
+    unhinged                        = {  90440, 386628, 1 }, -- Every other time Bladestorm or Ravager deal damage, you automatically cast a Mortal Strike at your target or random nearby enemy.
     valor_in_victory                = {  90442, 383338, 1 }, -- Increases Versatility by 2% and reduces the cooldown of Die by the Sword by 30.0 sec.
     warbreaker                      = {  90287, 262161, 1 }, -- Smash the ground and shatter the armor of all enemies within 10 yds, dealing 27,987 Physical damage and increasing damage you deal to them by 30% for 13 sec.
 
@@ -190,12 +190,12 @@ spec:RegisterTalents( {
     brutal_finish                   = {  94786, 446085, 1 }, -- Your next Mortal Strike after Bladestorm ends deals 50% additional damage.
     culling_cyclone                 = {  94786, 444778, 1 }, -- Each strike of Bladestorm deals an additional 10% damage evenly split across all targets.
     death_drive                     = {  94813, 444770, 1 }, -- You heal for 15% of damage dealt by Sudden Death.
-    fierce_followthrough            = {  94787, 444773, 1 }, -- Mortal Strike critical strikes increase the damage of your next Mortal Strike by 20%. 
+    fierce_followthrough            = {  94787, 444773, 1 }, -- Mortal Strike critical strikes increase the damage of your next Mortal Strike by 20%.
     imminent_demise                 = {  94788, 444769, 1 }, -- Every 3 Slayer's Strikes you gain Sudden Death. Using Sudden Death accelerates your next Bladestorm, striking 1 additional time (max 3). Bladestorm's total duration is unchanged.
     opportunist                     = {  94787, 444774, 1 }, -- When Overpower has its cooldown reset by Tactician, your next Overpower deals 25% additional damage and 25% additional critical damage.
     overwhelming_blades             = {  94810, 444772, 1 }, -- Each strike of Bladestorm applies Overwhelmed to all enemies affected, increasing damage you deal to them by 1% for 20 sec, max 10 stacks.
     reap_the_storm                  = {  94809, 444775, 1 }, -- Mortal Strike and Cleave when it hits 3 or more targets have a 20% chance to cause you to unleash a flurry of steel, striking all nearby enemies for 20,067 damage and applying Overwhelmed. Deals reduced damage beyond 8 targets.
-    relentless_pursuit              = {  94795, 444776, 1 }, -- Charge grants you 70% movement speed for 3 sec. Charge removes all movement impairing effects, this effect cannot occur more than once every 30 sec. 
+    relentless_pursuit              = {  94795, 444776, 1 }, -- Charge grants you 70% movement speed for 3 sec. Charge removes all movement impairing effects, this effect cannot occur more than once every 30 sec.
     show_no_mercy                   = {  94784, 444771, 1 }, -- Marked for Execution increases the critical strike chance and critical strike damage of your next Execute on the target by 15%.
     slayers_dominance               = {  94814, 444767, 1, "slayer" }, -- Your attacks against your primary target have a high chance to overwhelm their defenses and trigger a Slayer's Strike, dealing 23,443 damage and applying Marked for Execution, increasing the damage they take from your next Execute by 15%. Stacks 3 times.
     slayers_malice                  = {  94801, 444779, 1 }, -- Overpower damage increased by 30%.
@@ -1460,7 +1460,7 @@ spec:RegisterAbilities( {
     shockwave = {
         id = 46968,
         cast = 0,
-        
+
         cooldown = function () return ( ( talent.rumbling_earth.enabled and active_enemies >= 3 ) and 25 or 40 ) end,
         gcd = "spell",
 
@@ -1565,7 +1565,7 @@ spec:RegisterAbilities( {
             if not t.up then
                 return false, "Target is not casting"
             end
-            if not class.reflectableFilters[ zone ][ npcid ][ t.v1 ] then
+            if not state.target.is_dummy and not class.reflectableFilters[ t.v1 ] then
                 return false, "spell[" .. t.v1 .. "] in zone[" .. zone .. "] by npc[" .. npcid .. "] is not reflectable"
             end
             if not UnitIsUnit( "player", t.caster .. "target" ) then

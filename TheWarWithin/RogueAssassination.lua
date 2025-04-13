@@ -11,7 +11,6 @@ local GetUnitChargedPowerPoints = GetUnitChargedPowerPoints
 local strformat, insert, sort, wipe, max = string.format, table.insert, table.sort, table.wipe, math.max
 local UA_GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 
-
 local orderedPairs = ns.orderedPairs
 
 local spec = Hekili:NewSpecialization( 259 )
@@ -90,7 +89,6 @@ spec:RegisterResource( Enum.PowerType.Energy, {
         value = 4
     }
 } )
-
 
 -- Talents
 spec:RegisterTalents( {
@@ -221,7 +219,6 @@ spec:RegisterTalents( {
     tempted_fate           = {  95138, 454286, 1 }, -- You have a chance equal to your critical strike chance to absorb 10% of any damage taken, up to a maximum chance of 40%.
 } )
 
-
 -- PvP Talents
 spec:RegisterPvpTalents( {
     control_is_king    = 5530, -- (354406)
@@ -236,22 +233,6 @@ spec:RegisterPvpTalents( {
     thick_as_thieves   = 5408, -- (221622)
     veil_of_midnight   = 5517, -- (198952)
 } )
-
-
-spec:RegisterStateExpr( "cp_max_spend", function ()
-    return combo_points.max
-end )
-
-spec:RegisterStateExpr( "effective_combo_points", function ()
-    local c = combo_points.current or 0
-
-    if c > 0 and buff.supercharged_combo_points.up then
-        c = c + ( talent.forced_induction.enabled and 3 or 2 )
-    end
-
-    return c
-end )
-
 
 local stealth = {
     normal = { "stealth" },
@@ -270,7 +251,58 @@ local stealth = {
 
     all = { "stealth", "vanish", "shadowmeld", "subterfuge", "shadow_dance", "sepsis_buff", "improved_garrote_aura", "improved_garrote" },
 }
+local stealth_dropped = 0
+local envenom1, envenom2 = 0, 0
+local first_envenom, second_envenom = 0, 0
+local last = 0
+local energySpent = 0
+local ENERGY = Enum.PowerType.Energy
+local lastEnergy = -1
+local tracked_bleeds = {}
+local kingsbaneReady = false
+local valid_bleeds = { "garrote", "internal_bleeding", "rupture", "crimson_tempest", "mutilated_flesh", "serrated_bone_spike" }
+local application_events = {
+    SPELL_AURA_APPLIED      = true,
+    SPELL_AURA_APPLIED_DOSE = true,
+    SPELL_AURA_REFRESH      = true,
+}
 
+local removal_events = {
+    SPELL_AURA_REMOVED      = true,
+    SPELL_AURA_BROKEN       = true,
+    SPELL_AURA_BROKEN_SPELL = true,
+}
+
+local stealth_spells = {
+    [1784  ] = true,
+    [115191] = true,
+}
+
+local tick_events = {
+    SPELL_PERIODIC_DAMAGE   = true,
+}
+
+local death_events = {
+    UNIT_DIED               = true,
+    UNIT_DESTROYED          = true,
+    UNIT_DISSIPATES         = true,
+    PARTY_KILL              = true,
+    SPELL_INSTAKILL         = true,
+}
+
+spec:RegisterStateExpr( "cp_max_spend", function ()
+    return combo_points.max
+end )
+
+spec:RegisterStateExpr( "effective_combo_points", function ()
+    local c = combo_points.current or 0
+
+    if c > 0 and buff.supercharged_combo_points.up then
+        c = c + ( talent.forced_induction.enabled and 3 or 2 )
+    end
+
+    return c
+end )
 
 spec:RegisterStateTable( "stealthed", setmetatable( {}, {
     __index = function( t, k )
@@ -299,7 +331,6 @@ spec:RegisterStateTable( "stealthed", setmetatable( {}, {
     end,
 } ) )
 
-
 spec:RegisterStateExpr( "master_assassin_remains", function ()
     if buff.master_assassin_any.up then return buff.master_assassin_any.remains end
     return 0
@@ -309,8 +340,6 @@ spec:RegisterStateExpr( "indiscriminate_carnage_remains", function ()
     if not talent.indiscriminate_carnage.enabled then return 0 end
     return buff.indiscriminate_carnage_any.remains
 end )
-
-local stealth_dropped = 0
 
 local function isStealthed()
     return ( UA_GetPlayerAuraBySpellID( 1784 ) or UA_GetPlayerAuraBySpellID( 115191 ) or UA_GetPlayerAuraBySpellID( 115192 ) or UA_GetPlayerAuraBySpellID( 11327 ) or GetTime() - stealth_dropped < 0.2 )
@@ -326,10 +355,7 @@ local calculate_multiplier = setfenv( function( spellID )
     return mult
 end, state )
 
-
 -- Bleed Modifiers
-local tracked_bleeds = {}
-
 local function NewBleed( key, spellID )
     tracked_bleeds[ key ] = {
         id = spellID,
@@ -371,45 +397,10 @@ NewBleed( "rupture", 1943 )
 NewBleed( "rupture_deathmark", 360826 )
 NewBleed( "crimson_tempest", 121411 )
 NewBleed( "internal_bleeding", 154904 )
-
 NewBleed( "deadly_poison_dot", 2823 )
 NewBleed( "deadly_poison_dot_deathmark", 394324 )
 NewBleed( "sepsis", 328305 )
 NewBleed( "serrated_bone_spike", 324073 )
-
-local application_events = {
-    SPELL_AURA_APPLIED      = true,
-    SPELL_AURA_APPLIED_DOSE = true,
-    SPELL_AURA_REFRESH      = true,
-}
-
-local removal_events = {
-    SPELL_AURA_REMOVED      = true,
-    SPELL_AURA_BROKEN       = true,
-    SPELL_AURA_BROKEN_SPELL = true,
-}
-
-local stealth_spells = {
-    [1784  ] = true,
-    [115191] = true,
-}
-
-local tick_events = {
-    SPELL_PERIODIC_DAMAGE   = true,
-}
-
-local death_events = {
-    UNIT_DIED               = true,
-    UNIT_DESTROYED          = true,
-    UNIT_DISSIPATES         = true,
-    PARTY_KILL              = true,
-    SPELL_INSTAKILL         = true,
-}
-
-local envenom1 = 0
-local envenom2 = 0
-
-local last = 0
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == state.GUID then
@@ -490,12 +481,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
     end
 end, false )
 
-
-local energySpent = 0
-
-local ENERGY = Enum.PowerType.Energy
-local lastEnergy = -1
-
 spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, unit, powerType )
     if powerType == "ENERGY" then
         local current = UnitPower( "player", ENERGY )
@@ -508,14 +493,6 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
         return
     elseif powerType == "COMBO_POINTS" then
         Hekili:ForceUpdate( powerType, true )
-    end
-end )
-
-spec:RegisterCycle( function ()
-    if this_action == "marked_for_death" then
-        if cycle_enemies == 1 or active_dot.marked_for_death >= cycle_enemies then return end -- As far as we can tell, MfD is on everything we care about, so we don't cycle.
-        if debuff.marked_for_death.up then return "cycle" end -- If current target already has MfD, cycle.
-        if target.time_to_die > 3 + Hekili:GetLowestTTD() and active_dot.marked_for_death == 0 then return "cycle" end -- If our target isn't lowest TTD, and we don't have to worry that the lowest TTD target is already MfD'd, cycle.
     end
 end )
 
@@ -587,9 +564,6 @@ spec:RegisterStateExpr( "poison_remains", function ()
     return debuff.lethal_poison.remains
 end )
 
-
-local valid_bleeds = { "garrote", "internal_bleeding", "rupture", "crimson_tempest", "mutilated_flesh", "serrated_bone_spike" }
-
 -- Count of bleeds on targets.
 spec:RegisterStateExpr( "bleeds", function ()
     local n = 0
@@ -608,7 +582,6 @@ spec:RegisterStateExpr( "poisoned_bleeds", function ()
     return ns.conditionalDebuffCount( "deadly_poison_dot", "wound_poison_dot", "amplifying_poison_dot", "garrote", "internal_bleeding", "rupture" )
 end )
 
-
 -- Count of Garrotes on all poisoned (Deadly/Wound) targets.
 spec:RegisterStateExpr( "poisoned_garrotes", function ()
     return ns.conditionalDebuffCount( "deadly_poison_dot", "wound_poison_dot", "amplifying_poison_dot", "garrote" )
@@ -618,7 +591,6 @@ end )
 spec:RegisterStateExpr( "poisoned_ruptures", function ()
     return ns.conditionalDebuffCount( "deadly_poison_dot", "wound_poison_dot", "amplifying_poison_dot", "rupture" )
 end )
-
 
 spec:RegisterStateExpr( "ss_buffed", function ()
     return false
@@ -644,8 +616,6 @@ spec:RegisterStateExpr( "ss_buffed_targets_above_pandemic", function ()
     return 0
 end )
 
-
-
 spec:RegisterStateExpr( "pmultiplier", function ()
     if not this_action or this_action == "variable" then return 0 end
 
@@ -670,10 +640,6 @@ spec:RegisterStateExpr( "improved_garrote_remains", function()
     return 0
 end )
 
-
-local first_envenom = 0
-local second_envenom = 0
-
 spec:RegisterStateExpr( "envenom_stacks", function ()
     return ( first_envenom > query_time and 1 or 0 ) + ( second_envenom > query_time and 1 or 0 )
 end )
@@ -687,7 +653,6 @@ spec:RegisterStateExpr( "priority_rotation", function ()
     return toggle.funnel
 end )
 
-
 local ExpireSepsis = setfenv( function ()
     applyBuff( "sepsis_buff" )
 
@@ -697,62 +662,61 @@ local ExpireSepsis = setfenv( function ()
     end
 end, state )
 
--- The War Within
-spec:RegisterGear( "tww2", 229290, 229288, 229289, 229287, 229292 )
-spec:RegisterAuras( {
-    -- 2-set
-    -- https://www.wowhead.com/spell=1218439
-    -- Winning Streak!  
-    winning_streak = {
-        id = 1218439,
-        duration = 3600,
-        max_stack = 10,
-    },
-    -- 4-set
-    cashout = {
-        id = 1219264,
-        duration = 4,
-        max_stack = 1,
-    },
-} )
-
-
--- Tier 31
-spec:RegisterGear( "tier31", 207234, 207235, 207236, 207237, 207239, 217208, 217210, 217206, 217207, 217209 )
--- 422905: Rogue Assassination 10.2 Class Set 2pc
--- Each 10 energy you spend grants Natureblight, granting 1.0% attack speed and 1.0% Nature Damage for 6 sec. Multiple instances of Natureblight may overlap, up to 12.
--- TODO: Each application is actually individual, so I should track this differently.
-spec:RegisterAura( "natureblight", {
-    id = 426568,
-    duration = 6,
-    max_stack = 12
-} )
-
--- Tier 30
-spec:RegisterGear( "tier30", 202500, 202498, 202497, 202496, 202495 )
-spec:RegisterAuras( {
-    poisoned_edges = {
-        id = 409587,
-        duration = 30,
-        max_stack = 1
-    }
-} )
-
 local ExpireDeathmarkT30 = setfenv( function ()
     applyBuff( "poisoned_edges" )
 end, state )
 
-
--- Tier Set
-spec:RegisterGear( "tier29", 200372, 200374, 200369, 200371, 200373 )
-spec:RegisterAura( "septic_wounds", {
-    id = 394845,
-    duration = 8,
-    max_stack = 5
+spec:RegisterGear( {
+    -- The War Within
+    tww2 = {
+        items = { 229290, 229288, 229289, 229287, 229292 },
+        auras = {
+            -- 2-set
+            winning_streak = {
+                id = 1218439,
+                duration = 3600,
+                max_stack = 10
+            },
+            -- 4-set
+            cashout = {
+                id = 1219264,
+                duration = 4,
+                max_stack = 1
+            }
+        }
+    },
+    -- Dragonflight
+    tier31 = {
+        items = { 207234, 207235, 207236, 207237, 207239, 217208, 217210, 217206, 217207, 217209 },
+        auras = {
+            natureblight = {
+                id = 426568,
+                duration = 6,
+                max_stack = 12
+            }
+        }
+    },
+    tier30 = {
+        items = { 202500, 202498, 202497, 202496, 202495 },
+        auras = {
+            poisoned_edges = {
+                id = 409587,
+                duration = 30,
+                max_stack = 1
+            }
+        }
+    },
+    tier29 = {
+        items = { 200372, 200374, 200369, 200371, 200373 },
+        auras = {
+            septic_wounds = {
+                id = 394845,
+                duration = 8,
+                max_stack = 5
+            }
+        }
+    }
 } )
-
-
-local kingsbaneReady = false
 
 spec:RegisterHook( "reset_precast", function ()
     -- Supercharged Combo Point handling
@@ -848,7 +812,6 @@ spec:RegisterHook( "runHandler", function( ability )
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 end )
 
-
 -- Auras
 spec:RegisterAuras( {
     acrobatic_strikes = {
@@ -861,7 +824,7 @@ spec:RegisterAuras( {
     alacrity = {
         id = 193538,
         duration = 15,
-        max_stack = 5,
+        max_stack = 5
     },
     amplifying_poison = {
         id = 381664,
@@ -878,7 +841,7 @@ spec:RegisterAuras( {
     amplifying_poison_dot_deathmark = {
         id = 394328,
         duration = 12,
-        max_stack = 20,
+        max_stack = 20
     },
     -- Talent: Each strike has a chance of poisoning the enemy, reducing their damage by ${$392388s1*-1}.1% for $392388d.
     -- https://wowhead.com/beta/spell=381637
@@ -893,12 +856,12 @@ spec:RegisterAuras( {
         id = 392388,
         duration = 10,
         type = "Magic",
-        max_stack = 1,
+        max_stack = 1
     },
     audacity = {
         id = 386270,
         duration = 10,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: $w1% reduced damage and healing.
     -- https://wowhead.com/beta/spell=394119
@@ -927,12 +890,12 @@ spec:RegisterAuras( {
     blindside = {
         id = 121153,
         duration = 10,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Real RtB buffs.
     broadside = {
         id = 193356,
-        duration = 30,
+        duration = 30
     },
     caustic_spatter = {
         id = 421976,
@@ -998,7 +961,7 @@ spec:RegisterAuras( {
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.crimson_tempest.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
-        },
+        }
     },
     -- Healing for ${$W1}.2% of maximum health every $t1 sec.
     -- https://wowhead.com/beta/spell=354494
@@ -1062,7 +1025,7 @@ spec:RegisterAuras( {
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.deadly_poison_dot.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
-        },
+        }
     },
     deadly_poison_dot_deathmark = {
         id = 394324,
@@ -1078,7 +1041,7 @@ spec:RegisterAuras( {
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.deadly_poison_dot_deathmark.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
-        },
+        }
     },
     -- Talent: Bleeding for $w damage every $t sec. Duplicating $@auracaster's Garrote, Rupture, and Lethal poisons applied.
     -- https://wowhead.com/beta/spell=360194
@@ -1092,7 +1055,7 @@ spec:RegisterAuras( {
     deathstalkers_mark_buff = {
         id = 457160,
         duration = 12,
-        max_stack = 3 -- ?
+        max_stack = 3
     },
     deathstalkers_mark = {
         id = 457129,
@@ -1170,7 +1133,7 @@ spec:RegisterAuras( {
     finality_rupture = {
         id = 385951,
         duration = 30,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: $w1% of armor is ignored by the attacking Rogue.
     -- https://wowhead.com/beta/spell=316220
@@ -1193,11 +1156,8 @@ spec:RegisterAuras( {
         id = 394758,
         duration = 12,
         max_stack = 30,
-        copy = 345569,
+        copy = 345569
     },
-
-
-
     garrote = {
         id = 703,
         duration = 18,
@@ -1214,7 +1174,7 @@ spec:RegisterAuras( {
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.garrote.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
-        },
+        }
     },
     garrote_deathmark = {
         id = 360830,
@@ -1232,7 +1192,7 @@ spec:RegisterAuras( {
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.garrote_deathmark.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
-        },
+        }
     },
     -- Silenced.
     -- https://wowhead.com/beta/spell=1330
@@ -1243,14 +1203,10 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Your finishing moves cost no Energy.
-    -- TODO: Does Goremaw's Bite track by value or by stacks?
     goremaws_bite = {
         id = 426593,
         duration = 30,
         max_stack = 3,
-
-        -- Affected by:
-        -- shadow_blades[121471] #3: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 6.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_1_VALUE, }
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/beta/spell=1776
@@ -1269,26 +1225,26 @@ spec:RegisterAuras( {
     improved_garrote_aura = {
         id = 392403,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
     },
     improved_garrote_any = {
         alias = { "improved_garrote_aura", "improved_garrote" },
         aliasMode = "longest",
         aliasType = "buff",
         duration = function() return combat and ( 6 + 3 * talent.subterfuge.rank ) or 3600 end,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Your next Garrote and Rupture apply to $s1 nearby targets.
     -- https://wowhead.com/beta/spell=381802
     indiscriminate_carnage = {
         id = 385747,
         duration = function() return 6 + 3 * talent.subterfuge.rank end,
-        max_stack = 1,
+        max_stack = 1
     },
     indiscriminate_carnage_aura = {
         id = 385754,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
     },
     indiscriminate_carnage_any = {
         alias = { "indiscriminate_carnage_aura", "indiscriminate_carnage" },
@@ -1314,11 +1270,11 @@ spec:RegisterAuras( {
                 if t.down then return haste * 2 end
                 local hasteMod = tracked_bleeds.internal_bleeding.haste[ target.unit ]
                 hasteMod = 2 * ( hasteMod and ( 100 / hasteMod ) or haste )
-                return hasteMod 
+                return hasteMod
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.internal_bleeding.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
-        },
+        }
     },
     -- Talent: Damage done reduced by $s1%.
     -- https://wowhead.com/beta/spell=256148
@@ -1363,7 +1319,7 @@ spec:RegisterAuras( {
     master_assassin = {
         id = 256735,
         duration = function() return 6 + 3 * talent.subterfuge.rank end,
-        max_stack = 1,
+        max_stack = 1
     },
     master_assassin_aura = {
         duration = 3600,
@@ -1404,13 +1360,13 @@ spec:RegisterAuras( {
         id = 289467,
         duration = 20,
         tick_time = 2,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Coats your weapons with a Non-Lethal Poison that lasts for 1 |4hour:hrs;. Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 15% for 10 sec.
     numbing_poison = {
         id = 5761,
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Attack and casting speed slowed by $s1%.
     -- https://wowhead.com/beta/spell=5760
@@ -1437,7 +1393,7 @@ spec:RegisterAuras( {
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.rupture.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
-        },
+        }
     },
     rupture_deathmark = {
         id = 360826,
@@ -1455,7 +1411,7 @@ spec:RegisterAuras( {
             end,
             haste_pct = function( t ) return ( 100 / haste ) end,
             haste_pct_next_tick = function( t ) return t.up and ( tracked_bleeds.rupture_deathmark.haste[ target.unit ] or ( 100 / haste ) ) or 0 end,
-        },
+        }
     },
     -- Talent: Incapacitated.$?$w2!=0[  Damage taken increased by $w2%.][]
     -- https://wowhead.com/beta/spell=6770
@@ -1483,7 +1439,7 @@ spec:RegisterAuras( {
         meta = {
             last_tick = function( t ) return t.up and ( tracked_bleeds.sepsis.last_tick[ target.unit ] or t.applied ) or 0 end,
             tick_time = function( t ) return t.up and ( haste * 2 ) or ( haste * 2 ) end,
-        },
+        }
     },
     sepsis_buff = {
         id = 375939,
@@ -1529,12 +1485,7 @@ spec:RegisterAuras( {
     shadow_techniques = {
         id = 196911,
         duration = 3600,
-        max_stack = 1,
-
-        -- Affected by:
-        -- deeper_stratagem[193531] #5: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
-        -- improved_shadow_techniques[394023] #0: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER, 'points': 3.0, 'target': TARGET_UNIT_CASTER, 'modifies': EFFECT_2_VALUE, }
-        -- secret_stratagem[394320] #5: { 'type': APPLY_AURA, 'subtype': ADD_FLAT_MODIFIER_BY_LABEL, 'points': 2.0, 'target': TARGET_UNIT_CASTER, 'modifies': MAX_STACKS, }
+        max_stack = 1
     },
     -- Talent: Movement speed increased by $s2%.
     -- https://wowhead.com/beta/spell=36554
@@ -1591,17 +1542,17 @@ spec:RegisterAuras( {
     slice_and_dice = {
         id = 315496,
         duration = function () return 6 * ( 1 + effective_combo_points ) end,
-        max_stack = 1,
+        max_stack = 1
     },
     smoke_bomb = {
         id = 212182,
         duration = 5,
-        max_stack = 1,
+        max_stack = 1
     },
     sprint = {
         id = 2983,
         duration = function() return ( 8 + ( talent.featherfoot.rank * 4 ) ) * ( pvptalent.maneuverability.enabled and 0.5 or 1 ) end,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Stealthed.
     -- https://wowhead.com/beta/spell=115191
@@ -1614,7 +1565,7 @@ spec:RegisterAuras( {
     subterfuge = {
         id = 115192,
         duration = function() return 3 * talent.subterfuge.rank end,
-        max_stack = 1,
+        max_stack = 1
     },
     -- todo: Find a way to find a true buff / ID for this as a failsafe? Currently fully emulated.
     supercharged_combo_points = {
@@ -1627,13 +1578,13 @@ spec:RegisterAuras( {
     symbols_of_death = {
         id = 212283,
         duration = 10,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Movement speed increased by $w1%.
     terrifying_pace = {
         id = 428389,
         duration = 3.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Mastery increased by ${$w2*$mas}.1%.
     -- https://wowhead.com/beta/spell=381623
@@ -1686,12 +1637,11 @@ spec:RegisterAuras( {
         max_stack = 3,
         copy = { 394327, "wound_poison_dot" }
     },
-
     poisoned = {
         alias = { "amplifying_poison_dot", "amplifying_poison_dot_deathmark", "deadly_poison_dot", "deadly_poison_dot_deathmark", "kingsbane_dot", "sepsis", "wound_poison_dot" },
         aliasMode = "longest",
         aliasType = "debuff",
-        duration = 3600,
+        duration = 3600
     },
     lethal_poison = {
         alias = { "amplifying_poison", "deadly_poison", "wound_poison", "instant_poison" },
@@ -1710,12 +1660,12 @@ spec:RegisterAuras( {
     creeping_venom = {
         id = 198097,
         duration = 4,
-        max_stack = 18,
+        max_stack = 18
     },
 
     system_shock = {
         id = 198222,
-        duration = 2,
+        duration = 2
     },
 
     -- Legendaries
@@ -1724,13 +1674,11 @@ spec:RegisterAuras( {
         duration = 6,
         max_stack = 1
     },
-
     master_assassins_mark = {
         id = 340094,
         duration = 4,
         max_stack = 1
     },
-
     master_assassin_any = {
         alias = { "master_assassin_aura", "master_assassin", "master_assassins_mark" },
         aliasMode = "longest",
@@ -1738,7 +1686,6 @@ spec:RegisterAuras( {
         duration = function() return 6 + 3 * talent.subterfuge.rank end
     }
 } )
-
 
 local BoneSpikes = setfenv( function( ruptureTargets )
 
@@ -1849,7 +1796,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "amplifying_poison" )
-        end,
+        end
     },
 
     -- Talent: Coats your weapons with a Non-Lethal Poison that lasts for $d. Each strike has a $h% chance of poisoning the enemy, reducing their damage by ${$392388s1*-1}.1% for $392388d.
@@ -1867,7 +1814,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "atrophic_poison" )
-        end,
+        end
     },
 
     -- Talent: Blinds the target, causing it to wander disoriented for $d. Damage will interrupt the effect. Limit 1.
@@ -1884,7 +1831,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "blind" )
-        end,
+        end
     },
 
     -- Stuns the target for $d.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
@@ -1901,9 +1848,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        cycle = function ()
-            if talent.prey_on_the_weak.enabled then return "prey_on_the_weak" end
-        end,
+        cycle = function () if talent.prey_on_the_weak.enabled then return "prey_on_the_weak" end end,
 
         usable = function ()
             if target.is_boss then return false, "cheap_shot assumed unusable in boss fights" end
@@ -1928,7 +1873,7 @@ spec:RegisterAbilities( {
             end
 
             gain( action.cheap_shot.cp_gain, "combo_points" )
-        end,
+        end
     },
 
     -- Talent: Provides a moment of magic immunity, instantly removing all harmful spell effects. The cloak lingers, causing you to resist harmful spells for $d.
@@ -1947,7 +1892,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "dispellable_magic" )
             applyBuff( "cloak_of_shadows" )
-        end,
+        end
     },
 
     -- Talent: Increases the critical strike chance of your next damaging ability by $s1%.
@@ -1988,7 +1933,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "crimson_vial" )
-        end,
+        end
     },
 
     -- Talent: Finishing move that slashes all enemies within 13 yards, dealing instant damage and causing victims to bleed for additional damage. Deals reduced damage beyond 8 targets. Lasts longer per combo point. 1 point : 325 plus 307 over 4 sec 2 points: 487 plus 460 over 6 sec 3 points: 650 plus 613 over 8 sec 4 points: 812 plus 767 over 10 sec 5 points: 975 plus 920 over 12 sec
@@ -1999,9 +1944,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function ()
-            return 45 * ( 1 - 0.06 * talent.tight_spender.rank )
-        end,
+        spend = function () return 45 * ( 1 - 0.06 * talent.tight_spender.rank ) end,
         spendType = "energy",
 
         talent = "crimson_tempest",
@@ -2018,9 +1961,8 @@ spec:RegisterAbilities( {
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
 
-        end,
+        end
     },
-
 
     crippling_poison = {
         id = 3408,
@@ -2036,9 +1978,8 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "crippling_poison" )
-        end,
+        end
     },
-
 
     deadly_poison = {
         id = 2823,
@@ -2050,12 +1991,11 @@ spec:RegisterAbilities( {
         essential = true,
         texture = 132290,
 
-
         readyTime = function () return buff.deadly_poison.remains - 120 end,
 
         handler = function ()
             applyBuff( "deadly_poison" )
-        end,
+        end
     },
 
     -- Talent: Carve a deathmark into an enemy, dealing 3,209 Bleed damage over 16 sec. While marked your Garrote, Rupture, and Lethal poisons applied to the target are duplicated, dealing 100% of normal damage.
@@ -2070,13 +2010,11 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         toggle = "cooldowns",
-        usable = function()
-            return settings.cooldowns_ttd == 0 or target.is_boss or settings.cooldowns_ttd < target.time_to_die, "save CDs at low health"
-        end,
+        usable = function() return settings.cooldowns_ttd == 0 or target.is_boss or settings.cooldowns_ttd < target.time_to_die, "save CDs at low health" end,
 
         handler = function ()
             applyDebuff( "target", "deathmark" )
-        end,
+        end
     },
 
     -- Throws a distraction, attracting the attention of all nearby monsters for $s1 seconds. Usable while stealthed.
@@ -2094,9 +2032,8 @@ spec:RegisterAbilities( {
         texture = 132289,
 
         handler = function ()
-        end,
+        end
     },
-
 
     -- Talent: Deal $s1 Arcane damage to an enemy, extracting their anima to Animacharge a combo point for $323558d.    Damaging finishing moves that consume the same number of combo points as your Animacharge function as if they consumed $s2 combo points.    |cFFFFFFFFAwards $s3 combo $lpoint:points;.|r
     echoing_reprimand = {
@@ -2120,7 +2057,7 @@ spec:RegisterAbilities( {
             gain( action.echoing_reprimand.cp_gain, "combo_points" )
         end,
 
-        copy = { 385616, 323547 },
+        copy = { 385616, 323547 }
     },
 
     -- Finishing move that drives your poisoned blades in deep, dealing instant Nature damage and increasing your poison application chance by 30%. Damage and duration increased per combo point. 1 point : 288 damage, 2 sec 2 points: 575 damage, 3 sec 3 points: 863 damage, 4 sec 4 points: 1,150 damage, 5 sec 5 points: 1,438 damage, 6 sec
@@ -2131,9 +2068,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "nature",
 
-        spend = function ()
-            return 35 * ( 1 - 0.06 * talent.tight_spender.rank )
-        end,
+        spend = function () return 35 * ( 1 - 0.06 * talent.tight_spender.rank ) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2170,7 +2105,7 @@ spec:RegisterAbilities( {
 
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
-        end,
+        end
     },
 
 -- Talent: Increases your dodge chance by ${$s1/2}% for $d.$?a344363[ Dodging an attack while Evasion is active will trigger Mastery: Main Gauche.][]
@@ -2209,7 +2144,7 @@ spec:RegisterAbilities( {
 
             -- Predict crit gains
             if talent.seal_fate.enabled and settings.fok_critical_cp_prediction ~= "do_not_predict" then
-                -- calculate the crit chance of Fan of Knives then estimate 
+                -- calculate the crit chance of Fan of Knives then estimate
                 fanCP = fanCP + max(0, floor( true_active_enemies * ( 0.01 * ( crit_pct_current + ( talent.deadly_precision.enabled and 5 or 0 ) + ( talent.thrown_precision.enabled and 5 or 0 ) + ( buff.momentum_of_despair.up and 10 or 0 ) + ( buff.master_assassin_any.up and 20 or 0 ) ) ) ) - ( settings.fok_critical_cp_prediction == "predict_conservatively" and 1 or 0 ) )
 
             end
@@ -2233,7 +2168,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "amplifying_poison_dot" )
                 active_dot.amplifying_poison_dot = min( active_enemies, active_dot.amplifying_poison_dot + newDeadlyPoisons )
             end
-        end,
+        end
     },
 
     -- Talent: Performs an evasive maneuver, reducing damage taken from area-of-effect attacks by $s1% $?s79008[and all other damage taken by $s2% ][]for $d.
@@ -2254,7 +2189,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "feint" )
-        end,
+        end
     },
 
     -- Garrote the enemy, causing 2,407 Bleed damage over 18 sec. Awards 1 combo point.
@@ -2305,7 +2240,7 @@ spec:RegisterAbilities( {
                     debuff.garrote.ss_buffed = true
                 end
             end
-        end,
+        end
     },
 
     -- Talent: Gouges the eyes of an enemy target, incapacitating for $d. Damage will interrupt the effect.    Must be in front of your target.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
@@ -2330,7 +2265,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "gouge" )
             gain( action.gouge.cp_gain, "combo_points" )
-        end,
+        end
     },
 
     instant_poison = {
@@ -2347,7 +2282,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "instant_poison" )
-        end,
+        end
     },
 
     -- A quick kick that interrupts spellcasting and prevents any spell in that school from being cast for 5 sec.
@@ -2405,7 +2340,7 @@ spec:RegisterAbilities( {
             end
 
             spend( combo_points.current, "combo_points" )
-        end,
+        end
     },
 
     -- Talent: Release a lethal poison from your weapons and inject it into your target, dealing 1,770 Nature damage instantly and an additional 1,648 Nature damage over 14 sec. Each time you apply a Lethal Poison to a target affected by Kingsbane, Kingsbane damage increases by 20%. Awards 1 combo point.
@@ -2425,15 +2360,13 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         cp_gain = 1,
-        usable = function()
-            return settings.cooldowns_ttd == 0 or target.is_boss or settings.cooldowns_ttd < target.time_to_die, "save CDs at low health"
-        end,
+        usable = function() return settings.cooldowns_ttd == 0 or target.is_boss or settings.cooldowns_ttd < target.time_to_die, "save CDs at low health" end,
 
         handler = function ()
             removeBuff( "kingsbane" )
             applyDebuff( "target", "kingsbane_dot" )
             gain( action.kingsbane.cp_gain, "combo_points" )
-        end,
+        end
     },
 
     -- Attack with both weapons, dealing a total of 649 Physical damage. Awards 2 combo points.
@@ -2444,9 +2377,7 @@ spec:RegisterAbilities( {
         gcd = "totem",
         school = "physical",
 
-        spend = function()
-            return 50 + ( talent.vicious_venoms.rank * 5 )
-        end,
+        spend = function() return 50 + ( talent.vicious_venoms.rank * 5 ) end,
         spendType = "energy",
 
         startsCombat = true,
@@ -2463,7 +2394,7 @@ spec:RegisterAbilities( {
             if talent.doomblade.enabled or legendary.doomblade.enabled then
                 applyDebuff( "target", "mutilated_flesh" )
             end
-        end,
+        end
     },
 
     -- Throws a poison-coated knife, dealing 171 damage and applying your active Lethal and Non-Lethal Poisons. Awards 1 combo point.
@@ -2480,7 +2411,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-        end,
+        end
     },
 
     -- Coats your weapons with a Non-Lethal Poison that lasts for 1 hour.  Each strike has a 30% chance of poisoning the enemy, clouding their mind and slowing their attack and casting speed by 15% for 10 sec.
@@ -2498,7 +2429,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "numbing_poison" )
-        end,
+        end
     },
 
     -- Pick the target's pocket.
@@ -2512,7 +2443,7 @@ spec:RegisterAbilities( {
         texture = 133644,
 
         handler = function ()
-        end,
+        end
     },
 
     -- Finishing move that tears open the target, dealing Bleed damage over time. Lasts longer per combo point. 1 point : 1,250 over 8 sec 2 points: 1,876 over 12 sec 3 points: 2,501 over 16 sec 4 points: 3,126 over 20 sec 5 points: 3,752 over 24 sec
@@ -2557,7 +2488,7 @@ spec:RegisterAbilities( {
                 applyDebuff( "target", "rupture_deathmark" )
                 debuff.rupture_deathmark.pmultiplier = persistent_multiplier
             end
-            
+
             local ruptureTargets = min( true_active_enemies, buff.indiscriminate_carnage_any.up and 3 or 1 )
             if ruptureTargets > 1 then active_dot.rupture = min( true_active_enemies, active_dot.rupture + ( ruptureTargets - 1 ) ) end -- Primary target is already handle, so -1
             if buff.serrated_bone_spike_charges.up then BoneSpikes( ruptureTargets ) end
@@ -2574,9 +2505,8 @@ spec:RegisterAbilities( {
                 removeStack( "goremaws_bite" )
             end
 
-        end,
+        end
     },
-
 
     sap = {
         id = 6770,
@@ -2592,7 +2522,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "sap" )
-        end,
+        end
     },
 
     -- Talent: Infect the target's blood, dealing $o1 Nature damage over $d. If the target survives its full duration, they suffer an additional $328306s1 damage and you gain $s6 use of any Stealth ability for $347037d.    Cooldown reduced by $s3 sec if Sepsis does not last its full duration.    |cFFFFFFFFAwards $s7 combo $lpoint:points;.|r
@@ -2640,7 +2570,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyBuff( "shadowstep" )
             setDistance( 5 )
-        end,
+        end
     },
 
     -- Talent: Attack with your poisoned blades, dealing 319 Physical damage, dispelling all enrage effects and applying a concentrated form of your active Non-Lethal poison. Your Nature damage done against the target is increased by 20% for 8 sec. Awards 1 combo point.
@@ -2669,7 +2599,7 @@ spec:RegisterAbilities( {
             removeDebuff( "target", "dispellable_enrage" )
             if talent.improved_shiv.enabled then applyDebuff( "target", "shiv" ) end
             if talent.supercharger.enabled then addStack( "supercharged_combo_points", nil, talent.supercharger.rank ) end
-        end,
+        end
     },
 
     -- Extend a cloak that shrouds party and raid members within 30 yards in shadows, providing stealth for 15 sec.
@@ -2687,7 +2617,7 @@ spec:RegisterAbilities( {
         usable = function() return stealthed.all, "requires stealth" end,
         handler = function ()
             applyBuff( "shroud_of_concealment" )
-        end,
+        end
     },
 
     -- Finishing move that consumes combo points to increase attack speed by 50%. Lasts longer per combo point. 1 point : 12 seconds 2 points: 18 seconds 3 points: 24 seconds 4 points: 30 seconds 5 points: 36 seconds
@@ -2718,7 +2648,7 @@ spec:RegisterAbilities( {
             if talent.underhanded_upper_hand.enabled then
                 if buff.blade_flurry.up then buff.slice_and_dice.expires = buff.slice_and_dice.expires + buff.blade_flurry.remains end
             end
-        end,
+        end
     },
 
     -- Increases your movement speed by 70% for 8 sec. Usable while stealthed.
@@ -2735,7 +2665,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "sprint" )
-        end,
+        end
     },
 
     -- Conceals you in the shadows until cancelled, allowing you to stalk enemies without being seen.
@@ -2799,7 +2729,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "thistle_tea" )
-        end,
+        end
     },
 
     -- Talent: Redirects all threat you cause to the targeted party or raid member, beginning with your next damaging attack within the next 30 sec and lasting 6 sec.
@@ -2816,7 +2746,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "tricks_of_the_trade" )
-        end,
+        end
     },
 
     -- Allows you to vanish from sight, entering stealth while in combat. For the first 3 sec after vanishing, damage and harmful effects received will not break stealth. Also breaks movement impairing effects.
@@ -2867,9 +2797,8 @@ spec:RegisterAbilities( {
 
             if conduit.cloaked_in_shadows.enabled then applyBuff( "cloaked_in_shadows" ) end
             if conduit.fade_to_nothing.enabled then applyBuff( "fade_to_nothing" ) end
-        end,
+        end
     },
-
 
     wound_poison = {
         id = 8679,
@@ -2885,7 +2814,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "wound_poison" )
-        end,
+        end
     },
 
     -- TODO: Dragontempered Blades allows for 2 Lethal Poisons and 2 Non-Lethal Poisons.
@@ -2935,9 +2864,8 @@ spec:RegisterAbilities( {
         end,
 
         copy = "apply_poison"
-    },
+    }
 } )
-
 
 spec:RegisterRanges( "pick_pocket", "sinister_strike", "blind", "shadowstep" )
 
@@ -2961,7 +2889,6 @@ spec:RegisterOptions( {
 
     package = "Assassination",
 } )
-
 
 spec:RegisterSetting( "priority_rotation", false, {
     name = "Assassination Rogue is able to do funnel damage. Head over to |cFFFFD100Toggles|r to learn how to turn the feature on and off. " ..
@@ -3065,5 +2992,4 @@ spec:RegisterSetting( "cooldowns_ttd", 0, {
     width = "full"
 } )
 
-
-spec:RegisterPack( "Assassination", 20250314, [[Hekili:v3tEZTTX1)zrtNHLu2IMK6WozKygxB3wNgNFzQCt)JovqqKGIOceGfhswD4Op7)EV9c7U4TlaPPCAhNylrSypE3NlVA8vF(QlNhwgD1ppz0KthD84tgozYPtgD2vxw(46ORUCD4S7cVf(H0WvWF)2IIWII40WY4Su8PpMKfohNLISQ8zWiwwwUU47F1RUnUCz1ndNLT6vfXRQsyVXS8WfL4Vp7vxD5nvXjLFm9QBO2cJp9KRUmSQCzw(vxEz8Q3bZC885r8Hhvm7QlXHF0OJpA8jF)txF5JPZE66hGff(zy4pDD)0OhE66Y8407IkF66K40Obp9Jp9JYxB0BOEn9bmMyaxDzsCrzb7exgfMuUmcp()mdsgLgEtc87)byRptaHYYscYJKqhCNNhVM)SlLtWtx)w2WlU6Yfz5bPrFPeNr4VM4yAdxDtvXsR57TRxN84tx)(OWYLfLHj3fLx801Fkm)UNUoEb8)ayyzi8rlctsIsF66SfWNMLdNVW4Y40BHNG)2FTADzvEe8cWyEB2hU6synkJYJdV6YdE665r3uTyXW56ltWkyvgwT(PR7bW8qy2lPgG4KWgfqzCtwW6S40sylD(txFFiScWJhgTyreCoVpkOyDu68Gz8PTpS0zLdZ57UHLXZUJTN3Sr7DbAZBtIckdZVfX64ZoqTJkQUboglQUnQENmabZh7amxSm(ElG8NcVdGmfm4tzgcqVh(jG48(NUgp)ZRYz7Q)c83f3eMcpeb5HaSfyBsGZ9YOzac5F8NJUloj(FkjU(P4Bxw(qe(3YPlln5rDyV4uCNCMnaNiOP(jkGtJNKhTkmoLdXFJeUwJvXtSepQ)r6V2yaQXga7XrP3hLMTcEjesEIdiPyuwaZpW)uoKexGYqKMd4j4tEn48sfQthIutPysnn9I2jNCdWmow1hCyopwri6LhaP6ypFwwY8GBsYYMB(5ZHrgvugKIOBj428iaR2RfuNNUBWujO7tHGKkGTwk7MZxZzuqwdKtzFbuzNUvSfmiuSEbHv5HYdPlg1FdaRN5aSkeWaGKhNP2HfOa59jqkoDEmI1wHktHzjmpf0ZgeM(OCJdWJ8OfGUJL4KPKLvevIYQlgY2EswX(s(y1INhDBuAqriCwGfGlKiKVB0eJYyOfFCuA0Q4Oc2ukwSA01mq0JC2aWKAeKIKhi0dGqo4txbqXSG5XWQnfeFCQffRsFJKI9JgWMNU(DCGdI0ETdK2TH55zLTG0uAShgVADE29rZdeVxnaxtm3e(HCny9sz86KyKjcLcmM)599IjLyrnqUATGjhiissKBZHlctdYweCxkmuo8NdbpWlddf89iTZaaRN0GfayUwepdnfG)4JCY7Ci8Clm1hfGTNU(pXplGfscRoygoWjxLQ0W5vBSfVeHgZYQs1S1WdQ(nwO6Tbp6cNzWqnWhWH)oVGbJoS2cIL5zvZH1RaoBzZyScs1WnjglH)C59HPXGPAe2iszmiabalgNN9aIaX)8RSxxAikhMzJfKaCMLFO4st7iVe(38WGWviO)Qlp5uxMN6XGtXPWCpl3BO27fSFIT)(JaMCrfyQZhaKB6TwMpYO2wad5gy7mpiPA2DpccrJtLCmFnIw73y(XzgyAItkgcAuqlVW55unTgwJDzu4C7X61iXwbnfRZH5udBjLZPWxCeywvPBgctGOGC0stRHbH1JYHak9blhPf7KLb7CctPCmn9uAs3g6I1tFmeSHwA)nu6Rw56hPlO(K2zL73Ie3P)aFA8zcRLRCnzQS8DZLzBEPxymqGgSW7zuisrNso8oqD8)siD)4eP6R(Dsv3ybpDEy88GO7Xtw4CGtgn2fNQrTy2NF0c4X8nmjcmeKTj1eWFFSMKe69C7PgappJPl6ydDr1EZMhMENpRJ2MZgH2fc5vy8esbzBaigdFadHfI2Wf9L1GGzuBytsYF7i02hsxCqyD8iUE(zz5mZ88fniLvQgiI3LXm(nCfWGcgsDpE0qkDaIEtCsCjZM8QceqblF(JpSmcFHpP8x(pPm(vbY9AvJBBKeNuDay3m0C8eFwpOCPYkukYdGYdGQ0KOIceyWSgfOX4bejgHaRDDa7STb71JCFgTXleYN4H8kSyjWPeuGw5oppkPMe)qUHeYxWTBAhYy2hOr5EGtt0rYxXsplSQa8)coYHLaiY2uab1V9OWjXRXnOgKImWcQOvRH12jg8D8X901FwoWVguLn2WlqyGL5oHRae8Ihr8aSMfAgOZ4tzX0JGhndiVkWiHul0KVjXFkPksp2NgrjttYJDy3A4yCB68qAsB3J5bdCwgOqh)Gc2olGhpECJeOEefly7hlVHv0keFSpR2LuZv3EFPMrZD4weSv(rNPwkmt5MZBZzewGdg)sE0S4cjHQP2MqXOcwlhKXbZXHODues)EIcdBXFiX0(SJ055CwybUaSJRk8X0g(NuhT4agXO7JgbwqxX6oeZyTi)q)2knQetbc(y2IPXylfHzblvNjCbTJrLPQFhOHwcGQFkUBIrtEKkI(zUIOgrx9NG)osyEem2uq9LokRRXLSlsfzZvIC9cMlworK3TTRTbdXV50m(iloxzzIAuS94SLixyrWICosd56zwXmKfgxtuPhlGjq1)rLDVfAIzuYwKi451bvzBLXSFuyqy4kv4X60jvA2oqxnJDkfYCcXG4rlQHwVGM62Dxo73gU)VR7aQ3xTADD23WGAXy6bEqdE6m0e1EIhhyqdts9YmQ7nCZpwbELhmBEH)KgZ)xtBTGxeulbiISQcJWe(lzLwQazemSeKKa27bCzWmlI4LR9o6iJaIstV5Y2E2YeSOk)Xg(xMhZ2QkInGhg(3cEuXUb0Nx8y6mefZ1RlHDgcqDSBSnIW)luVzJYlIYDPHUJtYI48i2PMs3s9CyqD7iPTUceGLuJbQmoSBt3UjZwt8AiGNkkZbU8zGSeoLmyrMl)DB3OZTx7Nl33SlcISpGAI96ln(N)CuYA8H)Qyz5eLIKZFtyr8mwg7JlwIJI26B40hihJFRW7M7u2orXfcnb8y8ZI8zPNeeDJuf2vzkXLE7XgZo4U7z(SDVtPFBVgtI2s1zhorJTtVLkGxvRVlkATQay40gOu0LOYGO8BFeKDPYfQpJ97uYK3fmwFF2G7kt56gD7f6vlPHN4xW)h(SGrAKP(DIr0hih156y22svkFYAhNDQm2iUZXCZ4086N)404k(eUY1DxiXqdszqwSuTG5hHT2eEU8TPMW73kYmVey(RTGUHyh)DTa5BWZ5j8)0HMvjrqudxktzUfXrHLigI53aRKLscrz2V7xqJBwWcQBOUse2aJMJkMqZUXAhlDo6pNosYgbSJcn5j7wZWuePfW1e2Rdr44ynHfUMNdLAC2QzRne7agULhHf7kjsniyofHDhGBRinMUDBqC5WvljeyIKQJCCHZFS2XK6hyYZ4XbIj2kLUusY9ognZN5f0QHDiG5kaSK)GUzhY684)dMiMKW5XivCrWnHaHjI3weLNb0yG18vf4hSi42zZzkS4lwNEvcHo0BYAyvd5l(S3aKFhvGljW3feTcnRpRkX1w21OnSvF7nsg50gRmoVfKQVacgFBAuPC)bW3SCNqF6X2zWTpngHjaFj4WAW6Q)Z)bKBEt2xCcqPg6wTjCjgUKPceOJQkGxmmTyvmMOcxBeNdFR2mUcA0QW5b)7QOOuSietzfPUH5SUftWe6nskOyhffCS8usSp8eaO)vv6DRcr31YGXhDBi8sirZEDV3Zk6n(k2BLzceXU0OG7g1jMPXJKWfNNupr9jg8SkhDWe0Qa2Dmh8S9XGIO8QvUOX89gBfzgSXFU582DvATb15IWg7Tg2QJZi3(gMbpvfSnbqBa2TuQ0Ezi7vb8KWnmWqbfjzLYq91ZFo89UZhPhaLwwQj6K28rmSCYqf8tOGVHwbdM6dChkgVmE89Q75EG6GCG)dYaqrb8dfOas2dhRlHv8ji60L9bIbnz7Wtt(2HNgtHNg))84PjCJAb78dbB6PmR10BYOczzJIr2FnaDJzoo0hdY)9vjOtkSpqf5C0Ft0NIWs9SNWNfklgnR)3uGwaLVWJmLeiXDEfy(ZEaBSGvRyqHyCW8vOqgIxq0LMf53bamkR8A30DUhYcplXJtCkQPHxoo2vxJ8PFq4w9FfFRNUonkAo(XSs0u4CQUv1wUTszbx7BuQexyTb)fakYayxgvwT(LQGqYlfW6yIxVZmkfCkt6AFF5XKepmmMXLwFlfJOb5wLW(U23rVEeZpq0YdTAClm92ka7fCd4UrurTnfhXnxOEK3dogJwbYspBbVI402FvRbL4bjXG9HbCIhkd)AFx6nhMYge6ah56eejztCIOAg41eBduKzI1xCaMnpG9reg(1(Uwjdshn1ucLynyNbpvCKA8nbQkX3K5TftB7B0vemWTUaxmjVR2ZrqGdY9IgeHM8xdRsZkdwZFbktbBhEXPYnJPPwfH3N9FEJ6XH(dnkp0jyOo(bzPPAEE)7rI6P8sE8)USo6zpSK17Mv5mJQywBH1GmVi5wgxY7UcwaPwf(L4vODQAYoSc2gPHPM0Om4mvZQQYQbmIa(VeGThlQqjpEwPZ2Vjp72QioHGVE5aFUZqanfdbeRBCLNmv)42QHQ8J07QLT6(KOTaywBPmAICQrC37Z(SSDg68AiRIuCHS1lsSq80DL95cjDHQND3sKJTIQPmfvA7mz6(Wx0wpiXg79X5rysNLPI7TY0V1raXC27Zwn3PyvygGzyrpLf7Esle0C5kFgwElLz55a)aBzyQSSE(6QKIi9fhh4R1hiRQAkc(xvZVDfotwJ9n6J9MWBzrUba)3vyoYsmWArCdZuM9P2my1zikMrRfyhk3VSBbJhgUOknnkrxYalysXLpgamFkrdBLPzYzQHLU64mnR1xgweG(fomm9XG5RlO99Q5Oy5kIWO)5QeiGecuUVvpI6QgTEyXfdDeqPgRP7HsPHhzoJXm7OUocyM9R6ECMVX)kIFku4PX7MbNtiH1uqrk)NAbwtcjN2gYOjO2h8RXs6du7JMBNSlE26aqPjVYdywzcQPp)hy5eSwLoM3gw8UdRBIb7kjkc2FGFqrIm4GoNfJkP5PdsRIc0penl9bkBPnnmkp6OzS8obIIMHwnGB83Z(rDFcPC2RujMLWrZgQgq)cIKL)ilbm(6YqH8xayEy)rdp9fJgE8HuGp0EOJgnC8Ph62q(bhX37QcrEwwHgsSZnXiDdZ7utfVqruv8jYJIsIJNHtmGbxlRNUsemZm3e9EdgdALeZcvvPOZW)SA7GzZg2lSSbW()4vHC7LNJzp8L8e)IkYbDUdVYSQ82NfuQEyw0Sz2WxVMvtVMHWteLmgLXd2jgN3dsokFl)yivkWu4czMtf(nzwLUxzxjCKGlFTzQUuGDtmS1TBshqgKoIz4UvdueTnBuQFq60hIWkDnRkzoV47ebMLLI6KetPPyWNfF6ojgTdnLIRqv3xpUCu9RIgXP9Jn9Husb2wk07ayuRrx4ljiULVM2qn5wQg65UWSRDKU5lQGTRQkJteP8XoEfB5ujU1GicHGCegEX2i6(P86q5Vi8XffiEgs9UZ8GnUBooJYF9DEZD8lKLBa5DpacZyfOADnzu4eMYHLso1g2kljD7sPqCKEPiTkdDBOAfoo4eTomoNQjDlxMdgvrvJ1d0sWg24W5Smd)qCjMFTOcjO(axrkREIidfWob8zHdMFVqWvAuiUbQs58AsLFpkXpaeHv994NaRC0CEmmKf3ip4XsG(txlH6de45pBPKueDZ5kVMygV0ukdbAugb0gvOV8bux2j25SWIG53eIIbKHbXsuGvTZY(qoY5paQzMxepp6v1x9sdXqnim4PctWN8fwKJkLv5IG4oWQNw3dpSlmzYsg8g5(qj7VryK0RQX2dEDDuV5PUqX8yUsdid1tdHYDRUo3g6HlAETR85WBo6tIv0G569mACSda42wImdtu8nKXqQ5jWrkC)u9r03bI7gHJgAODdfQfl5SH5DWr2inpQWA)01)9WyrkQ0AzDMmFRBmLp9wHdt65CrR37Q1TRiBald)A74Y6dDnPQXXTToLAc9otnA)nCzN2Gn4YK5eOaDZmaDHBo8dgzf902mSJnb6DtkJFULlbcDpjCLUwfHjnAY1yOay2(XROFKnTcVt8vE(PauVu)MtSaRW3xkiUybenRKveOCeVEhfic0FbOaQyrmgjbkCRbg1B8x)BfH3Q6JuLnoIkx9OzgvrOydk2BVlmTeMgHY6AFDVQBHSLxkMe(liFBTwPZkIXODJw3UeSeyiTo4HyeewuLFpZ6HKmKMcOIQUDPRsuGa0j0D2S(tz(c0TQpAYOwdjZ70KL8wTagiUKilyxylDcI6QRgnoX2nlKHaKgxEJNPPV8RJDSFlvjbaSoDuT4BISn3bW9yTlRkf3QppykxcGpuJCuyd(cLyFEdFkJYsA8SLs7)56qz0ESiaYSQT2mgfxFyIOctmVvkKb7qBxq1txgaPZujI15RUlLMA7tRV2xuF46DXiPdAwzQf)3x9x5963R()4IwW2E0OAg6e9VQzjP8mXaQxRUIjSTxB1oE3wFX9MdLH0gSGmiS37CmynRvH69ghJnYbgMSQ39WTX1vZ0vBLrCA09XLydWHr5yUHRe78TT2GMLOOcMQAhKggPHbF6pW7JfM8XpWC9MxA7SFNlnQO2jcHmq(DPxuo72EqCvrp6nxD5dH5PidayLmY0gVADwEPyY)9kQIFp2Gb)7Q4C8uxKX6hWQYSv8mQde4Pab(WN(XFIfX(jFpRodGvJ94FVZAC93ZTkW9aKGAyG9h)LbTTc1xPtwZCZBUy7z8y6zujCWAcBy4P989gh7qIlar79QN7iX6v5PFKaFX532oKLJdUf7V1E0HZgDeOs3gBwlH)lGTUUsw1eH9A44g1YE2p9B25W1kTFohN9mIRF9Z0oNKqxwMhBhPUl5s2DZOTyjxD7yhLkzfLDRz3rm(7ibEJ0lzn7oVmNAbaJAn2la3DwaQRdCJRld7tSZ7tJosXUhxbhkb2zyIJ5BVSJjjdKgqUDKcoeITZh7938rEifvM12Dgp5ztwc5EKfBGTBh6GyzpAf24X2lHOQtSB4d1k4QJqEgN565SHekX7y32dnMtIbyUB3FZSl8VOJg2okahQ7TkkCl0VJsgVf6tvX3TD7Wgc5vao7kPIa0rme)Aqu0qTo5KdPttorfC5dRRnMN1PV1jMO008XBTT77DD67We7U(2iwbVdUtNeF1EhbQO7lydnk7tYvxt(EHrZ9oF3q6pZtFRt8UYK1X99Uo9DyI)MtAUfl42W85WIp9kF0sTfvnL2IolETBUDkSCSX2lU49D0ZnrXmyn)Ek3HoUg2vcH1c4Qqj64SBwXmwZnD50ypZJh9na44Ar(QHo0XWyBDRAF7HDtJS5VySz4UTM2y6GHRFy)i7CItjE)EWJQn(niyrjEyWoLiBrmMw0F3V7PR76x4H3KKDZRkxg9qyoMeQ40xX7JQFruds)eo9VILSDvSQ4XofF9N(rCT(BR5NL5H1LWa(Ts43Z(A(dBWamlMyWXzfu0IzHF3RpDbEK4hIIHk7CFXfVsVTsOhHmbaVethYfnQwQxYkxGlm6OeyJciLTSPh6YQlML6c8xS6JFz8IlCBoqV(h42qKnB8OtB6fEuupO3bDrjI(c4PLh(ko(t0p(npHAh)MWM6DhXjCQhqJ2P335sF(9D6)DyY)l7y)s0fGvZ8vjGw6f29rto)hoLQNeyBOU2xf0BhzPWX4AjhGrv08s1JckIWtAbNSw7YaR3bSub6(g07hzB7VUBea1HX4iGFTZu(133)6to25)CjfBt35RpdMiCRE1xGTj7bWPhpIJGZ6sB37EjnAcFXcYRUvzLKFXy3VTEJylEzYIKyZgYK)dFSzQHDUqn7rBXY96rhD8OdPdAYrJh5PDCQfXh7QZ1DVFeT2GKFukzPrrmC(X9oG8PyvxyG)ENJoc39EqRrke7dvMU1XlB2CW9wDKrpYAzFZM6cJSb4EZM(nBg(PJh(MnBWcFzqpJYW48lMmIl1qPdvvqkIU5w1t4yTPiYLoVPI41D2SkwpTM8OH0NM0VSgbVwsjtUiV3K4WK(EQeifDtZMB)WjdM(dt48y71Uy3dROvpTloao7I)Px0)R7WnGZc4OX413O2LxIydRQzqEVyZL2BvYLB24U343SXr5TmDK2w7DusXO3rGX8gVOD7R3HzqKstTPXvZP3(KjsPHb4Xu460XAlK7w4R1vI7eT(4mBnCCLnBZ8Pxm(0xqFb00CwynqU(NB1V46pYO9Wf6ZFUVoRRnFraYBWCnN8YIvj)UUMHMEHN6fQxFTBP0ZVySGdQTl8AQT3mZ7qBgNJoZ80lM0RUkqj3990nSQzbHEKKz6m2UChVwOP27c23xA01aCYBQUudi1Aa4m271kOSSaY3PA8eUPI7ZRIyQdROiWPoSBd(P)bombI3YtzAx9WdGb7eI03Ty9lMaUQ48PNJyb)wFJVUB49PdgmWhcP)RFrFx5x9Wth8I(UothEgmXhq3FD)xccXj6OgrzR(2lT73588QZP(SEDn7JX2YPToYuVzJY8Vs59RCppwOm9IJbs9MVZHtA)TCdChm9KEomR4Irc9rphTztn8eScPP(hYo6qO)5azqsPRXlU3t2TYxhxoIMdXAvvJyZgpoYCXereo(M3jjD9K248zzjAppn(Z0t7r0Wpc5L19waymRhctqR2beT2tpIM5qNiG65eyng4F)3vm2qxA7lzf(c3tSpMEF2DWY8HVa0QPQViCQjmmIweFsJzVtqK4vcqyKiASzpau8XPlQWy2JcEO7YcUvYFfnyJ95uTe4A2NafuJFAkRbe(nAa3ZxshFv(96R7z6gKN1KhwJurDW27MXqrJjwVjno)SbBp1C)6qMAxJ(tV40rC5snWvoamJpvqbh9S0)k2WiTw)aHshq0(i9iAMLPxC2Mn0dMYAHEKTUY5oNelyIc(s0OkhEMiar4PQLgrPBKsYYiSBJMxf7myNrBP4t5kt16U1Cen2ukdWEPwdAWnZRFlDQY0r9APdvMISVMmoEP2rI9dOt9wp6EpXRFKdu2HSF(otwd4jIFHPXCD0aUbD1JsHVxB9x9XK7tP98w7ZTZr8UUZ7FYxJtk9PTAx52LvjgOmhO5faZalayJyiqbPiIzq3HyM((qEoWeIXpinkyD9SVYd2eSFmUYQEP8A0c4r1VeTU4z)o0slSAZRVDVeYJ(V87flcOQy)xR1Ygn1R7i9AYzTSfOK854wXAkyeZMnciQkqLsx0v3awmW7wEPw5)4sFADjF14sUtZMRUClrrSpSs4K6QHGigHN7fM3iDlAjwXalydHTfjyDhn1P9S5LMKS0gOLor6XJBrwkYgh3xvGTVdCgQGMN1ghg5D5HrGCAEMiEt(1atRVhaD3QB)jIvYWez3KS6qHloZ9kVdxTtDztzaf4N(Eh0OUx65l7rtV44J67U2T65OORgidFg5v4Ks9IPK9b0aiww5)wE9l1fq7bZ9DPmbSpnaZKrVH)HwmFaWRpfQ7zanXb5FRUPK6olR4eZnWx)QmspnISO5mWDaCjVIKeeM6ZjhiSJxlr(eG5lY0DdVkI2wZ7XOTrUPuUNPIAZVa2QNpwiEAOtH(7biTA9WwbIBNOoFIwTqO)uWdEhHsWriwM0CxJNx8Nv14xBF7U10RsfSJ(m7OgwABRq)T2gHpTBv8fgp2v4NAf2q9DV2wdmABri(cEAVVgokeV9(6087TmUJxUdn2XJ6DWwqpFCB7axFdHTZ7dSEkfob3OndfckD)TC25oJ954rMb)vEAMNf4azbs)kURjgJEtBAdjMVj2ofM5eGMg3QG7NW8pJvm1G37ZahcJL)iA)Xwn(AEkPrn5pUgTNe(WY8kXzuoRKpSXueLdN9sKokeSW7wuIqCbRA1LZJ7rOpzeXw1pjK7V(3278lDI3FBvD4wANHAY2(gBZ9EV4LS66wweYJntlqJ6wgdEgrUECLtadt7AoztmQVBfCGPAKoWZB2qMQjpsdMmIEMgmqVcbBS3g0zq2K2azt2NGSXg1e()TbY4UYhdSAjjWlYCItlPZ8G6xdzLrMNftnMbwsxlzrapb8JfpzZkjbwhpIWMxr8z(1qZCecU9WZKqD(BX9nRwgz(hrKtbTDhB7eSOcmzazIPwuQ3c0TeLJqUT5Twag4YtaWw8sGCnupzysaMvdgfzJ8C3JImWmzaiXx3ETTWQT3ijm4jbKQ81WLVHn44h2m72wzVGWjtYa84XPJZV40UStuhSg7PgqmUgnvchRZ0T5rsdOWeDhMPYr4BZlz3zgSwzG78AJ9i(piMwg7AXRu7URR11VN1NWGFwXC3iH0c8ipJLUQgeRnPKAKvbLpeXyKz4qrXEyTxja292kxfEdk2JC8Ul2dmaWdQTr0geOklLMgK5bInWglFt8TnI4wDyKLXu4NIf2HYhlAiQtyB7bJZF0YDz4RUSgAAUVHytF1OZ4EMj)NOK9Vy8WxpWYQPcnwpf)MebmVUWo2A(UDviLlTz1BzEQz0uRjRBawSBAJ5Rwc1bBVqJNf(I3xTATK7ad20co7al1gUO2jmBIe9F4BK6DCxK)dvHx7fUZRhpOHQOJv74iRXnfyfSy6wIvU4cazX6oIfl4586HWyTGBxxBywLtVXwPooHggVzEX4auwoDN1G9)CFC)9jOe1sDJrNsvxna13PHYu6Ifhvb7KHwyjAtugIfV8ljIvQOmpxeZ((LuuCH)J)C0DXjX)tPIWFQwctnDIbPUguZIZuZeMTrwtDYGu8VnlyMZhpWwnpdoOeKJaHvQKAXQPhC81qI64ntFy0sq4ouQfooYgB56iXy6HInvgvTbl(m)PasiXTHYTpXkLgG8xulnCMboLMkRgphaf2E2UqEcRYdnTstNK)5f0OKgibnF0Oi1XWwZQsDAOHNscFNHo0vjFqy6J4zOVw5uacdkIyT6vXq2oaSDYtf8l0oOjT5CtfggExAxw5cZ5StDevrkkQ4Upk66kv1c99kH4m5W8dIuodE21glzEj3kCJNMfXDNHvxw4JNSzJDzM3sBmOdHfZ35ES0hB(ahK8EkKOj0P6EYrK08hoXpWPfGrZ6Sxr85mL7VyIQdajUkBnTiWQI4XWgW7x9lFmDMePBtgjPyEFtde51iIhljmRqOtoveRc(IIAmwW(j2c)hbS7IkwjMWYOBZvrRufzq)66(lPA2DpYQ(VHEQKeVwfynJnQ1WloviNZt1gEXPdACclwJXQsdAkL8PvGZiaoRQSdCCuWIsYUkOxDDmsX)iTKQbrOY0sPb8vctMK)UnrQ(ZmiyPJcONO)EIlICVvWWpCYG9ffjV5WtIcVNHHKYgLCa7c253AKGpi3eF9xdOwbeafgppi6EMNtZbY840PY(jwbZu(QXGEnm1PdahBk32daNYsUZEHQid1U1Xv99VJnjHmocUsPVNWjhDQHxnpOTlrFb8gTuVJv8G4F(qT7c)fbc94rxDj6E9v)8Kt)o2nx)v))p]] )
+spec:RegisterPack( "Assassination", 20250412, [[Hekili:v3ZAZTTX1(BrtNHHuYIMKsu2jJiZ464ERtJZntLB7h6ubbbckIksaw8q2Qdh9B)Eo7lS7IZUaupsYD8yjkIf7JZ7Naxo(YpF5flclJV8NNmAY0rNoEYWrJpz6O3C5fL3Vn(Yl2ggDB4nWhsd3a)8DffHffjPHLjzP4vVFDw4cCwkYQYJGrSQSCBX396xFts5QQRhgLT51fjBQwZUJO8WLL4Fh96RxND9Rlxf)LW8Vadnj91VlchYVKNKLNuE)pLuuw868SBQIdc1x1H4TF5fxxLSU8JPxEn1b40t)2lViSQCvw(LxCrYM3d7RKflI5dpUaUFC4hp60Jhp57E4QlY2eJ7HBE4QI6pwMSjg(zE4DXRxZ(M7cZtcVEDCXd)O8(h9w8(Vpn6HRWZb8zy5Kx(KJNm9PC5XNsD5R6Ng)fCJLKEBC5dxb7T4b13ul7OrJjU8LxSgH3mezzC4AaXGy1FMrGeNIN5fx(hbyAKaXNLToipwI0rqAEYw(1UqobpCfhLwC5flZYdsJ)AjoJWpM4yAd3CDvXkR57DB3U((hU6hIdlxvugU(248IhU6tH53(WvjlH)dGGvHWxTmC9640hUkBj8Tz5W5lmPKH3wI)1FTABzvoGrtGX8USpC5fWAugdy0lV4GhUAr81vlxoCH(YeSbwLHvBF4QEa8oeM9sQbiojSrbe8xNfSnljTe2sNxtZmmE5Yy4CExCqX240fbr8PTpS0zLdZ57UHLjr3Y2Z72PDVaX)nRJdkdZVbX441oqTJkQUgoglRUjUENmabZN4amxSk5olG8NcVfGmfm4tzgcqVd(eW1C3dxHN)fv5SD1Fb(zX1HPWfrqEiaBb(Y1W5EvCeGq(N)54BtwN8VKex)uYnRk)sm(t50LLU(EDyV4uCRCMnaNiOP(kkGtJRKhVjmjLdXFReUwJvXtSepQ)v632yaQXga7YXP3fNMTbUjesEQdiPyuwaZpW)woKexGYqKMd4j4tEn48cfQthIutPysnnFw7KtUbyghR6domNNOie9YdGuDSRhLTEraiapBH53VagzCrzqkIULGBZJaSAVrqDo9XbtLGUpfcsQa2APkjoFnNrbznqoLNlGk70THTGkLrbHv5HYdPlg1FdaRN5aSkeWaGK7Ju7WcuG8ZjqkjDrcI12GARHzjmpfmFiim9E5ghGh5XlbDhRWjtjlRiUeLvxmKT9KSI9L8XQfpp(M40GIq4SalaxiriF3OjgLXql(6404njGkBCkflwn6kce9iNnamPgbPi5bc9aiKBiADqqzwWIey1MdIpMArXQ03iPy)ObS5HREph4GiT34aPDtyEEwzlinLg7HjB2MNDx8IaX9vdW1eZnHFi3cgLvMSDDcYeHsbgZ)((EXKsSOgixTwWKdeeRxl3MdxgMgKTm42uyOC4phcEGxggk47XANbawpPblaWCTmjcnfGF5JDY7CiCDlm1hfGThU6)HFwalKewDWmCGtUkvPHZR2ylEfcnIYQs1S1WdQ(TwO69bp6cNzWqnWhWHFphXGrhwBbXQ8SQfW6vaNTSiUD2Y9ydIXs4FxCxyAcyQgHnIugdcqaWIXfzFbrG4)(7SBxAikhMzJfKaCMLFO4st7iVa(DEyq4ge0F5fNo1L5PEm4uCkm3ZY9gQ9Ej7tS93FcWKlRatD(aGCtVXY8rg12syixdBNfbRRIU9EqiAsQKJ5PiATFJ5hNzGPjzDXqqJcA5fopt10Ayn2vXHlShRxJeBf0uSnhMtnSLuoNcFXrGzvLUzimbIcYrlnTggewpkhcO0hSCKwStwgSZjmLYX00tPjDBOlwp9XqWgAP93qPVALRVKUG6tBNvUFlsCN)98PXNjSwUY1KPYY3nxMT5LEHXabAWcVJrHifDk5W7a1X)FcP7hNivF1VtQ6gl4PZdtweeFhEYcxaCYOXU4unQfZ(8JwapMVMjrGHGSnPMa(7J1KKqVNBp1a45zmDrNyOlQ2B28W0B9zD0(C2i0UqiVcJNqkiBdaXy4dyiSq0gU4VUfemJAdBss(BhH2ZH0fhewNmIRNpklNzMNVObPSs1ar8(mMXVHBaguWqQ7WJgpKAHxNSoPKztEvbcOGLp)(VSkgVHpP8x()rz8RcK71Qg32ijoP6aWUzO54j(SEq5sLvOuKhaLhavPRJlkqGbZAuGgJhqKeecS11bSZ2g8SEK7ZOnosiFIhYRWcmIObfOvUlYJxxtIFi3qc5n42nTdzm7d0OCpWPj6i5RyPJcRka)VGJCyjaISnfqq9BpkCs8ACdQbPidSGkEZwyTDIbFpFCpC1N5dSgvI0DFjRA9cg0ldJwwii5Vmpl9genefwu(0qS24Ugy5TX5fjG4yWdw9l1ZhO1WcQWnWTS8Ee1cBScnB(zS(SWesW2NbuSfyWvQLdZpj4NwxfRhovJaVPjmZosEn81Un1OiaW2JBE8fJYaBeWVOGTZc4zUa3ibQlrXv3(XYBKkTIAi77Q9Y1C1T3xQz0ChUhXVLF0zA6cZuEo9UCg1h4ZYVKhhLuiP9nvGfkgvWw5GCWM9IHmr2Htv3UfZPX0uB00kMJLd3gvkcI5uHeo2z6)ck)Up62a8eTvdrzOzKDEIwHZxrWYCo4fHwmfkd)2wSC2jAa49XtfdBOcyoTRoRRJpEaB7Od5njFiis0nL4reLCTyDrF3kifXuGWiM1NAYZLcTTqGgqF7OYzASJtCV3qg7NH46e0ipPQ3FMR6Tr8K)PeuWn3GqySPGuEDuwxJeBxKSZMR1Y1lyHy5e5AW2s(g8R)MtZ4JS4CLTyDLnJf4AtuPhB(jq1)jLL(fAsbvI(Ki4f1HrQgK6YNLFLensfqWoDsLoQa0vrStPqMtig2spz2u)mwZWsRrZH2lDciNSRAMW50kdZG83VdYepsAA7XDH8AaZQZtgXiD95oKxhHMGoc9ZFRtMY2GIh0vIPwa3V0IxBWboEu3jm)HQnBRZVlg2uMqwqMNHm0m0Y5EIlhyiZGeDYqGVLBn6MKIOGOff(llb(VnTMhUrW2daVKvvyei6FrmClP8SuWTg8OaOqcJePB35ENtHXaWn5Z859iBzcwwLFFJiyKNW2QkMBGOg(DbpURxdM3vCFAeIX5M5jHDfTizJYMs)3q9Mf81ioxkYY2IOoojltYJzNAkD5DCocHdo4LfWffbcd5KgGfVUcrr7g1VxQVTlnLSpGwl4nch4)(ZXR3Ix8VlMzoIuuYexhwKeXQJIKIvmxhjDGboGbYX43rMU5KBtxBX)yciI9ZISmQNAkDR3f2(zk0IE7XfSU)bH4mFU)0PKI2wKIOIzcXETTup3HZYy70nQcaz12BJJ3QkijovbkZzfk6mo)M7boDvUP95ksNsU)Jbx13NhcUQCbDxc8c9Q15Ztep4siFwWi)Y0DnXWucYrDUE0)Al118jRDC2uzSQ8MZ)(SYU4LowzUIMJR6nODYQxZaK6ex8mDRNwpMv08O36Z1RAkVFROZ2B(ZFhG4AWM6jdo0rxxjerugEkBfUbrXHLi2JHczvD26qua)7)f06HLS4YhQRXHnW4fOwm0pcS8)sxGoOQJwTrzTjH1rGP51RGMLFiAoGR2SxhIt0jAYxCnphkvpTxZwBYfgWiD4XPYUyWudcMtrMta42gsRvB3MexbrRLC6mrs1roUWf3x7iq9fm5Y8yH(eB9yxij5EpJM5Z86r2WOfW2gawYVq3mAPKjOkohmagUXW0Injyi9V8IkyMYwUm4MOfm9A8fW5Wjeh5EZ4YsJnHlc(pvXXPy56LYQZCdtmCJny0wJK4Jhje)e5PKyF4XyG)Dv6TBcrRKZGXhFtiCt3Kgx(SU375k6hgUQ6RyPvs1jJegBUyx21XrvmlsPZTbobhAfWtNqipk6saRKZr)baMEq75cWrK7daFIQ24I203DSxKNU0meUgKxbEkhST6)(Fb9jxN9vx7fYHQ5Y1JwGtBa9jtOIMNJOAXv(W0gvvW2daoguQuQeTuVL1velHAOBXbfRZkLX9ON)CK7WEJbQkHSLvqjWvC5HLtgQazcjUTafNRII(ava59TQTcVbICCKfOSr2Dpwx4Q4B8e2rXyMSFW6jV4W6XnG1J)9hSEcx1pynuiy5dLYFtt2JlK1hjgq3TWALWmVQpgB37QwJMYX(cv88qJ6rlVcl1dzhFwO0RAwORPacf5Z5o7lHvCd)bUWSVGvq)Mnmmtcoy(kuiJ0eicrZULBbKiL6Z2nWH7gIWaA84KKIQe41DIDzKiV6heUe)xX76HRsJJxGFnZPfHn462EyzDoLgZ23OuHt1Ad(lauKbWUiUSA7RuX1HxZB1HMtlNVjA18mLoN23xE8uYuNS(6MGWA5(HqVs7lR3iD7nTqYUm5ahJd4FTr8iymrvs1r1XTTitS5eNROfbSVIqrt7hjLaaDOJM1j0LNsFPR08eqlkgZ3oI5XW4r6f02DGJrO5PS8nwicAXXCtSoSJzjPwkjzE0W0O9wD5vd8jYIM6991(Ndscq2k0Ib0XnyV(pV4(8KL)l2N)8kSSLW)lQyRQTGDobRtatVdKHTID5C0wCm0cvL6OR0SYGT8LLsru7Omo9TzSG0QSzEYK8663H(dPe3)r0FVVxwILMqT)rSOUaVGhiLlQJbaauyh5CMXlmRAWAPLdswLuY7saMx5Bc)AYg0AqnrdwnKYLe5EYKlHHSO65svyGHreW)JaSlpr1f5jrLo7Iewt3YPM81sc41D6g8C0nywtLkpyQ2kLk1sehP3xl509jrBbWudHtTxfUYPgrD)q2NLvLFNxdzXqIlKxnT8fINFGSpxijluTE6EICSvdnNPgsBNjtbcEJ2QJj2y)qsEmk3sM7I3jZxrhbely3pB1CNliHasZqdnLffns9)Ao2KhH1SqzwEoWoWwgMksRRVTADrS(IJd8m9bYsLCrW)UAXnBWzYASVrFSxhEdkhab)3wyos4gXC2Ym7szuNAZGPCxi02Ab2RsmtkcOHHO6WunJFxfweGo7Hsd198U2veZrWc9nHTZluHagrquEYupIbeo8Kum0ruyASM73qxLX9LfdGpWCtyDaYwLGH1w1l8mZXvTVmZ5X)oQ0OqP8y8JZI1jKybByCtSGnEY4yscJN3gAQjsypGS7b(AcfsWhD6JYc7OTbGEqEgwz2xaAEp)7zX0PwlngpACtGn1uDJPzwccXWja8CjwezA0DQeuVlpm3APvv)qqKIxc7XnTykp(4iw80bXlrOHa4g)hyFu3lok3ZkvIojCnSH4E0i)yzDQXcSSVgGtitfaMh2F0WPhnA4jhsb(qtCoE0WXtp0TbQdoMV3vf0AuwHgsSZ9xhDVC7u7dpB5QsZd5ErPRjr4edyWTYcFQebZmlir)TGXGw(WmDvzgnd)ZsWnZmmSnnzdG9)KnHCdPxGzf5v8SFHkNb9OdV0S6EEoR8p9WCOzgSHJBn9eqZ22jIAnHYGGh8xZ704cvq8vqDzUFe(Dzw4Kx2PsI0xVoQZV)4KyitZl2pz5bGnLbFjPedBCCHwqOBn1p8UeUV)GqlIsenNILhA1oP16AFICTft8Mm08KQn44a0Z2WKCQEARCvoOkGQ(X4jNSLTz9iUgoUlkswy8edHublYV9LyS0k5n7aw9rIyZYsH461y2wQfOUm7wXbpG53ZJl8gwpfv6aNLEO8eXdGJoCZVrBuD9rbv8joGpLGL4RfwCf39(T1DlAYlSVSP)(sZfAlBT0adZcPRUTy4ljObKVM2qn5wQg6zhxgI8FqCJky7MQYK1I0E5Ub670ujEgdr4xTCeg8RnYvb6CpWt8xeCZOoQZqAWhTWYgpjpoRzE0CXrZ8rVnHntekgCwqN79b(eMKe2cs90paXdScySUKckCIN44hLjTz3CdCHLvPPXRzFPAWuswA4TVfw2QC9yFj3oG)Ouc4RRFg8meDwxyErfMjk5nSmhvmQIvpXddPEATr6WUCwL6DQLelzRBeig9YPQ94(wN3dEO9vbY0CLgqgdJg8BDRGYSoBEPiN185VXNdV(4pjwrrUiupZVwG)(xewYH0EtuKEAgdk0izrSsgnKMhrhjJ8t1WaFNyUv9okm52vsuZJ7S1QLzpZQNcAKNevSRF4Q)ryIihpAn3mJ306zRXNENW)f9KwO1Zs1Y1v0vG5Bp1gPRTgiHNnrgvR2ZHlYnJAg8xrhTVN8OkwH19USDrASuBlpc2O7JbORzlGpyKMYP2wEsNXf)L0VuMQR()G4yzGAT9VwrijRcDEZBRycvcUEL(dBVcmbbVsqLXc(ygpTc8tME5olIPEryzsXYe0dFkmUbE227bJT8FRi8gvJ4PukjQuUJJmQAjXguS3EFyAjmncrm1(G2XWJYl9lclFL3TwVizfDw04bRhibSCfWPOq2weewuLFxcgIR1ziQg4qQUzLRm2ta6eovquBKZ4PVQdLtdVXySnlMYhcg8)DAoYlEUcwWEgF0jiQR2cZ4eBxns4jWSVs0Zh5zAAwTe10zwz1e0w9unDuTCCIQPQdG7XApFJusdOShwoOYva4d1Dhh2GVqj)N3XCYOFKMeTsAWgxBlJ2JfzoMA1AdEuC9HRffFH5dYazGt02fQ(JJ6bW4CUHVcPEoV19UPf7006RFK0hUEBjDgLlewPwf)9R)R8M351)VCrlyFmzuxaDI(x19tu2XBa1RnFKjSTxB1QA3wFXJAfktUnybzqyVpMQG1SwfO3hsvSroWW4wRcnSLI9rY0vRgnjn(UKsS7CqxDxyOm9r)a6AqZIUtbtvfSEdR1WGP8hXRiKp(bMVs8sPL93CPrf1UBiKbYF8RHp7hGjs8ypE0BV8IVeMNImaG90itBYMTz5LIj)ByAK(gSyM)pvj54jgFqhdCVvLzB4jUgiUtbI7Hp8J)elk6V57yffaSsSl)nY8cyxIBFd3GGVXznWbdO)4Vo4fyIvt5BDmL2LiwJPKyag71NVjgMYh(rcmJkXI7h2zIZnME(Mi2wwx2406AsN4FsBC5onPe52YhuuBmVOtFRtmrs78rPUV77h703Hj2DM)iwbVdUtNeFzLKav8mTGMjSKEDAmgJP)KxcUaxt6tIF19o9Xrd9cp9ToXpwE2oUVFStFhM4xikD3yG9yb3hEzVlylSw0Jrm9p8JFKP2dN1XJ55Ba9dL9EhaUoRhJJa7zM(TyX2KTmb92(p8hE4QFDEJs8WpIR1FBl)qTiSoez47hb2de48K1S2gen5IL)UrNm6nlEZs8WXpofdvAZpA2R1lmiy6ba7EwZk0tR0w0xHwMptml1vHXRyXZA24xLSCgTqME9pGwK2UDE4uMpZd7)GEh0fst9fOZJYKI6PatMOdtM4cMm2bmH4yp3d8sdK0TdB3aCemzmARUx(lDbc20nhbiup79hp58VFkvjMW2qDTmzO3oYCTW4kjhGrWtFL6sbfX4jTGZaO1ZQ9oG5bP7Ed)hzB7NwlzOomghb8bCB5tVXl0NCS1l4Yu2N2JqFgmr4wnlHaBtwMMZpzehbN1L(EW9sA0feIfmmspl0Zg7(U1RwFXntgCOD7ScDaJIQz9SlNDEeRxUgZRndScyJmxvraEL4uXBnLKnX4BINIcdI2gB8MvlVjWEBu58z9F7OJhpYtbAD8jQR2OEHguRSjXv7t4gWkkEcXMYo9d9uY5AeSTZpP3bKxfJoObbZlBRg4(OPH7ehpfAvNCA3oYK1VBx)Npu0ay2A2khZhp8TWQdYCg0ZiMKNpBYiozLYgcv0zfDrGQxeWa1kcSeVY34GOOkwXuV(E)KN8gqOw(ptApVa64GS(Ecl(HUBQIdNmy(3pHl54zT7j8iGXQxkehaU0aIUhbWPpTdNGXZrhzOVrTJ1QydRsGgVja46WSQhGD7C3ug725iwVZhPT1EpLSz6DuKW6cx9nrhMbrltOnnU6kI2NmrxoyaEmvzmFS2c5UotBDL4vPR(4m7jbCLn7VH5Zgp9i6(AS5SW6Cb9V3Qrf0VKrFjiSs5L(bpvTrzcqEdMl6NTlsRe1cG(8z(cEodz12tIkQDJvAVzmk68UZNnPxDgqj3S90ToSzYqpwY7CgBx(iFQnrT3fCRVYO2A4uZuLPhqz1t7jPY5WFAyxR6yAzeNVZ04jCRDFXEMbrDUfLxb15EFqv9pWHLEmj7gpJGgad2j4PVBb6ZMaEC58QigOVFVjWB3nWF6GbdiWoZ7)MJ676Xr0HthCuFxNLdpdMWdinB53liI9Gk9fcoOZe)I(utYhpVLtPU437BYWVBNYqq1J5OEESvz(Stas)M3ZHtA)UCt4oy(P9CyGXSrcntVeLHwn8eShPPMiYQxsOj6a)fxh4DiXdR3oUCe1aMs)NtNKa1s2fBcp8n)QxDvD9yAF4ikuUE9jk2icWdy7QhQVXCidDzXnF6UDh0WBupfahihGOW36rSr1jByiJN)6gZgwtB0jlj9C3Z(y6Dz4BK1p8vGSnv9SFTMmXiWy8jnHDpbXIBHf(s(eVn7laXFs6YkSObqzq01He305NqjOzFovlbUMuej1kwiudmB8ObC3Hj9gw5mSV6lRBqEwzqznsfvgBVBgfPD7uS46LX05Nnqyyqn7Dl08Wnuh6y7Qyz(SPJ4IOAGRCaygpvqbh)IuHx2WiTIJcHshquGv9ik3R5Zod4MjhmLbf9ilURZDojwWef8LOuUo8mrOPWtvlLQv3iLKvQv3gnVUQyWoJc3YNEwMw2hx5d1ytPSr7vALWe3sqoHS7A5A(OEuJqRgUMJSVMmoEP2rI9dORuRE0vNLxNlhOmj555frLgWteudt766OTCd6QFNcF0273NuK7tPj)w7tVaWh9oV)Ppf737tBaVYJmRgEtPNVzFYnWca(0EDorcxjIdr3HV6Gtdqn5R2jho207axrzwpX08aAbByJE3(vY(jhy517M8zV4ntUwO7wu3M7cXB)oVbXjGQI9FTsWgyPUtv0NkztkbPoAp85Gnr72jGOQGHYza2ZE82)XJ(05s8SXt3bnt26sBftSpm9rXUJaLzOGlnGS7W75lc)am8y(nt2n41kNmjYhWYMJF)QpUV7o9UNJU7EWrKl3r29W9Gwbu1DRgraAp3lXyD4ZejgC3oAYtBspBrVwTmCN2ZM9WRzkjT1cq6wQBvdk(jhTpn4JXaNrNP5zTXHr2EHgXuR5zI4o5TUAR33FOr7o(G3MrMyLmisDZBRdfMDgwPmuKL(9ZbGMU3YpI2jUlNgdWhhSb6k1BW46ObylkHNLLFL6x4UteiofCHu6n0REwbzPjCG7OZs2OWIG2QpNCm2lvZ56JNXxCP1adEi4MnrqUz3nV7dRQKvZujQ5t7865Jf9MgIXOFQo7juAU9p68jAfyH(vbNZDeLahrpzsZDnEEXplRGoYYqRPtIk4f95ST1P5d2CUb0UdiYjJ6DWECupPTDGRhf4p69HYDeLhVs5LSHA8WqxW0rATb35A)p8ZNp1vyGgzgGq5zFrwGdulWgvCBt8l9r0u)hMEc2MfM51j3GnHe6tbm)rSkjg8WlcSYpr(r1HRRJVMWvMAP873I6cHVSmVsCgLZk5fBmfX5WzVeP6cbLm3ahMnjfSNPoY5X9i0NmI4V5NGZ9tf(NDUlIh670y49rgKBrkgYBB7r5U79EXRyfeTSqDhBg64g12lgGfIa9Zfi2q7hAPUN5AIEDmRGcmjSEakZNmcDb4a3tS7Oy3rOWK2GctEgHcJ1lD5FvGcCNfA5f1xnWsgJvw4my6tLgVA9U7JCfpzeHnqI8W94F37rU7QFh)Xy1OwuQ7s9Y2BFUl1BxV95MmFD658o5waTY81RD9eIQ6Ay5J5RXsz(yTuosK(vsp58yQ35ZM2LDI7S12iRICX)Qm4u7LG1BMZAGctoN)x82n2J4VqaUm6DnE7G2WsINbG18zN6lPPQS)x)21gSHAQmcfMVvTTtcgr9SoB8WVDGoXd1BgBNqgPHtUEHWAHyiWWGqX9iHsVfKErpE3j0hJ72GAB8SHRQ6mOPjt(YDTnP1J(vyTtyB7U67piLUnCTnc9FfXM(QdJX96c17BgyzxtXQU8kM2jmGQKeE2fayTL9(UI2nZh1wTzfy4q2ihv5G8wLjNM1fFV(977Go5OXdoUnu2Gdpz05UnrzqVMVKNNRBfMdbq1h3dCJSCcjEjKn4(fUSBoEcBViHNh(wPcF31W(qv4MoYDkL4brtfTOANFXadllTemZBRWYXBjqWYk(F8XKnYF9LWeTOawxZtwvlUXwPoUzg0VMVcYQ55AErdrGN7tcyFcopTGJB0Et1PoOqf9qzYjXY8r0crzQUaLHyXh0jeXouu7IltyV8pevm3)8phFBY6K)L0cKFQM7PMoXGDxdQzjHUMCFVK3whUDL8QML(X5JhqwaCkLziqyJkTbSQtbhFnKOo(R0hgTCv9ikAahhzJTCD0LmD6YMkJQqyD0CrMbzxO1PHc(pXkkeG8xuviCMboLMQ(SEjakS9SDjPewLhAAESoj)llOrjnqcA(OrLyJrPLvk20qdp1)8Jg6qxk4bHP3ZccOwQ(bHbfXSozQyiBhGA9CxM6cTdAsBo3uHHHt32n9KWKwl5uKvFUO2X(OOPIu19Y3PeIZKdZpis5m4zxBSKjWzVWnEAoc3n(uDTopEYUD21oDl1QVoewmFN7XfkScZDqY7PKyMqNmXjhtsZF4e)aNwagnlECfXNZKAE0evdUTkpRAbmFfWwlls0gl6weyvM3yyt4nz(f3Ngjr62KrskMFOPrY8QGZJLeMfNYPtfXQHVOOgJLSpXw4)eGDxwXQ2Hfj6vZTAv0k6og0VUc2wxfD79S6yBONIAWRvbwZyJQMB2uHCop1n3SPdACcL9yJcAkL8PvQUiag7a2254OGfYkuWumFV6kYJI)rAjvdIqLPLshwQeMmj)BBIu9RzqWshytpXO(uxe5ElsJV)0bpxuK8oUEDC4DmmKu2OKd4XGD(Tgj4dYnXxtJaQvabquUDzsJVu5Vkd61WuNoaCSPCP8GL221zNDKQ(2QTqN)2GZZMKqghbxP0)B4KJo1Wl7b02L4VcEKxQ3jgEq8VCO2hd)fbc9e(798l))(d]] )

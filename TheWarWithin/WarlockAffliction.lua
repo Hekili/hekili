@@ -11,6 +11,7 @@ local FindUnitDebuffByID = ns.FindUnitDebuffByID
 local UnitTokenFromGUID = _G.UnitTokenFromGUID
 
 local GetSpellInfo = C_Spell.GetSpellInfo
+state.sqrt = math.sqrt
 
 local spec = Hekili:NewSpecialization( 265 )
 
@@ -213,10 +214,10 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=980
     agony = {
         id = 980,
-        duration = function () return ( 18 + conduit.rolling_agony.mod * 0.001 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+        duration = 18,
         tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) * haste end,
         type = "Magic",
-        max_stack = function () return 10 + 4 * talent.writhe_in_agony.rank end,
+        max_stack = function () return 14 + 4 * talent.writhe_in_agony.rank end,
         meta = {
             stack = function( t )
                 if t.down then return 0 end
@@ -228,7 +229,7 @@ spec:RegisterAuras( {
                 local last_real_tick = now + ( floor( ( now - app ) / tick ) * tick )
                 local ticks_since = floor( ( query_time - last_real_tick ) / tick )
 
-                return min( talent.writhe_in_agony.enabled and 18 or 10, t.count + ticks_since )
+                return min( talent.writhe_in_agony.enabled and 18 or 14, t.count + ticks_since )
             end,
         }
     },
@@ -265,7 +266,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=146739
     corruption = {
         id = 146739,
-        duration = function () return ( talent.absolute_corruption.enabled and ( target.is_player and 24 or 3600 ) or 14 ) * ( talent.creeping_death.enabled and 0.85 or 1 ) end,
+        duration = function () return talent.absolute_corruption.enabled and ( target.is_player and 24 or 3600 ) or 14 end,
         tick_time = function () return 2 * ( 1 - 0.15 * talent.creeping_death.rank ) * ( 1 - 0.15 * talent.sataiels_volition.rank ) * haste end,
         type = "Magic",
         max_stack = 1
@@ -303,7 +304,7 @@ spec:RegisterAuras( {
     dark_harvest = {
         id = 387018,
         duration = 8,
-        max_stack = 4,
+        max_stack = 5
     },
     -- Talent: Absorbs $w1 damage.
     -- https://wowhead.com/beta/spell=108416
@@ -515,7 +516,7 @@ spec:RegisterAuras( {
     nightfall = {
         id = 264571,
         duration = 12,
-        max_stack = 1
+        max_stack = 2
     },
     oblivion = {
         id = 417537,
@@ -573,7 +574,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=27243
     seed_of_corruption = {
         id = 27243,
-        duration = 12,
+        duration = function() return 12 * haste end,
         type = "Magic",
         max_stack = 1
     },
@@ -708,7 +709,7 @@ spec:RegisterAuras( {
     succulent_soul = {
         id = 449793,
         duration = 30.0,
-        max_stack = 1,
+        max_stack = 3
     },
     -- Talent: Summons a Darkglare from the Twisting Nether that blasts its target for Shadow damage, dealing increased damage for every damage over time effect you have active on any target.
     -- https://wowhead.com/beta/spell=205180
@@ -728,7 +729,7 @@ spec:RegisterAuras( {
     tormented_crescendo = {
         id = 387079,
         duration = 10,
-        max_stack = 1,
+        max_stack = 2
     },
     -- Dealing $w1 Shadowflame damage every $t1 sec for $d.
     -- https://wowhead.com/beta/spell=273526
@@ -750,7 +751,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=316099
     unstable_affliction = {
         id = function () return pvptalent.rampant_afflictions.enabled and 342938 or 316099 end,
-        duration = function () return 21 * ( talent.creeping_death.enabled and 0.85 or 1 ) * haste end,
+        duration = 21,
         tick_time = function () return 2 * ( talent.creeping_death.enabled and 0.85 or 1 ) * haste end,
         type = "Magic",
         max_stack = 1,
@@ -777,7 +778,7 @@ spec:RegisterAuras( {
         duration = function() return 18.0 * ( 1 - 0.15 * talent.hatefury_rituals.rank ) end,
         tick_time = function() return 2.0 * ( 1 - 0.15 * talent.creeping_death.rank ) * ( 1 - 0.25 * talent.sataiels_volition.rank) end,
         pandemic = true,
-        max_stack = 8, -- ??
+        max_stack = 8 -- ??
     },
 
 
@@ -845,7 +846,6 @@ spec:RegisterAuras( {
     },
 } )
 
-
 spec:RegisterHook( "TimeToReady", function( wait, action )
     local ability = action and class.abilities[ action ]
 
@@ -856,10 +856,17 @@ spec:RegisterHook( "TimeToReady", function( wait, action )
     return wait
 end )
 
+spec:RegisterHook( "runHandler", function( ability )
+    local a = class.abilities[ ability ]
+
+    if talent.blackened_soul.enabled and debuff.wither.up and ability and ability.spend and ability.spendType == "soul_shards" then
+        -- We need to do this here, because it works even if you spend 0 due to a discount proc
+        applyDebuff( "target", "wither", debuff.wither.remains, debuff.wither.stack + ( buff.malevolence.up and 2 or 1 ) )
+    end
+
+end )
+
 spec:RegisterStateExpr( "soul_shard", function () return soul_shards.current end )
-
-
-state.sqrt = math.sqrt
 
 spec:RegisterStateExpr( "time_to_shard", function ()
     local num_agony = active_dot.agony
@@ -884,19 +891,13 @@ end, false )
 spec:RegisterGear( "tww2", 229325, 229323, 229328, 229326, 229324 )
 spec:RegisterAuras( {
 -- 2-set
--- https://www.wowhead.com/ptr-2/spell=1219034/jackpot
+-- https://www.wowhead.com/spell=1219034/jackpot
 -- Your spells and abilities have a chance to hit a Jackpot! that increases your haste by 12% for 12 sec. Casting Summon Darkglare always hits a Jackpot! 
     jackpot = {
         id = 1219034,
         duration = 12,
         max_stack = 1
     },
---[[ https://www.wowhead.com/ptr-2/spell=1219036/warlock-affliction-11-1-class-set-4pc
-    tww2_set_haste_buff = {
-        id = 1219034,
-        duration = 12,
-        max_stack = 1
-    },--]]
 
 } )
 
@@ -1116,7 +1117,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyDebuff( "target", "agony", nil, max( 2 * talent.writhe_in_agony.rank + ( azerite.sudden_onset.enabled and 4 or 0 ), debuff.agony.stack ) )
+
+            if debuff.agony.up then applyDebuff( "target", "agony", nil, min( debuff.agony.max_stack, debuff.agony.stack + 1 ) )
+            else applyDebuff( "target", "agony", nil, max( 4 * talent.writhe_in_agony.rank, 1 ) )
+            end
         end,
     },
 
@@ -1519,13 +1523,13 @@ spec:RegisterAbilities( {
 
             removeStack( "decimating_bolt" )
             removeBuff( "malefic_wrath" )
-            removeBuff( "nightfall" )
+            removeStack( "nightfall" )
 
             if talent.shadow_embrace.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
         end,
 
         tick = function ()
-            if not settings.manage_ds_ticks or not talent.shadow_embrace.enabled or debuff.shadow_embrace.stack > 2 then return end
+            if not settings.manage_ds_ticks or not talent.shadow_embrace.enabled then return end
             applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 )
         end,
 
@@ -1627,7 +1631,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "haunt" )
-            if level > 51 then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
+            if talent.improved_haunt.enabled then applyDebuff( "target", "shadow_embrace", nil, debuff.shadow_embrace.stack + 1 ) end
         end,
     },
 
@@ -1665,29 +1669,12 @@ spec:RegisterAbilities( {
         end,
     },
 
-    --[[ Passive in 10.0.5 -- Talent: Summon an Inquisitor's Eye that periodically blasts enemies for 254 Shadowflame damage and occasionally dealing 290 Shadowflame damage instead. Lasts 1 |4hour:hrs;.
-    inquisitors_gaze = {
-        id = 386344,
-        cast = 0,
-        cooldown = 10,
-        gcd = "spell",
-        school = "shadow",
-
-        talent = "inquisitors_gaze",
-        startsCombat = false,
-        nobuff = "inquisitors_gaze",
-
-        handler = function ()
-            applyBuff( "inquisitors_gaze" )
-        end,
-    }, ]]
-
     -- Talent: Your damaging periodic effects from your spells erupt on all targets, causing $324540s1 Shadow damage per effect.
     malefic_rapture = {
         id = 324536,
         cast = function ()
             if buff.tormented_crescendo.up or buff.calamitous_crescendo.up then return 0 end
-            return 1.5 * ( 1 - 0.15 * talent.improved_malefic_rapture.rank )
+            return 1.5 * ( 1 - 0.1 * talent.improved_malefic_rapture.rank ) * haste
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1705,7 +1692,7 @@ spec:RegisterAbilities( {
             removeStack( "cruel_epiphany" )
 
             if buff.calamitous_crescendo.up then removeBuff( "calamitous_crescendo" ) end
-            if buff.tormented_crescendo.up then removeBuff( "tormented_crescendo" ) end
+            if buff.tormented_crescendo.up then removeStack( "tormented_crescendo" ) end
 
             if buff.malign_omen.up or buff.umbrafire_kindling.up then
                 removeStack( "umbrafire_kindling" )
@@ -1718,19 +1705,6 @@ spec:RegisterAbilities( {
                 if dot.siphon_life.up         then dot.siphon_life.expires         = dot.siphon_life.expires         + 2 end
             end
 
-            if talent.dread_touch.enabled then
-                if debuff.unstable_affliction.up then applyDebuff( "target", "dread_touch" ) end
-                active_dot.dread_touch = active_dot.unsable_affliction
-            end
-
-            if debuff.wither.up then applyDebuff( "target", "wither", nil, debuff.wither.stack + ( buff.malevolence.up and 2 or 1 ) ) end
-
-            --[[ if talent.malefic_affliction.enabled and active_dot.unstable_affliction > 0 then
-                if buff.malefic_affliction.stack == 3 then
-                    if debuff.unstable_affliction.up then applyDebuff( "target", "dread_touch" )
-                    else active_dot.dread_touch = 1 end
-                else addStack( "malefic_affliction" ) end
-            end ]]
             if legendary.malefic_wrath.enabled then addStack( "malefic_wrath" ) end
         end,
     },
@@ -1749,7 +1723,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function()
-            if debuff.wither.up then applyDebuff( "target", "wither", nil, debuff.wither.stack + 6 ) end
+            if debuff.wither.up then applyDebuff( "target", "wither", debuff.wither.remains, debuff.wither.stack + 6 ) end
             applyBuff( "malevolence" )
         end,
     },
@@ -1855,8 +1829,7 @@ spec:RegisterAbilities( {
 
         talent = "seed_of_corruption",
         startsCombat = true,
-        nodebuff = "seed_of_corruption",
-
+        nodebuff = function() if active_enemies == 1 then return "seed_of_corruption" end end,
         velocity = 30,
 
         handler = function()
@@ -1865,11 +1838,13 @@ spec:RegisterAbilities( {
         end,
 
         impact = function ()
-            applyDebuff( "target", "seed_of_corruption" )
-            if active_enemies > 1 and talent.sow_the_seeds.enabled then
-                active_dot.seed_of_corruption = min( active_enemies, active_dot.seed_of_corruption + 2 )
+
+            if debuff.seed_of_corruption.up then
+                active_dot.seed_of_corruption = min( active_enemies, active_dot.seed_of_corruption + 1 )
+            else
+                applyDebuff( "target", "seed_of_corruption" )
             end
-        end,
+        end
     },
 
     -- Sends a shadowy bolt at the enemy, causing 2,321 Shadow damage.
@@ -1893,7 +1868,7 @@ spec:RegisterAbilities( {
         cycle = function () return talent.shadow_embrace.enabled and "shadow_embrace" or nil end,
 
         handler = function ()
-            removeBuff( "nightfall" )
+            removeStack( "nightfall" )
             removeBuff( "malefic_wrath" )
         end,
 
@@ -2009,6 +1984,10 @@ spec:RegisterAbilities( {
             if talent.dark_harvest.enabled then applyBuff( "dark_harvest", nil, active_dot.soul_rot ) end
             if talent.malign_omen.enabled then addStack( "malign_omen", nil, 3 ) end
             if legendary.decaying_soul_satchel.enabled then applyBuff( "decaying_soul_satchel", nil, active_dot.soul_rot ) end
+            if talent.shadow_of_death.enabled then
+                addStack( "succulent_soul", nil, 3 )
+                gain( 3, "soul_shards" )
+            end
         end,
 
         copy = { 386997, 325640 }
@@ -2341,7 +2320,7 @@ spec:RegisterAbilities( {
     -- Talent: Afflicts one target with 18,624 Shadow damage over 21 sec. If dispelled, deals 32,416 damage to the dispeller and silences them for 4 sec. Generates 1 Soul Shard if the target dies while afflicted.
     unstable_affliction = {
         id = function () return pvptalent.rampant_afflictions.enabled and 342938 or 316099 end,
-        cast = function() return 1.5 * ( 1 - 0.2 * talent.perpetual_unstability.rank ) end,
+        cast = function() return 1.5 * ( 1 - 0.2 * talent.perpetual_unstability.rank ) * haste end,
         cooldown = 0,
         gcd = "spell",
         school = "shadow",
@@ -2387,7 +2366,8 @@ spec:RegisterAbilities( {
 
         handler = function()
             applyDebuff( "target", "vile_taint" )
-            applyDebuff( "target", "agony" )
+            active_dot.vile_taint = min( active_enemies, active_dot.vile_taint + 7 )
+            applyDebuff( "target", "agony", nil, 4 * ( talent.writhe_in_agony.rank + talent.infirmity.rank ) )
             active_dot.agony = min( active_enemies, active_dot.agony + 7 )
             applyDebuff( "target", "curse_of_exhaustion" )
             active_dot.curse_of_exhaustion = min( active_enemies, active_dot.curse_of_exhaustion + 7 )

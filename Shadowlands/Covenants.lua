@@ -1265,7 +1265,7 @@ elseif baseClass == "PALADIN" then
 
             spend = function ()
                 if buff.divine_purpose.up then return 0 end
-                return 1 - ( buff.the_magistrates_judgment.up and 1 or 0 )
+                return 1
             end,
             spendType = "holy_power",
 
@@ -1276,7 +1276,6 @@ elseif baseClass == "PALADIN" then
 
             handler = function ()
                 removeBuff( "divine_purpose" )
-                removeBuff( "the_magistrates_judgment" )
                 applyBuff( "vanquishers_hammer", nil, legendary.dutybound_gavel.enabled and 2 or nil )
                 if soulbind.kevins_oozeling.enabled then applyBuff( "kevins_oozeling" ) end
             end,

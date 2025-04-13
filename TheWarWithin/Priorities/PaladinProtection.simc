@@ -1,3 +1,6 @@
+## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/paladin_protection.simc
+## Up to date with SimC: March 13 2025 - a8d374d
+
 ## actions.precombat+=/rite_of_sanctification
 ## actions.precombat+=/rite_of_adjuration
 actions.precombat+=/devotion_aura
@@ -35,25 +38,29 @@ actions.standard+=/hammer_of_light,if=buff.hammer_of_light_free.remains<2|buff.s
 actions.standard+=/eye_of_tyr,if=(hpg_to_2dawn=5|!talent.of_dusk_and_dawn.enabled)&talent.lights_guidance.enabled
 actions.standard+=/eye_of_tyr,if=(hpg_to_2dawn=1|buff.blessing_of_dawn.stack>0)&talent.lights_guidance.enabled
 actions.standard+=/shield_of_the_righteous,if=(!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&!buff.hammer_of_light_ready.up
+# during luck of the draw(TWW2 4P)spam sotr as much as possible without wasting icd where possible
+actions.standard+=/shield_of_the_righteous,if=!buff.hammer_of_light_ready.up&(buff.luck_of_the_draw.up&((holy_power+judgment_holy_power>=5)|(!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)))
+# outside of luck of the draw, pool holy power as much as possible to be able to enter luck of the draw windows with more holy power
+actions.standard+=/shield_of_the_righteous,if=!buff.hammer_of_light_ready.up&set_bonus.thewarwithin_season_2_4pc&((holy_power+judgment_holy_power>5)|(holy_power+judgment_holy_power>=5&cooldown.righteous_protector_icd.remains=0))
+actions.standard+=/shield_of_the_righteous,if=!set_bonus.thewarwithin_season_2_4pc&(!talent.righteous_protector.enabled|cooldown.righteous_protector_icd.remains=0)&!buff.hammer_of_light_ready.up
 actions.standard+=/judgment,cycle_targets=1,if=spell_targets.shield_of_the_righteous>3&buff.bulwark_of_righteous_fury.stack>=3&holy_power<3
 actions.standard+=/avengers_shield,if=!buff.bulwark_of_righteous_fury.up&talent.bulwark_of_righteous_fury.enabled&spell_targets.shield_of_the_righteous>=3
 actions.standard+=/hammer_of_the_righteous,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3&!buff.avenging_wrath.up
 actions.standard+=/blessed_hammer,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3&!buff.avenging_wrath.up
 actions.standard+=/crusader_strike,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2&!buff.avenging_wrath.up
-actions.standard+=/judgment,cycle_targets=1,if=charges>=2|full_recharge_time<=gcd.max
+## redundant line: actions.standard+=/judgment,cycle_targets=1,if=charges>=2|full_recharge_time<=gcd.max
 actions.standard+=/consecration,if=buff.divine_guidance.stack=5
 actions.standard+=/holy_armaments,if=next_armament=sacred_weapon&(!buff.sacred_weapon.up|(buff.sacred_weapon.remains<6&!buff.avenging_wrath.up&cooldown.avenging_wrath.remains<=30))
 actions.standard+=/hammer_of_wrath
 actions.standard+=/divine_toll
+actions.standard+=/avengers_shield,if=talent.refining_fire.enabled
+actions.standard+=/judgment,cycle_targets=1,if=buff.avenging_wrath.up&talent.hammer_and_anvil.enabled
+actions.standard+=/holy_armaments,if=next_armament=holy_bulwark&charges=2
+actions.standard+=/judgment,cycle_targets=1
 actions.standard+=/avengers_shield,if=!buff.shake_the_heavens.up&talent.shake_the_heavens.enabled
 actions.standard+=/hammer_of_the_righteous,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3)|buff.shake_the_heavens.up
 actions.standard+=/blessed_hammer,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3)|buff.shake_the_heavens.up
 actions.standard+=/crusader_strike,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2)|buff.shake_the_heavens.up
-actions.standard+=/judgment,cycle_targets=1
-actions.standard+=/hammer_of_the_righteous,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3
-actions.standard+=/blessed_hammer,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3
-actions.standard+=/crusader_strike,if=buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2
-# In single target, Templar should prioritize maintaining Shake the Heavens by casting spells listed in Higher Calling.
 actions.standard+=/avengers_shield,if=!talent.lights_guidance.enabled
 actions.standard+=/consecration,if=!consecration.up
 actions.standard+=/eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
@@ -68,5 +75,6 @@ actions.standard+=/word_of_glory,if=buff.shining_light_free.up
 actions.standard+=/arcane_torrent,if=holy_power<5
 actions.standard+=/consecration
 
+actions.trinkets+=/use_item,name=tome_of_lights_devotion,if=buff.inner_resilience.up
 actions.trinkets+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(buff.avenging_wrath.up|fight_remains<=40)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready|!buff.avenging_wrath.up))|!variable.trinket_sync_slot)
 actions.trinkets+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(buff.avenging_wrath.up|fight_remains<=40)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready|!buff.avenging_wrath.up))|!variable.trinket_sync_slot)

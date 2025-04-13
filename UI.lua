@@ -1154,7 +1154,7 @@ do
 
 
                             if ability.empowered then
-                                b.EmpowerLevel:SetText( RomanNumerals[ b.Recommendation.empower_to or state.max_empower ] )
+                                b.EmpowerLevel:SetText( RomanNumerals[ b.Recommendation.empower_to or ability.empowerment_default or state.max_empower ] )
                             else
                                 b.EmpowerLevel:SetText( nil )
                             end
@@ -1650,7 +1650,7 @@ do
 
                     if ability.item then
                         start, duration, enabled, modRate = GetItemCooldown( ability.item )
-                    elseif ability.key ~= state.empowerment.spell then
+                    elseif not ability.empowered then
                         start, duration, enabled, modRate = GetSpellCooldown( ability.id )
                     end
 
@@ -1671,7 +1671,7 @@ do
                     end
 
                     if i == 1 and ability.empowered and conf.empowerment.glow then
-                        if state.empowerment.spell == ability.key and duration == 0 then
+                        if state.empowerment.start > 0 and duration == 0 then
                             button.Empowerment:Show()
                         else
                             button.Empowerment:Hide()
@@ -2796,6 +2796,9 @@ do
         local empText = b.EmpowerLevel:GetText()
         b.EmpowerLevel:SetText( nil )
         b.EmpowerLevel:SetText( empText )
+
+        if conf.empowerment.enabled then b.EmpowerLevel:Show()
+        else b.EmpowerLevel:Hide() end
 
         -- Mover Stuff.
         b:SetScript( "OnMouseDown", Button_OnMouseDown )

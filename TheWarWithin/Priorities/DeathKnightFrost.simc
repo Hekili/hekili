@@ -1,3 +1,6 @@
+## https://github.com/simulationcraft/simc/commits/thewarwithin/ActionPriorityLists/deathknight_frost.simc
+## Up to date with SimC: March 5 2025 - 04347cf
+
 ## Evaluates a trinkets cooldown, divided by pillar of frost, empower rune weapon, or breath of sindragosa's cooldown. If it's value has no remainder return 1, else return 0.5.
 actions.precombat+=/variable,name=trinket_1_sync,op=setif,value=1,value_else=0.5,condition=trinket.1.has_use_buff&(talent.pillar_of_frost&!talent.breath_of_sindragosa&(trinket.1.cooldown.duration%%cooldown.pillar_of_frost.duration=0)|talent.breath_of_sindragosa&(cooldown.breath_of_sindragosa.duration%%trinket.1.cooldown.duration=0))
 actions.precombat+=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5,condition=trinket.2.has_use_buff&(talent.pillar_of_frost&!talent.breath_of_sindragosa&(trinket.2.cooldown.duration%%cooldown.pillar_of_frost.duration=0)|talent.breath_of_sindragosa&(cooldown.breath_of_sindragosa.duration%%trinket.2.cooldown.duration=0))
@@ -118,10 +121,11 @@ actions.cold_heart+=/chains_of_ice,if=talent.obliteration&!buff.pillar_of_frost.
 
 # Breath Active Rotation
 actions.breath+=/obliterate,cycle_targets=1,if=buff.killing_machine.stack=2
-actions.breath+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_pct_0>5&runic_power>50
+actions.breath+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_die>5&runic_power>50
 actions.breath+=/howling_blast,if=(variable.rime_buffs|!buff.killing_machine.up&buff.pillar_of_frost.up&talent.obliteration&!buff.bonegrinder_frost.up)&runic_power>(variable.breath_rime_rp_threshold-(talent.rage_of_the_frozen_champion*6))|!dot.frost_fever.ticking
 actions.breath+=/horn_of_winter,if=rune<2&runic_power.deficit>30&(!buff.empower_rune_weapon.up|runic_power<variable.breath_rp_cost*2*gcd.max)
 actions.breath+=/obliterate,cycle_targets=1,if=buff.killing_machine.up|runic_power.deficit>20
+actions.breath+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_die>5&active_enemies=1&rune>2
 actions.breath+=/remorseless_winter,if=variable.breath_dying
 actions.breath+=/any_dnd,if=!death_and_decay.ticking&(variable.st_planning&talent.unholy_ground&runic_power.deficit>=10&!talent.obliteration|variable.breath_dying)
 actions.breath+=/howling_blast,if=variable.breath_dying
@@ -135,8 +139,9 @@ actions.obliteration+=/howling_blast,if=buff.killing_machine.stack<2&buff.pillar
 actions.obliteration+=/glacial_advance,if=buff.killing_machine.stack<2&buff.pillar_of_frost.remains<gcd&!buff.death_and_decay.up&variable.ga_priority
 actions.obliteration+=/frost_strike,cycle_targets=1,if=buff.killing_machine.stack<2&buff.pillar_of_frost.remains<gcd&!buff.death_and_decay.up
 actions.obliteration+=/frost_strike,cycle_targets=1,if=debuff.razorice.stack=5&talent.shattering_blade&talent.a_feast_of_souls&buff.a_feast_of_souls.up
+actions.obliteration+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_die>5&active_enemies=1&rune>2&!buff.killing_machine.up
 actions.obliteration+=/obliterate,cycle_targets=1,if=buff.killing_machine.up
-actions.obliteration+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_pct_0>5&rune>2
+actions.obliteration+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_die>5&rune>2
 actions.obliteration+=/howling_blast,cycle_targets=1,if=!buff.killing_machine.up&(!dot.frost_fever.ticking)
 actions.obliteration+=/glacial_advance,cycle_targets=1,if=(variable.ga_priority|debuff.razorice.stack<5)&(!death_knight.runeforge.razorice&(debuff.razorice.stack<5|debuff.razorice.remains<gcd*3)|((variable.rp_buffs|rune<2)&active_enemies>1))
 actions.obliteration+=/frost_strike,cycle_targets=1,if=(rune<2|variable.rp_buffs|debuff.razorice.stack=5&talent.shattering_blade)&!variable.pooling_runic_power&(!talent.glacial_advance|active_enemies=1|talent.shattered_frost)
@@ -166,9 +171,10 @@ actions.aoe+=/arcane_torrent,if=runic_power.deficit>25
 actions.single_target+=/frost_strike,if=talent.a_feast_of_souls&debuff.razorice.stack=5&talent.shattering_blade&buff.a_feast_of_souls.up
 actions.single_target+=/obliterate,if=buff.killing_machine.stack=2|buff.exterminate.up
 actions.single_target+=/frost_strike,if=(debuff.razorice.stack=5&talent.shattering_blade)|(rune<2&!talent.icebreaker)
+actions.single_target+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_die>5&!buff.killing_machine.react
 actions.single_target+=/howling_blast,if=variable.rime_buffs
 actions.single_target+=/obliterate,if=buff.killing_machine.up&!variable.pooling_runes
-actions.single_target+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_pct_0>5&rune>2
+actions.single_target+=/soul_reaper,if=fight_remains>5&target.time_to_pct_35<5&target.time_to_die>5&rune>2
 actions.single_target+=/frost_strike,if=!variable.pooling_runic_power&(variable.rp_buffs|(!talent.shattering_blade&runic_power.deficit<20))
 actions.single_target+=/howling_blast,if=buff.rime.up
 actions.single_target+=/frost_strike,if=!variable.pooling_runic_power&!(main_hand.2h|talent.shattering_blade)

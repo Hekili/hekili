@@ -764,7 +764,7 @@ spec:RegisterHook( "reset_postcast", function( x )
 end )
 
 -- The War Within
-spec:RegisterGear( "tww2", 229298, 212045, 229301, 229299, 229297 )
+spec:RegisterGear( "tww2", 229301, 229299, 229298, 229297, 229296 )
 spec:RegisterAuras( {
     -- 2-set
     -- https://www.wowhead.com/ptr-2/spell=1217990/luck-of-the-draw

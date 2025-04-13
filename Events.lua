@@ -1238,6 +1238,7 @@ do
 
         empowerment.spell = ability.key
         empowerment.start = start
+        empowerment.active = true
 
         for i = 1, 4 do
             local n = GetUnitEmpowerStageDuration( "player", i - 1 )
@@ -1256,6 +1257,7 @@ do
     RegisterUnitEvent( "UNIT_SPELLCAST_EMPOWER_STOP", "player", nil, function( event, unit, cast, spellID )
         empowerment.spell = "none"
 
+        empowerment.active = false
         empowerment.start = 0
         empowerment.finish = 0
         empowerment.hold = 0

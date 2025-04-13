@@ -23,6 +23,7 @@ local counted = {}
 local formatKey = ns.formatKey
 local orderedPairs = ns.orderedPairs
 local FeignEvent, RegisterEvent = ns.FeignEvent, ns.RegisterEvent
+local TargetDummies = ns.TargetDummies
 
 local format = string.format
 local insert, remove, wipe = table.insert, table.remove, table.wipe
@@ -179,41 +180,47 @@ end
 
 -- Excluding enemy by NPC ID (as string).  This keeps the enemy from being counted if they are not your target.
 -- = true           Always Exclude
+-- = number         If table, [1] = de/buff Id per below, [2] = boolean (true = exclude if not present)
 -- = number < 0     Exclude if debuff ID abs( number ) is active on unit.
 -- = number > 0     Exclude if buff ID number is active on unit.
 local enemyExclusions = {
-    [23775]  = true,      -- Head of the Horseman
-    [120651] = true,      -- Explosives
-    [128652] = true,      -- Viq'Goth (Siege of Boralus - untargetable background boss)
-    [156227] = true,      -- Neferset Denizen
-    [160966] = true,      -- Thing from Beyond?
-    [161895] = true,      -- Thing from Beyond?
-    [157452] = true,      -- Nightmare Antigen in Carapace
-    [158041] = 310126,    -- N'Zoth with Psychic Shell
-    [164698] = true,      -- Tor'ghast Junk
-    [177117] = 355790,    -- Ner'zhul: Orb of Torment (Protected by Eternal Torment)
-    [176581] = true,      -- Painsmith:  Spiked Ball
-    [186150] = true,      -- Soul Fragment (Gavel of the First Arbiter)
-    [185685] = true,      -- Season 3 Relics
-    [185680] = true,      -- Season 3 Relics
-    [185683] = true,      -- Season 3 Relics
-    [183501] = 367573,    -- Xy'mox: Genesis Bulwark
-    [166969] = true,      -- Frieda
-    [166970] = true,      -- Stavros
-    [166971] = true,      -- Niklaus
-    [168113] = 329606,    -- Grashaal (when shielded)
-    [168112] = 329636,    -- Kaal (when shielded)
-    [193760] = true,      -- Surging Ruiner (Raszageth) -- gives bad range information.
-    [204560] = true,      -- Incorporeal Being
-    [229296] = true,      -- Orb of Ascendance (TWW S1 Affix)
-    [218884] = true,      -- Silken Court: Scattershell Scarab
-    [235187] = true,      -- Cauldron: Voltaic Image
+    [23775]  = true,              -- Head of the Horseman
+    [120651] = true,              -- Explosives
+    [128652] = true,              -- Viq'Goth (Siege of Boralus - untargetable background boss)
+    [156227] = true,              -- Neferset Denizen
+    [160966] = true,              -- Thing from Beyond?
+    [161895] = true,              -- Thing from Beyond?
+    [157452] = true,              -- Nightmare Antigen in Carapace
+    [158041] = 310126,            -- N'Zoth with Psychic Shell
+    [164698] = true,              -- Tor'ghast Junk
+    [177117] = 355790,            -- Ner'zhul: Orb of Torment (Protected by Eternal Torment)
+    [176581] = true,              -- Painsmith:  Spiked Ball
+    [186150] = true,              -- Soul Fragment (Gavel of the First Arbiter)
+    [185685] = true,              -- Season 3 Relics
+    [185680] = true,              -- Season 3 Relics
+    [185683] = true,              -- Season 3 Relics
+    [183501] = 367573,            -- Xy'mox: Genesis Bulwark
+    [166969] = true,              -- Frieda
+    [166970] = true,              -- Stavros
+    [166971] = true,              -- Niklaus
+    [168113] = 329606,            -- Grashaal (when shielded)
+    [168112] = 329636,            -- Kaal (when shielded)
+    [193760] = true,              -- Surging Ruiner (Raszageth) -- gives bad range information.
+    [204560] = true,              -- Incorporeal Being
+    [229296] = true,              -- Orb of Ascendance (TWW S1 Affix)
+    [218884] = true,              -- Silken Court: Scattershell Scarab
+    [235187] = true,              -- Cauldron: Voltaic Image
+    [231788] = true,              -- Mug'Zee: Unstable Crawler Mine
+    [233474] = true,              -- Mug'Zee: Gallagio Goon (they are within a cage with LoS restrictions)
+    [231727] = true,              -- Gallywix: 1500-Pound "Dud"
+    [151579] = true               -- Operation: Mechagon - Shield Generator
 }
 
 local requiredForInclusion = {
     [131825] = 260805,    -- Focusing Iris (damage on others is wasted)
     [131823] = 260805,    -- Same
     [131824] = 206805,    -- Same
+    [230312] = 467454     -- Mug'Zee: Volunteer Rocketeer, only attackable with "Charred"
 }
 
 if Hekili.IsDev then
@@ -336,11 +343,14 @@ do
         return next, counted, nil
     end
 
-    FindExclusionAuraByID = function( unit, spellID )
+    FindExclusionAuraByID = function( unit, spellID, invert )
+        local result
         if spellID < 0 then
-            return FindUnitDebuffByID( unit, -1 * spellID ) ~= nil
+            result = FindUnitDebuffByID( unit, -1 * spellID ) ~= nil
+        else
+            result = FindUnitBuffByID( unit, spellID ) ~= nil
         end
-        return FindUnitBuffByID( unit, spellID ) ~= nil
+        return invert and ( not result ) or result
     end
 
     -- New Nameplate Proximity System
@@ -381,11 +391,10 @@ do
         if spec then
             if checkPets or checkPlates then
                 for unit, guid in pairs( npGUIDs ) do
-                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                        local excluded = not UnitIsUnit( unit, "target" )
-                        local npcid = guid:match( "(%d+)-%x-$" )
-                        npcid = tonumber( npcid )
+                    local npcid = tonumber( guid:match( "(%d+)-%x-$" ) or 0 )
 
+                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitInPhase( unit ) and ( UnitHealth( unit ) > 1 or TargetDummies[ npcid ] ) and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                        local excluded = not UnitIsUnit( unit, "target" )
                         local _, range = nil, -1
 
                         if debugging then details = format( "%s\n - Checking nameplate list for %s [ %s ] %s.", details, unit, guid, UnitName( unit ) ) end
@@ -397,12 +406,19 @@ do
                                 excluded = enemyExclusions[ npcid ]
                             end
 
-                            -- If our table has a number, unit is ruled out only if the buff is present.
+                            -- If our table has a number, unit is ruled out based on aura.
+                            local invert = false
+
+                            if type( excluded ) == "table" then
+                                invert = excluded[ 2 ]
+                                excluded = excluded[ 1 ]
+                            end
+
                             if excluded and type( excluded ) == "number" then
-                                excluded = FindExclusionAuraByID( unit, excluded )
+                                excluded = FindExclusionAuraByID( unit, excluded, invert )
 
                                 if debugging and excluded then
-                                    details = format( "%s\n    - Excluded by aura.", details )
+                                    details = format( "%s\n    - Excluded by %s aura.", details, ( invert and "missing" or "present" ) )
                                 end
                             end
 
@@ -451,11 +467,10 @@ do
                     local guid = UnitGUID( unit )
 
                     if guid and counted[ guid ] == nil then
-                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitAffectingCombat( unit ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
-                            local excluded = not UnitIsUnit( unit, "target" )
+                        local npcid = tonumber( guid:match( "(%d+)-%x-$" ) or 0 )
 
-                            local npcid = guid:match( "(%d+)-%x-$" )
-                            npcid = tonumber(npcid)
+                        if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and UnitAffectingCombat( unit ) and UnitInPhase( unit ) and ( UnitHealth( unit ) > 1 or TargetDummies[ npcid ] ) and ( not inGroup or not FriendCheck( unit ) ) and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
+                            local excluded = not UnitIsUnit( unit, "target" )
 
                             local _, range = nil, -1
 
@@ -518,14 +533,12 @@ do
         end
 
         if not spec or spec.damage or not checkPets and not checkPlates then
-            local db = spec and (spec.myTargetsOnly and myTargets or targets) or targets
+            local db = spec and ( spec.myTargetsOnly and myTargets or targets ) or targets
 
-            for guid, seen in pairs(db) do
+            for guid, seen in pairs( db ) do
                 if counted[ guid ] == nil then
-                    local npcid = guid:match("(%d+)-%x-$")
-                    npcid = tonumber(npcid)
-
-                    local range
+                    local npcid = guid:match( "(%d+)-%x-$" ) or 0
+                    npcid = tonumber( npcid )
 
                     local unit = Hekili:GetUnitByGUID( guid ) or UnitTokenFromGUID( guid )
                     local excluded = false
@@ -652,7 +665,7 @@ function ns.updateTarget( id, time, mine )
             end
         end
     else
-        if state.empowerment.start > 0 and state.empowerment.finish > GetTime() then
+        if state.empowerment.start > 0 and state.empowerment.hold > GetTime() then
             -- Don't expire targets mid-empowerment cast.
             return
         end
@@ -1187,8 +1200,9 @@ do
     end
 
     function Hekili:GetDeathClockByGUID( guid )
-        local time, validUnit = 0, false
+        if state.target.is_dummy then return 180 end
 
+        local time, validUnit = 0, false
         local enemy = db[ guid ]
 
         if enemy then
@@ -1281,6 +1295,8 @@ do
     end
 
     function Hekili:GetGreatestTTD()
+        if state.target.is_dummy then return 180 end
+
         local time, validUnit, now = 0, false, GetTime()
 
         for k, v in pairs( db ) do
@@ -1316,6 +1332,8 @@ do
     end
 
     function Hekili:GetLowestTTD()
+        if state.target.is_dummy then return 180 end
+
         local time, validUnit, now = 3600, false, GetTime()
 
         for k, v in pairs(db) do
@@ -1334,9 +1352,10 @@ do
 
     function Hekili:GetNumTTDsWithin( x )
         local count, now = 0, GetTime()
+        local dummy_override = state.target.is_dummy
 
         for k, v in pairs(db) do
-            if not CheckEnemyExclusion( k ) and max( 0, v.deathTime ) <= x then
+            if dummy_override or not CheckEnemyExclusion( k ) and max( 0, v.deathTime ) <= x then
                 count = count + 1
             end
         end
@@ -1347,10 +1366,10 @@ do
 
     function Hekili:GetNumTTDsAfter( x )
         local count = 0
-        local now = GetTime()
+        local dummy_override = state.target.is_dummy
 
         for k, v in pairs(db) do
-            if CheckEnemyExclusion( k ) and max( 0, v.deathTime ) > x then
+            if dummy_override or CheckEnemyExclusion( k ) and max( 0, v.deathTime ) > x then
                 count = count + 1
             end
         end
@@ -1413,7 +1432,9 @@ do
     local bosses = {}
 
     function Hekili:GetAddWaveTTD()
-        if not UnitExists("boss1") then
+        if state.target.is_dummy then return 180 end
+
+        if not UnitExists( "boss1" ) then
             return self:GetGreatestTTD()
         end
 
@@ -1441,6 +1462,10 @@ do
     function Hekili:GetTTDInfo()
         local output = "targets:"
         local found = false
+
+        if state.target.is_dummy then
+            output = output .. "    Target TTDs overridden; target is a training dummy"
+        end
 
         for k, v in pairs( db ) do
             local unit = ( v.unit or "unknown" )

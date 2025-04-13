@@ -4,8 +4,8 @@
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
 actions.precombat+=/mark_of_the_wild
 actions.precombat+=/heart_of_the_wild
-actions.precombat+=/cat_form,if=talent.rake.enabled
 actions.precombat+=/prowl,if=talent.rake.enabled
+actions.precombat+=/cat_form,if=talent.rake.enabled
 
 actions+=/skull_bash
 actions+=/berserking
@@ -33,7 +33,8 @@ actions.cat+=/pool_resource,for_next=1
 actions.cat+=/thrash_cat,cycle_targets=1,if=refreshable&target.time_to_die>5&spell_targets.thrash_cat>4
 actions.cat+=/sunfire,cycle_targets=1,if=(refreshable&target.time_to_die>5)&!prev_gcd.1.cat_form
 actions.cat+=/rake,cycle_targets=1,if=refreshable&(time_to_die>8&!ticking)|(active_dot.rake<1&talent.primal_fury.enabled&talent.master_shapeshifter.enabled&spell_targets.swipe_cat>4)
-actions.cat+=/cat_form,if=!buff.cat_form.up&energy>60&(cooldown.healing.remains>(gcd.max*2)|!druid.time_spend_healing)&!talent.fluid_form.enabled
+# [Hekili] Modified as cooldown.healing and druid.time_spend_healing are not supported.
+actions.cat+=/cat_form,if=!buff.cat_form.up&energy>60&!talent.fluid_form.enabled
 actions.cat+=/moonfire,cycle_targets=1,if=(refreshable&time_to_die>12&!ticking|(prev_gcd.1.sunfire&remains<duration*0.8&spell_targets.sunfire=1))&!prev_gcd.1.cat_form&spell_targets.swipe_cat<4
 actions.cat+=/sunfire,if=prev_gcd.1.moonfire&remains<duration*0.8
 actions.cat+=/starfire,if=(talent.master_shapeshifter.enabled&(spell_targets.starfire>4|(buff.heart_of_the_wild.up&spell_targets.starfire>5))|(buff.heart_of_the_wild.up&spell_targets.starfire>7))

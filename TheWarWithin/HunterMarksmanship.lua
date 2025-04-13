@@ -92,7 +92,7 @@ spec:RegisterTalents( {
     serrated_tips           = { 102384, 459502, 1 }, -- You gain 5% more critical strike from critical strike sources.
     shell_cover             = {  94967, 472707, 1 }, -- When dropping below 60% health, summon the aid of a Turtle, reducing the damage you take by 10% for 6 sec. This effect can only occur once every 1.5 min.
     slicked_shoes           = {  94979, 472719, 1 }, -- When Disengage removes a movement impairing effect, its cooldown is reduced by 4 sec.
-    specialized_arsenal     = { 102390, 459542, 1 }, -- Aimed Shot deals 10% increased damage. 
+    specialized_arsenal     = { 102390, 459542, 1 }, -- Aimed Shot deals 10% increased damage.
     survival_of_the_fittest = { 102422, 264735, 1 }, -- Reduces all damage you and your pet take by 30% for 8 sec.
     tar_trap                = { 102393, 187698, 1 }, -- Hurls a tar trap to the target location that creates a 8 yd radius pool of tar around itself for 30 sec when the first enemy approaches. All enemies have 50% reduced movement speed while in the area of effect. Limit 1. Trap will exist for 1 min.
     tarcoated_bindings      = { 102417, 459460, 1 }, -- Binding Shot's stun duration is increased by 1 sec.
@@ -120,7 +120,7 @@ spec:RegisterTalents( {
     focused_aim             = { 103987, 378767, 1 }, -- Consuming Precise Shots reduces the cooldown of Aimed Shot by 0.75 sec.
     headshot                = { 103972, 471363, 1 }, -- Kill Shot can now benefit from Precise Shots at 25% effectiveness. Kill Shot consumes Precise Shots.
     improved_deathblow      = { 103969, 378769, 1 }, -- Aimed Shot now has a 15% chance and Rapid Fire now has a 25% chance to grant Deathblow. Kill Shot critical strike damage is increased by 25%.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
-    improved_spotters_mark  = { 104127, 466867, 1 }, -- The damage bonus of Spotter's Mark is increased by 20%.  Spotter's Mark Damaging an enemy with abilities empowered by Precise Shots has a 30% chance to apply Spotter's Mark to the primary target, causing your next Aimed Shot to deal 30% increased damage to the target. 
+    improved_spotters_mark  = { 104127, 466867, 1 }, -- The damage bonus of Spotter's Mark is increased by 20%.  Spotter's Mark Damaging an enemy with abilities empowered by Precise Shots has a 30% chance to apply Spotter's Mark to the primary target, causing your next Aimed Shot to deal 30% increased damage to the target.
     improved_streamline     = { 103987, 471427, 1 }, -- Streamline's cast time reduction effect is increased to 30%.
     in_the_rhythm           = { 103948, 407404, 1 }, -- When Rapid Fire finishes channeling, the time between your Auto Shots is reduced by 1.0 sec for 12 sec.
     incendiary_ammunition   = { 103985, 471428, 1 }, -- Bulletstorm now increases your critical strike damage by 2%. Additionally, Bulletstorm now stacks 5 more times.
@@ -140,7 +140,7 @@ spec:RegisterTalents( {
     quickdraw               = { 103963, 473380, 1 }, -- Lock and Load now increases the damage of Aimed Shot by 15%.
     rapid_fire              = { 103961, 257044, 1 }, -- Shoot a stream of 10 shots at your target over 1.7 sec, dealing a total of 803,344 Physical damage. Usable while moving. Rapid Fire causes your next Aimed Shot to cast 20% faster. Each shot generates 2 Focus.
     razor_fragments         = { 103965, 384790, 1 }, -- After gaining Deathblow, your next Kill Shot will deal 75% increased damage, and shred up to 5 targets near your Kill Shot target for 35% of the damage dealt by Kill Shot over 6 sec.
-    salvo                   = { 103960, 400456, 1 }, -- Volley now also applies Explosive Shot to up to 2 targets hit. 
+    salvo                   = { 103960, 400456, 1 }, -- Volley now also applies Explosive Shot to up to 2 targets hit.
     shrapnel_shot           = { 104126, 473520, 1 }, -- Damaging an enemy with Explosive Shot increases the damage they receive from your next Arcane Shot or Multi-Shot by 30%.
     small_game_hunter       = { 103978, 459802, 1 }, -- Multi-Shot deals 75% increased damage and Explosive Shot deals 15% increased damage.
     streamline              = { 103983, 260367, 1 }, -- Rapid Fire's damage is increased by 15%. Casting Rapid Fire grants Streamline.  Streamline Your next Aimed Shot has its Focus cost and cast time reduced by 20%. Stacks up to 2 times.
@@ -156,7 +156,7 @@ spec:RegisterTalents( {
     windrunner_quiver       = { 103952, 473523, 1 }, -- Precise Shots can now stack up to 2 times, but its damage bonus is reduced to 80%. Casting Aimed Shot has a 50% chance to grant an additional stack of Precise Shots.
 
     -- Dark Ranger
-    banshees_mark           = {  94957, 467902, 1 }, -- Murder of Crows now deals Shadow damage. Black Arrow's initial damage has a 25% chance to summon a Murder of Crows on your target.  A Murder of Crows 
+    banshees_mark           = {  94957, 467902, 1 }, -- Murder of Crows now deals Shadow damage. Black Arrow's initial damage has a 25% chance to summon a Murder of Crows on your target.  A Murder of Crows
     black_arrow             = {  94987, 466932, 1, "dark_ranger" }, -- Your Kill Shot is replaced with Black Arrow.  Black Arrow You attempt to finish off a wounded target, dealing 358,172 Shadow damage and 35,873 Shadow damage over 10 sec. Only usable on enemies above 80% health or below 20% health.
     bleak_arrows            = {  94961, 467749, 1 }, -- Your auto shot now deals Shadow damage, allowing it to bypass armor. Your auto shot has a 8% chance to grant Deathblow.  Deathblow The cooldown of Kill Shot is reset. Your next Kill Shot can be used on any target, regardless of their current health.
     bleak_powder            = {  94974, 467911, 1 }, -- Casting Black Arrow while Trick Shots is active causes Black Arrow to explode upon hitting its target, dealing 323,501 Shadow damage to other nearby enemies.
@@ -179,27 +179,27 @@ spec:RegisterTalents( {
     extrapolated_shots      = {  94973, 450374, 1 }, -- When you apply Sentinel to a target not affected by Sentinel, you apply 1 additional stack.
     eyes_closed             = {  94970, 450381, 1 }, -- For 8 sec after activating Trueshot, all abilities are guaranteed to apply Sentinel.
     invigorating_pulse      = {  94971, 450379, 1 }, -- Each time Sentinel deals damage to an enemy it has an up to 15% chance to generate 5 Focus. Chances decrease with each additional Sentinel currently imploding applied to enemies.
-    lunar_storm             = {  94978, 450385, 1 }, -- Every 30 sec your next Rapid Fire launches a celestial arrow that conjures a 12 yd radius Lunar Storm at the target's location dealing 104,729 Arcane damage. For the next 12 sec, a random enemy affected by Sentinel within your Lunar Storm gets struck for 98,184 Arcane damage every 0.4 sec. Any target struck by this effect takes 10% increased damage from you and your pet for 8 sec. 
+    lunar_storm             = {  94978, 450385, 1 }, -- Every 30 sec your next Rapid Fire launches a celestial arrow that conjures a 12 yd radius Lunar Storm at the target's location dealing 104,729 Arcane damage. For the next 12 sec, a random enemy affected by Sentinel within your Lunar Storm gets struck for 98,184 Arcane damage every 0.4 sec. Any target struck by this effect takes 10% increased damage from you and your pet for 8 sec.
     overwatch               = {  94980, 450384, 1 }, -- All Sentinel debuffs implode when a target affected by more than 3 stacks of your Sentinel falls below 20% health. This effect can only occur once every 15 sec per target.
     release_and_reload      = {  94958, 450376, 1 }, -- When you apply Sentinel on a target, you have a 15% chance to apply a second stack.
-    sentinel                = {  94976, 450369, 1, "sentinel" }, -- Your attacks have a chance to apply Sentinel on the target, stacking up to 10 times. While Sentinel stacks are higher than 3, applying Sentinel has a chance to trigger an implosion, causing a stack to be consumed on the target every sec to deal 84,588 Arcane damage. 
-    sentinel_precision      = {  94981, 450375, 1 }, -- Aimed Shot and Rapid Fire deal 5% increased damage. 
+    sentinel                = {  94976, 450369, 1, "sentinel" }, -- Your attacks have a chance to apply Sentinel on the target, stacking up to 10 times. While Sentinel stacks are higher than 3, applying Sentinel has a chance to trigger an implosion, causing a stack to be consumed on the target every sec to deal 84,588 Arcane damage.
+    sentinel_precision      = {  94981, 450375, 1 }, -- Aimed Shot and Rapid Fire deal 5% increased damage.
     sentinel_watch          = {  94970, 451546, 1 }, -- Whenever a Sentinel deals damage, the cooldown of Trueshot is reduced by 1 sec, up to 15 sec.
     sideline                = {  94990, 450378, 1 }, -- When Sentinel starts dealing damage, the target is snared by 40% for 3 sec.
     symphonic_arsenal       = {  94965, 450383, 1 }, -- Multi-Shot discharges arcane energy from all targets affected by your Sentinel, dealing 30,350 Arcane damage to up to 5 targets within 8 yds of your Sentinel targets.
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
-    aspect_of_the_fox      = 5700, -- (1219162) 
+spec:RegisterPvpTalents( {
+    aspect_of_the_fox      = 5700, -- (1219162)
     chimaeral_sting        =  653, -- (356719) Stings the target, dealing 117,636 Nature damage and initiating a series of venoms. Each lasts 3 sec and applies the next effect after the previous one ends.  Scorpid Venom: 90% reduced movement speed.  Spider Venom: Silenced.  Viper Venom: 20% reduced damage and healing.
-    consecutive_concussion = 5440, -- (357018) 
-    diamond_ice            = 5533, -- (203340) 
-    explosive_powder       = 5688, -- (1218150) 
-    hunting_pack           = 3729, -- (203235) 
-    rangers_finesse        =  659, -- (248443) 
+    consecutive_concussion = 5440, -- (357018)
+    diamond_ice            = 5533, -- (203340)
+    explosive_powder       = 5688, -- (1218150)
+    hunting_pack           = 3729, -- (203235)
+    rangers_finesse        =  659, -- (248443)
     snipers_advantage      =  660, -- (1217102) Trueshot and Volley increase the range of all shots by 30% for their duration.
-    survival_tactics       =  651, -- (202746) 
+    survival_tactics       =  651, -- (202746)
 } )
 
 -- Auras
@@ -266,7 +266,7 @@ spec:RegisterAuras( {
     -- Taking $w1 Shadow damage every $t1 seconds.
     black_arrow = {
         id = 468572,
-        duration = 10,
+        duration = 14,
         tick_time = 1,
         max_stack = 1,
     },
@@ -481,10 +481,13 @@ spec:RegisterAuras( {
         id = 451803,
         duration = 30,
         max_stack = 1,
+        onRemove = function()
+            applyBuff( "lunar_storm_ready" )
+        end,
     },
     lunar_storm_ready = {
         id = 451805,
-        duration = 30,
+        duration = 3600,
         max_stack = 1
     },
     -- https://www.wowhead.com/spell=269576
@@ -500,7 +503,7 @@ spec:RegisterAuras( {
         duration = 30,
         max_stack = 1
     },
-    -- 
+    --
     moving_target = {
         id = 474293,
         duration = 15,
@@ -811,11 +814,11 @@ spec:RegisterStateTable( "tar_trap", setmetatable( {}, {
 
 
 spec:RegisterGear( "tww1", 212018, 212019, 212020, 212021, 212023 )
-spec:RegisterGear( "tww2", 229271, 229272, 229274, 229270, 229273 )
+spec:RegisterGear( "tww2", 229271, 229269, 229274, 229272, 229270 )
 spec:RegisterAuras( {
     -- 2-set
     -- https://www.wowhead.com/spell=1218033
-    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.  
+    -- Jackpot! Auto shot damage increased by 200% and the time between auto shots is reduced by 0.5 sec.
     jackpot = {
         id = 1218033,
         duration = 10,
@@ -939,7 +942,10 @@ spec:RegisterAbilities( {
         recharge = function () return haste * 12 * ( buff.trueshot.up and 0.4 or 1 ) - ( 1 * talent.ammo_conservation.rank ) end,
         gcd = "spell",
         school = "physical",
-        -- cycle = function() return talent.serpentstalkers_trickery.enabled and "serpent_sting" or nil end,
+
+        cycle_to = true,
+        cycle = "spotters_mark",
+
         max_targets = function() return ( trick_shots and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
 
         spend = function ()
@@ -963,14 +969,16 @@ spec:RegisterAbilities( {
             removeDebuff( "target", "spotters_mark" )
             removeBuff ( "moving_target" )
             if talent.precise_shots.enabled then addStack( "precise_shots", nil, 1 + talent.windrunner_quiver.rank ) end
-            if debuff.explosive_shot.up and talent.precision_detonation.enabled then removeDebuff( "target", "explosive_shot" ) end
             if debuff.spotters_mark.up then SpottersMarkConsumer( action.aimed_shot.max_targets ) end
-            
-            if buff.lock_and_load.up then 
+
+            if buff.lock_and_load.up then
                 removeBuff( "lock_and_load" )
                 if talent.magnetic_gunpowder.enabled then reduceCooldown( "explosive_shot", 8 ) end
                 if set_bonus.tww2 >= 4 then spec.abilities.explosive_shot.handler() end
+            else
+                removeBuff( "streamline" )
             end
+            if debuff.explosive_shot.up and talent.precision_detonation.enabled then removeDebuff( "target", "explosive_shot" ) end
 
             if buff.double_tap.up then
                 removeBuff( "double_tap" )
@@ -980,10 +988,8 @@ spec:RegisterAbilities( {
             if talent.bullet_hell.enabled then reduceCooldown( "volley", 0.5 * action.aimed_shot.max_targets ) end
 
             -- Trick Shots
-            if buff.trick_shots.up then
-                if buff.volley.down then 
-                    removeBuff( "trick_shots" )
-                    end
+            if buff.trick_shots.up and buff.volley.down then
+                removeBuff( "trick_shots" )
             end
 
             --- Legacy / PvP stuff
@@ -993,7 +999,7 @@ spec:RegisterAbilities( {
                     applyDebuff( "target", "hit_the_mark" )
                 end
             end
-            if legendary.secrets_of_the_unblinking_vigil.enabled then 
+            if legendary.secrets_of_the_unblinking_vigil.enabled then
                 if buff.secrets_of_the_unblinking_vigil.up then removeBuff( "secrets_of_the_unblinking_vigil" ) end
             end
             if pvptalent.rangers_finesse.enabled then addStack( "rangers_finesse" ) end
@@ -1013,6 +1019,7 @@ spec:RegisterAbilities( {
         spendType = "focus",
 
         startsCombat = true,
+        cycle = "spotters_mark",
 
         -- notalent = "chimaera_shot",
 
@@ -1101,6 +1108,8 @@ spec:RegisterAbilities( {
 
         talent = "black_arrow",
         startsCombat = true,
+
+        cycle = "black_arrow",
 
         usable = function () return buff.deathblow.up or buff.flayers_mark.up or ( talent.the_bell_tolls.enabled and target.health_pct > 80 ) or target.health_pct < 20, "requires flayers_mark or target health below 20 percent or above 80 percent" end,
         handler = function ()
@@ -1255,7 +1264,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            applyDebuff( "target", "explosive_shot" )
+            -- It does technically trigger the explosion, but we just need to model the debuff presence
+            applyDebuff( "target", "explosive_shot", debuff.explosive_shot.remains + spec.auras.explosive_shot.duration )
             if talent.precision_detonation.enabled then addStack( "streamline" ) end
         end,
     },
@@ -1304,6 +1314,7 @@ spec:RegisterAbilities( {
         spend = function () return buff.flayers_mark.up and 0 or 10 end,
         spendType = "focus",
 
+        cycle = "spotters_mark",
         talent = "kill_shot",
         notalent = "black_arrow",
         startsCombat = true,
@@ -1349,17 +1360,17 @@ spec:RegisterAbilities( {
             cast = 0,
             cooldown = function() return pvptalent.kindred_beasts.enabled and 22.5 or 45 end,
             gcd = "spell",
-    
+
             startsCombat = false,
             texture = off,
             talent = "cunning",
-    
+
             handler = function ()
                 applyBuff( "masters_call" )
             end,
-    
+
             copy = 53271, -- Pet's version.
-    
+
             auras = {
                 masters_call = {
                     id = 62305,
@@ -1380,7 +1391,7 @@ spec:RegisterAbilities( {
         spend = function () return 30 * ( buff.precise_shots.up and 0.6 or 1 ) * ( buff.trueshot.up and legendary.eagletalons_true_focus.enabled and 0.75 or 1 ) end,
         spendType = "focus",
 
-        -- talent = "multishot",
+        cycle = "spotters_mark",
         startsCombat = true,
 
         handler = function ()
@@ -1405,13 +1416,25 @@ spec:RegisterAbilities( {
         cooldown = function() return 20 * ( buff.trueshot.up and 0.4 or 1 ) end,
         gcd = "spell",
         school = "physical",
+
         max_targets = function() return ( trick_shots and min( 6, active_enemies ) ) or ( talent.aspect_of_the_hydra.enabled and min ( 2, active_enemies ) ) or 1 end,
         shots = function() return ( 7 + 3 * talent.ammo_conservation.rank ) * ( buff.double_tap.up and 1.8 or 1 ) end,
+
         talent = "rapid_fire",
         startsCombat = true,
+        texture = 461115,
+
+        toggle = function ()
+            if buff.lunar_storm_ready.up then
+                local dyn = state.settings.lunar_toggle
+                if dyn == "none" then return "none" end
+                if dyn == "default" then return nil end  -- let the base toggle apply
+                return dyn
+            end
+            return "none"
+        end,
 
         start = function ()
-
             if talent.bulletstorm.enabled and trick_shots then
                 addStack( "bulletstorm", nil, action.rapid_fire.max_targets * action.rapid_fire.shots )
             end
@@ -1426,7 +1449,6 @@ spec:RegisterAbilities( {
             if conduit.brutal_projectiles.enabled then removeBuff( "brutal_projectiles" ) end
             if set_bonus.tier31_2pc > 0 then applyBuff( "volley", 2 * haste ) end
             removeBuff( "double_tap" )
-
         end,
 
         finish = function ()
@@ -1474,7 +1496,7 @@ spec:RegisterAbilities( {
             reduceCooldown( "aimed_shot", 2 )
         end,
     },
- 
+
     -- Talent: Reduces the cooldown of your Aimed Shot and Rapid Fire by ${100*(1-(100/(100+$m1)))}%, and causes Aimed Shot to cast $s4% faster for $d.    While Trueshot is active, you generate $s5% additional Focus$?s386878[ and you gain $386877s1% critical strike chance and $386877s2% increased critical damage dealt every $386876t1 sec, stacking up to $386877u times.][].$?s260404[    Every $260404s2 Focus spent reduces the cooldown of Trueshot by ${$260404m1/1000}.1 sec.][]
     trueshot = {
         id = 288613,
@@ -1531,9 +1553,15 @@ spec:RegisterAbilities( {
             applyBuff( "volley" )
             applyBuff( "trick_shots", 6 )
             if talent.double_tap.enabled then applyBuff( "double_tap" ) end
+
+            -- There are weird situations where it doesn't do the below .. but this is usually what happens
             if talent.salvo.enabled then
-                applyDebuff( "target", "explosive_shot" )
-                if active_enemies > 1 and active_dot.explosive_shot < active_enemies then active_dot.explosive_shot = active_dot.explosive_shot + 1 end
+                if active_enemies < 3 then
+                    spec.abilities.explosive_shot.handler()
+                    if active_enemies > 1 then active_dot.explosive_shot = min( true_active_enemies, active_dot.explosive_shot + 1 ) end
+                else
+                   active_dot.explosive_shot = min( true_active_enemies, active_dot.explosive_shot + 2 )
+                end
             end
 
             if pvptalent.rangers_finesse.enabled then
@@ -1592,7 +1620,10 @@ local beastMastery = class.specs[ 253 ]
 
 spec:RegisterSetting( "pet_healing", 0, {
     name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
-    desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage. Setting to |cFFFFD1000|r disables this feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
+    desc = strformat( "If set above zero, %s may be recommended when your pet falls below this health percentage.\n\n"
+        .. "Setting to |cFFFFD1000|r disables this feature.",
+        Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id )
+    ),
     icon = 132179,
     iconCoords = { 0.1, 0.9, 0.1, 0.9 },
     type = "range",
@@ -1603,24 +1634,54 @@ spec:RegisterSetting( "pet_healing", 0, {
 } )
 
 spec:RegisterSetting( "mark_any", false, {
-    name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ), 
+    name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
     desc = strformat( "If checked, %s may be recommended for any target rather than only bosses.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "trueshot_rapid_fire", true, {
-    name = strformat( "%s Indicator During %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ) ),
-    desc = strformat( "If checked, when %s is recommended during %s, a %s indicator will also be shown. This icon means that you should attempt to queue %s during the cast, in case %s's cooldown is reset by %s / %s. Otherwise, use the next recommended ability in the queue.",
+    name = strformat( "|T135130:0|t %s Icon in %s", Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ) ),
+    desc = strformat( "If checked, when %s is recommended during %s, a %s indicator will also be shown.\n\n"
+        .. "This icon means that you should attempt to queue %s during the cast, in case %s's cooldown is reset by %s.\n\n"
+        .. "Otherwise, follow the next recommendation.",
         Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.trueshot.id ),
         Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.aimed_shot.id ),
-        Hekili:GetSpellLinkWithTexture( spec.talents.improved_deathblow[ 2 ] ),
+        spec.abilities.rapid_fire.name,
+        spec.abilities.rapid_fire.name,
+        -- Hekili:GetSpellLinkWithTexture( spec.talents.improved_deathblow[ 2 ] ), -- no longer resets Rapid Fire?
         Hekili:GetSpellLinkWithTexture( spec.talents.surging_shots[ 2 ] ) ),
     type = "toggle",
     width = "full"
+} )
+
+spec:RegisterSetting( "lunar_toggle", "none", {
+    name = strformat( "|T461115:0|t %s: Special Toggle", Hekili:GetSpellLinkWithTexture( spec.talents.lunar_storm[2] ) ),
+    desc = strformat(
+        "When %s is talented and is not on cooldown, %s will only be recommended if the selected toggle is active.\n\n" ..
+        "This setting will be ignored if you have set %s's toggle in |cFFFFD100Abilities and Items|r.\n\n" ..
+        "Select |cFFFFD100Do Not Override|r to disable this feature.",
+        Hekili:GetSpellLinkWithTexture( spec.talents.lunar_storm[2] ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.rapid_fire.id ),
+        spec.abilities.rapid_fire.name
+    ),
+    type = "select",
+    width = 2,
+    values = function ()
+        local toggles = {
+            none       = "Do Not Override",
+            default    = "Default |cffffd100(" .. ( spec.abilities.rapid_fire.toggle or "none" ) .. ")|r",
+            cooldowns  = "Cooldowns",
+            essences   = "Minor CDs",
+            defensives = "Defensives",
+            interrupts = "Interrupts",
+            potions    = "Potions",
+            custom1    = spec.custom1Name or "Custom 1",
+            custom2    = spec.custom2Name or "Custom 2",
+        }
+        return toggles
+    end
 } )
 
 spec:RegisterSetting( "prevent_hardcasts", false, {
@@ -1630,4 +1691,4 @@ spec:RegisterSetting( "prevent_hardcasts", false, {
     width = "full"
 } )
 
-spec:RegisterPack( "Marksmanship", 20250321, [[Hekili:T3Z(VTnos)3sXH6gJ04yjN0xFXb4UDXIVTy39BX5Ty)HpCwwXwowxKL8Phjnlc8F73mKusu8LEy720cdSBtIi5mdhoV4OrKtTM(htNSWn1B6Vzp0(YHJSTgyp6IlgnA6K0h34nDYg3535El8lHURH)9xDJVlzTByYk)nyJpge5Uabssuw8COd)TTZwLMUj5dNF(T(PRYUzW8O1NN4VolWn1pkCES7Yu8VNF(0j3K5hK(ZHtVrbrm69x8(PtCZsxffpDYe)1)W0jR8xSWJ2DVK5tNGD)SHJoZ26dBNHDz7SpTbH02pU9J5nAn0qJdTHg)rVap4XZM4gCFuzR2Nz)oO1)4p)tOjp3KOWTZS3oltai2Nz9wOB)ESxG)A)q34h3oZYAG12z)9F)xyD7cGkoZ(9fesfyqBC0hidB4GllE8W3dT86TZWFEPUXo8DqJqNSTn1dcdk1ZDbqC)u08SKTZIcdG)WF52zPUbEHPEl4hXqKyP8lOVlJJwZGoFFqO(PeGZ9)MbJp(vqprbKTZs8st9dVTSZV9mBKj9R(HrXqZ(RZPY)h4xuab(bICM)yf0N)0fg7Fcsv(HtNe4NKMGsEPX(ZVlzve5V(nIeTxO7nbElM(pMozESpaxF3PtEr(eDWIOmOzNu3ndY75e35O050j3hfe4940uqwulKU3f(b84bPXzEiMDIroBjqYFocMrAbZnzlxoytS3C)ephYeyq2MTZ6TD2jBNTWJ0CYMOuO7joRbUcq4paYGp902zKgxhDpWKH5r8TEPSg7Z1oHZWGm2AjbcAJP(5u4fAPqT8lcvsWbxBvrrjJ8sZCGhGfu4pHjYs)yVCwG0eiBtjSVjaSk54ghh9aIG3OfbNWauvUCjBujxMNcQYIXw6RJ8kF(nzWupnjnkED(ZxcpcKsMVcbKtQ)AqC(QTZUD(IbRD)C5mZfAzHt(kZBnZ5uGFycdY5a)mYjn2ZBqcS(5h6fWjveKb2OCiuNZ8OOaKBmi2BTRFiO9D92zuAPOTTZoF7Sr1baM0x5mj2DJ)cYskotExDYy0vieVl8sJcj(kQiTLVugeHl9HlCqppKPnsyVGyZX5MOWSKbG80dUXpqmu4KqSC7y7CXM55REhcXIYzU3N3eeL4FVxX647FwiGQtkZAisEAOEoYg7QfFx5vdf6NEJNlPEFoD7S5UjOLZB9cj6cKgQQnKq8yvsOJ4XEPnSk4ofdoyPl0yH7G8rmpI4Kr1eZMVFPXUH)hi0e))czTk6TOn9iG3cIFCg)yEiWFliZdrntpj31WGyQZ4cD2yxqDX7EuxWDXIKbEFgDWX1bMIcACjX7rVsLduozP)TRqMzPwSmgxKftuRCUfEaDjGjLi0bIgVnNgFbotsHv8TZgl(CyvZH1wFEsgmRFhiwMAnyLBId4O3bhhfYCnQ0m0OHM6hH5Pex2MWLDdXLTkCH9O2LjXouAywSLs29PYn6tvkSVunAXMb6(nd1sym8k(y(zTv5OVjkHojeeKyKqFAe3X(BOY3)ieVCmeSRhnas)u4)HE7cE0IIarsQdU0iwWD)rUe22z)tGE2oJqqqiOa4w7)xmUqQ7DySMBI9JaRfalpHmEy3huON4EpkUVeJGKO8VjarcXYhIC4)dIGGoj)gsspef(Qu0gAGlaTO79GbUYnGqWqxY5)av9)HHG8GpsRUbbrpWWcStNGagasOZNaYKgzUuPlVLl9MNwi5KarIdoNaCVcnRLLGrbp7FW0tEDbXKIXZgagalMHrlzpLScKpnD)mqfOIvYaIvfh62Wec80yqCBa55vEUbPRC2GukSKcpYbFeqCC2t9aNQqlQczRWckWpCyXhGbGtddNruZxKOkASgn2C2N5OEoPyNfOJIymoGhzkUu)F(joujzQLbeBGJSfGK3kIPFQduIbSHKEWghkV6KgHmiN3nKOCypSK05hS5Ozyy0l0BTVhv)zurekml48ELl2)rc(u0hxdzyj1eyHiHGZO2JfU9wr8SIHPeT(g3uZB1InrZcVbKpVd7agz2c5DBLKTEnGxMuNyqd17wv2UFzuRc(oQ6uOzUnQ6cZhe68HGDIDIw6SmgiQSyimQ0O1ryiqfob4az9drNxNsNdxP2fyzhebbgwvXom4hAzd6hYyDdPxD0546OZ(fEBmfAq9RmsC5V3zA6D(sCyak1GBp05gduupvjpgcB4b3fuzWGjGVUFoe9cLmhm3tCoL7V9dvDPrTzSWDnX7e7zVM6IfXf0iyyiof)9cWRRDIJoKLGea4rAUVBa5XSOeMhfM4Va76VsuxOUd)PCfgicIsnMhatkKj7kxyMeHEULOCWT7CpMB(nrpG9GebXMamUGB8sFWdDptyFlwFBPBCIVBYJ5HOGVxct2XYjNX3TTeaI4CjsscMkWODfmQ3J)Zf3K6t8JO3jarwukurl2esO0)jnZsYotQUR23WVJo(nskUBXIqpu4sR(vrT5cSIklgamnu5cruq8fL3I9iAJ(Xiq4vCD5uNPYIuvzYii4OIujoOYObBVN0Q7eetwGPjWUs)0vz5ja95DtFs1wSj7IHUFxXjeX(miW6hWu435vMh8XnlCJPLhc9Os5Tm1deadXNLeeLY)3O)VOLlDUD(cs8BCrBz2vAHeAPiIutY2FAW(MlDM3vuOMal3GQzxJ00skVN1Ah4POzlPjOeVZ4K)AT09zGTSlRhaq3UKeSHgW0tBla5FXLekqyIZwqKy52sSCJuwd6s3j(RhRK5Rdfy31JJDw4rx(LQeiPax2iEpTo4PCvRmYy1SKC9j9tw7HM6WvQbSi3OF7IrxDiV0yguAyGADVHPTRbMpQvgsMP2edKv5Q1Iew)630CPTxMycEZ(ucgRK6msjThawuU(juxwKnbGE3yPMILpkmfx4tPjmJ4HSWRx5MSZZ(hlvBbrKuOvM2U8GSjSci2)Fcqyc95iaOImm3NS46fcL3NI9hlWHBaMxq0nlFcbdCRUteGjVYDZgVWejIur(a1n9imkxLBXIbSBySkYmfMnGmasoc7BsX0WpCPxm8FfZFsq6vxcjCrYw2sHDRHZ108PoeDWzU3ggLK6pNMPuwyliuIIj7LQiLIjUR5NFBC9Jj7ollybgSsswqk3AfT3uCBkzGm4zleRIDJIvPzQIMcKWwNcJQ3Nq3Ivr2XzdC3yWaR5yvuoqvXQOWCSXjFRIvrfa6U7(whRIC4HgPSg0LUt8kJvrpk2hXQyq4PrzkSRXQOeEnnwf5xm3EkwfdrUPnwL6Zw4UhRsnB0AxSq1uCuFSkASeSpIvPDtmAAwsQ5DgS)kplvv)sV6QDLPAkCf9LVfhxP(QaR2ASQ26FPrL3cD9ImtpmvuIy13OTUrmM(VVxMZkY4OP57owhD6FVOm4VcK)ij(sc6YvzyUzZ6gzS7FffJV6QBxdD0yz4vBnE9LM(Ud2SrdQblfVQulcckXVBYgiGC8L4bcIoRECrSRyXPX6zYJR3Skk0h8GedMFCdQwNo59clSaNBHaTDOjnVSx9nXvOOQZ1gk3l7NVaqPfaMsEZHMoCJN7gwAYWsV)HdMoUMsZKsHdk9gmW7ZEZZsZ7sEbSv8I(iirrPFYwYFWpCrCwyOxSZ)jdK3IR7fyyOg6omL4PoxGwTQeM3HveTCcJVQRMw6NvTOy23tL3lwfddMC4zP3JNEtzAnNA143Gfw4ngJTIWT5E5o1g7NfNWWnWANx8DyTczmSl1iPq8t8TYSLVU7mrkVHNdffbYLzXpAo0SVaKIB4Cpiiy3ahSaAmhI3bICEFj1GQQeMJ54UQsivJZiaHFIZ)oBbXtQ5aAKNrCrHriKGSKYPktdNwfAdYRcn7gv(HJ4u5alj4ptPI9Gnuubo)Rgc8Inb09dXx790jKpye)1BIIZRLUxLwumtVcZ6fyfMuAbjrObC3S0O1U4hbZmWtaS1MKbB)4VqkYc8RC5hIcb0rA(vsrZbGdZlNCd564qhoX6Z9lG4f7Di(2QqmAJhD7Yj0869k2cgF5G37Kxi7e5PNQ1bY1copE5itdc)N(5tNdivCEdOIcU17uZ)v5tqyLWKBJY1KTFuH4hRQ0BNS3i1uAEHxlqDI1gUOuIe0y7BVAUgkaQ6ur0CGkUMPaWk6Ybe4TdSG)wZaL2H2tVncW1csBZlAsn3i6u(LnPaWDDrRBaVDGvfVvrhAp92iaRdKs2Jv58haaynu9hya0GgD8NEQIpZRLHC1V7JtfccG14lTz2pR(TEmU6Zk(op6JeKA7dp9KbvWRhnux7W0VcuT1bvzzKQqvCvP)tpPLPk)vt07eDFNgNk)ryCL9LYa3p863mubsbyR5RX4AlS)yqq9QSycGVW35ZojMZpkX8mvIPU4CslJatiaIu5pnHAIQP4lcODX1OjMAXVyabYt3huGObDBJUmZxR14YKR5gb0Dk4jZuAhDURNsR77rqb13GH0iKx)hdHIzzdgsdrE5wby6MMCMZ1Ndk4RfWkEbOMICST0DxbFTaM7TSQIrW1wtPtTGZQ9G7zp1v7IYrz1gd(ga4VvSF31LUdm4RfWDDPRH0DxbFTa(zVDIN3uxTlkhLvBm4la8LQdCMwLaVQA4Yv)qPEL5a5t2prWVd5WwtwX3BzL1idCpJL3S35oVvneZFDIcWt8TmEyHMM9z(SaAVxn0uurhca2qnF0qCivlicyqBTI0u4lwfjIWxxvMicFlnkZs1SGac0wtdsiqWEOu(q3pVeOxokNa3pW78rLgET(YyEYsJ9Pwl9R0ipZhtlFbOsZ89rKZ6aQCU6KaSYUCabETGTRE1Biv3vWFWa8xB6EN2D1(v24Gc8deypsZhP5NN0CxTy0qQURG)Gb4J0D3O7kYwn6nZ3qkU9aUnGSvPQO9uCRaFTa(GeDxhZY0XabQfShze7ay)QqZsBcwJUvVtu8nlZ9q2W4(0znw6d9F6Px0waktceqDnVUROfMxoQAPjySZNAxTEmQm)nmzUwjDDM1LMg0zxELYH1t5tp9IlVUYebyGg(Ii7DIbmBSX2rwxp2wBjSWa31JvdVoTyQUiCYB)QkCiny4utqqGh3VVH6ZrdhXEO6gUsfGkNzeCPR2K4wX48pnEOKse9JfXq9iTtAS1dtboH5QFYEyFDLp0oqM1eJW3O2Xo)ODSVFSJD(3T2Xo)ODS9MDSIi2KsgpBu7u426aQLeLyAZYLD5ac8AbRcbXgT7Zgs1Df8hma)1MU3PnLVFLnoOa)ab2J08rA(5jn3vlgnKQ7k4pya(iD3n6UISvJ(qcBif3Ea3gqQLjOUpTLIBf4RfWhKO7S7w5AEmqGAb7rgXoa2Vk0S(mFx32cvNGhBvBStMEAEgJSBEgJuyfxFMVv05QzmYstgJKNmniJrYdQDPMPrzmYsvgJKXSXgBhzjKXivGRRzms5IP6Kf0XmgPacMYyKOt3oNXifocLY8TOYhpr3UmgPnXVTxJTEyQpJrk0AAxgJAkzwtmcFJAhtFMVpAhBpqwFzTJD(3T2XKY89r7yDLmXi22(XFMuZ4yGAVj)OceV4ltsXschVeaJw6Jx8o)TwCz)dnS2pn5C(dOVZ)7ey)7SlGSFbXW50VubYHfyYA3WKv(BgGqy7hr09j2Tsa5cUNDW5Jxl9FGCVXph(lR3HNSy4Hx8zBNnC4BxAF57WjfDEKmO4al40XNxE9d(A)LJ1CidaiE7SJ35AFXVZ1uVKLlA)A8EvASSX7xtUnOgxOcx9mDOu6xuluya5nWzwP(JcHsln1FYfusjQSfxItP2QmWCRz8di)zk74yfDSNbkzSbkPIr3gYp5zrFZoTBJKPTKKPHipudy(Rvp0o1jsxUFWCUYf7x)ESJUuXR0VXd7P8Q8dCNOg3LheRiMREGOo26PNeEIDVxu5BpvJz3YZYuolZqd8xq78px(czx0O8XBH6Vq3c18llIs88hd(mP9cTNoFQvTNoTQ2HZ3mDhwvkIkJ)uLsmK3(gCYOWuKkqAlcYVPpNQ4fLYV8XrRmvVWYVI7YkVITcH7TAQq48fj13PCTe(E(f2iRwAd(j4nWFE6ylzlUxnc94s1pslpQUQhQPfh9TgG(12O1ymk7FGyWHO7)70i5(5WLzje7Jutk52sP2eZ2mGoWCR9WYaql(H3hDha(pdSMq3aISoLEiXh64Zakskv1AlKESfu)VYAuPpfkwkpFQLHt2gLcFkasXjlTAGOYowP(Pku8gruu9eJ(GHMIJc69egEViceoOOLrdcEXbrp5Mvrs9oHAcM7qJUqtR8aJ(kBn2rgzXV5UesGyKqpqC9cPtxbQy6))KhJ9x(ViBr8tuNJAp2GPs4W2xi7QIOtKLKVti(rrSidu)RXGh8w4tiPZiUZRsFLNU(ink)HQ3JWq0tqvHwoReHfxOL8(Ifgr1dUEUD(Q67uVxdoB9zlHY3dap9KM7aa6uu88)VpBMlCFRiq(vdj9BksVuYusWKoEHBbgHHZDbbWbJ8JaGEkMjOU0lu2p57nfbKvC5PC4rvXLrIcFswf7OqX5XbSBsnNKgOje1Nbg9vt89or7TzclWr5BYK(IsMLxMjfw6oi4PIgWEtcw(Iq5kkA1DjOCA5EPP2WRC5N0t3HeIrZHD8G7i)bVCKrE1(HvvR90tErdm9uQUOY4vr0LfkcMngiQ6j0B1B5EqzCH163u5qALZNkJSIo)(ttH1cxWXcgs1mJBR94kGryPGmsCb3lgjpIAtUOuALl)anW7aPFRGauQ3QWoWTZx8voYPkmOQMmunV66TkrPDKAVoj0qBTl6k6IRyydGPHgyaP)El4LV6YHnIxwV2NMEWz8dNilJMNLq9Df7DRx4vKhG5(PoBvK9ht38lnLJfV8d2LVmEBoVWlXpgneY)kHC5Err48V4sFghbv(VcYj5N4uXuSv(U(zPxtRnxzQCxjsQ7OgtL0UZit2kE51feH(izNfIjZpGLZXDMBIxN5Bj3p2TLLs0(nKZss70emsi(Jx46hVW1pix46kfzXef7N6T(14VWUy1hB9AKMYtMjjFEPkZyDtR(ivFECYjKU5fFuZ)SBvwCAAQ9if9TsPhP5BUvrM1RTWJKht7kWNgv3rQ(IBLrSP2AhrvTQJubTow0rkxev(6q6wjhPaagQ4iXxvsxl4iLveAFJV6BocUvvBuN(mBvQGwle1wQrkutAxLg1qASRM5S5nZv30RUAI00RYR5M5AEnwQuwsJzU6QWsnfyzxQVYDTogBKzovLxPPQRCxjQQM52J1wPYfrZvZtRmZ1UcRCFvxLknEx1mNHc5PvM56unvASKkRlChzZChKcQubnoDcM06P)M9LxqUZsN(F)d]] )
+spec:RegisterPack( "Marksmanship", 20250330, [[Hekili:T3tBZTTnt(BjtNQynow2IooPPNTNjPpxV2ET968O2RF4MtuWsuw8cfPEiPIJZ4r)2VDxaqcIx4lYsj2z80xSnbWIDxSy3flwamE44)C8OzS8GX)U3jENDYPNEYGHV8StF54r53Uky8OvSPVNDn8lXSLW))3yPVpBjloBr4kSWBJsyZqyKLSoDkuHVzZKf55RY((Jp(6W8fRVAW0KLhNfUCDelpmjEAkBEo(3tpE8ORwhgL)ZXJVYgo45bibBD(IK0XJgfU8hgpAr4Szb8QhKnD8iS6hDYPhD6jF)Mjyv2m5VwHqAZVilYBOZIg6UvN4bf9pcIcGpozel6djYY8oY77GY(Z)(VHccyzjXBM4TzY6kaW7OHVgQ0FKgefUmmMLE7Mjdhoy4MjV9p(vQsVe69J8EtbcO0EErN(9utozWzIpEYBGV)IntWFEM92DY3bfbvXZZD5e7ipGndqPFmz66SntsIJG)iC(Mj5SOG48GzL1)eef5ChOMZttwkGCznqi(xzaF6NwdTn95q9qPKntYcYZdJVww1xFKhYu(TW4KuOWWLsS7Fd(flTVSziV4pxa14Vzql)BqSkmE8OOWS8mu0lpnC67ZwKq)1Vts0bXSRIcMn(DJhnnneGAiB8ONjjWbZswdf7NZwnqwZrSPO454rFijkk42X5GWOti9bg8d4ZdYtxhG9SFkYrlbI87iyovdmOOBA4kEfhDdBfIwPxhKdeEEcWzwfepJeEMgISLriLj59)ouHrttwbFhMhfaSd2Qvr3IS5jJwLKxzaGfLYhOrWMJmWvPHljPrEpoaiQBNcCI)KJaJhnSKgGzS5HerOq5xTE(8bR4OMpXZhSgiGEBMCWMjZcOIZ44rMp0vVh413atrU7UntOcxM8baz9f9pVW(kLtdMciJLICWxQXb1gQQYr)ru66FqdWGudBfmFik5gKt9FtvhK0JjgrcquWFbcDHrqnfJyG6lwMkRln86RdsH5eQaDGkpXPqfXxiQsPmjrDMdI6QiqJRplnn5gnk7Tr3WUfWTPSmanFhwpqHcwXntUbMuGeri(nHedoWmh5gVlkGbF(psUzwq6aJHtvw(6viU9kh4glCzWmFUmrfu7p4SZWpbSN3IvIJeaFeyaHitn86f4yq(cgW9)NSvHqv(XW0aUINWCuQDAuckWJsRtxGciiTUAfjCZW5eVBnmcMNLNKctfcjsSc5CGGDxvaTuc0QaQq(1I0jws)YcRYNk)(vLyL87ZHpb6e4uHFoWr2m58ntUE6SblzFezXV2blofzn(ZboJgl(VPryOjGo1GiqQErs0mnwjnAJOaYchE8PGUDI5I82eO6eJGugWLQ3m5xxhJ6uhXzPOKFwcAsd)TvjzzHOwUgKyKt)b9RWyCIFEAqWGmbIQm1oc7lFIp5lrNbPblzHXqVDj0PepWVevpEZKtBcacviip97CWtd(4kqYk8db2eD58vU22qK0)hb5jXKVkat(ggk9k0rWqoCueoFdP6kc63KSghoIPFhMGgyQbNKRHIgaJAb)R10i2VMGtyjH7Ff8KIZd(GywX6ms0N0C)YvtTP0zLeV9NvG2vu)iNseLGAvIN5JoSrdAiB9zKvA)RsIxNna6NByP3qMx9ZiFB898HowolyFm9ch3Etxv3uHZJCQBcEoY0qtN52z8fs8MwjrM)VrygQBNqnUxgvm3cCfOjldyOWQEpmLp6FvaxY4MfbXAYhHcf3FX0xHm6HNGCAxtlkhbWQ62pQ5C3gpKtqGAURrQ9CCYbuaPGROpYixn9L(cn0tfbu8WqTVPr75mOWc)5KTa4ZOpI2q4kqopLfdZWIc)eYESuBDNYsGvZaZeu8Tq4Ih(BrRdWUwOWr6B3aHhc8jgC9FPmq5DWhWzMSzZYge8r0jv(GPEzeTSzYfGMALjyLoPIMvYcUnOC6mcL5GHuKNxQ10eXMToLue4Fn8b(iLqGqRcKgwpfnSf9zwo5DXf6FhgC9fLvbLtdJFpibMpCa4(Kp4oVp2ooKvk0QA)tpPU6r8yR9LxD9Lxl7lpB9LTHl5qzpxJ1Lgc1lPKDFOzHH85oENzVBXIb8(vN4eXe9R(NvP6HLT(QKmorOjijqH(AAAbJHbPWsyl8tJRjdSeEDscisYDTbvWslHt6fnAIJH(Lqie4gcaULHFsWfYzVhxnzPp4zu7zOdFi0ZyFaf3jVziDeRq3UlwKe6Bsuc5uyghLUjj(55O6YigaTKpG65xWIK((i5)aw9Fbg5atCiUY4wYPEjBj8xcaimyerenYC5sxbZNhmnVqYj7fclhCD9ct1Vtmp5ffidz8oI8yxqHOlz0xPrajzY(iGf4eRSbKYhFE8w0wGPLfdvQxEfipViGfLVWFfIPWqk8jF8taYPO2fwFPpusDRczkWp8f(JHl0MVCBbsnDwwDRsO22kzF28bUIHrr0dq7jPONl3kM4Yn1fM5ZLK5Ag4En5pdK8wqwi42kjfyNq1q0ouE1ppbzq(F3j0KdVtkrD1gBZJYsmu0JbXbldd4ZFoTWNkHgCvdWfXzid)kAkSLmSSCBUi5grqkQ79IsmuidWOhjjlVILxFivee664Ra5Z3Jva9LCMzuvYwVCj0VcPo9iR0S1xt9(LRsqZ2rvJcTZSrvtyHGqxiSU6u)K5(ZtbKADk4iAEYYeC12fgbuazZnXLvNsJdNB3eyzf0bb69vXAlvBAzbUBYfUAsVMWZlAcp7xyTPoxdAEKXGl)1otZTXxYGbmPgm7rHrHdkULQSBJNkJaKeWzGTUFogTcLnfu3tgNK2B)(QM046mMXwswNeF7fCtSyFbfckgsPGnwaExLtg6qwcIaGfPPHSi6ZcVeMMeNfodR6Vrtx4Md)r5egWdIYzm3aQukJzusofajnmhm7onqyMFfpmFKheRIq)cUki)Ma08mX(MT86sZ4KTB6ZQquZ2lXK9h6lz8B3kharCLagBatl9OxLE0Tf)hkMj19IWT1j(QDqm0sjEekuA)KhFxtJjkXfq6gIT1BQVOYcxpSysR5rrNX8VYuw0byURYfIOG4lkVHr7bQAykce1jUmLPZCzr(uzQfuFurQeBuP3GD3sA1vcUEv9eW9f)5JYMea)7B38jBReNwfdF9U6eePFwebpAc)9EK5MqCXcxv3WdHp1T3fcad(NLfLKR(3O9VK5Z9VE6mY)nfVTQ3uAHeAPiIrrM6FAX6MlnMVTDHDeSCbQ1BAKhgyZ1S2ydpevBzqGg8UAj(lDI3hb6YoRzaav7mYzdhGPNZsa0)LNryGgHlgqmy5EgS8AXSwuLTh5V8cRmFxDbwD39X9w4Xv8LQ4iPgxU2(9WMGN1rTspJTZsKZNCtSENuxfo3oG15g97Mp62D5L7ZGvfdCT7TmSDTq9rJYqMm12OGSkxTXoruV(TnwA7ectZA2FLH(kzpIugRbq4LByg3KfFZKskcnLiEuY9lKhWmYczHvVYfzlJ(NiuB8DQLvg2oPt2eRyaUHKrrz8VJaGlYimFk8RxZv(qEVFBrFWIW4cIMzvdiyeR6kraM8c2QvbXzgiPL4b6I8igfZ6sSeatU3oeLcudidGOJ26MSqgHXZdsH)TG(jN0RoesCrAjB5WQ1qAnxs6G3bhXUoojlpCkpsPc3wqOKKsRLQiKIzSLQ03kwykT6mA3PsdYwhLRmwXRnVVRlyGc45P5RIxR8vPDtfRZrcpxtySTFcBNVkMgoBH5MAuWwVVkwBOnFvSOoUwIVt(QydaBV5(o7RIP7H1IzTOkBpYB1xf3DXUWxLAeEAvKc3wFvScV26RI5gZTJ8vPgp3C6RsZrl8(7Rsdl06(OHQT9rZ(Q4qtWUWxLUry8WSKzDpdkwnVTC27Nsq7tY8ZRswmrr27Mfj4kZlnxBDRbXObMVMeEODNJCFyj4RbuWA08BLCLQCr8SpWcJqeL3JIT3o4J5PmrkNjY4m((Zr7Ni5lf5Qbyspzn8lVnBfzkVWw8pD7Su2G2MaQfYV8kWiOHBMaal)feOQKhaUdSgfGhBzucVdkh3kY0SbQAk4duQLg8XGPRZvsJTxvozSmvfKzaxbw2V6CQUKAeIn9wSzvLd72i8l55pHTGHjL5CMtDQPTyfHJAYrouYZHyImZe5BjSuCUAszYZAXUj3ylR661CoXvDmQwjQE1pu2ZfBVN1unsoQ7usSkMfN4NH5yLIOJTadoD7s)AxbGR2KcuvWGsaUzIC)LYuo4h3Y3RdsnW)Uesfj9A8mzMcsvqoERNYGKyIrgaYLqEXgT8CqpLZut4qulgL0HZ2QCeSvPaylgsVFPRMEgkw)gl8iN2QBVmARvZhlz6UEAEuHi(pjZWOm9XvZO9RWeqiyJ25wOYSaEcFcRaot4rWpbucN0Wtw0mCpijMeLCpoAkW1YEFOWBdJel9QekRRBroJk3Wdj7KNA6opDfvsZFdo8cbHyYF3tN9IsTXU76u2NssXKB46LqfL5uQrkY4KKFpmulu2(yMG1tfhlztEqiFZQhD7YvlsIXa382uW2nUx4O84iE6M9FqXFHFSNaXWFd9N9iUS3uClVPqoLHyeorLMiOBfqifJhIlA)tlssUw4FXdJt(tD(w0EVxk9CotYZHjxelVQFZYAHJa(xdda(8nZwZ5dEMs3kXAwkmyfyiyVF4xJTLA2pGokoU5sk5Y)09FcW74a400IBK50Ers9CqJlZPy8s)ya1x1TAWrWzPRJJds9)xRbH9c5TXfzfFxw4YxWdde6Dafx70Gm0QxvbHcbORO8UHwKeYL4XGhZd51XrusPhQQLln4iJQQFsj2xhVO(3NbAXQap)coXPOHPjnw1So2H1EKrFKF4x6OgIDR6bI76oFQEwlxVqvhiQBnioxVjIiUxDJBVtS7bjcn91ou9CgloY3LJhjRtLh97CkNFMdUNHYiZwlu8tEluzCC6m84JkrGQNThCuBwdNaBAmrj3JAm0KWmHs6fgHdsFpMk7wI1ttDsHgb9KgIM5jpwi1HkVsL1NKa6LxNEB9bQ4ZaQWINgKLNYI8X87U(0fCpHoVPeBqtveZP(fVxfrO1jwaIie(z()FRNrEDBBvX1rrklLNqKO1zLKQqpa)qsmqEij8A1PJ5ufvvG(g8NcXEWEfo7xE7v4bveuCeJzL54r09wq4YvjP5ctYppVix7FoA5JojOZqBTOphS15jlz4DWa64v81yI0(l)kLdW4fTWpKedDhv8Znwn(Z5ZBnlqQ8aQWbd)y)ci(YDoeFDvicgp47MtgpyepxmGPgTWEh8mt763DxJ20VuZE(3EADnc)F9LKZEeloUfyrb367SZ)TzqrBKOoBoLJjB(flIFIZwz3K9o1oMkpxGAyN(rxuxkXaAITvQ6wHvau77uw7bQ(yMfaBPk7rG3nWcgzRhO8k0D8TvaUrq6v)GMrXTcpnZfklaEBh02oG3nWAJ3APcDhFBfGDbsd9X2m(daO3bh8m7By3D3z9CmFXW(Gguht)V7UkMtV0StREILpuZ)arHFRNq1A1tP8fv)wXjuMqi7QoU7UAMDE5PN4QCGZubQEUGQP4tvOQpG13KTYz39mhhqBvUoHXhAUtQN7DMjWdJV8vNyPtby74CeF5qS(O)r9QmycGVWS6JjHPJFsy6bQWutEhLx63MMBh5MN32g8fQ4yU2nVHC4jU(XGvd9CDkz1nd4vRHw5yTddTkf3kGEVC5QEmDlDjWnM20HS1c23IM0QoV5t4RfQSfnPLDE5cieZnRZfaL6SxbFJa2sw9vN)MDfV3wW3iGvsDqBmcLYAlE6eCd7o4EWJDnoO8KSARbFla8Jf93B7q3Eg8nc4TDORL492c(gb8dE9epSXUghuEswT1GVaWNz3XzE6T98QUlx90))86DKpB34b)9iY3oGOLTbwd01SrXTSpu2qAnyBzJSBCSEpG3o6J9bEltMynaQNJX6qZXoHSZIeFTI)74E5v7Cz7xBhIY9MwdE6Bz9(fAoIsWdcO9MpdZTC0hgPbNwp4mn5Al81tGoD47kb7m0PTpuQ5cOgPHLgODMMwgDW(qLMlGUtLx07eJTeyhTrOF7PAbXvJ4vc)ALKP68lgIb3Sr6Qx1eO6YHfHHEhrah)5NakhK(8ypAOddsDwDNvFYeUe2XSCWGY3fl01fqndTUbGTwL9iWBeSBRt4TeR3wWV3a8xA8(EfmKDRSXEf47jW(eo)eo)WeN3wngTeR3wWV3a8t492H3vKTAv630smU7aUlGStrwS7yCNaFJaEV4D3wgu4NCeOrW(eJ4Ea2Vi4SXY8Dm3Q3bwU3Su(OOzkxFt1MPs9V7UN1vaAIceOUuDURUgMV90QzsuTv(qVQPpvf6VgI5sR41rdpRUgD0zNBTz9S(1dF5zxwHqagyn3kp9oOMEU2c7gAD5fEoZ4mb4U8c7WBRgmTNZCYYpVchYrpCyDqqJh3VFnPtNdoI3j2l4CBaQKYO(YvQeQmIPyF6ItmMeXdDunPp49AgBZWuJtuFYk6DsFxz739anBWhHhP6Xo(j9yF9Oh74VA1JD8t6X2z6Xk8yZiy8IwDVC32fqhAGj1Ty5YQShbEJG1IGyRw9zlX6Tf87na)LgVVxlkF3kBSxb(EcSpHZpHZpmX5TvJrlX6Tf87na)eEVD4DfzRwDAHBjg3Da3fq6KjyVoDfJ7e4BeW7fV782USR(jhbAeSpXiUhG9lco7oY3nTSq7b4XZ2c7mXN2hXiV2hXilAXDh5BlvUAeJg6iIrMetlIyKzJ6wOzAveJgAlIrM9CTf2n0slIr2a32gXiRdM2dwWwgXilqOUigPB0DRJyKfdHgr(wFYNks3Tig5mWVDFgBZW0DeJSmRPBrmQTOzd(i8ivpM7iF)KESDaA95vp2XF1QhZiY3pPhBBrt0JTn)Ypt5mo6O2RKxrRBMGVm9ykHJpe9jZdXh)1V5B2mzrE(QSV)4JVomFX6RaiU84SWLRJOrMPPS554Fp9yOGLH5zhREfEE8BjylUEKV9xXE4y(rtHU3qZwYIZweUAacHn)c2D)L4YZDglpq(comkC5p890TN6u4V8(o4)obFaDoAZK3C1RNo)LVgjkoDKnO4(f5WloU8jW)fHZVqKs963jiqhVzYtV73F2F3VTpKjfTFb(2(EHPY7xqViXxumfU6vWsP0V(SqTgilqrTsZ3CjLAAA(IgPetSPlUSpnkRsdLAZuBG8BwR4fwQyVAWKlQbtQO0TL8tvw0JwYUlsMEgsM145HDaR(0UJ6PoW4bMhO5kpU89LhKj9Nv(loPN1NtEWCI9(U8gGg75QhpQlgE3DAFXRN80zXpQ4ou7wElfROzgkGUQXaL)8sk)EEkl(FTomk8t4vhnV0QkLLpZOOgh2MjxNKmJR8JRRBnQ0t(kRmaVv2XlLD6wWcJgbuXWpX425YbnDzQVrlzjLpPQO(mLh(u9N7Sm9xiO6F5tjvLsXkaR(Vq9Q3q3J3m8Lks0lz8NMccazC6jIiA8o0vvLzHXi6Twd1QYV4VxNrgDEN4ku7ffidP0nImuiOWINKcYPcjzY(O8LwBG6WIUeV6l)KqAVy2Z(4(NBhDVZDpUedDDTZzXHn17hoDVH7xJ9hlAPSbspDq(O(gNtvkBj40K0fn4hIRkAuX15WF6J)jkERQgbpNZIJok62kx(C6SSMRKCcKAn)mR)1jUb)emueofMmyQm(8trJX85h5Lx6End18IR(6AG(LEOIA0b8FG0frQf(dUtE)C881zKQtU2MYhZkXBqcVHsdbWWaGlHXFi59a4)iWAIzrKSohFixh9dfafrLQZAlKE80M(F(Wtln3W7LY7NEt4SELvHplaP4ML3oqSPIRC(PTU4v6Dr1Bm(9w3uCvWVJ6H3O3bAxu8MDdcE9gXV52THs9oGRcw5sJVyMw5fg)5Eo0JC6qsODZKVIFltlzMzKpOenI8sPUGYBseW1BNhaEdh5gkmjA(mF07GsdngpxPhYXgxVMpN)QsLukhs)(9TyuYL7aGHMYvZPPLAyFUUM)Nr3Mgo))LcbWFXD(PMhLtunfS8uAvZCHJm5kDvBfzwDa9mqcCLzHeLEe5UgkK9a(HlvtiPCWbfumVyg6rJ8ozyLdHweK6zo6ACPk0tmpV6D9VdXTYEtEFb1xJCKkmqIrzTvQoJAma946bevJGR(S1Oe5kB3Ze9AXRNtnmFhpNp8Hq9NYN(cjhTxwtn0V6skFOJ6FJ49QCV)OE6utUPICcv1Evpjm9R5xUtn(JYtT0lQ8awXDFv76rPNfPeuPJZh9pH5pZh8V(LkKQcCZxMsnmU4T28Hl((nY3zShbVwMAC3IhitBC3Dh300ywDgdLECzCZEDN8YiY4o5s36MYtz5(LYmSr(z(LQ0TvclK9otRV5Js5517c7HLXp22nrLLBGkSBev04Umtzk3x5VCK16d62E9Gj)GRl2ST9(aZ8EaJgOEm)mp2PPx7Mzxn626ZAHdELMVS5IynofOSgyPHpAqC39SlQ1523vJbLXxRH1N7OjTD5nJUHTsX8jTSs02QPuZ80KLvKXyZP1(cQOJULehnfwlCEnr3jsXWTdS)ZKzzrjQRPSWP4p3UV7yaVdUX)2OBOD6HVf(v9KNVMZQXbaN7tgiExua79uGzbxQCHsAtsmyCchbFq4kqfeV6ch3zUayHb0ZIrCBUkC90zF5c40xs3gSpav1OUn(693qFJpLJk8M)qAXG2QyHjJxGHvbLFfZZzYW6WzuvJMJs8yOyXy3ip3a7K)j)g10s4F4UtWNxi2mwsjkyFZfVSBb5Hpzqp6fGTZwyHT)olgkFf5K0xifpTsyWrLu8)arZ5jtxNXxTsAW1bXNtFa3g7Mmvl21K)K8fkunfVaDuYqZmlilmvzxnOeFJTPmD4qQtAUIAbxDwLoN2Q1d1tKGYmAwKeb152JgwEFrs(m1wJL8QlqtX4zX2xXXpkhue6AOj93BUz5wl1vwkPmTMmZGkNNReeY)xzyQWW7B9umXinhfZwdZ4yixlxsrUMisWePXiEgWqmKcIS0KKmDEe5od3jcwzE4iZJqAd)WatcDyg)7ia4j(JGBjsDrvQiJ3daiUTOp47NhYvvZWNiw1KTCZKdwa(VeeNzGKwsWhxKhXOywZIubWKARikfOM(84UPLAOwiJW45bPW)wq)S4B1hcjUiLvQ5yW3MXhrispkj)i21Xjz5ym)YskKsrOKKYJuNKYYOW)vG6RyHPucOs6BtdYafkkJv8Al6BBISyoVeMhS8f4VKmFUp4EfSqbeNK5LbpwPwt(M2EglSDjGyMBnT)iw0(lxiRhbhhNWcl1TYbSWXnlKLKeQXJxHzB62XyOvNUcB3RqMDCDL1nKQ6zRWg02YJwH1brRz212DWkSaGAoxf6z912ESkSEU36xBc(QGWD6mvSvxMqwNG2ieDEGkSmnPBNNIwIJBRAopv1CnrEnDYVQlReBVAU2FsYSkl5qnxtNJmhhJST5uKDFpTwTsnNTdrwDNHS7lsvvn3o8eKzDqS(ZSqNuZ1TJp2U60Jzv5Dv1C1CCf6KAUT6KJv7bhRj3DmvZTxo2ywWXXJWTqz8V7D2lhNd)Z4))d]] )

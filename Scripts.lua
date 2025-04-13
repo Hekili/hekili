@@ -536,7 +536,9 @@ do
 
         { "^!?fiery_brand_dot_primary_remains$", "fiery_brand_dot_primary_remains" }, -- Vengeance
         { "^!?fiery_brand_dot_primary_ticking$", "fiery_brand_dot_primary_remains" }, -- Vengeance
+        { "^!?elemental_equilibrium.active", "elemental_equilibrium.active_remains" }, -- Elemental Shaman
 
+        { "^!?boar_charge.charges_remaining", "boar_charge.remains" }, -- Pack Leader Hunters
 
         { "^!?variable%.([a-z0-9_]+)$", "safenum(variable.%1)"                        },
         { "^!?variable%.([a-z0-9_]+)<=?(.-)$", "0.01+%2-safenum(variable.%1)"         },
@@ -1648,111 +1650,8 @@ function scripts:LoadScripts()
             }
 
             for list, lData in pairs( pData.lists ) do
-                for action, data in ipairs( lData ) do
-                    Hekili:Yield( "Loading " .. pack .. " - " .. list .. " - " .. action )
-
-                    local scriptID = pack .. ":" .. list .. ":" .. action
-
-                    local script = ConvertScript( data, true, scriptID )
-
-                    if script.Error then
-                        Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. ( script.rs or "null" ) .. "\n\n" .. script.Error )
-                    end
-
-                    script.action = data.action
-
-                    local lua = script.Lua
-
-                    if lua then
-                        for aura in lua:gmatch( "d?e?buff%.([a-z_0-9]+)" ) do
-                            self.PackInfo[ pack ].auras[ aura ] = true
-                        end
-
-                        for aura in lua:gmatch( "active_dot%.([a-z_0-9]+)" ) do
-                            self.PackInfo[ pack ].auras[ aura ] = true
-                        end
-                    end
-
-                    if data.use_off_gcd and data.use_off_gcd ~= 0 then
-                        self.PackInfo[ pack ].hasOffGCD = true
-                    end
-
-                    if data.action == "call_action_list" or data.action == "run_action_list" then
-                        -- Check for Time Sensitive conditions.
-                        script.TimeSensitive = false
-
-                        if lua then
-                            -- If resources are checked, it's time-sensitive.
-                            for k in pairs( GetResourceInfo() ) do
-                                local resource = specData.resources[ k ]
-                                resource = resource and resource.state
-
-                                if resource and lua:find( k ) and ( resource.regenModel or resource.regen ~= 0.001 ) then
-                                    script.TimeSensitive = true
-                                    break
-                                end
-                            end
-
-                            if not script.TimeSensitive then
-                                -- Check for other time-sensitive variables.
-                                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) or lua:find( "rune" ) then
-                                    script.TimeSensitive = true
-                                end
-                            end
-                        end
-                    end
-
-                    local ability
-
-                    if data.action then
-                        ability = specData.abilities[ data.action ] or class.abilities[ data.action ]
-                    end
-
-                    if ability then
-                        if ability.channeled then
-                            if not self.Channels[ pack ] then self.Channels[ pack ] = {} end
-                            if not self.Channels[ pack ][ data.action ] then
-                                self.Channels[ pack ][ data.action ] = {}
-                            end
-
-                            local cInfo = self.Channels[ pack ][ data.action ]
-
-                            -- This will load the channel criteria for the first entry for this ability in any of the action lists.
-                            -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
-                            -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
-                            -- 2020-10-22:  Modified this to decide that if any breakchannel logic is met, you break the channel.
-                            -- TODO:  Phase 3 would be only using channel-break logic for channel entries that you've passed in the current APL run.
-
-                            for k in pairs( channelModifiers ) do
-                                if script.Modifiers[ k ] then
-                                    local newfunc = script.Modifiers[ k ]
-
-                                    if newfunc and type( newfunc ) == "function" then
-                                        local oldfunc = cInfo[ k ]
-
-                                        if oldfunc then
-                                            local oldstr = cInfo[ "_" .. k ]
-                                            cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
-                                            cInfo[ "_" .. k ] = format( "( %s ) or ( %s )", oldstr or "nil", script.ModEmulates[ k ] )
-                                        else
-                                            cInfo[ "_" .. k ] = script.ModEmulates[ k ]
-                                            cInfo[ k ] = script.Modifiers[ k ]
-                                        end
-                                    end
-                                end
-                            end
-                        end
-
-                        if list ~= "precombat" and ( ability.item or data.action == "trinket1" or data.action == "trinket2" or data.action == "main_hand" ) and data.enabled then
-                            self.PackInfo[ pack ].items[ data.action ] = true
-                        end
-
-                        if list ~= "precombat" and ability.essence and data.enabled then
-                            self.PackInfo[ pack ].essences[ data.action ] = true
-                        end
-                    end
-
-                    self.DB[ scriptID ] = script
+                for action, _ in ipairs( lData ) do
+                    Hekili:LoadScript( pack, list, action )
                 end
             end
         end
@@ -1800,33 +1699,49 @@ function Hekili.Scripts:LoadItemScripts()
     end
 
     local pack = "UseItems"
-    --[[ self.PackInfo[ pack ] = self.PackInfo[ pack ] or {
-        items = {}
-    } ]]
 
     for list, lData in pairs( class.itemPack.lists ) do
+        local specData = class.specs[ state.spec.id ]
+
         for action, data in ipairs( lData ) do
             local scriptID = pack .. ":" .. list .. ":" .. action
 
             local script = ConvertScript( data, true, scriptID )
+            local lua = script.Lua
+
+            if lua then
+                for aura in lua:gmatch( "d?e?buff%.([a-z_0-9]+)" ) do
+                    self.PackInfo[ pack ].auras[ aura ] = true
+                end
+
+                for aura in lua:gmatch( "active_dot%.([a-z_0-9]+)" ) do
+                    self.PackInfo[ pack ].auras[ aura ] = true
+                end
+            end
+
+            if data.use_off_gcd and data.use_off_gcd ~= 0 then
+                self.PackInfo[ pack ].hasOffGCD = true
+            end
 
             if data.action == "call_action_list" or data.action == "run_action_list" then
                 -- Check for Time Sensitive conditions.
                 script.TimeSensitive = false
 
-                local lua = script.Lua
-
                 if lua then
                     -- If resources are checked, it's time-sensitive.
                     for k in pairs( GetResourceInfo() ) do
-                        if lua:find( k ) then script.TimeSensitive = true; break end
-                    end
+                        local resource = specData.resources[ k ]
+                        resource = resource and resource.state
 
-                    if lua:find( "rune" ) then script.TimeSensitive = true end
+                        if resource and lua:find( k ) and ( resource.regenModel or resource.regen ~= 0.001 ) then
+                            script.TimeSensitive = true
+                            break
+                        end
+                    end
 
                     if not script.TimeSensitive then
                         -- Check for other time-sensitive variables.
-                        if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
+                        if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) or lua:find( "rune" ) then
                             script.TimeSensitive = true
                         end
                     end
@@ -1836,7 +1751,7 @@ function Hekili.Scripts:LoadItemScripts()
             local ability
 
             if data.action then
-                ability = class.abilities[ data.action ] or class.specs[ 0 ].abilities[ data.action ]
+                ability = specData.abilities[ data.action ] or class.abilities[ data.action ]
             end
 
             if ability then
@@ -1851,9 +1766,26 @@ function Hekili.Scripts:LoadItemScripts()
                     -- This will load the channel criteria for the first entry for this ability in any of the action lists.
                     -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
                     -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
+                    -- 2020-10-22:  Modified this to decide that if any breakchannel logic is met, you break the channel.
+                    -- TODO:  Phase 3 would be only using channel-break logic for channel entries that you've passed in the current APL run.
 
                     for k in pairs( channelModifiers ) do
-                        if script.Modifiers[ k ] and not cInfo[ k ] then cInfo[ k ] = script.Modifiers[ k ] end
+                        if script.Modifiers[ k ] then
+                            local newfunc = script.Modifiers[ k ]
+
+                            if newfunc and type( newfunc ) == "function" then
+                                local oldfunc = cInfo[ k ]
+
+                                if oldfunc then
+                                    local oldstr = cInfo[ "_" .. k ]
+                                    cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
+                                    cInfo[ "_" .. k ] = format( "( %s ) or ( %s )", oldstr or "nil", script.ModEmulates[ k ] )
+                                else
+                                    cInfo[ "_" .. k ] = script.ModEmulates[ k ]
+                                    cInfo[ k ] = script.Modifiers[ k ]
+                                end
+                            end
+                        end
                     end
                 end
             end
@@ -1870,7 +1802,9 @@ end
 
 
 function Hekili:LoadScript( pack, list, id )
-    local data = self.DB.profile.packs[ pack ].lists[ list ][ id ]
+    local pData = self.DB.profile.packs[ pack ]
+    local data = pData.lists[ list ][ id ]
+    local specData = pData.spec and class.specs[ pData.spec ]
     local scriptID = pack .. ":" .. list .. ":" .. id
 
     local script = ConvertScript( data, true, scriptID )
@@ -1879,29 +1813,101 @@ function Hekili:LoadScript( pack, list, id )
         Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. ( script.rs or "null" ) .. "\n\n" .. script.Error )
     end
 
+    script.action = data.action
+    local lua = script.Lua
+
+    if lua then
+        for aura in lua:gmatch( "d?e?buff%.([a-z_0-9]+)" ) do
+            scripts.PackInfo[ pack ].auras[ aura ] = true
+        end
+
+        for aura in lua:gmatch( "active_dot%.([a-z_0-9]+)" ) do
+            scripts.PackInfo[ pack ].auras[ aura ] = true
+        end
+    end
+
+    if data.use_off_gcd and data.use_off_gcd ~= 0 then
+        scripts.PackInfo[ pack ].hasOffGCD = true
+    end
+
     if data.action == "call_action_list" or data.action == "run_action_list" then
         -- Check for Time Sensitive conditions.
         script.TimeSensitive = false
 
-        local lua = script.Lua
-
         if lua then
             -- If resources are checked, it's time-sensitive.
             for k in pairs( GetResourceInfo() ) do
-                if lua:find( k ) then script.TimeSensitive = true; break end
-            end
+                local resource = specData.resources[ k ]
+                resource = resource and resource.state
 
-            if lua:find( "rune" ) then script.TimeSensitive = true end
+                if resource and lua:find( k ) and ( resource.regenModel or resource.regen ~= 0.001 ) then
+                    script.TimeSensitive = true
+                    break
+                end
+            end
 
             if not script.TimeSensitive then
                 -- Check for other time-sensitive variables.
-                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
+                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) or lua:find( "rune" ) then
                     script.TimeSensitive = true
                 end
             end
         end
     end
-    self.Scripts.DB[ scriptID ] = script
+
+    local ability
+
+    if data.action then
+        ability = specData.abilities[ data.action ] or class.abilities[ data.action ]
+    end
+
+    if ability then
+        if ability.channeled then
+            if not scripts.Channels[ pack ] then scripts.Channels[ pack ] = {} end
+            if not scripts.Channels[ pack ][ data.action ] then
+                scripts.Channels[ pack ][ data.action ] = {}
+            end
+
+            local cInfo = scripts.Channels[ pack ][ data.action ]
+
+            -- This will load the channel criteria for the first entry for this ability in any of the action lists.
+            -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
+            -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
+            -- 2020-10-22:  Modified this to decide that if any breakchannel logic is met, you break the channel.
+            -- TODO:  Phase 3 would be only using channel-break logic for channel entries that you've passed in the current APL run.
+
+            for k in pairs( channelModifiers ) do
+                if script.Modifiers[ k ] then
+                    local newfunc = script.Modifiers[ k ]
+
+                    if newfunc and type( newfunc ) == "function" then
+                        local oldfunc = cInfo[ k ]
+
+                        if oldfunc then
+                            local oldstr = cInfo[ "_" .. k ]
+                            cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
+                            cInfo[ "_" .. k ] = format( "( %s ) or ( %s )", oldstr or "nil", script.ModEmulates[ k ] )
+                        else
+                            cInfo[ "_" .. k ] = script.ModEmulates[ k ]
+                            cInfo[ k ] = script.Modifiers[ k ]
+                        end
+                    end
+                end
+            end
+        end
+
+        if list ~= "precombat" and data.enabled then
+            if ( ability.item or data.action == "trinket1" or data.action == "trinket2" or data.action == "main_hand" ) then
+                scripts.PackInfo[ pack ].items[ data.action ] = true
+            end
+
+            if ability.essence then
+                scripts.PackInfo[ pack ].essences[ data.action ] = true
+            end
+        end
+    end
+
+    scripts.DB[ scriptID ] = script
 end
 
 

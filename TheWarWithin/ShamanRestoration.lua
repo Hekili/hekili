@@ -340,7 +340,7 @@ local recall_totems = {
 local recallTotem1
 local recallTotem2
 
-spec:RegisterTotems({
+spec:RegisterTotems( {
     tremor_totem = {
         id = 136108
     },
@@ -365,9 +365,7 @@ spec:RegisterTotems({
     surging_totem = {
         id = 5927655
     },
-})
-
-
+} )
 
 spec:RegisterStateExpr( "recall_totem_1", function()
     return recallTotem1

@@ -1,3 +1,6 @@
+## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/evoker_augmentation.simc
+## Up to date with SimC: February 25 2025 - 5d5dfd2
+
 actions.precombat+=/variable,name=spam_heal,default=1,op=reset
 actions.precombat+=/variable,name=minimum_opener_delay,op=reset,default=0
 actions.precombat+=/variable,name=opener_delay,value=variable.minimum_opener_delay,if=!talent.interwoven_threads

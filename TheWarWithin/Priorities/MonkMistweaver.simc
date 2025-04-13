@@ -1,5 +1,6 @@
 actions.precombat+=/potion
 actions.precombat+=/chi_burst
+actions.precombat+=/variable,name=tea_up,value=buff.tea_of_plenty_rsk.up|buff.tea_of_plenty_em.up|buff.tea_of_plenty_eh.up|buff.tea_of_serenity_em.up|buff.tea_of_serenity_rm.up|buff.tea_of_serenity_v.up|buff.thunder_focus_tea.up
 
 actions+=/spear_hand_strike
 actions+=/use_items
@@ -10,10 +11,20 @@ actions+=/fireblood
 actions+=/ancestral_call
 actions+=/bag_of_tricks
 actions+=/potion
+actions+=/renewing_mist,if=time_to_max_charges<=gcd.max
+actions+=/call_action_list,name=focus_tea,if=variable.tea_up
 actions+=/run_action_list,name=crane,strict=1,if=pet.chiji.up
 actions+=/jadefire_stomp,if=!settings.save_faeline|talent.awakened_jadefire&buff.awakened_jadefire.down|talent.jadefire_teachings&buff.jadefire_teachings.down
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=3
 actions+=/call_action_list,name=st,strict=1,if=active_enemies<3
+
+
+actions.focus_tea+=/renewing_mist,if=raid|buff.tea_of_serenity_rm.up
+actions.focus_tea+=/rising_sun_kick
+## only use these 3 if their rng buffs are up, don't spend real focus tea
+actions.focus_tea+=/expel_harm,if=buff.tea_of_plenty_eh.up
+actions.focus_tea+=/vivify,if=buff.tea_of_serenity_v.up
+actions.focus_tea+=/enveloping_mist,if=buff.tea_of_serenity_em.up|buff.tea_of_plenty_em.up
 
 actions.st+=/thunder_focus_tea
 actions.st+=/rising_sun_kick
@@ -24,16 +35,18 @@ actions.st+=/vivify,if=settings.single_zen_pulse&buff.zen_pulse.up
 actions.st+=/chi_burst
 actions.st+=/tiger_palm
 
-actions.aoe+=/thunder_focus_tea,if=active_enemies<=3
+actions.aoe+=/thunder_focus_tea
+actions.aoe+=/crackling_jade_lightning,if=buff.jade_empowerment.up&buff.jadefire_teachings.up
 actions.aoe+=/vivify,if=buff.zen_pulse.up
-actions.aoe+=/rising_sun_kick,if=active_enemies<=3|settings.aoe_rsk
-actions.aoe+=/rushing_wind_kick,if=active_enemies<=3|settings.aoe_rsk
+actions.aoe+=/rising_sun_kick,if=settings.aoe_rsk
+actions.aoe+=/rushing_wind_kick,if=settings.aoe_rsk
+actions.aoe+=/spinning_crane_kick,if=(talent.celestial_conduit&!talent.xuens_guidance)|active_enemies>=4
 actions.aoe+=/tiger_palm,if=talent.awakened_jadefire.enabled&buff.jadefire_stomp.up&buff.teachings_of_the_monastery.stack<4|buff.teachings_of_the_monastery.stack<1
 actions.aoe+=/blackout_kick,if=(!talent.rushing_wind_kick&cooldown.rising_sun_kick.remains>2*gcd.max|cooldown.rushing_wind_kick.remains>2*gcd.max)&(buff.teachings_of_the_monastery.stack>3)
 actions.aoe+=/chi_burst
 actions.aoe+=/spinning_crane_kick
 
-actions.crane+=/renewing_mist,if=time_to_max_charges<=gcd.max
+
 actions.crane+=/thunder_focus_tea,if=talent.ancient_teachings&buff.ancient_teachings.remains<gcd.max
 actions.crane+=/essence_font,if=talent.ancient_teachings&buff.ancient_teachings.remains<gcd.max
 actions.crane+=/jadefire_stomp,if=talent.ancient_teachings&buff.ancient_teachings.remains<gcd.max

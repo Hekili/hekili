@@ -1677,13 +1677,24 @@ spec:RegisterPet( "demonic_tyrant",
     "summon_demonic_tyrant",
     15 )
 
-spec:RegisterTotem( "demonic_tyrant", 135002 )
-spec:RegisterTotem( "vilefiend", 1709931 ) -- Charhound.
-spec:RegisterTotem( "vilefiend", 1709932 ) -- Gloomhound.
-spec:RegisterTotem( "vilefiend", 1616211 )
-spec:RegisterTotem( "grimoire_felguard", 237562 )
-spec:RegisterTotem( "dreadstalker", 1378282 )
+-- Totems (which are sometimes pets)
+spec:RegisterTotems( {
+    demonic_tyrant = {
+        id = 135002
+    },
+    vilefiend = {
+        id = 1616211,
+        copy = { 1709931, 1709932 }
+        --      Charhound, Gloomhound
+    },
+    grimoire_felguard = {
+        id = 237562
+    },
+    dreadstalker = {
+        id = 1378282
+    },
 
+} )
 
 spec:RegisterStateExpr( "extra_shards", function () return 0 end )
 
@@ -1742,7 +1753,7 @@ spec:RegisterAbilities( {
         debuff = "casting",
         readyTime = state.timeToInterrupt,
 
-        usable = function () return pet.exists, "requires felguard" end,
+        usable = function() return pet.felguard.alive, "requires a living felguard" end,
         handler = function ()
             interrupt()
             applyDebuff( "target", "axe_toss", 4 )
@@ -1906,7 +1917,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         readyTime = function() return max( buff.fiendish_wrath.remains, buff.felstorm.remains ) end,
 
-        usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
+        usable = function() return pet.felguard.alive, "requires a living felguard" end,
         handler = function ()
             applyBuff( "felstorm" )
             applyBuff( "demonic_strength" )
@@ -1975,7 +1986,7 @@ spec:RegisterAbilities( {
         startsCombat = true,
         nobuff = "felstorm",
 
-        usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
+        usable = function() return pet.felguard.alive, "requires a living felguard" end,
         handler = function()
             removeBuff( "felstorm" )
             applyBuff( "fiendish_wrath" )
@@ -2316,7 +2327,7 @@ spec:RegisterAbilities( {
 
         readyTime = function() return buff.fiendish_wrath.remains end,
 
-        usable = function() return pet.alive and pet.real_pet == "felguard", "requires a living felguard" end,
+        usable = function() return pet.felguard.alive, "requires a living felguard" end,
         handler = function()
             applyBuff( "felstorm" )
             if cooldown.guillotine.remains < 5 then setCooldown( "guillotine", 8 ) end

@@ -74,14 +74,14 @@ spec:RegisterTalents( {
     barbaric_training               = {  90340, 383082, 1 }, -- Revenge deals 25% increased damage.
     battle_stance                   = {  90261, 386164, 1 }, -- A balanced combat state that increases the critical strike chance of your abilities by 3% and reduces the duration of movement impairing effects by 10%. Lasts until canceled.
     berserker_shout                 = {  90348, 384100, 1 }, -- Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also remove fear effects from group members within 12 yds.
-    bitter_immunity                 = {  90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you. 
+    bitter_immunity                 = {  90356, 383762, 1 }, -- Restores 20% health instantly and removes all diseases, poisons and curses affecting you.
     bounding_stride                 = {  90355, 202163, 1 }, -- Reduces the cooldown of Heroic Leap by 15 sec, and Heroic Leap now also increases your movement speed by 70% for 3 sec.
     cacophonous_roar                = {  90383, 382954, 1 }, -- Intimidating Shout can withstand 200% more damage before breaking.
     champions_might                 = {  90323, 386284, 1 }, -- The duration of Champion's Spear is increased by 2 sec. You deal 25% increased critical strike damage to targets chained to your Spear.
     champions_spear                 = {  90380, 376079, 1 }, -- Throw a spear at the target location, dealing 20,869 Physical damage instantly and an additional 22,111 damage over 4 sec. Deals reduced damage beyond 5 targets. Enemies hit are chained to the spear's location for the duration. Generates 10 Rage.
     concussive_blows                = {  90354, 383115, 1 }, -- Cooldown of Pummel reduced by 1.0 sec. Successfully interrupting an enemy increases the damage you deal to them by 5% for 10 sec.
     crackling_thunder               = {  95959, 203201, 1 }, -- Thunder Clap's radius is increased by 50%, and it reduces movement speed by an additional 20%.
-    cruel_strikes                   = {  90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%. 
+    cruel_strikes                   = {  90381, 392777, 2 }, -- Critical strike chance increased by 1% and critical strike damage of Execute increased by 5%.
     crushing_force                  = {  90347, 382764, 2 }, -- Shield Slam deals an additional 5% damage and deals 5% increased critical strike damage.
     defensive_stance                = {  90330, 386208, 1 }, -- A defensive combat state that reduces all damage you take by 16% and all magic damage you take by an additional 6%. Lasts until canceled.
     double_time                     = {  90382, 103827, 1 }, -- Increases the maximum number of charges on Charge by 1, and reduces its cooldown by 3 sec.
@@ -124,7 +124,7 @@ spec:RegisterTalents( {
     battering_ram                   = {  90262, 394312, 1 }, -- Shield Charge critical strike chance and critical strike damage increased by 20%, and Shield Charge increases your auto-attack damage and speed by 10% for 20 sec.
     battlescarred_veteran           = {  90435, 386394, 1 }, -- When your health is brought below 30%, you take 80% less damage for 8 sec and healing you receive is increased by 100%. Cannot occur more than once every 3 min.
     best_served_cold                = {  90304, 202560, 1 }, -- Revenge deals 10% more damage, or 20% more damage when your successful dodges or parries have made it cost no Rage.
-    bloodborne                      = {  90448, 385704, 2 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects deal 10% increased damage. 
+    bloodborne                      = {  90448, 385704, 2 }, -- Deep Wounds, Rend and Thunderous Roar's Bleed effects deal 10% increased damage.
     bloodsurge                      = {  90300, 384361, 1 }, -- Damage from Deep Wounds has a chance to generate 5 Rage.
     bolster                         = {  90264, 280001, 1 }, -- Last Stand's cooldown is reduced by 60 sec, and it grants you the Shield Block effect for its duration.
     booming_voice                   = {  90314, 202743, 1 }, -- Demoralizing Shout also generates 20 Rage, and increases damage you deal to affected targets by 20%.
@@ -136,11 +136,11 @@ spec:RegisterTalents( {
     defenders_aegis                 = {  90310, 397103, 1 }, -- Shield Wall gains 1 additional charge, and its cooldown is reduced by 60 sec.
     demoralizing_shout              = {  90305,   1160, 1 }, -- Demoralizes all enemies within 15 yards, reducing the damage they deal to you by 20% for 8 sec.
     devastator                      = {  90299, 236279, 1 }, -- Your auto attacks deal an additional 5,458 Physical damage and have a 25% chance to reset the remaining cooldown on Shield Slam.
-    disrupting_shout                = {  90307, 386071, 1 }, -- Taunts all enemies within 14 yds to attack you for 6 sec, interrupts all spellcasting within 14 yds and prevents any spell in that school from being cast for 6 sec. 
+    disrupting_shout                = {  90307, 386071, 1 }, -- Taunts all enemies within 14 yds to attack you for 6 sec, interrupts all spellcasting within 14 yds and prevents any spell in that school from being cast for 6 sec.
     enduring_alacrity               = {  90433, 384063, 1 }, -- Increases Stamina and Armor by 8% and your Haste by 2%.
     enduring_defenses               = {  90313, 386027, 1 }, -- Shield Block lasts 2 sec longer.
     fight_through_the_flames        = {  90306, 452494, 1 }, -- Defensive Stance additionally reduces magic damage you take by 6%.
-    focused_vigor                   = {  90318, 384067, 1 }, -- Increases Strength and Armor by 5% and your critical strike chance by 1%. 
+    focused_vigor                   = {  90318, 384067, 1 }, -- Increases Strength and Armor by 5% and your critical strike chance by 1%.
     fueled_by_violence              = {  90451, 383103, 1 }, -- You are healed for 110% of the damage dealt by Deep Wounds.
     heavy_repercussions             = {  90319, 203177, 1 }, -- Shield Slam generates 2 more Rage and extends the duration of Shield Block by 1.0 sec.
     ignore_pain                     = {  90295, 190456, 1 }, -- Fight through the pain, ignoring 50% of damage taken until 82,409 damage has been prevented. Repeated uses of Ignore Pain accumulate, up to 245,731 total damage prevented.
@@ -150,7 +150,7 @@ spec:RegisterTalents( {
     into_the_fray                   = {  90319, 202603, 1 }, -- You gain 2% Haste for each enemy or ally within 10 yards, up to 8% Haste.
     juggernaut                      = {  90449, 393967, 1 }, -- Execute increases Execute's damage dealt by 3% for 20 sec, stacking up to 15 times.
     last_stand                      = {  90297,  12975, 1 }, -- Increases maximum health by 30% for 15 sec, and instantly heals you for that amount.
-    massacre                        = {  90313, 281001, 1 }, -- Execute is now usable on targets below 35% health. 
+    massacre                        = {  90313, 281001, 1 }, -- Execute is now usable on targets below 35% health.
     punish                          = {  90449, 275334, 1 }, -- Shield Slam deals 10% increased damage, and reduces enemies' damage against you by 3% for 9 sec. Multiple punishments may overlap.
     ravager                         = {  90432, 228920, 1 }, -- Throws a whirling weapon at the target location that chases nearby enemies, inflicting 54,731 Physical damage to all enemies over 10.3 sec. Deals reduced damage beyond 8 targets. Generates 20 Rage each time it deals damage.
     rend                            = {  90302, 394062, 1 }, -- Wounds the target, causing 4,879 Physical damage instantly and an additional 10,697 Bleed damage over 15 sec. Thunder Clap affects 5 nearby targets with Rend.
@@ -169,7 +169,7 @@ spec:RegisterTalents( {
     violent_outburst                = {  90265, 386477, 1 }, -- Every 250 rage you spend triggers a Violent Outburst, causing your next Shield Slam or Thunder Clap to deal 200% increased damage, generate 50% more Rage and grant Ignore Pain.
 
     -- Colossus
-    arterial_bleed                  = {  94799, 440995, 1 }, -- Colossal Might increases the damage of your Rend and Deep Wounds by 3% per stack. 
+    arterial_bleed                  = {  94799, 440995, 1 }, -- Colossal Might increases the damage of your Rend and Deep Wounds by 3% per stack.
     boneshaker                      = {  94789, 429639, 1 }, -- Shockwave's stun duration is increased by 1 sec and reduces the movement speed of affected enemies by 40% for 3 sec after the stun ends.
     colossal_might                  = {  94819, 429634, 1 }, -- Colossal Might increases damage dealt by your next Demolish by 10%, stacking up to 5 times. Shield Slam grants a stack of Colossal Might and Revenge grants a stack of Colossal Might when it strikes 3 or more targets.
     demolish                        = {  94818, 436358, 1, "colossus" }, -- Unleash a series of precise and powerful strikes against your target, dealing 154,152 damage to it, and 96,345 damage to enemies within 8 yds of it. Deals reduced damage beyond 8 targets. While channeling Demolish, you take 10% less damage and are immune to stuns, knockbacks, and forced movement effects. You can block, parry, dodge, and use certain defensive abilities while channeling Demolish.
@@ -204,7 +204,7 @@ spec:RegisterTalents( {
 
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     battlefield_commander = 5629, -- (424742) Your Shout abilities have additional effects.  Battle Shout: Increases Stamina by 3%.  Piercing Howl: Radius increased by 50%  Berserker Shout: Range increased by 8 yds.  Intimidating Shout: Cooldown reduced by 15 sec.  Rallying Cry: Removes movement impairing effects and grants 30% movement speed to allies.  Thunderous Roar: Targets receive 5% more damage from all sources while bleeding.
     berserker_roar        = 5703, -- (1219201) Go berserk, removing and granting immunity to Fear, Sap, and Incapacitate effects for 6 sec. Also reduces the duration of the next crowd control effect within 10 sec by 50% on group members within 40 yds.
     bodyguard             =  168, -- (213871) Protect an ally, causing 40% of all Physical damage they take to be transfered to you. When the target takes Physical damage, your Shield Slam cooldown has a 30% chance to be reset. Bodyguard is cancelled if the target is further than 20 yards from you. Lasts 1 min. Only one target can be Bodyguarded at a time.
@@ -583,7 +583,7 @@ spec:RegisterAuras( {
     },
 } )
 
--- Dragonflight 
+-- Dragonflight
 spec:RegisterGear( "tier29", 200426, 200428, 200423, 200425, 200427 )
 spec:RegisterSetBonuses( "tier29_2pc", 393710, "tier29_4pc", 393711 ) -- Dragonflight Season 1
 spec:RegisterAura( "vanguards_determination", {
@@ -627,7 +627,7 @@ spec:RegisterUnitEvent( "UNIT_POWER_FREQUENT", "player", nil, function( event, u
         local current = UnitPower( "player", RAGE )
         if current < lastRage - 3 then -- Spent Rage, -3 is used as a Hack to avoid Rage decaying
             if state.talent.anger_management.enabled or ( state.legendary.glory.enabled and FindPlayerAuraByID( 324143 ) ) then -- Glory and Anger Management
-                rageSpent_10 = ( rageSpent_10 + lastRage - current ) % 10 
+                rageSpent_10 = ( rageSpent_10 + lastRage - current ) % 10
             end
             if state.talent.indomitable.enabled then -- Indomitable
                 rageSpent_20 = ( rageSpent_20 + lastRage - current ) % 20
@@ -655,7 +655,7 @@ spec:RegisterHook( "spend", function( amt, resource )
                 end
             end
         end
-        
+
         if talent.indomitable.enabled then
             rageSpent_20 = rageSpent_20 + amt
             local rage20activations = floor( rageSpent_20 / 20 )
@@ -1698,7 +1698,7 @@ spec:RegisterAbilities( {
             if not t.up then
                 return false, "Target is not casting"
             end
-            if not class.reflectableFilters[ zone ][ npcid ][ t.v1 ] then
+            if not state.target.is_dummy and not class.reflectableFilters[ t.v1 ] then
                 return false, "spell[" .. t.v1 .. "] in zone[" .. zone .. "] by npc[" .. npcid .. "] is not reflectable"
             end
             if not UnitIsUnit( "player", t.caster .. "target" ) then

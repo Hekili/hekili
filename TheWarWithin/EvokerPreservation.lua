@@ -93,13 +93,13 @@ spec:RegisterTalents( {
     unravel                         = {  93308, 368432, 1 }, -- Sunder an enemy's protective magic, dealing 174,613 Spellfrost damage to absorb shields.
     unrelenting_siege               = {  94934, 441246, 1 }, -- For each second you are in combat, Azure Strike, Living Flame, and Eruption deal 1% increased damage, up to 15%.
     verdant_embrace                 = {  93341, 360995, 1 }, -- Fly to an ally and heal them for 99,187, or heal yourself for the same amount.
-    walloping_blow                  = {  93286, 387341, 1 }, -- Wing Buffet and Tail Swipe knock enemies further and daze them, reducing movement speed by 70% for 4 sec. 
+    walloping_blow                  = {  93286, 387341, 1 }, -- Wing Buffet and Tail Swipe knock enemies further and daze them, reducing movement speed by 70% for 4 sec.
     wingleader                      = {  94953, 441206, 1 }, -- Bombardments reduce the cooldown of Breath of Eons by 1 sec for each target struck, up to 3 sec.
     zephyr                          = {  93346, 374227, 1 }, -- Conjure an updraft to lift you and your 4 nearest allies within 20 yds into the air, reducing damage taken from area-of-effect attacks by 20% and increasing movement speed by 30% for 8 sec.
 
     -- Preservation
     call_of_ysera                   = {  93250, 373834, 1 }, -- Verdant Embrace increases the healing of your next Dream Breath by 40%, or your next Living Flame by 100%.
-    cycle_of_life                   = {  93266, 371832, 1 }, -- Every 3 Emerald Blossoms leaves behind a tiny sprout which gathers 10% of your healing over 8 sec. The sprout then heals allies within 30 yds, divided evenly among targets. 
+    cycle_of_life                   = {  93266, 371832, 1 }, -- Every 3 Emerald Blossoms leaves behind a tiny sprout which gathers 10% of your healing over 8 sec. The sprout then heals allies within 30 yds, divided evenly among targets.
     delay_harm                      = {  93335, 376207, 1 }, -- Time Dilation delays 70% of damage taken.
     dream_breath                    = {  93240, 355936, 1 }, -- Inhale, gathering the power of the Dream. Release to exhale, healing yourself and 5 injured allies in a 30 yd cone in front of you for 123,053. I: Heals 22,704 instantly and 100,349 over 16 sec. II: Heals 47,791 instantly and 75,262 over 12 sec. III: Heals 72,878 instantly and 50,174 over 8 sec.
     dream_flight                    = {  93267, 359816, 1 }, -- Take in a deep breath and fly to the targeted location, healing all allies in your path for 47,458 immediately, and 32,763 over 15 sec. Healing increased by 100% when not in a raid. Removes all root effects. You are immune to movement impairing and loss of control effects while flying.
@@ -179,7 +179,7 @@ spec:RegisterTalents( {
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     chrono_loop          = 5455, -- (383005) Trap the enemy in a time loop for 5 sec. Afterwards, they are returned to their previous location and health. Cannot reduce an enemy's health below 20%.
     divide_and_conquer   = 5595, -- (384689) Deep Breath forms curtains of fire, preventing line of sight to enemies outside its walls and burning enemies who walk through them for 139,690 Fire damage. Lasts 6 sec.
     dreamwalkers_embrace = 5616, -- (415651) Verdant Embrace tethers you to an ally, increasing movement speed by 40% and slowing and siphoning 24,251 life from enemies who come in contact with the tether. The tether lasts up to 10 sec or until you move more than 30 yards away from your ally.
@@ -439,8 +439,6 @@ spec:RegisterHook( "runHandler", function( action )
     local ability = class.abilities[ action ]
     local color = ability.color
 
-    empowerment.active = false
-
     if ( set_bonus.tier30_4pc > 0 or set_bonus.tier31_4pc ) and ability.empowered then
         if empowered_spell_count == 4 then
             empowered_spell_count = 0
@@ -502,10 +500,10 @@ do
 
     empowered_cast_time = setfenv( function()
         if buff.tip_the_scales.up then return 0 end
-        local power_level = args.empower_to or max_empower
+        local power_level = args.empower_to or class.abilities[ this_action ].empowerment_default or max_empower
 
         if settings.fire_breath_fixed > 0 then
-            power_level = min( settings.fire_breath_fixed, max_empower )
+            power_level = min( settings.fire_breath_fixed, power_level )
         end
 
         return stages[ power_level ] * ( talent.font_of_magic.enabled and 0.8 or 1 ) * ( 1 - 0.1 * buff.temporal_compression.stack ) * haste

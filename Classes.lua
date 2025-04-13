@@ -65,6 +65,7 @@ local specTemplate = {
             clash = 0,
             targetMin = 0,
             targetMax = 0,
+            dotCap = 0,
             boss = false
         }
     },
@@ -576,9 +577,11 @@ local HekiliSpecMixin = {
             if type( arg2 ) == "table" then
                 if arg2.items then
                     for _, item in ipairs( arg2.items ) do
-                        table.insert( gear, item )
-                        gear[ item ] = true
-                        found = true
+                        if not gear[ item ] then
+                            table.insert( gear, item )
+                            gear[ item ] = true
+                            found = true
+                        end
                     end
                 end
 
@@ -591,24 +594,21 @@ local HekiliSpecMixin = {
             -- If the second arg is a number, this is a legacy registration with a single set/item
             if type( arg2 ) == "number" then
                 local n = select( "#", ... )
-                local item, i = arg2, 3
 
-                while item do
-                    table.insert( gear, item )
-                    gear[ item ] = true
-                    found = true
+                for i = 2, n do
+                    local item = select( i, ... )
 
-                    i = i + 1
-                    item = select( i, ... )
+                    if not gear[ item ] then
+                        table.insert( gear, item )
+                        gear[ item ] = true
+                        found = true
+                    end
                 end
             end
 
             if found then
                 self.gear[ arg1 ] = gear
                 CommitKey( arg1 )
-            else
-                -- No valid items found, remove the set.
-                self.gear[ arg1 ] = nil
             end
 
             return
@@ -788,6 +788,15 @@ local HekiliSpecMixin = {
 
             -- Register the item if it doesn't already exist.
             class.specs[0]:RegisterGear( ability, item )
+            if data.copy then
+                if type( data.copy ) == "table" then
+                    for _, iID in ipairs( data.copy ) do
+                        if type( iID ) == "number" and iID < 0 then class.specs[0]:RegisterGear( ability, -iID ) end
+                    end
+                else
+                    if type( data.copy ) == "number" and data.copy < 0 then class.specs[0]:RegisterGear( ability, -data.copy ) end
+                end
+            end
 
             local actionItem = Item:CreateFromItemID( item )
             if not actionItem:IsItemEmpty() then
@@ -796,7 +805,7 @@ local HekiliSpecMixin = {
                     local link = actionItem:GetItemLink()
                     local texture = actionItem:GetItemIcon()
 
-                   
+
                     if name then
                         if not a.name or a.name == a.key then a.name = name end
                         if not a.link or a.link == a.key then a.link = link end
@@ -873,6 +882,7 @@ local HekiliSpecMixin = {
                                 local copyItem = Item:CreateFromItemID( id )
 
                                 if not copyItem:IsItemEmpty() then
+                                    self:RegisterGear( a.key, id )
                                     copyItem:ContinueOnItemLoad( function()
                                         local name = copyItem:GetItemName()
                                         local link = copyItem:GetItemLink()
@@ -915,7 +925,7 @@ local HekiliSpecMixin = {
             -- Hekili:ContinueOnSpellLoad( a.id, function( success )
             a.onLoad = function()
                 local spellInfo = GetSpellInfo( a.id )
-                
+
                 if spellInfo == nil then
                     spellInfo = GetItemInfo( a.id )
                 end
@@ -1066,24 +1076,35 @@ local HekiliSpecMixin = {
 
     RegisterPet = function( self, token, id, spell, duration, ... )
         CommitKey( token )
-    
-        -- Register the main pet.
-        self.pets[ token ] = {
+
+        -- Prepare the main model
+        local model = {
             id = type( id ) == "function" and setfenv( id, state ) or id,
             token = token,
             spell = spell,
             duration = type( duration ) == "function" and setfenv( duration, state ) or duration
         }
-    
-        -- Process copies.
+
+        -- Register the main pet token
+        self.pets[ token ] = model
+
+        -- Register copies, but avoid overwriting unrelated registrations
         local n = select( "#", ... )
         if n and n > 0 then
             for i = 1, n do
-                local copy = select( i, ... )
-                self.pets[ copy ] = self.pets[ token ]
+                local alias = select( i, ... )
+
+                if self.pets[ alias ] and self.pets[ alias ] ~= model then
+                    if Hekili.ActiveDebug then
+                        Hekili:Debug( "RegisterPet: Alias '%s' already assigned to a different pet. Skipping for token '%s'.", tostring( alias ), tostring( token ) )
+                    end
+                else
+                    self.pets[ alias ] = model
+                end
             end
         end
     end,
+
 
     RegisterPets = function( self, pets )
         for token, data in pairs( pets ) do
@@ -1092,7 +1113,7 @@ local HekiliSpecMixin = {
             local spell = data.spell
             local duration = data.duration
             local copy = data.copy
-    
+
             -- Register the pet and handle the copy field if it exists.
             if copy then
                 self:RegisterPet( token, id, spell, duration, copy )
@@ -1106,7 +1127,7 @@ local HekiliSpecMixin = {
         -- Register the primary totem.
         self.totems[ token ] = id
         self.totems[ id ] = token
-    
+
         -- Handle copies if provided.
         local n = select( "#", ... )
         if n and n > 0 then
@@ -1116,7 +1137,7 @@ local HekiliSpecMixin = {
                 self.totems[ id ] = copy
             end
         end
-    
+
         -- Commit the primary token.
         CommitKey( token )
     end,
@@ -1125,11 +1146,11 @@ local HekiliSpecMixin = {
         for token, data in pairs( totems ) do
             local id = data.id
             local copy = data.copy
-    
+
             -- Register the primary totem.
             self.totems[ token ] = id
             self.totems[ id ] = token
-    
+
             -- Register any copies (aliases).
             if copy then
                 if type( copy ) == "string" then
@@ -1142,7 +1163,7 @@ local HekiliSpecMixin = {
                     end
                 end
             end
-    
+
             CommitKey( token )
         end
     end,
@@ -1872,12 +1893,46 @@ all:RegisterAuras( {
         duration = 3600,
     },
 
+    empowering = {
+        name = "Empowering",
+        duration = 3600,
+        generate = function( t )
+            local e = state.empowerment
+            local ability = class.abilities[ e.spell ]
+            local spell = ability and ability.key or e.spell
+
+            t.name = ability and ability.name or "Empowering"
+            t.count = e.start > 0 and 1 or 0
+            t.expires = e.hold
+            t.applied = e.start - 0.1
+            t.duration = e.hold - t.applied
+            t.v1 = ability and ability.id or 0
+            t.v2 = 0
+            t.v3 = 0
+            t.spell = spell
+            t.caster = "player"
+
+            if t.remains > 0 then
+                local timeDiff = state.now - e.start - 0.1
+                if Hekili.ActiveDebug then
+                    Hekili:Debug( "Empowerment spell: %s[%.2f], unit: %s; rewinding %.2f...", t.name, t.remains, t.caster, timeDiff )
+                end
+                state.now = state.now - timeDiff
+            end
+        end,
+    },
+
     casting = {
         name = "Casting",
         generate = function( t, auraType )
             local unit = auraType == "debuff" and "target" or "player"
 
-            if unit == "player" or UnitCanAttack( "player", "target" ) then
+            if unit == "player" and state.buff.empowering.up then
+                removeBuff( "casting" )
+                return
+            end
+
+            if unit == "player" or UnitCanAttack( "player", unit ) then
                 local spell, _, _, startCast, endCast, _, _, notInterruptible, spellID = UnitCastingInfo( unit )
 
                 if spell then
@@ -1894,37 +1949,33 @@ all:RegisterAuras( {
                     t.v3 = 0
                     t.caster = unit
 
-                    if unit == "target" and Hekili.DB.profile.toggles.interrupts.filterCasts then
-                        local filters = class.interruptibleFilters
-                        local zone = state.instance_id
-                        local npcid = state.target.npcid or -1
+                    if unit ~= "target" then return end
 
-                        if filters then
-                            local interruptible = filters[ zone ][ npcid ][ spellID ]
+                    if state.target.is_dummy then
+                        -- Pretend that all casts by target dummies are interruptible.
+                        if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' is fake-interruptible", spell ) end
+                        t.v2 = 0
 
-                            if not interruptible then
-                                if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' not interruptible per user preference.", spell ) end
-                                t.v2 = 1
-                            elseif interruptible == "testing" then
-                                t.v2 = 0
-                            end
-                        end
+                    elseif Hekili.DB.profile.toggles.interrupts.filterCasts and class.spellFilters[ state.instance_id ] and class.interruptibleFilters and not class.interruptibleFilters[ spellID ] then
+                        if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' not interruptible per user preference.", spell ) end
+                        t.v2 = 1
                     end
 
                     return
                 end
 
                 spell, _, _, startCast, endCast, _, notInterruptible, spellID = UnitChannelInfo( unit )
+                startCast = ( startCast or 0 ) / 1000
+                endCast = ( endCast or 0 ) / 1000
+                duration = endCast - startCast
 
-                if spell then
-                    startCast = startCast / 1000
-                    endCast = endCast / 1000
-
+                -- Channels greater than 10 seconds are nonsense.  Probably.
+                if spell and duration <= 10 then
                     t.name = spell
                     t.count = 1
                     t.expires = endCast
                     t.applied = startCast
-                    t.duration = endCast - startCast
+                    t.duration = duration
                     t.v1 = spellID
                     t.v2 = notInterruptible and 1 or 0
                     t.v3 = 1 -- channeled.
@@ -1932,21 +1983,19 @@ all:RegisterAuras( {
 
                     if class.abilities[ spellID ] and class.abilities[ spellID ].dontChannel then
                         removeBuff( "casting" )
-                    elseif unit == "target" and Hekili.DB.profile.filterCasts then
-                        local filters = Hekili.DB.profile.castFilters
-                        local zone = state.instance_id
-                        local npcid = state.target.npcid or -1
+                        return
+                    end
 
-                        if filters then
-                            local interruptible = filters[ zone ][ npcid ][ spellID ]
+                    if unit ~= "target" then return end
 
-                            if not interruptible then
-                                if Hekili.ActiveDebug then Hekili:Debug( "Cast '%s' not interruptible per user preference.", spell ) end
-                                t.v2 = 1
-                            elseif interruptible == "testing" then
-                                t.v2 = 0
-                            end
-                        end
+                    if state.target.is_dummy then
+                        -- Pretend that all casts by target dummies are interruptible.
+                        if Hekili.ActiveDebug then Hekili:Debug( "Channel '%s' is fake-interruptible", spell ) end
+                        t.v2 = 0
+
+                    elseif Hekili.DB.profile.toggles.interrupts.filterCasts and class.spellFilters[ state.instance_id ] and class.interruptibleFilters and not class.interruptibleFilters[ spellID ] then
+                        if Hekili.ActiveDebug then Hekili:Debug( "Channel '%s' not interruptible per user preference.", spell ) end
+                        t.v2 = 1
                     end
 
                     return
@@ -1963,44 +2012,6 @@ all:RegisterAuras( {
             t.caster = unit
         end,
     },
-
-    --[[ player_casting = {
-        name = "Casting",
-        generate = function ()
-            local aura = buff.player_casting
-
-            local name, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitCastingInfo( "player" )
-
-            if name then
-                aura.name = name
-                aura.count = 1
-                aura.expires = endCast / 1000
-                aura.applied = startCast / 1000
-                aura.v1 = spell
-                aura.caster = "player"
-                return
-            end
-
-            name, _, _, startCast, endCast, _, _, notInterruptible, spell = UnitChannelInfo( "player" )
-
-            if notInterruptible == false then
-                aura.name = name
-                aura.count = 1
-                aura.expires = endCast / 1000
-                aura.applied = startCast / 1000
-                aura.v1 = spell
-                aura.caster = "player"
-                return
-            end
-
-            aura.name = "Casting"
-            aura.count = 0
-            aura.expires = 0
-            aura.applied = 0
-            aura.v1 = 0
-            aura.caster = "target"
-        end,
-    }, ]]
 
     movement = {
         duration = 5,
@@ -2638,6 +2649,13 @@ all:RegisterAuras( {
         end,
         copy = "unravel_absorb"
     },
+
+    devouring_rift = {
+        id = 440313,
+        duration = 15,
+        shared = "player",
+        max_stack = 1
+    }
 } )
 
 do
