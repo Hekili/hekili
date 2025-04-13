@@ -2490,7 +2490,7 @@ spec:RegisterAbilities( {
     },
 
     revive_pet = {
-        id = 982, -- Revive Pet
+        id = 982,
         cast = 2,
         cooldown = 0,
         gcd = "spell",
@@ -2499,7 +2499,7 @@ spec:RegisterAbilities( {
         spendType = "focus",
 
         startsCombat = false,
-        texture = 132163, -- icon for Revive Pet
+        texture = 132163,
         known = true,
         essential = true,
 
@@ -2517,7 +2517,7 @@ spec:RegisterAbilities( {
     },
 
     dismiss_pet = {
-        id = 2641, -- Dismiss Pet
+        id = 2641,
         cast = 3,
         cooldown = 0,
         gcd = "spell",
@@ -2526,7 +2526,7 @@ spec:RegisterAbilities( {
         spendType = "focus",
 
         startsCombat = false,
-        texture = 136095, -- icon shown in your screenshot
+        texture = 136095,
         known = true,
 
         usable = function ()
