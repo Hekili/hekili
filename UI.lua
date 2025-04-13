@@ -369,7 +369,7 @@ function ns.StopConfiguration()
             display.Backdrop:Hide()
         end
 
-        mouseInteract = Hekili.Pause or Hekili.DB.profile.displays[ id ].iconTooltipToggle
+        mouseInteract = Hekili.Pause or Hekili.DB.profile.displays[ id ].iconTooltipStyle ~= "off"
         for i, btn in ipairs( display.Buttons ) do
             btn:EnableMouse( mouseInteract )
             btn:SetMovable( false )
@@ -2822,11 +2822,19 @@ do
             elseif b.Ability then
                 if b.Ability.item then
                     GameTooltip:SetOwner(self)
-                    GameTooltip:SetItemByID(b.Ability.item)
+                    if conf.iconTooltipStyle == "tooltip" then
+                        GameTooltip:SetItemByID(b.Ability.item)
+                    elseif conf.iconTooltipStyle == "minimal" then
+                        GameTooltip:AddLine("Item: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                    end
                     GameTooltip:Show()
                 elseif b.Ability.id then
                     GameTooltip:SetOwner(self)
-                    GameTooltip:SetSpellByID(b.Ability.id)
+                    if conf.iconTooltipStyle == "tooltip" then
+                        GameTooltip:SetSpellByID(b.Ability.id)
+                    elseif conf.iconTooltipStyle == "minimal" then
+                        GameTooltip:AddLine("Spell: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                    end
                     GameTooltip:Show()
                 end
             end
@@ -2839,7 +2847,7 @@ do
 
         Hekili:ProfileFrame( bName, b )
 
-        b:EnableMouse( conf.iconTooltipToggle )
+        b:EnableMouse( conf.iconTooltipStyle ~= "off" )
         b:SetMouseClickEnabled( false )
         b:SetMovable( false )
 

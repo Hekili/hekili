@@ -1656,10 +1656,17 @@ return "Position" end,
                                 },
                             },
 
-                            iconTooltipToggle = {
-                                type = "toggle",
-                                name = "Icon Tooltip",
-                                desc = "If enabled, icons will display ability/item tooltips when moused over.",
+                            iconTooltipStyle = {
+                                type = "select",
+                                values = {
+                                    off = "Off",
+                                    minimal = "Minimal",
+                                    tooltip = "Tooltip",
+                                },
+                                name = "Display Action Info on Hover",
+                                desc = "Select what to display when hovering over recommended action icons.\n\n" ..
+                                       "Minimal will only show the action name.\n\n" ..
+                                       "Tooltip will show the full Blizzard tooltip for the action.",
                                 order = 100,
                             },
 
@@ -12221,7 +12228,7 @@ function Hekili:TogglePause( ... )
     for id, group in pairs( ns.UI.Buttons ) do
         for _, button in pairs( group ) do
             if button:IsShown() then
-                button:EnableMouse( MouseInteract or Hekili.DB.profile.displays[ id ].iconTooltipToggle )
+                button:EnableMouse( MouseInteract or Hekili.DB.profile.displays[ id ].iconTooltipStyle ~= "off" )
             end
         end
     end
