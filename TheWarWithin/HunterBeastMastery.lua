@@ -9,6 +9,7 @@ local class, state = Hekili.Class, Hekili.State
 
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local PTR = ns.PTR
+local GetSpellInfo = ns.GetUnpackedSpellInfo
 
 local strformat = string.format
 
@@ -2427,22 +2428,119 @@ spec:RegisterAbilities( {
         cast = 0,
         cooldown = 0,
         gcd = "spell",
+        spend = 0,
+        spendType = "focus",
+
+        startsCombat = false,
+        texture = function ()
+            local setting = state.settings.default_hunter_pet or "generic"
+
+            if setting == "generic" then return 132161 end
+
+            local spellIDs = {
+                call_pet_1 = 883,
+                call_pet_2 = 83242,
+                call_pet_3 = 83243,
+                call_pet_4 = 83244,
+                call_pet_5 = 83245
+            }
+
+            local id = spellIDs[ setting ]
+            local _, _, icon = GetSpellInfo( id )
+            return icon or 132161
+        end,
+
+        essential = true,
+        nomounted = true,
+
+        usable = function ()
+            return not pet.exists, "requires no active pet"
+        end,
+
+        handler = function ()
+            local preferred = state.settings.default_hunter_pet or "generic"
+
+            if preferred == "generic" then
+                summonPet( "made_up_pet", 3600, "ferocity" )
+                return
+            end
+
+            local preferredSlot = tonumber( preferred:match( "%d" ) ) or 1
+
+            local spellIDs = {
+                call_pet_1 = 883,
+                call_pet_2 = 83242,
+                call_pet_3 = 83243,
+                call_pet_4 = 83244,
+                call_pet_5 = 83245
+            }
+
+            for i = preferredSlot, 1, -1 do
+                local key = "call_pet_" .. i
+                local spellID = spellIDs[ key ]
+
+                if IsSpellKnown( spellID ) then
+                    summonPet( key, 3600, "ferocity" )
+                    return
+                end
+            end
+
+            summonPet( "call_pet_1", 3600, "ferocity" )
+        end,
+    },
+
+    revive_pet = {
+        id = 982, -- Revive Pet
+        cast = 2,
+        cooldown = 0,
+        gcd = "spell",
 
         spend = 0,
         spendType = "focus",
 
         startsCombat = false,
-        texture = 'Interface\\ICONS\\Ability_Hunter_BeastCall',
-
+        texture = 132163, -- icon for Revive Pet
+        known = true,
         essential = true,
-        nomounted = true,
 
-        usable = function () return not pet.exists, "requires no active pet" end,
+        usable = function ()
+            return pet.dead, "requires dead pet"
+        end,
 
         handler = function ()
-            summonPet( "made_up_pet", 3600, "ferocity" )
-        end,
+            summonPet( "pet", 3600 )
+            pet.dead = false
+            pet.alive = true
+            pet.health_pct = 100
+        end
+
     },
+
+    dismiss_pet = {
+        id = 2641, -- Dismiss Pet
+        cast = 3,
+        cooldown = 0,
+        gcd = "spell",
+
+        spend = 0,
+        spendType = "focus",
+
+        startsCombat = false,
+        texture = 136095, -- icon shown in your screenshot
+        known = true,
+
+        usable = function ()
+            return pet.alive, "requires active pet"
+        end,
+
+        handler = function ()
+            dismissPet( "pet" )
+            pet.active = false
+            pet.alive = false
+            pet.dead = false
+        end
+    },
+
 
     -- Hurls a tar trap to the target location that creates a $187699s1 yd radius pool of tar around itself for $13810d when the first enemy approaches. All enemies have $135299s1% reduced movement speed while in the area of effect. Limit $s2. Trap will exist for $13809d.
     tar_trap = {
@@ -2582,16 +2680,43 @@ spec:RegisterOptions( {
     package = "Beast Mastery",
 } )
 
-spec:RegisterSetting( "barbed_shot_grace_period", 0, {
-    name = strformat( "%s Grace Period", Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ) ),
-    desc = strformat( "If set above zero, %s's cooldown will be reduced by this number of global cooldowns. This feature helps to ensure that you maintain %s stacks by recommending %s with time remaining on %s.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ), Hekili:GetSpellLinkWithTexture( spec.auras.frenzy.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ), Hekili:GetSpellLinkWithTexture( spec.auras.frenzy.id ) ),
-    icon = 2058007,
-    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
-    type = "range",
-    min = 0,
-    max = 2,
-    step = 0.01,
+spec:RegisterSetting( "default_hunter_pet", "generic", {
+    name = "|T132161:0|t Preferred Pet",
+    desc = "Specify which pet should be summoned when you have no active pet. If the chosen pet is not available, the addon will try lower-numbered pets. Choose 'Generic' to use the default Call Pet whistle icon.",
+    type = "select",
+    values = function ()
+        local values = {
+            generic = "Call Pet: |T132161:0|t |cFFFFFFFFGeneric Whistle Icon|r"
+        }
+
+        local spellIDs = {
+            call_pet_1 = 883,
+            call_pet_2 = 83242,
+            call_pet_3 = 83243,
+            call_pet_4 = 83244,
+            call_pet_5 = 83245
+        }
+
+        for i = 1, 5 do
+            local key = "call_pet_" .. i
+            local id = spellIDs[ key ]
+
+            local spellName, _, fallbackIcon = GetSpellInfo( id )
+            local stablePet = C_StableInfo.GetStablePetInfo( i )
+
+            local name = spellName
+            local icon = fallbackIcon
+
+            if stablePet then
+                name = stablePet.name or spellName
+                icon = stablePet.icon or fallbackIcon
+            end
+
+            values[ key ] = format( "Call Pet %d: |T%d:0|t |cFFFFFFFF%s|r", i, icon or 136095, name or key )
+        end
+
+        return values
+    end,
     width = 1.5
 } )
 
@@ -2605,6 +2730,29 @@ spec:RegisterSetting( "pet_healing", 0, {
     min = 0,
     max = 100,
     step = 1,
+    width = 1.5
+} )
+
+spec:RegisterSetting( "barbed_shot_grace_period", 0, {
+    name = strformat( "%s Grace Period", Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ) ),
+    desc = strformat( "If set above zero, %s's cooldown will be reduced by this number of global cooldowns. This feature helps to ensure that you maintain %s stacks by recommending %s with time remaining on %s.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ), Hekili:GetSpellLinkWithTexture( spec.auras.frenzy.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ), Hekili:GetSpellLinkWithTexture( spec.auras.frenzy.id ) ),
+    icon = 2058007,
+    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    type = "range",
+    min = 0,
+    max = 2,
+    step = 0.01,
+    width = 1.5
+} )
+
+spec:RegisterSetting( "barbed_shot_opener", true, {
+    name = strformat( "Use %s Opener", Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ) ),
+    desc = strformat( "If checked, %s will be recommended as the first ability in combat. This differs from SimulationCraft behavior which uses %s first but aligns with written guides. The %s opener ensures your pets immediately move to the target at the start of the fight.",
+        Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.bestial_wrath.id ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ) ),
+    type = "toggle",
     width = 1.5
 } )
 
@@ -2633,14 +2781,4 @@ spec:RegisterSetting( "check_pet_range", false, {
     width = "full"
 } )
 
-spec:RegisterSetting( "barbed_shot_opener", true, {
-    name = strformat( "Use %s Opener", Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ) ),
-    desc = strformat( "If checked, %s will be recommended as the first ability in combat. This differs from SimulationCraft behavior which uses %s first but aligns with written guides. The %s opener ensures your pets immediately move to the target at the start of the fight.",
-        Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.bestial_wrath.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.barbed_shot.id ) ),
-    type = "toggle",
-    width = "full"
-} )
-
-spec:RegisterPack( "Beast Mastery", 20250319, [[Hekili:T31EpUTns8plbfNZ6Uz9AjhNSBU1gOnhoCnixrX5w0)4Wzzzz516wBjxj51Xfl8N9Bgs9Gs8HOKTt2KZafnEfj)X5b5mdPgro2y8VoE0m7y3X)SzxZ(D7zCBhZUDFtVBhpkE3A3XJwB78G99Wp8Txb))F01okE)K)j8)Dd3HfVBzG9meMOGnHoqv(U9twehVo6DxF99EXl2mTJtWQRJ8wTzPDSxGVtO98y8VDUE8OPB8wg)t(JNkKmmaYWEt8IGWXJg5T69JhTWB2mxA1DJCgpcR(vD7DLXTVB)eSk7N8BRrK2pX5gNP9N7S)d7)qwTEnuRFy2S9tw5ff55FpuRf2(3d1EEyWQ9twh6(OxWMOuS2qXIfIUVRyHVA)eBeXP2Ht3pjAraiEcw767gI)lYW5n38kZBGM)R)(VdyassOSjM89I5vgVfQ2Ve6U0BLNVD4U9tmm6ya0(V8XKQ96Rmma6PeXeLxA3RmFJYsX2cO2Tt)Sh392RmnFNqMhk8g1f21ak8F5gT21beb)Jn(WiKxgHJvcFaemUXXOapRbV9kZ3MQnEV9YLG0A((jXlaDXV7TeEyS9sx)yud568q0Ff6YiOS3hqagidqsN(WsDgBFGC5Vsa1oeroEHN)4rl9IIJiJ9DNBVzzm8ZFMmxW2b1yJh5q7gluFoEKRV90LUZg)JJJHrOS1lo02)pGXWE)jWCIQDpS25pzKtOhGRNnm1XnUZcx7LXlSwJsS7GHFUXw4JaSY7IvU(ZSGsq0ETu0Uiteh1zfieSS9Hrnp9ekhdVh6kViRPbrGiQ9(jTGXSa6p6AnlaiccRgzTIOOgSFsxsnsAxS3kxR4aKgTUbkzimKTBo1X2yKc7xIcZeOGk2I(hwO0NQdSOwvCMfHT9nnPTXHE(p4gta4TsfpjSlmTCLhmpaf2MuXZlshP1zkABZYzPR9JUDsqHvwX24EAsDre12nAtxdZOR6suqln0KOOOngjTrGfpW88uB(ParBwTcAnoYtWeagUjynuzSwPT8rBG3GsXFTCd8pOmMQM6eB2zHDKLtqWYzbB9t410cnifcZPTMUz(CcFEbvfvS551ivfMJGhmbWlmmi0kyU18qGO2e6odgcVkaE62OuuzGS6MuGkn7Ks(DMTjK4uJmOGHieuHYqG6vCYfxtZlqEtgiRjTQIohufD2M8F8Y16Qz4KYFRl0OXKe6TMol4V5cZXb33UjE1IIddGqncZGc(ra84D(o7NSfCmbU6saoQZ(j)eGkIhy9NeOY6qVaWSXoWFgv(6oFo4PLoZFM9kBmkMKNbXKSmPVgsIjjK4YmdEzLtITdfjibaoOC8SxsESlLwDc8J8MHv9FsMUq9z)3tNWaEAZNXS11(bcZcbyb1debHCuoecMdaTh(71bBXA4HpE9spGqM6gV111pr8nB19PTem(5pl5XSi2Hy6POFbldRubVi3XAz7k9zDeGPGE0Sqpw2LDAhHXlc2yOHmuyGZ)E0UqV5)N9tUA)Kp6IYgysvyegjuqaQk2UWLkorDY8GLld2UFY9Bandk0wyJHWI6MqucVI5zSEEYIwGHqSObUs9mK5yn1XqTeBjUVi(HaJQa9ATfcRRGlSlObCBDVZSogCvnZmuQNWLbbZIw4QcJS6K14ly9WRKAEHQEQDANHJ3aNYrXWudRTW0)fD2SM2vzMfkwCO7kBp)iR734grdEOpXyr(ah0eGvOR9SDnZ9QoChHU5QrkPRuelw(E0fUcLSCIjAypkMk7nxSKQKWMOtyNpC4msI(WYDzegKv6Obo4s68YdAYGlJ4suV6mUsLLMKjYq0HrldIz)B0zDW85OYfNJZinQWVFMfX8HUCfXBSuEyuzIK8ipAAxiMatGFyv(XVgcTNoAKSwj4hZ9UFrCnq4sC9rCCkNquPuyOugaCjy0VAaUIyK5oPW0sAja5)6(ekOeJNjtsurCkbtoLGssuJQ0CUy4aHAbzDbwD59XbpCQ0sCehhSmXTsc4YQaMxp2MncFXYM0PAY5AZUQQWDvfonvS0UER1qCO70TRqOndQRcgF3vVALJIXRk6dP0zLs8kjGK6LlvLzfd3(J(hjMw1U(K0sZsUEm1Y1tfQin8lykJrmoAUE4T6PHTcftk001Jqee56rWCjLsHA56rean3ODZD9W7)xjjQrvAoxi01J8U4y46rXWjT23Qd21JqG111JXPY1JcpYsD9u9MyD4UEQiK6dX4vf9XrY1Je7ghdxp1JPPBub(2deShf5EuoG1(w12lO5QgvSRbkKtgmVLHPUHrUHpGVzib7rW3a86By4vSRTMVjCN63G23c8QTVd08qO5yhP(D891k)EBo7o3l0L07IIA85eNQCdRASKOhZROBDa5FjMWIIvBblHuWx26ksQxergUKVZtPGodKVwK3zi3RQUaXQ9BPMWN4BNa(t)7Tq9hzB5YNRA78GLnUP)AVB35OpFdOccDDwGVR58xSdQ7wz)jQ4Kwye99YbGHVscmQPm)bp4bG4eSALT)SoIQnZygL68mefSLDKatqGweSDPf9DJYeVIeg5gGz35SeEc5LPhH640b(fEvTmDwjvZBkOdthlwQsVLTsSYJs17MIGLR6kwTBRAGymmsCgDeXIGGhDJ4hj6(P1ldIWxrnrPdOA0v9OSIZMqfrQQRqIimZJkB7N3xlXjArw)3nZUFfqEKoRu6Cmn0wu6zyuykcZSNsvRIjinN0NAFpr5h658azxCnQW(FZ7k7qhBFxR1BW9Ng7j52FVaFVsoBOH5t(fmw)Ex6AmXvb2MUWbsjWmvUojoimKQjIZY3GYjyGkdsYdWPctH5gN5QrummENe2UPmdMvQMzsgJcRx6SvYtKvsnvg05bTk9kPiMl3bCPR)FUlNjiYlfCr2YlYumR2Sm2l1ow50usfDPyqWBRHtGB0XjqLwTJwydSmyXgmEhvuCKudYSHIjBKSPkkSMFqojkheKyVAIgVyu2OrftR0miZmLw5WmtRrc6asUILQr2pAdRODxH34jwEeSI3Pb(Gn04TBnt27OkdI8wjSFLgVAQJdrUxL7LI6uifoIbkwJvFFolsSshCpS8hmPssTppSy21L75oZLv1URle0uPbzLQQ8Cg8aLA8E2LNgGk932RB983cS4JGtpS400P(1JhT1o0hZ3JXJiPdR3Q1bHXiKH7N8YK0G9L7Ne6(hB8i5YtuaAE2EtCWk7y8b0uLoQZ(p8rswnHPV77d8H(Iu8ltNpWy)daeZrfrfLozaQYfgFQDgQ3CKrD)heWVzz9y94yZY0wYUtvmNgZiVIBQitXfyyzGwCl84aLRyTa1unOCfRfOvNZLcOEnAIwDE1zVPaUuJMOzNZTfZc6nr15KcFLalyRXfOIAmD3u4ReyM9FxKGGPmDPtPWzuF4E2tDvQuopwvB41a4VwSF3uv3jg(kbUPQonP7McFLa)S3oXZBQRsLY5XQAdVSaKtAegiunIp2qCS7LxJ9llg)USDBQmVlb9STdPeSCV3gnX7zk1YP5pQuRe0))eQT3jLALGEJP2xFkc4qgO8P8Nk7H5v5ecELW2uJHAs1nf(tgWFPP7dkO0J7yJtk4NiyptZNP5NN0CtTyOjv3u4pzaFMUBgDxySL9SDQh8rRGwuC9bUoqwRv4vFkUwWxjWNKO7A4IZphiqLWEwqCaW(fHMdw7sNlgTFINV85wTUqW3heZdtAgZhLYtpPGEA)0tVOUaYtceOgYo3TSfM)sVwyof0Qq(eOSfxA2TaLxqiOGJgkK4UYOVQgDv)7e2SwcF6LVU)WcmcH3arPIpOGwxOO7vwy9OTHdkj34HB4aX41i1ktFjO874fts6MlvbtrPD72TLXH4qxXCHzxXfCNiGYzpsF9cPZfzj6u3vd6YnNctxIhDB36IxiBa9HmbwkMcPcPYhLDduokj4NdFNz)dG4RiqIVsn2D9zJDFlAS76VTn2D9zJDNyJDzX(1)ue4Umqn4Oevl7oVkNqWRewbdp1ADSAs1nf(tgWFPP7dA59h3XgNuWprWEMMptZppP5MAXqtQUPWFYa(mD3m6UWylrB1TGkOffxFGRdKsfcIRtDP4AbFLaFsIUZSz5l35abQe2ZcIda2Vi0S89qx6cqvUlqMIwyhp9O)2kzQ)2kjWkEf7HUGwuCBLmKSTs8CKgBReFJQ3w3O)2kziABL47ELfwpAR02kjcUMUTscvRI32GdzBLeaJQTvQSp4gVTsc8lYTh6LNlYs01BBLKUzX1FcSumB82kjywv92wjDj(kcK4RuJDvSh6Nn2DSOTpVg7U(BBJDC7H(zJDhzJDDK8jJ4mddD8W)ArACEXFA)Eoo2FZbN2VqIJ93CWP9lKGlbFoqQvcEhjQLBPuhi1kbVNDuRWz9r18iuqYK0YhwtLOkzN2tFEv83kgDUZ5MsWl9CWPcrB2HDrneVsSQ8vH4v1i10dXjrJwlFapPPARWPHujCfEsjPjUmNHsLqvWPRuzmjxVKNMXyjDGu)yzNZrCYyUtajTbL9OrQmSIo2K0f40tuPYQTsh0sStW(jYCleK3qV88WtdAY9aju84r41w54F2SFp8kXlyUhEPX8D14QmfpzQ8IJUggKV1oCl5EM86FG0n)sYn31hXo7A6fMi9ylYIoPBxheI9Fa7VFBnLLO3HP0Rfm8g38DK72sh4VmUbMM3fpdLVQWLCkLNI6KD22C5GRZVd)a03p58vs2N9RKmX6L0OVFfENenGFPNVIC1)miBThfpbHYdqNB5dfBqAbmRhQ6dEN8Liv95KtoLiALK59jxzfAy6YWyBq6ZewXbcQylfuYafusHvlQP8Kve9vlBxNrMMCJmvSVjetnNUlXoX0nZz83R8MpqXTBxw7HwXEn)Y(C(R1x2stVrEXoQ4T47Dm3GVSTG9wYfB1fC3vVGcVW90B7w01(ZDd9oOBlH3mVWY9lWzyqx0)KCbWs1NWA0RUsjAunQzereKqOj3eT3zIZNs8XZCYS1Qu16vn80gY3fdnrPvv9Wqd0Ri6tnD8cW9qF55)yWdqT(eis9TxsMqt7pI9Elp)5BWdppSFXY4JFDZ68(pD5sTUq0PoE7CzrzuADbb8YhH4p9u2uvHx3B31RlaAX9ZX4n5ZjO8y(TfWPMlKWec21jJECuj2bKZ5)NrujNSS4j0)Zzkn7W1)5drEBzAKEQ3FQjWxWbH(KCpd2OPPMwitPyARGYZpmsrMtYcRPKH4tM6bMI618fFLjZeDkutbM7eOweImoklCmYoWa7b(JO57a5oyvI7eJE4GmlvvC2sNPr50tziWnoG8IbE6jUZr6wciWBeWMzNyZIfByNIH3jyBeySalGQOBcEt0uc1gL7bHaNmgw3bDf28ImzpZMpiaOINrUmGXTXccAmR6V8yQ6pcud7czsAiqCb7Mqwnt3paWurXJA5HdmR0Cvk5w60pMr5w(KbolgU0iZM55ExFrA9Sd1yYuUYhyY4mUVhjWncoGKh2t54Gk1TcvimNuXhd(R4HsmjGxctEjZrB8LqGm3LDGgZAYnkwxZPLAJet00Yem9uH5YOYRP4BptLewuU9NePgNThYZz5c5c6sL0eBmKgE8Mbs55SzFshZXnq44mbHag71WXrcl1t0m6lzIw6c9US8Y(ZZQKKL7lDnmkU)2BxJa5Uq)i5A3WforVNSVRFBD5FSwWQpvla0WzvkVlI1RjNlKX1LFsKdVky9aY1KEcNPJu7v5xS5dQm4iwfr2ltmTZDc8N5Hu7a95BHmiUvCEXUREf(JKlswWSmEnZMUbgeJ0Y2zp9YGkrFyHMhqgzP)x1SW84tvczjObfYhljFsZ8Ct1zJfFBQxcpPFYyj6dAMV3vvw9OSIPILi0AyMyjuDYUp(8BJC9ZdlbOOinSmpszHLWeQTTYTvNHGRvky1OVIzHZxLHytZ)kbtJQx6xPjL3uBHMS2cpEPN6NNStT2zIFv5MQKutTjzM6HM8N6BluuIPQkVupukROTWJywPwrg4FCYj16LsQhRmsvOz(I2cv8MeRLTWgLnQktg1JvUOEssfvbuo5QoA8)7d]] )
+spec:RegisterPack( "Beast Mastery", 20250413, [[Hekili:T3vEVnUnw8plbfRN4Mehl54jzM12a9al2oyArX6w0)yXAzzjABTXwYvsoEYIa)zFFpsDqjsQlB3jZadumnrK8hFh8DWJqorBYVnzSTzizYVO3vVF37061PRU(9A9Nmo85nKjJ3yA9O5c4hCnxd)73tmdc3p9NH)L4)mw8ZR8mTryc826Bbv5B2pDzy4MG3F7TlCcxUDwhlV13g4SE7kZqhpxlFZ5H4VBD7KXZ26Sk8NCNmtgz827UFYyZTHl98NmESZ6FyY4Lo22ew1jbwtgJv)MU3DJwV3VF64TB245dK3gc8p(KNCEIC9(PwMBW(nG(JRw54Uy)0GnelN5ow06g0z)hya17gT3Hab91(P)(gKKGg9G1S(ZT4QZDqD(oB79tx7eeqXZAPP7cOUZ99wdyI9T32GyK2YqkfGUVpBraPzI4nZ0FgqCl9a63BdXL4J)FK6JBS(n6pan(3(J)aqaugqjt1Z3d63ODpuPF1NSYzTJRP)Z7NQP1rdO6F9J0kbsmnGsYrgbXL19g93wqzy7a862PF0h7(UB01FVe2fk6HIkQRgu0)IGQdGL)NBDHHvVjahG5)iiiiHHO4nQ63FJ(9Xs(Fa0KGSz((PHlb5(F4Sc(yO5kIBiQniwpg83HUlak7h8OWcKaixJ)yUUkThqE73OqA6J4gU0XDY4vobHbuJfYCZTRcHF8xOgpMwO2zYylwNyG6UjJjUMZwrSN89tcHH081l0309pHb9o)pGXKv7EyTt)YylFhaxhtWwJe2zjXCv4sJnO0AaDWRb(jaR0UynX12akbr7oLODzI4nOZAqeyy6cJsE5fuk6Va6kNaJzEbGaQ9(PTGXNa6prmS9aIGYQbgRPkPH7N2LwJO2f6SMye6H0OXdqjJGbODtPo(gJuy)CuyIafuWgSFXaL(mDGbZnKLDa2232K2g674(iy0JaCVsXte7cMGRDGX(OWwNjEUiECwNzOZqdRveZNiDIqHxwX34EvK6cOQThQmDnkHUQlrbTuRIefdTjiPng8Tb(ZNzMAcirbW89sheooY97KX)iX0MoK9I8JQTHsyE09DIQCIHJe0d2UEnqMzr)NJDfNVdUG(Pom2NkjI(IIEnVbO3gOhXUkU7FYeWfkf)PvBj0EiAqvNq9olndmS88wz7TZnsZexOgTqW)JXSTZNtPLlzdOY280AepGlfbhWC1X33Z3WBUXCFGO26tSbdU1EWx3feJkhKL3KmuPENyYVJ9wFAmB6qyoIqsfYdbokeDfi000cu3KHQAsRYOZHLrNTP)NOCTUAgbP8x7cTCMk)ibSVGKlirrGdc99GuG8tGc(bp4Zp7cjzTdcJcHLJagY3A6pbOI4bXQywT(oEGj7Zq0xM8LmFoKtaZpLT5Atm7QOVbzlTkQVgrZwYNgEpbEvLttDffjibmgZa0Cf9ZegTAbjj6yJv9NPMlS8l(hXgmqEbPwm7iMpszwiXpOEGiWxGYb)rwa0o4pVXBhwdh8ZBw5aeYms4ocXns8zVErClbx1U2rFMhXouxpzJIzOzel4LfUVs(UI)whjykPh1Z0JQcFJzYc(yyj4KzGZ)E8Z(oZ)p7NEZ(PFKGYgWOYpaZAZZdvf7wsyItuNm3B1kVD7NUylOzqH2stm1Au34Js41CFJ3RFsUnCeIblLAwCmmfcjrWsraf9DOHfbVMabzSdYXSZ2nzJ2UYZZoyjXotO2lztbWyHLDhT06KXZdR9c4ZddLcMrccHXPg7aBXLjDplZmOoZDwSm0WNS20XLLPHgxQgZablX)rm9qjXt)kGxFlhVIDTX8TW0slmn6Vg4vtWXcyfcnh7OIt0)lv(9DPS7ChFcT3L5X51eNErjDtZKe94YtFJh9)tDHLmtgj(Xk3ZFv4NSIL8vnr6CqI2lpos32XDwbY4KmBYwCKS2yXwsatI3NMVtASpmlgqLyA)Sm)Ohhz9bm6vU89OlCLkzfetSjAvWmPCMlxsLtyt1j5Mi3bYir6ddYQaCwTXJgeGlX4l7GMe4siUi1BvgxjZjTzYIcrnKbZ8GvEH8)ooFdV5ZrLlAJZjnkzQljj1Lo0vOiX89uptWersQdXM2fYjWi4hv2urUf8hYgnQWHzPiCfUGucCQGqSqPWiLmaKvRw)Yb4gQtMbkHPLYsaY)U(ukihJNitIurckbDbLqHKyfQsZ5IrdLQfu1fy1v3hh8WPmuH06nqT4Uqc4QYawup2MFrkKlBIn1uZ16DlQcdKdCEXs76TCjYx9b26dl1Nr8AYLe7U8fC5O48QK(qjDwQeVuciQEPs1cs7tV)rIPlAE6rTupxOh9kf6PevufIlORIr0oAHEe96vbFffyuuXqpsrqwOhj2sfkfQvOhza0CN2np0Jy8)cjXkuLMZfsd9OUlogHEky4KkZ3JBOhPax1qpANQqpferwzONYxh(dp0tjPuFioVkPposHEu434ye6PEmnBHkcKUzHCbuyZxd3A410twsaDDTsN2wC0kBhFqEH7WPWgRNzQxvEp1PtPf3Dc4xDxyGl0eDoTPlQOP1JgM4I(x0e4YSA3POpFlmXsFI1sCNXt3yhCM6Rn)u00lPfgW2xoamCljqxojcZhDaqS8wV201UJSAZT8afoX4eeLmFxQvnc0sVDRmyBWkNXUcg5bGzF2Af8f6w)hG644CnYSXYCDwovZBZOdJNHDUkDpFL4Lh5Q3dzblv1LTAVRSbIHWirB2iILEEprcehjs(0MvEb4MCtv6aQADlEuw21gaveXQUmhBcBhMSTFAFTcTpdm(VBTxSgipANL7WNmZ3u2HjrlJjcN1tUQvIbsZj9zMlOkFFhRhPlbIwjluDZ7ktFltxIXMT4I7G9K6fk(sCFLS2YIrs)jyS(cclbnmfQ2SOU0salvHoj0Z3NPjctoDe5prqf5qs9oXuIRqwSFuqjuJGqy8onMNUkhMLQM5o6izs24SxYtKxYkQmy2bTYTEUu3LpdCjX9)9CktqLxfWfjXMtumR3Uk0j2pw(dvvr0vbdcUVgbbEOkbbk1RDWstGLbp2GZ7GSIJOAqTgYE0OuzQuG38dkiHQtmv2OAYgVOP64qPWSQI7NqIsl)M2exJi0bKiYLQbMpzcPd(CMTlalpasxCMNl4dnC3o9OjEvAUNVtb7xQZRMg4qw4v1rPybfIHJ6GI3z13MYIuV0ElG0LXdvsS)5rzplGPrUtczvE46mjnLBqwUQQ(eoEGsnXi7Qp0IfgVTx36fVfyXNGGEyXStlEpnyiZotFx88Emzm9W76SMDsWNJNsK3KCMfFdESW)ZTo0tZtGh6G2CBO3AZq8dSdXnEAW)i9CnHhf4FWZf6nAXVjEQozpJFaM4bv5n5MHkxXxQ9P2LcA25dkaQqXvcu9IbvO4kbA5NbrjuFfAsL68YpnJs4Yk0Kk25cRxHKEtwDoPWxkWswNfjQOgt3nf(sbMBXCKji4kRQ0Ps40QpCV6PUsvkNhRwz4RaWFP4)UPQUtm8LcCtvDvKUBk8Lc8RE)eVUPUsvkNhRwz4bG3)bjjih1imrOAKF8DNcxHQavCNTlstLwLti4LcBtvtvKQBk8NmG)Ct3hu4YJ7yJtk4NiyptZNP5xN0Ct9yurQUPWFYa(mD3m6oZylt7NlEWhRcvIIRpW1bYAL7z9P4AbFPaFsYURHtB4CIaLc7zbXba7NfA2BdHzlgattZvTTvRlLCmy5(yuZ4o7LV8sb0t7xE5I6cOijqHAeVTBEpm)TETWD)RvMD(RWwCLE3muEgHqbC0iPe3nA9lQr30FG0M1s6xV6U(JYWiuEdeLfCU5ADzbDFHfwpAB0WCYnr4gnuoEnsTY1xskFGOysr3CvrWKvA3UDBvCio0voxO3vEbdKbuk7r7RluAlYt0XHRg2vWMc3yZNiTBD5fQgqFigWkXukvOu(uy3aLJscrB4b69paIVKej(c1z3TND291OZUB)62z3TND2DID2LK7x)trI7QavtGskAA3Pv5ecEPWkz4zLMhBfP6Mc)jd4p309bn9(J7yJtk4NiyptZNP5xN0Ct9yurQUPWFYa(mD3m6oZylzl1TKkujkU(axhivkeKxN6sX1c(sb(KKDNEZojpNteOuyplioay)SqZQxdDLtaTWvbsx2e7ePNQVSs6vFzLK4fVK1qxslYUSsAkwwjroQclRKyJQ3s3u9Lvst2Ykj29fwy9OTClRKm4A6YkjvTkFzdoKLvscmfTSs5Jb34LvssCrH1qpVTiprxVLvs5IfxFdyLy24LvsIvv9wwPQs8LKiXxOo7kzn0p7S7yrB)16S72VUD2jSg6ND2DKD21bpm7)e9CSJP89w2tCbEfcrFTwGINmgFyzM8l697HpCfEZDWBA0VPgVqr4Fr2oHb3gUKSZ0Fh91G52VJ2n)A0nw)hXo7w2ZAc7pxxd29YWZDqi2)bS)(9nmxZSxui21Hp(I48E67pJf8BApG3pp4fVZnCp5qqR3pn9HZy)03)(9FGXMbDs(ZA9QH3M(IBCTZ8HXpVf0MN5LXqncPVQgicxK(Mz06ImWD(I))V8l(F5kSylNRXRn3HIHnUME70omXVr2)UKtnUem9Z2G4c48Lv(FoVPU3k)V(2ukrwuG0(uOSmnm2fkFdI)M0kousfBvaLmSakjJN(kkp5frFXY21zKPUWiZcY5H6Q509uriNU5UjnqFGf8gsK0EOv8p9x8Fx8P(IV04xPRy31PVSxd4EvV4Bb)lNf2QlfE)UafEM3UR2TyEWfE1Ug2TL0xRliuDgol3JcftFAzhuELI0OvOMburqeHg96unqhTNIUas4UWzALRA9khEwdf7Ir6O0QSEyKgng83eNBrqhG7H(YX9jVhHA9jqK6AUIAqZ6pQ)Edh35BXROcSFXY6i5IyjT)JVXBADPSBY92PYI8O06sk45Vt2F5LetvP3i5d61fanBUyAVn1MGXJPpEiNAUqbtijJrTEcuzYZ(XRiQuqwM9b741mLM8wB86HiFxEAK9iyCQjWleGO6KCpQFJeQM6AHAsX1wjLNEL)GmNI7cogzi)(FBOUSEn9sEkrMj7UEJbSW98Mme5cuM5YAAOg2dIxeAda5o4vs4EzB0WepvLCdULOrf0tjii)gB7LxeUT2AjHaFqcBMCVOjxSHDkMENKBJnopWQUb2A3enLuTr(EqkWXplivCqxMltTezp3fOMeGYEtuXbMWvLMKgZR(ZpMQ(JaRGFHejnKiUKR6SKAgF9MbUkYEHMnAOEPURIj3C3XyCk383)wj5WfNzMTdzqFzA9KRomQjx(RLm0I7BrcCRKRHSr9kCCqP6wPkeU7dSJb)L9Q)IMWlLjVI7ce7kirMbjxBy8UCdcRQ70CTrHlAwzsmplWDzq(5u81NRsklQ2)tKutW3d978CHAbDUsAIpgAdpEwGmEoX6t5yoHbchhdeky8x2ThjSk2qtRVcdT4j6Dv(P9NUJqrt3x5Cyk4jgRDnsK7YQNjx7goXj2t50G(TRk)J1cM9zXcGkeSkM3LX61KZLY4vLFIKdx7Tzi9L8kIZQIu7603ERHLMCeVIi)ZU11wEU2oi1oS68TugexkoNqY6RXFi6TobClJVekXlGb1jTQv2RA7(PS)Oa0pGDtT6)fjjDp4lAZuL0Gm7LQI)CKe5MY3jvX2uVnRS6BKQS)yKe79IkREuw2TrvgAnCxuLQo5xhFXLrU(7HQeukylu1ps7GQ0ddt7cxwDocUwBFAJ(lqsQ9QkeB6ENkXmQEBDAfP8M6luN3x4X7OL8xZjlP2NIUYoxjkowjn5uLCOhCJQ7lu2HkPOZuYHszz9fEeprjLC65ooNNK6DCsowNMePU5Z6lSGDsSw(cB0jjPWdsYX6CKCsogjsOC6fk(K))d]] )
