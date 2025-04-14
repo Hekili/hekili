@@ -132,7 +132,21 @@ state.off_hand = {
 
 state.gcd = {}
 
-state.hero_tree = setmetatable( {}, { __index = function( t, k ) return state.talent[ k ].enabled end } ) -- TODO: Update hero tree detection for 11.0 launch.
+state.hero_tree = setmetatable( {}, {
+    __index = function( t, k )
+
+        if state.level < 71 then
+            return false
+        end
+
+        if k == "current" then
+            return ns.getActiveHeroTreeName()
+        end
+
+        return ns.getActiveHeroTreeName() == k
+    end
+} )
+
 
 state.history = {
     casts = {},
@@ -680,6 +694,7 @@ state.remove = table.remove
 state.tonumber = tonumber
 state.tostring = tostring
 state.type = type
+state.unpack = unpack
 
 state.safenum = function( val )
     if type( val ) == "number" then return val end
@@ -734,7 +749,7 @@ local function spendCharges( action, charges )
     elseif cd.charges > cd.charge then
         local addl = cd.charges_fractional - cd.charges
         cd.charge = cd.charges
-        cd.recharge_began = state.query_time - ( addl * ability.recharge )
+        cd.recharge_began = state.query_time - ( addl * ( ability.recharge or ability.cooldown ) )
     end
 
     cd.charge = max( 0, cd.charge - charges )
@@ -1622,13 +1637,27 @@ do
         end
     end
 
+    local recurseRechecks
+    recurseRechecks = function( script, seen )
+        if not seen then seen = {}
+        else seen[ script.ID ] = script.Recheck or true end
 
-    local function channelInfo( ability )
-        if state.system.packName and scripts.Channels[ state.system.packName ] then
-            return scripts.Channels[ state.system.packName ][ state.channel ], class.auras[ state.channel ]
+        if script.Variables then
+            for _, var in ipairs( script.Variables ) do
+                local varIDs = state:GetVariableIDs( var )
+                if varIDs then
+                    for _, entry in ipairs( varIDs ) do
+                        if not seen[ entry.id ] then
+                            local subscript = scripts.DB[ entry.id ]
+                            if subscript then recurseRechecks( subscript, seen ) end
+                        end
+                    end
+                end
+            end
         end
-    end
 
+        return seen
+    end
 
     function state.recheck( ability, script, stack, block )
         local times = state.recheckTimes
@@ -1642,21 +1671,17 @@ do
                 recheckHelper( workTable, script.Recheck() )
             end
 
-            -- This can be CPU intensive but is needed for some APLs (i.e., Unholy).
             if script.Variables then
-                -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
-                for i, var in ipairs( script.Variables ) do
-                    local varIDs = state:GetVariableIDs( var )
+                if not script.AllRechecks then
+                    script.AllRechecks = recurseRechecks( script )
 
-                    if varIDs then
-                        for _, entry in ipairs( varIDs ) do
-                            local vr = scripts.DB[ entry.id ].VarRecheck
-                            if vr then
-                                recheckHelper( workTable, vr() )
-                            end
-                        end
+                    for id, func in pairs( script.AllRechecks ) do
+                        if type( func ) ~= "function" then script.AllRechecks[ id ] = nil end
                     end
-                    -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
+                end
+
+                for id, func in pairs( script.AllRechecks ) do
+                    recheckHelper( workTable, func() )
                 end
             end
         end
@@ -1685,6 +1710,20 @@ do
 
                 if callScript and callScript.Recheck then
                     recheckHelper( workTable, callScript.Recheck() )
+
+                    if callScript.Variables then
+                        if not callScript.AllRechecks then
+                            callScript.AllRechecks = recurseRechecks( callScript )
+
+                            for id, func in pairs( callScript.AllRechecks ) do
+                                if type( func ) ~= "function" then callScript.AllRechecks[ id ] = nil end
+                            end
+                        end
+
+                        for id, func in pairs( callScript.AllRechecks ) do
+                            recheckHelper( workTable, func() )
+                        end
+                    end
                 end
             end
         end
@@ -1697,45 +1736,26 @@ do
                 if callScript and callScript.Recheck then
                     recheckHelper( workTable, callScript.Recheck() )
                 end
-            end
-        end
 
-        -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
+                if callScript and callScript.Recheck then
+                    recheckHelper( workTable, callScript.Recheck() )
 
-        --[[ if state.channeling then
-            local aura = class.auras[ state.channel ]
-            local remains = state.channel_remains
+                    if callScript.Variables then
+                        if not callScript.AllRechecks then
+                            callScript.AllRechecks = recurseRechecks( callScript )
 
-            if aura and aura.tick_time then
-                -- Put tick times into recheck.
-                local i = 1
-                while ( true ) do
-                    if remains - ( i * aura.tick_time ) > 0 then
-                        workTable[ roundUp( remains - ( i * aura.tick_time ), 3 ) ] = true
-                    else break end
-                    i = i + 1
-                end
+                            for id, func in pairs( callScript.AllRechecks ) do
+                                if type( func ) ~= "function" then callScript.AllRechecks[ id ] = nil end
+                            end
+                        end
 
-                for time in pairs( workTable ) do
-                    if ( ( remains - time ) / aura.tick_time ) % 1 <= 0.5 then
-                        workTable[ time ] = nil
+                        for id, func in pairs( callScript.AllRechecks ) do
+                            recheckHelper( workTable, func() )
+                        end
                     end
                 end
             end
-
-            workTable[ remains ] = true
-        end ]]
-
-        --[[ if #steps > 0 then
-            -- table.insert( steps, debugprofilestop() )
-            local str = string.format( "RECHECK: %.2f", steps[#steps] - steps[1] )
-
-            for i = 2, #steps do
-                str = string.format( "%s, %.2f ", str, steps[i] - steps[i-1] )
-            end
-
-            print( str )
-        end ]]
+        end
 
         wipe( times )
 
@@ -3164,7 +3184,7 @@ do
                     if not duration then duration = max( ability.recharge or 0, ability.cooldown or 0 ) end
 
                     t.true_duration = duration
-                    duration = max( duration, ability.recharge )
+                    duration = max( duration, ability.recharge or 0 )
 
                     t.charge = charges or 1
                     t.duration = duration
@@ -3234,8 +3254,8 @@ do
                     if not state:IsKnown( t.key ) then return ability.charges or 1 end
                 end
 
-                if t.charge == ability.charges then return t.charge end
-                return min( ability.charges, t.charge + max( 0, ( state.query_time - t.recharge_began ) / ability.recharge ) )
+                if not ability.charges or t.charge == ability.charges then return t.charge or 1 end
+                return min( ability.charges, t.charge + max( 0, ( state.query_time - t.recharge_began ) / ( ability.recharge or ability.cooldown ) ) )
 
             elseif k == "recharge_time" then
                 if not ability.charges then return t.duration or 0 end
@@ -4932,6 +4952,7 @@ local cycle_debuff = {
 -- Table of default handlers for debuffs.
 -- Needs review.
 local mt_default_debuff, mt_debuffs
+local flagged_debuffs = {}
 
 do
     local autoReset = {
@@ -4948,11 +4969,33 @@ do
         v1 = 1,
         v2 = 1,
         v3 = 1,
-        pmultiplier = 1
+        pmultiplier = 1,
+
+        haste = 1,
+        last_tick = 1,
+        next_tick = 1
     }
 
     mt_default_debuff = {
         mtID = "default_debuff",
+
+        ticks_before = function( t, span )
+            if span <= 0 then return 0 end
+
+            local remains = t.remains
+            if remains == 0 then return 0 end
+
+            local ticks_remain = t.ticks_remain
+            span = min( span, remains )
+
+            local real_delay = state.delay
+            state.delay = state.delay + span
+
+            local ticks_before = max( 0, ticks_remain - t.ticks_remain )
+            state.delay = real_delay
+
+            return ticks_before
+        end,
 
         __index = function( t, k )
             local aura = class.auras[ t.key ]
@@ -5011,79 +5054,79 @@ do
                 end
 
                 return rawget( t, k )
-
-            elseif k == "up" or k == "ticking" then
-                return t.remains > 0
-
-            elseif k == "i_up" or k == "rank" then
-                return t.up and 1 or 0
-
-            elseif k == "down" then
-                return t.remains == 0
-
-            elseif k == "duration" then
-                return ( t.remains > 0 and t.expires - t.applied ) or aura.duration or 30
-
-            elseif k == "remains" then
-                return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
-
-            elseif k == "refreshable" then
-                local tr = t.remains
-                return tr == 0 or tr < 0.3 * ( aura.duration or 30 )
-
-            elseif k == "time_to_refresh" then
-                return t.up and max( 0, 0.01 + t.remains - ( 0.3 * ( aura.duration or 30 ) ) ) or 0
-
-            elseif k == "stack" or k == "stacks" or k == "react" then
-                if t.remains == 0 then return 0 end
-                return t.count
-
-            elseif k == "max_stack" or k == "max_stacks" then
-                return max( t.count, aura and aura.max_stack or 1 )
-
-            elseif k == "stack_pct" then
-                if t.remains == 0 then return 0 end
-                if aura then
-                    return ( 100 * t.count / max( aura and aura.max_stack or 1, t.count ) )
-                end
-                return 100
-
-            elseif k == "value" then
-                if t.remains == 0 then return 0 end
-                return t.v1 or 0
-
-            elseif k == "stack_value" then
-                return t.value * t.stack
-
-            elseif k == "pmultiplier" then
-                if t.remains == 0 then return 0 end
-
-                -- Persistent modifier, used by Druids.
-                t[ k ] = ns.getModifier( aura.id, state.target.unit )
-                return t[ k ]
-
-            elseif k == "ticks" then
-                if t.remains == 0 then return 0 end
-                return t.duration / t.tick_time - t.ticks_remain
-
-            elseif k == "tick_time" then
-                return aura and aura.tick_time or ( 3 * state.haste )
-
-            elseif k == "ticks_remain" then
-                return ceil( t.remains / t.tick_time )
-
-            elseif k == "tick_time_remains" then
-                if t.remains == 0 then return 0 end
-                if not aura.tick_time then return t.remains end
-                return aura.tick_time - ( ( query_time - t.applied ) % aura.tick_time )
-
-            else
-                if aura and aura[ k ] ~= nil then
-                    return aura[ k ]
-                end
             end
 
-            Error ( "UNK: debuff." .. t.key .. "." .. k )
+            -- 20250412: Revamped to avoid having this metatable call this metatable call this metatable...
+            -- This change means that any references to t.X should only occur where X is a real value and not a metatable lookup.
+
+            local moment = state.query_time
+            local applied = t.applied
+            local expires = t.expires
+            local remains = applied > 0 and applied <= moment and expires > moment and expires - moment or 0
+
+            if k == "remains" then return remains end
+
+            if k == "up" or
+                k == "ticking" then return remains > 0 end
+
+            if k == "down" then return remains == 0 end
+
+            -- These should be long since deprecated.
+            if k == "i_up" or
+                k == "rank" then return remains > 0 and 1 or 0 end
+
+            if k == "stack" or
+                k == "stacks" or
+                k == "react" then return remains > 0 and t.count or 0 end
+
+            if k == "max_stack" or
+               k == "max_stacks" then return max( t.count, aura.max_stack or 1 ) end
+
+            if k == "at_max_stacks" then return remains > 0 and t.count >= ( aura.max_stack or 1 ) end
+            if k == "stack_pct" then return remains > 0 and ( 100 * t.count / ( aura.max_stack or 1 ) ) or 0 end
+            if k == "value" then return remains > 0 and t.v1 or 0 end
+            if k == "stack_value" then return remains > 0 and t.v1 * t.count or 0 end
+
+            local duration = remains > 0 and ( expires - applied ) or aura.duration or 30
+            local apply_duration = aura.duration or duration
+
+            if k == "duration" then return duration end
+            if k == "apply_duration" then return apply_duration end
+            if k == "refreshable" then return remains < 0.3 * apply_duration end
+            if k == "time_to_refresh" then return remains > 0 and max( 0, 0.01 + remains - ( 0.3 * apply_duration ) ) or 0 end
+
+            if k == "pmultiplier" then
+                t.pmultiplier = remains > 0 and ns.getModifier( aura.id, state.target.unit ) or 0
+                return t.pmultiplier
+            end
+
+            local tick_time = aura.tick_time or ( 3 * state.haste )
+            if k == "tick_time" then return tick_time end
+
+            local last_tick = remains > 0 and max( ns.GetDebuffNextTick( t.key, state.target.unit ), applied ) or 0
+            if last_tick > 0 and moment - last_tick > tick_time then
+                last_tick = last_tick + floor( ( moment - last_tick ) / tick_time ) * tick_time
+            end
+
+            if k == "last_tick" then return last_tick end
+            if k == "ticks" then return remains > 0 and floor( ( last_tick - applied ) / tick_time ) or 0 end
+
+            local next_tick = remains > 0 and max( ns.GetDebuffNextTick( t.key, state.target.unit ), last_tick + tick_time ) or 0
+            if next_tick > 0 and next_tick < moment then
+                next_tick = next_tick + ceil( ( moment - last_tick ) / tick_time ) * tick_time
+            end
+
+            if k == "next_tick" then return next_tick end
+            if k == "tick_time_remains" then return max( 0, next_tick - moment ) end
+            if k == "ticks_remain" then return expires > moment and max( 0, 1 + floor( ( expires - next_tick ) / tick_time ) ) or 0 end
+
+            local attr = aura[ k ]
+            if attr ~= nil then return attr end
+
+            if not flagged_debuffs[ t.key ] then
+                Error( "UNK: debuff." .. t.key .. "." .. k )
+                flagged_debuffs[ t.key ] = true
+            end
         end,
         __newindex = function( t, k, v )
             if v ~= nil and autoReset[ k ] then Mark( t, k ) end
@@ -6245,7 +6288,7 @@ do
 
             -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
             -- if ability.charges and ability.charges > 1 and ability.recharge > 0 then
-            if ability.charges and ability.recharge > 0 then
+            if ability.charges and ( ability.recharge or ability.cooldown ) > 0 then
                 self.spendCharges( action, 1 )
 
             elseif action ~= "global_cooldown" then

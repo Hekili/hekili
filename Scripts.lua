@@ -445,6 +445,8 @@ do
         { "^!?(dot%.[a-z0-9_]+)%.up$"               , "%1.remains"                        },
         { "^!?(d?e?buff%.[a-z0-9_]+)%.react$"       , "%1.remains"                        },
         { "^!?(dot%.[a-z0-9_]+)%.react$"            , "%1.remains"                        },
+        { "^!?(d?e?buff%.[a-z0-9_]+)%.stack$"       , "%1.remains"                        },
+        { "^!?(d?e?buff%.[a-z0-9_]+)%.stack[<>]=?(.-)$", "0.01+%1.remains"                   },
         { "^!?(d?e?buff%.[a-z0-9_]+)%.ticking$"     , "%1.remains"                        },
         { "^!?(dot%.[a-z0-9_]+)%.ticking$"          , "%1.remains"                        },
         { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$"     , "%1.remains"                        },
@@ -591,6 +593,18 @@ do
         ["=="] = true,
     }
 
+    local lhsTerms = {
+        ["("] = true,
+        ["&"] = true,
+        ["|"] = true
+     }
+
+    local rhsTerms = {
+        [")"] = true,
+        ["&"] = true,
+        ["|"] = true
+    }
+
 
     -- Given an expression, can we assess whether it is time-based and progressing in a meaningful way?
     -- 1.  Cooldowns
@@ -606,6 +620,43 @@ do
         end
 
         local lhs, comp, rhs = expr:match( "^(.-)([<>=~?]+)(.-)$" )
+
+        -- Finding that SplitExpr is falling short occasionally; need to trim lhs and rhs to the most appropriate balanced pair.
+        local brace_depth = 0
+
+        if lhs then
+            for i = lhs:len(), 1, -1 do
+                local char = lhs:sub( i, i )
+                if char == ")" then
+                    brace_depth = brace_depth + 1
+                elseif char == "(" then
+                    brace_depth = brace_depth - 1
+                end
+
+                if brace_depth < 0 and lhsTerms[ char ] then
+                    lhs = lhs:sub( i + 1, lhs:len() )
+                    break
+                end
+            end
+        end
+
+        if rhs then
+            brace_depth = 0
+            for i = 1, rhs:len() do
+                local char = rhs:sub( i, i )
+
+                if char == "(" then
+                    brace_depth = brace_depth + 1
+                elseif char == ")" then
+                    brace_depth = brace_depth - 1
+                end
+
+                if brace_depth < 0 and rhsTerms[ char ] then
+                    rhs = rhs:sub( 1, i - 1  )
+                    break
+                end
+            end
+        end
 
         if comp and comp:match( "?" ) then
             comp = nil
@@ -683,14 +734,6 @@ do
                     return true, "rune.timeTo( " .. lhs .. " )"
                 end
             end
-
-            --[[ if comp:match( "<=?" ) then
-                return true, lhs .. " - " .. rhs .. " + 0.01"
-            end
-
-            if comp:match( ">=?" ) then
-                return true, rhs .. " - " .. lhs .. " + 0.01"
-            end ]]
         end
 
         -- If we didn't convert a resource.current to resource.timeTo then let's revert our string.
@@ -700,6 +743,10 @@ do
             if expr:match( swap[1] ) then
                 return true, expr:gsub( swap[1], swap[2]), swap[1]
             end
+        end
+
+        if comp and comp:match( "[<>]=?" ) then
+            return true, "0.01 + " .. lhs .. " - " .. rhs, "fallback"
         end
 
         return false, nil
@@ -728,7 +775,13 @@ do
                 if converted then
                     calc = SimToLua( calc )
                     calc = self:EmulateSyntax( calc, true )
-                    recheck = ( recheck and ( recheck .. ", " ) or "" ) .. calc
+
+                    local rslt, msg = Hekili:Loadstring( "return " .. calc )
+                    if not rslt then
+                        Hekili:Debug( "Recheck failed to loadstring: %s", msg )
+                    else
+                        recheck = ( recheck and ( recheck .. ", " ) or "" ) .. calc
+                    end
                 end
             end
         end
@@ -993,7 +1046,7 @@ do
             end
 
             if trimmed_prefix then
-                    piece.s = trimmed_prefix .. piece.s
+                piece.s = trimmed_prefix .. piece.s
             end
 
             output = output .. piece.s
@@ -1363,20 +1416,23 @@ local function ConvertScript( node, hasModifiers, header )
     local rs, rc, erc, rEle
     local recheckDebug, recheckPrint
 
-    if t and t ~= "" then
-        rs = scripts:BuildRecheck( node.criteria )
+    local hasCriteria = node.criteria and node.criteria ~= ""
+    local hasValue = node.value and node.value ~= ""
+    local hasValueElse = node.value_else and node.value_else ~= ""
+
+    if hasCriteria or hasValue or hasValueElse then
+        if node.action == "variable" then
+            rs = format( "%s | %s | %s", hasCriteria and node.criteria or "1", hasValue and node.value or "1", hasValueElse and node.value_else or "1" )
+            rs = scripts:BuildRecheck( rs )
+        else
+            rs = scripts:BuildRecheck( node.criteria )
+        end
+
         if rs then
-            local orig = rs
             rc, erc = Hekili:Loadstring( "-- " .. header .. " recheck\nreturn " .. rs )
             if rc then setfenv( rc, state ) end
 
-            rEle = GetScriptElements( orig )
-
-            --[[ if next( rEle ) ~= nil then
-                recheckDebug, recheckPrint = generateDebugPrint( node, rs, header, true )
-            end ]]
-
-            rEle.zzz = orig
+            rEle = GetScriptElements( rs )
 
             if type( rc ) ~= "function" then
                 Hekili:Error( "Recheck function for " .. clean .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
@@ -1385,41 +1441,44 @@ local function ConvertScript( node, hasModifiers, header )
         end
     end
 
-    local output = {
-        Conditions = sf,
-        Error = e,
-        Elements = se,
-        Print = debugPrint,
-        Debug = generateDebug,
+    local output = scripts.DB[ header ]
+    if output then wipe( output )
+    else output = {} end
 
-        Recheck = rc,
-        RecheckScript = rs,
-        RecheckError = erc,
-        RecheckElements = rEle,
-        RecheckPrint = recheckPrint,
-        RecheckDebug = recheckDebug,
-        Modifiers = {},
-        ModElements = {},
-        ModEmulates = {},
-        ModSimC = {},
-        SpecialMods = "",
+    local specialMods = ""
 
-        Variables = varPool,
+    if output.Modifiers then wipe( output.Modifiers ) end
+    local modifiers = output.Modifiers or {}
 
-        Lua = clean and clean:trim() or nil,
-        Emulated = t and t:trim() or nil,
-        EmuPreSim = tPreSim and tPreSim:trim() or nil,
-        SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil,
+    if output.ModElements then wipe( output.ModElements ) end
+    local modElements = output.ModElements or {}
 
-        ID = header
-    }
+    if output.ModEmulates then wipe( output.ModEmulates ) end
+    local modEmulates = output.ModEmulates or {}
+
+    if output.ModSimC then wipe( output.ModSimC ) end
+    local modSimC = output.ModSimC or {}
+
+    output.Conditions = sf
+    output.Error = e
+    output.Elements = se
+    output.Print = debugPrint
+    output.Debug = generateDebug
+
+    output.Recheck = rc
+    output.RecheckScript = rs
+    output.RecheckError = erc
+    output.RecheckElements = rEle
+    output.RecheckPrint = recheckPrint
+    output.RecheckDebug = recheckDebug
 
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
                 local emulated
                 local o = SimToLua( node[ m ] )
-                output.SpecialMods = output.SpecialMods .. " - " .. m .. " : " .. o
+
+                specialMods = specialMods .. " - " .. m .. " : " .. o
 
                 local sf, e
 
@@ -1433,69 +1492,71 @@ local function ConvertScript( node, hasModifiers, header )
                         emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
                     end
 
+                    --[[ if modChecks then modChecks = modChecks .. " | " .. node[ m ]
+                    else modChecks = node[ m ] end ]]
                 else -- string
                     o = "'" .. o .. "'"
                     emulated = o
 
-                end
-
-                if node.action == "variable" then
-                    --[[ local var_val, var_recheck, var_err
-                    var_val = scripts:BuildRecheck( node[m] )
-                    if var_val then
-                        if var_val:match(",") then
-
-                        end
-                        var_val = scripts:EmulateSyntax( var_val )
-                        var_val = SimToLua( var_val )
-                        var_recheck, var_err = loadstring( "-- val " ..header .. " recheck\nreturn " .. var_val )
-                        if var_recheck then setfenv( var_recheck, state ) end
-
-                        if type( var_recheck ) ~= "function" then
-                            Hekili:Error( "Variable recheck function for " .. node.criteria .. " ( " .. ( var_recheck or "nil" ) .. " ) was unsuccessful somehow." )
-                            var_recheck = nil
-                        end
-
-                        output.VarRecheck = var_recheck
-                        output.VarRecheckScript = var_val
-                        output.VarRecheckError = var_err
-                    end ]]
-                    local rs, rc, erc
-                    rs = scripts:BuildRecheck( node[m] )
-
-                    if rs then
-                        local orig = rs
-                        rc, erc = Hekili:Loadstring( "-- var " .. header .. " recheck\nreturn " .. rs )
-                        if rc then setfenv( rc, state ) end
-
-                        --[[rEle = GetScriptElements( orig )
-                        rEle.zzz = orig ]]
-
-                        if type( rc ) ~= "function" then
-                            Hekili:Error( "Variable recheck function for " .. o .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
-                            rc = nil
-                        end
-
-                        output.VarRecheck = rc
-                        output.VarRecheckScript = rs
-                        output.VarRecheckError = erc
-                    end
+                    --[[ if modChecks then modChecks = modChecks .. " | " .. node[ m ]
+                    else modChecks = node[ m ] end ]]
                 end
 
                 sf, e = Hekili:Loadstring( "return " .. emulated )
 
                 if sf then
                     setfenv( sf, state )
-                    output.Modifiers[ m ] = sf
-                    output.ModElements[ m ] = GetScriptElements( o )
-                    output.ModEmulates[ m ] = emulated
-                    if type( node[ m ] ) == 'string' then output.ModSimC[ m ] = SimcWithResources( node[ m ]:trim() ) end
+                    modifiers[ m ] = sf
+                    modElements[ m ] = GetScriptElements( o )
+
+                    if modElements[ m ] then
+                        for k, v in pairs( modElements[ m ] ) do
+                            if k:sub( 1, 8 ) == "variable" then
+                                varPool = varPool or {}
+                                table.insert( varPool, k:sub( 10 ) )
+                            end
+                        end
+                    end
+
+                    modEmulates[ m ] = emulated
+                    if type( node[ m ] ) == 'string' then modSimC[ m ] = SimcWithResources( node[ m ]:trim() ) end
                 else
-                    output.Modifiers[ m ] = e
+                    modifiers[ m ] = e
                 end
             end
         end
+
+        --[[ if modChecks then
+            local mcString = scripts:BuildRecheck( modChecks )
+            if mcString then
+                local mcTimes, emsg = Hekili:Loadstring( "-- var " .. header .. " mod recheck\n return " .. mcString )
+                if mcTimes then setfenv( mcTimes, state ) end
+
+                if type( mcTimes ) ~= "function" then
+                    Hekili:Error( "Modifier recheck function for " .. modChecks .. " ( " .. ( mcString or "nil" ) .. ") was unsuccessful somehow." )
+                    mcTimes = nil
+                end
+
+                output.VarRecheck = mcTimes
+                output.VarRecheckScript = mcString
+                output.VarRecheckError = emsg
+            end
+        end ]]
     end
+
+    output.Modifiers = hasModifiers and modifiers
+    output.ModElements = hasModifiers and modElements
+    output.ModEmulates = hasModifiers and modEmulates
+    output.ModSimC = hasModifiers and modSimC
+    output.SpecialMods = specialMods
+
+    output.Variables = varPool
+
+    output.Lua = clean and clean:trim() or nil
+    output.Emulated = t and t:trim() or nil
+    output.EmuPreSim = tPreSim and tPreSim:trim() or nil
+    output.SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil
+    output.ID = header
 
     state.scriptID = previousScript
     return output
@@ -1650,111 +1711,8 @@ function scripts:LoadScripts()
             }
 
             for list, lData in pairs( pData.lists ) do
-                for action, data in ipairs( lData ) do
-                    Hekili:Yield( "Loading " .. pack .. " - " .. list .. " - " .. action )
-
-                    local scriptID = pack .. ":" .. list .. ":" .. action
-
-                    local script = ConvertScript( data, true, scriptID )
-
-                    if script.Error then
-                        Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. ( script.rs or "null" ) .. "\n\n" .. script.Error )
-                    end
-
-                    script.action = data.action
-
-                    local lua = script.Lua
-
-                    if lua then
-                        for aura in lua:gmatch( "d?e?buff%.([a-z_0-9]+)" ) do
-                            self.PackInfo[ pack ].auras[ aura ] = true
-                        end
-
-                        for aura in lua:gmatch( "active_dot%.([a-z_0-9]+)" ) do
-                            self.PackInfo[ pack ].auras[ aura ] = true
-                        end
-                    end
-
-                    if data.use_off_gcd and data.use_off_gcd ~= 0 then
-                        self.PackInfo[ pack ].hasOffGCD = true
-                    end
-
-                    if data.action == "call_action_list" or data.action == "run_action_list" then
-                        -- Check for Time Sensitive conditions.
-                        script.TimeSensitive = false
-
-                        if lua then
-                            -- If resources are checked, it's time-sensitive.
-                            for k in pairs( GetResourceInfo() ) do
-                                local resource = specData.resources[ k ]
-                                resource = resource and resource.state
-
-                                if resource and lua:find( k ) and ( resource.regenModel or resource.regen ~= 0.001 ) then
-                                    script.TimeSensitive = true
-                                    break
-                                end
-                            end
-
-                            if not script.TimeSensitive then
-                                -- Check for other time-sensitive variables.
-                                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) or lua:find( "rune" ) then
-                                    script.TimeSensitive = true
-                                end
-                            end
-                        end
-                    end
-
-                    local ability
-
-                    if data.action then
-                        ability = specData.abilities[ data.action ] or class.abilities[ data.action ]
-                    end
-
-                    if ability then
-                        if ability.channeled then
-                            if not self.Channels[ pack ] then self.Channels[ pack ] = {} end
-                            if not self.Channels[ pack ][ data.action ] then
-                                self.Channels[ pack ][ data.action ] = {}
-                            end
-
-                            local cInfo = self.Channels[ pack ][ data.action ]
-
-                            -- This will load the channel criteria for the first entry for this ability in any of the action lists.
-                            -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
-                            -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
-                            -- 2020-10-22:  Modified this to decide that if any breakchannel logic is met, you break the channel.
-                            -- TODO:  Phase 3 would be only using channel-break logic for channel entries that you've passed in the current APL run.
-
-                            for k in pairs( channelModifiers ) do
-                                if script.Modifiers[ k ] then
-                                    local newfunc = script.Modifiers[ k ]
-
-                                    if newfunc and type( newfunc ) == "function" then
-                                        local oldfunc = cInfo[ k ]
-
-                                        if oldfunc then
-                                            local oldstr = cInfo[ "_" .. k ]
-                                            cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
-                                            cInfo[ "_" .. k ] = format( "( %s ) or ( %s )", oldstr or "nil", script.ModEmulates[ k ] )
-                                        else
-                                            cInfo[ "_" .. k ] = script.ModEmulates[ k ]
-                                            cInfo[ k ] = script.Modifiers[ k ]
-                                        end
-                                    end
-                                end
-                            end
-                        end
-
-                        if list ~= "precombat" and ( ability.item or data.action == "trinket1" or data.action == "trinket2" or data.action == "main_hand" ) and data.enabled then
-                            self.PackInfo[ pack ].items[ data.action ] = true
-                        end
-
-                        if list ~= "precombat" and ability.essence and data.enabled then
-                            self.PackInfo[ pack ].essences[ data.action ] = true
-                        end
-                    end
-
-                    self.DB[ scriptID ] = script
+                for action, _ in ipairs( lData ) do
+                    Hekili:LoadScript( pack, list, action )
                 end
             end
         end
@@ -1802,33 +1760,49 @@ function Hekili.Scripts:LoadItemScripts()
     end
 
     local pack = "UseItems"
-    --[[ self.PackInfo[ pack ] = self.PackInfo[ pack ] or {
-        items = {}
-    } ]]
 
     for list, lData in pairs( class.itemPack.lists ) do
+        local specData = class.specs[ state.spec.id ]
+
         for action, data in ipairs( lData ) do
             local scriptID = pack .. ":" .. list .. ":" .. action
 
             local script = ConvertScript( data, true, scriptID )
+            local lua = script.Lua
+
+            if lua then
+                for aura in lua:gmatch( "d?e?buff%.([a-z_0-9]+)" ) do
+                    self.PackInfo[ pack ].auras[ aura ] = true
+                end
+
+                for aura in lua:gmatch( "active_dot%.([a-z_0-9]+)" ) do
+                    self.PackInfo[ pack ].auras[ aura ] = true
+                end
+            end
+
+            if data.use_off_gcd and data.use_off_gcd ~= 0 then
+                self.PackInfo[ pack ].hasOffGCD = true
+            end
 
             if data.action == "call_action_list" or data.action == "run_action_list" then
                 -- Check for Time Sensitive conditions.
                 script.TimeSensitive = false
 
-                local lua = script.Lua
-
                 if lua then
                     -- If resources are checked, it's time-sensitive.
                     for k in pairs( GetResourceInfo() ) do
-                        if lua:find( k ) then script.TimeSensitive = true; break end
-                    end
+                        local resource = specData.resources[ k ]
+                        resource = resource and resource.state
 
-                    if lua:find( "rune" ) then script.TimeSensitive = true end
+                        if resource and lua:find( k ) and ( resource.regenModel or resource.regen ~= 0.001 ) then
+                            script.TimeSensitive = true
+                            break
+                        end
+                    end
 
                     if not script.TimeSensitive then
                         -- Check for other time-sensitive variables.
-                        if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
+                        if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) or lua:find( "rune" ) then
                             script.TimeSensitive = true
                         end
                     end
@@ -1838,7 +1812,7 @@ function Hekili.Scripts:LoadItemScripts()
             local ability
 
             if data.action then
-                ability = class.abilities[ data.action ] or class.specs[ 0 ].abilities[ data.action ]
+                ability = specData.abilities[ data.action ] or class.abilities[ data.action ]
             end
 
             if ability then
@@ -1853,9 +1827,26 @@ function Hekili.Scripts:LoadItemScripts()
                     -- This will load the channel criteria for the first entry for this ability in any of the action lists.
                     -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
                     -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
+                    -- 2020-10-22:  Modified this to decide that if any breakchannel logic is met, you break the channel.
+                    -- TODO:  Phase 3 would be only using channel-break logic for channel entries that you've passed in the current APL run.
 
                     for k in pairs( channelModifiers ) do
-                        if script.Modifiers[ k ] and not cInfo[ k ] then cInfo[ k ] = script.Modifiers[ k ] end
+                        if script.Modifiers[ k ] then
+                            local newfunc = script.Modifiers[ k ]
+
+                            if newfunc and type( newfunc ) == "function" then
+                                local oldfunc = cInfo[ k ]
+
+                                if oldfunc then
+                                    local oldstr = cInfo[ "_" .. k ]
+                                    cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
+                                    cInfo[ "_" .. k ] = format( "( %s ) or ( %s )", oldstr or "nil", script.ModEmulates[ k ] )
+                                else
+                                    cInfo[ "_" .. k ] = script.ModEmulates[ k ]
+                                    cInfo[ k ] = script.Modifiers[ k ]
+                                end
+                            end
+                        end
                     end
                 end
             end
@@ -1872,7 +1863,9 @@ end
 
 
 function Hekili:LoadScript( pack, list, id )
-    local data = self.DB.profile.packs[ pack ].lists[ list ][ id ]
+    local pData = self.DB.profile.packs[ pack ]
+    local data = pData.lists[ list ][ id ]
+    local specData = pData.spec and class.specs[ pData.spec ]
     local scriptID = pack .. ":" .. list .. ":" .. id
 
     local script = ConvertScript( data, true, scriptID )
@@ -1881,29 +1874,101 @@ function Hekili:LoadScript( pack, list, id )
         Hekili:Error( "Error in " .. scriptID .. " conditions:  " .. ( script.rs or "null" ) .. "\n\n" .. script.Error )
     end
 
+    script.action = data.action
+    local lua = script.Lua
+
+    if lua then
+        for aura in lua:gmatch( "d?e?buff%.([a-z_0-9]+)" ) do
+            scripts.PackInfo[ pack ].auras[ aura ] = true
+        end
+
+        for aura in lua:gmatch( "active_dot%.([a-z_0-9]+)" ) do
+            scripts.PackInfo[ pack ].auras[ aura ] = true
+        end
+    end
+
+    if data.use_off_gcd and data.use_off_gcd ~= 0 then
+        scripts.PackInfo[ pack ].hasOffGCD = true
+    end
+
     if data.action == "call_action_list" or data.action == "run_action_list" then
         -- Check for Time Sensitive conditions.
         script.TimeSensitive = false
 
-        local lua = script.Lua
-
         if lua then
             -- If resources are checked, it's time-sensitive.
             for k in pairs( GetResourceInfo() ) do
-                if lua:find( k ) then script.TimeSensitive = true; break end
-            end
+                local resource = specData.resources[ k ]
+                resource = resource and resource.state
 
-            if lua:find( "rune" ) then script.TimeSensitive = true end
+                if resource and lua:find( k ) and ( resource.regenModel or resource.regen ~= 0.001 ) then
+                    script.TimeSensitive = true
+                    break
+                end
+            end
 
             if not script.TimeSensitive then
                 -- Check for other time-sensitive variables.
-                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) then
+                if lua:find( "time" ) or lua:find( "cooldown" ) or lua:find( "charge" ) or lua:find( "remain" ) or lua:find( "up" ) or lua:find( "down" ) or lua:find( "ticking" ) or lua:find( "refreshable" ) or lua:find( "stealthed" ) or lua:find( "rune" ) then
                     script.TimeSensitive = true
                 end
             end
         end
     end
-    self.Scripts.DB[ scriptID ] = script
+
+    local ability
+
+    if data.action then
+        ability = specData.abilities[ data.action ] or class.abilities[ data.action ]
+    end
+
+    if ability then
+        if ability.channeled then
+            if not scripts.Channels[ pack ] then scripts.Channels[ pack ] = {} end
+            if not scripts.Channels[ pack ][ data.action ] then
+                scripts.Channels[ pack ][ data.action ] = {}
+            end
+
+            local cInfo = scripts.Channels[ pack ][ data.action ]
+
+            -- This will load the channel criteria for the first entry for this ability in any of the action lists.
+            -- This seems OK as long as channel breakage criteria is based on the same logic for the same spell.
+            -- There's genuinely no way to know if a person is channeling Mind Flay because it was recommended, or just because they felt like it.
+            -- 2020-10-22:  Modified this to decide that if any breakchannel logic is met, you break the channel.
+            -- TODO:  Phase 3 would be only using channel-break logic for channel entries that you've passed in the current APL run.
+
+            for k in pairs( channelModifiers ) do
+                if script.Modifiers[ k ] then
+                    local newfunc = script.Modifiers[ k ]
+
+                    if newfunc and type( newfunc ) == "function" then
+                        local oldfunc = cInfo[ k ]
+
+                        if oldfunc then
+                            local oldstr = cInfo[ "_" .. k ]
+                            cInfo[ k ] = setfenv( function() return ( oldfunc() ) or ( newfunc() ) end, state )
+                            cInfo[ "_" .. k ] = format( "( %s ) or ( %s )", oldstr or "nil", script.ModEmulates[ k ] )
+                        else
+                            cInfo[ "_" .. k ] = script.ModEmulates[ k ]
+                            cInfo[ k ] = script.Modifiers[ k ]
+                        end
+                    end
+                end
+            end
+        end
+
+        if list ~= "precombat" and data.enabled then
+            if ( ability.item or data.action == "trinket1" or data.action == "trinket2" or data.action == "main_hand" ) then
+                scripts.PackInfo[ pack ].items[ data.action ] = true
+            end
+
+            if ability.essence then
+                scripts.PackInfo[ pack ].essences[ data.action ] = true
+            end
+        end
+    end
+
+    scripts.DB[ scriptID ] = script
 end
 
 

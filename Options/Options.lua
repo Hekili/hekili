@@ -8291,6 +8291,7 @@ function Hekili:GenerateProfile()
     local s = state
 
     local spec = s.spec.key
+    local heroTree = state.hero_tree.current or "none"
 
     local talents = self:GetLoadoutExportString()
 
@@ -8427,7 +8428,8 @@ break end
     "build: %s\n" ..
     "level: %d (%d)\n" ..
     "class: %s\n" ..
-    "spec: %s\n\n" ..
+    "spec: %s\n" ..
+    "hero tree: %s\n\n" ..
 
     "### Talents ###\n\n" ..
     "In-Game Import: %s\n" ..
@@ -8457,6 +8459,7 @@ break end
     UnitLevel( 'player' ) or 0, UnitEffectiveLevel( 'player' ) or 0,
     class.file or "NONE",
     spec or "none",
+    heroTree or "none",
     talents or "none",
     pvptalents or "none",
     covenant or "none",

@@ -39,10 +39,11 @@ Hekili.IsDragonflight = function()
     return buildNum >= 100000
 end
 
-Hekili.BuiltFor = 110000
+Hekili.BuiltFor = 110100
 Hekili.GameBuild = buildStr
 
-ns.PTR = buildNum > 110000
+ns.PTR = buildNum > 110100
+Hekili.IsPTR = ns.PTR
 
 ns.Patrons = "|cFFFFD100Current Status|r\n\n"
     .. "All existing specializations are currently supported, though healer priorities are experimental and focused on rotational DPS only.\n\n"
@@ -57,7 +58,6 @@ do
     end
 
 	ns.cpuProfile = cpuProfileDB
-
 
 	local frameProfileDB = {}
 

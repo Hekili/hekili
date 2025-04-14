@@ -1,5 +1,5 @@
 ## https://github.com/simulationcraft/simc/commits/thewarwithin/ActionPriorityLists/priest_shadow.simc
-## Up to date with SimC: March 19 2025 - af22603
+## Up to date with SimC: April 12 2025 - 9b983fb
 
 actions.precombat+=/power_word_fortitude
 actions.precombat+=/shadowform,if=!buff.shadowform.up
@@ -158,4 +158,5 @@ actions.trinkets+=/use_item,use_off_gcd=1,name=neural_synapse_enhancer,if=(buff.
 actions.trinkets+=/use_item,use_off_gcd=1,name=flarendos_pilot_light,if=gcd.remains>0&(buff.voidform.up|buff.power_infusion.remains>=10|buff.dark_ascension.up)|boss&fight_remains<20
 actions.trinkets+=/use_item,use_off_gcd=1,name=geargrinders_spare_keys,if=gcd.remains>0
 actions.trinkets+=/use_item,name=spymasters_web,if=(buff.power_infusion.remains>=10&buff.spymasters_report.stack>=36&fight_remains>240)&(buff.voidform.up|buff.dark_ascension.up|!talent.dark_ascension&!talent.void_eruption)|((buff.power_infusion.remains>=10&buff.bloodlust.up&buff.spymasters_report.stack>=10)|buff.power_infusion.remains>=10&(boss&fight_remains<120))&(buff.voidform.up|buff.dark_ascension.up|!talent.dark_ascension&!talent.void_eruption)|(boss&fight_remains<=20|buff.dark_ascension.up&boss&fight_remains<=60|buff.entropic_rift.up&talent.entropic_rift&boss&fight_remains<=30)&!buff.spymasters_web.up
-actions.trinkets+=/use_items,if=(buff.voidform.up|buff.power_infusion.remains>=10|buff.dark_ascension.up|(cooldown.void_eruption.remains>10&trinket.cooldown.duration<=60)|equipped.neural_synapse_enhancer&buff.entropic_rift.up)|boss&fight_remains<20
+actions.trinkets+=/use_item,name=prized_gladiators_badge_of_ferocity,if=(buff.voidform.up|buff.power_infusion.remains>=10|buff.dark_ascension.up|(talent.void_eruption&cooldown.void_eruption.remains>10)|equipped.neural_synapse_enhancer&buff.entropic_rift.up)|boss&fight_remains<20
+actions.trinkets+=/use_items,if=(buff.voidform.up|buff.power_infusion.remains>=10|buff.dark_ascension.up|equipped.neural_synapse_enhancer&buff.entropic_rift.up)|boss&fight_remains<20

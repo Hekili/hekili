@@ -339,7 +339,7 @@ spec:RegisterAuras( {
         max_stack = 1,
         dot = "buff",
         friendly = true,
-        copy = "lifebloom"
+        -- copy = "lifebloom"
     },
     natures_swiftness = {
         id = 132158,
@@ -1049,7 +1049,6 @@ spec:RegisterAbilities( {
         spend = 0.10,
         spendType = "mana",
 
-        talent = "swiftmend",
         startsCombat = false,
         texture = 134914,
 

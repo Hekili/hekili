@@ -91,11 +91,9 @@ Hekili.ErrorDB = errors
 
 
 function Hekili:GetErrors()
-
     for i = 1, #eIndex do
         Hekili:Print( eIndex[i] .. " (n = " .. errors[ eIndex[i] ].n .. "), last at " .. errors[ eIndex[i] ].last .. "." )
     end
-
 end
 
 

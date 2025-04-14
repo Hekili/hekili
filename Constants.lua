@@ -211,9 +211,251 @@ ns.getSpecializationKey = function ( id )
     return SpecializationKeys[ id ] or "none"
 end
 
-
 ns.getSpecializationID = function ( index )
     return GetSpecializationInfo( index or GetSpecialization() or 0 )
+end
+
+ns.HeroTrees = {
+    [31] = {
+        name = "sanlayn",
+        keyTalent = "vampiric_strike",
+        specIDs = { 250, 252 }
+    },
+    [32] = {
+        name = "rider_of_the_apocalypse",
+        keyTalent = "riders_champion",
+        specIDs = { 251, 252 }
+    },
+    [33] = {
+        name = "deathbringer",
+        keyTalent = "reapers_mark",
+        specIDs = { 250, 251 }
+    },
+
+    [34] = {
+        name = "felscarred",
+        keyTalent = "demonsurge",
+        specIDs = { 577, 581 }
+    },
+    [35] = {
+        name = "aldrachi_reaver",
+        keyTalent = "art_of_the_glaive",
+        specIDs = { 577, 581 }
+    },
+
+    [21] = {
+        name = "druid_of_the_claw",
+        keyTalent = "ravage",
+        specIDs = { 103, 104 }
+    },
+    [22] = {
+        name = "wildstalker",
+        keyTalent = "thriving_growth",
+        specIDs = { 103, 105 }
+    },
+    [23] = {
+        name = "keeper_of_the_grove",
+        keyTalent = "dream_surge",
+        specIDs = { 102, 105 }
+    },
+    [24] = {
+        name = "elunes_chosen",
+        keyTalent = "boundless_moonlight",
+        specIDs = { 102, 104 }
+    },
+    [36] = {
+        name = "scalecommander",
+        keyTalent = {
+            [1467] = "mass_disintegrate",
+            [1468] = "mass_eruption"
+        },
+        specIDs = { 1467, 1468 }
+    },
+    [37] = {
+        name = "flameshaper",
+        keyTalent = "engulf",
+        specIDs = { 1467, 1473 }
+    },
+    [38] = {
+        name = "chronowarden",
+        keyTalent = "chrono_flame",
+        specIDs = { 1468, 1473 }
+    },
+
+    [42] = {
+        name = "sentinel",
+        keyTalent = "sentinel",
+        specIDs = { 254, 255 }
+    },
+    [43] = {
+        name = "pack_leader",
+        keyTalent = "howl_of_the_pack_leader",
+        specIDs = { 253, 255 }
+    },
+    [44] = {
+        name = "dark_ranger",
+        keyTalent = "black_arrow",
+        specIDs = { 253, 254 }
+    },
+
+    [39] = {
+        name = "sunfury",
+        keyTalent = "spellfire_spheres",
+        specIDs = { 62, 63 }
+    },
+    [40] = {
+        name = "spellslinger",
+        keyTalent = "splintering_sorcery",
+        specIDs = { 62, 64 }
+    },
+    [41] = {
+        name = "frostfire",
+        keyTalent = "frostfire_mastery",
+        specIDs = { 63, 64 }
+    },
+
+    [64] = {
+        name = "conduit_of_the_celestials",
+        keyTalent = "celestial_conduit",
+        specIDs = { 269, 270 }
+    },
+    [65] = {
+        name = "shado_pan",
+        keyTalent = "flurry_strikes",
+        specIDs = { 268, 269 }
+    },
+    [66] = {
+        name = "master_of_harmony",
+        keyTalent = "aspect_of_harmony",
+        specIDs = { 268, 270 }
+    },
+
+    [48] = {
+        name = "templar",
+        keyTalent = "lights_guidance",
+        specIDs = { 66, 70 }
+    },
+    [49] = {
+        name = "lightsmith",
+        keyTalent = "holy_armaments",
+        specIDs = { 65, 66 }
+    },
+    [50] = {
+        name = "herald_of_the_sun",
+        keyTalent = "dawnlight",
+        specIDs = { 65, 70 }
+    },
+
+    [18] = {
+        name = "voidweaver",
+        keyTalent = "entropic_rift",
+        specIDs = { 257, 258 }
+    },
+    [19] = {
+        name = "archon",
+        keyTalent = "power_surge",
+        specIDs = { 256, 258 }
+    },
+    [20] = {
+        name = "oracle",
+        keyTalent = "premonition",
+        specIDs = { 256, 257 }
+    },
+
+    [51] = {
+        name = "trickster",
+        keyTalent = "unseen_blade",
+        specIDs = { 260, 261 }
+    },
+    [52] = {
+        name = "fatebound",
+        keyTalent = "hand_of_fate",
+        specIDs = { 259, 260 }
+    },
+    [53] = {
+        name = "deathstalker",
+        keyTalent = "deathstalkers_mark",
+        specIDs = { 259, 261 }
+    },
+
+    [54] = {
+        name = "totemic",
+        keyTalent = "surging_totem",
+        specIDs = { 262, 264 }
+    },
+    [55] = {
+        name = "stormbringer",
+        keyTalent = "tempest",
+        specIDs = { 262, 263 }
+    },
+    [56] = {
+        name = "farseer",
+        keyTalent = "call_of_the_ancestors",
+        specIDs = { 263, 264 }
+    },
+
+    [57] = {
+        name = "soul_harvester",
+        keyTalent = "demonic_soul",
+        specIDs = { 265, 266 }
+    },
+    [58] = {
+        name = "hellcaller",
+        keyTalent = "wither",
+        specIDs = { 265, 267 }
+    },
+    [59] = {
+        name = "diabolist",
+        keyTalent = "diabolic_ritual",
+        specIDs = { 266, 267 }
+    },
+
+    [60] = {
+        name = "slayer",
+        keyTalent = "slayers_dominance",
+        specIDs = { 71, 72 }
+    },
+    [61] = {
+        name = "mountain_thane",
+        keyTalent = "lightning_strikes",
+        specIDs = { 71, 73 }
+    },
+    [62] = {
+        name = "colossus",
+        keyTalent = "demolish",
+        specIDs = { 72, 73 }
+    }
+}
+
+-- Get full info for a Hero Tree by its Hero Spec ID (31–66)
+ns.getHeroTree = function ( heroID )
+    return ns.HeroTrees[ heroID ]
+end
+
+-- Get the name of the currently active Hero Tree
+ns.getActiveHeroTreeName = function ()
+    local id = C_ClassTalents and C_ClassTalents.GetActiveHeroTalentSpec()
+    if not id or id == 0 then return nil end -- 0 is the API return for no tree
+    local tree = ns.HeroTrees[ id ]
+    return tree and tree.name or nil
+end
+
+-- Get the key talent from the currently active Hero Tree (with per-spec support)
+ns.getActiveHeroTreeKeyTalent = function ()
+    local id = C_ClassTalents and C_ClassTalents.GetActiveHeroTalentSpec()
+    if not id then return nil end
+
+    local tree = ns.HeroTrees[ id ]
+    if not tree then return nil end
+
+    local keyTalent = tree.keyTalent
+
+    if type( keyTalent ) == "table" then
+        local specID = state.spec.id or ns.getSpecializationID()
+        return keyTalent[ specID ]
+    end
+
+    return keyTalent
 end
 
 

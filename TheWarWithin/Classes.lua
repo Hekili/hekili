@@ -12,22 +12,19 @@ local spellFilters = {
         name = "Grim Batol",
         [ 40167 ] = {
             name = "Twilight Beguiler",
-            [ 76369 ] = {
+            --[[ [ 76369 ] = {
                 name = "Sear Mind",
                 interrupt = true,
+            }, -- Either wrong ID, or just used for testing.  I can't find Sear Mind via Wowhead. ]]
+            [ 76369 ] = {
+                name = "Shadowflame Bolt",
+                spell_reflection = true,
             },
         },
         [ 40166 ] = {
             name = "Molten Giant",
             [ 451971 ] = {
                 name = "Lava Fist",
-                spell_reflection = true,
-            },
-        },
-        [ 40167 ] = {
-            name = "Twilight Beguiler",
-            [ 76369 ] = {
-                name = "Shadowflame Bolt",
                 spell_reflection = true,
             },
         },
@@ -105,19 +102,16 @@ local spellFilters = {
                 name = "Choking Waters",
                 interrupt = true,
             },
+            [ 272581 ] = {
+                name = "Water Bolt",
+                spell_reflection = true,
+            },
         },
         [ 128969 ] = {
             name = "Ashvane Commander",
             [ 275826 ] = {
                 name = "Bolstering Shout",
                 interrupt = true,
-            },
-        },
-        [ 129367 ] = {
-            name = "Bilge Rat Tempest",
-            [ 272581 ] = {
-                name = "Water Bolt",
-                spell_reflection = true,
             },
         },
         [ 129370 ] = {

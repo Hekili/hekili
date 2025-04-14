@@ -1069,12 +1069,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     end
                                                 end
 
-                                                Timer:Track("Pre-Recheck")
-                                                state.recheck( action, script, Stack, Block )
-
-                                                -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.
                                                 if not aScriptPass then
-
+                                                    Timer:Track("Pre-Recheck")
+                                                    state.recheck( action, script, Stack, Block )
                                                     Timer:Track("Post-Recheck Times")
 
                                                     local cap_sec = spec.throttleForecastingTime or 0

@@ -213,13 +213,14 @@ local enemyExclusions = {
     [231788] = true,              -- Mug'Zee: Unstable Crawler Mine
     [233474] = true,              -- Mug'Zee: Gallagio Goon (they are within a cage with LoS restrictions)
     [231727] = true,              -- Gallywix: 1500-Pound "Dud"
+    [151579] = true               -- Operation: Mechagon - Shield Generator
 }
 
 local requiredForInclusion = {
     [131825] = 260805,    -- Focusing Iris (damage on others is wasted)
     [131823] = 260805,    -- Same
     [131824] = 206805,    -- Same
-    [230312] = 467454,    -- Mug'Zee: Volunteer Rocketeer, only attackable with "Charred"
+    [230312] = 467454     -- Mug'Zee: Volunteer Rocketeer, only attackable with "Charred"
 }
 
 if Hekili.IsDev then
@@ -752,7 +753,7 @@ ns.actorHasDebuff = function( target, spell )
     return ( debuffs[ spell ] and debuffs[ spell ][ target ] ~= nil ) or false
 end
 
-ns.trackDebuff = function(spell, target, time, application)
+ns.trackDebuff = function( spell, target, time, application, snapshotHaste )
     debuffs[spell] = debuffs[spell] or {}
     debuffCount[spell] = debuffCount[spell] or 0
 
@@ -773,6 +774,16 @@ ns.trackDebuff = function(spell, target, time, application)
         debuff.last_seen = time
         debuff.applied = debuff.applied or time
 
+        local model = class.auras[ spell ]
+
+        if model and snapshotHaste then
+            debuff.haste = 100 / ( 100 + GetHaste() )
+            debuff.next_tick = time + ( model.base_tick_time or model.tick_time ) * debuff.haste
+        else
+            debuff.haste = -1
+            debuff.next_tick = time + ( model.base_tick_time or model.tick_time or 3 )
+        end
+
         if application then
             debuff.pmod = debuffMods[spell]
         else
@@ -781,6 +792,26 @@ ns.trackDebuff = function(spell, target, time, application)
     end
 end
 
+ns.GetDebuffLastTick = function( spell, target )
+    local aura = debuffs[ spell ] and debuffs[ spell ][ target ]
+    if not aura then return 0 end
+    return aura.last_seen or 0
+end
+
+ns.GetDebuffNextTick = function( spell, target )
+    local aura = debuffs[ spell ] and debuffs[ spell ][ target ]
+    if not aura then return 0 end
+    if ( aura.last_seen or 0 ) == 0 then return 0 end
+
+    local model = class.auras[ spell ]
+    return aura.next_tick or ( aura.last_seen + ( model.tick_time or 3 ) )
+end
+
+ns.GetDebuffHaste = function( spell, target )
+    local aura = debuffs[ spell ] and debuffs[ spell ][ target ]
+    if not aura then return 1 end
+    return aura.haste or state.haste or 1
+end
 
 ns.GetDebuffApplicationTime = function( spell, target )
     if not debuffCount[ spell ] or debuffCount[ spell ] == 0 then return 0 end

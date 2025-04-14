@@ -329,7 +329,7 @@ spec:RegisterAuras( {
         max_stack = 5
     },
     premonition_of_insight = {
-        id = 428993,
+        id = 428933,
         duration = 20,
         max_stack = 3
     },
@@ -846,7 +846,9 @@ spec:RegisterAbilities( {
     pain_suppression = {
         id = 33206,
         cast = 0.0,
-        cooldown = 1.5,
+        charges = function() if talent.protector_of_the_frail.enabled then return 2 end end,
+        cooldown = 180,
+        recharge = function() if talent.protector_of_the_frail.enabled then return 180 end end,
         gcd = "off",
 
         spend = 0.016,
