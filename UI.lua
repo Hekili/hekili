@@ -26,6 +26,32 @@ local GetItemInfoInstant = C_Item.GetItemInfoInstant
 local GetSpellTexture = C_Spell.GetSpellTexture
 local IsUsableSpell = C_Spell.IsSpellUsable
 
+local GetSpellBookItemInfo = function(index, bookType)
+    local spellBank = ( bookType == "spell" or bookType == Enum.SpellBookItemType.Spell ) and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.Pet
+    local info = C_SpellBook.GetSpellBookItemInfo(index, spellBank)
+    if info then return info.name, info.iconID, info.spellID end
+end
+
+local function IsSpellInSpellbook(spellID, bookType)
+    local slot = FindSpellBookSlotBySpellID( spellID )
+    if not slot then return false end
+    local _, _, id = GetSpellBookItemInfo(slot, bookType)
+    if id == spellID then
+        return true
+    end
+    return false
+end
+
+local function GetSpellOrigin(spellID)
+    if IsSpellInSpellbook(spellID, "spell") then
+        return "player"
+    elseif IsSpellInSpellbook(spellID, "pet") then
+        return "pet"
+    else
+        return "unknown"
+    end
+end
+
 local GetSpellCooldown = function(spellID)
     local spellCooldownInfo = C_Spell.GetSpellCooldown(spellID)
     if spellCooldownInfo then
@@ -2825,7 +2851,11 @@ do
                     if conf.iconTooltipStyle == "tooltip" then
                         GameTooltip:SetItemByID(b.Ability.item)
                     elseif conf.iconTooltipStyle == "minimal" then
-                        GameTooltip:AddLine("Item: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        if b.Ability.bagItem then
+                            GameTooltip:AddLine("Bag Item: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        else
+                            GameTooltip:AddLine("Equipped Item: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        end
                     end
                     GameTooltip:Show()
                 elseif b.Ability.id then
@@ -2833,7 +2863,12 @@ do
                     if conf.iconTooltipStyle == "tooltip" then
                         GameTooltip:SetSpellByID(b.Ability.id)
                     elseif conf.iconTooltipStyle == "minimal" then
-                        GameTooltip:AddLine("Spell: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        local origin = GetSpellOrigin(b.Ability.id)
+                        if origin == "player" then
+                            GameTooltip:AddLine("Player Spell: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        elseif origin == "pet" then
+                            GameTooltip:AddLine("Pet Spell: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        end
                     end
                     GameTooltip:Show()
                 end
