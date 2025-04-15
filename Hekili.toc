@@ -85,7 +85,9 @@ TheWarWithin\WarriorFury.lua
 TheWarWithin\WarriorProtection.lua
 
 Targets.lua
-Options.lua
+Options\DevTools.lua
+Options\ChatCommands.lua
+Options\Options.lua
 UI.lua
 Scripts.lua
 Core.lua
