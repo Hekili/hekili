@@ -10,7 +10,7 @@ local state = Hekili.State
 
 local format, lower, match = string.format, string.lower, string.match
 local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
-local skeletonHandler = ns.skeletonHandler
+local SkeletonHandler = ns.SkeletonHandler
 
 local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 

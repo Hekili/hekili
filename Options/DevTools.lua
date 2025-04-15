@@ -178,23 +178,52 @@ function SkeletonGen:Init()
     self._lastCast      = { ability = nil, time = 0 }
 end
 
-function SkeletonGen:append( s )
+function SkeletonGen:Append( s )
     insert( self.output, self.indent .. s )
 end
 
-function SkeletonGen:appendAttr( t, k )
+function SkeletonGen:AppendAttr( t, k )
     if t[k] ~= nil then
         local v = t[k]
         local line = ( type(v) == "string" )
             and string.format( "%s = \"%s\",", k, tostring(v) )
             or string.format( "%s = %s,", k, tostring(v) )
-        self:append( line )
+        self:Append( line )
     end
 end
 
-function SkeletonGen:increaseIndent() self.indent = self.indent .. "    " end
-function SkeletonGen:decreaseIndent() self.indent = self.indent:sub( 1, self.indent:len() - 4 ) end
-function SkeletonGen:blank() insert( self.output, "" ) end
+function SkeletonGen:AppendField( field, value )
+    if type( value ) == "string" then
+        self:Append( field .. ' = "' .. value .. '",' )
+    else
+        self:Append( field .. " = " .. tostring( value ) .. "," )
+    end
+end
+
+function SkeletonGen:IncreaseIndent() self.indent = self.indent .. "    " end
+function SkeletonGen:DecreaseIndent() self.indent = self.indent:sub( 1, self.indent:len() - 4 ) end
+function SkeletonGen:Blank() insert( self.output, "" ) end
+function SkeletonGen:StartRegistration( comment, registerLine )
+    self:Append( "-- " .. comment )
+    self:Append( "spec:Register" .. registerLine .. "( {" )
+    self:IncreaseIndent()
+end
+
+function SkeletonGen:EndRegistration()
+    self:DecreaseIndent()
+    self:Append( "} )\n" )
+end
+
+function SkeletonGen:FormatTalentEntry( k, v )
+    return string.format(
+        "%-30s = { %6d, %7d, %d }, -- %s",
+        k,
+        v.node or 0,
+        v.id or 0,
+        v.ranks or 0,
+        v.tooltip or ""
+    )
+end
 
 function SkeletonGen:GetBuffTooltip( unit, index, filter )
     local tooltip = HekiliTooltip or CreateFrame( "GameTooltip", "HekiliTooltip", UIParent, "GameTooltipTemplate" )
@@ -220,30 +249,34 @@ end
 function SkeletonGen:CleanTooltip( tooltip )
     if not tooltip or tooltip == "" then return nil end
 
-    -- Remove UI artifacts
-    tooltip = tooltip:gsub( "%d+ second[s]? remaining", "" )
-    tooltip = tooltip:gsub( "%d+ minute[s]? remaining", "" )
-    tooltip = tooltip:gsub( "%d+ hour[s]? remaining", "" )
-    tooltip = tooltip:gsub( "%s*SpellID%s*", "" )
-    tooltip = tooltip:gsub( "%s*IconID%s*", "" )
-
     -- Strip Blizzard formatting
-    tooltip = tooltip:gsub( "|c%x%x%x%x%x%x%x%x", "" )
-    tooltip = tooltip:gsub( "|r", "" )
+    tooltip = tooltip:gsub( "|c%x%x%x%x%x%x%x%x", "" ):gsub( "|r", "" )
 
-    -- Remove comma thousands separator (normalize numeric text)
+    -- Normalize thousands separators
     tooltip = tooltip:gsub( "([%d]+),([%d]+)", "%1%2" )
 
-    local counter = 1
+    -- Remove standalone 'Passive'
+    tooltip = tooltip:gsub( "^%s*[Pp]assive%.?%s*$", "" )
+    tooltip = tooltip:gsub( "[Pp]assive%.?%s*", "" )
 
-    -- Match things like "58750 Physical damage"
+    -- Early cleanup of known junk
+    tooltip = tooltip:gsub( "SpellID%s*%d*", "" )
+    tooltip = tooltip:gsub( "IconID%s*%d*", "" )
+
+    -- Clean whitespace and trailing dot
+    tooltip = tooltip:gsub( "\n", " " )
+    tooltip = tooltip:gsub( "%s+", " " ):gsub( "^%s+", "" ):gsub( "%s+$", "" )
+    tooltip = tooltip:gsub( "%.$", "" )
+
+    if tooltip == "" then return nil end
+
+    -- Replace numeric values with placeholders
+    local counter = 1
     tooltip = tooltip:gsub( "([%d%.]+) ([A-Za-z]+ damage)", function( num, dtype )
         local repl = "$s" .. counter .. " " .. dtype
         counter = counter + 1
         return repl
     end )
-
-    -- Match other numeric values
     tooltip = tooltip:gsub( "%f[%d]([%d%.]+)%f[%D]", function( value )
         if value:find( "%%" ) then return value end
         local repl = "$s" .. counter
@@ -251,13 +284,9 @@ function SkeletonGen:CleanTooltip( tooltip )
         return repl
     end )
 
-    -- Normalize line breaks and spacing
-    tooltip = tooltip:gsub( "\n", " " )
-    tooltip = tooltip:gsub( "%s+", " " ):gsub( "^%s+", "" ):gsub( "%s+$", "" )
-    tooltip = tooltip:gsub( "%.$", "" )
-
     return tooltip
 end
+
 
 --[[
 local function trackAuraApplication( token, spellID, time )
@@ -283,12 +312,22 @@ local function assignAuraToLastCast( auraType, token, spellID )
     ability[ auraType ][ token ] = spellID
 end--]]
 
-local function getAbilityKey( ability )
+local function GetAbilityKey( ability )
     local name = GetSpellInfo( ability.id )
     return name and formatKey( name ) or "s" .. ability.id
 end
 
-local function skeletonCLEU( _, _, subtype, _, sourceGUID, sourceName, _, _, _, _, _, spellID, spellName )
+local function HasText( s ) return s and s ~= "" end
+
+local function TitleCase( str )
+    return str:gsub( "_", " " ):gsub( "(%a)(%w*)", function( a, b ) return a:upper() .. b:lower() end )
+end
+
+local function WowHeadComment( s )
+    return "-- https://www.wowhead.com/spell=" .. ( type( s ) == "table" and s.id or s )
+end
+
+local function SkeletonCLEU( _, _, subtype, _, sourceGUID, sourceName, _, _, _, _, _, spellID, spellName )
     if not sourceName or not UnitIsUnit( sourceName, "player" ) then return end
     if type( spellName ) ~= "string" then return end
 
@@ -310,7 +349,7 @@ local function skeletonCLEU( _, _, subtype, _, sourceGUID, sourceName, _, _, _, 
     end
 end
 
-local function skeletonHandler( self, event, unit, ... )
+local function SkeletonHandler( self, event, unit, ... )
 
     if event == "UNIT_AURA" then
         if UnitIsUnit( unit, "player" ) or UnitCanAttack( "player", unit ) then
@@ -408,11 +447,11 @@ local function skeletonHandler( self, event, unit, ... )
         end
 
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        skeletonCLEU( CombatLogGetCurrentEventInfo() )
+        SkeletonCLEU( CombatLogGetCurrentEventInfo() )
     end
 end
 
-ns.skeletonHandler = skeletonHandler
+ns.SkeletonHandler = SkeletonHandler
 
 function SkeletonGen:PrepareSpecData()
     wipe( self.resources )
@@ -583,7 +622,7 @@ function SkeletonGen:PrepareSpecData()
                 local ability = self.abilities[ token ] or {}
                 ability.id = spellID
                 local desc = GetSpellDescription( spellID )
-                if desc and desc ~= "" then
+                if HasText ( desc ) then
                     ability.tooltip = self:CleanTooltip( desc )
                 end
 
@@ -603,7 +642,7 @@ function SkeletonGen:EmbedSpellData( spellID, token, ability )
     ability = ability or {}
     if not ability.tooltip or ability.tooltip == "" then
         local desc = GetSpellDescription( spellID )
-        if desc and desc ~= "" then
+        if HasText ( desc ) then
             ability.tooltip = self:CleanTooltip( desc )
         end
     end
@@ -676,277 +715,242 @@ function SkeletonGen:Generate()
     local playerClass = UnitClass( "player" ):gsub( " ", "" )
     local playerSpec = select( 2, GetSpecializationInfo( GetSpecialization() ) ):gsub( " ", "" )
 
-    -- Top of skeleton
-    self:append( "-- " .. playerClass .. playerSpec .. ".lua" )
-    self:append( "-- " .. date( "%B %Y" ) )
-    self:append( string.format( [[if UnitClassBase("player") ~= "%s" then return end]], UnitClassBase( "player" ) ) )
-    self:append( "\nlocal addon, ns = ...\nlocal Hekili = _G[ addon ]\nlocal class, state = Hekili.Class, Hekili.State\n" )
+    local specInfo = ns.Specializations[ self.specID ]
+    local isRanged = specInfo and specInfo.ranged or false
 
-    self:append( "local spec = Hekili:NewSpecialization( " .. self.specID .. " )\n" )
+    -- Top of skeleton
+    self:Append( "-- " .. playerClass .. playerSpec .. ".lua" )
+    self:Append( "-- " .. date( "%B %Y" ) )
+    self:Append( string.format( [[if UnitClassBase("player") ~= "%s" then return end]], UnitClassBase( "player" ) ) )
+    self:Append( "" )
+    self:Append( "local addon, ns = ..." )
+    self:Append( "local Hekili = _G[ addon ]" )
+    self:Append( "local class, state = Hekili.Class, Hekili.State" )
+    self:Blank()
+    self:Append( "local spec = Hekili:NewSpecialization( " .. self.specID .. ", " .. tostring( isRanged ) .. " )" )
+    self:Blank()
 
     -- Resources
     for k in orderedPairs( self.resources ) do
-        self:append( "spec:RegisterResource( Enum.PowerType." .. k .. " )" )
+        self:Append( "spec:RegisterResource( Enum.PowerType." .. k .. " )" )
     end
-    self:blank()
+    self:Blank()
 
     -- Talents
-    self:append( "-- Talents" )
-    self:append( "spec:RegisterTalents( {" )
+    self:StartRegistration( "Talents", "Talents" )
 
     -- Organize talents into categories.
     local specName = select( 2, GetSpecializationInfo( GetSpecialization() ) )
     local className = select( 1, UnitClass( "player" ) )
-
     local groups = {
         [className] = {},  -- e.g., "Hunter"
         [specName] = {},   -- e.g., "Marksmanship"
     }
 
     for k, v in pairs( self.talents ) do
-        if v.isHero then
-            local key = formatKey( v.tree or "unknown" )
-            groups[ key ] = groups[ key ] or {}
-            table.insert( groups[ key ], { k, v } )
-        elseif v.isSpec then
-            table.insert( groups[ specName ], { k, v } )
-        else
-            table.insert( groups[ className ], { k, v } )
-        end
+        local talentType = v.isHero and formatKey( v.tree or "unknown" ) or v.isSpec and specName or className
+        groups[ talentType ] = groups[ talentType ] or {}
+        table.insert( groups[ talentType ], { k, v } )
     end
 
     -- Capture hero tree keys for sorting
     local heroKeys = {}
-
     for k in pairs( groups ) do
         if k ~= className and k ~= specName then
             table.insert( heroKeys, k )
         end
     end
-
     table.sort( heroKeys )
 
-    -- Embed class
-    if groups[ className ] then
-        table.sort( groups[ className ], function( a, b ) return a[1] < b[1] end )
-        self:append( "    -- " .. className )
-        for _, entry in ipairs( groups[ className ] ) do
-            local k, v = entry[1], entry[2]
-            self:append( string.format(
-                "    %-30s = { %6d, %7d, %d }, -- %s",
-                k,
-                v.node or 0,
-                v.id or 0,
-                v.ranks or 0,
-                v.tooltip or ""
-            ) )
-        end
-    end
-
-    -- Embed spec
-    if groups[ specName ] then
-        table.sort( groups[ specName ], function( a, b ) return a[1] < b[1] end )
-        self:blank()
-        self:append( "    -- " .. specName )
-        for _, entry in ipairs( groups[ specName ] ) do
-            local k, v = entry[1], entry[2]
-            self:append( string.format(
-                "    %-30s = { %6d, %7d, %d }, -- %s",
-                k,
-                v.node or 0,
-                v.id or 0,
-                v.ranks or 0,
-                v.tooltip or ""
-            ) )
-        end
-    end
-
-    local function titleCase( str )
-        return str:gsub( "_", " " ):gsub( "(%a)(%w*)", function(a,b) return a:upper() .. b:lower() end )
-    end
-
-    -- Embed hero trees alphabetically
-    for _, groupKey in ipairs( heroKeys ) do
-        local talents = groups[ groupKey ]
-        if talents then
-            table.sort( talents, function( a, b ) return a[1] < b[1] end )
-            self:blank()
-            self:append( "    -- " .. titleCase( groupKey ) )
-            for _, entry in ipairs( talents ) do
-                local k, v = entry[1], entry[2]
-                self:append( string.format(
-                    "    %-30s = { %6d, %7d, %d }, -- %s",
-                    k,
-                    v.node or 0,
-                    v.id or 0,
-                    v.ranks or 0,
-                    v.tooltip or ""
-                ) )
+    -- Class and Spec talents
+    for _, section in ipairs( { className, specName } ) do
+        if groups[ section ] then
+            sort( groups[ section ], function( a, b ) return a[ 1 ] < b[ 1 ] end )
+            self:Blank()
+            self:Append( "-- " .. section )
+            for _, entry in ipairs( groups[ section ] ) do
+                self:Append( self:FormatTalentEntry( entry[1], entry[2] ) )
             end
         end
     end
 
-    self:decreaseIndent()
-    self:append( "} )\n" )
+    -- Hero Talents
+    for _, key in ipairs( heroKeys ) do
+        local list = groups[ key ]
+        if list then
+            table.sort( list, function( a, b ) return a[ 1 ] < b[ 1 ] end )
+            self:Blank()
+            self:Append( "-- " .. TitleCase( key ) )
+            for _, entry in ipairs( list ) do
+                self:Append( self:FormatTalentEntry( entry[1], entry[2] ) )
+            end
+        end
+    end
+
+    self:EndRegistration()
 
     -- PvP Talents
-    self:append( "-- PvP Talents" )
-    self:append( "spec:RegisterPvpTalents( {" )
-    self:increaseIndent()
+    self:StartRegistration( "PvP Talents", "PvpTalents" )
     for k, v in orderedPairs( self.pvptalents ) do
-        self:append( string.format(
-            "%-30s = %4d, -- (%d) %s",
-            k,
-            v.talent or 0,
-            v.id or 0,
-            v.tooltip or ""
-        ) )
+        self:Append( string.format( "%-30s = %4d, -- (%d) %s", k, v.talent or 0, v.id or 0, v.tooltip or "" ) )
     end
-    self:decreaseIndent()
-    self:append( "} )\n" )
+    self:EndRegistration()
 
     -- Auras
-    self:append( "-- Auras" )
-    self:append( "spec:RegisterAuras( {" )
+    self:StartRegistration( "Auras", "Auras" )
 
     for token, aura in orderedPairs( self.auras ) do
         local nameToken = self.idToToken[ aura.id ] or token
 
-        if aura.tooltip and aura.tooltip ~= "" then
-            self:append( "    -- " .. aura.tooltip )
+        if HasText( aura.tooltip ) then
+            self:Append( "-- " .. aura.tooltip )
         end
 
-        self:append( "    -- https://wowhead.com/spell=" .. aura.id )
-        self:append( "    " .. nameToken .. " = {" )
+        self:Append( WowHeadComment( aura.id ) )
+        self:Append( nameToken .. " = {" )
+        self:IncreaseIndent()
 
-        local auraLines = {
+        local lines = {
             "id = " .. aura.id,
             "duration = " .. ( aura.duration == 0 and 3600 or ( aura.duration or 0 ) )
         }
 
         if aura.max_stack and aura.max_stack > 1 then
-            table.insert( auraLines, "max_stack = " .. aura.max_stack )
+            insert( lines, "max_stack = " .. aura.max_stack )
         end
 
         local auraType = aura.type
         if auraType and auraType ~= "None" then
-            local lowerType = auraType:lower()
-
-            if lowerType == "poison" or lowerType == "disease" then
-                table.insert( auraLines, 'type = "' .. lowerType .. '"' )
-                table.insert( auraLines, "pandemic = true" )
-
-            elseif lowerType == "magic"
-                or lowerType == "curse"
-                or lowerType == "enrage"
-            then
-                table.insert( auraLines, 'type = "' .. lowerType .. '"' )
+            local lower = auraType:lower()
+            if lower == "poison" or lower == "disease" then
+                insert( lines, 'type = "' .. lower .. '"' )
+                insert( lines, "pandemic = true" )
+            elseif lower == "magic" or lower == "curse" or lower == "enrage" then
+                insert( lines, 'type = "' .. lower .. '"' )
             end
         end
 
-        for i, line in ipairs( auraLines ) do
-            if i < #auraLines then
-                self:append( "        " .. line .. "," )
+        for i, line in ipairs( lines ) do
+            if i < #lines then
+                self:Append( line .. "," )
             else
-                self:append( "        " .. line )
+                self:Append( line )
             end
         end
 
-        self:append( "    }," )
+        self:DecreaseIndent()
+        self:Append( "}," )
     end
 
-    self:append( "} )\n" )
+    self:EndRegistration()
 
     -- Abilities
-    self:append( "-- Abilities" )
-    self:append( "spec:RegisterAbilities( {" )
-    self:increaseIndent()
+    self:StartRegistration( "Abilities", "Abilities" )
+
     local abilities = {}
     for _, ability in pairs( self.abilities ) do
-        local key = getAbilityKey( ability )
+        local key = GetAbilityKey( ability )
         abilities[ key ] = ability
     end
+
     for _, ability in orderedPairs( abilities ) do
-        local k = getAbilityKey( ability )
+        local k = GetAbilityKey( ability )
 
-        if ability.tooltip and ability.tooltip ~= "" then
-            self:append( "-- " .. ability.tooltip )
+        if HasText( ability.tooltip ) then
+            self:Append( "-- " .. ability.tooltip )
         end
 
-        self:append( string.format( "-- https://www.wowhead.com/spell=%d", ability.id ) )
-        self:append( k .. " = {" )
-        self:increaseIndent()
+        self:Append( WowHeadComment( ability.id ) )
+        self:Append( k .. " = {" )
+        self:IncreaseIndent()
 
-        self:append( "id = " .. ability.id .. "," )
-
-        if ability.empowered and ability.cast and ability.cast > 0 then
-            self:append( "cast = empowered_cast_time," )
-        elseif ability.cast and ability.cast > 0 then
-            self:append( "cast = " .. ability.cast .. "," )
-        end
+        self:AppendField( "id", ability.id )
 
         if ability.empowered then
-            self:append( "empowered = true," )
-            self:append( "empowerment_default = 1," )
+            self:Append( "cast = empowered_cast_time," )
+            self:AppendField( "empowered", true )
+            self:AppendField( "empowerment_default", 1)
+        elseif ability.cast and ability.cast > 0 then
+            self:AppendField( "cast", ability.cast )
         end
 
-        if ability.cooldown and ability.cooldown > 0 then
-            self:append( "cooldown = " .. ability.cooldown .. "," )
-        end
+        if ability.cooldown and ability.cooldown > 0 then self:AppendField( "cooldown", ability.cooldown ) end
 
         if ability.charges and ability.charges > 1 then
-            self:append( "charges = " .. ability.charges .. "," )
+            self:AppendField( "charges", ability.charges )
             local recharge = ability.recharge or ability.cooldown
             if recharge and recharge > 0 then
-                self:append( "recharge = " .. recharge .. "," )
+                self:AppendField( "recharge", recharge )
             end
         end
 
-        if ability.gcd then
-            self:append( 'gcd = "' .. ability.gcd .. '",' )
-        end
-
-        self:blank()
-
-        if ability.texture then
-            self:append( "texture = " .. ability.texture .. "," )
-        end
-
-        self:blank()
+        if ability.gcd then self:AppendField( "gcd", ability.gcd ) end
+        self:Blank()
+        if ability.texture then self:AppendField( "texture", ability.texture ) end
+        self:Blank()
 
         if ability.spend and ability.spend > 0 then
-            self:append( "spend = " .. ability.spend .. "," )
+            self:AppendField( "spend", ability.spend )
             if ability.spendType then
-                self:append( 'spendType = "' .. ability.spendType .. '",' )
+                self:AppendField( "spendType", ability.spendType )
             end
-            self:blank()
+            self:Blank()
         end
 
         if ability.talent then
-            self:append( 'talent = "' .. ability.talent .. '",' )
-            self:blank()
+            self:AppendField( "talent", ability.talent )
+            self:Blank()
         end
 
         --[[ Applies/Removes lines as comments
         if ability.applies then
             for auraKey, auraID in pairs( ability.applies ) do
-                self:append( "-- applies " .. auraKey .. " (" .. auraID .. ")" )
+                self:Append( "-- applies " .. auraKey .. " (" .. auraID .. ")" )
             end
         end
         if ability.removes then
             for auraKey, auraID in pairs( ability.removes ) do
-                self:append( "-- removes " .. auraKey .. " (" .. auraID .. ")" )
+                self:Append( "-- removes " .. auraKey .. " (" .. auraID .. ")" )
             end
-        end--]]
+        end --]]
 
-        self:append( "handler = function () end" )
+        self:Append( "handler = function () end" )
 
-        self:decreaseIndent()
-        self:append( "}," )
+        self:DecreaseIndent()
+        self:Append( "}," )
     end
 
-    self:decreaseIndent()
-    self:append( "} )\n" )
+    self:EndRegistration()
+
+
+    self:StartRegistration( "Options", "Options" )
+
+    self:AppendField( "enabled", true )
+    self:Blank()
+    self:AppendField( "aoe", 3 )
+    self:AppendField( "cycle", false )
+    self:Blank()
+    self:AppendField( "nameplates", not isRanged )
+    self:AppendField( "nameplateRange", ( isRanged and 40 or 8 ) )
+    self:AppendField( "rangeFilter", false )
+    self:Blank()
+    self:AppendField( "damage", true )
+    self:AppendField( "damageExpiration", 6 )
+    self:Blank()
+    self:AppendField( "potion", "tempered_potion" )
+    self:Blank()
+    self:AppendField( "package", specName )
+
+    self:EndRegistration()
+
+    do
+        local today = tonumber( date( "%Y%m%d" ) )
+        local export = "Hekili:INSERT_EXPORT_STRING"
+
+        self:Append( "" )
+        self:Append( string.format( "spec:RegisterPack( \"%s\", %d, [[%s]] )", specName, today, export ) )
+    end
+
 
     -- End
     local output = table.concat( self.output, "\n" )
@@ -976,11 +980,11 @@ function Hekili:StartSkeletonListener()
     listener:RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED" )
     listener:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
 
-    listener:SetScript( "OnEvent", ns.skeletonHandler )
+    listener:SetScript( "OnEvent", ns.SkeletonHandler )
 
     -- Run initial fetches (to populate aura info, etc.).
-    ns.skeletonHandler( listener, "PLAYER_SPECIALIZATION_CHANGED", "player" )
-    ns.skeletonHandler( listener, "SPELLS_CHANGED" )
+    ns.SkeletonHandler( listener, "PLAYER_SPECIALIZATION_CHANGED", "player" )
+    ns.SkeletonHandler( listener, "SPELLS_CHANGED" )
 end
 
 function Hekili:StopSkeletonListener()
