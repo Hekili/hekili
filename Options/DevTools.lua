@@ -879,8 +879,15 @@ function SkeletonGen:Generate()
 
         self:append( "id = " .. ability.id .. "," )
 
-        if ability.cast and ability.cast > 0 then
+        if ability.empowered and ability.cast and ability.cast > 0 then
+            self:append( "cast = empowered_cast_time," )
+        elseif ability.cast and ability.cast > 0 then
             self:append( "cast = " .. ability.cast .. "," )
+        end
+
+        if ability.empowered then
+            self:append( "empowered = true," )
+            self:append( "empowerment_default = 1," )
         end
 
         if ability.cooldown and ability.cooldown > 0 then
@@ -899,6 +906,8 @@ function SkeletonGen:Generate()
             self:append( 'gcd = "' .. ability.gcd .. '",' )
         end
 
+        self:blank()
+
         if ability.texture then
             self:append( "texture = " .. ability.texture .. "," )
         end
@@ -913,12 +922,9 @@ function SkeletonGen:Generate()
             self:blank()
         end
 
-        if ability.empowered then
-            self:append( "empowered = true," )
-        end
-
         if ability.talent then
             self:append( 'talent = "' .. ability.talent .. '",' )
+            self:blank()
         end
 
         --[[ Applies/Removes lines as comments
