@@ -578,7 +578,7 @@ function SkeletonGen:PrepareSpecData()
             local name = GetSpellBookItemName( index, "spell" )
             local _, _, spellID = GetSpellBookItemInfo( index, "spell" )
 
-            if name and spellID and not IsPassiveSpell( spellID ) then
+            if name and spellID and not IsPassiveSpell( spellID ) and IsPlayerSpell( spellID ) then
                 local token = "s" .. spellID
                 local ability = self.abilities[ token ] or {}
                 ability.id = spellID
@@ -868,22 +868,77 @@ function SkeletonGen:Generate()
     end
     for _, ability in orderedPairs( abilities ) do
         local k = getAbilityKey( ability )
+
         if ability.tooltip and ability.tooltip ~= "" then
             self:append( "-- " .. ability.tooltip )
         end
+
         self:append( string.format( "-- https://www.wowhead.com/spell=%d", ability.id ) )
         self:append( k .. " = {" )
         self:increaseIndent()
+
         self:append( "id = " .. ability.id .. "," )
+
+        if ability.cast and ability.cast > 0 then
+            self:append( "cast = " .. ability.cast .. "," )
+        end
+
         if ability.cooldown and ability.cooldown > 0 then
             self:append( "cooldown = " .. ability.cooldown .. "," )
         end
+
         if ability.charges and ability.charges > 1 then
             self:append( "charges = " .. ability.charges .. "," )
+            local recharge = ability.recharge or ability.cooldown
+            if recharge and recharge > 0 then
+                self:append( "recharge = " .. recharge .. "," )
+            end
         end
+
+        if ability.gcd then
+            self:append( 'gcd = "' .. ability.gcd .. '",' )
+        end
+
+        if ability.texture then
+            self:append( "texture = " .. ability.texture .. "," )
+        end
+
+        self:blank()
+
+        if ability.spend and ability.spend > 0 then
+            self:append( "spend = " .. ability.spend .. "," )
+            if ability.spendType then
+                self:append( 'spendType = "' .. ability.spendType .. '",' )
+            end
+            self:blank()
+        end
+
+        if ability.empowered then
+            self:append( "empowered = true," )
+        end
+
+        if ability.talent then
+            self:append( 'talent = "' .. ability.talent .. '",' )
+        end
+
+        --[[ Applies/Removes lines as comments
+        if ability.applies then
+            for auraKey, auraID in pairs( ability.applies ) do
+                self:append( "-- applies " .. auraKey .. " (" .. auraID .. ")" )
+            end
+        end
+        if ability.removes then
+            for auraKey, auraID in pairs( ability.removes ) do
+                self:append( "-- removes " .. auraKey .. " (" .. auraID .. ")" )
+            end
+        end--]]
+
+        self:append( "handler = function () end" )
+
         self:decreaseIndent()
         self:append( "}," )
     end
+
     self:decreaseIndent()
     self:append( "} )\n" )
 
