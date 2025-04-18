@@ -42,6 +42,78 @@ local Tooltip = ns.Tooltip
 local Masque, MasqueGroup
 local _
 
+local proxyFrames = {}
+
+local function GetPersonalResourceAnchor()
+    local frame = C_NamePlate and C_NamePlate.GetNamePlateForUnit and C_NamePlate.GetNamePlateForUnit( "player" )
+    if frame then
+        -- ElvUI support
+        if _G.ElvUIPlayerNamePlateAnchor then
+            return _G.ElvUIPlayerNamePlateAnchor
+        end
+        --[[ KuiNameplates support
+        if frame.kui and frame.kui:IsShown() then
+            return frame.kui
+        end--]]
+        -- Default Blizzard PRD frame
+        if frame.UnitFrame and frame.UnitFrame.healthBar then
+            return frame.UnitFrame
+        end
+    end
+    return nil
+end
+
+local function TrySetAnchor( d, conf )
+    local anchor = Hekili:GetActiveAnchorFrame( conf )
+
+    if not anchor or not anchor:IsShown() then
+        -- Do not anchor to anything; fall back to screen position in visibility update
+        return false
+    end
+
+    d:ClearAllPoints()
+    d:SetPoint(
+        conf.anchorPoint or "CENTER",
+        anchor,
+        conf.relativePoint or "CENTER",
+        conf.anchorX or 0,
+        conf.anchorY or 0
+    )
+    return true
+end
+
+
+
+local function HandlePRDLoaded( event, unit )
+    if unit == "player" then
+        local proxy = Hekili:GetProxyFrame( "PRD" )
+        local anchor = GetPersonalResourceAnchor()
+
+        if anchor and proxy then
+            proxy:ClearAllPoints()
+            proxy:SetPoint( "CENTER", anchor, "CENTER", 0, 0 )
+            proxy:Show()
+
+            for id, display in pairs( ns.UI.Displays ) do
+                local conf = Hekili.DB.profile.displays[ id ]
+                if conf and conf.anchorTarget == "PRD" then
+                    display:ClearAllPoints()
+                    display:SetPoint(
+                        conf.anchorPoint or "CENTER",
+                        proxy,
+                        conf.relativePoint or "CENTER",
+                        conf.anchorX or 0,
+                        conf.anchorY or 0
+                    )
+                end
+            end
+        end
+    end
+end
+
+local f = CreateFrame( "Frame" )
+f:RegisterEvent( "NAME_PLATE_UNIT_ADDED" )
+f:SetScript( "OnEvent", HandlePRDLoaded )
 
 function Hekili:GetScale()
     return PixelUtil.GetNearestPixelSize( 1, PixelUtil.GetPixelToUIUnitFactor(), 1 )
@@ -51,7 +123,6 @@ function Hekili:GetScale()
 
     return (GetCVar("UseUIScale") == "1" and (GetScreenHeight() / resolution:match("%d+x(%d+)")) or 1) ]]
 end
-
 
 local movementData = {}
 
@@ -820,10 +891,6 @@ do
     end
 end
 
-
-
-
-
 do
     ns.UI.Displays = ns.UI.Displays or {}
     local dPool = ns.UI.Displays
@@ -979,6 +1046,13 @@ do
         end
         local d = dPool[ id ]
 
+        -- Initialize anchoring fields for fallback compatibility and positioning.
+        d.anchorTarget     = conf.anchorTarget or "SCREEN"
+        d.anchorPoint      = conf.anchorPoint or "CENTER"
+        d.relativePoint    = conf.relativePoint or "CENTER"
+        d.anchorX          = conf.anchorX or 0
+        d.anchorY          = conf.anchorY or 0
+
         d.id = id
         d.alpha = 0
         d.numIcons = conf.numIcons
@@ -993,7 +1067,9 @@ do
         d:SetScale( UIParent:GetScale() ) ]]
         d:ClearAllPoints()
 
-        d:SetPoint( "CENTER", UIParent, "CENTER", conf.x or 0, conf.y or -225 )
+        -- Determine anchor
+        TrySetAnchor( d, conf )
+
         d:SetParent( UIParent )
 
         d:SetFrameStrata( conf.frameStrata or "MEDIUM" )
@@ -1611,21 +1687,29 @@ do
                 return
             end
 
+            local conf = Hekili.DB.profile.displays[ self.id ]
             local preAlpha = self.alpha or 0
             local newAlpha = CalculateAlpha( self.id )
 
-            if preAlpha > 0 and newAlpha == 0 then
-                -- self:Deactivate()
-                self:SetAlpha( 0 )
-                self.alphaCheck = 0.5
-            else
-                if preAlpha == 0 and newAlpha > 0 then
-                    Hekili:ForceUpdate( "DISPLAY_ALPHA_CHANGED:" .. d.id .. ":" .. preAlpha .. ":" .. newAlpha .. ":" .. GetTime() )
-                end
+            self:ClearAllPoints()
+
+            if Hekili:IsRealAnchorAvailable( conf.anchorTarget ) then
+                local anchor = Hekili:GetActiveAnchorFrame( conf )
+                self:SetPoint(
+                    conf.anchorPoint or "CENTER",
+                    anchor,
+                    conf.relativePoint or "CENTER",
+                    conf.anchorX or 0,
+                    conf.anchorY or 0
+                )
                 self:SetAlpha( newAlpha )
-                self:Show()
+            else
+                -- fallback to static screen position
+                self:SetPoint( "CENTER", UIParent, "CENTER", conf.x or 0, conf.y or 0 )
+                self:SetAlpha( conf.fallbackAlpha or 1 )
             end
 
+            self:Show()
             self.alpha = newAlpha
         end
 
@@ -2044,7 +2128,6 @@ do
             end )
         end
     end
-
 
     function Hekili:CreateCustomDisplay( id )
         local conf = rawget( self.DB.profile.displays, id )
@@ -2886,9 +2969,21 @@ function Hekili:BuildUI()
     -- End Notification Panel
 
     -- Displays
-    for disp in pairs( self.DB.profile.displays ) do
-        self:CreateDisplay( disp )
+    local displayOrder = { "Primary", "AOE", "Cooldowns", "Defensives", "Interrupts" }
+
+    for _, disp in ipairs( displayOrder ) do
+        if self.DB.profile.displays[ disp ] then
+            self:CreateDisplay( disp )
+        end
     end
+
+    -- Just in case there are any custom displays
+    for disp in pairs( self.DB.profile.displays ) do
+        if not tContains( displayOrder, disp ) then
+            self:CreateDisplay( disp )
+        end
+    end
+
 
     --if Hekili.Config then ns.StartConfiguration() end
     if MasqueGroup then
@@ -3034,7 +3129,6 @@ local key_cache = setmetatable( {}, {
     end
 })
 
-
 function Hekili:ShowDiagnosticTooltip( q )
     if not q.actionName or not class.abilities[ q.actionName ].name then return end
 
@@ -3127,16 +3221,131 @@ function Hekili:ShowDiagnosticTooltip( q )
 end
 
 function Hekili:SaveCoordinates()
-    for i in pairs(Hekili.DB.profile.displays) do
-        local display = ns.UI.Displays[i]
-        if display then
-            local rel, x, y = select( 3, display:GetPoint() )
+    for id, display in pairs( ns.UI.Displays ) do
+        local conf = self.DB.profile.displays[ id ]
+        if display and conf then
+            -- Only save if we're not anchoring to something restricted (e.g., PRD, nameplates)
+            if not display:IsAnchoringRestricted() then
+                local point, anchor, relPoint, x, y = display:GetPoint()
+                conf.anchorPoint = point or "CENTER"
+                conf.relativePoint = relPoint or "CENTER"
+                conf.anchorX = x or 0
+                conf.anchorY = y or 0
 
-            self.DB.profile.displays[i].rel = "CENTER"
-            self.DB.profile.displays[i].x = x
-            self.DB.profile.displays[i].y = y
+                local prdProxy = Hekili:GetProxyFrame( "PRD" )
+                local targetProxy = Hekili:GetProxyFrame( "TARGET" )
+                if anchor == prdProxy then
+                    conf.anchorTarget = "PRD"
+                elseif anchor == ns.UI.Displays.Primary then
+                    conf.anchorTarget = "PRIMARY"
+                elseif anchor == UIParent then
+                    conf.anchorTarget = "SCREEN"
+                elseif anchor == targetProxy then
+                    conf.anchorTarget = "TARGET"
+                else
+                    conf.anchorTarget = "SCREEN"
+                end
+
+            else
+                -- Restricted anchor; do not update stored coordinates
+                -- Hekili:Print("Skipping save for '" .. id .. "' due to restricted anchor.")
+            end
         end
     end
 
-    self.DB.profile.notifications.x, self.DB.profile.notifications.y = select( 4, HekiliNotification:GetPoint() )
+    -- Save Notification Panel (if movable)
+    if HekiliNotification and not HekiliNotification:IsAnchoringRestricted() then
+        local _, _, _, x, y = HekiliNotification:GetPoint()
+        self.DB.profile.notifications.x = x
+        self.DB.profile.notifications.y = y
+    end
+end
+
+function Hekili:EvaluateDisplayAnchors()
+    for id, display in pairs( ns.UI.Displays ) do
+        local conf = self.DB.profile.displays[ id ]
+        if display and conf then
+            TrySetAnchor( display, conf )
+        end
+    end
+end
+
+function Hekili:GetProxyFrame( anchorTarget )
+    if anchorTarget == "TARGET" then
+        proxyFrames.TARGET = proxyFrames.TARGET or CreateFrame( "Frame", "HekiliAnchorProxy_TargetNameplate", UIParent )
+        proxyFrames.TARGET:SetSize( 1, 1 )
+        return proxyFrames.TARGET
+
+    elseif anchorTarget == "PRD" then
+        proxyFrames.PRD = proxyFrames.PRD or CreateFrame( "Frame", "HekiliAnchorProxy_PRD", UIParent )
+        proxyFrames.PRD:SetSize( 1, 1 )
+        return proxyFrames.PRD
+
+    elseif anchorTarget == "SCREEN" then
+        proxyFrames.SCREEN = proxyFrames.SCREEN or CreateFrame( "Frame", "HekiliAnchorProxy_Screen", UIParent )
+        proxyFrames.SCREEN:SetSize( 1, 1 )
+        proxyFrames.SCREEN:SetPoint( "CENTER", UIParent, "CENTER", 0, 0 )
+        return proxyFrames.SCREEN
+    end
+end
+
+function Hekili:UpdateTargetNameplateProxy()
+    local proxy = Hekili:GetProxyFrame( "TARGET" )
+    if not proxy then return end
+
+    local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit and C_NamePlate.GetNamePlateForUnit( "target" )
+
+    if plate and plate:IsShown() then
+        proxy:ClearAllPoints()
+        proxy:SetPoint( "CENTER", plate, "CENTER", 0, 0 )
+        proxy:Show()
+    else
+        proxy:Hide()
+    end
+end
+
+function Hekili:GetActiveAnchorFrame( conf )
+    local target = conf.anchorTarget
+
+    if target == "PRIMARY" then
+        return ns.UI.Displays.Primary
+
+    elseif target == "PRD" then
+        local prd = GetPersonalResourceAnchor()
+        if prd and prd:IsShown() then return prd end
+        local proxy = self:GetProxyFrame( "PRD" )
+        return proxy:IsShown() and proxy or nil
+
+    elseif target == "TARGET" then
+        local nameplate = C_NamePlate and C_NamePlate.GetNamePlateForUnit and C_NamePlate.GetNamePlateForUnit( "target" )
+        if nameplate and nameplate:IsShown() then return nameplate end
+        local proxy = self:GetProxyFrame( "TARGET" )
+        return proxy:IsShown() and proxy or nil
+
+    elseif target == "COOLDOWN" then
+        -- In future patch when available
+        return self.CooldownManager
+
+    else
+        return nil
+    end
+end
+
+function Hekili:IsRealAnchorAvailable( anchorTarget )
+    if anchorTarget == "PRIMARY" then
+        return ns.UI.Displays.Primary and ns.UI.Displays.Primary:IsShown()
+
+    elseif anchorTarget == "PRD" then
+        local prd = GetPersonalResourceAnchor()
+        return prd and prd:IsShown()
+
+    elseif anchorTarget == "TARGET" then
+        local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit and C_NamePlate.GetNamePlateForUnit( "target" )
+        return plate and plate:IsShown()
+
+    elseif anchorTarget == "COOLDOWN" then
+        return self.CooldownManager and self.CooldownManager:IsShown()
+    end
+
+    return false
 end

@@ -339,6 +339,7 @@ RegisterEvent( "PLAYER_ENTERING_WORLD", function( event, login, reload )
         state.torghast = IsInJailersTower()
         state.instance_id = instanceID or -1
 
+        Hekili:EvaluateDisplayAnchors()
         Hekili:BuildUI()
     end
 end )
@@ -1556,11 +1557,18 @@ do
         end
 
         state.target.updated = true
+        Hekili:UpdateTargetNameplateProxy()
+        Hekili:EvaluateDisplayAnchors()
         Hekili:ForceUpdate( event, true )
     end )
 end
 
-
+RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( event, unit )
+    if unit == "player" or unit == "target" then
+        Hekili:UpdateTargetNameplateProxy()
+        Hekili:EvaluateDisplayAnchors()
+    end
+end )
 
 do
     local MOVEMENT_ICD = 0.5

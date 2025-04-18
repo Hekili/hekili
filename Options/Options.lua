@@ -1446,45 +1446,12 @@ return "Position" end,
                                 order = 10,
 
                                 args = {
-                                    --[[
-                                    relativeTo = {
-                                        type = "select",
-                                        name = "Anchored To",
-                                        values = {
-                                            SCREEN = "Screen",
-                                            PERSONAL = "Personal Resource Display",
-                                            CUSTOM = "Custom"
-                                        },
-                                        order = 1,
-                                        width = 1.49,
-                                    },
-
-                                    customFrame = {
-                                        type = "input",
-                                        name = "Custom Frame",
-                                        desc = "Specify the name of the frame to which this display will be anchored.\n" ..
-                                                "If the frame does not exist, the display will not be shown.",
-                                        order = 1.1,
-                                        width = 1.49,
-                                        hidden = function() return data.relativeTo ~= "CUSTOM" end,
-                                    },
-
-                                    setParent = {
-                                        type = "toggle",
-                                        name = "Set Parent to Anchor",
-                                        desc = "If checked, the display will be shown/hidden when the anchor is shown/hidden.",
-                                        order = 3.9,
-                                        width = 1.49,
-                                        hidden = function() return data.relativeTo == "SCREEN" end,
-                                    },
-
-                                    preXY = {
+                                    fallbackXYHeader = {
                                         type = "description",
-                                        name = " ",
-                                        width = "full",
-                                        order = 97
-                                    }, ]]
-
+                                        name = "Position When Not Anchored:",
+                                        order = 0,
+                                        fontSize = "medium",
+                                    },
                                     x = {
                                         type = "range",
                                         name = "X",
@@ -1494,14 +1461,13 @@ return "Position" end,
                                         max = 512,
                                         step = 1,
 
-                                        order = 98,
+                                        order = 1,
                                         width = 1.49,
 
                                         disabled = function()
                                             return name == "Multi"
                                         end,
                                     },
-
                                     y = {
                                         type = "range",
                                         name = "Y",
@@ -1511,11 +1477,209 @@ return "Position" end,
                                         max = 384,
                                         step = 1,
 
-                                        order = 99,
+                                        order = 2,
                                         width = 1.49,
 
                                         disabled = function()
                                             return name == "Multi"
+                                        end,
+                                    },
+
+                                    spacer1 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 3,
+                                    },
+                                    anchorTarget = {
+                                        type = "select",
+                                        name = "Anchor To",
+                                        values = {
+                                            SCREEN  = "No Anchor",
+                                            PRIMARY = "Hekili Primary Display",
+                                            PRD     = "Personal Resource Display",
+                                            TARGET  = "Target Nameplate"
+                                            -- COOLDOWN = "Cooldown Manager"
+                                        },
+                                        order = 4,
+                                        width = "double",
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.anchorTarget
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.anchorTarget = val
+
+                                            local frame = ns.UI.Displays[ name ]
+
+                                            if frame then
+                                                frame:ClearAllPoints()
+
+                                                if val == "SCREEN" then
+                                                    frame:SetParent( UIParent )
+                                                    frame:SetPoint( "CENTER", UIParent, "CENTER", display.x or 0, display.y or 0 )
+                                                    frame:SetMovable( true )
+                                                    frame:EnableMouse( true )
+                                                    if frame.Backdrop then
+                                                        frame.Backdrop:SetParent( UIParent )
+                                                    end
+                                                else
+                                                    -- optional: force anchoring to the new target if available
+                                                    TrySetAnchor( frame, display )
+                                                end
+                                            end
+
+                                            Hekili:SaveCoordinates()
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+                                    spacer2 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 5,
+                                    },
+                                    anchorFrame = {
+                                        type = "select",
+                                        name = "Anchor To",
+                                        desc = "Choose which part of the anchor target (e.g., PRD, Target Nameplate, etc.) this display should attach to.",
+                                        values = {
+                                            TOP = "Top",
+                                            TOPLEFT = "Top Left",
+                                            TOPRIGHT = "Top Right",
+                                            CENTER = "Center",
+                                            BOTTOM = "Bottom",
+                                            BOTTOMLEFT = "Bottom Left",
+                                            BOTTOMRIGHT = "Bottom Right",
+                                            LEFT = "Left",
+                                            RIGHT = "Right",
+                                        },
+                                        order = 6,
+                                        disabled = function(info)
+                                            local display = Hekili.DB.profile.displays[ info[2] ]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.relativePoint
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.relativePoint = val
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+                                    anchorPoint = {
+                                        type = "select",
+                                        name = "Using This Display's",
+                                        desc = "Choose which part of this display should attach to the selected anchor point.",
+                                        values = {
+                                            TOP = "Top",
+                                            TOPLEFT = "Top Left",
+                                            TOPRIGHT = "Top Right",
+                                            CENTER = "Center",
+                                            BOTTOM = "Bottom",
+                                            BOTTOMLEFT = "Bottom Left",
+                                            BOTTOMRIGHT = "Bottom Right",
+                                            LEFT = "Left",
+                                            RIGHT = "Right",
+                                        },
+                                        order = 7,
+                                        disabled = function(info)
+                                            local display = Hekili.DB.profile.displays[ info[2] ]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.anchorPoint
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.anchorPoint = val
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+
+                                    anchorX = {
+                                        type = "range",
+                                        name = "X Offset",
+                                        min = -500, max = 500, step = 1,
+                                        order = 8,
+                                        disabled = function(info)
+                                            local display = Hekili.DB.profile.displays[ info[2] ]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.anchorX
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.anchorX = val
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+                                    anchorY = {
+                                        type = "range",
+                                        name = "Y Offset",
+                                        min = -500, max = 500, step = 1,
+                                        order = 9,
+                                        disabled = function(info)
+                                            local display = Hekili.DB.profile.displays[ info[2] ]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.anchorY
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.anchorY = val
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+                                    fallbackAlpha = {
+                                        type = "range",
+                                        name = "Fallback Alpha",
+                                        desc = "When the chosen anchor is not available (e.g., PRD or Target Nameplate hidden), set the transparency of the display.",
+                                        min = 0, max = 1, step = 0.01,
+                                        order = 10,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[name]
+                                            return display.fallbackAlpha or 1
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[name]
+                                            display.fallbackAlpha = val
+                                            Hekili:UpdateDisplayVisibility()
+                                        end,
+                                        disabled = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[name]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                    },
+                                    fallbackNote = {
+                                        type = "description",
+                                        name = "The fallback X/Y position is defined above and will be used when the anchor is hidden or unavailable.",
+                                        order = 11,
+                                        hidden = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[name]
+                                            return display.anchorTarget == "SCREEN"
                                         end,
                                     },
                                 },
