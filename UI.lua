@@ -562,7 +562,77 @@ do
                                 return spec.cycle
                             end,
                             hidden = function () return Hekili.State.spec.id ~= i end,
+
                         } )
+
+                        local max_swaps = {
+                            text = "Maximum Target Swaps",
+                            tooltipTitle = "Maximum Target Swaps",
+                            tooltipText = "If checked, the number of targets used for target-swapping will be limited to this value.",
+                            tooltipOnButton = true,
+                            notCheckable = true,
+                            func = function ( self, arg1, arg2, checked )
+                                local spec = rawget( Hekili.DB.profile.specs, i )
+                                if spec then
+                                    spec.max_cycle = arg1
+                                    if Hekili.DB.profile.notifications.enabled then
+                                        Hekili:Notify( "Maximum Target Swaps: " .. ( spec.max_cycle ) )
+                                    else
+                                        Hekili:Print( "Maximum Target Swaps: " .. ( spec.max_cycle ) )
+                                    end
+                                end
+                            end,
+                            hidden = function ()
+                                local spec = rawget( Hekili.DB.profile.specs, i )
+                                return Hekili.State.spec.id ~= i or not spec.cycle
+                            end,
+                            hasArrow = true,
+                            menuList = {}
+                        }
+
+                        local slider = {
+                            text = "Maximum Target Swaps",
+                            tooltipTitle = "Maximum Target Swaps",
+                            tooltipText = "If checked, the number of targets used for target-swapping will be limited to this value.",
+                            tooltipOnButton = true,
+                            notCheckable = true,
+                            hidden = function ()
+                                local spec = rawget( Hekili.DB.profile.specs, i )
+                                return Hekili.State.spec.id ~= i or not spec.cycle
+                            end,
+                        }
+                        local cn = "HekiliSpec" .. i .. "OptionMaxSwapTargets"
+                        local cf = CreateFrame( "Frame", cn, UIParent, "HekiliPopupDropdownRangeTemplate" )
+
+                        cf.Slider:SetAccessorFunction( function()
+                            local spec = rawget( Hekili.DB.profile.specs, i )
+                            return spec and spec.max_cycle or 3
+                        end )
+
+                        cf.Slider:SetMutatorFunction( function( val )
+                            local spec = rawget( Hekili.DB.profile.specs, i )
+                            if spec then spec.max_cycle = val end
+                        end )
+
+                        cf.Slider:SetMinMaxValues( 3, 15 )
+                        cf.Slider:SetValueStep( 1 )
+                        cf.Slider:SetObeyStepOnDrag( true )
+
+                        cf.Slider:SetScript( "OnEnter", function( self )
+                            local tooltip = GetAppropriateTooltip()
+                            tooltip:SetOwner( cf.Slider, "ANCHOR_LEFT", 0, 2 )
+                            GameTooltip_SetTitle( tooltip, slider.tooltipTitle )
+                            GameTooltip_AddNormalLine( tooltip, slider.tooltipText, true )
+                            tooltip:Show()
+                        end )
+
+                        cf.Slider:SetScript( "OnLeave", function( self )
+                            GameTooltip:Hide()
+                        end )
+
+                        slider.customFrame = cf
+                        insert( max_swaps.menuList, slider )
+                        insert( menuData, max_swaps )
 
                         local potionMenu = {
                             text = "|T967533:0|t Preferred Potion",

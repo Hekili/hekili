@@ -39,6 +39,7 @@ local specTemplate = {
     aoe = 2,
     cycle = false,
     cycle_min = 6,
+    max_cycle = 3,
     gcdSync = true,
 
     nameplates = true,

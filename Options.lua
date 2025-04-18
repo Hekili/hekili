@@ -5571,8 +5571,8 @@ found = true end
                                         cycle_min = {
                                             type = "range",
                                             name = "Filter by Time-to-Die",
-                                            desc = "When |cffffd100Recommend Target Swaps|r is checked, this value determines which targets are counted for target swapping purposes.  If set to 5, target swapping will " ..
-                                                    "not be recommended if no other target will live 5 seconds or longer.  This can be beneficial to avoid applying damage-over-time effects to a target that will die " ..
+                                            desc = "When |cffffd100Recommend Target Swaps|r is checked, this value determines which targets are counted for target swapping purposes.\n\nIf set to 5, target swapping will " ..
+                                                    "not be recommended if no other target will live 5 seconds or longer.\n\nThis can be beneficial to avoid applying damage-over-time effects to a target that will die " ..
                                                     "too quickly to be damaged by them.\n\nSet to 0 to count all detected targets.",
                                             width = "full",
                                             min = 0,
@@ -5580,6 +5580,18 @@ found = true end
                                             step = 1,
                                             order = 1
                                         },
+                                        max_cycle = {
+                                            type = "range",
+                                            name = "Maximum Targets",
+                                            desc = "When |cffffd100Recommend Target Swaps|r is checked, this setting determines the maximum number of targets to count for target swapping purposes.\n\nIf set to 3, target swapping "
+                                                .. "may not be recommended beyond if 3 targets are already affected by the relevant debuff.\n\nThis can be beneficial to avoid target-swapping endlessly in large packs of enemies.",
+                                            width = "full",
+                                            min = 3,
+                                            max = 15,
+                                            step = 1,
+                                            order = 2
+
+                                        }
                                     }
                                 },
 
@@ -11023,7 +11035,7 @@ function Hekili:HandleSetCommand( args )
         local cycleValue = tonumber( subToggleOrState )
         if cycleValue and cycleValue >= 0 and cycleValue <= 20 and floor( cycleValue ) == cycleValue then
             profile.specs[ state.spec.id ].cycle_min = cycleValue
-            self:Print( format( "Target Swap minimum time to die set to %d seconds.", cycleValue ) )
+            self:Print( format( "Target Swap minimum time-to-die set to %d seconds.", cycleValue ) )
         elseif subToggleOrState == nil then
             -- Toggle cycle if no state is provided
             profile.specs[ state.spec.id ].cycle = not profile.specs[ state.spec.id ].cycle

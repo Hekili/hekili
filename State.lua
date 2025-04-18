@@ -852,6 +852,7 @@ do
             cycle.expires = cDebuff.expires
             cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
             cycle.maxTTD  = ability.max_ttd
+            cycle.maxTargets = state.settings.max_cycle or 3
 
             cycle.aura = aura
 
@@ -868,6 +869,7 @@ do
             cycle.expires = state.query_time + ( 2 * state.gcd.max ) -- Assume the aura is available for 3 GCDs (don't forecast a slow target swap).
             cycle.minTTD  = max( state.settings.cycle_min, ability.min_ttd or 0, cDebuff.duration / 2 )
             cycle.maxTTD  = ability.max_ttd
+            cycle.maxTargets = state.settings.max_cycle or 3
 
             cycle.aura = aura
 
@@ -908,14 +910,15 @@ do
     end
 
     function state.GetCycleInfo()
-        return cycle.expires, cycle.minTTD, cycle.maxTTD, cycle.aura
+        return cycle.expires, cycle.minTTD, cycle.maxTTD, cycle.aura, cycle.maxTargets
     end
 
-    function state.SetCycleInfo( expires, minTTD, maxTTD, aura )
+    function state.SetCycleInfo( expires, minTTD, maxTTD, aura, maxTargets )
         cycle.expires = expires
         cycle.minTTD  = minTTD
         cycle.maxTTD  = maxTTD
         cycle.aura    = aura
+        cycle.maxTargets = maxTargets
     end
 
     function state.HasCyclingDebuff( aura )
@@ -2099,6 +2102,7 @@ do
 
             elseif k == "cycle_enemies" then
                 if not t.settings.cycle or t.active_enemies == 1 then return 1 end
+                local max_cycle = t.settings.max_cycle or 3
 
                 local targets = t.true_active_enemies
                 local timeframe = t.delay + t.offset
@@ -2124,7 +2128,8 @@ do
                 -- if t.min_targets > 0 then targets = max( t.min_targets, targets ) end
 
                 -- cap cycle_targets if forced into single-target model.
-                if t.max_targets > 0 then targets = min( t.max_targets, targets ) end
+                if t.max_targets > 1 then targets = min( t.max_targets, targets ) end
+                targets = min( targets, max_cycle )
 
                 -- if Hekili.ActiveDebug then Hekili:Debug( "cycle min:%.2f, max:%.2f, ae:%d, before:%d, after:%d, cycle_enemies:%d", minTTD or 0, maxTTD or 0, t.active_enemies, minTTD and Hekili:GetNumTTDsBefore( minTTD ) or 0, maxTTD and Hekili:GetNumTTDsAfter( maxTTD ) or 0, max( 1, targets ) ) end
 
