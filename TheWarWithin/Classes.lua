@@ -102,19 +102,16 @@ local spellFilters = {
                 name = "Choking Waters",
                 interrupt = true,
             },
+            [ 272581 ] = {
+                name = "Water Bolt",
+                spell_reflection = true,
+            },
         },
         [ 128969 ] = {
             name = "Ashvane Commander",
             [ 275826 ] = {
                 name = "Bolstering Shout",
                 interrupt = true,
-            },
-        },
-        [ 129367 ] = {
-            name = "Bilge Rat Tempest",
-            [ 272581 ] = {
-                name = "Water Bolt",
-                spell_reflection = true,
             },
         },
         [ 129370 ] = {
@@ -1381,7 +1378,7 @@ do
 
     for zoneID, zoneData in pairs( spellFilters ) do
         for npcID, npcData in pairs( zoneData ) do
-            if npcID ~= "name" then
+            if npcID ~= "name" and type(npcData) == "table" then
                 for spellID, spellData in pairs( npcData ) do
                     if spellID ~= "name" and spellData.interrupt then
                         interruptibleFilters[ spellID ] = true
