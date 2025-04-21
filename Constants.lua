@@ -103,196 +103,235 @@ ns.Specializations = {
     [250] = {
         key = "blood",
         class = "DEATHKNIGHT",
+        bloodlust = false,
         ranged = false
     },
     [251] = {
         key = "frost",
         class = "DEATHKNIGHT",
+        bloodlust = false,
         ranged = false
     },
     [252] = {
         key = "unholy",
         class = "DEATHKNIGHT",
+        bloodlust = false,
         ranged = false
     },
     [102] = {
         key = "balance",
         class = "DRUID",
+        bloodlust = false,
         ranged = true
     },
     [103] = {
         key = "feral",
         class = "DRUID",
+        bloodlust = false,
         ranged = false
     },
     [104] = {
         key = "guardian",
         class = "DRUID",
+        bloodlust = false,
         ranged = false
     },
     [105] = {
         key = "restoration",
         class = "DRUID",
+        bloodlust = false,
         ranged = true
     },
     [253] = {
         key = "beast_mastery",
         class = "HUNTER",
+        bloodlust = true,
         ranged = true
     },
     [254] = {
         key = "marksmanship",
         class = "HUNTER",
+        bloodlust = true,
         ranged = true
     },
     [255] = {
         key = "survival",
         class = "HUNTER",
+        bloodlust = true,
         ranged = false
     },
     [62] = {
         key = "arcane",
         class = "MAGE",
+        bloodlust = true,
         ranged = true
     },
     [63] = {
         key = "fire",
         class = "MAGE",
+        bloodlust = true,
         ranged = true
     },
     [64] = {
         key = "frost",
         class = "MAGE",
+        bloodlust = true,
         ranged = true
     },
     [268] = {
         key = "brewmaster",
         class = "MONK",
+        bloodlust = false,
         ranged = false
     },
     [269] = {
         key = "windwalker",
         class = "MONK",
+        bloodlust = false,
         ranged = false
     },
     [270] = {
         key = "mistweaver",
         class = "MONK",
+        bloodlust = false,
         ranged = false
     },
     [65] = {
         key = "holy",
         class = "PALADIN",
+        bloodlust = false,
         ranged = false
     },
     [66] = {
         key = "protection",
         class = "PALADIN",
+        bloodlust = false,
         ranged = false
     },
     [70] = {
         key = "retribution",
         class = "PALADIN",
+        bloodlust = false,
         ranged = false
     },
     [256] = {
         key = "discipline",
         class = "PRIEST",
+        bloodlust = false,
         ranged = true
     },
     [257] = {
         key = "holy",
         class = "PRIEST",
+        bloodlust = false,
         ranged = true
     },
     [258] = {
         key = "shadow",
         class = "PRIEST",
+        bloodlust = false,
         ranged = true
     },
     [259] = {
         key = "assassination",
         class = "ROGUE",
+        bloodlust = false,
         ranged = false
     },
     [260] = {
         key = "outlaw",
         class = "ROGUE",
+        bloodlust = false,
         ranged = false
     },
     [261] = {
         key = "subtlety",
         class = "ROGUE",
+        bloodlust = false,
         ranged = false
     },
     [262] = {
         key = "elemental",
         class = "SHAMAN",
+        bloodlust = true,
         ranged = true
     },
     [263] = {
         key = "enhancement",
         class = "SHAMAN",
+        bloodlust = true,
         ranged = false
     },
     [264] = {
         key = "restoration",
         class = "SHAMAN",
+        bloodlust = true,
         ranged = true
     },
     [265] = {
         key = "affliction",
         class = "WARLOCK",
+        bloodlust = false,
         ranged = true
     },
     [266] = {
         key = "demonology",
         class = "WARLOCK",
+        bloodlust = false,
         ranged = true
     },
     [267] = {
         key = "destruction",
         class = "WARLOCK",
+        bloodlust = false,
         ranged = true
     },
     [71] = {
         key = "arms",
         class = "WARRIOR",
+        bloodlust = false,
         ranged = false
     },
     [72] = {
         key = "fury",
         class = "WARRIOR",
+        bloodlust = false,
         ranged = false
     },
     [73] = {
         key = "protection",
         class = "WARRIOR",
+        bloodlust = false,
         ranged = false
     },
     [577] = {
         key = "havoc",
         class = "DEMONHUNTER",
+        bloodlust = false,
         ranged = false
     },
     [581] = {
         key = "vengeance",
         class = "DEMONHUNTER",
+        bloodlust = false,
         ranged = false
     },
     [1467] = {
         key = "devastation",
         class = "EVOKER",
+        bloodlust = true,
         ranged = true
     },
     [1468] = {
         key = "preservation",
         class = "EVOKER",
+        bloodlust = true,
         ranged = true
     },
     [1473] = {
         key = "augmentation",
         class = "EVOKER",
+        bloodlust = true,
         ranged = true
     },
 }
