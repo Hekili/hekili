@@ -1629,34 +1629,29 @@ spec:RegisterSetting( "default_hunter_pet", "generic", {
             generic = "Call Pet: |T132161:0|t |cFFFFFFFFGeneric Whistle Icon|r"
         }
 
-        local spellIDs = {
-            call_pet_1 = 883,
-            call_pet_2 = 83242,
-            call_pet_3 = 83243,
-            call_pet_4 = 83244,
-            call_pet_5 = 83245
-        }
+        local activePets = C_StableInfo.GetActivePetList()
 
         for i = 1, 5 do
-            local key = "call_pet_" .. i
-            local id = spellIDs[ key ]
+            local pet = activePets[ i ]
+            local icon = 136095
+            local name = "Pet " .. i
+            local spec = ""
 
-            local spellName, _, fallbackIcon = GetSpellInfo( id )
-            local stablePet = C_StableInfo.GetStablePetInfo( i )
-
-            local name = spellName
-            local icon = fallbackIcon
-
-            if stablePet then
-                name = stablePet.name or spellName
-                icon = stablePet.icon or fallbackIcon
+            if pet then
+                icon = pet.icon or icon
+                name = pet.name or name
+                spec = pet.specialization and (" (" .. pet.specialization .. ")") or ""
             end
 
-            values[ key ] = format( "Call Pet %d: |T%d:0|t |cFFFFFFFF%s|r", i, icon or 136095, name or key )
+            values[ "call_pet_" .. i ] = format(
+                "Call Pet %d: |T%d:0|t |cFFFFFFFF%s%s|r",
+                i, icon, name, spec
+            )
         end
 
         return values
     end,
+
     width = 1.5
 } )
 
