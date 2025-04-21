@@ -19,6 +19,35 @@ local GetSpellBookItemName = function(index, bookType)
     return C_SpellBook.GetSpellBookItemName(index, spellBank);
 end
 
+function GetPetSlotDropdownForSpec( specName, includeAllSlots )
+    local dropdown = {}
+    local activePets = C_StableInfo.GetActivePetList() or {}
+    local isBM = state.spec.id == 253 -- Only BM can use exotic pets
+
+    for _, pet in ipairs( activePets ) do
+        if pet.specialization and pet.slotID then
+            local petSpec = pet.specialization:lower()
+            local isExotic = pet.isExotic
+            local usable = isBM or not isExotic
+
+            if usable and ( includeAllSlots or ( petSpec == specName:lower() ) ) then
+                dropdown[ "call_pet_" .. pet.slotID ] = format(
+                    "Slot %d: |T%d:0|t |cFFFFFFFF%s|r",
+                    pet.slotID,
+                    pet.icon or 136095,
+                    pet.name or ("Pet " .. pet.slotID)
+                )
+            end
+        end
+    end
+
+    if next( dropdown ) ~= nil then
+        dropdown.generic = "|T132161:0|t Generic Icon"
+    end
+
+    return dropdown
+end
+
 spec:RegisterResource( Enum.PowerType.Focus, {
     terms_of_engagement = {
         aura = "terms_of_engagement",
@@ -1561,58 +1590,6 @@ spec:RegisterOptions( {
 
 local beastMastery = class.specs[ 253 ]
 
-spec:RegisterSetting( "default_hunter_pet", "generic", {
-    name = "|T132161:0|t Preferred Pet",
-    desc = "Specify which pet should be summoned when you have no active pet. If the chosen pet is not available, the addon will try lower-numbered pets. Choose 'Generic' to use the default Call Pet whistle icon.",
-    type = "select",
-    values = function ()
-        local values = {
-            generic = "Call Pet: |T132161:0|t |cFFFFFFFFGeneric Whistle Icon|r"
-        }
-
-        local spellIDs = {
-            call_pet_1 = 883,
-            call_pet_2 = 83242,
-            call_pet_3 = 83243,
-            call_pet_4 = 83244,
-            call_pet_5 = 83245
-        }
-
-        for i = 1, 5 do
-            local key = "call_pet_" .. i
-            local id = spellIDs[ key ]
-
-            local spellName, _, fallbackIcon = GetSpellInfo( id )
-            local stablePet = C_StableInfo.GetStablePetInfo( i )
-
-            local name = spellName
-            local icon = fallbackIcon
-
-            if stablePet then
-                name = stablePet.name or spellName
-                icon = stablePet.icon or fallbackIcon
-            end
-
-            values[ key ] = format( "Call Pet %d: |T%d:0|t |cFFFFFFFF%s|r", i, icon or 136095, name or key )
-        end
-
-        return values
-    end,
-    width = 1.5
-} )
-
-spec:RegisterSetting( "pet_healing", 0, {
-    name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
-    desc = strformat( "If set above zero, %s will be recommended when your pet falls below this health percentage. Set to 0 to disable the feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
-    icon = 132179,
-    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
-    type = "range",
-    min = 0,
-    max = 100,
-    step = 1,
-    width = "1.5"
-} )
-
 spec:RegisterSetting( "lunar_toggle", "none", {
     name = strformat( "|T2065634:0|t %s: Special Toggle", Hekili:GetSpellLinkWithTexture( spec.talents.lunar_storm[2] ) ),
     desc = strformat(
@@ -1645,14 +1622,217 @@ spec:RegisterSetting( "mark_any", false, {
     name = strformat( "%s Any Target", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
     desc = strformat( "If checked, %s may be recommended for any target rather than only bosses.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.hunters_mark.id ) ),
     type = "toggle",
-    width = "full"
+    width = 3.0
 } )
 
 spec:RegisterSetting( "use_harpoon", true, {
     name = strformat( "Use %s", Hekili:GetSpellLinkWithTexture( spec.abilities.harpoon.id ) ),
     desc = strformat( "If checked, %s will be recommended when you are out of range and it is available.", Hekili:GetSpellLinkWithTexture( spec.abilities.harpoon.id ) ),
     type = "toggle",
-    width = "full"
+    width = 3.0
 } )
+
+spec:RegisterSetting( "pet_header", nil, {
+    type = "header",
+    name = "|cffffd100Hunter Pet Preferences|r",
+} )
+
+spec:RegisterSetting( "pet_healing", 0, {
+    name = strformat( "%s Below Health %%", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
+    desc = strformat( "If set above zero, %s will be recommended when your pet falls below this health percentage. Set to 0 to disable the feature.", Hekili:GetSpellLinkWithTexture( beastMastery.abilities.mend_pet.id ) ),
+    icon = 132179,
+    iconCoords = { 0.1, 0.9, 0.1, 0.9 },
+    type = "range",
+    min = 0,
+    max = 100,
+    step = 1,
+    width = 1.5
+} )
+
+spec:RegisterSetting( "custom_pet_summoning", false, {
+    type = "toggle",
+    name = "Use Advanced Pet Summoning Options",
+    desc = "Enable this show advanced options for assigning specific pets for different situations, including spec-based or smart Bloodlust logic.",
+    width = 3.0,
+    get = function() return rawget( spec.settings, "custom_pet_summoning" ) end,
+    set = function( info, val )
+        spec.settings.custom_pet_summoning = val
+        LibStub("AceConfigRegistry-3.0"):NotifyChange("Hekili")
+    end
+} )
+
+spec:RegisterSetting( "pet_spec_dropdown_desc", nil, {
+    type = "description",
+    name = "|cff71d5ffSelect your preferred pet of each type|r",
+    fontSize = "medium",
+    hidden = function()
+        return not spec.settings.custom_pet_summoning
+    end,
+    width = 3.0
+} )
+
+spec:RegisterSetting( "pet_dropdowns", nil, {
+    type = "group",
+    name = "",
+    inline = true,
+    order = 99,
+    hidden = function()
+        return not spec.settings.custom_pet_summoning
+    end,
+    args = {
+        ferocity_pet = {
+            type = "select",
+            name = "|T463876:0|t Ferocity (Bloodlust + Leech)",
+            desc = function()
+                local hasPets = next( GetPetSlotDropdownForSpec( "ferocity" ) ) ~= nil
+                if not hasPets then
+                    return "|cffff2020You do not have any valid Ferocity pets in your active Call Pet slots.|r"
+                end
+                return "Select which Call Pet slot to use when a Ferocity (Bloodlust-capable) pet is needed."
+            end,
+            values = function()
+                local values = {
+                    generic = "|T132161:0|t Generic Icon"
+                }
+                local slots = GetPetSlotDropdownForSpec( "ferocity" )
+                for k, v in pairs( slots ) do values[ k ] = v end
+                return values
+            end,
+            get = function() return spec.settings.ferocity_pet end,
+            set = function( info, val ) spec.settings.ferocity_pet = val end,
+            width = 1.0,
+            order = 1,
+            disabled = function()
+                return next( GetPetSlotDropdownForSpec( "ferocity" ) ) == nil
+            end,
+        },
+
+        tenacity_pet = {
+            type = "select",
+            name = "|T132185:0|t Tenacity (Defensive)",
+            desc = function()
+                local hasPets = next( GetPetSlotDropdownForSpec( "tenacity" ) ) ~= nil
+                if not hasPets then
+                    return "|cffff2020You do not have any valid Ferocity pets in your active Call Pet slots.|r"
+                end
+                return "Select which Call Pet slot to use when a Tenacity (Defensive) pet is needed."
+            end,
+            values = function()
+                local values = {
+                    generic = "|T132161:0|t Generic Icon"
+                }
+                local slots = GetPetSlotDropdownForSpec( "tenacity" )
+                for k, v in pairs( slots ) do values[ k ] = v end
+                return values
+            end,
+            get = function() return spec.settings.tenacity_pet end,
+            set = function( info, val ) spec.settings.tenacity_pet = val end,
+            width = 1.0,
+            order = 2,
+            disabled = function()
+                return next( GetPetSlotDropdownForSpec( "tenacity" ) ) == nil
+            end,
+        },
+
+        cunning_pet = {
+            type = "select",
+            name = "|T132152:0|t Cunning (Movement)",
+            desc = function()
+                local hasPets = next( GetPetSlotDropdownForSpec( "cunning" ) ) ~= nil
+                if not hasPets then
+                    return "|cffff2020You do not have any valid Ferocity pets in your active Call Pet slots.|r"
+                end
+                return "Select which Call Pet slot to use when a Cunning (Movement-enhancing) pet is needed."
+            end,
+            values = function()
+                local values = {
+                    generic = "|T132161:0|t Generic Icon"
+                }
+                local slots = GetPetSlotDropdownForSpec( "cunning" )
+                for k, v in pairs( slots ) do values[ k ] = v end
+                return values
+            end,
+            get = function() return spec.settings.cunning_pet end,
+            set = function( info, val ) spec.settings.cunning_pet = val end,
+            width = 1.0,
+            order = 3,
+            disabled = function()
+                return next( GetPetSlotDropdownForSpec( "cunning" ) ) == nil
+            end,
+        },
+    }
+} )
+
+spec:RegisterSetting( "pet_content_dropdown_desc", nil, {
+    type = "description",
+    name = "|cff71d5ffSelect your preferred pet type for different types of content|r",
+    fontSize = "medium",
+    hidden = function()
+        return not spec.settings.custom_pet_summoning
+    end,
+    width = 3.0
+} )
+
+spec:RegisterSetting( "pet_context_group", nil, {
+    type = "group",
+    name = "",
+    inline = true,
+    order = 102,
+    hidden = function()
+        return not spec.settings.custom_pet_summoning
+    end,
+    args = {
+        solo_pet = {
+            type = "select",
+            name = "|T132161:0|t Solo",
+            desc = "Which pet type should be summoned when you're not in a group.",
+            width = 1.0,
+            order = 1,
+            values = {
+                ferocity = "|T463876:0|t Use Ferocity Pet",
+                tenacity = "|T132185:0|t Use Tenacity Pet",
+                cunning  = "|T132152:0|t Use Cunning Pet",
+                generic  = "|T132161:0|t Generic Icon",
+            },
+            get = function() return spec.settings.solo_pet end,
+            set = function( info, val ) spec.settings.solo_pet = val end,
+        },
+
+        dungeon_pet = {
+            type = "select",
+            name = "|T132161:0|t Dungeon",
+            desc = "Which pet type should be summoned in 5-player content.",
+            width = 1.0,
+            order = 2,
+            values = {
+                ferocity = "|T463876:0|t Use Ferocity Pet",
+                tenacity = "|T132185:0|t Use Tenacity Pet",
+                cunning  = "|T132152:0|t Use Cunning Pet",
+                generic  = "|T132161:0|t Generic Icon",
+                smart    = "|T136012:0|t Use Smart Bloodlust",
+            },
+            get = function() return spec.settings.dungeon_pet end,
+            set = function( info, val ) spec.settings.dungeon_pet = val end,
+        },
+
+        raid_pet = {
+            type = "select",
+            name = "|T132161:0|t Raid",
+            desc = "Which pet type should be summoned in raid groups.",
+            width = 1.0,
+            order = 3,
+            values = {
+                ferocity = "|T463876:0|t Use Ferocity Pet",
+                tenacity = "|T132185:0|t Use Tenacity Pet",
+                cunning  = "|T132152:0|t Use Cunning Pet",
+                generic  = "|T132161:0|t Generic Icon",
+                smart    = "|T136012:0|t Use Smart Bloodlust",
+            },
+            get = function() return spec.settings.raid_pet end,
+            set = function( info, val ) spec.settings.raid_pet = val end,
+        }
+    }
+} )
+
 
 spec:RegisterPack( "Survival", 20250406, [[Hekili:TZvBZTjss4FlUUQ4K3nglq(TKt2v5lX7EjRJtQvov(MamAKeN5fDaYoElv8B)6EabdWmWGKDIZw(l7MiMPNE6xF6z6jJ1gF94rtSIjJVsVV(H9pqBGAF9bhn41Jhf)WcY4rlSSV1Ag8h8T8G)7OLH35CNLl(HhCdSMGeikyzOn8X5XXlIEZ(7pZjE(YBuTd82pYXBPRvStGVDO10y8VBV)nUb3SF8CY9wH3dd1XF)ZTXH85qNGqN4hU0jkoA)5l9JjHgrzROko1XJUzPJB879hFdx(wd4BRLXZdcbw1X7Tap5mzcjD4Kiy(4W3R)b7Pn4njMJwUyrqyCI5cc8FcjWcrEvIPT1cKDIO)rxxh)zjMrli2otDSPJnsn5dRju)JqcbRvI5xwGSuI5VMyEtGvOH9CRWzK1dDWE6APd1UyO9MhCVlSh98c8ncjwtEiXCV9olXK53vP)(Uf0rRFTLSoDYhV(E6NaJ)6V(vyseROa)et9eZLPZmFqAhdd6ZHexhphFRqGp00u1smp)ZxsheStF9E66GmrRF(o5TLOdmKt2t)ayiWq7Fs(qwKPxRpynDyq)MZ3sm)dhx3eZ3g45z5pbgyey0Ly6a865F6Iet0ojX0Z6Be4J)wG9YOcI0hzM)KGAiql(FOMn)ZOeZpAfElO4iXXOgmB4hVNoUr)OJFqi8rhV1m1)cxusT5xmn0G565Wi(QfmZVsnChpYfTvPobe)yBxI1De4VDf1XI4BDJlzY4)nyusnWhp6Eh3jtDcjg3e4Lztg6Si9BJU4QRF)vxCzI5QvjMV7IF78VC51z7)ZF71V)txD57hbKfMbWHowJhTdyOTC6uv3LGgZikoi0ZWoiWDsW9OvJNLJF04yWhra3Cli0HjqL5S0LsuWua2sUKOidqb6z5AmLegyd6r1LlsmvYw7yNfgbtna3zdqdyfQgfdHmsmhcgkanFaKjgXOFaiMaXcWndQWnvwxreeCk6tx28DyjHPAQ3wKX0W0TNLlDoAQhNkq760ED606LygBHscvC4wHtCiHQzCFz2b(dWx9bBPjgwrrwlDJxReOIdWP7xsmNzprfSJtm3nL(Rj(Yy75KWh4t68VYsVmkjY4cK0hiqVhcb4ccnUbK71e)rXHo3smCIncDSNxsvx5tC5fEk8dr2y9AVERWYyWyosOrXonQayfHTOFAxVNAZUMt5Opro94n38TG2txg(W6HrSM5sqkFIqk3RfNTtPwxOSOTHbr03LHnCT8VfIoAKQArM41DmwXuAWymNNTveyzqMr8Pss6heBuO1N1QG8TfUbrq6xJO5bXvSn0QgnDJe518o0QgwSczNqSINdyvUVWsxj3ylYX2G4T2qRIyIUhWvOAOUwCalm1Td8JTM5eSmcZMdIuaZr(AXvCkNVE9zgJzHMsnUxN3A9u9w(x)fyzwwzOZoI4ql))hGiZ5VOgr1vDIJ13lp1mAKeERHL)dRDNr2t1jc0urr0aLGChxsW8ysqSAkYWidpAc(txNxiBEXoEWwmWyHDSXj9Pwb6mMbStMxmYcoea6PoNy5gphPf1Mg(jd8NaUMrmr8NyaFjpuhhTaIJ0i9VyGqgsboyKcQ2EsuZHaZ27eFINdjnG7awJrk4VmpaeWUbGdzsryqaCc4EBJwjsYrlCJAjwxvw6mAeONuwkdDvJbkfkP25PJZqKFPIRQXoLqC9eZxfYS04TTgyVeI0VGaIRGm3zkWXqcCccr2parbdLhrCXHghGG9beJcIrvk6IvOTLp6PggcmA1q(LcZCJ1mQKb2)3gvDKdyhPRZS5Xrg)3LtM5vJQWFf4oBeMqCtG0tleK6spkRwWXJEhOnOba2PAmciprvbxtGUZksRm1)OtuevqwDb2H(tQP2pRTyAyvRgWn1uWXBbjCkuFeaKXgcxz5B)GrejCPxbF1WyAmm5ZLa5vd9MUZTCbsbq9mwqtMbCcdGzEFm1mXvCPCf7Czq(ZO3rOjZrTwdghpziZzqhopygoEm2clWgMJSO43tl6QXPYUgk1hhYMTU0nThWjhA5mXGChgM0AYeak03WYUPZT6Ny5Rd4hhseQSFmLdFaB8RkNpqPiDIWwiIT7Ll05MyX4(hUJe6xwq34eqlKUmCc7W3L)UxmON2QKr2cEkeuCQ254sPz4xA6jSJHxrHLhUyqaDOyfU1hkzk8UuBw2rJi6mqouMe5nx723PIS4gaTsYFeNDdP9bHWIa8pukP6B)0NU8DF6Rxns0HWLN8BzeXiJg0nbG14o1sQgob(Rio4LjzDeu2QdRpQmAw(ipYZ5u2TTGsfdGD(sTsm(nUbbtmqtwErx)7WoeWcrGGgqqFeXDZ4H(5DxIjEO6sEzB(5DdMbgndn5ehsA24bmgWaossiMAOLusuySW6oflZWO0H7Eit6OFIeofcHfb0)pNQ(LOcHryWVGPtnaOG0kuBVUJcXkcFKfXzoCY9GCIQAJBSIFzaHx5caQjpl2I42aOSxuZzYZQqzcGcfdnaCnG04iM4f0lJQAc84SdwPHCqvYKxn3lh0Dpc4sZVlINDiglLj(ZN)2)iX8Ylo)Dx8NPeB07V63V8IeZRp)p)9lUMnbTAZ5ALZOrPdxUtTlJPcQOgtmkZQiOqYwYdjjAZ6aJfvSH4tUglOhCTxawJaDaQblU9T0d1OEn90OWieZ0tbRx5Ovcp77u1oZjiuAbxFecswQrlBjz4gLMyMH5Fm)y)u4jMYvW8yAPlqrSnGOcRLj0GGitTxMZMUOLnmzvn8kaQdw7m2zIonHoEsdyZjau(G(LVsnUvUj(qKEUD9MLp51MopcH3U12uoAUssMKBS5SEuYdIemJlXBoOpnZOGWjsEJBCu0D)Y9KlAmVzEeR2SOU5kAYJLTE(48R7OXtgvQgtrGrgNe3Tzy9OAdiqD)tD27hPGZnNrOLJYRTfLFrtflNxG)SGaaF(6SbIVCYEsy(rLItxcBHqsAWsdeCcTOd2E0rPietRPx6qS4TSZKkaSlz2H2WVwT5KAW78ejGKigDWZU8DBbMIUM1VT4yT68vwcuXXNF9iCZk01aS)GZC3Md4W8BdOEYBX5VB5GkZJ3G6wEY2IqxLhkxdKArVQbFqsZG8GnBEeUNiGWAh2CCJAOyKrG3Ke8izrTubGJqyqvlK6jerNO2SRveD6IUeOnO1IB68t6kAoK16A8o5Ja0M7VyCB6B3Paja4M(w0eZnICtVLWcTHIAZGUPVLag7m2nDXGfFb82tj4nDzoqjDXNO0Zn4B6pDx3(GUED7T6a(ibFBqxJZ(3r4BdA5M0FIHVnylsa8Zj8TbTKzQRW3gCO0W3gi1Pynq09w(4dFBGCif51T9axFhjmchD2BxS)rG02k0hBIKXJEVh(KeXOLhNE)by3KqFLzQjFaBG1GPoyt5)p(hjMp9p4YKpGRZxa)yS3EtFRHPVfp8P99g6JKZEE61FJ7gAg4do51hp9GBs(amBaTzEJZMy(M3K8H09uKAER4(RNUFrh3(kNPNUU9wPtVuNXkMcfDvlsHDk6zwLDkihVjU(gFFfEJ1Nk(cR5pB2Mqfx4E1Af2vRk3gS7QKYx1Aa2t7RWTXxptVVmCoNEzfvaztegE6R5G9xQ)6ny)635TgYHzpKI12afp(IHmp8c2zuT)3tff2tIAFq4nX)Q0wQ)unCfZ49S7QB4aLM7lFzwH0MiUHv5m9TEvspo(M3j78ySiYSzADHWGjB6JkGLnzr68QsXzpvJDCLFKbSFP0BkG9dvEcbzrX42gGf(LGjh6YK29FOOHxxbQuRJaRsGIoPdPrdLwTA1oI7ThfBHD6sX8Y)Ksdukn8FzE0X)UaOwqY3a3BaNUbYLzg8b3d5pC8NUetV9CzhuM7l3jFpp5X8(W75j7v0TCpp4pinurxLmuBqv(nTX2O8kKKsPuV7nu)WvR(XVfQYYYck5vmTDxAizMEP7SScD2RVQMOficNJmNZWQvI3S18XIQ19B4YuPP5o70JOXwR3wx1(38ag8pz5ureFRzdz3cCPcdG9Q5rYTUR9WBuA4qXgcs9mtQ6V2ffopYMZ6lC4iTuQ(n0Oui5fZxRwXVKqfbpGMHhWvE1uI3CbwJhjGsd1hpuJ7IwQw0nIT6LjXKPVgZfVT3tJTnusXq3LlFx5mGYLG8fpNQNTGc(mFP36d5J7hBmyelJw9eYAHvpR)gPNOha0VwCkvdZpHkiauTZi8mn1d5UmLpnbXCc(18nsTNIYAS5PpdL2cFKbuStDPklnJILq(0BB9V2D1QNz(c09DzfMSr0vKzqyq0AR3wL8GsHU55w2DGsGwY8SJW(PTAT0aQNZ00v6TJ4tZA1kCX51MQN2VUYOfot8YOiAvgM9HSkfve2eS14fEbVQ7PiitDP0IYKXP22FZjmhnE3JHckv(zTLoBUJ)zhWrfZXsNA0v7YBWZ4PYpv4112D4Wr4kmvUuH)eNEaKuThACDSVTi(5Qv0LC4G(72zhNgCq7cP4l1QMOJty1SmuY9VZyf0Q4WFQQ)OBkQ4QXlYGpLAtxVTAkz3an7akTToGf5yMIKKy4VgmhBW5QPuA6)cKuB3cFZSGKftU6)GHvojyjbYtsfqcwR6rZl95V)rLkT8Dp(SicvhBqVTbw)UBOlK4WLciOiCZBHhutS(Mb)UlwVsfYvwcsJF29wPQ8cffF6whdvQCLBDQUD5SOBbU5CAS5iN5V33CmAvJeqPDPlQwkIZ)Od5q6Ak(ETQ4pREhaShg7xPPakpX5T2DBtCXr0WpZWpiSQfMQBzgbPCuB0aTydiODHQNTvQf97cs6MSrhQZcLMNjbFhrUTzsXbLYPxE4Qu6wsmLnXp9rP4nTd3srdNz3uwErfuK)ThReUTrSMlwPdPBFmkArkxkz8iEjHRSgZVKW9LeUVKW9LeUDWp9LeUBtcx6lCXgFlihsBt1X)))]] )
