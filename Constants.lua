@@ -98,117 +98,208 @@ function ns.ResourceRegenerates( key )
     return false
 end
 
-
-local Specializations = {
-    death_knight_blood = 250,
-    death_knight_frost = 251,
-    death_knight_unholy = 252,
-
-    druid_balance = 102,
-    druid_feral = 103,
-    druid_guardian = 104,
-    druid_restoration = 105,
-
-    hunter_beast_mastery = 253,
-    hunter_marksmanship = 254,
-    hunter_survival = 255,
-
-    mage_arcane = 62,
-    mage_fire = 63,
-    mage_frost = 64,
-
-    monk_brewmaster = 268,
-    monk_windwalker = 269,
-    monk_mistweaver = 270,
-
-    paladin_holy = 65,
-    paladin_protection = 66,
-    paladin_retribution = 70,
-
-    priest_discipline = 256,
-    priest_holy = 257,
-    priest_shadow = 258,
-
-    rogue_assassination = 259,
-    rogue_outlaw = 260,
-    rogue_subtlety = 261,
-
-    shaman_elemental = 262,
-    shaman_enhancement = 263,
-    shaman_restoration = 264,
-
-    warlock_affliction = 265,
-    warlock_demonology = 266,
-    warlock_destruction = 267,
-
-    warrior_arms = 71,
-    warrior_fury = 72,
-    warrior_protection = 73,
-
-    demonhunter_havoc = 577,
-    demonhunter_vengeance = 581,
-
-    evoker_devastation = 1467,
-    evoker_preservation = 1468,
-}
-
-
-local SpecializationKeys = {
-    [250] = "blood",
-    [251] = "frost",
-    [252] = "unholy",
-
-    [102] = "balance",
-    [103] = "feral",
-    [104] = "guardian",
-    [105] = "restoration",
-
-    [253] = "beast_mastery",
-    [254] = "marksmanship",
-    [255] = "survival",
-
-    [62] = "arcane",
-    [63] = "fire",
-    [64] = "frost",
-
-    [268] = "brewmaster",
-    [269] = "windwalker",
-    [270] = "mistweaver",
-
-    [65] = "holy",
-    [66] = "protection",
-    [70] = "retribution",
-
-    [256] = "discipline",
-    [257] = "holy",
-    [258] = "shadow",
-
-    [259] = "assassination",
-    [260] = "outlaw",
-    [261] = "subtlety",
-
-    [262] = "elemental",
-    [263] = "enhancement",
-    [264] = "restoration",
-
-    [265] = "affliction",
-    [266] = "demonology",
-    [267] = "destruction",
-
-    [71] = "arms",
-    [72] = "fury",
-    [73] = "protection",
-
-    [577] = "havoc",
-    [581] = "vengeance",
-
-    [1467] = "devastation",
-    [1468] = "preservation",
-    [1473] = "augmentation"
+-- Primary purpose of this table is to store information we know about a spec, but is not directly retrieveable via API calls in-game.
+ns.Specializations = {
+    [250] = {
+        key = "blood",
+        class = "DEATHKNIGHT",
+        ranged = false
+    },
+    [251] = {
+        key = "frost",
+        class = "DEATHKNIGHT",
+        ranged = false
+    },
+    [252] = {
+        key = "unholy",
+        class = "DEATHKNIGHT",
+        ranged = false
+    },
+    [102] = {
+        key = "balance",
+        class = "DRUID",
+        ranged = true
+    },
+    [103] = {
+        key = "feral",
+        class = "DRUID",
+        ranged = false
+    },
+    [104] = {
+        key = "guardian",
+        class = "DRUID",
+        ranged = false
+    },
+    [105] = {
+        key = "restoration",
+        class = "DRUID",
+        ranged = true
+    },
+    [253] = {
+        key = "beast_mastery",
+        class = "HUNTER",
+        ranged = true
+    },
+    [254] = {
+        key = "marksmanship",
+        class = "HUNTER",
+        ranged = true
+    },
+    [255] = {
+        key = "survival",
+        class = "HUNTER",
+        ranged = false
+    },
+    [62] = {
+        key = "arcane",
+        class = "MAGE",
+        ranged = true
+    },
+    [63] = {
+        key = "fire",
+        class = "MAGE",
+        ranged = true
+    },
+    [64] = {
+        key = "frost",
+        class = "MAGE",
+        ranged = true
+    },
+    [268] = {
+        key = "brewmaster",
+        class = "MONK",
+        ranged = false
+    },
+    [269] = {
+        key = "windwalker",
+        class = "MONK",
+        ranged = false
+    },
+    [270] = {
+        key = "mistweaver",
+        class = "MONK",
+        ranged = false
+    },
+    [65] = {
+        key = "holy",
+        class = "PALADIN",
+        ranged = false
+    },
+    [66] = {
+        key = "protection",
+        class = "PALADIN",
+        ranged = false
+    },
+    [70] = {
+        key = "retribution",
+        class = "PALADIN",
+        ranged = false
+    },
+    [256] = {
+        key = "discipline",
+        class = "PRIEST",
+        ranged = true
+    },
+    [257] = {
+        key = "holy",
+        class = "PRIEST",
+        ranged = true
+    },
+    [258] = {
+        key = "shadow",
+        class = "PRIEST",
+        ranged = true
+    },
+    [259] = {
+        key = "assassination",
+        class = "ROGUE",
+        ranged = false
+    },
+    [260] = {
+        key = "outlaw",
+        class = "ROGUE",
+        ranged = false
+    },
+    [261] = {
+        key = "subtlety",
+        class = "ROGUE",
+        ranged = false
+    },
+    [262] = {
+        key = "elemental",
+        class = "SHAMAN",
+        ranged = true
+    },
+    [263] = {
+        key = "enhancement",
+        class = "SHAMAN",
+        ranged = false
+    },
+    [264] = {
+        key = "restoration",
+        class = "SHAMAN",
+        ranged = true
+    },
+    [265] = {
+        key = "affliction",
+        class = "WARLOCK",
+        ranged = true
+    },
+    [266] = {
+        key = "demonology",
+        class = "WARLOCK",
+        ranged = true
+    },
+    [267] = {
+        key = "destruction",
+        class = "WARLOCK",
+        ranged = true
+    },
+    [71] = {
+        key = "arms",
+        class = "WARRIOR",
+        ranged = false
+    },
+    [72] = {
+        key = "fury",
+        class = "WARRIOR",
+        ranged = false
+    },
+    [73] = {
+        key = "protection",
+        class = "WARRIOR",
+        ranged = false
+    },
+    [577] = {
+        key = "havoc",
+        class = "DEMONHUNTER",
+        ranged = false
+    },
+    [581] = {
+        key = "vengeance",
+        class = "DEMONHUNTER",
+        ranged = false
+    },
+    [1467] = {
+        key = "devastation",
+        class = "EVOKER",
+        ranged = true
+    },
+    [1468] = {
+        key = "preservation",
+        class = "EVOKER",
+        ranged = true
+    },
+    [1473] = {
+        key = "augmentation",
+        class = "EVOKER",
+        ranged = true
+    },
 }
 
 ns.getSpecializationKey = function ( id )
-    return SpecializationKeys[ id ] or "none"
+    local spec = ns.Specializations[ id ]
+    return spec and spec.key or "none"
 end
 
 ns.getSpecializationID = function ( index )

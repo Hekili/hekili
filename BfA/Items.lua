@@ -630,30 +630,6 @@ do
     } )
 
 
-    -- Hyperthread Wristwraps
-    all:RegisterAbility( "hyperthread_wristwraps", {
-        id = 300142,
-        cast = 0,
-        cooldown = 120,
-        gcd = "off",
-        known = function () return equipped.hyperthread_wristwraps end,
-
-        item = 168989,
-        toggle = "cooldowns",
-
-        handler = function ()
-            -- Gain 5 seconds of CD for the last 3 spells.
-            for i = 1, 3 do
-                local ability = prev[i].spell
-
-                if ability and ability ~= "no_action" then
-                    gainChargeTime( ability, 5 )
-                end
-            end
-        end,
-
-        copy = "hyperthread_wristwraps_300142"
-    } )
 
     local hyperthread_blocks = {
         berserking      = true,
@@ -671,6 +647,34 @@ do
         bag_of_tricks   = true
     }
 
+    -- Hyperthread Wristwraps
+    all:RegisterAbility( "hyperthread_wristwraps", {
+        -- id = 300142,
+        cast = 0,
+        cooldown = 120,
+        gcd = "off",
+        -- known = function () return equipped.hyperthread_wristwraps end,
+
+        item = 168989,
+        toggle = "cooldowns",
+
+        handler = function ()
+            local count = 0
+
+            for i = 1, 10 do
+                local spell = prev[ i ].spell
+
+                if not hyperthread_blocks[ spell ] then
+                    gainChargeTime( spell, 5 )
+                    count = count + 1
+                end
+
+                if count > 2 then break end
+            end
+        end,
+
+        copy = "hyperthread_wristwraps_300142"
+    } )
 
     local first_remains = setmetatable( {}, {
         __index = function( t, k )

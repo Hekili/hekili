@@ -104,9 +104,9 @@ actions+=/bag_of_tricks,if=talent.obliteration&!buff.pillar_of_frost.up&buff.unh
 actions+=/bag_of_tricks,if=!talent.obliteration&buff.pillar_of_frost.up&(buff.unholy_strength.up&buff.unholy_strength.remains<gcd*3|buff.pillar_of_frost.remains<gcd*3)
 
 
-actions+=/call_action_list,name=cold_heart,if=talent.cold_heart&(!buff.killing_machine.up|talent.breath_of_sindragosa)&((debuff.razorice.stack=5|!death_knight.runeforge.razorice&!talent.glacial_advance&!talent.avalanche&!talent.arctic_assault)|boss&fight_remains<=gcd)
+actions+=/call_action_list,name=cold_heart,strict_if=talent.cold_heart,if=talent.cold_heart&(!buff.killing_machine.up|talent.breath_of_sindragosa)&((debuff.razorice.stack=5|!death_knight.runeforge.razorice&!talent.glacial_advance&!talent.avalanche&!talent.arctic_assault)|boss&fight_remains<=gcd)
 actions+=/run_action_list,name=breath,strict=1,if=buff.breath_of_sindragosa.up|breath_ticks_left>0
-actions+=/run_action_list,name=obliteration,if=talent.obliteration&buff.pillar_of_frost.up&!buff.breath_of_sindragosa.up
+actions+=/run_action_list,name=obliteration,strict_if=talent.obliteration&buff.pillar_of_frost.up,if=talent.obliteration&buff.pillar_of_frost.up&!buff.breath_of_sindragosa.up
 actions+=/call_action_list,name=aoe,strict=1,if=active_enemies>=2
 actions+=/call_action_list,name=single_target,strict=1,if=active_enemies=1
 

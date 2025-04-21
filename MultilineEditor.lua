@@ -4,7 +4,7 @@
 local addon, ns = ...
 local Hekili = _G[ addon ]
 
-local Type, Version = "HekiliCustomEditor", 5
+local Type, Version = "HekiliCustomEditor", 6
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -234,10 +234,10 @@ local function GenerateDiagnosticTooltip( widget, event )
     local path = user.path
     local appName = user.appName
 
-    local name    = GetOptionsMemberValue( "name",  opt, options, path, appName )
+    local name = GetOptionsMemberValue( "name", opt, options, path, appName )
     local arg, listName, actID = GetOptionsMemberValue( "arg", opt, options, path, appName )
-    local desc    = GetOptionsMemberValue( "desc",  opt, options, path, appName )
-    local usage   = GetOptionsMemberValue( "usage", opt, options, path, appName )
+    local desc = GetOptionsMemberValue( "desc", opt, options, path, appName )
+    local usage = GetOptionsMemberValue( "usage", opt, options, path, appName )
     local descStyle = opt.descStyle
 
     if descStyle and descStyle ~= "tooltip" then return end
@@ -245,11 +245,18 @@ local function GenerateDiagnosticTooltip( widget, event )
     Tooltip:SetOwner( widget.frame, "ANCHOR_TOPRIGHT" )
     Tooltip:SetText(name, 1, .82, 0, 1)
 
+    local needs_space
+
     if type( arg ) == "string" then
-        Tooltip:AddLine(arg, 1, 1, 1, 1)
+        Tooltip:AddLine( arg, 1, 1, 1, 1 )
+        needs_space = true
     end
 
-    local tested = false
+    if type( desc ) == "string" then
+        if needs_space then Tooltip:AddLine(" ") end
+        Tooltip:AddLine( desc, 1, 1, 1, 1 )
+        needs_space = true
+    end
 
     local packName, script = path[ 2 ], path[ #path ]
     -- print( unpack( path ) )
@@ -262,39 +269,37 @@ local function GenerateDiagnosticTooltip( widget, event )
         local scriptID = packName .. ":" .. listName .. ":" .. actID
         local action = entry.action
 
-        if script == 'criteria' then
+        if script == "criteria" then
             local result, warning = scripts:CheckScript( scriptID, action )
-
-            Tooltip:AddDoubleLine( "Shown", ns.formatValue( result ), 1, 1, 1, 1, 1, 1 )
-
+            Tooltip:AddDoubleLine( " ", ns.formatValue( result ) )
             if warning then Tooltip:AddLine( warning, 1, 0, 0 ) end
-
         else
             local result, warning = scripts:CheckScript( scriptID, action, script )
-
-            Tooltip:AddLine( ns.formatValue( result ), 1, 1, 1, 1 )
-
-            if warning then Tooltip:AddLine( warning, 1, 0, 0 ) end
-            -- handle other types.
+            if result ~= nil then
+                Tooltip:AddDoubleLine( " ", ns.formatValue( result ) )
+                if warning then Tooltip:AddLine( warning, 1, 0, 0 ) end
+            end
         end
-
-        tested = true
+        needs_space = true
     end
 
     local has_args = arg and ( next(arg) ~= nil )
 
     if has_args then
-        if tested then Tooltip:AddLine(" ") end
-
+        if needs_space then Tooltip:AddLine( " " ) end
         Tooltip:AddLine( "Values" )
+
         for k, v in orderedPairs( arg ) do
-          if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find("floor") and not key_cache[k]:find( "ceil" ) and ( type(v) ~= "string" or not v:find( "function" ) ) then
-            Tooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
-          end
+            if not key_cache[k]:find( "safebool" ) and not key_cache[k]:find( "safenum" ) and not key_cache[k]:find("floor") and not key_cache[k]:find( "ceil" ) and ( type(v) ~= "string" or not v:find( "function" ) ) then
+                Tooltip:AddDoubleLine( key_cache[ k ], ns.formatValue( v ), 1, 1, 1, 1, 1, 1 )
+            end
         end
+
+        needs_space = true
     end
 
     if type( usage ) == "string" then
+        if needs_space then Tooltip:AddLine( " " ) end
         Tooltip:AddLine( "Usage: "..usage, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1 )
     end
 

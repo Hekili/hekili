@@ -75,7 +75,7 @@ spec:RegisterTalents( {
     internal_struggle         = {  90934, 393822, 1 }, -- Increases your mastery by 3.6%.
     live_by_the_glaive        = {  95151, 428607, 1 }, -- When you parry an attack or have one of your attacks parried, restore 2% of max health and 10 Fury. This effect may only occur once every 5 sec.
     long_night                = {  91001, 389781, 1 }, -- Increases the duration of Darkness by 3 sec.
-    lost_in_darkness          = {  90947, 389849, 1 }, -- Spectral Sight has 5 sec reduced cooldown and no longer reduces movement speed. 
+    lost_in_darkness          = {  90947, 389849, 1 }, -- Spectral Sight has 5 sec reduced cooldown and no longer reduces movement speed.
     master_of_the_glaive      = {  90994, 389763, 1 }, -- Throw Glaive has 2 charges and snares all enemies hit by 50% for 6 sec.
     pitch_black               = {  91001, 389783, 1 }, -- Reduces the cooldown of Darkness by 120 sec.
     precise_sigils            = {  95155, 389799, 1 }, -- All Sigils are now placed at your target's location.
@@ -86,7 +86,7 @@ spec:RegisterTalents( {
     sigil_of_misery           = {  90946, 207684, 1 }, -- Place a Sigil of Misery at the target location that activates after 1 sec. Causes all enemies affected by the sigil to cower in fear, disorienting them for 17 sec.
     sigil_of_spite            = {  90997, 390163, 1 }, -- Place a demonic sigil at the target location that activates after 1 sec. Detonates to deal 103,800 Chaos damage and shatter up to 3 Lesser Soul Fragments from enemies affected by the sigil. Deals reduced damage beyond 5 targets.
     soul_rending              = {  90936, 204909, 2 }, -- Leech increased by 6%. Gain an additional 6% leech while Metamorphosis is active.
-    soul_sigils               = {  90929, 395446, 1 }, -- Afflicting an enemy with a Sigil generates 1 Lesser Soul Fragment. 
+    soul_sigils               = {  90929, 395446, 1 }, -- Afflicting an enemy with a Sigil generates 1 Lesser Soul Fragment.
     swallowed_anger           = {  91005, 320313, 1 }, -- Consume Magic generates 20 Fury when a beneficial Magic effect is successfully removed from the target.
     the_hunt                  = {  90927, 370965, 1 }, -- Charge to your target, striking them for 135,929 Chaos damage, rooting them in place for 1.5 sec and inflicting 105,579 Chaos damage over 6 sec to up to 5 enemies in your path. The pursuit invigorates your soul, healing you for 25% of the damage you deal to your Hunt target for 20 sec.
     unrestrained_fury         = {  90941, 320770, 1 }, -- Increases maximum Fury by 20.
@@ -124,7 +124,7 @@ spec:RegisterTalents( {
     painbringer               = {  90976, 207387, 2 }, -- Consuming a Soul Fragment reduces all damage you take by 1% for 6 sec. Multiple applications may overlap.
     perfectly_balanced_glaive = {  90968, 320387, 1 }, -- Reduces the cooldown of Throw Glaive by 6 sec.
     retaliation               = {  90952, 389729, 1 }, -- While Demon Spikes is active, melee attacks against you cause the attacker to take 3,510 Physical damage. Generates high threat.
-    revel_in_pain             = {  90957, 343014, 1 }, -- When Fiery Brand expires on your primary target, you gain a shield that absorbs up 160,940 damage for 15 sec, based on your damage dealt to them while Fiery Brand was active. 
+    revel_in_pain             = {  90957, 343014, 1 }, -- When Fiery Brand expires on your primary target, you gain a shield that absorbs up 160,940 damage for 15 sec, based on your damage dealt to them while Fiery Brand was active.
     roaring_fire              = {  90988, 391178, 1 }, -- Fel Devastation heals you for up to 50% more, based on your missing health.
     ruinous_bulwark           = {  90965, 326853, 1 }, -- Fel Devastation heals for an additional 10%, and 100% of its healing is converted into an absorb shield for 10 sec.
     shear_fury                = {  90970, 389997, 1 }, -- Shear generates 10 additional Fury.
@@ -155,7 +155,7 @@ spec:RegisterTalents( {
     thrill_of_the_fight       = {  94919, 442686, 1 }, -- After consuming both enhancements, gain Thrill of the Fight, increasing your attack speed by 15% for 20 sec and your damage and healing by 20% for 10 sec.
     unhindered_assault        = {  94911, 444931, 1 }, -- Vengeful Retreat resets the cooldown of Felblade.
     warblades_hunger          = {  94906, 442502, 1 }, -- Consuming a Soul Fragment causes your next Fracture to deal 7,627 additional Physical damage.
-    wounded_quarry            = {  94897, 442806, 1 }, -- Expose weaknesses in the target of your Reaver's Mark, causing your Physical damage to any enemy to also deal 20% of the damage dealt to your marked target as Chaos. 
+    wounded_quarry            = {  94897, 442806, 1 }, -- Expose weaknesses in the target of your Reaver's Mark, causing your Physical damage to any enemy to also deal 20% of the damage dealt to your marked target as Chaos.
 
     -- Fel-Scarred
     burning_blades            = {  94905, 452408, 1 }, -- Your blades burn with Fel energy, causing your Soul Cleave, Throw Glaive, and auto-attacks to deal an additional 40% damage as Fire over 6 sec.
@@ -171,25 +171,25 @@ spec:RegisterTalents( {
     student_of_suffering      = {  94902, 452412, 1 }, -- Sigil of Flame applies Student of Suffering to you, increasing Mastery by 14.4% and granting 5 Fury every 2 sec, for 6 sec.
     untethered_fury           = {  94904, 452411, 1 }, -- Maximum Fury increased by 50.
     violent_transformation    = {  94912, 452409, 1 }, -- When you activate Metamorphosis, the cooldowns of your Sigil of Flame and Fel Devastation are immediately reset.
-    wave_of_debilitation      = {  94913, 452403, 1 }, -- Chaos Nova slows enemies by 60% and reduces attack and cast speed 15% for 5 sec after its stun fades. 
+    wave_of_debilitation      = {  94913, 452403, 1 }, -- Chaos Nova slows enemies by 60% and reduces attack and cast speed 15% for 5 sec after its stun fades.
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
-    blood_moon        = 5434, -- (355995) 
-    cleansed_by_flame =  814, -- (205625) 
-    cover_of_darkness = 5520, -- (357419) 
+spec:RegisterPvpTalents( {
+    blood_moon        = 5434, -- (355995)
+    cleansed_by_flame =  814, -- (205625)
+    cover_of_darkness = 5520, -- (357419)
     demonic_trample   = 3423, -- (205629) Transform to demon form, moving at 175% increased speed for 3 sec, knocking down all enemies in your path and dealing 2347.4 Physical damage. During Demonic Trample you are unaffected by snares but cannot cast spells or use your normal attacks. Shares charges with Infernal Strike.
-    detainment        = 3430, -- (205596) 
-    everlasting_hunt  =  815, -- (205626) 
-    glimpse           = 5522, -- (354489) 
+    detainment        = 3430, -- (205596)
+    everlasting_hunt  =  815, -- (205626)
+    glimpse           = 5522, -- (354489)
     illidans_grasp    =  819, -- (205630) You strangle the target with demonic magic, stunning them in place and dealing 133,481 Shadow damage over 5 sec while the target is grasped. Can move while channeling. Use Illidan's Grasp again to toss the target to a location within 20 yards.
-    jagged_spikes     =  816, -- (205627) 
-    rain_from_above   = 5521, -- (206803) You fly into the air out of harm's way. While floating, you gain access to Fel Lance allowing you to deal damage to enemies below. 
+    jagged_spikes     =  816, -- (205627)
+    rain_from_above   = 5521, -- (206803) You fly into the air out of harm's way. While floating, you gain access to Fel Lance allowing you to deal damage to enemies below.
     reverse_magic     = 3429, -- (205604) Removes all harmful magical effects from yourself and all nearby allies within 10 yards, and sends them back to their original caster if possible.
-    sigil_mastery     = 1948, -- (211489) 
+    sigil_mastery     = 1948, -- (211489)
     tormentor         = 1220, -- (207029) You focus the assault on this target, increasing their damage taken by 3% for 6 sec. Each unique player that attacks the target increases the damage taken by an additional 3%, stacking up to 5 times. Your melee attacks refresh the duration of Focused Assault.
-    unending_hatred   = 3727, -- (213480) 
+    unending_hatred   = 3727, -- (213480)
 } )
 
 -- Auras
@@ -260,7 +260,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- https://www.wowhead.com/spell=452416
-    -- Demonsurge Damage of your next Demonsurge is increased by 10%.  
+    -- Demonsurge Damage of your next Demonsurge is increased by 10%.
     demonsurge = {
         id = 452416,
         duration = 12,
@@ -740,7 +740,7 @@ spec:RegisterHook( "reset_precast", function ()
         addStack( "soul_fragments", nil, fragments.real )
     end
 
-    if IsSpellKnownOrOverridesKnown( 442294 ) then
+    if IsSpellKnownOrOverridesKnown( 442294 ) or IsSpellOverlayed( 442294 ) then
         applyBuff( "reavers_glaive" )
         if Hekili.ActiveDebug then Hekili:Debug( "Applied Reaver's Glaive." ) end
     end
@@ -809,7 +809,7 @@ end )
 spec:RegisterVariable( "incoming_souls", function()
     -- actions+=/variable,name=incoming_souls,op=reset
     local souls = 0
-    
+
     -- actions+=/variable,name=incoming_souls,op=add,value=2,if=prev_gcd.1.fracture&!buff.metamorphosis.up
     if action.fracture.time_since < ( 0.25 + gcd.max ) and not buff.metamorphosis.up then souls = souls + 2 end
 
@@ -1773,7 +1773,7 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "soul_furnace" )
 
-            -- 
+            --
             if buff.glaive_flurry.up then -- Reaver stuff
                 removeBuff( "glaive_flurry" )
                 if talent.thrill_of_the_fight.enabled and buff.rending_strike.down then

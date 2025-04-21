@@ -743,7 +743,7 @@ spec:RegisterAuras( {
     },
     unfurling_darkness_cd = {
         id = 341291,
-        duration = 15,
+        duration = 15.2,
         max_stack = 1,
         copy = "unfurling_darkness_icd"
     },
@@ -1019,7 +1019,12 @@ spec:RegisterHook( "reset_precast", function ()
         applyBuff( "shadowform" )
     end
 
-    applyBuff( "unfurling_darkness_cd", state.PlayerDebuffRemains( "unfurling_darkness_cd" ) )
+    if debuff.unfurling_darkness_cd.up then
+        debuff.unfurling_darkness_cd.expires = debuff.unfurling_darkness_cd.expires + 0.2
+        if Hekili.ActiveDebug then Hekili:Debug( "Extended Unfurling Darkness CD debuff to %.2f...", debuff.unfurling_darkness_cd.remains ) end
+        rawset( buff, "unfurling_darkness_cd", debuff.unfurling_darkness_cd )
+        if Hekili.ActiveDebug then Hekili:Debug( "Unfurling Darkness CD buff will reference the real debuff: %s = %s, %.2f = %.2f...", tostring( buff.unfurling_darkness_cd ), tostring( debuff.unfurling_darkness_cd ), buff.unfurling_darkness_cd.remains, debuff.unfurling_darkness_cd.remains ) end
+    end
 
     if pet.mindbender.active then
         applyBuff( "mindbender", pet.mindbender.remains )
@@ -2288,6 +2293,7 @@ spec:RegisterAbilities( {
 
             if talent.unfurling_darkness.enabled then
                 if buff.unfurling_darkness.up then removeBuff( "unfurling_darkness" ) end
+                if Hekili.ActiveDebug then Hekili:Debug( "In VT handler, Unfurling Darkness CD buff: %s %.2f, debuff: %s %.2f...", tostring( buff.unfurling_darkness_cd ), buff.unfurling_darkness_cd.remains, tostring( debuff.unfurling_darkness_cd ), debuff.unfurling_darkness_cd.remains ) end
                 if buff.unfurling_darkness_cd.down then
                     applyBuff( "unfurling_darkness" )
                     applyBuff( "unfurling_darkness_cd" )

@@ -10,7 +10,10 @@ local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
 
-local strformat = string.format
+local ForEachAura = AuraUtil.ForEachAura
+local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+
+local strformat, insert, remove = string.format, table.insert, table.remove
 
 local spec = Hekili:NewSpecialization( 250 )
 
@@ -193,8 +196,55 @@ local spendHook = function( amt, resource )
             addStack( "rune_carved_plates" )
         end
     end
-    
+
 end
+
+
+local bpUnits = {}
+
+local myName = UnitName( "player" )
+local myRuneWeapon = 0x2111
+
+local matchThreshold = 0.02
+local MINE = 1
+local RUNE_WEAPON = 2
+
+spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName )
+    if spellID == 55078 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) then
+        local source
+
+        if sourceName == myName then source = MINE
+        elseif sourceFlags == myRuneWeapon then source = RUNE_WEAPON end
+
+        if not source then return end
+
+        local unit = UnitTokenFromGUID( destGUID )
+        if not unit then return end
+
+        local storage = bpUnits[ destGUID ] or {}
+
+        ForEachAura( unit, "HARMFUL", nil, function( info )
+            if info.spellId ~= 55078 then return end
+
+            if storage[ info.auraInstanceID ] then
+                return
+            end
+
+            -- May require tuning.
+            local tOffset = math.abs( info.expirationTime - info.duration - GetTime() )
+            if tOffset < matchThreshold then
+                insert( storage, info.auraInstanceID )
+                while( #storage > 3 ) do storage[ remove( storage, 1 ) ] = nil end
+
+                storage[ info.auraInstanceID ] = source
+                return true
+            end
+        end, true )
+
+        bpUnits[ destGUID ] = storage
+    end
+end )
+
 
 spec:RegisterHook( "spend", spendHook )
 
@@ -431,6 +481,25 @@ spec:RegisterAuras( {
         type = "Disease",
         max_stack = 1
     },
+    drw_blood_plague_1 = {
+        duration = function() return 24 * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.rapid_decomposition.enabled and 0.85 or 1 ) * ( buff.consumption.up and 0.7 or 1 ) * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
+        type = "Disease",
+    },
+    drw_blood_plague_2 = {
+        duration = function() return 24 * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.rapid_decomposition.enabled and 0.85 or 1 ) * ( buff.consumption.up and 0.7 or 1 ) * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
+        type = "Disease",
+    },
+    drw_blood_plague = {
+        alias = { "drw_blood_plague_1", "drw_blood_plague_2" },
+        aliasType = "debuff",
+        aliasMode = "longest",
+        duration = function() return 24 * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
+        tick_time = function() return 3 * ( talent.rapid_decomposition.enabled and 0.85 or 1 ) * ( buff.consumption.up and 0.7 or 1 ) * ( spec.blood and talent.wither_away.enabled and 0.5 or 1 ) end,
+        max_stack = 2,
+        type = "Disease",
+    },
     -- Absorbs $w1 Physical damage$?a391398 [ and Physical damage increased by $s2%][].
     -- https://wowhead.com/beta/spell=77535
     blood_shield = {
@@ -545,7 +614,7 @@ spec:RegisterAuras( {
         duration = function () return ( pvptalent.last_dance.enabled and 6 or 8 ) + ( talent.everlasting_bond.enabled and 6 or 0 ) end,
         type = "Magic",
         max_stack = 1,
-        active_weapons = function() return 
+        active_weapons = function() return
             buff.dancing_rune_weapon.up and 1 + talent.everlasting_bond.rank or 0
         end
     },
@@ -1072,7 +1141,7 @@ spec:RegisterAuras( {
 spec:RegisterGear( "tww2", 229253, 229251, 229256, 229254, 229252 )
 spec:RegisterAuras( {
     -- https://www.wowhead.com/spell=1218601
-    -- Luck of the Draw! Damage increased by 15%. Death Strike costs 10 less Runic Power and strikes 2 additional nearby targets.  
+    -- Luck of the Draw! Damage increased by 15%. Death Strike costs 10 less Runic Power and strikes 2 additional nearby targets.
     luck_of_the_draw = {
         id = 1218601,
         duration = function() if set_bonus.tww2 >= 4 then return 12 end
@@ -1081,7 +1150,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- https://www.wowhead.com/spell=1222698
-    -- Murderous Frenzy Your Haste is increased by 12%.  
+    -- Murderous Frenzy Your Haste is increased by 12%.
     murderous_frenzy = {
         id = 1222698,
         duration = 6,
@@ -1246,6 +1315,36 @@ spec:RegisterHook( "reset_precast", function ()
             tick_time = tick_time - 1
         end
     end
+
+    if debuff.blood_plague.up and bpUnits[ target.unit ] then
+        -- Target has at least 1 Blood Plague, but we don't know whose it is.
+        removeDebuff( "target", "blood_plague" )
+
+        for id, caster in pairs( bpUnits[ target.unit ] ) do
+            -- Index 1 - 3 used for caps.
+            if id > 3 then
+                local aura = "blood_plague"
+
+                if caster == RUNE_WEAPON then
+                    if debuff.drw_blood_plague_1.down then aura = "drw_blood_plague_1"
+                    elseif debuff.drw_blood_plague_2.down then aura = "drw_blood_plague_2"
+                    else break end
+                end
+
+                local info = GetAuraDataByAuraInstanceID( "target", id )
+                if info then
+                    applyDebuff( "target", aura, info.expirationTime - state.query_time )
+                    debuff[ aura ].duration = info.duration
+                    debuff[ aura ].applied = info.expirationTime - info.duration
+                end
+            end
+        end
+    end
+
+    if buff.death_and_decay.up and buff.death_and_decay.duration == 10 then
+        -- Extend by 4 to support on-leave effect.
+        buff.death_and_decay.expires = buff.death_and_decay.expires + 4
+    end
 end )
 
 spec:RegisterStateExpr( "save_blood_shield", function ()
@@ -1274,6 +1373,34 @@ spec:RegisterStateTable( "death_and_decay", setmetatable(
     elseif k == "remains" then
         return buff.death_and_decay.remains
 
+    end
+
+    return false
+end } ) )
+
+
+spec:RegisterStateFunction( "applyRunePlagues", function()
+    -- Should only reach here when DRW is active.
+    local num = min( 2, buff.dancing_rune_weapon.active_weapons )
+    if num == 0 then return end
+
+    for i = 1, num do
+        if buff.drw_blood_plague_1.down then
+            applyDebuff( "target", "drw_blood_plague_1" )
+            if this_action == "blood_boil" then active_dot.drw_blood_plague_1 = true_active_enemies end
+        elseif buff.drw_blood_plague_2.down then
+            applyDebuff( "target", "drw_blood_plague_2" )
+            if this_action == "blood_boil" then active_dot.drw_blood_plague_2 = true_active_enemies end
+            return
+        end
+    end
+end )
+
+spec:RegisterStateTable( "drw", setmetatable(
+{ onReset = function( self ) end },
+{ __index = function( t, k )
+    if k == "bp_ticking" then
+        return buff.drw_blood_plague.up
     end
 
     return false
@@ -1388,6 +1515,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "blood_plague" )
             active_dot.blood_plague = active_enemies
+            if buff.dancing_rune_weapon.up then applyRunePlagues() end
 
             if talent.bind_in_darkness.enabled and debuff.reapers_mark.up then applyDebuff( "target", "reapers_mark", nil, debuff.reapers_mark.stack + 2 ) end
 
@@ -1398,7 +1526,6 @@ spec:RegisterAbilities( {
             if set_bonus.tier31_4pc > 0 and debuff.ashen_decay.up then
                 debuff.ashen_decay.expires = debuff.ashen_decay.expires + 1
             end
-
 
             -- Legacy
             if legendary.superstrain.enabled then
@@ -1641,7 +1768,7 @@ spec:RegisterAbilities( {
                 if talent.perseverance_of_the_ebon_blade.enabled then applyBuff( "perseverance_of_the_ebon_blade" ) end
                 removeBuff( "crimson_scourge" )
                 if talent.relish_in_blood.enabled then
-                    gain( 10, "runic_power" ) 
+                    gain( 10, "runic_power" )
                     gain( 0.25 * buff.bone_shield.stack, "health" )
                 end
             end
@@ -1761,7 +1888,7 @@ spec:RegisterAbilities( {
         cooldown = 0,
         gcd = "spell",
 
-        spend = function () return ( ( talent.ossuary.enabled and buff.bone_shield.stack >= 5 ) and 40 or 45 ) 
+        spend = function () return ( ( talent.ossuary.enabled and buff.bone_shield.stack >= 5 ) and 40 or 45 )
                 - ( talent.improved_death_strike.enabled and 5 or 0 )
                 - ( buff.blood_draw.up and 10 or 0 )
                 - ( set_bonus.tww2 >= 4 and buff.luck_of_the_draw.up and 10 or 0 )
@@ -1824,8 +1951,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            local RWStrikes = 1 + buff.dancing_rune_weapon.active_weapons -- the 1 is your actual spell hit
             applyDebuff( "target", "blood_plague" )
+            if buff.dancing_rune_weapon.up then applyRunePlagues() end
+
+            local RWStrikes = 1 + buff.dancing_rune_weapon.active_weapons -- the 1 is your actual spell hit
             addStack( "bone_shield", nil, ( 2 * RWStrikes ) )
 
             if set_bonus.tww1_4pc > 0 then
@@ -1900,7 +2029,7 @@ spec:RegisterAbilities( {
             -- PvP
             if pvptalent.blood_for_blood.enabled then
                 health.current = health.current - 0.03 * health.max
-            end 
+            end
 
             --- Legacy
             if set_bonus.tier31_4pc > 0 and debuff.ashen_decay.up and set_bonus.tier31_4pc > 0 then debuff.ashen_decay.expires = debuff.ashen_decay.expires + 1 end
@@ -1998,6 +2127,7 @@ spec:RegisterAbilities( {
             if talent.exterminate.enabled and buff.exterminate.up then
                 removeStack( "exterminate" )
                 applyDebuff( "target", "blood_plague" )
+                if buff.dancing_rune_weapon.up then applyRunePlagues() end
             end
 
             if talent.ossified_vitriol.enabled then removeBuff( "ossified_vitriol" ) end

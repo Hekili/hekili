@@ -11,6 +11,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_coo
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_cooldown&trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)|!trinket.1.has_cooldown
 
 actions+=/rebuke
+actions+=/blessing_of_spellwarding
 actions+=/call_action_list,name=mitigation
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=trinkets
@@ -31,7 +32,7 @@ actions.mitigation+=/divine_shield,if=talent.final_stand.enabled&tanking&incomin
 actions.mitigation+=/guardian_of_ancient_kings,if=tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
 actions.mitigation+=/sentinel,if=defensive_sentinel&tanking&incoming_damage_5s>goak_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
 actions.mitigation+=/ardent_defender,if=tanking&incoming_damage_5s>ad_damage&!(buff.ardent_defender.up|buff.guardian_of_ancient_kings.up|buff.divine_shield.up|buff.potion.up)
-actions.mitigation+=/lay_on_hands,if=health.pct<15
+actions.mitigation+=/lay_on_hands,if=health.pct<loh_health
 
 actions.standard+=/judgment,cycle_targets=1,if=charges>=2|full_recharge_time<=gcd.max
 actions.standard+=/hammer_of_light,if=buff.hammer_of_light_free.remains<2|buff.shake_the_heavens.remains<1|!buff.shake_the_heavens.up|cooldown.eye_of_tyr.remains<1.5|fight_remains<2

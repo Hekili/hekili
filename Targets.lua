@@ -213,7 +213,8 @@ local enemyExclusions = {
     [231788] = true,              -- Mug'Zee: Unstable Crawler Mine
     [233474] = true,              -- Mug'Zee: Gallagio Goon (they are within a cage with LoS restrictions)
     [231727] = true,              -- Gallywix: 1500-Pound "Dud"
-    [151579] = true               -- Operation: Mechagon - Shield Generator
+    [151579] = true,              -- Operation: Mechagon - Shield Generator
+    [219588] = true               -- Cinderbrew Meadery - Yes Man (etc.)
 }
 
 local requiredForInclusion = {
@@ -638,11 +639,13 @@ function ns.dumpNameplateInfo()
 end
 
 
-function ns.updateTarget( id, time, mine )
+function ns.updateTarget( id, time, mine, spellID )
     local spec = rawget( Hekili.DB.profile.specs, state.spec.id )
     if not spec or not spec.damage then return end
 
-    if id == state.GUID then
+    id, time, mine, spellID = ns.callHook( "filter_target", id, time, mine, spellID )
+
+    if id == nil or id == state.GUID then
         return
     end
 
@@ -753,7 +756,7 @@ ns.actorHasDebuff = function( target, spell )
     return ( debuffs[ spell ] and debuffs[ spell ][ target ] ~= nil ) or false
 end
 
-ns.trackDebuff = function(spell, target, time, application)
+ns.trackDebuff = function( spell, target, time, application, snapshotHaste )
     debuffs[spell] = debuffs[spell] or {}
     debuffCount[spell] = debuffCount[spell] or 0
 
@@ -774,6 +777,16 @@ ns.trackDebuff = function(spell, target, time, application)
         debuff.last_seen = time
         debuff.applied = debuff.applied or time
 
+        local model = class.auras[ spell ]
+
+        if model and snapshotHaste then
+            debuff.haste = 100 / ( 100 + GetHaste() )
+            debuff.next_tick = time + ( model.base_tick_time or model.tick_time ) * debuff.haste
+        else
+            debuff.haste = -1
+            debuff.next_tick = time + ( model.base_tick_time or model.tick_time or 3 )
+        end
+
         if application then
             debuff.pmod = debuffMods[spell]
         else
@@ -782,6 +795,26 @@ ns.trackDebuff = function(spell, target, time, application)
     end
 end
 
+ns.GetDebuffLastTick = function( spell, target )
+    local aura = debuffs[ spell ] and debuffs[ spell ][ target ]
+    if not aura then return 0 end
+    return aura.last_seen or 0
+end
+
+ns.GetDebuffNextTick = function( spell, target )
+    local aura = debuffs[ spell ] and debuffs[ spell ][ target ]
+    if not aura then return 0 end
+    if ( aura.last_seen or 0 ) == 0 then return 0 end
+
+    local model = class.auras[ spell ]
+    return aura.next_tick or ( aura.last_seen + ( model.tick_time or 3 ) )
+end
+
+ns.GetDebuffHaste = function( spell, target )
+    local aura = debuffs[ spell ] and debuffs[ spell ][ target ]
+    if not aura then return 1 end
+    return aura.haste or state.haste or 1
+end
 
 ns.GetDebuffApplicationTime = function( spell, target )
     if not debuffCount[ spell ] or debuffCount[ spell ] == 0 then return 0 end
@@ -1216,6 +1249,8 @@ do
     end
 
     function Hekili:GetTTD( unit, isGUID )
+        if state.target.is_dummy then return 180 end
+
         local default = ( isGUID or UnitIsTrivial(unit) and UnitLevel(unit) > -1 ) and TRIVIAL or FOREVER
         local guid = isGUID and unit or UnitExists(unit) and UnitCanAttack("player", unit) and UnitGUID(unit)
 
@@ -1223,7 +1258,7 @@ do
             return default
         end
 
-        local enemy = db[guid]
+        local enemy = db [guid ]
         if not enemy then
             return default
         end
@@ -1355,7 +1390,7 @@ do
         local dummy_override = state.target.is_dummy
 
         for k, v in pairs(db) do
-            if dummy_override or not CheckEnemyExclusion( k ) and max( 0, v.deathTime ) <= x then
+            if not dummy_override and not CheckEnemyExclusion( k ) and max( 0, v.deathTime ) <= x then
                 count = count + 1
             end
         end
@@ -1469,7 +1504,7 @@ do
 
         for k, v in pairs( db ) do
             local unit = ( v.unit or "unknown" )
-            local excluded = CheckEnemyExclusions( k )
+            local excluded = CheckEnemyExclusion( k )
 
             if v.n > 3 then
                 output = output .. format( "\n    %-11s: %4ds [%d] #%6s%s %s", unit, v.deathTime, v.n, v.npcid, excluded and "*" or "", UnitName( v.unit ) or "Unknown" )

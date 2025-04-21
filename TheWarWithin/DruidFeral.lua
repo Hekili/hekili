@@ -672,6 +672,7 @@ spec:RegisterAuras( {
         tick_time = function () return mod_circle_dot( 2 ) * haste end,
         meta = {
             remains = function () return dot.rip.remains end,
+            expires = function () return dot.rip.expires end,
             applied = function () return dot.rip.applied end
         }
     },
