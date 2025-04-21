@@ -11,7 +11,6 @@ actions.precombat+=/potion
 ## Action-List Selection
 actions+=/use_items
 actions+=/potion
-actions+=/hyperspeed_acceleration,use_off_gcd=1,if=set_bonus.tier7feral_4pc=1&(buff.tigers_fury.up|cooldown.tigers_fury.remains>=15)
 actions+=/run_action_list,name=bearweave,if=buff.bear_form.up&bearweaving_enabled
 actions+=/run_action_list,name=bear_tank_aoe,if=buff.bear_form.up&!bearweaving_enabled&active_enemies>2&bear_mode_tank_enabled
 actions+=/run_action_list,name=bear_tank,if=buff.bear_form.up&!bearweaving_enabled&bear_mode_tank_enabled
@@ -21,49 +20,59 @@ actions+=/cat_form,if=!up
 
 ## Cat: Default Rotation when in cat_form
 actions.cat+=/synapse_springs,if=try_tigers_fury|try_berserk|buff.berserk.up
-actions.cat+=/tigers_fury,use_off_gcd=1,if=try_tigers_fury
+actions.cat+=/tigers_fury,use_off_gcd=1,if=energy.current<=40&!buff.omen_of_clarity.up
 actions.cat+=/berserk,use_off_gcd=1,if=try_berserk
 actions.cat+=/cancel_buff,buff_name=primal_madness,if=cancel_primal_madness&buff.primal_madness.up&energy.current<20
-actions.cat+=/faerie_fire_feral,if=ff_now&target.outside2
+actions.cat+=/faerie_fire_feral,if=settings.maintain_ff&(debuff.faerie_fire.down|debuff.faerie_fire.remains<6)&target.outside2
 actions.cat+=/feral_charge_cat,if=target.outside7
-actions.cat+=/mangle_cat,if=feral_t11_refresh_now
-actions.cat+=/rip,if=rip_now
-actions.cat+=/savage_roar,if=roar_now&!rip_now
-actions.cat+=/ferocious_bite,if=bite_now&(energy.current>=action.ferocious_bite.spend|!should_bearweave)&!(rip_now|roar_now)
-actions.cat+=/mangle_cat,if=mangle_now
+actions.cat+=/mangle_cat,if=debuff.mangle.down
+actions.cat+=/rip,if=combo_points.current>=5&target.time_to_die>12&(dot.rip.remains<=4|buff.tigers_fury.up|buff.berserk.up)&energy.current>=30
+actions.cat+=/ferocious_bite,if=combo_points.current>=1&dot.rip.ticking&dot.rip.remains<2&((target.health.pct<=25)||(target.health.pct<=60&set_bonus.tier13feral_2pc))
+# Standard Bite logic - Execute phase bite for 25% health or 60% with T13 2pc
+actions.cat+=/ferocious_bite,if=combo_points.current>=5&dot.rip.remains<=4&dot.rip.ticking&((target.health.pct<=25)||(target.health.pct<=60&set_bonus.tier13feral_2pc))
+# Use bite during TF/Berserk windows with enough energy
+actions.cat+=/ferocious_bite,if=combo_points.current>=5&dot.rip.remains>=6&energy.current>=50&(buff.tigers_fury.up|buff.berserk.up)
 actions.cat+=/rake,if=rake_now
-actions.cat+=/mangle_cat,if=feral_t11_build_now
-actions.cat+=/bear_form,if=should_bearweave&!(feral_t11_refresh_now|rip_now|roar_now|mangle_now|rake_now|feral_t11_build_now)
-actions.cat+=/feral_charge_cat,if=should_leaveweave
+actions.cat+=/savage_roar,if=combo_points.current>=1&(!buff.savage_roar.up|buff.savage_roar.remains<=2)
 actions.cat+=/ravage,if=ravage_now
-actions.cat+=/shred,if=(excess_e>=action.shred.spend|buff.clearcasting.up|buff.berserk.up|energy.current>=energy.max-energy.regen*latency)
+actions.cat+=/shred,if=buff.clearcasting.up|buff.berserk.up|energy.current>=50|energy.current>=energy.max-energy.regen*latency
+actions.cat+=/bear_form,if=should_bearweave&!(dot.rip.remains<=4|dot.rake.remains<=4|debuff.mangle.remains<=2)&energy.current<30
+
+# Bearweaving logic - Maintain Cat timers, shift to Bear when low energy
+actions.cat+=/bear_form,if=should_bearweave&!(dot.rip.remains<=4|dot.rake.remains<=4|buff.savage_roar.remains<=4|debuff.mangle.remains<=2)&energy.current<30
+actions.bearweave+=/cat_form,if=buff.clearcasting.up|energy.current>=75|(dot.rip.remains<=4|dot.rake.remains<=4|buff.savage_roar.remains<=4)
+actions.bearweave+=/thrash,if=active_enemies>1&rage.current>=action.thrash.spend
+actions.bearweave+=/mangle_bear,if=rage.current>=action.mangle_bear.spend
+actions.bearweave+=/lacerate,if=rage.current>=action.lacerate.spend
+actions.bearweave+=/thrash,if=rage.current>=action.thrash.spend
+actions.bearweave+=/faerie_fire_feral,if=settings.maintain_ff&debuff.faerie_fire.down
+actions.bearweave+=/enrage,use_off_gcd=1,if=rage.current<action.mangle_bear.spend+action.thrash.spend
+actions.bearweave+=/maul,use_off_gcd=1,if=rage.current>=50&!buff.clearcasting.up
 
 ## Cat AoE: Default Rotation when in cat_form and multi target
-# try to maintain t11 during aoe and cycle on unmangled enemy for max value
-actions.cat_aoe+=/mangle_cat,cycle_targets=1,max_cycle_targets=5,if=feral_t11_refresh_now&!debuff.mangle.up&target.within2
-# try to maintain t11 during aoe even without cycle
-actions.cat_aoe+=/mangle_cat,if=feral_t11_refresh_now
-actions.cat_aoe+=/synapse_springs,if=try_tigers_fury|try_berserk|buff.berserk.up
-actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=try_tigers_fury
-actions.cat_aoe+=/berserk,if=try_berserk
-actions.cat_aoe+=/savage_roar,if=!up&ttd>2+latency
-actions.cat_aoe+=/swipe_cat,if=active_enemies>6|active_enemies>3&buff.tigers_fury.up
-actions.cat_aoe+=/ravage,if=ravage_now
-actions.cat_aoe+=/rake,cycle_targets=1,max_cycle_targets=5,if=active_enemies<7&target.within3&((!debuff.rake.up|(debuff.rake.remains<debuff.rake.tick_time))&(ttd>debuff.rake.tick_time))
+actions.cat_aoe+=/mangle_cat,if=debuff.mangle.down|debuff.mangle.remains<=2.0
+actions.cat_aoe+=/synapse_springs,if=buff.tigers_fury.up|buff.berserk.up|energy.current>=80
+actions.cat_aoe+=/tigers_fury,use_off_gcd=1,if=energy.current<=40&!buff.omen_of_clarity.up
+actions.cat_aoe+=/berserk,if=buff.tigers_fury.up
+actions.cat_aoe+=/savage_roar,if=!buff.savage_roar.up&combo_points.current>=1&ttd>2+latency
+actions.cat_aoe+=/rip,if=combo_points.current>=5&target.time_to_die>12&active_enemies<=3
+actions.cat_aoe+=/rake,cycle_targets=1,max_cycle_targets=3,if=active_enemies<=5&target.time_to_die>9&(!dot.rake.ticking|dot.rake.remains<=4)
+actions.cat_aoe+=/swipe_cat,if=active_enemies>=4|buff.tigers_fury.up|buff.berserk.up
+actions.cat_aoe+=/ferocious_bite,if=combo_points.current>=5&energy.current>=50&active_enemies<=3
+actions.cat_aoe+=/shred,if=combo_points.current<5&active_enemies<=3&(buff.clearcasting.up|buff.berserk.up)
 actions.cat_aoe+=/swipe_cat
 # Bearweave if we're out of energy and TF on cd
-actions.cat_aoe+=/bear_form,if=should_bearweave
+actions.cat_aoe+=/bear_form,if=should_bearweave&energy.current<30&cooldown.tigers_fury.remains>3
 
 ## Bearweave: Use if bearweaving enabled and cat would be downtime
-actions.bearweave+=/maul,use_off_gcd=1,if=should_cat&action.maul.ready&!buff.clearcasting.up
-actions.bearweave+=/cat_form,if=should_cat
+actions.bearweave+=/maul,use_off_gcd=1,if=should_cat&action.maul.ready&!buff.clearcasting.up&rage.current>=40
+actions.bearweave+=/cat_form,if=should_cat&energy.current>=40
 actions.bearweave+=/enrage,use_off_gcd=1,if=!should_cat&rage.current<action.mangle_bear.spend+action.thrash.spend
-actions.bearweave+=/thrash,if=active_enemies>1
-actions.bearweave+=/swipe_bear,if=active_enemies>1
-actions.bearweave+=/mangle_bear
-actions.bearweave+=/thrash
-actions.bearweave+=/faerie_fire_feral
-actions.bearweave+=/maul,use_off_gcd=1,if=!buff.clearcasting.up
+actions.bearweave+=/thrash,if=active_enemies>1&rage.current>=action.thrash.spend
+actions.bearweave+=/swipe_bear,if=active_enemies>1&rage.current>=action.swipe_bear.spend
+actions.bearweave+=/mangle_bear,if=rage.current>=action.mangle_bear.spend
+actions.bearweave+=/faerie_fire_feral,if=debuff.faerie_fire.down
+actions.bearweave+=/maul,use_off_gcd=1,if=rage.current>=50&!buff.clearcasting.up
 
 ## Tankmode: setting enabled and single target
 actions.bear_tank+=/frenzied_regeneration,if=health.pct<30
