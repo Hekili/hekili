@@ -788,7 +788,7 @@ end)
 
 spec:RegisterStateExpr("calc_rip_end_thresh", function()
     if combo_points.current < 5 then
-        return cachedRipEnd_thresh
+        return cachedRipEndThresh
     end
     
     --Calculate the minimum DoT duration at which a Rip cast will provide higher DPE than a Bite cast
@@ -817,7 +817,7 @@ spec:RegisterStateExpr("clip_roar", function()
         return false
     end
 
-    if not debuff.rip.up or (local_ttd - debuff.rip.remains < cached_rip_end_thresh) then
+    if not debuff.rip.up or (local_ttd - debuff.rip.remains < cachedRipEndThresh) then
         return false
     end
     
@@ -997,7 +997,39 @@ spec:RegisterStateExpr("next_refresh_at", function()
     local pending_actions_map = pending_actions
     local sorted_action_list = sorted_actions(pending_actions_map)
     
-    return pending_actions_map[sorted_action_list[1]].refresh_time
+    -- Om det finns inga giltiga aktioner att sortera, returnera en tid långt i framtiden men inte ett enormt värde
+    if not sorted_action_list or #sorted_action_list == 0 then
+        return query_time + 300 -- 5 minuter i framtiden istället för ett extremt stort värde
+    end
+    
+    -- Validera att refresh_time är inom rimliga gränser för att förhindra jämförelser med orimliga värden
+    local refresh_time = pending_actions_map[sorted_action_list[1]].refresh_time
+    
+    if refresh_time <= 0 or refresh_time > (query_time + 600) then
+        return query_time + 300 -- Returnera en rimlig default-tid om värdet verkar orimligt
+    end
+    
+    return refresh_time
+end)
+
+--- Beräknar och returnerar sluttiden för en bearweave-sekvens
+spec:RegisterStateExpr("earliest_weave_end", function()
+    -- Sätt en maximal rimlig tid för att undvika extremt stora värden
+    local max_reasonable_time = query_time + 300
+    
+    local target_weave_duration = 1.5 * 2 + latency * 2
+    if talent.furor.rank == 3 and (not leaveweaving_enabled or cooldown.feral_charge_cat.remains > target_weave_duration) then
+        target_weave_duration = target_weave_duration + 1.5
+    end
+    
+    local weave_end = query_time + target_weave_duration
+    
+    -- Validation för att förhindra orimliga värden
+    if weave_end <= 0 or weave_end > max_reasonable_time then
+        return max_reasonable_time
+    end
+    
+    return weave_end
 end)
 
 spec:RegisterStateExpr("excess_e", function()
@@ -1143,31 +1175,27 @@ spec:RegisterStateExpr("should_bearweave", function() -- aka can_bearweave
     local weave_energy = furor_cap - target_weave_duration * energy.regen
 
     if energy.current > weave_energy then
-        Hekili:Debug("Current Energy %d is higher than maximum Energy to start Weave %d without capping %d.", energy.current, weave_energy, furor_cap)
         return false
     end
 
     -- Prioritize all timers over weaving
     local default_weave_duration = 1.5 * 3 + latency * 2
-    local earliest_weave_end = query_time + default_weave_duration
+    local earliest_weave_end_time = earliest_weave_end
     local next_refresh_time = next_refresh_at
-    local is_pooling = next_refresh_time > 0
+    local is_pooling = next_refresh_time > 0 and next_refresh_time < (query_time + 300)
 
-    if is_pooling and next_refresh_time < earliest_weave_end then
-        Hekili:Debug("is_pooling (%s) and next_refresh_at (%d) < earliest_weave_end (%d)", tostring(is_pooling), next_refresh_time, earliest_weave_end)
+    if is_pooling and next_refresh_time < earliest_weave_end_time then
         return false
     end
 
     -- Mana check
     if mana.current < action.cat_form.spend * 2 then
-        Hekili:Debug("Current Mana (%d) not enough for two shifts", mana.current)
         return false
     end
 
-    -- Also add a condition to make sure we can spend down our Energy post-weave before the encounter ends or TF is ready.
+    -- Ensure we can spend down Energy post-weave before the encounter ends or TF is ready
     local energy_to_dump = energy.current + default_weave_duration * energy.regen
-    local time_to_dump = earliest_weave_end + floor(energy_to_dump / action.shred.cost)
-    Hekili:Debug("time_to_dump (%d) - query_time < ttd (%d) and not tf_expected_before (%d))", time_to_dump, query_time, ttd, tf_expected_before(query_time, time_to_dump))
+    local time_to_dump = earliest_weave_end_time + floor(energy_to_dump / action.shred.cost)
     return time_to_dump - query_time < ttd and not tf_expected_before(query_time, time_to_dump)
 end)
 
@@ -1462,7 +1490,7 @@ spec:RegisterAuras( {
         duration = function() return glyph.berserk.enabled and 25 or 15 end,
         max_stack = 1,
     },
-    -- Immunity to Polymorph effects.  Increases melee attack power by $3025s1 plus Agility.
+    -- Immune to Polymorph effects.  Armor contribution from items is increased by $3025s1 plus Agility.
     cat_form = {
         id = 768,
         duration = 3600,
@@ -1633,7 +1661,7 @@ spec:RegisterAuras( {
         duration = 10,
         tick_time = 1,
         max_stack = 1,
-    },
+            },
     -- Chance to hit with melee and ranged attacks decreased by $s2% and $s1 Nature damage every $t1 sec.
     insect_swarm = {
         id = 5570,
@@ -1970,7 +1998,17 @@ spec:RegisterAuras( {
         alias = { "lacerate", "pounce_bleed", "rip", "rake", "deep_wound", "rend", "garrote", "rupture" },
         aliasType = "debuff",
         aliasMode = "longest"
-    }
+    },
+    -- Item - Druid T13 Feral 4P Bonus (Might of Ursoc and Stampede)
+    t13_4pc_melee = {
+        id = 105735,
+        duration = 3600,
+        max_stack = 1,
+        meta = {
+            -- This is a meta-buff that doesn't actually exist in game but is used to track the set bonus
+            is_feral_T13_4pc = function() return set_bonus.tier13feral_4pc == 1 end,
+        },
+    },
 } )
 
 
@@ -3830,14 +3868,16 @@ spec:RegisterAbilities( {
             applyBuff("tigers_fury")
             if talent.primal_madness.enabled then -- we dont need to check on primal_madness.up since TF cant be casted during active berserk
                 applyBuff("primal_madness", aura.tigers_fury.duration)
-                energy.max = energy.max + 10 * talent.primal_madness.rank
                 gain(10 * talent.primal_madness.rank, "energy")
-                buff.primal_madness.expires = buff.tigers_fury.expires
-                state:QueueAuraExpiration( "primal_madness", ExpirePrimalMadness, buff.primal_madness.expires) 
+                energy.max = energy.max + 10 * talent.primal_madness.rank
+                state:QueueAuraExpiration("primal_madness", ExpirePrimalMadness, buff.primal_madness.expires)
             end
-            gain( 20 * talent.king_of_the_jungle.rank, "energy" )
+            
+            -- Apply Clearcasting from T13 4-piece bonus
+            if set_bonus.tier13feral_4pc == 1 then
+                applyBuff("clearcasting")
+            end
         end,
-
     },
     --Shows the location of all nearby humanoids on the minimap.  Only one type of thing can be tracked at a time. In the Feral Abilities category.
     track_humanoids = {
@@ -4244,6 +4284,35 @@ spec:RegisterSetting("druid_balance_footer", nil, {
     name = "\n\n"
 })
 
+spec:RegisterSetting( "druid_thornsweaving_header", nil, {
+    type = "header",
+    name = "Feral: Thornsweaving"
+} )
+
+spec:RegisterSetting( "druid_thornsweaving_description", nil, {
+    type = "description",
+    name = "Thornsweaving involves casting Thorns on the active tank during downtime for extra DPS. This is especially effective when running out to Leaveweave.\n\n"
+} )
+
+spec:RegisterSetting( "thornsweaving_enabled", true, {
+    type = "toggle",
+    name = "Use Thornsweaving",
+    desc = "If checked, Thorns may be recommended when running out to Leaveweave or during downtime.",
+    width = "full",
+} )
+
+spec:RegisterSetting( "thorns_target", "tank", {
+    type = "select",
+    name = "Thorns Target Priority",
+    desc = "Choose which targets should receive Thorns during combat.",
+    width = "full",
+    values = {
+        tank = "Active Tank Only",
+        all = "All Party/Raid Members"
+    },
+    sorting = { "tank", "all" }
+} )
+
 if (Hekili.Version:match( "^Dev" )) then
     spec:RegisterSetting("druid_debug_header", nil, {
         type = "header",
@@ -4299,7 +4368,7 @@ spec:RegisterOptions( {
 
 -- Default Packs
 spec:RegisterPack( "Balance (IV)", 20230228, [[Hekili:9IvZUTnoq4NfFXigBQw74MMgG6COOh20d9IxShLeTmvmr0FlfLnYcb9SVdffTO4pskfO9sRd5mFZhNz4mdL)g))2F)red7)J7wF3213D3N92S5(h)4g)9S3kW(7lqrVIEb(rgkf(3VIsqzr4MWBE(FwX39TKC0rokL5v0iqc)9hQijSNZ8pyf6TpcYwGJ8)XgWiNihpIfIIlJuW)B0kYXMWckjNsyV1egNtBc)l8RKecyxAEmjbSgkIrYZk9kO4O80di2FS7ptr0xdYJdyNWbxijhVLeVBrvXYfhQIJ9EHeZu31RQO572GHDkNMv2PSDrsZZZELKfaClDublY5R189R7cRfHssce)zqcPKDl3dVJKryQsrRYmfcLJ5MJV(zCaodNsWLpTDs9klqT88mIsqhsWE8fcYYVmPMXKYtk03JttqwjqcHsQYq0ajM3EgLuH3160XrjKIsCqRed84wbQmpzcGALyganeIRN7HmTUU3HmWYtGo3POG(chWVCXph8cuIqzbq6EKB3zcQKfGkksi4J7wxx)Vvy6Bbmsk(dti9t72UEkpylJhJeIqXCjHP0ZGecpHM7(QtvU(sn)VK0Z6eoj43OfeLOxxRh3L7Ss9cdhhW0LmenMqBV(k8lGo4YGlue7eKpV8gD0KeOU2uEkofrYk)IWiEsW9Ej6yDDA(zs2lRmOaVOLKcloIBrvUgNbc9mudQXfH5foZqSkk2(jdkPzQictj4GRMKFizOeCgZJKc(PZ4JbkY4HZ4NE4a8cnVQiifNEatlFA39UpsGpahXckVG6Qd3DSuxFqXIo9GwCNGtoxfb0lFjbwYRBDjvE3UqhHWL6IkJFBnSqB8DqP6HqnAILwMAVo9AXlbbADc6XtHUXqiaffHtWGzH9VTQKhQJdGePDB6Zv1QIV0YQDhPNkXmg4qlL3jYZtoMFbAPGXxqVzqerdYF)2LBqcdNw(730tvkWqHzMLdLqSsDzbeRC)HvgMZmf0v3llhihTcvtbHHygEfCI7Ec5nlZiw)ufLsGkVWmHNHuAyNRZD(G)EW1KXdn(7FoTiNYaCd)utOaIMq(CoLEnF3FF7V4JZYV0a))pANqUJl(F1FFemnkuRcXhZ1smlCjmACt4IMqxxCdRRBcDwkVj8lsAnOCUqTUsZHRKd(cJs3jKpdoVo5kWhZYuTKvazpEY954TLJNCdT6)Qgce9JQIkJrAYC)y0R33nJEdcVXG(dnHpTRj8EN(jfu4C5tZWvPDVQhl1n4G9GtWKebozwZU7XSBdoCFEgCtpm6mBBPPkQPABTh5F0jfCyOEyAtN5ySz90GmSbL1SAg)PHXOQeMTRJsf0FmL4MCG4rR8X(g)(bxZ(xsb5sd8mAViAa2q1NRxvM4S2vdCE4YL(6fllh4X0TT2vRN76BqhVuw)9VfD1MS8kzLmfThypzThvLfpRECFMMkQpZ2OyJyYHHLAyI4YON55FF8UzuBBqPsLErASQnQoJUk6pxMhAC39UnFD8PpuiN9r(83RmaeNGJgt)LZszu1KuUZA(LtQRdlAJx6xuhFqb7nWhTdPJ300pXHJZF)8goDapmOvPE7n39kDmzOLMbUBr6ysrx9cARLB5guo4sH4yVAsC5)cErVJ0Jw56kBQralxaENgr(rQunIMNYsc90gX1W1THANXefoOyD902PTU5ST9ey5WrFDtHRT8TK1pnfSekv)IsnHWOGRfUJ(Vdvt4hSEryOM8Pi3U2mTq(rDSDH4DsyZpb2CjSnnnj8WVpLTBFtt4Z6F)lBtzE1egEl1WR(4S)Sg)gJeRRFGVwhNzEz)(Rm9pkuumWqfFYe)9Fdh)FOiX8t())d]] )
-spec:RegisterPack( "Feral DPS", 20250420, [[Hekili:TZvBVTnos4FlblGBZ2wF(1MMdjbO7D7EOf3fSyDp0VjjAj6yDrwYhLuY5cd9B)gskkXxLLDD7ThWc0MglnCMHdNzEgoKUEJ9(K3Iiub27(jJMmF0SjJgo(DtNmBI3IIDBXEl2IcFe9a8lPOnWp)fmbLuf8x)1f0xTljdfrzrEwjjeET3ILLXjfFi1BPbFhD9S5JUgODlo07(XJ9wSookcZjfNh2Y8T5vbzK4hItrj7QccjyGtrvblHpKxUftslZbswwwufuUnI)suk8Jnzr7wflODXMYvK4hbnLKTkob0VF4hQcesHughv9r4b)ekNoIS0QGpN95fXBaE)Y3N9ZusXj5He0QIlR(iqlq8VsWHzBwIkQ(ikSiolnF4wXJE1T)PniYJ(zR8lwJ9Fooj61XRU9ILLRwnmVav4Z(TYTaRSn4I1zK0C2qO0yJKqGjRYiBQjAaN3lXic7XdDnUTz0NrNe8PX7z08M)ECoydxGtWH83xpwyeL5y)4cmymKEOGnTpHuM6Z)KFcWSxtDtULQppJrpHPQPHgoq8640h8XPOLjG5VpS0VaL(OpkZbBVWcFhqz0ty4J4nX487MWeUp4NG5C7OL)ri7tuu01y5jPynNkh9PJmZcrjjw5MnoPoqfNkHpYFbv8NH4e8kuzc4L8BzGhmD1p451y4NXWFfJS1PlK5ULVlfTfCGY3sadcZLUGSZVi(bmj3Fvjz3(90hSe(iM84(91wu2NuCI58tAGVM6yMTAL)dHr3oMYzWyqEy3WWscbNwCZTZgvhwKTbNsdgdtqK4IDu73l5VPy8u)zBd93aE(y45733eKUzlgwWaXYESM9E8L6AwToBQvstp9XeIsdXjSKbVM(dF2cfyQ2Gs83GIsX5mtwnDQVyatrvFgDMPzfMmsxQRqysm2Fvmb(bnhive54Ic6k0WnO40c4V(Rwn4LryMqKgXWOSNt3V3Yliy6qZV5TxoOarEaxmmRSipocpXqbOc1pCnLk)A3s1HCL(q2GsFiPH4APZFitJ0PNeVLz4G0Ez(BZGPuUWIC3TZfkyr8giKmZpkgF34jW0nRyimYMPYTZQDiLC7yEdAEPxQz0V72PMwDmjlmoRm3FjKnLfjc)RFA2Zg6o6r27P)RT3NJEcaI9jziI754yHhUe1TQU8dBMStm8PjmY46cBa20M1eCuBILeivxikN6lzZsTFVULA(iZNv)5nO)ZBQ)vc(bC6pMai8PH7md9QtaZCKxNvMe53G8m4cRlRSNbgy1hQ4xjzy0dQOlV8sgAZ2xfKK9qCyvWBQc(h1brSCNvbu)ms(RHIwwhVI(5m(ifzqtaZAaxeFZMBUx3p2jUqbBudnKd7oc6RXxnF)(ZI2FPDnQynbLVMQp6PUhqaU0Qi8bpKt)qOO00i7CSohe9r8qclCrIMUyvckeYbwGDYhbbDXK2z4joH6pqGdCa7SfNs1htGqzT8gx2Rx1BTFduns3cHMCPUcan3rPkBGsGZ(5ExEt9UlacJHWygkIselTETEax5oIB4iB8Zszu9bxYmQ7Dwz)5QQkB8wuxKDv22i(FqvrcZSkYQna0bUGBlkIUBYRSHqvZ8tQKe1Cx3C7uRCMwWq4oWh3NZLCyLdap9vF2uZKH3yxWxdfp0KgUio8rWPZAI5lTAfFoEBJVVwY3(wrLn(AwbLlBPzng9Zq2ulJngFZCtMm4L9QQNUntkfsGHeoRGup4xqGFnJ2zJSvnfhWt)8PFH3KIWi7bCDvXGbEo4qNLqZjPSKuVeF3urMYg9dsv(pZR1YLYv)i2vlxhPZRGNPcNswvavcuxSJjxETYdSAqdCrzcOBOOD2ZRRbTpRhvRijeD3gxd3fa3fs86md2D(RMH7(jkMPFCTDmFNQtYAfkhvXiNJQe(ek9rA3Bax)6QJ092ZJPthZkcyXI0E(qNlGW(smoYNTxgA1DajuLzngLuSE42qZYRfJnVK8u8taIgetcYpSixBG6UQncvER2IveN71wEKmdNPPAUDQ3wM8eSC8fwAzkqrtbS1WhduEyEbk8ri9PYdfWkZSlIMAMpms3K(PfhqGMoF9uYD2lLnO)vgXhr2a)eqBk5Xd8IcT1VfiPwNnB5s7kFegeakj(l0(qkkOXuXOVPr1qBDQrgStsVmFxJH1L2z0pm5xwNEvFhdk1UQeCOwCSDI4jeD5Q3Km6846DHvFVlCwJJ9iPEkSd7NlI2Q7iuJeAlvP9rTlDNhtHPICZ0EgU5oVKEIzXE4CKD2X21A4QO(YtnbTOGUtkjDBXTNsI6M9B27K11J4BDcBX0Q3Ty47z(XAL73X5ifBm3vwlL9q4iXL6gWDtWrLV1EdjCtOCNUo50IQDvP7PBFsJ81fd8vNg1IPPNPjLc39waIkhET4K1hFT3INrKu66H3Ip)(F7(pC)FdskcPjxt3V2MTzeypzW(EQcEbSfLxufqW)7sWorlGnd2AwaQSiBd)u0HmrPpGZhw9r2OxLLKK9ml3kQe8jP7qLUb1s2jMtBrwbLmUcxfKWooz25YZPlnJj6YufQJIOehHkqlr5q51FK18CLZKJMQ)dmvNkORufbv98wW(n6LpOXmbF4E2nAOghW7N8wesIlG1gK3I2mYvb3ufmDK3cot9wyfcWRamX9LBZK4MjGaLvtDYkT09sQLo4aLpZCYh5W4QG7UTky(8wMXCEGXp354TfkufmGUjEDV0QaG7tnFzT)p3K0k7MaeQc8wnfqqKGjGkjxpbDjDHrvgElMC8QUQ2bQYvoufJKjNIozdUJPtVeuRdb6vfSFVmLQqF8PMt4p2e8Tvbxc)HonFNZLC7OEAAPb2NUYzdbuwfDIcYxjQv0gRVb505W105GGIAud5jfqY4r9m04gW59DsbSCKqglgllgn0oDXnrMwoKTojtLjrchtNo9G6ZrmXfAE)YHfxqZsRa)Yud9CdMXVNGE0Vyt90kVSvjLrC5UE2rDB8MyZLV5PzQ1ykuctGxjVwBjdI6k(7u9mk1iOGggWozQgqnbXnxmlnwQ4oYVOwAuOdbjiw7wijpJR9sqTxVm6Id9bAx2joESp)wckEp2gG1jl1lSky2RO8PTpMa4xvWKgn18kyzOSnvzzdH8BHcFm6vxGMhsNcLUXxUmuksT(af6cDu)EM1Lq15D3WrxqVpNYcIZhE8qZ1z0wzETrsQ3)s(vlLeVL)6EDvp10i2us(2B2DHHS5Gws2w)cRtU7NEOq3I2fMoRX1YnKILW06XoZbcNmCKbev9cL7jjJBAhPBBMzPn1XEO6bSWlnvg)vhNvyrK6Fpl9SL1BjDqw)0LiDIoBKYQI5Xy3D11wMYMfK0r2dPJ3wMTwpnBEkcgiN(jAZELX0dwghzlnHfhzLJ1MXnBN6jFrAm79ffrImQVc2agIDu3sRETC0wwdPPQt5mNlhJtKMj2XtSM5IUKovkry8wB5wAEn6X(I4pvwNTj1o12RLQEr)S0RJf1op9AVZ66wU2P5Zi1nFunrD9iCuArtCk0hOW5dTMzl0E(O(SGPES(TfFFeQXncTWQOeleCijTJ4ZEYkPnHWUtaML53A3SvPVfhVMK)6ir4t5G)LTj6NXVRmdthvhL7(8(zEUt54mT1U1jsJBRQnxIRM3UNr17(xJ3FNHgnRwwUlGsXpwbxDJIzPyiEgpZoPWzSY5RlbcX37NLkSDTdujwACK4gOXNsNFQzE7Mvu5CZMGSay1d2EiZGByiNnfXXP7lLVWyhvcWMEuMq9o8D3ra3lhmqpBZBbAtpepF)DDzyNRwCIwGvdWWjiR2lNstQsLButxY1rWWSrha1qtM2Yii3Wu5OvoiqpMNMlPxqVO1kc(SSip(7zcedCKVgHPFVD0HXejwmA)upsb0)0wgDvYy7khzqpV1o9Wf5me2vO3FG)4ig()WJyOh4pFFBkFpq16P6)71(1R0FtRnh)AZ6QT1A8rYK5OX)UJi7DJ)vRYV7g)7oo7i75U16X4zJTLmvtnMlt3bB4S7yItlO8RQb92dBh72X3zN3TBcpC31dT3hrPuMQFFv5Zl5VuNhyd2M90AspHToN90sFPs)l(kFwi1Lt5V(R8xAVUJlBaC6XmQjSv18k11mxhsW3LUM5gVQhWfg3hz5gU2noWGMUij(kZEaGb3XW9dGVUFpDeMz0)yJmrhSj(hQLrD3MVd0HG(2PlH912wpKllRUTHU76M4BRRIfvVXvDDWZpQnCwNi7g06qnKvkEwVDUhUrjtuBZLAZB7yVoTFvGLNlpjWpDJjEe9FZv7JOLP76D4MV0WSBrew6loCvWpARF1nD2ZDDUw7T2fh07SZ(x11zW4YDvBteTnt02(QmPYElhJpxFPL)wBXoyh)(6mRf8kbqL0)FxXBH4)TyOp07)o]] )
+spec:RegisterPack( "Feral DPS", 20250422, [[Hekili:TVvBVTnos4FlblGBY2uF(1(YH4a09UDp0I9cwuxG(njrlrhRlYs(OKsUuyOF73qsjk(QSIJB7EahARtSe5mdjNzEEihwVXEF2BzeQa7DZKrtMpA2KjdNmzY8jVZBzXJ7WEl3HcVdDl8lPOTWN)gMGsQc(7)Xs6REmjdfrfrEwjjeET3YvLXjfFi1BLf5o(TZa5MVdh6DZ4XEl3ehfH5nfNh2k8D5vbzK4BJtrjpwfesWGKIQcwbFjVChMKwMdnzvzrvq5Ui(lrPWhBZIECDCtBxUTCnj(oWsjzRJta77N(PQGgTqkJJQ(i8GFbLt7rwAvWxY(YY4TGSp)9z)kTP4K8qcADXfvFeAl04)GGdZ2Ucvu9ruyrCwA(WDnp6Ll(lBrK78Zw7xSb7)qCs0LXRxC2QY1RhMxGk8z)w5o79Tytgjn)Yce5wCXIcu6DSExUBa)npGr3hNERpofTkbSyRcje0Y6mY2MUYv(kmIWEStLVlJ(m6OKpoFpRnV63JZHj5L4eCi)919f6rzo2pUadZwspSrmTpHuM6Z)MFciSlP(rlO2dD4GPMPHfoO512gTDjsF6KMpkZHypZIChqf09y4R4TX48RNWuUp4iH5s7jR)NGUpsvrxJLhKnR5u9OpC6JWSji5(P5t14I83qf)viocVgvMaojFkd8WPl(bpSbdFgd)RPNT(CHD4QB1nFq(MSYKiF(l1fu(JPODGJy(oc0NCMuip6xeFlMK7VUK84(90hSc(kMC3(91RmSVPemuByTD8sQdE261(3ggTymvYWKk52hhgwsi40IRwmBuD4v2wCknQpmbrIlEKUoCo)nfJN6pBxO)wiccdpF)Er2GT7WWcpOw2J1w3gFHULvBZMwL0WtVpHO0qCclRZL0p8zR4Wu1wuI)wuukoNnLv3o1xmGzOQpJoY0MfMmsxRRrysm2FDmb(GMSLQICCrbDfA4wuCAb8p)1RhCEeMPePEmmk7H097T8ccM218RE9fd4(ndZklYJJWtyoKvb)onHsT3tvWRapYsWfmJIsWahc3q7ganaqAvbGBj8bbdp4tO7bioJHb1095DYVokP2xmPrt4bIXvIK2ntrZfjHPir4MMtaDyCytqDS)g9USfLEBIOX1tJ8hYMAnmP4DmpaahiZFxgS2K3S0E9I5nZ0fXBHCuz(rX4Rhpbw3Ykgc9uSMSywDKLu8dZTwlC7cnVNRxm109btYcJZkZ9xbWlSjl4N(PzpyoDEh790FA795SPBFsgI4EmoUjuvQ1TMU8dfd2jgbNTlS8FZQ1SHGJAt1c(lKquo15X2m1(96ZuZhz(S6VVf9FEv9VsW3It)5eGtuA4JC6nTapvbjz3ghYco(N1XHS84vb0vys(LabRnXRPFpJ3ZMS5jWakGRdZmt14Csrica(bNz1zH9myzZ0dY6m(mrgHAxzP1c9esupQwtuyiNguhzXjdlAFnvF56nZ3V)KmDCHRbibLVHAp6WjdiGuAneENhYB)qGrEAKDjwNoH(iU3TfPi1MUevRXDK2s)XvCaRyxS4uQ9yIRkBLx5AO(YEB9BbwsDReAiEnHcnpjjgxaZ8SFT30UQ3ve0WyiKM53Re9sPrEAcmAf2HqGChkpCKn5zHIxFGAmJ(ERvXFQy8zt2nC2SBY26XpagBntZQGL2Weh4cbTOi66jVua6yk8JILHAoSRwm1QKPCacFecy85sjhw5a8qF1Nn1mP4v2v87a(aI0XfXH3boDwtqFH1zXhI3j891sc3xss2KRjPixZLM0g63ePGEInbF1CtHm48ErKP7Pjfgkav841qEm8li4AI7zRfSo45Y(8VXpPMWi7bCDrfXGOa4qNLqZjPSKuVeF90M0UFgsis3LoK2TgUHAuCg(CRkpMMkZmfR4qbonjzLfhS1L0VgJJ8zm(a4qAtOsCdgLuSz4UqoviB9nVKCF89qscyycdNWICTooZrhv2qsdPaN7irUNm4ptaV52B9UYK7bS7VY80PXEjOq6queroq5HWgPcVd8ivEytK6m7QOPD9i5XK(zfhqHM0x6PM7CRZBr)RmIpISf(ecGl50r44S22EnKfVZ9wFHDJpcdkaLe)vQxAdgHPHrFJW0q7CArgItYUmFNyI1L1zC8hYVSMFNoJof6akbhQ8nCfmt575Yvxqs8046DMvFVZCcBypsQNk7W(5nrB17BwOH2S)TpQDP70mvyAixnTNHBUZlPNNVHJTJK9oOtlK6PJuTUip6C(nWUhvE)wkihtUFXUc6D()6E8TgdOzy17Dv(9mLBTX9N40UcVChjcvy65ixO62KC3GNukC7BB0DdfPGEozAv37B3d3(Kz65fd8SZmBzQPNzELc39wcQkhETOiWJ8w(aIKsxp8w(L3)PB(Wn)diplK5DdL7)2DzKI6tM)faP(xufqW)7syEIsXg2YnKaUSiBlVGVqMO0BX5dR(iR3RZssYEGLUgvc(K09rq3grjR4U0tfPG2mUbxfKWkSjReY82LMXuDzQsRJIOnocvGwHYHna8r2zNQuvhk6XhyMovrVrvfuZZBjy1qMDVLIcsZEfTW5I5n4l3WQgFnKG3V4TmKa71JeJ8wAVaWbdOhxReYbOjMUB6a8tw(z6pbvualeovrlkqvWvvbth1kmRWouPnTVsBMK0mbHOIAM7XUkeJKzPdirLZCNYro1rvW1lQcMpVvymhwO)V2z)Tf(XwcmJmQcaPp18L1XC8PKwDlckPgWB0mGMg1ieWKKPfr9AwAqwYB5KNUPRADGP8whMIrcSJXMSbXYSPZbZ6qaTvb73l3sv4w(qZjKlBa(6QGlG)shMVZ5sUDKwnR0aVv34SH6kBIorE5Re1gQy23O50XW4r0brttQHQKhvfSRCt)InUc8EFRuelh(LjIjYQrdIvxDtLBlNNGEtMj3ejWt92PhvFkckotZ9xoU4mk0GcMpZm0toygaFe2r)co1ZRCERrkdZZ99Sd1lCNyJLV55zQTykwctHVvET2ske1v83P6zuQ1GcACaRcicGZMglUxsAIuX1LFpL0AHB4SANbu7LOIUgqFGgMCRg0USnCmFF(TORPJ4Ur(SR1ZSQy2RO6R9mAbqUQGjcl18Ig1FJvqTRBi2NSbFsSRUHT5hsT0fBY1ev)0A9znBdP2To7TOTH6QKXswwnkGhoiUmF2ys2giPE9e538ss8o(R71nHuZIyJv5l3y30mzJb2AGvoThMbR7G0wr3M(U1v0682nZousHI2L8F0m0TCzEyz7Twovok(KHJmWxRDZoqYoTsv2cRiTny2dvlQcNyTm5bDscDMXtxy0XWSrkRPMvEvAoT1O54a1fZLUWD4exQdzt2uwsZ06sjkBRSyTwLwEIpgcTELAzVYyoawgh1D(gryOs5AzsZw184lsJ5rHfrn4eVe2YkIvcxPvVwj2DUj36zoxp8DXjvPvMAhpXA(y66(uPSMXSSk6e1fVgDxFPRmv2MTP1oT23jr9sVgX1XIA1jU2fUH01iNZFgis8Ujc76r8O0Qwt5v96M2)Hw0SfBpFuFwXuRxTNyRdpbZ4QgRWQQAwj4qTAxxg7zRK2dfRy3EgBsPDEZ2(uS45jay0bsXhtfTLNt0lETRudthvhM7Uq2mx3PcSSF44yAxqB(QL8Ty(ao3MakUXYokaf9nyPFjU5gOe3hLBXl7LwiyowXd8aqvDCCyTtuMqu9a077kKLBA5944FmU(EYSD6(CDAtH3ChXLsnzS1tlyRs5XuUb2AX5pZRCULa(2RwopORRRxE3iY2CoLXmVV(mDCF8x97KxBGzCJTzsC1fP0Nbwv3emoVgAU9E3kqMFkqSnox2agLpX8AclDG51CN27eY0DETMR8UgjiByv9zkCSEkpDMKI5cl3h56TAOcWQYB04a8KhjnxyEBoNgh5MM)D)q(DTpfkxgxVdlUA9SaBS01RVk4NTrvwWPWvYKdXwi(uDd9pirIZoyeHtISh2tyMLTLYY)y4V4MudNTI6rp9JM3Y)Vcz)5SczpjsfFpQPu3unCJy))oLBs505TxANrMBSYwLDuo6Eh1TYDizVRBL6286UUvUd0EILmsOqrnveqHA0FSnZ8A52DW6L4oO44IkFw1xYEC7y3E(olCK9PWdxCO2kS8Jg1WnnfBSoEZ82W5VzOZslqYNfUBSkARn3nlmlzIyWfSY)FOmYu0jyMtrA8)9k7rrpreUEAVhXgzDSl2dGo4oowlxN75f2j5254QoXOLtlWDiQfYbQNJIMpUEaQHUA(J3)n]] )
 spec:RegisterPack( "Feral Guardian", 20250419, [[Hekili:TVvBVTnos4FlblqoNTP(ITJBYEiUa7E7ThAU96T4uX1VjjgjABDrwYGskPPqq)2Vz4lsuuKYoPDXTlWc06ArYz4WHZ8W5r01FM)h89IjLu)3p)I5lV4YzZNo76lVC2cFVYN2t992tIUNSb(sgzh85przK0MW)EfHfNqYW(FknNeJ6PiVIfbJX37UQK0Y3L5FNvLFXvWy3tJ8F)Sz(EBtIJPIHslI89(yE5p)pAcLt0pYQsIBc)aj7(MWFHLKZsktOfn32C7hY3SjL2esIFGKfrHrXYljLj5zW3Or572rZI5px0eManwUfgDukPaEoFpVJPWcGLVojfm7V5B6wxQj(wOTFGuGkhv7hZ)OxYo(SJJ(x4tZDKYMBjrc9Tx10Rw9N3ry3hKVoaM3GhtsJppz9QtURA96PfGDgW)w1E7YwUnNLvWLW1qUJsybRZz7gDu7Z5EKBv283ZhZR)5KIYMqpAkns0VuwqIQcAqsjfxMDnQutxlBHWdgSnsJdirrGIyCF95O45RxhSjkE1mDbyvzbINcsHz)CmGAfFruc7UbKCkUq4EL2Lg4FofL5bAanJUd25F78JxNw13bfpc2B0ng85xSTacBtr6YnCFuSt5LKXJV)aHTHQfI1U8azxZOzFob2cy0nGrj3ca9SLssl3oDFu5nlUWUSfvShsEGKgKKvuMKfvwyi4LoeCnMAgeTfTRaSduUsUvonVQSijMELDj3rQsXbZaeLPrvmW6lF7QLlTp69vPpqzjFMVveNxonLeHlr60YKO7bVZP9AesQIUF1I(nYO7iW67MlTpfQXDE0trP0aXIOy1SZ3r(uq)2MFCwXbMW1eyfrdwNWGpq)4XoZf0sytAtXuu9LWFdwV(0jXuEK1oY)nNfqy7Gpz04k(epno)XS6A1y0Mzms2sRkt)nNDMDJpMctajn5ZGHeWYfB8dnmSNwtJS3PfnqDA21W(ADSUSU7a4ik7E7DsZWyoZyVBwDTRKJNYi7bKSI9mCXzFqLBzKITUc1XSxE6XxNqVtSg7DIeFJV07DAI9mPJCYoCCUkBBIWcANbWgQRnAQBR7RJRyOHCZIJmDZnUKc29FwLwMmcQlE2WxcYRu(xg6RAYFziWsPFgOWsj(1gjwTSgao(BbGpPX9ByWpPf6eosfY9yYENisYX4gevoGNfqQAIpiyQCGTabFj4DTr5Jba7kI7REoWxm(OfxZrI)PLURa3(RaxfnAsjRbcrYQsbIuryXTDkkItGWyZJJ0WEkOmzdSjeSUI9uDn2WGihH4AJRp1alkYuwPkTlNJ5lc5cMYjxDo(raVmCW23biM7iXz0c(AqoU(DCQyJPxByEjcWV5P2G95xyoRwrUWjp)Xt7JlpFGO6y5s6coHYJKel5H2Ybluq5SzawdCQuXwCwnfHLSNNZMS3wVfKhGK5wun8F5M(jogpmL5rj5vfb3LicjX)LlYK((Q3Usi50(ImfioMfxxFsX28Q0yEw6JuYd0Zo9KjYjTUwzhNnUdq(KTvn5Eju19w73LJeF)fX2eGNBP4QzA7GPBDVawiMRO66oJgAvAE11wmHblEBbmstjfndUTm0t8qlSnFV2wuWw4WkCitOFkcI8dOT7E8UuBAcYSWCXIiyTlB6W06aMRRndeKpd109A5x5Lo9TPakww0tN1dJ67Z)B)LMWFKUgaVGh)3TqwpULMjEDoAaxzXnH7e1TvkRBdueGsaFKdDjpCgEA2SMW4kejdelNkLLxJP4v8uLj2zGwrw(GgG5avXNAcHY1Q67z7FwdUzC4syx6mP90tAlRb1hI8ircEmPCBs28JFzrFaDtOyaiIAboULFuqj2pr)qhkmi6WMoFXNu0V0LXoFqz99H7ob9ZLXVD(RKHIwLHx8K0pjoPS91a9M6AJwwiojrZIDSOpyEz74U)yOhTCO1DZv9dIGssMOIZqTYZvNO3GQCe92WACGnGD0Zo70jOZYrNJ66eVovfCPO8JhP)jgM6HrP5R5jDa0GmV8d)KiPmk2(g(iGX(EqXvfGe8x(8LxC9Iz(Epsyzy8QV372TpNvIz5Vru4don4RTRyAZT(E8VHVt72IPGhEp)TLtZi3bWd()GVxedokJLq8964T1eEtt4Il89ek13Zkrr)sWSowTDPM2gsBev1cNQYOscnZYKcjQNlDQh9I9BcF7QMWLl7ugwIjk)sNYBRG5MWtbuRb1Y2ecAFXWoLHLcxs3C3wgnAaVXWaudsPeWK0ZxWTuVbzr(EZF(MEFRdmLRCykdkv8Lyt2ifZTPjGzDiQXnH116JSpbzXsZjjz(ceYzod(dUmV25wUDUXgw5agYMgNnEY6MOtUYIDcPH269hmCCn8D4Aqnc55g6lkyiZU4itnUbcEVwlHvWxMRIz6tJXjOMt3C9Xki2BoKf6drJTR54mtQ)AKtCIr0VEAb0NXP9CZWeByy(7lWooUCttyLjDgPoVCrONDU5Trt81YV6WmslgpkHpHxPVxBbbP)o(19JmQmgqjMgWlSU9qn1GBV7pdv2lCuCxGgJGhnQv2gFnRKWXDfAOc3N(iJNiDxIhUn2Voh4uPMW5DZPX1XjotpqCl29EfjJFW1GP(zod2ovYq7rA3l4x26swBKTJFCpNhTQhhUhYO01vRlteW1EL02QJQluT)fMl(jbaKNfDp8I4nMF(kt)U1hVmldlwCL7Jxo1ilsr47y5iLDBqJ6eumYosuKL6gODgCsyzt2L827ZW0WLFuCnF2uOTTTyB5)8nfB0EpO7z8TCtMN8dj0jy2DQH2jEopNFuCoJ5sl2uVrdu2rHV0m0HL4mk0epuxeHuglaHAcFfqssWrwBf2XMECGhl4AVr49S0J4KAlSO1MyfVYXbM6iwRH0XBZxv7NL4qKy7ljb0CPahHF1W8S26qMONykPJBwcSoPCUcTY9wuPRsVQ9SrgQFBzTdDOgfu4cRQd)ZaP(fXXVh5bt68C4Z(NB)hmY)DiJ8X4h()foSJuw9OOz)(HEBp6aw5s(DdrbSXKShyHdEYUZipAEY9iBCaEYJwQ2ZHIA7e2YHRuXD2O0eBEML6J7G8ZCNt8Ysk)I4ZApTDM7aFNevT7cpmz0i7Sco(sWgTAl3G6V0QTgVwrNvBzrtUE1mAxITU6TEN1D1jn4ER5D1)A44BvZVy8JgexCTEvlQlV(aOLUdSpUt9K1Y5o2ZE97MzOhUKqX9XQvTxYEBfdQjH8IBvWhd0GrvWJ8(cvxvUk11CdcpkxOvRxAUi6hmbZsKuv)DcxRQBUNp6oR)SEEEnLFaW7URR2L3EM7en19BR5VXQRhh)2YvH7CQDxL0qNuRhYbvzU)YUZdFs7hBGOx1pTa(t2(jeO7Z79cdg8krhy2D3N)4jmJCIY4SFgbMhJmL)ma6ftQ9tbq7agJFoawjflA0w4E3pnGMWx3(iV88MWVTLZzpxj3o4hGGedWxn0)kR9)FkI))Im5D)huGk8n7475TRAnl5EUa()Vd]] )
 
 
@@ -4348,3 +4417,39 @@ spec:RegisterCombatLogEvent(function(_, subtype, _, sourceGUID, _, _, _, destGUI
         end
     end
 end, false)
+
+-- Check if we should cast Thorns on a suitable target
+spec:RegisterStateExpr("should_thorns", function()
+    if not thornsweaving_enabled or not buff.cat_form.up then
+        return false
+    end
+    
+    -- Don't recommend if Thorns is already active on target
+    if debuff.thorns.up then
+        return false
+    end
+    
+    -- Additional check for when to cast Thorns
+    -- Best time is during Leaveweaving or when we're at low energy and waiting
+    if should_leaveweave then
+        return true
+    end
+    
+    -- Also consider using Thorns if we're at very low energy and waiting
+    local energy_threshold = 20
+    if energy.current < energy_threshold and not buff.clearcasting.up and 
+       not tf_expected_before(query_time, query_time + 3) then
+        return true
+    end
+    
+    return false
+end)
+
+-- Function to check T13 4P bonus
+spec:RegisterStateExpr("T13Feral4pBonus", function()
+    return {
+        IsActive = function()
+            return set_bonus.tier13feral_4pc == 1
+        end
+    }
+end)
