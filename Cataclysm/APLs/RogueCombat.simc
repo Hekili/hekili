@@ -40,7 +40,7 @@ actions.build+=/use_item,name=synapse_springs,if=buff.deep_insight.up|buff.adren
 # Finish rotation
 actions.finish+=/slice_and_dice,if=buff.slice_and_dice.remains<5&combo_points>=2
 actions.finish+=/rupture,if=combo_points=5&!ticking&(boss|active_enemies=1)&!buff.blade_flurry.up&target.time_to_die>12&buff.deep_insight.up
-actions.finish+=/eviscerate,if=combo_points=5|target.time_to_die<6&combo_points>=4|combo_points=5&(buff.shallow_insight.up&buff.moderate_insight.down)|combo_points=5&buff.deep_insight.up
+actions.finish+=/eviscerate,if=combo_points=5|target.time_to_die<6&combo_points>=4|combo_points=5&(buff.shallow_insight.up&!buff.moderate_insight.up)|combo_points=5&buff.deep_insight.up
 
 # Cooldowns
 actions.cds+=/use_item,slot=trinket1,if=buff.deep_insight.up|buff.adrenaline_rush.up
@@ -49,6 +49,7 @@ actions.cds+=/adrenaline_rush,if=energy<35&!buff.killing_spree.up&debuff.reveali
 actions.cds+=/killing_spree,if=energy<35&buff.slice_and_dice.up&!buff.adrenaline_rush.up&(buff.deep_insight.up|debuff.find_weakness.up)
 actions.cds+=/blood_fury,if=buff.deep_insight.up|buff.adrenaline_rush.up
 actions.cds+=/berserking,if=buff.deep_insight.up|buff.adrenaline_rush.up
+actions.cds+=/expose_armor,if=combo_points>=1&target.time_to_die>15&!debuff.major_armor_reduction.up&settings.maintain_expose
 
 # Defensives
 actions.defensives+=/cloak_of_shadows,if=health.pct<=20&!buff.cloak_of_shadows.up

@@ -1519,7 +1519,7 @@ all:RegisterAuras( {
     },
 
     major_armor_reduction = {
-        alias = { "faerie_fire","sunder_armor", "corrosive_spit", "expose_armor" },
+        alias = { "faerie_fire", "sunder_armor", "corrosive_spit", "expose_armor", "shattering_throw" },
         aliasType = "debuff",
         aliasMode = "longest"
     },
