@@ -213,7 +213,8 @@ local enemyExclusions = {
     [231788] = true,              -- Mug'Zee: Unstable Crawler Mine
     [233474] = true,              -- Mug'Zee: Gallagio Goon (they are within a cage with LoS restrictions)
     [231727] = true,              -- Gallywix: 1500-Pound "Dud"
-    [151579] = true               -- Operation: Mechagon - Shield Generator
+    [151579] = true,              -- Operation: Mechagon - Shield Generator
+    [219588] = true               -- Cinderbrew Meadery - Yes Man (etc.)
 }
 
 local requiredForInclusion = {
@@ -638,11 +639,13 @@ function ns.dumpNameplateInfo()
 end
 
 
-function ns.updateTarget( id, time, mine )
+function ns.updateTarget( id, time, mine, spellID )
     local spec = rawget( Hekili.DB.profile.specs, state.spec.id )
     if not spec or not spec.damage then return end
 
-    if id == state.GUID then
+    id, time, mine, spellID = ns.callHook( "filter_target", id, time, mine, spellID )
+
+    if id == nil or id == state.GUID then
         return
     end
 

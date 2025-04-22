@@ -1010,7 +1010,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         if auraInfo.funcs.onRemove then auraInfo.funcs.onRemove() end
 
     else
-        if not b.up then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        if not b.up or auraInfo.friendly then state.active_dot[ aura ] = min( state.group_members, state.active_dot[ aura ] + 1 ) end
 
         b.lastCount = b.count
         b.lastApplied = b.applied
@@ -1890,6 +1890,9 @@ do
         raid = 1,
         solo = 1,
         tanking = 1,
+        group_health = 1,
+        at_risk = 1,
+        raid_health = 1,
 
         -- Number of enemies.
         active_enemies = 1,
@@ -2089,6 +2092,40 @@ do
             elseif k == "raid" then t[k] = IsInRaid() and t.group_members > 5
             elseif k == "solo" then t[k] = t.group_members == 1
             elseif k == "tanking" then t[k] = t.role.tank and t.aggro
+            elseif k == "group_health" then
+                local health, maxHealth, absorbs = UnitHealth( "player" ), UnitHealthMax( "player" ), UnitGetTotalAbsorbs( "player" )
+                local count = 1
+
+                for i = 2, 5 do
+                    local token = "party" .. i
+                    if UnitExists( token ) and not UnitIsDeadOrGhost( token )then
+                        count = count + 1
+
+                        health = health + UnitHealth( token )
+                        maxHealth = maxHealth + UnitHealthMax( token )
+                        absorbs = absorbs + UnitGetTotalAbsorbs( token )
+                    end
+                end
+
+                local effHealthPct = 100 * ( health + absorbs ) / maxHealth
+                t[k] = effHealthPct
+
+            elseif k == "at_risk" then
+                local health, maxHealth, absorbs = UnitHealth( "player" ), UnitHealthMax( "player" ), UnitGetTotalAbsorbs( "player" )
+                local count = ( 100 * ( health + absorbs ) / maxHealth ) < 70 and 1 or 0
+
+                for i = 2, 5 do
+                    local token = "party" .. i
+                    if UnitExists( token ) and not UnitIsDeadOrGhost( token )then
+                        health = health + UnitHealth( token )
+                        maxHealth = maxHealth + UnitHealthMax( token )
+                        absorbs = absorbs + UnitGetTotalAbsorbs( token )
+
+                        if ( 100 * ( health + absorbs ) / maxHealth ) < 70 and 1 or 0 then count = count + 1 end
+                    end
+                end
+
+                t[k] = count
 
             -- Enemy counting.
             elseif k == "active_enemies" then
@@ -2910,6 +2947,8 @@ do
         real_ttd = 1,
         time_to_die = 1,
         unit = 1,
+        npcid = 1,
+        token = 1
     }, {
         __index = function( t, k )
             local expr, value = k:match( "^(.+)_?(%d+)$" )
@@ -3023,6 +3062,15 @@ do
 
                 return -1
 
+            elseif k == "token" then
+                for _, token in ipairs( { "focus", "mouseover", "target", "targettarget" } ) do
+                    if UnitExists( token ) and
+                        not UnitIsDeadOrGhost( token ) and
+                        UnitCanAttack( "player", token ) then
+                        t[k] = token
+                        break
+                    end
+                end
             end
 
             return rawget( t, k )

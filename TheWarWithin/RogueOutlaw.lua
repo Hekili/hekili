@@ -1306,7 +1306,7 @@ spec:RegisterAbilities( {
     killing_spree = {
         id = 51690,
         cast = 0,
-        cooldown = function() return 90 * ( talent.disorienting_strikes and 0.9 or 1 ) end,
+        cooldown = function() return 90 * ( talent.disorienting_strikes.enabled and 0.9 or 1 ) end,
         gcd = "totem",
         school = "physical",
 

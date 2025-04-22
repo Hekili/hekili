@@ -31,9 +31,10 @@ function Hekili:CmdLine( input )
     -- Trim the input once and handle empty or 'skeleton' input
     input = input and input:trim() or ""
 
-    if input == "" or input == "skeleton" then
-        self:HandleSkeletonCommand( input )
-        return true  -- Ensure return true to close chat box
+    -- open menu for `/hek` or `/hekili` without additional args
+    if input == "" then
+        ns.StartConfiguration()
+        return
     end
 
     -- Parse arguments into a table
@@ -86,7 +87,8 @@ function Hekili:CmdLine( input )
         dotinfo  = function () self:DumpDotInfo( args[2] ) end,
         recover  = function () self:HandleRecoverCommand() end,
         fix      = function () self:HandleFixCommand( args ) end,
-        snapshot = function () self:MakeSnapshot() end
+        snapshot = function () self:MakeSnapshot() end,
+        skeleton = function () self:HandleSkeletonCommand( input ) end
     }
 
     -- Execute the corresponding command handler or show error message
@@ -504,7 +506,6 @@ function Hekili:HandleSkeletonCommand( input )
         self:Print( "Addon will now gather specialization information. Select all talents and use all abilities for best results." )
     end
 end
-
 
 function Hekili:HandleProfileCommand( args )
     if not args[2] then

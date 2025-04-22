@@ -795,7 +795,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         state.this_list = listName
                         entryReplaced = true
                     elseif action == "trinket1" then
-                        if state.trinket.t1.usable and state.trinket.t1.ability and not Hekili:IsItemScripted( state.trinket.t1.ability, true ) then
+                        if state.trinket.t1.usable and state.trinket.t1.ability then -- and not Hekili:IsItemScripted( state.trinket.t1.ability, true ) then
                             action = state.trinket.t1.ability
                             ability = class.abilities[ action ]
                             state.this_action = action
@@ -808,7 +808,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             ability = nil
                         end
                     elseif action == "trinket2" then
-                        if state.trinket.t2.usable and state.trinket.t2.ability and not Hekili:IsItemScripted( state.trinket.t2.ability, true ) then
+                        if state.trinket.t2.usable and state.trinket.t2.ability then -- and not Hekili:IsItemScripted( state.trinket.t2.ability, true ) then
                             action = state.trinket.t2.ability
                             ability = class.abilities[ action ]
                             state.this_action = action

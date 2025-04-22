@@ -320,11 +320,21 @@ spec:RegisterAuras( {
         duration = 12,
         max_stack = 1
     },
-    echoes_of_great_sundering = {
+    echoes_of_great_sundering_eb = {
         id = 384088,
         duration = 25,
-        max_stack = 1,
-        copy = { 336217, "echoes_of_great_sundering_es", "echoes_of_great_sundering_eb" }
+        max_stack = 1
+    },
+    echoes_of_great_sundering_es = {
+        id = 336217,
+        duration = 25,
+        max_stack = 1
+    },
+    echoes_of_great_sundering = {
+        alias = { "echoes_of_great_sundering_eb", "echoes_of_great_sundering_es" },
+        aliasType = "buff",
+        aliasMode = "first",
+        duration = 25
     },
     -- Your next damage or healing spell will be cast a second time ${$s2/1000}.1 sec later for free.
     -- https://wowhead.com/beta/spell=320125
@@ -1031,6 +1041,9 @@ spec:RegisterStateExpr( "fb_extension_remaining", function()
     return further_beyond_duration_remains
 end )
 
+local filter_lvb = 0
+local resetFilter = function() filter_lvb = 0 end
+
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, school )
     -- Deaths/despawns.
     if death_events[ subtype ] then
@@ -1094,6 +1107,11 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
                 vesper_damage = vesper_damage - 1
             end
 
+        end
+
+        if spellID == spec.auras.ascendance.id and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) then
+            filter_lvb = GetTime()
+            C_Timer.After( 2, resetFilter )
         end
 
         if state.talent.elemental_equilibrium.enabled then
@@ -1368,8 +1386,6 @@ local TriggerStormkeeperRT = setfenv( function()
     rolling_thunder.last_tick = query_time
 end, state )
 
-local debugstack = debugstack
-
 spec:RegisterHook( "reset_precast", function ()
     local mh, _, _, mh_enchant, oh, _, _, oh_enchant = GetWeaponEnchantInfo()
 
@@ -1454,6 +1470,15 @@ end )
 spec:RegisterHook( "spend", function( amt, resource )
     if amt > 0 and resource == "maelstrom" and set_bonus.tww1_4pc > 0 then applyBuff( "maelstrom_surge" ) end
 end )
+
+
+spec:RegisterHook( "filter_target", function( id, time, mine, spellID )
+    if filter_lvb > 0 then
+        id = nil
+    end
+    return id, time, mine, spellID
+end )
+
 
 local fol_spells = {}
 
@@ -1880,7 +1905,7 @@ spec:RegisterAbilities( {
             end
 
             if talent.echoes_of_great_sundering.enabled or runeforge.echoes_of_great_sundering.enabled then
-                applyBuff( "echoes_of_great_sundering" )
+                applyBuff( "echoes_of_great_sundering_es" )
             end
 
             if talent.windspeakers_lava_resurgence.enabled or runeforge.windspeakers_lava_resurgence.enabled then
@@ -2065,7 +2090,7 @@ spec:RegisterAbilities( {
             end
 
             if talent.echoes_of_great_sundering.enabled or runeforge.echoes_of_great_sundering.enabled then
-                applyBuff( "echoes_of_great_sundering" )
+                applyBuff( "echoes_of_great_sundering_eb" )
             end
 
             if talent.windspeakers_lava_resurgence.enabled or runeforge.windspeakers_lava_resurgence.enabled then
@@ -2546,6 +2571,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
         nobuff = "tempest",
+        texture = 136048,
 
         handler = function ()
 
@@ -2615,6 +2641,7 @@ spec:RegisterAbilities( {
         spendType = "mana",
 
         startsCombat = true,
+        texture = 5927653,
         buff = "tempest",
 
         cycle = function() if talent.conductive_energy.enabled then return "lightning_rod" end end,

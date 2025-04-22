@@ -185,7 +185,9 @@ spec:RegisterAuras( {
     atonement = {
         id = 194384,
         duration = 15,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     body_and_soul = {
         id = 65081,
@@ -294,12 +296,9 @@ spec:RegisterAuras( {
     pain_suppression = {
         id = 33206,
         duration = 8,
-        max_stack = 1
-    },
-    power_infusion = {
-        id = 10060,
-        duration = 20,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        shared = "player"
     },
     power_of_the_dark_side = {
         id = 198069,
@@ -315,18 +314,24 @@ spec:RegisterAuras( {
         id = 21562,
         duration = 3600,
         max_stack = 1,
-        shared = "player" -- use anyone's buff on the player
+        shared = "player", -- use anyone's buff on the player
+        dot = "buff",
+        friendly = true
     },
     power_word_shield = {
         id = 17,
         duration = function() return 15 + ( 5 * talent.eternal_barrier.rank ) end,
         tick_time = 1,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     prayer_of_mending = {
         id = 41635,
         duration = 30,
-        max_stack = 5
+        max_stack = 5,
+        dot = "buff",
+        friendly = true
     },
     premonition_of_insight = {
         id = 428933,
@@ -346,7 +351,9 @@ spec:RegisterAuras( {
     premonition_of_solace_absorb = {
         id = 443526,
         duration = 15,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     psychic_scream = {
         id = 8122,
@@ -368,7 +375,9 @@ spec:RegisterAuras( {
         id = 139,
         duration = 15,
         tick_time = 3,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     schism = {
         id = 214621,
@@ -399,7 +408,9 @@ spec:RegisterAuras( {
     shield_of_absolution = {
         id = 394624,
         duration = 15,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        friendly = true
     },
     surge_of_light = {
         id = 114255,
@@ -430,7 +441,9 @@ spec:RegisterAuras( {
         id = 421453,
         duration = 6,
         max_stack = 1,
-        copy = 421454
+        copy = 421454,
+        dot = "buff",
+        friendly = true
     },
     vampiric_embrace = {
         id = 15286,
@@ -561,7 +574,6 @@ local InescapableTorment = setfenv( function ()
     elseif buff.voidwraith.up then buff.voidwraith.expires = buff.voidwraith.expires + 0.7
     end
 end, state )
-
 
 local insight_value = 7
 
@@ -809,7 +821,6 @@ spec:RegisterAbilities( {
         id = 8092,
         cast = 1.5,
         cooldown = 9,
-        hasteCD = true,
         gcd = "spell",
         school = "shadow",
         damage = 1,

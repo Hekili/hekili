@@ -595,7 +595,7 @@ spec:RegisterAuras( {
         copy = "thrill_of_the_fight_attack_speed"
     },
     thrill_of_the_fight_damage = {
-        id = 442688,
+        id = 1227062,
         duration = 10,
         max_stack = 1
     },
