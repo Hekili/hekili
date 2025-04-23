@@ -5790,8 +5790,8 @@ do
             v.lastCount = newTarget and 0 or v.count
             v.lastApplied = newTarget and 0 or v.applied
 
-            v.last_application = max( 0, v.applied, v.last_application )
-            v.last_expiry  = max( 0, v.expires, v.last_expiry )
+            v.last_application = max( 0, v.applied, v.last_application or 0 )
+            v.last_expiry  = max( 0, v.expires, v.last_expiry or 0 )
 
             v.count = 0
             v.expires = 0

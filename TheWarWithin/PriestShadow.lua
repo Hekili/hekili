@@ -1014,16 +1014,16 @@ spec:RegisterStateExpr( "pmultiplier", function ()
     return mult
 end )
 
+local unfurlingDarknessInitialized = false
+
 spec:RegisterHook( "reset_precast", function ()
     if buff.voidform.up or time > 0 then
         applyBuff( "shadowform" )
     end
 
-    if debuff.unfurling_darkness_cd.up then
-        debuff.unfurling_darkness_cd.expires = debuff.unfurling_darkness_cd.expires + 0.2
-        if Hekili.ActiveDebug then Hekili:Debug( "Extended Unfurling Darkness CD debuff to %.2f...", debuff.unfurling_darkness_cd.remains ) end
-        rawset( buff, "unfurling_darkness_cd", debuff.unfurling_darkness_cd )
-        if Hekili.ActiveDebug then Hekili:Debug( "Unfurling Darkness CD buff will reference the real debuff: %s = %s, %.2f = %.2f...", tostring( buff.unfurling_darkness_cd ), tostring( debuff.unfurling_darkness_cd ), buff.unfurling_darkness_cd.remains, debuff.unfurling_darkness_cd.remains ) end
+    if not unfurlingDarknessInitialized then
+        auras.player.buff.unfurling_darkness_cd = auras.player.debuff.unfurling_darkness_cd
+        rawset( debuff, "unfurling_darkness_cd", buff.unfurling_darkness_cd )
     end
 
     if pet.mindbender.active then

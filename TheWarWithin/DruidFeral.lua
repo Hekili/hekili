@@ -1686,7 +1686,7 @@ spec:RegisterAbilities( {
         cost = function () return max( 1, class.abilities.brutal_slash.spend ) end,
 
         handler = function ()
-            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1 + ( allow_crit_prediction and crit_pct_current * active_enemies >= 230 and 1 or 0 ), "combo_points" )
+            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1 + ( ( talent.primal_fury.enabled and settings.allow_crit_prediction and crit_pct_current * active_enemies >= 230 ) and 1 or 0 ), "combo_points" )
             if buff.bs_inc.up and talent.berserk_frenzy.enabled then applyDebuff( "target", "frenzied_assault" ) end
 
             if talent.bloodtalons.enabled then
@@ -2192,7 +2192,7 @@ spec:RegisterAbilities( {
         handler = function ()
             applyDebuff( "target", "lunar_inspiration" )
             debuff.lunar_inspiration.pmultiplier = persistent_multiplier
-            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1 + ( allow_crit_prediction and crit_pct_current >= 95 and 1 or 0 ), "combo_points" )
+            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1 + ( ( talent.primal_fury.enabled and settings.allow_crit_prediction and crit_pct_current >= 95 ) and 1 or 0 ), "combo_points" )
             if buff.bs_inc.up and talent.berserk_frenzy.enabled then applyDebuff( "target", "frenzied_assault" ) end
 
             if talent.bloodtalons.enabled then
@@ -2380,7 +2380,7 @@ spec:RegisterAbilities( {
                 check_bloodtalons()
             end
 
-            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1 + ( allow_crit_prediction and crit_pct_current >= 95 and 1 or 0 ), "combo_points" )
+            gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1 + ( ( talent.primal_fury.enabled and settings.allow_crit_prediction and crit_pct_current >= 95 ) and 1 or 0 ), "combo_points" )
 
 
         end,
@@ -2581,7 +2581,7 @@ spec:RegisterAbilities( {
                 check_bloodtalons()
             end
 
-            gain( 1 + ( talent.berserk.enabled and buff.bs_inc.up and 1 or 0 ) + ( talent.pouncing_strikes.enabled and buff.prowl.up and 1 or 0 ) + ( allow_crit_prediction and crit_pct_current >= 95 and 1 or 0 ), "combo_points" )
+            gain( 1 + ( talent.berserk.enabled and buff.bs_inc.up and 1 or 0 ) + ( talent.pouncing_strikes.enabled and buff.prowl.up and 1 or 0 ) + ( ( talent.primal_fury.enabled and settings.allow_crit_prediction and crit_pct_current >= 95 ) and 1 or 0 ), "combo_points" )
 
             removeStack( "clearcasting" )
         end,
@@ -2755,7 +2755,7 @@ spec:RegisterAbilities( {
         cost = function () return max( 1, class.abilities.swipe_cat.spend ) end,
 
         handler = function ()
-            gain( talent.berserk.enabled and 2 or 1 + ( allow_crit_prediction and crit_pct_current * active_enemies >= 230 and 1 or 0 ), "combo_points" )
+            gain( talent.berserk.enabled and 2 or 1 + ( ( talent.primal_fury.enabled and settings.allow_crit_prediction and crit_pct_current * active_enemies >= 230 ) and 1 or 0 ), "combo_points" )
 
             if talent.bloodtalons.enabled then
                 applyBuff( "bt_swipe" )
@@ -2846,7 +2846,7 @@ spec:RegisterAbilities( {
             end
 
             -- if target.within8 then
-                gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1 + ( allow_crit_prediction and crit_pct_current * active_enemies >= 230 and 1 or 0 ), "combo_points" )
+                gain( talent.berserk.enabled and buff.bs_inc.up and 2 or 1 + ( ( talent.primal_fury.enabled and settings.allow_crit_prediction and crit_pct_current * active_enemies >= 230 ) and 1 or 0 ), "combo_points" )
             -- end
 
             if talent.bloodtalons.enabled then
@@ -3022,10 +3022,6 @@ spec:RegisterSetting( "allow_crit_prediction", true, {
     type = "toggle",
     width = "full",
 } )
-
-spec:RegisterVariable( "allow_crit_prediction", function()
-    return settings.allow_crit_prediction ~= false
-end )
 
 spec:RegisterSetting( "lazy_swipe", false, {
     name = strformat( "%s: Don't %s in AOE", Hekili:GetSpellLinkWithTexture( spec.talents.wild_slashes[2] ), Hekili:GetSpellLinkWithTexture( spec.abilities.shred.id ) ),

@@ -1132,7 +1132,7 @@ local HekiliSpecMixin = {
 
             -- Register the pet and handle the copy field if it exists.
             if copy then
-                self:RegisterPet( token, id, spell, duration, copy )
+                self:RegisterPet( token, id, spell, duration, type( copy ) == "string" and copy or unpack( copy ) )
             else
                 self:RegisterPet( token, id, spell, duration )
             end

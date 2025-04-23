@@ -1181,8 +1181,12 @@ spec:RegisterAbilities( {
         toggle = "defensives",
 
         handler = function ()
-            buff.ignore_pain.v1 = min( 0.3 * health.max, buff.ignore_pain.v1 + stat.attack_power * 4.375 * ( 1 + stat.versatility_atk_mod / 100 ) )
-            applyBuff( "ignore_pain", nil, floor( buff.ignore_pain.v1 / ( 0.3 * health.max ) * 100 ), buff.ignore_pain.v1 )
+            -- Magic constants from Wowhead 2025-04-22.
+            local onCastAbsorb = stat.attack_power * 5.75 * ( 1 + 0.2 * talent.no_stranger_to_pain.rank ) * ( 1 + stat.versatility_atk_mod ) * 2
+            local maxAbsorb = 0.3 * health.max
+            buff.ignore_pain.v1 = min( maxAbsorb, buff.ignore_pain.v1 + onCastAbsorb )
+            -- The stack count for Ignore Pain is the percent of the maximum absorb.
+            applyBuff( "ignore_pain", nil, floor( buff.ignore_pain.v1 / maxAbsorb * 100 ), buff.ignore_pain.v1 )
         end,
     },
 

@@ -1619,7 +1619,7 @@ do
                                     local earliest_time = b.EarliestTime or delay
                                     if delay > earliest_time + 0.05 then
                                         if conf.delays.fade then unusable = true end
-                                        if conf.delays.desaturate then desaturate = true end
+                                        if conf.delays.desaturate then desaturated = true end
                                     end
                                 end
 
@@ -2414,9 +2414,9 @@ do
                 self.refreshTimer = 0
 
                 self.activeThread = coroutine.create( Hekili.Update )
+
                 self.activeThreadTime = 0
                 self.activeThreadStart = debugprofilestop()
-
                 self.activeThreadFrames = 0
 
                 if not self.firstThreadCompleted then
@@ -2426,9 +2426,9 @@ do
                     local spf = 1000 / ( rate > 0 and rate or 100 )
 
                     if HekiliEngine.threadUpdates then
-                        Hekili.maxFrameTime = 0.9 * max( 7, min( 16.667, spf, 1.1 * HekiliEngine.threadUpdates.meanWorkTime / floor( HekiliEngine.threadUpdates.meanFrames ) ) )
+                        Hekili.maxFrameTime = 0.8 * max( 7, min( 16.667, spf, 1.1 * HekiliEngine.threadUpdates.meanWorkTime / floor( HekiliEngine.threadUpdates.meanFrames ) ) )
                     else
-                        Hekili.maxFrameTime = 0.9 * max( 7, min( 16.667, spf ) )
+                        Hekili.maxFrameTime = 0.8 * max( 7, min( 16.667, spf ) )
                     end
                 end
 
