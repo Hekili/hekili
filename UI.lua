@@ -63,15 +63,47 @@ local function GetPersonalResourceAnchor()
     return nil
 end
 
+local function GetCooldownManagerAnchor( anchorTarget )
+    if not C_CooldownViewer or not C_CooldownViewer.IsCooldownViewerAvailable() then return nil end
+
+    local rootFrames = {
+        COOLDOWN_ESSENTIALS = _G.EssentialCooldownViewer,
+        COOLDOWN_UTILITY    = _G.UtilityCooldownViewer
+    }
+
+    local root = rootFrames[ anchorTarget ]
+    if not root then
+        Hekili:Debug( "Cooldown Manager anchorTarget '%s' does not map to a root frame.", anchorTarget )
+        return nil
+    end
+
+    Hekili:Debug( "Cooldown Manager root for anchorTarget '%s': %s", anchorTarget, tostring(root) )
+
+    for i = 1, root:GetNumChildren() do
+        local child = select(i, root:GetChildren())
+        if child and child:IsShown() then
+            Hekili:Debug( "Selected Cooldown Manager anchor (%s): %s", anchorTarget, tostring(child) )
+            return child
+        end
+    end
+
+    Hekili:Debug( "No visible child frame found for Cooldown Manager anchorTarget (%s).", anchorTarget )
+    return nil
+end
+
 local function TrySetAnchor( d, conf )
     local anchor = Hekili:GetActiveAnchorFrame( conf )
 
     if not anchor or not anchor:IsShown() then
-        -- Do not anchor to anything; fall back to screen position in visibility update
         return false
     end
 
     d:ClearAllPoints()
+
+    if conf.anchorTarget ~= "SCREEN" then
+        d:SetParent( anchor )
+    end
+
     d:SetPoint(
         conf.anchorPoint or "CENTER",
         anchor,
@@ -79,10 +111,11 @@ local function TrySetAnchor( d, conf )
         conf.anchorX or 0,
         conf.anchorY or 0
     )
+
     return true
 end
 
-
+Hekili.TrySetAnchor = TrySetAnchor
 
 local function HandlePRDLoaded( event, unit )
     if unit == "player" then
@@ -1068,9 +1101,12 @@ do
         d:ClearAllPoints()
 
         -- Determine anchor
-        TrySetAnchor( d, conf )
+        local anchored = TrySetAnchor( d, conf )
 
-        d:SetParent( UIParent )
+        -- If not anchored to something else, fall back to screen parent.
+        if not anchored or conf.anchorTarget == "SCREEN" then
+            d:SetParent( UIParent )
+        end
 
         d:SetFrameStrata( conf.frameStrata or "MEDIUM" )
         d:SetFrameLevel( conf.frameLevel or ( 10 * d.index ) )
@@ -1972,128 +2008,50 @@ do
 
             for i = 1, self.numIcons do
                 local button = self.Buttons[ i ]
+                if not button then break end
 
-                if i == 1 then
-                    lPos = button:GetLeft()
-                    rPos = button:GetRight()
-                    tPos = button:GetTop()
-                    bPos = button:GetBottom()
+                local bLeft   = button:GetLeft()
+                local bRight  = button:GetRight()
+                local bTop    = button:GetTop()
+                local bBottom = button:GetBottom()
 
-                    left = button
-                    right = button
-                    top = button
-                    bottom = button
-                else
-                    if button:GetLeft() < lPos then
-                        lPos = button:GetLeft()
+                if bLeft and bRight and bTop and bBottom then
+                    if i == 1 then
+                        lPos = bLeft
+                        rPos = bRight
+                        tPos = bTop
+                        bPos = bBottom
+
                         left = button
-                    end
-
-                    if button:GetRight() > rPos then
-                        rPos = button:GetRight()
                         right = button
-                    end
-
-                    if button:GetTop() > tPos then
-                        tPos = button:GetTop()
                         top = button
-                    end
-
-                    if button:GetBottom() < bPos then
-                        bPos = button:GetBottom()
                         bottom = button
+                    else
+                        if bLeft < lPos then
+                            lPos = bLeft
+                            left = button
+                        end
+
+                        if bRight > rPos then
+                            rPos = bRight
+                            right = button
+                        end
+
+                        if bTop > tPos then
+                            tPos = bTop
+                            top = button
+                        end
+
+                        if bBottom < bPos then
+                            bPos = bBottom
+                            bottom = button
+                        end
                     end
                 end
             end
 
             return left, right, top, bottom
         end
-
-        -- function d:UpdatePerformance( now, used, newRecs )
-            --[[
-            if not InCombatLockdown() then
-                self.combatUpdates.last = 0
-                return
-            elseif self.combatUpdates.last == 0 then
-                self.combatUpdates.last = now - used
-            end
-
-            if used == nil then return end
-            -- used = used / 1000 -- ms to sec.
-
-            if self.combatTime.samples == 0 then
-                self.combatTime.fastest = used
-                self.combatTime.slowest = used
-                self.combatTime.average = used
-
-                self.combatTime.samples = 1
-            else
-                if used < self.combatTime.fastest then self.combatTime.fastest = used end
-                if used > self.combatTime.slowest then
-                    self.combatTime.slowest = used
-                end
-
-                self.combatTime.average = ( ( self.combatTime.average * self.combatTime.samples ) + used ) / ( self.combatTime.samples + 1 )
-                self.combatTime.samples = self.combatTime.samples + 1
-            end
-
-            if self.combatUpdates.samples == 0 or self.combatUpdates.last == 0 then
-                if self.combatUpdates.last == 0 then
-                    self.combatUpdates.last = now
-                else
-                    local interval = now - self.combatUpdates.last
-                    self.combatUpdates.last = now
-
-                    self.combatUpdates.shortest = interval
-                    self.combatUpdates.longest = interval
-                    self.combatUpdates.average = interval
-
-                    self.combatUpdates.samples = 1
-                end
-            else
-                local interval = now - self.combatUpdates.last
-                self.combatUpdates.last = now
-
-                if interval < self.combatUpdates.shortest then
-                    self.combatUpdates.shortest = interval
-                    self.combatUpdates.shortEvents = nil
-
-                    local e = 0
-                    for k in pairs( self.eventsTriggered ) do
-                        if e == 0 then self.combatUpdates.shortEvents = k; e = 1
-                        else self.combatUpdates.shortEvents = self.combatUpdates.shortEvents .. "|" .. k end
-                    end
-                end
-
-                if interval > self.combatUpdates.longest  then
-                    self.combatUpdates.longest = interval
-                    self.combatUpdates.longEvents = nil
-
-                    local e = 0
-                    for k in pairs( self.eventsTriggered ) do
-                        if e == 0 then self.combatUpdates.longEvents = k; e = 1
-                        else self.combatUpdates.longEvents = self.combatUpdates.longEvents .. "|" .. k end
-                    end
-                end
-
-                self.combatUpdates.average = ( ( self.combatUpdates.average * self.combatUpdates.samples ) + interval ) / ( self.combatUpdates.samples + 1 )
-                self.combatUpdates.samples = self.combatUpdates.samples + 1
-            end
-
-            if self.id == "Primary" then
-                self.successEvents = self.successEvents or {}
-                self.failEvents = self.failEvents or {}
-
-                local events = newRecs and self.successEvents or self.failEvents
-
-                for k in pairs( self.eventsTriggered ) do
-                    if events[ k ] then events[ k ] = events[ k ] + 1
-                    else events[ k ] = 1 end
-                end
-
-                table.wipe( self.eventsTriggered )
-            end ]]
-        -- end
 
         ns.queue[id] = ns.queue[id] or {}
         d.Recommendations = ns.queue[id]
@@ -3227,28 +3185,29 @@ function Hekili:SaveCoordinates()
             -- Only save if we're not anchoring to something restricted (e.g., PRD, nameplates)
             if not display:IsAnchoringRestricted() then
                 local point, anchor, relPoint, x, y = display:GetPoint()
-                conf.anchorPoint = point or "CENTER"
-                conf.relativePoint = relPoint or "CENTER"
-                conf.anchorX = x or 0
-                conf.anchorY = y or 0
 
-                local prdProxy = Hekili:GetProxyFrame( "PRD" )
-                local targetProxy = Hekili:GetProxyFrame( "TARGET" )
-                if anchor == prdProxy then
-                    conf.anchorTarget = "PRD"
-                elseif anchor == ns.UI.Displays.Primary then
-                    conf.anchorTarget = "PRIMARY"
-                elseif anchor == UIParent then
-                    conf.anchorTarget = "SCREEN"
-                elseif anchor == targetProxy then
-                    conf.anchorTarget = "TARGET"
+                -- Save fallback screen position if using SCREEN
+                if conf.anchorTarget == "SCREEN" then
+                    conf.x = x or 0
+                    conf.y = y or 0
                 else
-                    conf.anchorTarget = "SCREEN"
-                end
+                    -- Save anchor-related positioning
+                    conf.anchorPoint = point or "CENTER"
+                    conf.relativePoint = relPoint or "CENTER"
+                    conf.anchorX = x or 0
+                    conf.anchorY = y or 0
 
-            else
-                -- Restricted anchor; do not update stored coordinates
-                -- Hekili:Print("Skipping save for '" .. id .. "' due to restricted anchor.")
+                    local prdProxy = Hekili:GetProxyFrame( "PRD" )
+                    local targetProxy = Hekili:GetProxyFrame( "TARGET" )
+
+                    if anchor == prdProxy then
+                        conf.anchorTarget = "PRD"
+                    elseif anchor == ns.UI.Displays.Primary then
+                        conf.anchorTarget = "PRIMARY"
+                    elseif anchor == targetProxy then
+                        conf.anchorTarget = "TARGET"
+                    end
+                end
             end
         end
     end
@@ -3290,6 +3249,7 @@ function Hekili:GetProxyFrame( anchorTarget )
 end
 
 function Hekili:UpdateTargetNameplateProxy()
+
     local proxy = Hekili:GetProxyFrame( "TARGET" )
     if not proxy then return end
 
@@ -3322,13 +3282,10 @@ function Hekili:GetActiveAnchorFrame( conf )
         local proxy = self:GetProxyFrame( "TARGET" )
         return proxy:IsShown() and proxy or nil
 
-    elseif target == "COOLDOWN" then
-        -- In future patch when available
-        return self.CooldownManager
-
-    else
-        return nil
+    elseif target == "COOLDOWN_ESSENTIALS" or target == "COOLDOWN_UTILITY" then
+        return GetCooldownManagerAnchor( target )
     end
+        return nil
 end
 
 function Hekili:IsRealAnchorAvailable( anchorTarget )
@@ -3343,8 +3300,10 @@ function Hekili:IsRealAnchorAvailable( anchorTarget )
         local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit and C_NamePlate.GetNamePlateForUnit( "target" )
         return plate and plate:IsShown()
 
-    elseif anchorTarget == "COOLDOWN" then
-        return self.CooldownManager and self.CooldownManager:IsShown()
+    elseif anchorTarget == "COOLDOWN_ESSENTIALS" or anchorTarget == "COOLDOWN_UTILITY" then
+        local anchor = GetCooldownManagerAnchor( anchorTarget )
+        return anchor and anchor:IsShown()
+
     end
 
     return false

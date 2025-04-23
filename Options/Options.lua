@@ -1364,7 +1364,7 @@ return end
                     main = {
                         type = 'group',
                         name = "Icons",
-                        desc = "Includes display position, icon size/shape, etc.",
+                        desc = "Includes display position, icon size/shape, anchoring, and layout settings.",
                         order = 1,
 
                         args = {
@@ -1388,12 +1388,12 @@ return end
                             numIcons = {
                                 type = 'range',
                                 name = "Icons Shown",
-                                desc = "Specify the number of recommendations to show.  Each icon shows an additional step forward in time.",
+                                desc = "Specify the number of recommendations to show.  Each icon shows an additional step forward in time and costs more CPU processing time.",
                                 min = 1,
                                 max = 10,
                                 step = 1,
                                 bigStep = 1,
-                                width = "full",
+                                width = 1.5,
                                 order = 1,
                                 disabled = function()
                                     return name == "Multi"
@@ -1421,7 +1421,7 @@ return end
                                 softMax = 15,
                                 max = 30,
                                 step = 0.1,
-                                width = "full",
+                                width = 1.5,
                                 order = 2,
                                 disabled = function()
                                     return name == "Multi"
@@ -1438,20 +1438,12 @@ return end
                                 end,
                             },
 
-                            pos = {
+                            fallbackPosition = {
                                 type = "group",
+                                name = "Position When Not Anchored",
                                 inline = true,
-                                name = function( info ) rangeXY( info )
-return "Position" end,
-                                order = 10,
-
+                                order = 5,
                                 args = {
-                                    fallbackXYHeader = {
-                                        type = "description",
-                                        name = "Position When Not Anchored:",
-                                        order = 0,
-                                        fontSize = "medium",
-                                    },
                                     x = {
                                         type = "range",
                                         name = "X",
@@ -1461,7 +1453,7 @@ return "Position" end,
                                         max = 512,
                                         step = 1,
 
-                                        order = 1,
+                                        order = 2,
                                         width = 1.49,
 
                                         disabled = function()
@@ -1477,36 +1469,46 @@ return "Position" end,
                                         max = 384,
                                         step = 1,
 
-                                        order = 2,
+                                        order = 2.5,
                                         width = 1.49,
 
                                         disabled = function()
                                             return name == "Multi"
                                         end,
                                     },
+                                }
+                            },
 
-                                    spacer1 = {
-                                        type = "description",
-                                        name = " ",
-                                        width = "full",
-                                        order = 3,
-                                    },
+                            anchorSettings = {
+                                type = "group",
+                                inline = true,
+                                name = "Anchor Settings",
+                                order = 6,
+                                args = {
                                     anchorTarget = {
                                         type = "select",
-                                        name = "Anchor To",
-                                        values = {
-                                            SCREEN  = "No Anchor",
-                                            PRIMARY = "Hekili Primary Display",
-                                            PRD     = "Personal Resource Display",
-                                            TARGET  = "Target Nameplate"
-                                            -- COOLDOWN = "Cooldown Manager"
-                                        },
-                                        order = 4,
-                                        width = "double",
+                                        name = "Anchor To Frame",
+                                        values = function(info)
+                                            local name = info[2]
+                                            local values = {
+                                                SCREEN               = "No Anchor",
+                                                COOLDOWN_ESSENTIALS = "Blizz Cooldown Manager: Essential Cooldowns",
+                                                COOLDOWN_UTILITY    = "Blizz Cooldown Manager: Utility Cooldowns",
+                                                PRD                 = "Personal Resource Display",
+                                                TARGET              = "Target Nameplate"
+                                            }
+
+                                            if name ~= "Primary" then
+                                                values.PRIMARY = "Hekili Primary Display"
+                                            end
+
+                                            return values
+                                        end,
+                                        order = 1,
+                                        width = 1.49,
                                         get = function(info)
                                             local name = info[2]
-                                            local display = Hekili.DB.profile.displays[ name ]
-                                            return display.anchorTarget
+                                            return Hekili.DB.profile.displays[ name ].anchorTarget
                                         end,
                                         set = function(info, val)
                                             local name = info[2]
@@ -1514,7 +1516,6 @@ return "Position" end,
                                             display.anchorTarget = val
 
                                             local frame = ns.UI.Displays[ name ]
-
                                             if frame then
                                                 frame:ClearAllPoints()
 
@@ -1527,8 +1528,7 @@ return "Position" end,
                                                         frame.Backdrop:SetParent( UIParent )
                                                     end
                                                 else
-                                                    -- optional: force anchoring to the new target if available
-                                                    TrySetAnchor( frame, display )
+                                                    Hekili.TrySetAnchor( frame, display )
                                                 end
                                             end
 
@@ -1536,15 +1536,16 @@ return "Position" end,
                                             Hekili:BuildUI()
                                         end
                                     },
+
                                     spacer2 = {
                                         type = "description",
                                         name = " ",
                                         width = "full",
-                                        order = 5,
+                                        order = 2,
                                     },
                                     anchorFrame = {
                                         type = "select",
-                                        name = "Anchor To",
+                                        name = "Attach To its",
                                         desc = "Choose which part of the anchor target (e.g., PRD, Target Nameplate, etc.) this display should attach to.",
                                         values = {
                                             TOP = "Top",
@@ -1557,7 +1558,8 @@ return "Position" end,
                                             LEFT = "Left",
                                             RIGHT = "Right",
                                         },
-                                        order = 6,
+                                        order = 3,
+                                        width = 1.49,
                                         disabled = function(info)
                                             local display = Hekili.DB.profile.displays[ info[2] ]
                                             return display.anchorTarget == "SCREEN"
@@ -1589,7 +1591,8 @@ return "Position" end,
                                             LEFT = "Left",
                                             RIGHT = "Right",
                                         },
-                                        order = 7,
+                                        order = 4,
+                                        width = 1.49,
                                         disabled = function(info)
                                             local display = Hekili.DB.profile.displays[ info[2] ]
                                             return display.anchorTarget == "SCREEN"
@@ -1606,12 +1609,18 @@ return "Position" end,
                                             Hekili:BuildUI()
                                         end
                                     },
-
+                                    spacer3 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 5,
+                                    },
                                     anchorX = {
                                         type = "range",
                                         name = "X Offset",
                                         min = -500, max = 500, step = 1,
-                                        order = 8,
+                                        order = 6,
+                                        width = 1.49,
                                         disabled = function(info)
                                             local display = Hekili.DB.profile.displays[ info[2] ]
                                             return display.anchorTarget == "SCREEN"
@@ -1632,7 +1641,8 @@ return "Position" end,
                                         type = "range",
                                         name = "Y Offset",
                                         min = -500, max = 500, step = 1,
-                                        order = 9,
+                                        order = 6.5,
+                                        width = 1.49,
                                         disabled = function(info)
                                             local display = Hekili.DB.profile.displays[ info[2] ]
                                             return display.anchorTarget == "SCREEN"
@@ -1654,7 +1664,8 @@ return "Position" end,
                                         name = "Fallback Alpha",
                                         desc = "When the chosen anchor is not available (e.g., PRD or Target Nameplate hidden), set the transparency of the display.",
                                         min = 0, max = 1, step = 0.01,
-                                        order = 10,
+                                        order = 7,
+                                        width = 1.49,
                                         get = function(info)
                                             local name = info[2]
                                             local display = Hekili.DB.profile.displays[name]
@@ -1689,7 +1700,7 @@ return "Position" end,
                                 type = "group",
                                 name = "Primary Icon",
                                 inline = true,
-                                order = 15,
+                                order = 7,
                                 args = {
                                     primaryWidth = {
                                         type = "range",
@@ -1749,53 +1760,11 @@ return "Position" end,
                                 },
                             },
 
-                            advancedFrame = {
-                                type = "group",
-                                name = "Display Frame Layer",
-                                inline = true,
-                                order = 99,
-                                args = {
-                                    frameStrata = {
-                                        type = "select",
-                                        name = "Strata",
-                                        desc =  "Frame Strata determines which graphical layer that this display is drawn on.\n\n" ..
-                                                "The default layer is |cFFFFD100MEDIUM|r.",
-                                        values = {
-                                            "BACKGROUND",
-                                            "LOW",
-                                            "MEDIUM",
-                                            "HIGH",
-                                            "DIALOG",
-                                            "FULLSCREEN",
-                                            "FULLSCREEN_DIALOG",
-                                            "TOOLTIP"
-                                        },
-                                        width = "full",
-                                        order = 1,
-                                    },
-                                },
-                            },
-
-                            queuedElvuiCooldown = {
-                                type = "toggle",
-                                name = "Apply ElvUI Cooldown Style to Queued Icons",
-                                desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
-                                width = "full",
-                                order = 23,
-                                get = function( info )
-                                    return Hekili.DB.profile.displays[ name ].queue.elvuiCooldown
-                                end,
-                                set = function( info, val )
-                                    Hekili.DB.profile.displays[ name ].queue.elvuiCooldown = val
-                                end,
-                                hidden = function () return _G["ElvUI"] == nil end,
-                            },
-
                             iconSizeGroup = {
                                 type = "group",
                                 inline = true,
                                 name = "Queued Icon Size",
-                                order = 21,
+                                order = 8,
                                 args = {
                                     width = {
                                         type = 'range',
@@ -1951,6 +1920,48 @@ return "Position" end,
                                         end,
                                     },
                                 }
+                            },
+
+                            advancedFrame = {
+                                type = "group",
+                                name = "Display Frame Layer",
+                                inline = true,
+                                order = 99,
+                                args = {
+                                    frameStrata = {
+                                        type = "select",
+                                        name = "Strata",
+                                        desc =  "Frame Strata determines which graphical layer that this display is drawn on.\n\n" ..
+                                                "The default layer is |cFFFFD100MEDIUM|r.",
+                                        values = {
+                                            "BACKGROUND",
+                                            "LOW",
+                                            "MEDIUM",
+                                            "HIGH",
+                                            "DIALOG",
+                                            "FULLSCREEN",
+                                            "FULLSCREEN_DIALOG",
+                                            "TOOLTIP"
+                                        },
+                                        width = 1.49,
+                                        order = 1,
+                                    },
+                                },
+                            },
+
+                            queuedElvuiCooldown = {
+                                type = "toggle",
+                                name = "Apply ElvUI Cooldown Style to Queued Icons",
+                                desc = "If ElvUI is installed, you can apply the ElvUI cooldown style to your queued icons.\n\nDisabling this setting requires you to reload your UI (|cFFFFD100/reload|r).",
+                                width = "full",
+                                order = 23,
+                                get = function( info )
+                                    return Hekili.DB.profile.displays[ name ].queue.elvuiCooldown
+                                end,
+                                set = function( info, val )
+                                    Hekili.DB.profile.displays[ name ].queue.elvuiCooldown = val
+                                end,
+                                hidden = function () return _G["ElvUI"] == nil end,
                             },
                         },
                     },
