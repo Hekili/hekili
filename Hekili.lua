@@ -344,7 +344,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             end
 
             sort( pbOrder )
-            DevTool:AddData( playerBuffs, "PB" )
+            if DevTool then DevTool:AddData( playerBuffs, "PB" ) end
 
 
             local playerDebuffs = {}
@@ -463,7 +463,7 @@ function Hekili:SaveDebugSnapshot( dispName )
             end
 
             sort( tbOrder )
-            DevTool:AddData( targetBuffs, "TB" )
+            if DevTool then DevTool:AddData( targetBuffs, "TB" ) end
 
 
             local targetDebuffs = {}
