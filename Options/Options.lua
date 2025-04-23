@@ -1488,14 +1488,18 @@ return end
                                     anchorTarget = {
                                         type = "select",
                                         name = "Anchor To Frame",
+                                        order = 1,
+                                        width = 1.49,
                                         values = function(info)
                                             local name = info[2]
                                             local values = {
-                                                SCREEN               = "No Anchor",
-                                                COOLDOWN_ESSENTIALS = "Blizz Cooldown Manager: Essential Cooldowns",
-                                                COOLDOWN_UTILITY    = "Blizz Cooldown Manager: Utility Cooldowns",
-                                                PRD                 = "Personal Resource Display",
-                                                TARGET              = "Target Nameplate"
+                                                SCREEN                   = "No Anchor",
+                                                COOLDOWN_ESSENTIALS      = "Blizz CD Manager: Essential Cooldowns",
+                                                COOLDOWN_UTILITY         = "Blizz CD Manager: Utility Cooldowns",
+                                                COOLDOWN_TRACKED_BUFFS   = "Blizz CD Manager: Tracked Buffs",
+                                                COOLDOWN_TRACKED_BARS    = "Blizz CD Manager: Tracked Bars",
+                                                PRD                      = "Personal Resource Display",
+                                                TARGET                   = "Target Nameplate",
                                             }
 
                                             if name ~= "Primary" then
@@ -1504,31 +1508,30 @@ return end
 
                                             return values
                                         end,
-                                        order = 1,
-                                        width = 1.49,
                                         get = function(info)
                                             local name = info[2]
-                                            return Hekili.DB.profile.displays[ name ].anchorTarget
+                                            return Hekili.DB.profile.displays[name].anchorTarget
                                         end,
                                         set = function(info, val)
                                             local name = info[2]
-                                            local display = Hekili.DB.profile.displays[ name ]
+                                            local display = Hekili.DB.profile.displays[name]
                                             display.anchorTarget = val
 
-                                            local frame = ns.UI.Displays[ name ]
+                                            local frame = ns.UI.Displays[name]
                                             if frame then
                                                 frame:ClearAllPoints()
 
                                                 if val == "SCREEN" then
-                                                    frame:SetParent( UIParent )
-                                                    frame:SetPoint( "CENTER", UIParent, "CENTER", display.x or 0, display.y or 0 )
-                                                    frame:SetMovable( true )
-                                                    frame:EnableMouse( true )
+                                                    frame:SetParent(UIParent)
+                                                    frame:SetPoint("CENTER", UIParent, "CENTER", display.x or 0, display.y or 0)
+                                                    frame:SetMovable(true)
+                                                    frame:EnableMouse(true)
+
                                                     if frame.Backdrop then
-                                                        frame.Backdrop:SetParent( UIParent )
+                                                        frame.Backdrop:SetParent(UIParent)
                                                     end
                                                 else
-                                                    Hekili.TrySetAnchor( frame, display )
+                                                    Hekili.TrySetAnchor(frame, display)
                                                 end
                                             end
 
@@ -1536,6 +1539,7 @@ return end
                                             Hekili:BuildUI()
                                         end
                                     },
+
 
                                     spacer2 = {
                                         type = "description",

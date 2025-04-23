@@ -63,31 +63,29 @@ local function GetPersonalResourceAnchor()
     return nil
 end
 
-local function GetCooldownManagerAnchor( anchorTarget )
+local function GetCooldownManagerAnchor( category )
     if not C_CooldownViewer or not C_CooldownViewer.IsCooldownViewerAvailable() then return nil end
 
     local rootFrames = {
-        COOLDOWN_ESSENTIALS = _G.EssentialCooldownViewer,
-        COOLDOWN_UTILITY    = _G.UtilityCooldownViewer
+        COOLDOWN_ESSENTIALS     = _G.EssentialCooldownViewer,
+        COOLDOWN_UTILITY        = _G.UtilityCooldownViewer,
+        COOLDOWN_TRACKED_BUFFS  = _G.BuffIconCooldownViewer,
+        COOLDOWN_TRACKED_BARS   = _G.BuffBarCooldownViewer,
     }
 
-    local root = rootFrames[ anchorTarget ]
+    local root = rootFrames[ category ]
     if not root then
-        Hekili:Debug( "Cooldown Manager anchorTarget '%s' does not map to a root frame.", anchorTarget )
+        Hekili:Print( "Cooldown Manager anchor category '%s' not mapped to a root frame.", category )
         return nil
     end
-
-    Hekili:Debug( "Cooldown Manager root for anchorTarget '%s': %s", anchorTarget, tostring(root) )
 
     for i = 1, root:GetNumChildren() do
         local child = select(i, root:GetChildren())
         if child and child:IsShown() then
-            Hekili:Debug( "Selected Cooldown Manager anchor (%s): %s", anchorTarget, tostring(child) )
             return child
         end
     end
 
-    Hekili:Debug( "No visible child frame found for Cooldown Manager anchorTarget (%s).", anchorTarget )
     return nil
 end
 
@@ -3282,8 +3280,13 @@ function Hekili:GetActiveAnchorFrame( conf )
         local proxy = self:GetProxyFrame( "TARGET" )
         return proxy:IsShown() and proxy or nil
 
-    elseif target == "COOLDOWN_ESSENTIALS" or target == "COOLDOWN_UTILITY" then
-        return GetCooldownManagerAnchor( target )
+    elseif target == "COOLDOWN_ESSENTIALS"
+    or target == "COOLDOWN_UTILITY"
+    or target == "COOLDOWN_TRACKED_BUFFS"
+    or target == "COOLDOWN_TRACKED_BARS" then
+
+    return GetCooldownManagerAnchor(target)
+
     end
         return nil
 end
@@ -3300,10 +3303,13 @@ function Hekili:IsRealAnchorAvailable( anchorTarget )
         local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit and C_NamePlate.GetNamePlateForUnit( "target" )
         return plate and plate:IsShown()
 
-    elseif anchorTarget == "COOLDOWN_ESSENTIALS" or anchorTarget == "COOLDOWN_UTILITY" then
+    elseif anchorTarget == "COOLDOWN_ESSENTIALS"
+        or anchorTarget == "COOLDOWN_UTILITY"
+        or anchorTarget == "COOLDOWN_TRACKED_BUFFS"
+        or anchorTarget == "COOLDOWN_TRACKED_BARS" then
+
         local anchor = GetCooldownManagerAnchor( anchorTarget )
         return anchor and anchor:IsShown()
-
     end
 
     return false
