@@ -2363,7 +2363,7 @@ do
 
         if Hekili.DB.profile.enabled and not Hekili.Pause then
             self.refreshRate = self.refreshRate or 0.5
-            self.combatRate = self.combatRate or 0.05
+            self.combatRate = self.combatRate or 0.2
 
             local thread = self.activeThread
 
@@ -2391,9 +2391,9 @@ do
                     local spf = 1000 / ( rate > 0 and rate or 100 )
 
                     if HekiliEngine.threadUpdates then
-                        Hekili.maxFrameTime = 0.9 * max( 18, min( 16.667, spf, 1.1 * HekiliEngine.threadUpdates.meanWorkTime / floor( HekiliEngine.threadUpdates.meanFrames ) ) )
+                        Hekili.maxFrameTime = 0.8 * max( 7, min( 16.667, spf, 1.1 * HekiliEngine.threadUpdates.meanWorkTime / floor( HekiliEngine.threadUpdates.meanFrames ) ) )
                     else
-                        Hekili.maxFrameTime = 0.9 * max( 18, min( 16.667, spf ) )
+                        Hekili.maxFrameTime = 0.8 * max( 7, min( 16.667, spf ) )
                     end
                 end
 
@@ -2430,7 +2430,7 @@ do
                     self.activeThread = nil
 
                     self.refreshRate = 0.5
-                    self.combatRate = 0.05
+                    self.combatRate = 0.2
 
                     if ok then
                         if self.firstThreadCompleted and not self.DontProfile then self:UpdatePerformance() end
