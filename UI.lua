@@ -99,7 +99,13 @@ local function TrySetAnchor( d, conf )
     d:ClearAllPoints()
 
     if conf.anchorTarget ~= "SCREEN" then
-        d:SetParent( anchor )
+        if conf.obeyAnchorScale == false then
+            d:SetParent( UIParent )
+            d:SetScale( Hekili:GetScale() )
+        else
+            d:SetParent( anchor )
+            d:SetScale( 1 ) -- reset to inherit
+        end
     end
 
     d:SetPoint(
@@ -320,12 +326,11 @@ function ns.StartConfiguration( external )
         end
 
         if ns.UI.Buttons[ i ][ 1 ] and Hekili.DB.profile.displays[ i ] then
-            -- if not Hekili:IsDisplayActive( i ) then v:Show() end
 
             v.Backdrop = v.Backdrop or CreateFrame( "Frame", v:GetName().. "_Backdrop", UIParent, "BackdropTemplate" )
             v.Backdrop:ClearAllPoints()
 
-            if not v:IsAnchoringRestricted() then
+            if v.anchorTarget == "SCREEN" then
                 v:EnableMouse( true )
                 v:SetMovable( true )
 
@@ -344,7 +349,11 @@ function ns.StartConfiguration( external )
                     v.Backdrop:SetHeight( v:GetHeight() + 2 )
                     v.Backdrop:SetPoint( "CENTER", v, "CENTER" )
                 end
+            else
+                v:EnableMouse( false )
+                v:SetMovable( false )
             end
+
 
             v.Backdrop:SetFrameStrata( v:GetFrameStrata() )
             v.Backdrop:SetFrameLevel( v:GetFrameLevel() + 1 )
@@ -1104,16 +1113,16 @@ do
         -- If not anchored to something else, fall back to screen parent.
         if not anchored or conf.anchorTarget == "SCREEN" then
             d:SetParent( UIParent )
+            d:SetMovable( true )
+            d:EnableMouse( true )
+        else
+            d:SetMovable( false )
+            d:EnableMouse( false )
         end
 
         d:SetFrameStrata( conf.frameStrata or "MEDIUM" )
         d:SetFrameLevel( conf.frameLevel or ( 10 * d.index ) )
 
-        if not d:IsAnchoringRestricted() then
-            d:SetClampedToScreen( true )
-            d:EnableMouse( false )
-            d:SetMovable( true )
-        end
 
         function d:UpdateKeybindings()
             local conf = Hekili.DB.profile.displays[ self.id ]
@@ -2354,7 +2363,7 @@ do
 
         if Hekili.DB.profile.enabled and not Hekili.Pause then
             self.refreshRate = self.refreshRate or 0.5
-            self.combatRate = self.combatRate or 0.2
+            self.combatRate = self.combatRate or 0.05
 
             local thread = self.activeThread
 
@@ -2382,9 +2391,9 @@ do
                     local spf = 1000 / ( rate > 0 and rate or 100 )
 
                     if HekiliEngine.threadUpdates then
-                        Hekili.maxFrameTime = 0.8 * max( 7, min( 16.667, spf, 1.1 * HekiliEngine.threadUpdates.meanWorkTime / floor( HekiliEngine.threadUpdates.meanFrames ) ) )
+                        Hekili.maxFrameTime = 0.9 * max( 18, min( 16.667, spf, 1.1 * HekiliEngine.threadUpdates.meanWorkTime / floor( HekiliEngine.threadUpdates.meanFrames ) ) )
                     else
-                        Hekili.maxFrameTime = 0.8 * max( 7, min( 16.667, spf ) )
+                        Hekili.maxFrameTime = 0.9 * max( 18, min( 16.667, spf ) )
                     end
                 end
 
@@ -2421,7 +2430,7 @@ do
                     self.activeThread = nil
 
                     self.refreshRate = 0.5
-                    self.combatRate = 0.2
+                    self.combatRate = 0.05
 
                     if ok then
                         if self.firstThreadCompleted and not self.DontProfile then self:UpdatePerformance() end
@@ -2843,16 +2852,6 @@ do
         b:SetScript( "OnEnter", function( self )
             local H = Hekili
 
-            --[[ if H.Config then
-                Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
-                Tooltip:SetBackdropColor( 0, 0, 0, 0.8 )
-
-                Tooltip:SetText( "Hekili: " .. dispID  )
-                Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-                Tooltip:Show()
-                self:SetMovable( true )
-
-            else ]]
             if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
                 H:ShowDiagnosticTooltip( b.Recommendation )
             end

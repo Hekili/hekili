@@ -1524,8 +1524,6 @@ return end
                                                 if val == "SCREEN" then
                                                     frame:SetParent(UIParent)
                                                     frame:SetPoint("CENTER", UIParent, "CENTER", display.x or 0, display.y or 0)
-                                                    frame:SetMovable(true)
-                                                    frame:EnableMouse(true)
 
                                                     if frame.Backdrop then
                                                         frame.Backdrop:SetParent(UIParent)
@@ -1539,7 +1537,6 @@ return end
                                             Hekili:BuildUI()
                                         end
                                     },
-
 
                                     spacer2 = {
                                         type = "description",
@@ -1619,11 +1616,32 @@ return end
                                         width = "full",
                                         order = 5,
                                     },
+                                    obeyAnchorScale = {
+                                        type = "toggle",
+                                        name = "Inherit Anchor's Scale (size)",
+                                        desc = "If enabled, the display will scale based on the anchor frame's scale (if possible).\n\nDisable to keep this display's scale independent.",
+                                        order = 6,
+                                        width = "full",
+                                        get = function(info)
+                                            local name = info[2]
+                                            return Hekili.DB.profile.displays[name].obeyAnchorScale ~= false
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            Hekili.DB.profile.displays[name].obeyAnchorScale = val
+                                            Hekili:BuildUI()
+                                        end,
+                                        disabled = function(info)
+                                            local name = info[2]
+                                            return Hekili.DB.profile.displays[name].anchorTarget == "SCREEN"
+                                        end,
+                                    },
+
                                     anchorX = {
                                         type = "range",
                                         name = "X Offset",
                                         min = -500, max = 500, step = 1,
-                                        order = 6,
+                                        order = 7,
                                         width = 1.49,
                                         disabled = function(info)
                                             local display = Hekili.DB.profile.displays[ info[2] ]
@@ -1645,7 +1663,7 @@ return end
                                         type = "range",
                                         name = "Y Offset",
                                         min = -500, max = 500, step = 1,
-                                        order = 6.5,
+                                        order = 7.5,
                                         width = 1.49,
                                         disabled = function(info)
                                             local display = Hekili.DB.profile.displays[ info[2] ]
@@ -1668,7 +1686,7 @@ return end
                                         name = "Fallback Alpha",
                                         desc = "When the chosen anchor is not available (e.g., PRD or Target Nameplate hidden), set the transparency of the display.",
                                         min = 0, max = 1, step = 0.01,
-                                        order = 7,
+                                        order = 8,
                                         width = 1.49,
                                         get = function(info)
                                             local name = info[2]
@@ -1690,7 +1708,7 @@ return end
                                     fallbackNote = {
                                         type = "description",
                                         name = "The fallback X/Y position is defined above and will be used when the anchor is hidden or unavailable.",
-                                        order = 11,
+                                        order = 9,
                                         hidden = function(info)
                                             local name = info[2]
                                             local display = Hekili.DB.profile.displays[name]
