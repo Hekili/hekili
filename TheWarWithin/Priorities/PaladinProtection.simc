@@ -11,7 +11,7 @@ actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_coo
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_cooldown&trinket.2.has_stat.any_dps&(!trinket.1.has_stat.any_dps|trinket.2.cooldown.duration>trinket.1.cooldown.duration)|!trinket.1.has_cooldown
 
 actions+=/rebuke
-actions+=/blessing_of_spellwarding
+actions+=/blessing_of_spellwarding,if=settings.bosp_filter
 actions+=/call_action_list,name=mitigation
 actions+=/call_action_list,name=cooldowns
 actions+=/call_action_list,name=trinkets
