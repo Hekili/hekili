@@ -1,3 +1,6 @@
+## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/warlock_destruction.simc
+## Up to date with SimC: April 27 - d935a4a
+
 actions.precombat=fel_domination,if=time>0&!pet.alive
 actions.precombat+=/summon_pet
 actions.precombat+=/variable,name=cleave_apl,value=toggle.funnel
@@ -16,9 +19,9 @@ actions.precombat+=/variable,name=trinket_1_exclude,value=trinket.1.is.whisperin
 # For On Use Trinkets on slot 2 with on use effects you dont want to use in combat
 actions.precombat+=/variable,name=trinket_2_exclude,value=trinket.2.is.whispering_incarnate_icon
 # Sets the duration of the trinket in the automatic logic
-actions.precombat+=/variable,name=trinket_1_buff_duration,value=trinket.1.proc.any_dps.duration
+actions.precombat+=/variable,name=trinket_1_buff_duration,value=trinket.1.proc.any_dps.duration+(trinket.1.is.funhouse_lens*15)+(trinket.1.is.signet_of_the_priory*20)
 # Sets the duration of the trinket in the automatic logic
-actions.precombat+=/variable,name=trinket_2_buff_duration,value=trinket.2.proc.any_dps.duration
+actions.precombat+=/variable,name=trinket_2_buff_duration,value=trinket.2.proc.any_dps.duration+(trinket.2.is.funhouse_lens*15)+(trinket.2.is.signet_of_the_priory*20)
 # Automatic Logic in case both Trinkets are on use buffs
 actions.precombat+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&variable.trinket_2_buffs|variable.trinket_2_buffs&((trinket.2.cooldown.duration%variable.trinket_2_buff_duration)*(1+0.5*trinket.2.has_buff.intellect)*(variable.trinket_2_sync))>((trinket.1.cooldown.duration%variable.trinket_1_buff_duration)*(1+0.5*trinket.1.has_buff.intellect)*(variable.trinket_1_sync))
 actions.precombat+=/variable,name=allow_rof_2t_spender,default=2,op=reset
