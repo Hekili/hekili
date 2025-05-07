@@ -2809,7 +2809,7 @@ do
         tooltipHoverButton:SetPoint("TOPRIGHT", -2, -2)
         tooltipHoverButton.texture = tooltipHoverButton:CreateTexture(nil, "ARTWORK")
         tooltipHoverButton.texture:SetAllPoints()
-        tooltipHoverButton.texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+        tooltipHoverButton.texture:SetTexture("Interface\\Addons\\Hekili\\Textures\\Question.png")
         tooltipHoverButton:Hide()
 
         tooltipHoverButton:SetScript( "OnEnter", function( self )
