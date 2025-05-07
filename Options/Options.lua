@@ -9870,6 +9870,7 @@ function Hekili:TogglePause( ... )
         for _, button in pairs( group ) do
             if button:IsShown() then
                 button:EnableMouse( MouseInteract or Hekili.DB.profile.displays[ id ].iconTooltipStyle ~= "off" )
+                button:SetMouseClickEnabled( false )
             end
         end
     end
