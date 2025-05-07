@@ -2811,7 +2811,7 @@ do
         tooltipHoverButton.texture:SetAllPoints()
         tooltipHoverButton.texture:SetTexture("Interface\\Addons\\Hekili\\Textures\\Question.png")
         tooltipHoverButton:Hide()
-
+        
         tooltipHoverButton:SetScript( "OnEnter", function( self )
             local H = Hekili
             toolTipHovered = true
@@ -2871,6 +2871,7 @@ do
             end
             if ( conf.iconTooltipStyle ~= "off" ) then
                 tooltipHoverButton:Show()
+                tooltipHoverButton:SetMouseClickEnabled( false )
             end
         end )
 
