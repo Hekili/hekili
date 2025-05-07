@@ -1833,6 +1833,8 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
+        usable = function () return ( settings.dnd_while_moving or not moving ), "cannot cast while moving" end,
+
         handler = function ()
             if buff.crimson_scourge.up then
                 if talent.perseverance_of_the_ebon_blade.enabled then applyBuff( "perseverance_of_the_ebon_blade" ) end
@@ -2543,6 +2545,12 @@ spec:RegisterOptions( {
     package = "Blood",
 } )
 
+spec:RegisterSetting( "dnd_while_moving", true, {
+    name = strformat( "Allow %s while moving", Hekili:GetSpellLinkWithTexture( spec.abilities.death_and_decay.id ) ),
+    desc = strformat( "If checked, then allow recommending %s while the player is moving otherwise only recommend it if the player is standing still.", Hekili:GetSpellLinkWithTexture( spec.abilities.death_and_decay.id ) ),
+    type = "toggle",
+    width = "full",
+} )
 
 spec:RegisterSetting( "save_blood_shield", true, {
     name = strformat( "Save %s", Hekili:GetSpellLinkWithTexture( spec.auras.blood_shield.id ) ),

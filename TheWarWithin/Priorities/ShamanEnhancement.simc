@@ -1,3 +1,6 @@
+## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/shaman_enhancement.simc
+## Up to date with SimC: May 4 2025 - d7ce1aa
+
 actions.precombat+=/windfury_weapon
 actions.precombat+=/flametongue_weapon
 actions.precombat+=/skyfury,if=buff.skyfury.down|active_dot.skyfury<group_members
@@ -51,7 +54,7 @@ actions.aoe+=/feral_spirit,if=fight_remains<16|cooldown.doom_winds.remains>15|co
 actions.aoe+=/doom_winds
 actions.aoe+=/primordial_wave,if=dot.flame_shock.ticking&(active_dot.flame_shock>=active_enemies|active_dot.flame_shock=6)
 actions.aoe+=/primordial_storm,if=(buff.maelstrom_weapon.stack>=10)&(buff.doom_winds.up|!talent.doom_winds.enabled|(cooldown.doom_winds.remains>buff.primordial_storm.remains)|(buff.primordial_storm.remains<2*gcd))
-actions.aoe+=/crash_lightning,if=talent.converging_storms.enabled&buff.electrostatic_wager.stack>6|!buff.crash_lightning.up
+actions.aoe+=/crash_lightning,if=!buff.crash_lightning.up|(buff.maelstrom_weapon.stack<10&buff.tempest.up)|buff.arc_discharge.down
 actions.aoe+=/windstrike,cycle_targets=1,if=talent.thorims_invocation.enabled&buff.maelstrom_weapon.stack>0&ti_chain_lightning
 actions.aoe+=/crash_lightning,if=talent.converging_storms.enabled&talent.alpha_wolf.enabled
 actions.aoe+=/stormstrike,if=buff.converging_storms.stack=6&buff.stormblast.stack>0&buff.legacy_of_the_frost_witch.up&buff.maelstrom_weapon.stack<=8
@@ -101,7 +104,7 @@ actions.aoe_open+=/voltaic_blaze
 actions.aoe_open+=/stormstrike
 
 ## Multi target action priority list for the Totemic hero talent tree
-actions.aoe_totemic+=/call_action_list,name=aoe_totemic_open,strict_if=time<16,if=time<16&(cooldown.doom_winds.remains=0|cooldown.sundering.remains=0|!buff.hot_hand.up)
+actions.aoe_totemic+=/call_action_list,name=aoe_totemic_open,strict_if=time<=16,if=time<=16&(cooldown.doom_winds.remains=0|cooldown.sundering.remains=0|!buff.hot_hand.up)
 actions.aoe_totemic+=/surging_totem
 actions.aoe_totemic+=/ascendance,if=ti_chain_lightning
 actions.aoe_totemic+=/crash_lightning,if=talent.crashing_storms.enabled&(active_enemies>=15-5*talent.unruly_winds.enabled)
@@ -111,12 +114,11 @@ actions.aoe_totemic+=/flame_shock,if=!ticking&(talent.ashen_catalyst.enabled|tal
 actions.aoe_totemic+=/doom_winds
 actions.aoe_totemic+=/primordial_wave,if=dot.flame_shock.ticking&(active_dot.flame_shock>=active_enemies|active_dot.flame_shock=6)
 actions.aoe_totemic+=/windstrike
-actions.aoe_totemic+=/elemental_blast,if=(!talent.elemental_spirits.enabled|(talent.elemental_spirits.enabled&(charges=max_charges|feral_spirit.active>=2)))&buff.maelstrom_weapon.stack=buff.maelstrom_weapon.max_stack&(!talent.crashing_storms.enabled|active_enemies<=3)
 actions.aoe_totemic+=/lava_lash,if=buff.hot_hand.up
 actions.aoe_totemic+=/crash_lightning,if=buff.electrostatic_wager.stack>8
 actions.aoe_totemic+=/sundering,if=buff.doom_winds.up|talent.earthsurge.enabled&(buff.legacy_of_the_frost_witch.up|!talent.legacy_of_the_frost_witch.enabled)&pet.surging_totem.active
 actions.aoe_totemic+=/chain_lightning,if=buff.maelstrom_weapon.stack>=10&buff.electrostatic_wager.stack>4&!buff.cl_crash_lightning.up&buff.doom_winds.up
-actions.aoe_totemic+=/elemental_blast,if=(buff.maelstrom_weapon.stack>=10)&(buff.primordial_storm.down|buff.primordial_storm.remains>gcd.max*4)
+actions.aoe_totemic+=/elemental_blast,if=buff.maelstrom_weapon.stack>=10
 actions.aoe_totemic+=/chain_lightning,if=buff.maelstrom_weapon.stack>=10&(buff.primordial_storm.down|buff.primordial_storm.remains>gcd.max*4)
 actions.aoe_totemic+=/crash_lightning,if=buff.doom_winds.up|!buff.crash_lightning.up|(talent.alpha_wolf.enabled&feral_spirit.active&alpha_wolf_min_remains=0)
 actions.aoe_totemic+=/voltaic_blaze
@@ -220,7 +222,7 @@ actions.funnel+=/flame_shock,if=!ticking
 actions.funnel+=/frost_shock,if=!talent.hailstorm.enabled
 
 # Single target action priority list
-actions.single=call_action_list,name=single_open,strict_if=time<18,if=time<18&(cooldown.doom_winds.remains=0|cooldown.sundering.remains=0|!buff.hot_hand.up)
+actions.single=call_action_list,name=single_open,strict_if=time<=18,if=time<=18&(cooldown.doom_winds.remains=0|cooldown.sundering.remains=0|!buff.hot_hand.up)
 actions.single+=/primordial_storm,if=(buff.maelstrom_weapon.stack>=10|buff.primordial_storm.remains<=4&buff.maelstrom_weapon.stack>=5)
 actions.single+=/flame_shock,if=!ticking&(talent.ashen_catalyst.enabled|talent.primordial_wave.enabled|talent.lashing_flames.enabled)
 actions.single+=/feral_spirit,if=fight_remains<16|cooldown.doom_winds.remains>15|cooldown.doom_winds.remains<7|buff.winning_streak.stack=1&buff.maelstrom_weapon.stack>7

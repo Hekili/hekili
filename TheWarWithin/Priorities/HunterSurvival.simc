@@ -1,5 +1,5 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/hunter_survival.simc
-## Up to date with SimC: March 25 2025 - 4897f4b
+## Up to date with SimC: April 26 2025 - 739316d
 
 actions.precombat+=/summon_pet
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
@@ -35,7 +35,7 @@ actions.cds+=/aspect_of_the_eagle,if=target.distance>=6
 
 #PACK LEADER |  AOE ACTIONLIST
 actions.plcleave+=/spearhead,if=cooldown.coordinated_assault.remains
-actions.plcleave+=/raptor_bite,cycle_targets=1,if=buff.strike_it_rich.up&buff.strike_it_rich.remains<gcd|buff.hogstrider.remains&boar_charge.remains>0|buff.hogstrider.remains<gcd&buff.hogstrider.up|buff.hogstrider.remains&buff.strike_it_rich.remains|raid_event.adds.exists&raid_event.adds.remains<4
+actions.plcleave+=/raptor_bite,cycle_targets=1,if=buff.strike_it_rich.up&buff.strike_it_rich.remains<gcd|buff.hogstrider.remains&boar_charge.remains>0|buff.hogstrider.remains<gcd&buff.hogstrider.up|buff.hogstrider.remains&buff.strike_it_rich.remains
 actions.plcleave+=/kill_command,cycle_targets=1,if=buff.relentless_primal_ferocity.up&buff.tip_of_the_spear.stack<1
 actions.plcleave+=/wildfire_bomb
 actions.plcleave+=/kill_command,cycle_targets=1,if=(buff.howl_of_the_pack_leader_wyvern.remains|buff.howl_of_the_pack_leader_boar.remains|buff.howl_of_the_pack_leader_bear.remains)
@@ -43,10 +43,10 @@ actions.plcleave+=/flanking_strike,if=buff.tip_of_the_spear.stack=2|buff.tip_of_
 actions.plcleave+=/butchery
 actions.plcleave+=/coordinated_assault
 actions.plcleave+=/fury_of_the_eagle,if=buff.tip_of_the_spear.stack>0
-actions.plcleave+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max|charges_fractional>1.5
 actions.plcleave+=/explosive_shot
+actions.plcleave+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max|charges_fractional>1.5
 actions.plcleave+=/kill_shot,if=buff.deathblow.remains&talent.sic_em
-actions.plcleave+=/raptor_bite
+actions.plcleave+=/raptor_bite,cycle_targets=1
 
 # PACK LEADER | SINGLE TARGET ACTIONLIST.
 actions.plst+=/kill_command,cycle_targets=1,if=(buff.relentless_primal_ferocity.up&buff.tip_of_the_spear.stack<1)|(buff.howl_of_the_pack_leader_wyvern.remains|buff.howl_of_the_pack_leader_boar.remains|buff.howl_of_the_pack_leader_bear.remains)
@@ -59,9 +59,10 @@ actions.plst+=/butchery
 actions.plst+=/kill_command,if=buff.strike_it_rich.remains&buff.tip_of_the_spear.stack<1
 actions.plst+=/raptor_bite,if=buff.strike_it_rich.remains&buff.tip_of_the_spear.stack>0
 actions.plst+=/fury_of_the_eagle,if=buff.tip_of_the_spear.stack>0&(!raid_event.adds.exists|raid_event.adds.exists&raid_event.adds.in>40)
-actions.plst+=/coordinated_assault,if=!talent.bombardier|talent.bombardier&cooldown.wildfire_bomb.charges_fractional<1
+actions.plst+=/coordinated_assault
 actions.plst+=/wildfire_bomb
 actions.plst+=/kill_command,cycle_targets=1,if=focus+cast_regen<focus.max&(!buff.relentless_primal_ferocity.up|(buff.relentless_primal_ferocity.up&buff.tip_of_the_spear.stack<1|focus<30))
+actions.plst+=/explosive_shot,if=active_enemies=2
 actions.plst+=/raptor_bite,cycle_targets=1,if=!talent.contagious_reagents
 actions.plst+=/raptor_bite,cycle_targets=1
 actions.plst+=/kill_shot

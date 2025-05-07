@@ -1,5 +1,5 @@
-## Updated 2025-04-22
-## Non-SimC edits to resolve Ascendance/trinket sync logic.
+## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/shaman_elemental.simc
+## Up to date with SimC: April 21 2025 - 53f00ae
 
 # Ensure weapon enchant is applied if you've selected Improved Flametongue Weapon.
 actions.precombat+=/flametongue_weapon,if=talent.improved_flametongue_weapon.enabled
@@ -109,8 +109,7 @@ actions.single_target+=/tempest,if=buff.storm_frenzy.stack=2&!talent.surge_of_po
 actions.single_target+=/liquid_magma_totem,if=dot.flame_shock.refreshable&!buff.master_of_the_elements.up
 # Maintain Flame shock if talented into Erupting Lava.
 actions.single_target+=/flame_shock,if=dot.flame_shock.refreshable&!buff.surge_of_power.up&!buff.master_of_the_elements.up&talent.erupting_lava
-# Spend if close to overcaping or MotE buff is up. Respect Echoes of Great Sundering.
-actions.single_target+=/earthquake,if=(buff.echoes_of_great_sundering_es.up|buff.echoes_of_great_sundering_eb.up)&(maelstrom>variable.mael_cap-15|buff.master_of_the_elements.up)
+# Spend if close to overcaping or MotE buff is up. Friendship ended with Echoes of Great Sundering.
 actions.single_target+=/elemental_blast,if=maelstrom>variable.mael_cap-15|buff.master_of_the_elements.up
 actions.single_target+=/earth_shock,if=maelstrom>variable.mael_cap-15|buff.master_of_the_elements.up
 # Use Icefury to proc Fusion of Elements.

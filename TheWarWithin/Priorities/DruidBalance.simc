@@ -1,5 +1,5 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/druid_balance.simc
-## Up to date with SimC: April 21 - bb52f69
+## Up to date with SimC: April 27 - 603b5f7
 
 actions.precombat+=/mark_of_the_wild
 actions.precombat+=/moonkin_form
@@ -55,7 +55,7 @@ actions.aoe+=/sunfire,cycle_targets=1,if=refreshable&(target.time_to_die-remains
 actions.aoe+=/moonfire,cycle_targets=1,if=refreshable&(target.time_to_die-remains)>6&(!talent.treants_of_the_moon|spell_targets-active_dot.moonfire_dmg>6|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up)&boss
 ## actions.aoe+=/wrath,if=cooldown.ca_inc.remains>cast_time+gcd.max&variable.enter_lunar&(eclipse.in_none|eclipse.remains<cast_time)
 ## actions.aoe+=/starfire,if=cooldown.ca_inc.remains>cast_time+gcd.max&!variable.enter_lunar&(eclipse.in_none|eclipse.remains<cast_time)
-actions.aoe+=/wrath,if=variable.enter_lunar&(eclipse.in_none|eclipse.remains<cast_time)
+actions.aoe+=/wrath,if=variable.enter_lunar&(eclipse.in_none|eclipse.remains<cast_time)&!variable.pre_cd_condition
 actions.aoe+=/starfire,if=!variable.enter_lunar&(eclipse.in_none|eclipse.remains<cast_time)
 actions.aoe+=/stellar_flare,cycle_targets=1,if=refreshable&(target.time_to_die-remains-target>7+spell_targets)&spell_targets<(11-talent.umbral_intensity.rank-(2*talent.astral_smolder)-talent.lunar_calling)
 actions.aoe+=/force_of_nature,if=variable.pre_cd_condition|cooldown.ca_inc.full_recharge_time+5+15*talent.control_of_the_dream>cooldown&(!talent.convoke_the_spirits|cooldown.convoke_the_spirits.remains+10+15*talent.control_of_the_dream>cooldown|fight_remains<cooldown.convoke_the_spirits.remains+cooldown.convoke_the_spirits.duration+5)&(variable.on_use_trinket=0|(variable.on_use_trinket=1|variable.on_use_trinket=3)&(trinket.1.cooldown.remains>5+15*talent.control_of_the_dream|cooldown.ca_inc.remains>20|trinket.1.cooldown.ready)|variable.on_use_trinket=2&(trinket.2.cooldown.remains>5+15*talent.control_of_the_dream|cooldown.ca_inc.remains>20|trinket.2.cooldown.ready))&(fight_remains>cooldown+5|fight_remains<cooldown.ca_inc.remains+7)|talent.whirling_stars&talent.convoke_the_spirits&cooldown.convoke_the_spirits.remains>cooldown.force_of_nature.duration-10&fight_remains>cooldown.convoke_the_spirits.remains+6

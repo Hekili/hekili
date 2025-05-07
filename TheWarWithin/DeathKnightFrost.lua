@@ -1235,6 +1235,8 @@ spec:RegisterAbilities( {
         startsCombat = true,
         notalent = "defile",
 
+        usable = function () return ( settings.dnd_while_moving or not moving ), "cannot cast while moving" end,
+
         handler = function ()
             applyBuff( "death_and_decay" )
             applyDebuff( "target", "death_and_decay" )
@@ -1933,6 +1935,13 @@ spec:RegisterStateExpr( "breath_possible_gains", function ()
 
     return possible_gains
 end )--]]
+
+spec:RegisterSetting( "dnd_while_moving", true, {
+    name = strformat( "Allow %s while moving", Hekili:GetSpellLinkWithTexture( spec.abilities.death_and_decay.id ) ),
+    desc = strformat( "If checked, then allow recommending %s while the player is moving otherwise only recommend it if the player is standing still.", Hekili:GetSpellLinkWithTexture( spec.abilities.death_and_decay.id ) ),
+    type = "toggle",
+    width = "full",
+} )
 
 spec:RegisterSetting( "bos_rp", 50, {
     name = strformat( "%s for %s", _G.RUNIC_POWER, Hekili:GetSpellLinkWithTexture( spec.abilities.breath_of_sindragosa.id ) ),
