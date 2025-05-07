@@ -2856,14 +2856,6 @@ do
         b:SetScript( "OnEnter", function( self )
             local H = Hekili
 
-            if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
-                H:ShowDiagnosticTooltip( b.Recommendation )
-            end
-
-            if ( conf.iconTooltipStyle ~= "off" ) then
-                tooltipHoverButton:Show()
-            end
-
             --[[ if H.Config then
                 Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
                 Tooltip:SetBackdropColor( 0, 0, 0, 0.8 )
@@ -2874,7 +2866,12 @@ do
                 self:SetMovable( true )
 
             else ]]
-            
+            if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
+                H:ShowDiagnosticTooltip( b.Recommendation )
+            end
+            if ( conf.iconTooltipStyle ~= "off" ) then
+                tooltipHoverButton:Show()
+            end
         end )
 
         b:SetScript( "OnLeave", function(self)
