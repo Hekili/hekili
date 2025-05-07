@@ -2804,22 +2804,18 @@ do
         b:SetScript( "OnMouseDown", Button_OnMouseDown )
         b:SetScript( "OnMouseUp", Button_OnMouseUp )
 
-        b:SetScript( "OnEnter", function( self )
+        local tooltipHoverButton = CreateFrame("Button", nil, b)
+        tooltipHoverButton:SetSize(15, 15)
+        tooltipHoverButton:SetPoint("TOPRIGHT", -2, -2)
+        tooltipHoverButton.texture = tooltipHoverButton:CreateTexture(nil, "ARTWORK")
+        tooltipHoverButton.texture:SetAllPoints()
+        tooltipHoverButton.texture:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+        tooltipHoverButton:Hide()
+
+        tooltipHoverButton:SetScript( "OnEnter", function( self )
             local H = Hekili
-
-            --[[ if H.Config then
-                Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
-                Tooltip:SetBackdropColor( 0, 0, 0, 0.8 )
-
-                Tooltip:SetText( "Hekili: " .. dispID  )
-                Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
-                Tooltip:Show()
-                self:SetMovable( true )
-
-            else ]]
-            if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
-                H:ShowDiagnosticTooltip( b.Recommendation )
-            elseif b.Ability then
+            toolTipHovered = true
+            if b.Ability then
                 if b.Ability.item then
                     GameTooltip:SetOwner(self)
                     if conf.iconTooltipStyle == "tooltip" then
@@ -2848,9 +2844,44 @@ do
             end
         end )
 
+        tooltipHoverButton:SetScript( "OnLeave", function( self )
+            GameTooltip:Hide()
+            C_Timer.After(0.1, function()
+                if not b:IsMouseOver() then
+                    tooltipHoverButton:Hide()
+                end
+            end)        
+        end )
+
+        b:SetScript( "OnEnter", function( self )
+            local H = Hekili
+
+            if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
+                H:ShowDiagnosticTooltip( b.Recommendation )
+            end
+
+            if ( conf.iconTooltipStyle ~= "off" ) then
+                tooltipHoverButton:Show()
+            end
+
+            --[[ if H.Config then
+                Tooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
+                Tooltip:SetBackdropColor( 0, 0, 0, 0.8 )
+
+                Tooltip:SetText( "Hekili: " .. dispID  )
+                Tooltip:AddLine( "Left-click and hold to move.", 1, 1, 1 )
+                Tooltip:Show()
+                self:SetMovable( true )
+
+            else ]]
+            
+        end )
+
         b:SetScript( "OnLeave", function(self)
             HekiliTooltip:Hide()
-            GameTooltip:Hide()
+            if not tooltipHoverButton:IsMouseOver() then
+                tooltipHoverButton:Hide()
+            end
         end )
 
         Hekili:ProfileFrame( bName, b )
