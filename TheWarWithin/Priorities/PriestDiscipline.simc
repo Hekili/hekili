@@ -123,8 +123,7 @@ actions+=/variable,name=can_divine_star,op=set,value=cooldown.divine_star.durati
 actions+=/run_action_list,name=scov_prep,if=talent.shadow_covenant&cooldown.mindbender.up
 ## actions+=/run_action_list,name=short_scov,if=variable.short_scov&variable.can_enter_scov
 actions+=/run_action_list,name=long_scov,if=variable.long_scov&variable.can_enter_scov
-actions+=/purge_the_wicked,if=talent.purge_the_wicked&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.purge_the_wicked.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
-actions+=/shadow_word_pain,if=!talent.purge_the_wicked&(target.time_to_die>(0.3*dot.shadow_word_pain.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.shadow_word_pain.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
+actions+=/shadow_word_pain,if=(target.time_to_die>(0.3*dot.shadow_word_pain.duration))&(!ticking|(refreshable&(!talent.painful_punishment|(talent.painful_punishment&(dot.shadow_word_pain.remains<(cooldown.penance.remains-variable.expected_penance_reduction))))))
 ## actions+=/schism,if=!talent.shadow_covenant
 actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&target.health.pct<20
 actions+=/mind_blast,if=talent.dark_indulgence&buff.power_of_the_dark_side.down&cooldown.penance.remains<gcd.max
@@ -142,16 +141,13 @@ actions+=/shadow_word_death,if=(!talent.shadow_covenant|variable.can_swd)&(targe
 actions+=/smite
 
 # Prepare to enter shadow covenant
-actions.scov_prep+=/purge_the_wicked,if=!ticking&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 actions.scov_prep+=/power_word_radiance,if=cooldown.shadowfiend.remains<cast_time
-actions.scov_prep+=/purge_the_wicked,if=(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 
 # Long Shadow Covenant
 actions.long_scov+=/mindbender
 ## actions.long_scov+=/schism
 actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.halo>=3
 actions.long_scov+=/divine_star,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.divine_star>=3
-actions.long_scov+=/purge_the_wicked,if=(!variable.should_te|(variable.should_te&variable.te_holy))&(!ticking|refreshable)&(target.time_to_die>(0.3*dot.purge_the_wicked.duration))
 actions.long_scov+=/shadow_word_death,if=target.health.pct<20&talent.expiation&(!variable.should_te|(variable.should_te&variable.te_shadow))
 actions.long_scov+=/penance,if=(!variable.should_te|(variable.should_te&variable.te_shadow))
 actions.long_scov+=/halo,if=(!variable.should_te|(variable.should_te&variable.te_shadow))&spell_targets.halo>=2
@@ -177,9 +173,10 @@ actions.long_scov+=/halo
 actions.long_scov+=/smite
 
 ## Cooldowns
-# Don't use pets during shadow covenant windows, wasting GCDs
-actions.cooldowns+=/shadowfiend,if=!talent.mindbender.enabled&!buff.shadow_covenant.up
-actions.cooldowns+=/mindbender,if=talent.mindbender.enabled&!buff.shadow_covenant.up
+# Don't use pets during shadow covenant windows, wasting GCDs -- is this even possible anymore?
+actions.cooldowns+=/shadowfiend,if=!buff.shadow_covenant.up
+actions.cooldowns+=/mindbender,if=!buff.shadow_covenant.up
+actions.cooldowns+=/voidwraith,if=!buff.shadow_covenant.up
 # hold PI to use with shadow covenant if we have it
 actions.cooldowns+=/power_infusion,if=!talent.shadow_covenant.enabled|(talent.shadow_covenant.enabled&(cooldown.shadowfiend.up|buff.shadow_covenant.up))
 # sync potion with PI

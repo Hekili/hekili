@@ -506,7 +506,8 @@ spec:RegisterAuras( {
         id = 119611,
         duration = function() return 20 + ( buff.tea_of_serenity_rm.up and 10 or 0 ) + ( buff.tea_of_plenty_rm.up and 10 or 0 ) end,
         max_stack = 1,
-        dot = "buff"
+        dot = "buff",
+        friendly = true
     },
     rushing_winds = {
         id = 467341,

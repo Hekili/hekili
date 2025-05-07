@@ -325,21 +325,13 @@ spec:RegisterAuras( {
     },
     -- talent = double lifebloom. Both spellID and actual buff spellID change.
     lifebloom = {
-        id = 33763,
+        id = function() return talent.undergrowth.enabled and 188550 or 33763 end,
         duration = 15,
         tick_time = function() return haste * mod_liveliness_hot( 1 ) end,
         max_stack = 1,
         dot = "buff",
         friendly = true,
-    },
-    lifebloom_2 = {
-        id = 188550,
-        duration = 15,
-        tick_time = function() return haste * mod_liveliness_hot( 1 ) end,
-        max_stack = 1,
-        dot = "buff",
-        friendly = true,
-        -- copy = "lifebloom"
+        copy = { 33763, 188550 }
     },
     natures_swiftness = {
         id = 132158,
@@ -359,6 +351,11 @@ spec:RegisterAuras( {
         id = 338643,
         duration = 60,
         max_stack = 1,
+    },
+    power_of_the_archdruid = {
+        id = 392303,
+        duration = 15,
+        max_stack = 1
     },
     reforestation = {
         id = 392360,
@@ -902,7 +899,11 @@ spec:RegisterAbilities( {
         handler = function ()
             removeBuff( "natures_swiftness" )
             removeBuff( "clearcasting" )
-            active_dot.regrowth = active_dot.regrowth + 1 + ( talent.power_of_the_archdruid.enabled and buff.power_of_the_archdruid.up and 2 or 0 )
+            applyBuff( "regrowth" )
+            if buff.power_of_the_archdruid.up then
+                active_dot.rejuvenation = min( active_allies, active_dot.rejuvenation + 2 )
+                removeBuff( "power_of_the_archdruid" )
+            end
             if talent.soul_of_the_forest.enabled then removeBuff( "soul_of_the_forest" ) end
             if talent.forestwalk.enabled then applyBuff( "forestwalk" ) end
             if talent.wild_synthesis.enabled then addStack( "wild_synthesis" ) end
@@ -932,11 +933,13 @@ spec:RegisterAbilities( {
 
                 elseif buff.germination.remains < buff.rejuvenation.remains then applyBuff( "rejuvenation_germination" )
                 end
-            else applyBuff( "rejuvenation" )
-            end
+            else applyBuff( "rejuvenation" ) end
 
             if talent.soul_of_the_forest.enabled then removeBuff( "soul_of_the_forest" ) end
-            active_dot.rejuvenation = active_dot.rejuvenation + 1 + ( talent.power_of_the_archdruid.enabled and buff.power_of_the_archdruid.up and 2 or 0 )
+            if buff.power_of_the_archdruid.up then
+                active_dot.rejuvenation = min( active_allies, active_dot.rejuvenation + 2 )
+                removeBuff( "power_of_the_archdruid" )
+            end
         end,
     },
 
@@ -1259,4 +1262,4 @@ spec:RegisterSetting( "healing_mode", false, {
 } )
 
 
-spec:RegisterPack( "Restoration Druid", 20250402, [[Hekili:TR1EVTnos8plbfqWUP1X2X2jzHTb27bWTb327W57(RdNLKLOI5zzjbkQKnag6Z(oK6fjfPSJBArxad0MejsoCEp)4iUE06)96v(Uu06VmE44PdNm82bdVD69tEy9k6RjO1RsC925(e8hrU7HF(VqP0yIlfhhL78xizyF2uEnm21NrQ04mIhmT1R2KHdP)s06nk0FmmPeK36VmA401R2I99rftcL6bptPjP)0n38eMUnBZaV493KI3NfY3qpIBaL9S3nBcJ3CdDl6fxYlWuXr38ZESP8pj4ycM(6FhNstVXNXF2KgwEaBX5p(FsYDOX5omgl3HrGCNv49)5Fk35xDjEWt3N7W43CNpN745T5oV7Ei)X8hbLqs62yAUdXf7N7Sjliab)oL6stHhrbXeGIaBVXLYE(jCe8E3iyoje0NtIPuC0t5oy4T(XrOb5p6Yz80bW4fR76f3S3LSZooWgKq7xWH(6N1wKlHE8PLqIFj8t4Gfu3queDaXDhAakYDtiYWk8CP2GKS34IQxgm50DzHH2BCt3k(2niskISJjScVnYLMbMd7NXpH5S0vmn4aohoilXQ4X0TU(XVShf6dVtC5EUWov8ODiyH)eZNCbOgcH9HrUuex)MoO8D27J9rIuOLk7TZezPiBmfTp9TVuW8d)1BFDKSO2InyK(ukLG9OlgzWqD4aNUvMZwAZJyLfMAC0ZX7qCTwAcgIW4sFpo5BPtH95WbV44qqAI0mmbT3fIlwoB4NVD4hl3ApyBj4Su7NGyw3ipbH4QYP0MsLtPVK)ywuaMG(K3REHah7sEcrtlureua49TLTgRIbgqX7HjfB7JrlNAvUr49GL5zKVDjT0Ps2hhFA7JWgmASeJcRjndwgBjSx)mYgfH2JrPZV)9rIUZsHU3PYaCcZICsqqSvjThunYYrLUq6SXIK6fi)6wH8cmFoMJl4pXOEB37s6wfbu(yAgRCGT7(nzPBf3Is6Pn8TxTRMg30kNT5tg24iPBEvUsaNeNMAfGFAl1UEXZu5enbpDqvREk2HfZ6B17k1OtRtssw8KN)G9U)M1pmHF9BPD6kFHGa3)hhzOLRlorxaxVEcHChoa2tYtVU8HHw1wNrdbPIvkn2ojghblCQusGYjE94jho0R6bX5)XjZfMFfHVEIYKwkmP(9zIi2JvV1sCAlhFTsK9l4eKniIFCClrob03m0sCmCFcmr2rOFdQUOop6wcuTNrKZiL0ulzgQHylNOUrDK4R3X2M(wxbqAE2MfSmQ2NtBcQJie9eP79wv6zqLxfv7hxu6C(OQkije8E3q7GmYR15akhAVBkfrSbINa7aoaEOEkgSvlNa2Q)7FdTdhI)Fag1yFCaMH70nLb2SjkjKdUKd3KJ9TqLaunY3Uzyge1igi20SKKycf5pOR0BTttv61pBOvvCvqidPnF8willOyx1l7zUGzT6g02c2ZspJ6Oo)Sca(FC4G7v1IftDXO(6DjmP0NB0De4yb6ujyA5LwKqOKBVtWHONH6YSChgZCQkrvlAklnXBFz31o)EhqxwmQjUOgnJvlFO2LmofpUPVfpUtnDwaIe7HJH6gBaC9A9pLsPERM8nZVLPAvY6xY0laUMNHaNux3IvK4K97(wLVD85Knuk8CiaIXCgVMYUD4IdtQRSEk(DvJ12VB5yPcFZN2HwSyRSpbL356tLULG4GtBsv2n31P7pdy9)ik3bcwHF4gTRz1Lz1zgp0)p7zqPYEVG6H75jm08rf0YL9)WWx1rQqCaAtyCmNBelYvpW8rkL)AgzSfN9RFbl8T0nilYh0gaKF6wbCxmU5vqHMIcdotUP1EYki29U(RqCif(FUZFniimw3gJydagBaxPxZXyKElFJYFKsCJs54lCaQgdgjccPJKGdCaDpuowvwiOco8AH3XYlB3(1IwZ(lRHCq4nFI1jk491fq4SS8qWV92T428h)5WxCFnL1aSqaWqXgbofSOtaBqfNQtme4SQQHSIYvlz9kwBks59wef4MfsH)8l8EnwqR1RA6A06vL866)0A66VmwCwnDrszw3YMvZBw5bhXarWURxDvrx5QpzzUJvUt1lLocAZ2i1wkg5NyK8A7WudLu7qvHMWUO3PLlHTbtFx5)wvZzBXS31TOURxmsF37kPl6kgJU3BKU66pLZHdLewivjyH49eJ5UvVdk9ptYOaRLT1p8w2Ar7DXoZiXOHgPrVsgvBBu4YXXpRBUZYCNzd5TK(w4xFKvkO7Z9wq6RQNOXt)M70xqMAF4DU4nsr8QdLlGflkVcLv5EaTlTYLMPLd2zt3a6kIiHzyzCZydCtfC8ozhf(aiM(nXCAgzWh5oZZDUxqLuHpMtf1SjF9kU74dQHhUZGGyoFJEq)fQfHqmDEUYYlxuy71mXm48gdkN8M2KjSQQGaNX(oqas5Ivlb6rJ6xTCixhig4lmwDXLU2SkurkbV6aDuSxqKtHwQRznMBUAbls07xdifPGY61PR6xlXOco1PkgAzqo0MZLfv95LyrfSxICPbiwn7I0y6kLkTtAbMzwRuHcl35AP3lG3rDiz3V(vbonQnT4YA03AWML7SasXleDvJRstzDjX90q0jk)THUvh52iZfbTSkLAcyvSDYFeRMeinicQFLA3(fIBHIT6IxLSBNsZY5E3tgQwiSJw1xhqZ(maCZK0NcOGGZoc2lZ1nofgWsmBst2DWPygN7kg)Q2GF4dDIQfGALFhHkc(JocfzqkcaVmJwVNoDu))OiWhfsMAQV6WhCIIwa(Ne0cgtu0AcUm8WqUorY7y0qbvLyZl4PNMQfivnbGCKJNuxyu81Yuc0yt4HusuYsEjtmUWLklSFD0ltdx044YGcXfVKxXdOPHopXj)yUfqhAk1uWvTbs6mhsDks3HMQMytFPodGGfMbtD4JpLj6fc1ZA1bOuvNNozN(vh5ttR21ZjQh9sQiqhQKET9)UVAZRT9ArNXOCf8TMc1A6GP4WD0dtngbbFPLCxvd(sTo0Ou98VPFZN1Ao3UAXeHCeZgwRCn1bEdNl20bh1DunD(AToTwlRCPjU9hisjTgOIYQU8Aqio7d0OX0vT0fv477YNUBB)CJXFToaRmMmLpU0rLJ2bWDF(1ENSFDVwIN4zeBsY3r102AirsmvmV9xdHUtfKG0XsnJsqfP1I6J(QdgMqwgnylm1dGJ3WVoc9ME2HENxPQrMQvj)PYAHhxPg7TglvmNpyJj3a8IAvWIADGYhsRiHqnsLZjo0uHWV11Ln1ZPZTCyR0KdRcFVQ7sCYas7mDq5upVsDJn3Fu1GSLvTKq2XaSItLowCX(YjU5JLEQMmTMEgPvZuFAbrJnN8TDv1oLt23sKtrZPW0KerBgbkV6sXf99ODF79)2olu7x5goxFAFZNRwGppLJyF8g2BwD2jj4DYGRlbT5Zisk7TcxV9xCjrSpr06v)Y(cOw8OIILN7W)0ydYFKtOaCieu)HpK7895MVZ2PZ(2VdR993LO5ZlE5cWF0lc(Lla)Lla)Lla)BqIUCb4VCb4)oe(D5cWF5cWFQPKUCb4pZlapa)8BA)q7kd3L7aVIhj(YDG3m6Ll3b(l3b(wvEVCh4)QVd8qfG3ZRbFj5(X5MWxYqF)Vm8FG16N3X7d)hyx0Q)iEL4bg)0Udv6KebMRQ(OYvRkJUnMWU)B7C3I3H5TqC9Vd]] )
+spec:RegisterPack( "Restoration Druid", 20250425, [[Hekili:vRvEVnoUv8plblGGDYmoso2oz2ABGTxO7IUtlQB)RIkjAjQywRddjQ4jab6ZEFK6IKIuXj7matb2zJTi57(4hFYUoU)t3DHik29ZZTNV0EX8LZCCMB74UJ(8jS7UtOGJOhHpKIsG)))axqZYruswAL)FmVKeY2YZXzOqgLkYkZdGT5UBFjjM(ZPU71qENLopa79eoW9Zo2lD3DGegIR3lUiWDhBVF0EXhNV8hR8)ZKVu5tr5pIPEKOFh85Zy0Xk)dyumj9rG)5zrKyGR)WpapLspv8J3E7Je6HY9ZcYsUTGKugZf5GCueL99GB3hNT)w6b8zu(zyRK0B)Pa2w(75KSCc95)kPGwCBitd9Y7v6zSdx9lmo9VobIswLpt9Q8zePYFhj5paI8VIYdGV9qLpttQ8)yLFqW(7dU)tv)cCyyFPOtfhYOv(5isyL)(YOim83ckIwaFfhLLdefK(9ik77pssHNJsH9Ckh)XtzukO7v(e4PHzP4zv)cIl)fZG1Rp3nBUnbLF0llYduuVZK4q97Q45K9Kmkja00AdvXbYPpqI2eMDo1IDKNWEO4ycUyRJEAaoHZXSJqrX4u6SC0r8mCkAFm2axdqupqntmCihMPQ5Cmz8yzCS3EuXbXNUhNxGZpYmfcpnfrlbFM3tKhjCz6kM9DgxeNvEYQ(RfhqG6LGJdHNjE8aqt9Q)Qxmeg8bwO)MMWTpuqZjb0nom6wG5UHIznl6LKfITeygZ(jsAyF5urhYBx6klWEekoP4TFuiQb(0B)C5LPdThG7tYwOXf(YlC626OhyMh1)lT1S0NYoI5wTItei)KR9t4KFGnf4ZlVeKLfZS(AwohNGG0PTRS)4D2x3W6aGT5KYcVhHmEuAGGsCvZwgsPMTmvkqTmnIKJ)qWZbXGeZRBvuBIYXrqy5b2zSQxygLKaBkZlKG3U0QHrKeWZ8eo0RHw6mjjzzxgFeyGZCjbfotrjCm2rAYXXP4eijF9dFD0O7TuO79QcaNWSmPtyiPRH2ZAxzRttiKoFSiPodvNpiuWGfZXcCH4jg1hgE3q32mGMVwuY6d5Hs2xwCqKfn0tB67KUqnnHPTbBRxy3hiPBFTHsGKKvuyfrE8a1R7WRuLenjpJqvRjk(HnRMAn5k1StRlst28yq4Se0xS(Uj9B6aRZy1leu4PF)OddcDHgWAs4MmriL7Lxa)z(JpV9t2wDEhhBqRynzZ8oLrsHdUuQiqZgVz(IxEzs7xe3)1lwlS)wcFZcLnTvyttNYursaRrSL422o)gLm7ZKtypqfVE(av(eyVzyT4yi)a4I8sXFb6UOUp6HCagaJiVJsslTKfOEITDHkJgPW3KxJntTUca78KhlzXPlMtBbQxrjMis3hSATZGjVnRomRU15AN2oiNYjjOyVOY8N7Qb0SucQGIZ9aIFc4ajc(s3wm4R2Uykh16)(VGpsIj)haGBwijIWqSIkyWu7tuI5Ws5av5GNRTkaHtd96xMbUnLb)TO80PSCkoC2yv4gwPQjWFLTvBQvumdQoF9bWoRP4yTmNyUNzNfhm4cU0MGJUeVWY6BiCT9ShunK1BDJZu9rfMS7RngrcsSaDAvmTYYasi01DYfetmXqRzw5dJfpv1O2dTKvP4TFS7hwIFe0lBC6tn6a0ynigAyxJljIB5BjI7sROfHZZcizqRJ9a0ETXNsvvVttjN13XmTkf(Be6nGuZlsqo116I1N4IJ7(wvYD(7PGOu6PnGJXCrV(oVJeIdBAScFkXDTRnmUB7CPEFRxoIvurLKG7TDWbV04OId5yoM0(YJJlrkbE9NCP8jNfIJibe6g73ustZ0o(BPv(qwoBkoPh7jqt7aMxh)FlFc8gSNlyx5HSclT2PJCi2)IJFwh1Ijr49XzzCzsShz3cRDu6E2VY86RV39awQFtiuzAiyBGBmqpiaBRrGEg8nf44O3PanGT8jV8Am(xHWfk8Vk))uuuCMoEJzlaHoa40G(7cj90MPua0JMJsl44u8bcNXEagRJQqwqenb6PRQr54A58gHNXkU7n8XIE2PB7GUKZN9fBqyWZ76cXLA5LG)gCCZDCb)NIpJEUGnfUya4rnVGaewwoGXOvy1PjccxBxvwZ92J4U7jCEbCM2byAp3D3zuEkBSpU7(5KA0lv(la2XjELpBgjfaEg3D8pXNWkocvgtHp(z(exR3Q7U(PA5URrvD)9UuGzI7QFkxk76o2U6FYUa4Mo4CcYD3v1ZuS7cUv(wv(Tpu6MW9SrASzmYVWi51o4lopug(fSv(mIy6DhJuhWwTHYREcZTJ1foYYVQQ3aahmwS6Rkl6MnhJ03)vL01ZUJr3hmsxDtrZ)LxAiSqDzTEfLP8j5uGZYy9NElSw0FxZzgjCSnsJjncQ2H9W1Jx)g5v(BR8xzZh5(DWFUM10z8BNxt6R62OX7Ox5pvqNgoIbU65OOEDz61i3f1xbaa8iGHqN4AZYMfhD0GaDfbnXCSmPzUbPP9gdJkokYbqm9mXCvOMQ9n4JQ8xx5)GGjPfcpNkQfB(TB4UNVOgz4EdkI56n6VxsTzriftxKRS(YvfgVwjwGNp(s5A70(kHTnn0yCe7Hw)YZai(1Frc0LgNIAlyULXPR3JgM1bordNAXJPKpRdRtnJGKPAd3y7AEFlfrazIjeAWgXYt10C8suJwuCxQAOva5WPUir0umVe8mfXubZNOKAaANUwPDXK9aDK4IwKGMTkTW(Q8Vr65cORuxso2BABUuVztlqWE7TgWGv(BGQ(6AR3LO1lpkk8LHGu0cmaQipPL1PutcRIts(vT1xaPhrq3JuFNecj)qZwD5RsoPlzK(8q5f2Qnch5fk0L9YEzfCFI0nyRj4Qxb7L5(gxIayjw6OV6oebSIlD1RF1qWp8LUqZcqTM32rlb)EhHImifbGxMbZprNnA6)VOWVkKmtL(GuFfRa8Fsqlycr98q46WNS52ePOdhBbtL4et41IwQfivhbGcIZx01fu8XYu6A(1lxRqjl5JSW4b3QCWPDzVmlC9STBskep8wE7nGMggogN8Z5EaDOPulb3o1kP7CinylDxAQDJ9Jo7DaeS2nyAiK8TSqVsOExRraLQg8mQ4mT9kFAEBa6Le1REj1eyetYKHXFp0Y8oFVwOymk3IvRVRSMHSkU8iJzvJtqiwAlpu1qS0GlnoOaNCZ8VPVOkxn3KxT9IqvJv2DMBtV2GrV4OURQPlwBWT1g4LBCXdFhwkL1adsz7pXpifN9oK046Ap6MwW8JftpUVFTX8VbxGvg(LY7)6v1JHjWJF)1jxCC9KbQN4De7lYps30HwirsSuSU9VfcDVkibPRLAgLGksRnDx9vhmmHQmAWwyAgaV(a)gjrB5fKOPFKuVVwvoM6vj)svgGhxPh7DgBvSMVyVl3a8IotWMoBGY76RUGqhsL3tEOPgHFR7lBAMtV32HdktA3M(E14T4KbKoA5GMT((A1n388rvtY22o)b5adWlUu6c(18LtCZxlv1qPCFUTsevWRZOQAr6ll)zU56UdBFoQkYERNCkAU61W6e6E9M8SkBJzYmw8MkrPTEdL37Q(NbTUrfiHK5R)puCbKfk)4WhFwcDt1QjmS(NdEDsKGVq7pL8l62(6F3b8jIm(9x1CEhdwEW2JkPhYYzZr7i6a5iH)u3)h]] )

@@ -401,6 +401,9 @@ spec:RegisterAuras( {
         id = 465,
         duration = 3600,
         max_stack = 1,
+        dot = "buff",
+        shared = "player",
+        friendly = true
     },
     divine_favor = {
         id = 210294,
@@ -650,7 +653,7 @@ spec:RegisterHook( "reset_precast", function()
 end )
 
 spec:RegisterHook( "spend", function( amt, resource )
-        
+
     if amt > 0 and resource == "holy_power" then
         if talent.tirions_devotion.enabled then
             reduceCooldown( "lay_on_hands", amt * 1.5 )
@@ -1701,7 +1704,7 @@ spec:RegisterAbilities( {
         texture = 236265,
         equipped = "shield",
 
-        
+
         handler = function ()
             if talent.blessed_assurance.enabled then applyBuff( "blessed_assurance" ) end
 

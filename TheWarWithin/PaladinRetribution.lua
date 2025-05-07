@@ -387,7 +387,10 @@ spec:RegisterAuras( {
     devotion_aura = {
         id = 465,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        dot = "buff",
+        shared = "player",
+        friendly = true
     },
     divine_arbiter = {
         id = 406975,

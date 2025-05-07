@@ -15,9 +15,7 @@ local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local RegisterEvent = ns.RegisterEvent
 local RegisterUnitEvent = ns.RegisterUnitEvent
 
-local formatKey = ns.formatKey
 local getSpecializationKey = ns.getSpecializationKey
-local tableCopy = ns.tableCopy
 
 local LSR = LibStub( "SpellRange-1.0" )
 
@@ -275,6 +273,24 @@ local HekiliSpecMixin = {
             end
 
             class.knownAuraAttributes[ element ] = true
+        end
+
+        if data.tick_time and not data.tick_fixed then
+            if a.funcs.tick_time then
+                local original = a.funcs.tick_time
+                a.funcs.tick_time = setfenv( function( ... )
+                    local val = original( ... )
+                    return ( val or 3 ) * haste
+                end, state )
+                a.funcs.base_tick_time = original
+            else
+                local original = a.tick_time
+                a.funcs.tick_time = setfenv( function( ... )
+                    return ( original or 3 ) * haste
+                end, state )
+                a.base_tick_time = original
+                a.tick_time = nil
+            end
         end
 
         self.auras[ aura ] = a
@@ -1116,7 +1132,7 @@ local HekiliSpecMixin = {
 
             -- Register the pet and handle the copy field if it exists.
             if copy then
-                self:RegisterPet( token, id, spell, duration, copy )
+                self:RegisterPet( token, id, spell, duration, type( copy ) == "string" and copy or unpack( copy ) )
             else
                 self:RegisterPet( token, id, spell, duration )
             end
@@ -1967,7 +1983,7 @@ all:RegisterAuras( {
                 spell, _, _, startCast, endCast, _, notInterruptible, spellID = UnitChannelInfo( unit )
                 startCast = ( startCast or 0 ) / 1000
                 endCast = ( endCast or 0 ) / 1000
-                duration = endCast - startCast
+                local duration = endCast - startCast
 
                 -- Channels greater than 10 seconds are nonsense.  Probably.
                 if spell and duration <= 10 then

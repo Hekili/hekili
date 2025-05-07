@@ -1269,22 +1269,6 @@ spec:RegisterAbilities( {
         end,
     },
 
-    shadow_word_death = {
-        id = 32379,
-        cast = 0,
-        cooldown = 10,
-        gcd = "spell",
-
-        spend = 250,
-        spendType = "mana",
-
-        talent = "shadow_word_death",
-        startsCombat = true,
-
-        handler = function ()
-        end,
-    },
-
     shadow_word_pain = {
         id = 589,
         cast = 0,

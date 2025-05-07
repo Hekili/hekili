@@ -1359,7 +1359,7 @@ all:RegisterAbilities( {
 
         auras = {
             ratfang_toxin = {
-                id = 1213433,
+                id = 1216604,
                 duration = 20,
                 max_stack = 5
             }

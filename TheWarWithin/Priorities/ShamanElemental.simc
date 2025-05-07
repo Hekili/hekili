@@ -1,4 +1,4 @@
-## Updated 2025-03-27
+## Updated 2025-04-22
 ## Non-SimC edits to resolve Ascendance/trinket sync logic.
 
 # Ensure weapon enchant is applied if you've selected Improved Flametongue Weapon.
@@ -42,7 +42,7 @@ actions+=/natures_swiftness
 ## actions+=/invoke_external_buff,name=power_infusion,if=buff.ascendance.up|cooldown.ascendance.remains>30
 actions+=/potion,if=buff.bloodlust.up|buff.spymasters_web.up|buff.ascendance.remains>12|fight_remains<31&boss
 # [Hekili] Ascendance/trinket sync logic; revised to recover when a trinket is used *before* Ascendance.
-actions+=/variable,name=ascendance_trinket,value=buff.spymasters_web.up|(trinket.1.has_use_buff&!trinket.1.is.spymasters_web|trinket.1.is.funhouse_lens)&(trinket.1.ready_cooldown|trinket.1.cooldown.remains>20)|(trinket.2.has_use_buff&!trinket.2.is.spymasters_web|trinket.2.is.funhouse_lens)&(trinket.2.ready_cooldown|trinket.2.cooldown.remains>20)|equipped.neural_synapse_enhancer&(cooldown.neural_synapse_enhancer.remains=0|cooldown.neural_synapse_enhancer.remains>20)|equipped.best_in_slots&(cooldown.best_in_slots.remains=0|cooldown.best_in_slots.remains>20)
+actions+=/variable,name=ascendance_trinket,value=buff.spymasters_web.up|(trinket.1.has_use_buff&!trinket.1.is.spymasters_web|trinket.1.is.funhouse_lens)&(trinket.1.ready_cooldown|trinket.1.cooldown.remains>20)|(trinket.2.has_use_buff&!trinket.2.is.spymasters_web|trinket.2.is.funhouse_lens)&(trinket.2.ready_cooldown|trinket.2.cooldown.remains>20)|equipped.neural_synapse_enhancer&(cooldown.neural_synapse_enhancer.remains=0|cooldown.neural_synapse_enhancer.remains>20)|equipped.best_in_slots&(cooldown.best_in_slots.remains=0|cooldown.best_in_slots.remains>20)|!trinket.1.has_use_buff&!trinket.2.has_use_buff
 actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.chain_lightning>1
 actions+=/run_action_list,name=single_target
 

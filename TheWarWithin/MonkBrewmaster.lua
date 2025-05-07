@@ -262,6 +262,16 @@ spec:RegisterAuras( {
         duration = 10,
         max_stack = 1
     },
+    balanced_stratagem_magic = {
+        id = 451508,
+        duration = 15,
+        max_stack = 5,
+    },
+    balanced_stratagem_physical = {
+        id = 451514,
+        duration = 15,
+        max_stack = 5,
+    },
     blackout_combo = {
         id = 228563,
         duration = 15,
@@ -546,6 +556,11 @@ spec:RegisterAuras( {
         tick_time = 0.75,
         max_stack = 1
     },
+    save_them_all = {
+        id = 390105,
+        duration = 4,
+        max_stack = 1,
+    },
     shuffle = {
         id = 322120,
         duration = 9,
@@ -768,7 +783,7 @@ spec:RegisterGear( "tww2", 229301, 229299, 229298, 229297, 229296 )
 spec:RegisterAuras( {
     -- 2-set
     -- https://www.wowhead.com/ptr-2/spell=1217990/luck-of-the-draw
-    -- Each time you take damage you have a chance to activate Luck of the Draw! causing you to cast Fortifying Brew for 6.0 sec. Your damage done is increased by 15% for 8 sec after Luck of the Draw! activates.  
+    -- Each time you take damage you have a chance to activate Luck of the Draw! causing you to cast Fortifying Brew for 6.0 sec. Your damage done is increased by 15% for 8 sec after Luck of the Draw! activates.
     luck_of_the_draw = {
         id = 1217990,
         duration = 8,
@@ -1078,6 +1093,15 @@ spec:RegisterStateExpr( "persistent_multiplier", function( act )
     return mult
 end )
 
+spec:RegisterStateExpr( "heal_multiplier", function()
+    return ( 1 + 0.02 * talent.chi_proficiency.rank )
+        * ( 1 + 0.04 * talent.grace_of_the_crane.rank )
+        * ( 1 + ( ( talent.flow_of_chi.enabled and health.pct < 35 ) and 0.1 or 0 ) )
+        * ( 1 + 0.1 * buff.save_them_all.stack )
+        * ( 1 + 0.03 * buff.balanced_stratagem_magic.stack )
+        * ( 1 + stat.versatility_atk_mod )
+end )
+
 spec:RegisterCombatLogEvent( function( ... )
     local _, subtype, _, sourceGUID, _, _, _, destGUID, _, _, _, spellID = ...
 
@@ -1200,6 +1224,11 @@ spec:RegisterAbilities( {
 
             if conduit.walk_with_the_ox.enabled and cooldown.invoke_niuzao.remains > 0 then reduceCooldown( "invoke_niuzao", 0.5 ) end
 
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_physical" )
+                addStack( "balanced_stratagem_magic" )
+            end
+
             if set_bonus.tww2 >= 4 and buff.opportunistic_strike.up then
                 reduceCooldown( "blackout_kick", 2 )
                 removeStack( "opportunistic_strike" )
@@ -1235,6 +1264,10 @@ spec:RegisterAbilities( {
                 debuff.breath_of_fire_dot.pmultiplier = persistent_multiplier
             end
             if talent.charred_passions.enabled or legendary.charred_passions.enabled then applyBuff( "charred_passions" ) end
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_magic" )
+                addStack( "balanced_stratagem_physical" )
+            end
         end,
     },
 
@@ -1281,6 +1314,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_magic" )
+                addStack( "balanced_stratagem_physical" )
+            end
         end,
     },
 
@@ -1340,6 +1377,10 @@ spec:RegisterAbilities( {
         start = function ()
             removeBuff( "the_emperors_capacitor" )
             if buff.jade_empowerment.up then removeStack( "jade_empowerment" ) end
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_magic" )
+                addStack( "balanced_stratagem_physical" )
+            end
             applyDebuff( "target", "crackling_jade_lightning" )
         end,
     },
@@ -1457,11 +1498,17 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            gain( ( healing_sphere.count * stat.attack_power ) + stat.spell_power * ( 1 + stat.versatility_atk_mod ), "health" )
+            local heal = ( healing_sphere.count * 3.3 * stat.attack_power ) + ( 1.2 * stat.spell_power ) * ( 1 + 0.05 * talent.vigorous_expulsion.rank ) * ( 1 + ( talent.strength_of_spirit.enabled and ( ( 100 - health.pct ) / 100 ) or 0 ) )
+            gain( heal * heal_multiplier, "health" )
+
             if pvptalent.reverse_harm.enabled then gain( 1, "chi" ) end
             removeBuff( "gift_of_the_ox" )
             if talent.tranquil_spirit.enabled and healing_sphere.count > 0 then stagger.amount_remains = 0.95 * stagger.amount_remains end
             healing_sphere.count = 0
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_magic" )
+                addStack( "balanced_stratagem_physical" )
+            end
         end,
     },
 
@@ -1477,6 +1524,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_magic" )
+                addStack( "balanced_stratagem_physical" )
+            end
             applyDebuff( "target", "exploding_keg" )
         end,
     },
@@ -1579,6 +1630,11 @@ spec:RegisterAbilities( {
 
             if buff.weapons_of_order.up then
                 applyDebuff( "target", "weapons_of_order_debuff", nil, min( 5, debuff.weapons_of_order_debuff.stack + 1 ) )
+            end
+
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_physical" )
+                addStack( "balanced_stratagem_magic" )
             end
 
             if talent.salsalabims_strength.enabled then setCooldown( "breath_of_fire", 0 ) end
@@ -1728,7 +1784,6 @@ spec:RegisterAbilities( {
                 addStack( "elusive_brawler" )
                 removeBuff( "blackout_combo" )
             end
-
             applyBuff( "purified_chi" )
 
             if talent.pretense_of_instability.enabled then applyBuff( "pretense_of_instability" ) end
@@ -1739,7 +1794,12 @@ spec:RegisterAbilities( {
 
             local reduction = stagger.amount_remains * ( 0.5 + 0.03 * buff.brewmasters_rhythm.stack )
             stagger.amount_remains = stagger.amount_remains - reduction
-            gain( 0.25 * reduction, "health" )
+            gain( 0.25 * reduction * heal_multiplier, "health" )
+
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_magic" )
+                addStack( "balanced_stratagem_physical" )
+            end
 
             applyBuff( "recent_purifies", nil, 1, reduction )
         end,
@@ -1784,6 +1844,11 @@ spec:RegisterAbilities( {
 
             if talent.strike_at_dawn.enabled then addStack( "elusive_brawler" ) end
 
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_physical" )
+                addStack( "balanced_stratagem_magic" )
+            end
+
             if set_bonus.tier30_4pc > 0 then addStack( "elusive_brawler" ) end
         end,
     },
@@ -1822,6 +1887,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "rushing_jade_wind" )
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_physical" )
+                addStack( "balanced_stratagem_magic" )
+            end
         end,
     },
 
@@ -1853,6 +1922,10 @@ spec:RegisterAbilities( {
 
         start = function ()
             applyBuff( "soothing_mist" )
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_magic" )
+                addStack( "balanced_stratagem_physical" )
+            end
         end,
     },
 
@@ -1899,6 +1972,11 @@ spec:RegisterAbilities( {
             applyBuff( "spinning_crane_kick" )
             removeBuff( "counterstrike" )
             removeBuff( "leverage" )
+
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_physical" )
+                addStack( "balanced_stratagem_magic" )
+            end
 
             if buff.celestial_flames.up then
                 applyDebuff( "target", "breath_of_fire_dot" )
@@ -1948,6 +2026,10 @@ spec:RegisterAbilities( {
             removeBuff( "blackout_combo" )
             removeBuff( "counterstrike" )
 
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_physical" )
+                addStack( "balanced_stratagem_magic" )
+            end
             if talent.endless_draught.enabled then
                 gainChargeTime( "celestial_brew", 1 )
             else
@@ -1990,6 +2072,10 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeBuff( "vivacious_vivification" )
+            if talent.balanced_stratagem.enabled then
+                removeBuff( "balanced_stratagem_magic" )
+                addStack( "balanced_stratagem_physical" )
+            end
         end,
     },
 
@@ -2036,7 +2122,7 @@ spec:RegisterAbilities( {
             applyBuff( "zen_meditation" )
         end,
     },
-	
+
 	-- You exploit the enemy target's weakest point, instantly killing $?s322113[creatures if they have less health than you.][them.    Only usable on creatures that have less health than you]$?s322113[ Deals damage equal to $s3% of your maximum health against players and stronger creatures under $s2% health.][.]$?s325095[    Reduces delayed Stagger damage by $325095s1% of damage dealt.]?s325215[    Spawns $325215s1 Chi Spheres, granting 1 Chi when you walk through them.]?s344360[    Increases the Monk's Physical damage by $344361s1% for $344361d.][]
     touch_of_death = {
         id = 322109,

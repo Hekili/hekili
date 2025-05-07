@@ -445,17 +445,19 @@ do
         { "^!?(dot%.[a-z0-9_]+)%.up$"               , "%1.remains"                        },
         { "^!?(d?e?buff%.[a-z0-9_]+)%.react$"       , "%1.remains"                        },
         { "^!?(dot%.[a-z0-9_]+)%.react$"            , "%1.remains"                        },
+        { "^!?(d?e?buff%.[a-z0-9_]+)%.stack$"       , "%1.remains"                        },
+        { "^!?(d?e?buff%.[a-z0-9_]+)%.stack[<>]=?(.-)$", "0.01+%1.remains"                   },
         { "^!?(d?e?buff%.[a-z0-9_]+)%.ticking$"     , "%1.remains"                        },
         { "^!?(dot%.[a-z0-9_]+)%.ticking$"          , "%1.remains"                        },
         { "^!?(d?e?buff%.[a-z0-9_]+)%.remains$"     , "%1.remains"                        },
         { "^!?ticking"                              , "remains"                           },
         { "^!?remains$"                             , "remains"                           },
         { "^!?up$"                                  , "remains"                           },
-        { "^down$"                                  , "remains"                           },
-        { "^refreshable$"                           , "time_to_refresh"                   },
-        { "^buff%.([a-z0-9_]+)%.refreshable$"       , "buff.%1.time_to_refresh"           },
-        { "^debuff%.([a-z0-9_]+)%.refreshable$"     , "debuff.%1.time_to_refresh"         },
-        { "^dot%.([a-z0-9_]+)%.refreshable$"        , "debuff.%1.time_to_refresh"         },
+        { "^!?down$"                                , "remains"                           },
+        { "^!?refreshable$"                         , "time_to_refresh"                   },
+        { "^!?buff%.([a-z0-9_]+)%.refreshable$"     , "buff.%1.time_to_refresh"           },
+        { "^!?debuff%.([a-z0-9_]+)%.refreshable$"   , "debuff.%1.time_to_refresh"         },
+        { "^!?dot%.([a-z0-9_]+)%.refreshable$"      , "debuff.%1.time_to_refresh"         },
 
         { "^time>=?(.-)$"                           , "0.01+%1-time"                      },
         { "^gcd.remains$"                           , "gcd.remains"                       },
@@ -516,6 +518,7 @@ do
         { "^!?stealthed%.(all)$"                    , "stealthed.%1_remains"                                          },
 
         { "^!?death_and_decay.ticking$"             , "death_and_decay.remains"                                       }, -- DKs
+        { "^!?drw.bp_ticking$"                      , "debuff.drw_blood_plague.remains" },
 
         { "^!?time_to_hpg$"           , "time_to_hpg"          }, -- Retribution Paladin
         { "^!?time_to_hpg[<=]=?(.-)$" , "time_to_hpg-%1"       }, -- Retribution Paladin
@@ -591,6 +594,18 @@ do
         ["=="] = true,
     }
 
+    local lhsTerms = {
+        ["("] = true,
+        ["&"] = true,
+        ["|"] = true
+     }
+
+    local rhsTerms = {
+        [")"] = true,
+        ["&"] = true,
+        ["|"] = true
+    }
+
 
     -- Given an expression, can we assess whether it is time-based and progressing in a meaningful way?
     -- 1.  Cooldowns
@@ -606,6 +621,43 @@ do
         end
 
         local lhs, comp, rhs = expr:match( "^(.-)([<>=~?]+)(.-)$" )
+
+        -- Finding that SplitExpr is falling short occasionally; need to trim lhs and rhs to the most appropriate balanced pair.
+        local brace_depth = 0
+
+        if lhs then
+            for i = lhs:len(), 1, -1 do
+                local char = lhs:sub( i, i )
+                if char == ")" then
+                    brace_depth = brace_depth + 1
+                elseif char == "(" then
+                    brace_depth = brace_depth - 1
+                end
+
+                if brace_depth < 0 and lhsTerms[ char ] then
+                    lhs = lhs:sub( i + 1, lhs:len() )
+                    break
+                end
+            end
+        end
+
+        if rhs then
+            brace_depth = 0
+            for i = 1, rhs:len() do
+                local char = rhs:sub( i, i )
+
+                if char == "(" then
+                    brace_depth = brace_depth + 1
+                elseif char == ")" then
+                    brace_depth = brace_depth - 1
+                end
+
+                if brace_depth < 0 and rhsTerms[ char ] then
+                    rhs = rhs:sub( 1, i - 1  )
+                    break
+                end
+            end
+        end
 
         if comp and comp:match( "?" ) then
             comp = nil
@@ -683,14 +735,6 @@ do
                     return true, "rune.timeTo( " .. lhs .. " )"
                 end
             end
-
-            --[[ if comp:match( "<=?" ) then
-                return true, lhs .. " - " .. rhs .. " + 0.01"
-            end
-
-            if comp:match( ">=?" ) then
-                return true, rhs .. " - " .. lhs .. " + 0.01"
-            end ]]
         end
 
         -- If we didn't convert a resource.current to resource.timeTo then let's revert our string.
@@ -700,6 +744,10 @@ do
             if expr:match( swap[1] ) then
                 return true, expr:gsub( swap[1], swap[2]), swap[1]
             end
+        end
+
+        if comp and comp:match( "[<>]=?" ) then
+            return true, "0.01 + " .. lhs .. " - " .. rhs, "fallback"
         end
 
         return false, nil
@@ -728,7 +776,13 @@ do
                 if converted then
                     calc = SimToLua( calc )
                     calc = self:EmulateSyntax( calc, true )
-                    recheck = ( recheck and ( recheck .. ", " ) or "" ) .. calc
+
+                    local rslt, msg = Hekili:Loadstring( "return " .. calc )
+                    if not rslt then
+                        Hekili:Debug( "Recheck failed to loadstring: %s", msg )
+                    else
+                        recheck = ( recheck and ( recheck .. ", " ) or "" ) .. calc
+                    end
                 end
             end
         end
@@ -753,7 +807,8 @@ do
         ["!"] = true,
         ["!="] = true,
         ["~="] = true,
-        ["@"] = true
+        ["@"] = true,
+        [","] = true
      }
 
     local math_ops = {
@@ -764,9 +819,6 @@ do
         ["%"] = true,
         ["<"] = true,
         [">"] = true,
-        -- ["="] = true,
-        -- ["!="] = true,
-        -- ["~="] = true,
         ["<="] = true,
         [">="] = true,
         [">?"] = true,
@@ -793,7 +845,9 @@ do
 
     local funcs = {
         ["floor"] = true,
-        ["ceil"] = true
+        ["ceil"] = true,
+        ["max"] = true,
+        ["min"] = true
     }
 
 
@@ -931,7 +985,9 @@ do
                         esDepth = esDepth - 1
                         return orig
                     end
-                    piece.s = scripts:EmulateSyntax( piece.s, numeric )
+
+                    local isNumber = numeric and prev == nil and next == nil or prev and math_ops[ prev.a ] or next and math_ops[ next.a ]
+                    piece.s = scripts:EmulateSyntax( piece.s, isNumber, squawk )
                 end
 
                 if ( prev and prev.t == "op" and math_ops[ prev.a ] and not equality[ prev.a ] ) or ( next and next.t == "op" and math_ops[ next.a ] and not equality[ next.a ] ) then
@@ -993,7 +1049,7 @@ do
             end
 
             if trimmed_prefix then
-                    piece.s = trimmed_prefix .. piece.s
+                piece.s = trimmed_prefix .. piece.s
             end
 
             output = output .. piece.s
@@ -1207,6 +1263,7 @@ local newModifiers = {
     sec = 'raw',
     value = 'raw',
     value_else = 'raw',
+    strict_if = 'raw',
 
     sync = 'string', -- should be an ability's name.
     action_name = 'string',
@@ -1224,6 +1281,7 @@ local valueModifiers = {
     line_cd = true,
     max_cycle_targets = true,
     empower_to = true,
+    strict_if = true
 }
 
 
@@ -1363,20 +1421,23 @@ local function ConvertScript( node, hasModifiers, header )
     local rs, rc, erc, rEle
     local recheckDebug, recheckPrint
 
-    if t and t ~= "" then
-        rs = scripts:BuildRecheck( node.criteria )
+    local hasCriteria = node.criteria and node.criteria ~= ""
+    local hasValue = node.value and node.value ~= ""
+    local hasValueElse = node.value_else and node.value_else ~= ""
+
+    if hasCriteria or hasValue or hasValueElse then
+        if node.action == "variable" then
+            rs = format( "%s | %s | %s", hasCriteria and node.criteria or "1", hasValue and node.value or "1", hasValueElse and node.value_else or "1" )
+            rs = scripts:BuildRecheck( rs )
+        else
+            rs = scripts:BuildRecheck( node.criteria )
+        end
+
         if rs then
-            local orig = rs
             rc, erc = Hekili:Loadstring( "-- " .. header .. " recheck\nreturn " .. rs )
             if rc then setfenv( rc, state ) end
 
-            rEle = GetScriptElements( orig )
-
-            --[[ if next( rEle ) ~= nil then
-                recheckDebug, recheckPrint = generateDebugPrint( node, rs, header, true )
-            end ]]
-
-            rEle.zzz = orig
+            rEle = GetScriptElements( rs )
 
             if type( rc ) ~= "function" then
                 Hekili:Error( "Recheck function for " .. clean .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
@@ -1385,41 +1446,44 @@ local function ConvertScript( node, hasModifiers, header )
         end
     end
 
-    local output = {
-        Conditions = sf,
-        Error = e,
-        Elements = se,
-        Print = debugPrint,
-        Debug = generateDebug,
+    local output = scripts.DB[ header ]
+    if output then wipe( output )
+    else output = {} end
 
-        Recheck = rc,
-        RecheckScript = rs,
-        RecheckError = erc,
-        RecheckElements = rEle,
-        RecheckPrint = recheckPrint,
-        RecheckDebug = recheckDebug,
-        Modifiers = {},
-        ModElements = {},
-        ModEmulates = {},
-        ModSimC = {},
-        SpecialMods = "",
+    local specialMods = ""
 
-        Variables = varPool,
+    if output.Modifiers then wipe( output.Modifiers ) end
+    local modifiers = output.Modifiers or {}
 
-        Lua = clean and clean:trim() or nil,
-        Emulated = t and t:trim() or nil,
-        EmuPreSim = tPreSim and tPreSim:trim() or nil,
-        SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil,
+    if output.ModElements then wipe( output.ModElements ) end
+    local modElements = output.ModElements or {}
 
-        ID = header
-    }
+    if output.ModEmulates then wipe( output.ModEmulates ) end
+    local modEmulates = output.ModEmulates or {}
+
+    if output.ModSimC then wipe( output.ModSimC ) end
+    local modSimC = output.ModSimC or {}
+
+    output.Conditions = sf
+    output.Error = e
+    output.Elements = se
+    output.Print = debugPrint
+    output.Debug = generateDebug
+
+    output.Recheck = rc
+    output.RecheckScript = rs
+    output.RecheckError = erc
+    output.RecheckElements = rEle
+    output.RecheckPrint = recheckPrint
+    output.RecheckDebug = recheckDebug
 
     if hasModifiers then
         for m, value in pairs( newModifiers ) do
             if node[ m ] then
                 local emulated
                 local o = SimToLua( node[ m ] )
-                output.SpecialMods = output.SpecialMods .. " - " .. m .. " : " .. o
+
+                specialMods = specialMods .. " - " .. m .. " : " .. o
 
                 local sf, e
 
@@ -1430,72 +1494,78 @@ local function ConvertScript( node, hasModifiers, header )
                     if m == "empower_to" and ( o == "max" or o == "maximum" ) then
                         emulated = SimToLua( scripts:EmulateSyntax( "max_empower", true ) )
                     else
-                        emulated = SimToLua( scripts:EmulateSyntax( node[ m ], true ) )
+                        emulated = node[ m ] ~= "" and node[ m ]
+                        emulated = SimToLua( scripts:EmulateSyntax( emulated, true ) )
                     end
 
+                    --[[ if modChecks then modChecks = modChecks .. " | " .. node[ m ]
+                    else modChecks = node[ m ] end ]]
                 else -- string
                     o = "'" .. o .. "'"
                     emulated = o
 
+                    --[[ if modChecks then modChecks = modChecks .. " | " .. node[ m ]
+                    else modChecks = node[ m ] end ]]
                 end
 
-                if node.action == "variable" then
-                    --[[ local var_val, var_recheck, var_err
-                    var_val = scripts:BuildRecheck( node[m] )
-                    if var_val then
-                        if var_val:match(",") then
-
-                        end
-                        var_val = scripts:EmulateSyntax( var_val )
-                        var_val = SimToLua( var_val )
-                        var_recheck, var_err = loadstring( "-- val " ..header .. " recheck\nreturn " .. var_val )
-                        if var_recheck then setfenv( var_recheck, state ) end
-
-                        if type( var_recheck ) ~= "function" then
-                            Hekili:Error( "Variable recheck function for " .. node.criteria .. " ( " .. ( var_recheck or "nil" ) .. " ) was unsuccessful somehow." )
-                            var_recheck = nil
-                        end
-
-                        output.VarRecheck = var_recheck
-                        output.VarRecheckScript = var_val
-                        output.VarRecheckError = var_err
-                    end ]]
-                    local rs, rc, erc
-                    rs = scripts:BuildRecheck( node[m] )
-
-                    if rs then
-                        local orig = rs
-                        rc, erc = Hekili:Loadstring( "-- var " .. header .. " recheck\nreturn " .. rs )
-                        if rc then setfenv( rc, state ) end
-
-                        --[[rEle = GetScriptElements( orig )
-                        rEle.zzz = orig ]]
-
-                        if type( rc ) ~= "function" then
-                            Hekili:Error( "Variable recheck function for " .. o .. " ( " .. ( rs or "nil" ) .. ") was unsuccessful somehow." )
-                            rc = nil
-                        end
-
-                        output.VarRecheck = rc
-                        output.VarRecheckScript = rs
-                        output.VarRecheckError = erc
-                    end
+                if emulated then
+                    sf, e = Hekili:Loadstring( "return " .. emulated )
                 end
-
-                sf, e = Hekili:Loadstring( "return " .. emulated )
 
                 if sf then
                     setfenv( sf, state )
-                    output.Modifiers[ m ] = sf
-                    output.ModElements[ m ] = GetScriptElements( o )
-                    output.ModEmulates[ m ] = emulated
-                    if type( node[ m ] ) == 'string' then output.ModSimC[ m ] = SimcWithResources( node[ m ]:trim() ) end
+                    modifiers[ m ] = sf
+                    modElements[ m ] = GetScriptElements( o )
+
+                    if modElements[ m ] then
+                        for k, v in pairs( modElements[ m ] ) do
+                            if k:sub( 1, 8 ) == "variable" then
+                                varPool = varPool or {}
+                                table.insert( varPool, k:sub( 10 ) )
+                            end
+                        end
+                    end
+
+                    modEmulates[ m ] = emulated
+                    if type( node[ m ] ) == 'string' then modSimC[ m ] = SimcWithResources( node[ m ]:trim() ) end
                 else
-                    output.Modifiers[ m ] = e
+                    modifiers[ m ] = nil
+                    modifiers[ "error:" .. m ] = e
                 end
             end
         end
+
+        --[[ if modChecks then
+            local mcString = scripts:BuildRecheck( modChecks )
+            if mcString then
+                local mcTimes, emsg = Hekili:Loadstring( "-- var " .. header .. " mod recheck\n return " .. mcString )
+                if mcTimes then setfenv( mcTimes, state ) end
+
+                if type( mcTimes ) ~= "function" then
+                    Hekili:Error( "Modifier recheck function for " .. modChecks .. " ( " .. ( mcString or "nil" ) .. ") was unsuccessful somehow." )
+                    mcTimes = nil
+                end
+
+                output.VarRecheck = mcTimes
+                output.VarRecheckScript = mcString
+                output.VarRecheckError = emsg
+            end
+        end ]]
     end
+
+    output.Modifiers = hasModifiers and modifiers
+    output.ModElements = hasModifiers and modElements
+    output.ModEmulates = hasModifiers and modEmulates
+    output.ModSimC = hasModifiers and modSimC
+    output.SpecialMods = specialMods
+
+    output.Variables = varPool
+
+    output.Lua = clean and clean:trim() or nil
+    output.Emulated = t and t:trim() or nil
+    output.EmuPreSim = tPreSim and tPreSim:trim() or nil
+    output.SimC = node.criteria and SimcWithResources( node.criteria:trim() ) or nil
+    output.ID = header
 
     state.scriptID = previousScript
     return output
@@ -1503,7 +1573,7 @@ end
 scripts.ConvertScript = ConvertScript
 
 
-function scripts:CheckScript( scriptID, action, elem )
+function scripts:CheckScript( scriptID, action, elem, default )
     local prev_action = state.this_action
     if action then
         state.this_action = action
@@ -1527,22 +1597,21 @@ function scripts:CheckScript( scriptID, action, elem )
 
         end
 
+        local result = script.Conditions()
         state.this_action = prev_action
-        return script.Conditions()
+        return result
+    end
 
-    else
-        if not script.Modifiers[ elem ] then
-            state.this_action = prev_action
-            return nil, elem .. " not set."
+    if not script.Modifiers[ elem ] then
+        state.this_action = prev_action
+        return nil, elem .. " not set."
+    end
 
-        else
-            local success, value = pcall( script.Modifiers[ elem ] )
+    local success, value = pcall( script.Modifiers[ elem ] )
 
-            if success then
-                state.this_action = prev_action
-                return value
-            end
-        end
+    if success then
+        state.this_action = prev_action
+        return value
     end
 
     state.this_action = prev_action

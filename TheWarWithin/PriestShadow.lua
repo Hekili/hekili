@@ -287,12 +287,13 @@ spec:RegisterPvpTalents( {
 } )
 
 
-spec:RegisterHook( "TALENTS_UPDATED", function()
-    talent.shadow_crash = talent.shadow_crash_targeted.enabled and talent.shadow_crash_targeted or talent.shadow_crash_ground
-end )
-
 -- Auras
 spec:RegisterAuras( {
+    ancient_madness = {
+        id = 341240,
+        duration = 20,
+        max_stack = 20
+    },
     angelic_feather = {
         id = 121557,
         duration = 5,
@@ -398,10 +399,10 @@ spec:RegisterAuras( {
         duration = 20,
         max_stack = 20
     },
-    voidheart = {
-        id = 449887,
-        duration = 8,
-        max_stack = 1
+    empty_mind = {
+        id = 247226,
+        duration = 12,
+        max_stack = 10
     },
     entropic_rift = {
         duration = 8,
@@ -542,14 +543,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    mindbender = {
-        duration = 15,
-        max_stack = 1,
-    },
-    voidwraith = {
-        duration = 15,
-        max_stack = 1
-    },
     -- Talent / Covenant: The next $w2 damage and $w5 healing dealt will be reversed.
     -- https://wowhead.com/beta/spell=323673
     mindgames = {
@@ -676,14 +669,6 @@ spec:RegisterAuras( {
         type = "Magic",
         max_stack = 1
     },
-    -- Talent: 343726
-    -- https://wowhead.com/beta/spell=34433
-    shadowfiend = {
-        id = 34433,
-        duration = 15,
-        type = "Magic",
-        max_stack = 1
-    },
     -- Spell damage dealt increased by $s1%.
     -- https://wowhead.com/beta/spell=232698
     shadowform = {
@@ -743,7 +728,7 @@ spec:RegisterAuras( {
     },
     unfurling_darkness_cd = {
         id = 341291,
-        duration = 15,
+        duration = 15.2,
         max_stack = 1,
         copy = "unfurling_darkness_icd"
     },
@@ -775,6 +760,11 @@ spec:RegisterAuras( {
     },
     void_bolt = {
         id = 228266,
+    },
+    voidheart = {
+        id = 449887,
+        duration = 8,
+        max_stack = 1
     },
     -- Talent: A Shadowy tendril is appearing under you.
     -- https://wowhead.com/beta/spell=108920
@@ -838,6 +828,17 @@ spec:RegisterAuras( {
         max_stack = 1
     },
 
+    anunds_last_breath = {
+        id = 215210,
+        duration = 15,
+        max_stack = 50
+    },
+    zeks_exterminatus = {
+        id = 236546,
+        duration = 15,
+        max_stack = 1
+    },
+
     -- Azerite Powers
     chorus_of_insanity = {
         id = 279572,
@@ -896,13 +897,14 @@ spec:RegisterAuras( {
     },
 } )
 
-
 spec:RegisterTotems( {
     mindbender = {
-        id = 136214
+        id = 136214,
+        copy = "mindbender_actual"
     },
     shadowfiend = {
-        id = 136199
+        id = 136199,
+        copy = "shadowfiend_actual"
     },
     voidwraith = {
         id = 615099
@@ -1014,28 +1016,16 @@ spec:RegisterStateExpr( "pmultiplier", function ()
     return mult
 end )
 
+local unfurlingDarknessInitialized = false
+
 spec:RegisterHook( "reset_precast", function ()
     if buff.voidform.up or time > 0 then
         applyBuff( "shadowform" )
     end
 
-    applyBuff( "unfurling_darkness_cd", state.PlayerDebuffRemains( "unfurling_darkness_cd" ) )
-
-    if pet.mindbender.active then
-        applyBuff( "mindbender", pet.mindbender.remains )
-        buff.mindbender.applied = action.mindbender.lastCast
-        buff.mindbender.duration = 15
-        buff.mindbender.expires = action.mindbender.lastCast + 15
-    elseif pet.shadowfiend.active then
-        applyBuff( "shadowfiend", pet.shadowfiend.remains )
-        buff.shadowfiend.applied = action.shadowfiend.lastCast
-        buff.shadowfiend.duration = 15
-        buff.shadowfiend.expires = action.shadowfiend.lastCast + 15
-    elseif pet.voidwraith.active then
-        applyBuff( "voidwraith", pet.voidwraith.remains )
-        buff.voidwraith.applied = action.voidwraith.lastCast
-        buff.voidwraith.duration = 15
-        buff.voidwraith.expires = action.voidwraith.lastCast + 15
+    if not unfurlingDarknessInitialized then
+        auras.player.buff.unfurling_darkness_cd = auras.player.debuff.unfurling_darkness_cd
+        rawset( debuff, "unfurling_darkness_cd", buff.unfurling_darkness_cd )
     end
 
     if buff.voidform.up then
@@ -1049,9 +1039,6 @@ spec:RegisterHook( "reset_precast", function ()
     if IsActiveSpell( 356532 ) then
         applyBuff( "direct_mask", class.abilities.fae_guardians.lastCast + 20 - now )
     end
-
-    -- If we are channeling Mind Sear, see if it started with Thought Harvester.
-    local _, _, _, start, finish, _, _, spellID = UnitChannelInfo( "player" )
 
     if settings.pad_void_bolt and cooldown.void_bolt.remains > 0 then
         reduceCooldown( "void_bolt", latency * 2 )
@@ -1085,12 +1072,27 @@ spec:RegisterHook( "reset_precast", function ()
 end )
 
 spec:RegisterHook( "TALENTS_UPDATED", function()
-    local sf = talent.voidwraith.enabled and "voidwraith" or talent.mindbender.enabled and "mindbender" or "shadowfiend"
+    talent.shadow_crash = talent.shadow_crash_targeted.enabled and talent.shadow_crash_targeted or talent.shadow_crash_ground
+
+    -- For ability/cooldown, Mindbender takes precedent.
+    local sf = talent.mindbender.enabled and "mindbender_actual" or talent.voidwraith.enabled and "voidwraith" or "shadowfiend"
+
+    class.abilities.shadowfiend = class.abilities.shadowfiend_actual
+    class.abilities.mindbender = class.abilities[ sf ]
+
+    rawset( cooldown, "shadowfiend", cooldown.shadowfiend_actual )
+    rawset( cooldown, "mindbender", cooldown[ sf ] )
+    rawset( cooldown, "fiend", cooldown.mindbender )
+
+    -- For totem/pet/buff, Voidwraith takes precedent.
+    sf = talent.voidwraith.enabled and "voidwraith" or talent.mindbender.enabled and "mindbender" or "shadowfiend"
+
     class.totems.fiend = spec.totems[ sf ]
     totem.fiend = totem[ sf ]
-    cooldown.fiend = cooldown[ sf ]
     pet.fiend = pet[ sf ]
+    buff.fiend = buff[ sf ]
 end )
+
 
 spec:RegisterHook( "pregain", function( amount, resource, overcap )
     if amount > 0 and resource == "insanity" and state.buff.memory_of_lucid_dreams.up then
@@ -1775,7 +1777,7 @@ spec:RegisterAbilities( {
         end,
     },
 
-    -- Talent: Summons a Mindbender to attack the target for $d.     |cFFFFFFFFGenerates ${$123051m1/100}.1% mana each time the Mindbender attacks.|r
+    --[[ -- Talent: Summons a Mindbender to attack the target for $d.     |cFFFFFFFFGenerates ${$123051m1/100}.1% mana each time the Mindbender attacks.|r
     mindbender = {
         id = function()
             if talent.voidwraith.enabled then
@@ -1808,7 +1810,7 @@ spec:RegisterAbilities( {
         end,
 
         copy = { "shadowfiend", 34433, 123040, 200174, "voidwraith", 451235 }
-    },
+    }, ]]
 
     -- Covenant (Venthyr): Assault an enemy's mind, dealing ${$s1*$m3/100} Shadow damage and briefly reversing their perception of reality.    $?c3[For $d, the next $<damage> damage they deal will heal their target, and the next $<healing> healing they deal will damage their target.    |cFFFFFFFFReversed damage and healing generate up to ${$323706s2*2} Insanity.|r]  ][For $d, the next $<damage> damage they deal will heal their target, and the next $<healing> healing they deal will damage their target.    |cFFFFFFFFReversed damage and healing restore up to ${$323706s3*2}% mana.|r]
     mindgames = {
@@ -2153,13 +2155,8 @@ spec:RegisterAbilities( {
 
             if talent.inescapable_torment.enabled then InescapableTorment() end
 
-            if talent.expiation.enabled then
-                local swp = talent.purge_the_wicked.enabled and "purge_the_wicked" or "shadow_word_pain"
-                if debuff[ swp ].up then
-                    if debuff[ swp ].remains <= 6 then removeDebuff( "target", swp )
-                    else debuff[ swp ].expires = debuff[ swp ].expires - 6 end
-                end
-            end
+            local swp_reduction = 3 * talent.expiation.rank
+            if swp_reduction > 0 then debuff.shadow_word_pain.expires = max( 0, debuff.shadow_word_pain.expires - swp_reduction ) end
 
             if legendary.painbreaker_psalm.enabled then
                 local power = 0
@@ -2288,6 +2285,7 @@ spec:RegisterAbilities( {
 
             if talent.unfurling_darkness.enabled then
                 if buff.unfurling_darkness.up then removeBuff( "unfurling_darkness" ) end
+                if Hekili.ActiveDebug then Hekili:Debug( "In VT handler, Unfurling Darkness CD buff: %s %.2f, debuff: %s %.2f...", tostring( buff.unfurling_darkness_cd ), buff.unfurling_darkness_cd.remains, tostring( debuff.unfurling_darkness_cd ), debuff.unfurling_darkness_cd.remains ) end
                 if buff.unfurling_darkness_cd.down then
                     applyBuff( "unfurling_darkness" )
                     applyBuff( "unfurling_darkness_cd" )

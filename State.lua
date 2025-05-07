@@ -22,6 +22,9 @@ local IsUsableItem = C_Item.IsUsableItem
 local GetSpellInfo, GetSpellCharges, GetSpellLossOfControlCooldown = ns.GetUnpackedSpellInfo, C_Spell.GetSpellCharges, C_Spell.GetSpellLossOfControlCooldown
 local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 
+local GetBuffDataByIndex, GetDebuffDataByIndex = C_UnitAuras.GetBuffDataByIndex, C_UnitAuras.GetDebuffDataByIndex
+local UnpackAuraData = AuraUtil.UnpackAuraData
+
 local GetSpellCharges = function(spellID)
     local spellChargeInfo = GetSpellCharges(spellID);
     if spellChargeInfo then
@@ -694,6 +697,7 @@ state.remove = table.remove
 state.tonumber = tonumber
 state.tostring = tostring
 state.type = type
+state.unpack = unpack
 
 state.safenum = function( val )
     if type( val ) == "number" then return val end
@@ -960,21 +964,22 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
         return
     end
 
-    local auraInfo = class.auras[ aura ]
+    local model = class.auras[ aura ]
 
-    if not auraInfo then
+    if not model then
+        Error( "Warning: attempted to apply unknown buff '%s'.", aura )
         local spec = class.specs[ state.spec.id ]
         if spec then
             spec:RegisterAura( aura, { ["duration"] = duration } )
             class.auras[ aura ] = spec.auras[ aura ]
         end
 
-        auraInfo = class.auras[ aura ]
-        if not auraInfo then return end
+        model = class.auras[ aura ]
+        if not model then return end
     end
 
-    if auraInfo.alias then
-        aura = auraInfo.alias[1]
+    if model.alias then
+        aura = model.alias[1]
     end
 
     if state.cycle then
@@ -986,7 +991,7 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
     local b = state.buff[ aura ]
     if not b then return end
 
-    duration = duration or auraInfo.duration or 15
+    duration = duration or model.duration or 15
 
     if duration == 0 then
         b.last_expiry = b.expires or 0
@@ -1006,10 +1011,10 @@ local function applyBuff( aura, duration, stacks, value, v2, v3, applied )
 
         state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
 
-        if auraInfo.funcs.onRemove then auraInfo.funcs.onRemove() end
+        if model.funcs.onRemove then model.funcs.onRemove() end
 
     else
-        if not b.up then state.active_dot[ aura ] = state.active_dot[ aura ] + 1 end
+        if not b.up or model.friendly then state.active_dot[ aura ] = min( state.group_members, state.active_dot[ aura ] + 1 ) end
 
         b.lastCount = b.count
         b.lastApplied = b.applied
@@ -1045,9 +1050,9 @@ state.applyBuff = applyBuff
 
 
 local function removeBuff( aura )
-    local auraInfo = class.auras[ aura ]
-    if auraInfo and auraInfo.alias then
-        for _, child in ipairs( auraInfo.alias ) do
+    local model = class.auras[ aura ]
+    if model and model.alias then
+        for _, child in ipairs( model.alias ) do
             applyBuff( child, 0 )
         end
     else
@@ -1058,9 +1063,8 @@ state.removeBuff = removeBuff
 
 
 -- Apply stacks of a buff to the current game state.
--- Wraps around Buff() to check for an existing buff.
+-- Wraps around applyBuff() to check for an existing buff.
 local function addStack( aura, duration, stacks, value )
-
     local a = class.auras[ aura ]
 
     duration = duration or ( a and a.duration or 15 )
@@ -1108,30 +1112,34 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         unit = "target"
     end
 
-    if not class.auras[ aura ] then
-        Error( "Attempted to apply unknown aura '%s'.", aura )
+    local model = class.auras[ aura ]
+    if not model then
+        Error( "Warning: attempted to apply unknown debuff '%s'.", aura )
         local spec = class.specs[ state.spec.id ]
         if spec then
             spec:RegisterAura( aura, { ["duration"] = duration } )
             class.auras[ aura ] = spec.auras[ aura ]
         end
 
-        if not class.auras[ aura ] then return end
+        model = class.auras[ aura ]
+        if not model then return end
     end
 
     if state.cycle then
         if duration == 0 then
             if Hekili.ActiveDebug then Hekili:Debug( "Removed an application of '%s' while target-cycling.", aura ) end
             state.active_dot[ aura ] = state.active_dot[ aura ] - 1
+            if model.key ~= aura then state.active_dot[ model.key ] = state.active_dot[ aura ] end
         else
             if Hekili.ActiveDebug then Hekili:Debug( "Added an application of '%s' while target-cycling.", aura ) end
             state.active_dot[ aura ] = state.active_dot[ aura ] + 1
+            if model.key ~= aura then state.active_dot[ model.key ] = state.active_dot[ aura ] end
         end
         return
     end
 
     local d = state.debuff[ aura ]
-    duration = duration or class.auras[ aura ].duration or 15
+    duration = duration or model.duration or 15
 
     if duration == 0 then
         d.expires = 0
@@ -1145,9 +1153,11 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         d.unit = unit
 
         state.active_dot[ aura ] = max( 0, state.active_dot[ aura ] - 1 )
+        if model.key ~= aura then state.active_dot[ model.key ] = state.active_dot[ aura ] end
     else
         if d.down or state.active_dot[ aura ] == 0 then
             state.active_dot[ aura ] = state.active_dot[ aura ] + 1
+            if model.key ~= aura then state.active_dot[ model.key ] = state.active_dot[ aura ] end
             -- TODO: Aura scraping utility may want to populate active_dot table when it sees an aura that wasn't tracked.
         end
 
@@ -1160,7 +1170,7 @@ local function applyDebuff( unit, aura, duration, stacks, value, noPandemic )
         d.lastCount = d.count or 0
         d.lastApplied = d.applied or 0
 
-        d.count = min( class.auras[ aura ].max_stack or 1, stacks or 1 )
+        d.count = min( model.max_stack or 1, stacks or 1 )
         d.value = value or 0
         d.applied = state.query_time
         d.unit = unit or "target"
@@ -1257,7 +1267,6 @@ state.dismissPet = dismissPet
 
 
 local function summonTotem( name, elem, duration )
-
     if elem then
         state.totem[ elem ] = rawget( state.totem, elem ) or {}
         state.totem[ elem ].name = name
@@ -1410,7 +1419,7 @@ do
             -- Adjust timeout based on rune cooldowns and regen models for Frost DK
             timeout = max( timeout, 0.01 + state.runes.expiry[ 6 ] - state.query_time )
         elseif state.spec.assassination then
-            timeout = 15.01
+            timeout = max( timeout, 0.01 + state.energy.max / max( 0.001, state.energy.regen_combined ) )
         end
 
         timeout = timeout + state.gcd.remains
@@ -1463,9 +1472,11 @@ do
         local finish = now + timeout
         local prev = now
         local iter = 0
-        local regen = r.regen > 0.001 and r.regen or 0
 
-        while ( #events > 0 and now <= finish and iter < 20 ) do
+        local regen = r.regen_combined and r.regen_combined or r.regen or 0
+        regen = regen > 0.001 and regen or 0
+
+        while ( #events > 0 and now <= finish and iter < 30 ) do
             local e = events[ 1 ]
             iter = iter + 1
 
@@ -1541,6 +1552,7 @@ do
                 r.forecast[ idx ] = r.forecast[ idx ] or {}
                 r.forecast[ idx ].t = finish
                 r.forecast[ idx ].v = min( r.max, val + ( v * regen ) )
+                r.forecast[ idx ].e = "to_max"
                 r.fcount = idx
             end
         end
@@ -1629,20 +1641,34 @@ do
             if type( x ) == "number" then
                 if x > 0 and x >= state.delayMin and x <= state.delayMax then
                     t[ x ] = true
-                elseif Hekili.ActiveDebug and x < 60 then
-                    Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 )
+                -- elseif Hekili.ActiveDebug and x < 60 then
+                --    Hekili:Debug( "Excluded %.2f recheck time as it is outside our constraints ( %.2f - %.2f ).", x, state.delayMin or -1, state.delayMax or -1 )
                 end
             end
         end
     end
 
+    local recurseRechecks
+    recurseRechecks = function( script, seen )
+        if not seen then seen = {}
+        else seen[ script.ID ] = script.Recheck or true end
 
-    local function channelInfo( ability )
-        if state.system.packName and scripts.Channels[ state.system.packName ] then
-            return scripts.Channels[ state.system.packName ][ state.channel ], class.auras[ state.channel ]
+        if script.Variables then
+            for _, var in ipairs( script.Variables ) do
+                local varIDs = state:GetVariableIDs( var )
+                if varIDs then
+                    for _, entry in ipairs( varIDs ) do
+                        if not seen[ entry.id ] then
+                            local subscript = scripts.DB[ entry.id ]
+                            if subscript then recurseRechecks( subscript, seen ) end
+                        end
+                    end
+                end
+            end
         end
-    end
 
+        return seen
+    end
 
     function state.recheck( ability, script, stack, block )
         local times = state.recheckTimes
@@ -1656,21 +1682,17 @@ do
                 recheckHelper( workTable, script.Recheck() )
             end
 
-            -- This can be CPU intensive but is needed for some APLs (i.e., Unholy).
             if script.Variables then
-                -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
-                for i, var in ipairs( script.Variables ) do
-                    local varIDs = state:GetVariableIDs( var )
+                if not script.AllRechecks then
+                    script.AllRechecks = recurseRechecks( script )
 
-                    if varIDs then
-                        for _, entry in ipairs( varIDs ) do
-                            local vr = scripts.DB[ entry.id ].VarRecheck
-                            if vr then
-                                recheckHelper( workTable, vr() )
-                            end
-                        end
+                    for id, func in pairs( script.AllRechecks ) do
+                        if type( func ) ~= "function" then script.AllRechecks[ id ] = nil end
                     end
-                    -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
+                end
+
+                for id, func in pairs( script.AllRechecks ) do
+                    recheckHelper( workTable, func() )
                 end
             end
         end
@@ -1699,6 +1721,20 @@ do
 
                 if callScript and callScript.Recheck then
                     recheckHelper( workTable, callScript.Recheck() )
+
+                    if callScript.Variables then
+                        if not callScript.AllRechecks then
+                            callScript.AllRechecks = recurseRechecks( callScript )
+
+                            for id, func in pairs( callScript.AllRechecks ) do
+                                if type( func ) ~= "function" then callScript.AllRechecks[ id ] = nil end
+                            end
+                        end
+
+                        for id, func in pairs( callScript.AllRechecks ) do
+                            recheckHelper( workTable, func() )
+                        end
+                    end
                 end
             end
         end
@@ -1711,45 +1747,26 @@ do
                 if callScript and callScript.Recheck then
                     recheckHelper( workTable, callScript.Recheck() )
                 end
-            end
-        end
 
-        -- if Hekili.ActiveDebug then table.insert( steps, debugprofilestop() ) end
+                if callScript and callScript.Recheck then
+                    recheckHelper( workTable, callScript.Recheck() )
 
-        --[[ if state.channeling then
-            local aura = class.auras[ state.channel ]
-            local remains = state.channel_remains
+                    if callScript.Variables then
+                        if not callScript.AllRechecks then
+                            callScript.AllRechecks = recurseRechecks( callScript )
 
-            if aura and aura.tick_time then
-                -- Put tick times into recheck.
-                local i = 1
-                while ( true ) do
-                    if remains - ( i * aura.tick_time ) > 0 then
-                        workTable[ roundUp( remains - ( i * aura.tick_time ), 3 ) ] = true
-                    else break end
-                    i = i + 1
-                end
+                            for id, func in pairs( callScript.AllRechecks ) do
+                                if type( func ) ~= "function" then callScript.AllRechecks[ id ] = nil end
+                            end
+                        end
 
-                for time in pairs( workTable ) do
-                    if ( ( remains - time ) / aura.tick_time ) % 1 <= 0.5 then
-                        workTable[ time ] = nil
+                        for id, func in pairs( callScript.AllRechecks ) do
+                            recheckHelper( workTable, func() )
+                        end
                     end
                 end
             end
-
-            workTable[ remains ] = true
-        end ]]
-
-        --[[ if #steps > 0 then
-            -- table.insert( steps, debugprofilestop() )
-            local str = string.format( "RECHECK: %.2f", steps[#steps] - steps[1] )
-
-            for i = 2, #steps do
-                str = string.format( "%s, %.2f ", str, steps[i] - steps[i-1] )
-            end
-
-            print( str )
-        end ]]
+        end
 
         wipe( times )
 
@@ -1870,6 +1887,7 @@ do
         encounter = 1,
         group = 1,
         group_members = 1,
+        active_allies = 1,
         level = 1,
         mounted = 1,
             is_mounted = 1,
@@ -1877,6 +1895,9 @@ do
         raid = 1,
         solo = 1,
         tanking = 1,
+        group_health = 1,
+        at_risk = 1,
+        raid_health = 1,
 
         -- Number of enemies.
         active_enemies = 1,
@@ -2069,13 +2090,64 @@ do
                 t[k] = t.encounterID > 0 or UnitCanAttack( "player", "target" ) and ( UnitClassification( "target" ) == "worldboss" or UnitLevel( "target" ) == -1 )
             elseif k == "encounter" then t[k] = t.encounterID > 0
             elseif k == "group" then t[k] = t.group_members > 1
-            elseif k == "group_members" or k == "active_allies" then t[k] = max( 1, GetNumGroupMembers() )
+            elseif k == "group_members" then t[k] = max( 1, GetNumGroupMembers() )
+            elseif k == "active_allies" then
+                local n = GetNumGroupMembers()
+                local maxUnits = IsInRaid() and 40 or 5
+                local token = IsInRaid() and "raid" or "party"
+                local count = 0
+
+                for i = 1, maxUnits do
+                    local unit = token .. i
+                    if UnitExists( unit ) and not UnitIsDead( unit ) and UnitIsConnected( unit ) and UnitInRange( unit ) then
+                        count = count + 1
+                        if n == 1 then break end
+                        n = n - 1
+                    end
+                end
+
+                t[k] = max( 1, count )
+
             elseif k == "level" then t[k] = UnitEffectiveLevel("player") or MAX_PLAYER_LEVEL
             elseif k == "mounted" or k == "is_mounted" then t[k] = IsMounted()
             elseif k == "moving" then t[k] = ( GetUnitSpeed("player") > 0 )
             elseif k == "raid" then t[k] = IsInRaid() and t.group_members > 5
             elseif k == "solo" then t[k] = t.group_members == 1
             elseif k == "tanking" then t[k] = t.role.tank and t.aggro
+            elseif k == "group_health" then
+                local health, maxHealth, absorbs = UnitHealth( "player" ), UnitHealthMax( "player" ), UnitGetTotalAbsorbs( "player" )
+                local count = 1
+
+                for i = 2, 5 do
+                    local token = "party" .. i
+                    if UnitExists( token ) and not UnitIsDeadOrGhost( token )then
+                        count = count + 1
+
+                        health = health + UnitHealth( token )
+                        maxHealth = maxHealth + UnitHealthMax( token )
+                        absorbs = absorbs + UnitGetTotalAbsorbs( token )
+                    end
+                end
+
+                local effHealthPct = 100 * ( health + absorbs ) / maxHealth
+                t[k] = effHealthPct
+
+            elseif k == "at_risk" then
+                local health, maxHealth, absorbs = UnitHealth( "player" ), UnitHealthMax( "player" ), UnitGetTotalAbsorbs( "player" )
+                local count = ( 100 * ( health + absorbs ) / maxHealth ) < 70 and 1 or 0
+
+                for i = 2, 5 do
+                    local token = "party" .. i
+                    if UnitExists( token ) and not UnitIsDeadOrGhost( token )then
+                        health = health + UnitHealth( token )
+                        maxHealth = maxHealth + UnitHealthMax( token )
+                        absorbs = absorbs + UnitGetTotalAbsorbs( token )
+
+                        if ( 100 * ( health + absorbs ) / maxHealth ) < 70 and 1 or 0 then count = count + 1 end
+                    end
+                end
+
+                t[k] = count
 
             -- Enemy counting.
             elseif k == "active_enemies" then
@@ -2264,6 +2336,9 @@ do
             local ability = class.abilities[ action ]
             local cooldown = t.cooldown[ action ]
 
+            -- Empowerment oddity.
+            if k == "duration" and action and model and model.empowered then return max( t.gcd.max, model.cast_time ) end -- Still ugh.
+
             if k == "action_cooldown" then return ability and ability.cooldown or 0
             elseif k == "cast_delay" then return 0
             elseif k == "cast_regen" then
@@ -2306,6 +2381,7 @@ do
                 return c or 0
 
             elseif k == "crit_pct_current" or k == "crit_percent_current" then return ability and ability.critical or t.stat.crit
+
             elseif k == "execute_remains" then
                 -- TODO:  Check out if this is functioning as expected.
                 -- Should buff.casting already suffice for a cast?  A queued cast should already trigger a casting buff.
@@ -2566,19 +2642,17 @@ do
     -- Table of default handlers for specific pets/totems.
     mt_default_pet = {
         __index = function( t, k )
-
             if k == "expires" then
                 local totemIcon = rawget( t, "icon" )
 
                 if totemIcon then
                     -- This is actually a totem; check them.
-                    local present, name, start, duration, icon
-
                     for i = 1, 5 do
-                        present, name, start, duration, icon = GetTotemInfo( i )
+                        local present, name, start, duration, icon, _, spellID = GetTotemInfo( i )
                         if duration == 0 then duration = 3600 end
 
-                        if present and ( icon == totemIcon or class.abilities[ name ] and t.key == class.abilities[ name ].key ) then
+                        local ability = class.abilities[ spellID ]
+                        if present and ( icon == totemIcon or abilitty and t.key == ability.key ) then
                             t.expires = start + duration
                             return t.expires
                         end
@@ -2616,7 +2690,6 @@ do
                 end
                 return t.expires
 
-
             elseif k == "remains" then
                 return max( 0, t.expires - ( state.query_time ) )
 
@@ -2629,7 +2702,6 @@ do
             elseif k == "id" then
                 local id = t.model and t.model.id
                 if type( id ) == "function" then id = id() end
-
                 return id
 
             elseif k == "spec" then
@@ -2682,7 +2754,7 @@ do
                     local token = petData.token or alias
                     local entry = rawget( t, token )
                     if entry and type( entry ) == "table" then
-                        rawset( entry, "expires", 0 )
+                        t.expires = 0
                     end
                 end
             end
@@ -2896,6 +2968,8 @@ do
         real_ttd = 1,
         time_to_die = 1,
         unit = 1,
+        npcid = 1,
+        token = 1
     }, {
         __index = function( t, k )
             local expr, value = k:match( "^(.+)_?(%d+)$" )
@@ -2981,6 +3055,7 @@ do
             elseif k == "moving" then t[k] = GetUnitSpeed( "target" ) > 0
             elseif k == "real_ttd" or k == "true_ttd" then
                 t[k] = Hekili:GetTTD( "target" )
+
             elseif k == "time_to_die" then
                 if state.IsCycling() then return state.raid_event.adds.remains end
 
@@ -3008,6 +3083,15 @@ do
 
                 return -1
 
+            elseif k == "token" then
+                for _, token in ipairs( { "focus", "mouseover", "target", "targettarget" } ) do
+                    if UnitExists( token ) and
+                        not UnitIsDeadOrGhost( token ) and
+                        UnitCanAttack( "player", token ) then
+                        t[k] = token
+                        break
+                    end
+                end
             end
 
             return rawget( t, k )
@@ -3071,8 +3155,11 @@ do
         charge = 1,
         duration = 1,
         expires = 1,
+        remains = 1,
         next_charge = 1,
+        recharge = 1,
         recharge_began = 1,
+        true_duration = 1,
         true_expires = 1,
         true_remains = 1,
     }
@@ -3165,15 +3252,8 @@ do
                 t.true_expires = start > 0 and ( start + true_duration ) or 0
 
                 if ability.charges and ability.charges > 1 then
-                    local charges, maxCharges
-                    charges, maxCharges, start, duration = GetSpellCharges( id )
-
-                    --[[ if class.abilities[ t.key ].toggle and not state.toggle[ class.abilities[ t.key ].toggle ] then
-                        charges = 1
-                        maxCharges = 1
-                        start = state.now
-                        duration = 0
-                    end ]]
+                    local charges, _
+                    charges, _, start, duration = GetSpellCharges( id )
 
                     if not duration then duration = max( ability.recharge or 0, ability.cooldown or 0 ) end
 
@@ -3184,18 +3264,10 @@ do
                     t.duration = duration
                     t.recharge = duration
 
-                    --[[ if charges and charges < maxCharges then
-                        -- t.recharge_began = start
-                        t.next_charge = start + duration
-                    else
-                        t.next_charge = 0
-                    end ]]
                     t.recharge_began = start or t.expires - t.duration
-                    -- t.recharge_began = max( 0, start or t.expires - t.duration )
 
                 else
                     t.charge = t.expires < state.query_time and 1 or 0
-                    -- t.next_charge = t.expires > state.query_time and t.expires or 0
                     t.recharge_began = t.expires - t.duration
                 end
 
@@ -3270,6 +3342,9 @@ do
                 return remains * reduction
 
             elseif k == "duration_guess" or k == "duration_expected" then
+                local expected = class.abilities[ t.key ].cooldown_estimate
+                if expected then return expected end
+
                 local remains, duration = t.remains, t.duration
                 if remains == 0 or remains == duration then return duration end
 
@@ -3330,7 +3405,6 @@ do
     }
     ns.metatables.mt_cooldowns = mt_cooldowns
 end
-
 
 local mt_dot = {
     __index = function( t, k )
@@ -3959,7 +4033,7 @@ do
                 return t.applied <= state.query_time and max( 0, t.expires - state.query_time ) or 0
 
             elseif k == "duration" then
-                return ( t.remains > 0 and t.expires - t.applied ) or aura.duration or 15
+                return aura.duration or ( t.remains > 0 and t.expires - t.applied or 0 ) or 15
 
             elseif k == "refreshable" then
                 local tr = t.remains
@@ -4416,9 +4490,9 @@ ns.metatables.mt_active_dot = mt_active_dot
 -- Table of default handlers for a totem. Under-implemented at the moment.
 -- Needs review.
 local mt_default_totem = {
-    __index = function(t, k)
+    __index = function( t, k )
         if k == "expires" then
-            local _, name, start, duration = GetTotemInfo( t.totem )
+            local _, name, start, duration, icon, modRate, spellID = GetTotemInfo( t.totem )
 
             t.name = name
             t.expires = ( start or 0 ) + ( duration or 0 )
@@ -4963,11 +5037,33 @@ do
         v1 = 1,
         v2 = 1,
         v3 = 1,
-        pmultiplier = 1
+        pmultiplier = 1,
+
+        haste = 1,
+        last_tick = 1,
+        next_tick = 1
     }
 
     mt_default_debuff = {
         mtID = "default_debuff",
+
+        ticks_before = function( t, span )
+            if span <= 0 then return 0 end
+
+            local remains = t.remains
+            if remains == 0 then return 0 end
+
+            local ticks_remain = t.ticks_remain
+            span = min( span, remains )
+
+            local real_delay = state.delay
+            state.delay = state.delay + span
+
+            local ticks_before = max( 0, ticks_remain - t.ticks_remain )
+            state.delay = real_delay
+
+            return ticks_before
+        end,
 
         __index = function( t, k )
             local aura = class.auras[ t.key ]
@@ -4976,10 +5072,12 @@ do
                 return cycle_debuff[ k ]
             end
 
-            if aura and rawget( aura, "meta" ) and aura.meta[ k ] then
+            local meta = aura and rawget( aura, "meta" )
+
+            if meta and meta[ k ]  then
                 if not t.metastack[ k ] then
                     t.metastack[ k ] = true
-                    local value = aura.meta[ k ]( t, "debuff" )
+                    local value = meta[ k ]( t, "debuff" )
                     t.metastack[ k ] = nil
                     if value ~= nil then return value end
                 end
@@ -5032,7 +5130,9 @@ do
             -- This change means that any references to t.X should only occur where X is a real value and not a metatable lookup.
 
             local moment = state.query_time
-            local remains = t.applied > 0 and t.applied <= moment and t.expires > moment and t.expires - moment or 0
+            local applied = meta and meta.applied and meta.applied( t, "debuff" ) or t.applied
+            local expires = meta and meta.expires and meta.expires( t, "debuff" ) or t.expires
+            local remains = meta and meta.remains and meta.remains( t, "debuff" ) or applied > 0 and applied <= moment and expires > moment and expires - moment or 0
 
             if k == "remains" then return remains end
 
@@ -5053,11 +5153,11 @@ do
                k == "max_stacks" then return max( t.count, aura.max_stack or 1 ) end
 
             if k == "at_max_stacks" then return remains > 0 and t.count >= ( aura.max_stack or 1 ) end
-            if k == "stack_pct" then return remains > 0 and ( 100 * t.count / ( aura.max_stack or 1 ) ) end
+            if k == "stack_pct" then return remains > 0 and ( 100 * t.count / ( aura.max_stack or 1 ) ) or 0 end
             if k == "value" then return remains > 0 and t.v1 or 0 end
             if k == "stack_value" then return remains > 0 and t.v1 * t.count or 0 end
 
-            local duration = remains > 0 and ( t.expires - t.applied ) or aura.duration or 30
+            local duration = remains > 0 and ( expires - applied ) or aura.duration or 30
             local apply_duration = aura.duration or duration
 
             if k == "duration" then return duration end
@@ -5071,11 +5171,24 @@ do
             end
 
             local tick_time = aura.tick_time or ( 3 * state.haste )
-
             if k == "tick_time" then return tick_time end
-            if k == "ticks" then return remains > 0 and floor( ( moment - t.applied ) / tick_time ) or 0 end
-            if k == "ticks_remain" then return remains > 0 and ceil( remains / tick_time ) or 0 end
-            if k == "tick_time_remains" then return remains > 0 and ( tick_time - ( remains % tick_time ) ) or 0 end
+
+            local last_tick = remains > 0 and max( ns.GetDebuffNextTick( t.key, state.target.unit ), applied ) or 0
+            if last_tick > 0 and moment - last_tick > tick_time then
+                last_tick = last_tick + floor( ( moment - last_tick ) / tick_time ) * tick_time
+            end
+
+            if k == "last_tick" then return last_tick end
+            if k == "ticks" then return remains > 0 and floor( ( last_tick - applied ) / tick_time ) or 0 end
+
+            local next_tick = remains > 0 and max( ns.GetDebuffNextTick( t.key, state.target.unit ), last_tick + tick_time ) or 0
+            if next_tick > 0 and next_tick < moment then
+                next_tick = next_tick + ceil( ( moment - last_tick ) / tick_time ) * tick_time
+            end
+
+            if k == "next_tick" then return next_tick end
+            if k == "tick_time_remains" then return max( 0, next_tick - moment ) end
+            if k == "ticks_remain" then return expires > moment and max( 0, 1 + floor( ( expires - next_tick ) / tick_time ) ) or 0 end
 
             local attr = aura[ k ]
             if attr ~= nil then return attr end
@@ -5113,7 +5226,6 @@ do
 
     -- Table of debuffs applied to the target by the player.
     local debuffs_warned = {}
-
     mt_debuffs = {
         -- The debuff/ doesn't exist in our table so check the real game state,
         -- and copy it so we don't have to use the API next time.
@@ -5145,7 +5257,7 @@ do
 
             else
                 if Hekili.PLAYER_ENTERING_WORLD and not debuffs_warned[ k ] then
-                    Hekili:Error( "Unknown debuff in [" .. ( state.scriptID or "unknown" ) .. "]: " .. k .. "\n\n" .. debugstack() )
+                    Hekili:Error( "WARNING: Unknown debuff in [" .. ( state.scriptID or "unknown" ) .. "]: " .. k .. "\n\n" .. debugstack() )
                     debuffs_warned[ k ] = true
                 end
 
@@ -5502,7 +5614,8 @@ local mt_aura = {
 
 local mt_empowering = {
     __index = function( t, k )
-        return state.buff.empowering.up and state.buff.empowering.spell == k
+        if state.buff.empowering.down then return false end
+        return state.buff.empowering.spell == k
     end
 }
 
@@ -5684,8 +5797,8 @@ do
             v.lastCount = newTarget and 0 or v.count
             v.lastApplied = newTarget and 0 or v.applied
 
-            v.last_application = max( 0, v.applied, v.last_application )
-            v.last_expiry  = max( 0, v.expires, v.last_expiry )
+            v.last_application = max( 0, v.applied, v.last_application or 0 )
+            v.last_expiry  = max( 0, v.expires, v.last_expiry or 0 )
 
             v.count = 0
             v.expires = 0
@@ -5720,14 +5833,17 @@ do
 
         local i = 1
         while ( true ) do
-            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitBuff( unit, i )
+            local buffData = GetBuffDataByIndex( unit, i )
+            if not buffData then break end
+
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnpackAuraData( buffData )
             if not name then break end
 
             local aura = class.auras[ spellID ]
             local shared = aura and aura.shared
             local key = aura and aura.key or autoAuraKey[ spellID ]
 
-            if key and ( shared or caster and ( UnitIsUnit( "pet", caster ) or UnitIsUnit( "player", caster ) ) ) then
+            if aura and key and ( shared or caster and ( UnitIsUnit( caster, "player" ) or UnitIsUnit( caster, "pet" ) ) ) then
                 db.buff[ key ] = db.buff[ key ] or {}
                 local buff = db.buff[ key ]
 
@@ -5765,15 +5881,17 @@ do
 
         i = 1
         while ( true ) do
+            local debuffData = GetDebuffDataByIndex( unit, i )
+            if not debuffData then break end
 
-            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnitDebuff( unit, i )
+            local name, _, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, timeMod, v1, v2, v3 = UnpackAuraData( debuffData )
             if not name then break end
 
             local aura = class.auras[ spellID ]
             local shared = aura and aura.shared
             local key = aura and aura.key or autoAuraKey[ spellID ]
 
-            if key and ( shared or caster and ( UnitIsUnit( "pet", caster ) or UnitIsUnit( "player", caster ) ) ) then
+            if aura and key and ( shared or caster and ( UnitIsUnit( caster, "player" ) or UnitIsUnit( caster, "pet" ) ) ) then
                 db.debuff[ key ] = db.debuff[ key ] or {}
                 local debuff = db.debuff[ key ]
 
@@ -6584,7 +6702,6 @@ do
 
         for i = 1, 5 do
             local _, _, start, duration, icon = GetTotemInfo( i )
-
             if icon and class.totems[ icon ] then
                 summonPet( class.totems[ icon ], start + duration - state.now )
             end
@@ -6897,8 +7014,8 @@ Hekili:ProfileCPU( "state.reset", state.reset )
 
 
 function state:SetConstraint( min, max )
-    state.delayMin = min or 0
-    state.delayMax = max or 15
+    if min then state.delayMin = min end
+    if max then state.delayMax = max end
 end
 
 
@@ -7326,7 +7443,7 @@ do
 
         -- New: DoT Cap
         local dotCap = option.dotCap
-        if dotCap and dotCap > 0 then
+        if dotCap and dotCap > 0 and class.auras[ spell ] then
             local activeDot = state.active_dot[ spell ]
             local aura = state.dot[ spell ]
             if activeDot and activeDot >= dotCap then

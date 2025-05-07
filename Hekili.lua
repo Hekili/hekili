@@ -47,8 +47,8 @@ Hekili.IsPTR = ns.PTR
 
 ns.Patrons = "|cFFFFD100Current Status|r\n\n"
     .. "All existing specializations are currently supported, though healer priorities are experimental and focused on rotational DPS only.\n\n"
-    .. "If you find odd recommendations or other issues, please follow the |cFFFFD100Issue Reports|r link below and submit all the necessary information to have your issue investigated.\n\n"
-    .. "Please do not submit tickets for routine priority updates (i.e., from SimulationCraft).  I will routinely update those when they are published.  Thanks!"
+    .. "If you find odd recommendations or other issues, please follow the |cFFFFD100Report Issue|r link below and submit all the necessary information to have your issue investigated.\n\n"
+    .. "Please |cffff0000do not|r submit tickets for routine priority updates (i.e., from SimulationCraft). They are routinely updated."
 
 do
     local cpuProfileDB = {}
@@ -135,6 +135,7 @@ Hekili.Class = {
 	toggles = {},
 	variables = {},
 }
+local class = Hekili.Class
 
 Hekili.Scripts = {
     DB = {},
@@ -279,73 +280,310 @@ function Hekili:SaveDebugSnapshot( dispName )
 
             -- Store aura data.
             local auraString = "\n### Auras ###\n"
-            auraString =  auraString .. "\nplayer_buffs:"
-            auraString = auraString .. "\n   id      - name                                 - stacks - remaining duration\n"
 
             local now = GetTime()
+            local playerBuffs = {}
+            local pbOrder = {}
 
-            local class = Hekili.Class
+            local longestKey, longestName = 0, 0
 
-            for i = 1, 40 do
-                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetBuffDataByIndex( "player", i ) )
+            AuraUtil.ForEachAura( "player", "HELPFUL", nil, function( aura )
+                if aura.isFromPlayerOrPlayerPet then
+                    local model = class.auras[ aura.spellId ]
+                    local key = model and model.key or formatKey( aura.name )
 
-                if not name then break end
+                    local offset = 0
+                    local newKey = key
 
-                local aura = class.auras[ spellId ]
-                local key = aura and aura.key
-                if key and not state.auras.player.buff[ key ] then key = key .. " [MISSING]" end
+                    while( playerBuffs[ newKey ] ) do
+                        offset = offset + 1
+                        newKey = format( "%s_%d", key, offset )
+                    end
 
-                auraString = format( "%s   %-7d - %-36s - %3d    - %.2f\n", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                    if newKey ~= key then key = newKey end
+
+                    pbOrder[ #pbOrder + 1 ] = key
+                    longestKey = max( longestKey, key:len() )
+                    longestName = max( longestName, aura.name:len() )
+
+                    playerBuffs[ key ] = {}
+                    local elem = playerBuffs[ key ]
+
+                    elem.spellId = aura.spellId
+                    elem.key = key
+                    elem.name = aura.name
+
+                    elem.count = aura.applications > 0 and aura.applications or 1
+                    elem.remains = aura.expirationTime > 0 and ( aura.expirationTime - now ) or 3600
+
+                    local scraped = state.auras.player.buff[ model and model.key or key ]
+                    if scraped and scraped.applied > 0 then
+                        elem.sCount = scraped.count > 0 and scraped.count or 1
+                        elem.sRemains = scraped.expires > 0 and ( scraped.expires - now ) or 3600
+                    end
+                end
+            end, true )
+
+            for token, caught in pairs( state.auras.player.buff ) do
+                if not playerBuffs[ token ] and caught.expires > 0 then
+                    playerBuffs[ token ] = {
+                        spellId = caught.id,
+                        key = caught.key,
+                        name = "",
+
+                        count = 0,
+                        remains = 0,
+
+                        sCount = caught.count > 0 and caught.count or 1,
+                        sRemains = caught.expires > 0 and ( caught.expires - now ) or 3600
+                    }
+
+                    pbOrder[ #pbOrder + 1 ] = token
+                    longestKey = max( longestKey, token:len() )
+                end
             end
 
-            auraString = auraString .. "\n\nplayer_debuffs:\n"
-            -- auraString = auraString .. "\n   id      - name                                 - stacks - remaining duration\n"
+            sort( pbOrder )
 
-            for i = 1, 40 do
-                local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetDebuffDataByIndex( "player", i ) )
 
-                if not name then break end
+            local playerDebuffs = {}
+            local pdOrder = {}
 
-                local aura = class.auras[ spellId ]
-                local key = aura and aura.key
-                if key and not state.auras.player.debuff[ key ] then key = key .. " [MISSING]" end
+            AuraUtil.ForEachAura( "player", "HARMFUL", nil, function( aura )
+                local model = class.auras[ aura.spellId ]
+                local key = model and model.key or formatKey( aura.name )
 
-                auraString = format( "%s   %-7d - %-36s - %3d    - %.2f\n", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
+                local offset = 0
+                local newKey = key
+
+                while( playerDebuffs[ newKey ] ) do
+                    offset = offset + 1
+                    newKey = format( "%s_%d", key, offset )
+                end
+                if newKey ~= key then key = newKey end
+
+                pdOrder[ #pdOrder + 1 ] = key
+                longestKey = max( longestKey, key:len() )
+                longestName = max( longestName, aura.name:len() )
+
+                playerDebuffs[ key ] = {}
+                local elem = playerDebuffs[ key ]
+
+                elem.spellId = aura.spellId
+                elem.key = key
+                elem.name = aura.name
+
+                elem.count = aura.applications > 0 and aura.applications or 1
+                elem.remains = aura.expirationTime > 0 and ( aura.expirationTime - now ) or 3600
+
+                local scraped = state.auras.player.debuff[ model and model.key or key ]
+                if scraped and scraped.applied > 0 then
+                    elem.sCount = scraped.count > 0 and scraped.count or 1
+                    elem.sRemains = scraped.expires > 0 and ( scraped.expires - now ) or 3600
+                end
+            end, true )
+
+            for token, caught in pairs( state.auras.player.debuff ) do
+                if not playerDebuffs[ token ] and caught.expires > 0 then
+                    playerDebuffs[ token ] = {
+                        spellId = caught.id,
+                        key = caught.key,
+                        name = "",
+
+                        count = 0,
+                        remains = 0,
+
+                        sCount = caught.count > 0 and caught.count or 1,
+                        sRemains = caught.expires > 0 and ( caught.expires - now ) or 3600
+                    }
+
+                    pdOrder[ #pdOrder + 1 ] = token
+                    longestKey = max( longestKey, token:len() )
+                end
             end
 
-            if not UnitExists( "target" ) then
-                auraString = auraString .. "\n\ntarget_auras:  target does not exist"
+            sort( pdOrder )
+
+
+            local targetBuffs = {}
+            local tbOrder = {}
+
+            AuraUtil.ForEachAura( "target", "HELPFUL", nil, function( aura )
+                local model = class.auras[ aura.spellId ]
+                local key = model and model.key or formatKey( aura.name )
+
+                local offset = 0
+                local newKey = key
+
+                while( targetBuffs[ newKey ] ) do
+                    offset = offset + 1
+                    newKey = format( "%s_%d", key, offset )
+                end
+                if newKey ~= key then key = newKey end
+
+                tbOrder[ #tbOrder + 1 ] = key
+                longestKey = max( longestKey, key:len() )
+                longestName = max( longestName, aura.name:len() )
+
+                targetBuffs[ key ] = {}
+                local elem = targetBuffs[ key ]
+
+                elem.spellId = aura.spellId
+                elem.key = key
+                elem.name = aura.name
+
+                elem.count = aura.applications > 0 and aura.applications or 1
+                elem.remains = aura.expirationTime > 0 and ( aura.expirationTime - now ) or 3600
+
+                local scraped = state.auras.target.buff[ model and model.key or key ]
+                if scraped and scraped.applied > 0 then
+                    elem.sCount = scraped.count > 0 and scraped.count or 1
+                    elem.sRemains = scraped.expires > 0 and ( scraped.expires - now ) or 3600
+                end
+            end, true )
+
+            for token, caught in pairs( state.auras.target.buff ) do
+                if not targetBuffs[ token ] and caught.expires > 0 then
+                    targetBuffs[ token ] = {
+                        spellId = caught.id,
+                        key = caught.key,
+                        name = "",
+
+                        count = 0,
+                        remains = 0,
+
+                        sCount = caught.count > 0 and caught.count or 1,
+                        sRemains = caught.expires > 0 and ( caught.expires - now ) or 3600
+                    }
+
+                    tbOrder[ #tbOrder + 1 ] = token
+                    longestKey = max( longestKey, token:len() )
+                end
+            end
+
+            sort( tbOrder )
+
+
+            local targetDebuffs = {}
+            local tdOrder = {}
+
+            AuraUtil.ForEachAura( "target", "HARMFUL", nil, function( aura )
+                if aura.isFromPlayerOrPlayerPet then
+                    local model = class.auras[ aura.spellId ]
+                    local key = model and model.key or formatKey( aura.name )
+
+                    local offset = 0
+                    local newKey = key
+
+                    while( targetDebuffs[ newKey ] ) do
+                        offset = offset + 1
+                        newKey = format( "%s_%d", key, offset )
+                    end
+                    if newKey ~= key then key = newKey end
+
+                    tdOrder[ #tdOrder + 1 ] = key
+                    longestKey = max( longestKey, key:len() )
+                    longestName = max( longestName, aura.name:len() )
+
+                    targetDebuffs[ key ] = {}
+                    local elem = targetDebuffs[ key ]
+
+                    elem.spellId = aura.spellId
+                    elem.key = key
+                    elem.name = aura.name
+
+                    elem.count = aura.applications > 0 and aura.applications or 1
+                    elem.remains = aura.expirationTime > 0 and ( aura.expirationTime - now ) or 3600
+
+                    local scraped = state.auras.target.debuff[ model and model.key or key ]
+                    if scraped and scraped.applied > 0 then
+                        elem.sCount = scraped.count > 0 and scraped.count or 1
+                        elem.sRemains = scraped.expires > 0 and ( scraped.expires - now ) or 3600
+                    end
+                end
+            end, true )
+
+            for token, caught in pairs( state.auras.target.debuff ) do
+                if not targetDebuffs[ token ] and caught.expires > 0 then
+                    targetDebuffs[ token ] = {
+                        spellId = caught.id,
+                        key = caught.key,
+                        name = "",
+
+                        count = 0,
+                        remains = 0,
+
+                        sCount = caught.count > 0 and caught.count or 1,
+                        sRemains = caught.expires > 0 and ( caught.expires - now ) or 3600
+                    }
+
+                    tdOrder[ #tdOrder + 1 ] = token
+                    longestKey = max( longestKey, token:len() )
+                end
+            end
+
+            sort( tdOrder )
+
+            local header = "     n  | ID      | Token" .. string.rep( " ", longestKey - 4 ) .. " | Name" .. string.rep( " ", longestName - 4 ) .. " | A. Count | A. Remains | S. Count | S. Remains\n"
+                .. "    --- | ------- | " .. string.rep( "-", longestKey + 1 ) .. " | " .. string.rep( "-", longestName ) .. " | -------- | ---------- | -------- | ----------"
+
+
+            if #pbOrder > 0 then
+                auraString = auraString .. "\nplayer_buffs:\n" .. header
+
+                for i, token in ipairs( pbOrder ) do
+                    local aura = playerBuffs[ token ]
+
+                    auraString = format( "%s\n     %-2d | %7d | %s%-" .. longestKey .. "s | %-" .. longestName .. "s | %8d | %10.2f | %8d | %10.2f",
+                        auraString, i, class.auras[ token ] and class.auras[ token ].id or -1, ( class.auras[ token ] and " " or "*" ), token, aura.name, aura.count, aura.remains, aura.sCount or -1, aura.sRemains or - 1 )
+                end
+
             else
-                auraString = auraString .. "\n\ntarget_buffs:\n"
-                -- auraString = auraString .. "\n   id      - name                                 - stacks - remaining duration\n"
-
-                for i = 1, 40 do
-                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetBuffDataByIndex( "target", i ) )
-
-                    if not name then break end
-
-                    local aura = class.auras[ spellId ]
-                    local key = aura and aura.key
-                    if key and not state.auras.target.buff[ key ] then key = key .. " [MISSING]" end
-
-                    auraString = format( "%s   %-7d - %-36s - %3d    - %.2f\n", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
-                end
-
-                auraString = auraString .. "\n\ntarget_debuffs:\n"
-                -- auraString = auraString .. "\n   id      - name                                 - stacks - remaining duration\n"
-
-                for i = 1, 40 do
-                    local name, _, count, debuffType, duration, expirationTime, source, _, _, spellId, canApplyAura, isBossDebuff, castByPlayer = UnpackAuraData( GetDebuffDataByIndex( "target", i, "PLAYER" ) )
-
-                    if not name then break end
-
-                    local aura = class.auras[ spellId ]
-                    local key = aura and aura.key
-                    if key and not state.auras.target.debuff[ key ] then key = key .. " [MISSING]" end
-
-                    auraString = format( "%s   %-7d - %-36s - %3d    - %.2f\n", auraString, spellId, key or ( "*" .. formatKey( name ) ), count > 0 and count or 1, expirationTime > 0 and ( expirationTime - now ) or 3600 )
-                end
+                auraString = auraString .. "\nplayer_buffs: none"
             end
+
+            if #pdOrder > 0 then
+                auraString = auraString .. "\n\nplayer_debuffs:\n" .. header
+
+                for i, token in ipairs( pdOrder ) do
+                    local aura = playerDebuffs[ token ]
+
+                    auraString = format( "%s\n     %-2d | %7d | %s%-" .. longestKey .. "s | %-" .. longestName .. "s | %8d | %10.2f | %8d | %10.2f",
+                        auraString, i, class.auras[ token ] and class.auras[ token ].id or -1, ( class.auras[ token ] and " " or "*" ), token, aura.name, aura.count, aura.remains, aura.sCount or -1, aura.sRemains or - 1 )
+                end
+            else
+                auraString = auraString .. "\n\nplayer_debuffs: none"
+            end
+
+            if #tbOrder > 0 then
+                auraString = auraString .. "\n\ntarget_buffs:\n" .. header
+
+                for i, token in ipairs( tbOrder ) do
+                    local aura = targetBuffs[ token ]
+                    local model = class.auras[ token ]
+
+                    auraString = format( "%s\n     %-2d | %7d | %s%-" .. longestKey .. "s | %-" .. longestName .. "s | %8d | %10.2f | %8d | %10.2f",
+                        auraString, i, model and model.id or -1, model and " " or "*", token, aura.name, aura.count, aura.remains, aura.sCount or -1, aura.sRemains or - 1 )
+                end
+
+            else
+                auraString = auraString .. "\n\ntarget_buffs: none"
+            end
+
+            if #tdOrder > 0 then
+                auraString = auraString .. "\n\ntarget_debuffs:\n" .. header
+
+                for i, token in ipairs( tdOrder ) do
+                    local aura = targetDebuffs[ token ]
+
+                    auraString = format( "%s\n     %-2d | %7d | %s%-" .. longestKey .. "s | %-" .. longestName .. "s | %8d | %10.2f | %8d | %10.2f",
+                        auraString, i, class.auras[ token ] and class.auras[ token ].id or -1, ( class.auras[ token ] and " " or "*" ), token, aura.name, aura.count, aura.remains, aura.sCount or -1, aura.sRemains or - 1 )
+                end
+
+            else
+                auraString = auraString .. "\n\ntarget_debuffs: none"
+            end
+
 
             insert( v.log, 1, auraString )
             insert( v.log, 1, "\n### Targets ###\n\ndetected_targets:  " .. ( Hekili.TargetDebug or "no data" ) )

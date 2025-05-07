@@ -38,7 +38,7 @@ actions.ar+=/chaos_strike,if=buff.rending_strike.up&buff.glaive_flurry.up&(varia
 actions.ar+=/annihilation,if=buff.rending_strike.up&buff.glaive_flurry.up&(variable.rg_ds=2|active_enemies>2)
 ## [Hekili] Remove `action.reavers_glaive.last_used` check that prevented using Reaver's Glaive after the opener.
 actions.ar+=/reavers_glaive,if=buff.glaive_flurry.down&buff.rending_strike.down&buff.thrill_of_the_fight_damage.remains<gcd.max*4+(variable.rg_ds=2)+(cooldown.the_hunt.remains<gcd.max*3)*3+(cooldown.eye_beam.remains<gcd.max*3&talent.shattered_destiny)*3&(variable.rg_ds=0|variable.rg_ds=1&cooldown.blade_dance.up|variable.rg_ds=2&cooldown.blade_dance.remains)&(buff.thrill_of_the_fight_damage.up|!prev_gcd.1.death_sweep|!variable.rg_inc)&active_enemies<3&debuff.essence_break.down&(buff.art_of_the_glaive.stack>3|buff.metamorphosis.remains>2|cooldown.eye_beam.remains<10|fight_remains<10)
-actions.ar+=/reavers_glaive,if=buff.glaive_flurry.down&buff.rending_strike.down&buff.thrill_of_the_fight_damage.remains<4&(buff.thrill_of_the_fight_damage.up|!prev_gcd.1.death_sweep|!variable.rg_inc)&active_enemies>2|buff.art_of_the_glaive.stack>3|fight_remains<10
+actions.ar+=/reavers_glaive,if=buff.glaive_flurry.down&buff.rending_strike.down&buff.thrill_of_the_fight_damage.remains<4&(buff.thrill_of_the_fight_damage.up|!prev_gcd.1.death_sweep|!variable.rg_inc)&active_enemies>2|boss&fight_remains<10
 actions.ar+=/call_action_list,name=ar_cooldown
 ## [Hekili] No performance loss in sims changing from Run Action List to Call Action List; checking CDs toggle will help keep cromulent.
 actions.ar+=/call_action_list,name=ar_opener,if=time<15&toggle.cooldowns&(cooldown.eye_beam.up|cooldown.metamorphosis.up|talent.essence_break&cooldown.essence_break.up)
@@ -133,7 +133,7 @@ actions.ar_meta+=/fel_rush,if=buff.inertia_trigger.up&talent.inertia&((cooldown.
 actions.ar_meta+=/immolation_aura,if=charges=2&active_enemies>1&debuff.essence_break.down
 actions.ar_meta+=/annihilation,if=buff.inner_demon.up&(cooldown.eye_beam.remains<gcd.max*3&cooldown.blade_dance.remains|cooldown.metamorphosis.remains<gcd.max*3)
 actions.ar_meta+=/essence_break,if=time<20&buff.thrill_of_the_fight_damage.remains>gcd.max*4&buff.metamorphosis.remains>=gcd.max*2&cooldown.metamorphosis.up&cooldown.death_sweep.remains<=gcd.max&buff.inertia.up
-actions.ar_meta+=/essence_break,if=fury>20&(cooldown.blade_dance.remains<gcd.max*3|cooldown.blade_dance.up)&(buff.unbound_chaos.down&!talent.inertia|buff.inertia.up)&buff.out_of_range.remains<gcd.max&(!talent.shattered_destiny|cooldown.eye_beam.remains>4)|buff.art_of_the_glaive.stack>3|fight_remains<10
+actions.ar_meta+=/essence_break,if=fury>20&(cooldown.blade_dance.remains<gcd.max*3|cooldown.blade_dance.up)&(buff.unbound_chaos.down&!talent.inertia|buff.inertia.up)&buff.out_of_range.remains<gcd.max&(!talent.shattered_destiny|cooldown.eye_beam.remains>4)|boss&fight_remains<10
 actions.ar_meta+=/death_sweep
 actions.ar_meta+=/eye_beam,if=debuff.essence_break.down&buff.inner_demon.down
 actions.ar_meta+=/glaive_tempest,if=debuff.essence_break.down&(cooldown.blade_dance.remains>gcd.max*2|fury>60)&(active_enemies>=desired_targets+raid_event.adds.count|raid_event.adds.in>10)

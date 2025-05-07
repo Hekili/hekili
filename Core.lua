@@ -713,7 +713,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
     local precombatFilter = listName == "precombat" and state.time > 0
 
     local rAction = action
-    local rWait = wait or 15
+    local rWait = wait or state.delayMax
     local rDepth = depth or 0
 
     local strict = false -- disabled for now.
@@ -795,7 +795,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                         state.this_list = listName
                         entryReplaced = true
                     elseif action == "trinket1" then
-                        if state.trinket.t1.usable and state.trinket.t1.ability and not Hekili:IsItemScripted( state.trinket.t1.ability, true ) then
+                        if state.trinket.t1.usable and state.trinket.t1.ability then -- and not Hekili:IsItemScripted( state.trinket.t1.ability, true ) then
                             action = state.trinket.t1.ability
                             ability = class.abilities[ action ]
                             state.this_action = action
@@ -808,7 +808,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                             ability = nil
                         end
                     elseif action == "trinket2" then
-                        if state.trinket.t2.usable and state.trinket.t2.ability and not Hekili:IsItemScripted( state.trinket.t2.ability, true ) then
+                        if state.trinket.t2.usable and state.trinket.t2.ability then -- and not Hekili:IsItemScripted( state.trinket.t2.ability, true ) then
                             action = state.trinket.t2.ability
                             ability = class.abilities[ action ]
                             state.this_action = action
@@ -908,11 +908,23 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                 if action == "call_action_list" or action == "run_action_list" or action == "use_items" then
                                     -- We handle these here to avoid early forking between starkly different APLs.
                                     local aScriptPass = true
+                                    local strict_if = false
+
+                                    if scripts:CheckScript( scriptID, action, "strict_if" ) == false then
+                                        aScriptPass = false
+                                        strict_if = true
+                                        strict = true
+                                    end
+
                                     local ts = not strict and entry.strict ~= 1 and scripts:IsTimeSensitive( scriptID )
 
-                                    if not entry.criteria or entry.criteria == "" then
+                                    if strict_if then
+                                        if debug then self:Debug( "Strict Conditions [%s] for %s were not met.", entry.strict_if, action == "use_items" and "Use Items" or state.args.list_name or "this action list" ) end
+
+                                    elseif not entry.criteria or entry.criteria == "" then
                                         if debug then self:Debug( "There is no criteria for %s.", action == "use_items" and "Use Items" or state.args.list_name or "this action list" ) end
                                         -- aScriptPass = ts or self:CheckStack()
+
                                     else
                                         aScriptPass = scripts:CheckScript( scriptID ) -- and self:CheckStack() -- we'll check the stack with the list's entries.
 
@@ -1069,13 +1081,10 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                     end
                                                 end
 
-                                                Timer:Track("Pre-Recheck")
-                                                state.recheck( action, script, Stack, Block )
-
-                                                -- NEW:  If the ability's conditions didn't pass, but the ability can report on times when it should recheck, let's try that now.
                                                 if not aScriptPass then
-
-                                                    Timer:Track("Post-Recheck Times")
+                                                    Timer:Track( "Pre-Recheck" )
+                                                    state.recheck( action, script, Stack, Block )
+                                                    Timer:Track( "Post-Recheck Times" )
 
                                                     local cap_sec = spec.throttleForecastingTime or 0
 
@@ -1108,9 +1117,9 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             elseif cap_sec > 0 and new_wait > cap_sec then
                                                                 if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck time ( %.2f ) exceeds the preferred Maximum Forecasting Time ( %.2f ).", i, new_wait, cap_sec ) end
                                                                 break
-                                                            elseif new_wait >= 10 then
+                                                            --[[ elseif new_wait >= 10 then
                                                                     if debug then self:Debug( "Rechecking stopped at step #%d.  The recheck ( %.2f ) isn't ready within a reasonable time frame ( 10s ).", i, new_wait ) end
-                                                                    break
+                                                                    break ]]
                                                             elseif ( action ~= state.channel ) and waitValue <= base_delay + step + 0.05 then
                                                                 if debug then self:Debug( "Rechecking stopped at step #%d.  The previously chosen ability is ready before this recheck would occur ( %.2f <= %.2f + 0.05 ).", i, waitValue, new_wait ) end
                                                                 break
@@ -1297,8 +1306,8 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                                     if debug then self:Debug( "The currently chosen action ( %s ) is ready at or before the next action ( %.2fs <= %.2fs ).  Skipping.", ( rAction or "???" ), rWait, next_wait ) end
                                                                 elseif state.delayMax and next_wait >= state.delayMax then
                                                                     if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we would exceed our time ceiling in %.2fs.  Skipping.", next_action, next_wait ) end
-                                                                elseif next_wait >= 10 then
-                                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we'd have to wait much too long ( %.2f ).  Skipping.", next_action, next_wait ) end
+                                                                --[[ elseif next_wait >= 15 then
+                                                                    if debug then self:Debug( "Attempted to Pool Resources for Next Entry ( %s ), but we'd have to wait much too long ( %.2f ).  Skipping.", next_action, next_wait ) end ]]
                                                                 else
                                                                     -- Pad the wait value slightly, to make sure the resource is actually generated.
                                                                     next_wait = next_wait + 0.01
@@ -1451,12 +1460,12 @@ function Hekili:GetNextPrediction( dispName, packName, slot )
 
     if not pack then return end
 
-    local action, wait, depth = nil, 10, 0
+    local action, wait, depth = nil, nil, 0
 
     state.this_action = nil
     state.this_list = nil
 
-    state.selection_time = 10
+    state.selection_time = nil
     state.selected_action = nil
 
     if self.ActiveDebug then
@@ -1640,6 +1649,15 @@ function Hekili.Update()
 
             if debug then Hekili:Debug( "Combat Timer: %.2f", state.time ) end
 
+            local isMain = ( dispName == "Primary" and dispName == "AOE" )
+            local defaultMax = isMain and 15 or ( display.forecastPeriod or 15 )
+
+            if class.file == "DEATHKNIGHT" then
+                defaultMax = max( defaultMax, 0.01 + 20 * state.haste )
+            elseif state.spec.assassination then
+                defaultMax = max( state.delayMax, 0.01 + state.energy.max / state.energy.regen_combined )
+            end
+
             for i = 1, numRecs do
                 local chosen_depth = 0
 
@@ -1653,10 +1671,16 @@ function Hekili.Update()
 
                 local action, wait, depth
                 local isMain = ( dispName == "Primary" or dispName == "AOE" )
+                local defaultMax = 15
+
+                if class.file == "DEATHKNIGHT" then
+                    defaultMax = max( defaultMax, 0.01 + 20 * state.haste )
+                elseif state.spec.assassination then
+                    defaultMax = max( state.delayMax, 0.01 + state.energy.max / state.energy.regen_combined )
+                end
 
                 state.delay = 0
-                state.delayMin = 0
-                state.delayMax = not isMain and display.forecastPeriod or 15
+                state:SetConstraint( 0, defaultMax )
 
                 local hadProj = false
 
@@ -1812,11 +1836,9 @@ function Hekili.Update()
                                         slot.actionID = nil
 
                                         state.delay = 0
-                                        state.delayMin = 0
-                                        state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
+                                        state:SetConstraint( 0, defaultMax )
 
                                         action, wait = nil, 10
-
                                         action, wait, depth = Hekili:GetNextPrediction( dispName, packName, slot )
                                     end
 
@@ -1829,8 +1851,7 @@ function Hekili.Update()
                                         slot.actionID = nil
 
                                         state.delay = 0
-                                        state.delayMin = 0
-                                        state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
+                                        state:SetConstraint( 0, defaultMax )
 
                                         action, wait = nil, 10
                                         break
@@ -1868,15 +1889,13 @@ function Hekili.Update()
 
                 if not action then
                     state.delay = 0
-                    state.delayMin = 0
-                    state.delayMax = not isMain and display.forecastPeriod or 15
+                    state:SetConstraint( 0, defaultMax )
 
                     if class.file == "DEATHKNIGHT" then
-                        state:SetConstraint( 0, min( state.delayMax, max( 0.01 + state.rune.cooldown * 2, 10 ) ) )
+                        state:SetConstraint( 0, max( state.delayMax, 0.01 + 20 * state.haste ) )
                     elseif state.spec.assassination then
-                        state:SetConstraint( 0, max( 3, min( state.delayMax, state.energy.time_to_pct_70 ) ) )
-                    else
-                        state:SetConstraint( 0, min( state.delayMax, 10 ) )
+                        -- Cap recommend generation above worst-case energy generation.
+                        state:SetConstraint( 0, max( state.delayMax, 0.01 + state.energy.max / state.energy.regen_combined ) )
                     end
 
                     if hadProj and debug then Hekili:Debug( "[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end
@@ -1909,11 +1928,9 @@ function Hekili.Update()
                             slot.actionID = nil
 
                             state.delay = 0
-                            state.delayMin = 0
-                            state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
+                            state:SetConstraint( 0, defaultMax )
 
                             action, wait = nil, 10
-
                             action, wait, depth = Hekili:GetNextPrediction( dispName, packName, slot )
                         end
 
@@ -1927,11 +1944,9 @@ function Hekili.Update()
                             slot.actionID = nil
 
                             state.delay = 0
-                            state.delayMin = 0
-                            state.delayMax = dispName ~= "Primary" and dispName ~= "AOE" and display.forecastPeriod or 15
+                            state:SetConstraint( 0, defaultMax )
 
                             action, wait = nil, 10
-
                             break
                         end
                     until action ~= "wait"
@@ -1942,43 +1957,50 @@ function Hekili.Update()
                 end
 
                 state.delay = wait
-                if not action and state.buff.empowering.up and not state:IsFiltered( state.buff.empowering.spell ) then
+
+                if not action then
                     state.delay = 0
-                    action = state.buff.empowering.spell
 
-                    local ability = class.abilities[ action ]
-                    wait = ability.cast or 0
+                    if state.buff.empowering.up and not state:IsFiltered( state.buff.empowering.spell ) then
+                        state.delay = 0
+                        action = state.buff.empowering.spell
 
-                    slot.scriptType = "simc"
-                    slot.script = nil
-                    slot.hook = nil
+                        local ability = class.abilities[ action ]
+                        wait = ability.cast or 0
+/rl
+                        slot.scriptType = "simc"
+                        slot.script = nil
+                        slot.hook = nil
 
-                    slot.display = state.display
-                    slot.pack = "Fallthrough"
-                    slot.list = "Fallthrough"
-                    slot.listName = "Empowerment"
-                    slot.action = 1
-                    slot.actionName = ability.key
-                    slot.actionID = ability.id
+                        slot.display = state.display
+                        slot.pack = "Fallthrough"
+                        slot.list = "Fallthrough"
+                        slot.listName = "Empowerment"
+                        slot.action = 1
+                        slot.actionName = ability.key
+                        slot.actionID = ability.id
 
-                    slot.caption = nil
-                    slot.texture = ability.texture
-                    slot.indicator = ability.indicator
+                        slot.caption = nil
+                        slot.texture = ability.texture
+                        slot.indicator = ability.indicator
 
-                    slot.wait = wait
-                    slot.waitSec = nil
+                        slot.wait = 0
+                        slot.waitSec = nil
 
-                    slot.resource = state.GetResourceType( action )
+                        slot.resource = state.GetResourceType( action )
 
-                    slot.empower_to = ability.empowerment_default or state.max_empower
+                        slot.empower_to = ability.empowerment_default or state.max_empower
 
-                    slot.hook = nil
-                    slot.script = nil
+                        slot.hook = nil
+                        slot.script = nil
 
-                    if debug then
-                        -- scripts:ImplantDebugData( slot )
-                        Hekili:Debug( "Fallthrough Empowerment:  %s at %.2f!", action, state.delay )
-                        Hekili:Debug( "Texture shown:  %s", slot.texture or "NOT SET" )
+                        if debug then
+                            -- scripts:ImplantDebugData( slot )
+                            Hekili:Debug( "Fallthrough Empowerment:  %s at %.2f!", action, state.delay )
+                            Hekili:Debug( "Texture shown:  %s", slot.texture or "NOT SET" )
+                        end
+                    else
+                        state.delay = wait
                     end
                 end
 

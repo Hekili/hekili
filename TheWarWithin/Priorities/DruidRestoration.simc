@@ -3,14 +3,14 @@
 
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
 actions.precombat+=/mark_of_the_wild
-actions.precombat+=/heart_of_the_wild
+actions.precombat+=/symbiotic_relationship,if=down&active_allies>1
 actions.precombat+=/prowl,if=talent.rake.enabled
-actions.precombat+=/cat_form,if=talent.rake.enabled
+actions.precombat+=/cat_form,if=talent.rake.enabled1
 
 actions+=/skull_bash
 actions+=/berserking
 actions+=/natures_vigil,if=!buff.prowl.up&!buff.shadowmeld.up
-actions+=/call_action_list,name=healing,if=settings.healing_mode
+actions+=/call_action_list,name=healing,strict=1,if=settings.healing_mode&buff.prowl.down
 actions+=/heart_of_the_wild,if=!buff.prowl.up&!buff.shadowmeld.up
 actions+=/use_items,if=!buff.prowl.up&!buff.shadowmeld.up
 actions+=/potion,if=!buff.prowl.up&!buff.shadowmeld.up
@@ -26,7 +26,7 @@ actions+=/wrath
 
 actions.cat+=/rake,if=buff.shadowmeld.up|buff.prowl.up|buff.sudden_ambush.up
 actions.cat+=/heart_of_the_wild,if=(cooldown.convoke_the_spirits.remains<40|!talent.convoke_the_spirits.enabled)|boss&fight_remains<46
-actions.cat+=/cat_form,if=talent.convoke_the_spirits.enabled&(active_enemies<=6)&(!buff.cat_form.up&cooldown.convoke_the_spirits.remains<=gcd.max&(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled))
+actions.cat+=/cat_form,if=!talent.fluid_form&talent.convoke_the_spirits.enabled&(active_enemies<=6)&(!buff.cat_form.up&cooldown.convoke_the_spirits.remains<=gcd.max&(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled))
 actions.cat+=/convoke_the_spirits,if=(buff.cat_form.up)&(buff.heart_of_the_wild.up|cooldown.heart_of_the_wild.remains>60-30*talent.cenarius_guidance.enabled|!talent.heart_of_the_wild.enabled)
 actions.cat+=/rip,cycle_targets=1,if=((refreshable|energy>90&remains<=10)&(combo_points=5&time_to_die>remains+24|(remains+combo_points*4<time_to_die&remains+4+combo_points*4>time_to_die))|!ticking&combo_points>2+spell_targets.swipe_cat*2)
 actions.cat+=/pool_resource,for_next=1
@@ -45,10 +45,11 @@ actions.cat+=/ferocious_bite,cycle_targets=1,if=(combo_points>3&target.time_to_d
 actions.cat+=/thrash_cat,cycle_targets=1,if=refreshable&target.time_to_die>5&spell_targets.thrash_cat>2
 actions.cat+=/rake,cycle_targets=1,if=refreshable&time_to_die>10&(!talent.primal_fury.enabled|!talent.master_shapeshifter.enabled|!spell_targets.swipe_cat>4)
 actions.cat+=/swipe_cat,if=active_enemies>2&combo_points<5
-actions.cat+=/thrash_cat,target_if=refreshable&target.time_to_die>5
+actions.cat+=/thrash_cat,if=refreshable&fight_remains>5
 actions.cat+=/pool_resource,for_next=1
 actions.cat+=/shred,if=energy>60&combo_points<5
-actions.cat+=/cat_form,if=!buff.cat_form.up
+actions.cat+=/ferocious_bite,if=energy>50&combo_points.deficit=0
+actions.cat+=/cat_form,if=!talent.fluid_form&!buff.cat_form.up
 
 # On the tank
 actions.healing+=/rejuvenation,if=active_dot.rejuvenation<1

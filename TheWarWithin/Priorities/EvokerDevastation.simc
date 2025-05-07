@@ -28,7 +28,7 @@ actions.precombat+=/variable,name=dr_prep_time,default=6,op=reset
 actions.precombat+=/variable,name=dr_prep_time_aoe,default=4,op=reset
 actions.precombat+=/variable,name=can_extend_dr,default=0,op=reset
 ## actions.precombat+=/variable,name=has_external_pi,value=cooldown.invoke_power_infusion_0.duration>0
-actions.precombat+=/variable,name=can_use_empower,value=1,default=1,if=!talent.animosity|!talent.dragonrage
+actions.precombat+=/variable,name=can_use_empower,value=1,default=1,if=!talent.animosity|!talent.dragonrage|buff.empowering.up
 # Get Some Scarlet Adaptation Prepull
 actions.precombat+=/verdant_embrace,if=talent.scarlet_adaptation
 ## [Syrif] - This charge gets refunded pretty early by deep breath when talented into slipstream, but added some extra conditions to stop it from griefing in dungeons
@@ -36,8 +36,6 @@ actions.precombat+=/hover,if=talent.slipstream&buff.hover.down&cooldown.deep_bre
 actions.precombat+=/firestorm,if=talent.firestorm&(!talent.engulf|!talent.ruby_embers)
 actions.precombat+=/living_flame,if=!talent.firestorm|talent.engulf&talent.ruby_embers
 
-# Delay pot in ST if you are about to SS - mostly relevant for opener where you want DR->FB->SS->rotation
-actions+=/potion,if=(!talent.dragonrage|buff.dragonrage.up)&(!cooldown.shattering_star.up|debuff.shattering_star_debuff.up|active_enemies>=2)|boss&fight_remains<35
 # Variable that evaluates when next dragonrage is by working out the maximum between the dragonrage cd and your empowers, ignoring CDR effect estimates.
 actions+=/variable,name=next_dragonrage,value=cooldown.dragonrage.remains<?((cooldown.eternity_surge.remains-8)>?(cooldown.fire_breath.remains-8))
 ## Invoke External Power Infusions if they're available during dragonrage
@@ -45,25 +43,33 @@ actions+=/variable,name=next_dragonrage,value=cooldown.dragonrage.remains<?((coo
 actions+=/variable,name=pool_for_id,if=talent.imminent_destruction,default=0,op=set,value=cooldown.deep_breath.remains<7&essence.deficit>=1&!buff.essence_burst.up&(raid_event.adds.in>=action.deep_breath.cooldown*0.4|talent.melt_armor&talent.maneuverability|active_enemies>=3)
 # [Edited by Syrif] - animosity_extension returns the number of extensions performed for this dragonrage, use it instead of the complex APL conditions
 actions+=/variable,name=can_extend_dr,if=talent.animosity,op=set,value=buff.dragonrage.up&(animosity_extension<4)
-actions+=/variable,name=can_use_empower,op=set,value=cooldown.dragonrage.remains>=gcd.max*variable.dr_prep_time,if=talent.animosity&talent.dragonrage
+actions+=/variable,name=can_use_empower,op=set,value=cooldown.dragonrage.remains>=gcd.max*variable.dr_prep_time,if=!buff.empowering.up&talent.animosity&talent.dragonrage
 # Rupt to make the raidleader happy
 actions+=/quell,use_off_gcd=1
 actions+=/unravel
+actions+=/expunge,enabled=0,if=debuff.dispellable_poison.up
+# [Hekili] No API available for detecting bleeds
+actions+=/cauterizing_flame,enabled=0,if=debuff.dispellable_poison.up|debuff.dispellable_curse.up|debuff.dispellable_disease.up
+# [Hekili] Recommended to link to toggle.interrupts with Show Separately enabled
+actions+=/hover,enabled=0,if=moving&buff.hover.down
+# Delay pot in ST if you are about to SS - mostly relevant for opener where you want DR->FB->SS->rotation
+actions+=/potion,if=(!talent.dragonrage|buff.dragonrage.up)&(!cooldown.shattering_star.up|debuff.shattering_star_debuff.up|active_enemies>=2)|boss&fight_remains<35
 actions+=/call_action_list,name=trinkets
-actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>=3
-actions+=/run_action_list,name=st
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>2
+actions+=/run_action_list,name=st,strict=1,if=active_enemies<3
 
 # AOE action list; Open with star before DR to save a global and start with a free EB  BaumChange 2: Don't do as FS - Neutral
 actions.aoe+=/shattering_star,cycle_targets=1,if=(cooldown.dragonrage.up&talent.arcane_vigor|talent.eternitys_span&active_enemies<=3)&!talent.engulf
 actions.aoe+=/hover,use_off_gcd=1,if=raid_event.movement.in<6&!buff.hover.up&gcd.remains>=0.5&(buff.mass_disintegrate_stacks.up&talent.mass_disintegrate|active_enemies<=4)
 # Spend firestorm procs ASAP
 actions.aoe+=/firestorm,if=buff.snapfire.up&!talent.feed_the_flames
+actions.aoe+=/variable,name=engulf_condition,value=dot.fire_breath_damage.remains>(action.engulf.travel_time+2*action.engulf.in_flight)&(variable.next_dragonrage>=cooldown*1.2|!talent.dragonrage)
 # BaumChange 1: Send DB before DR if FS FS FTF - +30k in 5T
-actions.aoe+=/deep_breath,if=talent.maneuverability&talent.melt_armor&!cooldown.fire_breath.up&!cooldown.eternity_surge.up|talent.feed_the_flames&talent.engulf&talent.imminent_destruction
+actions.aoe+=/deep_breath,if=talent.maneuverability&talent.melt_armor&!cooldown.fire_breath.up&!cooldown.eternity_surge.up|talent.feed_the_flames&talent.engulf&talent.imminent_destruction&(cooldown.engulf.remains>4|!variable.engulf_condition)
 # Acquire the buff  BaumChange #3: Keep it from hardcasting firestorm while the SS debuff is running. I know the condition is garbage but it works - +20k in 5T
 actions.aoe+=/firestorm,if=talent.feed_the_flames&(!talent.engulf|cooldown.engulf.remains>4|cooldown.engulf.charges=0|(variable.next_dragonrage<=cooldown*1.2|!talent.dragonrage))
 # Grab Irid Red before Dragonrage without griefing extension
-actions.aoe+=/call_action_list,name=fb,if=talent.dragonrage&cooldown.dragonrage.up&(talent.iridescence|talent.scorching_embers)&!talent.engulf|empowering.fire_breath
+actions.aoe+=/call_action_list,name=fb,strict_if=talent.dragonrage&(talent.iridescence|talent.scorching_embers)&!talent.engulf,if=talent.dragonrage&cooldown.dragonrage.up&(talent.iridescence|talent.scorching_embers)&!talent.engulf
 actions.aoe+=/dragonrage
 # Tip ES at appropiate target count or when playing Flameshaper otherwise Tip FB
 actions.aoe+=/tip_the_scales,if=(!talent.dragonrage|buff.dragonrage.up)&(cooldown.fire_breath.remains<=cooldown.eternity_surge.remains|(cooldown.eternity_surge.remains<=cooldown.fire_breath.remains&talent.font_of_magic)&!talent.engulf)
@@ -71,13 +77,13 @@ actions.aoe+=/tip_the_scales,if=(!talent.dragonrage|buff.dragonrage.up)&(cooldow
 actions.aoe+=/shattering_star,if=(cooldown.dragonrage.up&talent.arcane_vigor|talent.eternitys_span&active_enemies<=3)&talent.engulf
 actions.aoe+=/dragonrage,if=target.time_to_die>=32|active_enemies>=3&target.time_to_die>=15|boss&fight_remains<30
 # Cast Fire Breath DS optimization: Only cast if current fight will last 8s+ or encounter ends in less than 30s
-actions.aoe+=/call_action_list,name=fb,if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity|talent.flame_siphon)&(target.time_to_die>=8|talent.mass_disintegrate)|empowering.fire_breath
-actions.aoe+=/call_action_list,name=es,if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity)&(!buff.jackpot.up|!set_bonus.tww2_4pc|talent.mass_disintegrate)|empowering.eternity_surge
+actions.aoe+=/call_action_list,name=fb,strict=1,if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity|talent.flame_siphon)&(target.time_to_die>=8|talent.mass_disintegrate)
+actions.aoe+=/call_action_list,name=es,strict_if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity),if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity)&(!buff.jackpot.up|!set_bonus.tww2_4pc|talent.mass_disintegrate)
 actions.aoe+=/deep_breath,if=!buff.dragonrage.up&essence.deficit>3
 # Send SS when it doesn't overflow EB, without vigor send on CD  BaumChange 3: Save SS for Engulf - +20k in 5T
 actions.aoe+=/shattering_star,cycle_targets=1,if=(buff.essence_burst.stack<buff.essence_burst.max_stack&talent.arcane_vigor|talent.eternitys_span&active_enemies<=3|set_bonus.tww2_4pc&buff.jackpot.stack<2)&(!talent.engulf|cooldown.engulf.remains<4|cooldown.engulf.charges>0)
-# [Syrif] - Just going to use '2' instead of that DBC reference APL condition k thx
-actions.aoe+=/engulf,cycle_targets=1,if=(dot.fire_breath_damage.remains>=2)&(variable.next_dragonrage>=cooldown*1.2|!talent.dragonrage)
+# [Hekili] Re-revised Fire Breath debuff remaining so that you get back-to-back Engulfs easier.
+actions.aoe+=/engulf,cycle_targets=1,if=variable.engulf_condition
 actions.aoe+=/pyre,if=buff.charged_blast.stack>=12&(cooldown.dragonrage.remains>gcd.max*4|!talent.dragonrage)
 # Use Mass Disintegrate if CB wont't overcap
 actions.aoe+=/disintegrate,cycle_targets=1,if=buff.mass_disintegrate_stacks.up&talent.mass_disintegrate&(!variable.pool_for_id|buff.mass_disintegrate_stacks.remains<=buff.mass_disintegrate_stacks.stack*(duration+0.1))
@@ -92,7 +98,7 @@ actions.aoe+=/disintegrate,cycle_targets=1,chain=1,early_chain_if=evoker.use_ear
 # Cast LF with burnout to fish for snapfire procs
 actions.aoe+=/living_flame,cycle_targets=1,if=talent.snapfire&buff.burnout.up
 # Get Ancient Flame as Filler
-actions.aoe+=/call_action_list,name=green,if=talent.ancient_flame&!buff.ancient_flame.up&!buff.dragonrage.up
+actions.aoe+=/call_action_list,name=green,strict_if=talent.ancient_flame,if=talent.ancient_flame&!buff.ancient_flame.up&!buff.dragonrage.up
 actions.aoe+=/living_flame,if=talent.snapfire&!talent.engulfing_blaze
 # Fallback filler
 actions.aoe+=/azure_strike,cycle_targets=1
@@ -130,8 +136,8 @@ actions.st+=/fire_breath,empower_to=1,if=talent.engulf&talent.fulminous_roar&var
 # R2 funny breath good default for SC.
 actions.st+=/fire_breath,empower_to=2,if=variable.can_use_empower&!buff.dragonrage.up
 actions.st+=/fire_breath,empower_to=1,if=variable.can_use_empower
-# Gulf :garf:
-actions.st+=/engulf,if=(dot.fire_breath_damage.remains>travel_time)&(dot.living_flame_damage.remains>travel_time|!talent.ruby_embers)&(dot.enkindle.remains>travel_time|!talent.enkindle)&(!talent.iridescence|buff.iridescence_red.up)&(!talent.scorching_embers|dot.fire_breath_damage.duration<=6|fight_remains<=30)&(debuff.shattering_star_debuff.remains>travel_time|full_recharge_time<action.shattering_star.usable_in|talent.scorching_embers)
+# [Hekili] Modified to ignore Ruby Embers if applying it is going to waste the Fire Breath dot.
+actions.st+=/engulf,if=(dot.fire_breath_damage.remains>travel_time)&(dot.living_flame_damage.remains>travel_time|dot.fire_breath_damage.remains<action.living_flame.cast_time+travel_time+0.5|!talent.ruby_embers)&(dot.enkindle.remains>travel_time|!talent.enkindle)&(!talent.iridescence|buff.iridescence_red.up)&(!talent.scorching_embers|dot.fire_breath_damage.duration<=6|boss&fight_remains<=30)&(debuff.shattering_star_debuff.remains>travel_time|full_recharge_time<action.shattering_star.usable_in|talent.scorching_embers)
 # Why would you do this to yourself. Talent span right meow.
 actions.st+=/eternity_surge,empower_to=2,if=(!talent.power_swell|buff.power_swell.remains<=duration|!talent.mass_disintegrate)&active_enemies=2&!talent.eternitys_span&variable.can_use_empower
 # Surge all of eternity and swell power (but not if :engulf:)
@@ -151,7 +157,7 @@ actions.st+=/pyre,if=talent.snapfire&active_enemies>=2&talent.volatility.rank>=2
 # Disintegrator pov
 actions.st+=/disintegrate,cycle_targets=1,chain=1,if=(raid_event.movement.in>2|buff.hover.up)&!variable.pool_for_id
 # Get Ancient Flame if you have Engulfing Blaze and nothing interesting is happening
-actions.st+=/call_action_list,name=green,if=talent.ancient_flame&!buff.ancient_flame.up&!buff.shattering_star_debuff.up&talent.scarlet_adaptation&!buff.dragonrage.up&!buff.burnout.up&talent.engulfing_blaze
+actions.st+=/call_action_list,name=green,strict_if=talent.ancient_flame&talent.scarlet_adaptation&talent.engulfing_blaze,if=talent.ancient_flame&!buff.ancient_flame.up&!buff.shattering_star_debuff.up&talent.scarlet_adaptation&!buff.dragonrage.up&!buff.burnout.up&talent.engulfing_blaze
 # LF Gooder
 actions.st+=/living_flame,if=buff.burnout.up|buff.leaping_flames.up|buff.ancient_flame.up
 # AS Gooder

@@ -18,7 +18,7 @@ local spellFilters = {
             }, -- Either wrong ID, or just used for testing.  I can't find Sear Mind via Wowhead. ]]
             [ 76369 ] = {
                 name = "Shadowflame Bolt",
-                spell_reflection = true,
+                spell_reflection = true
             },
         },
         [ 40166 ] = {
@@ -102,16 +102,19 @@ local spellFilters = {
                 name = "Choking Waters",
                 interrupt = true,
             },
-            [ 272581 ] = {
-                name = "Water Bolt",
-                spell_reflection = true,
-            },
         },
         [ 128969 ] = {
             name = "Ashvane Commander",
             [ 275826 ] = {
                 name = "Bolstering Shout",
                 interrupt = true,
+            },
+        },
+        [ 129367 ] = {
+            name = "Bilge Rat Tempest",
+            [ 272581 ] = {
+                name = "Water Bolt",
+                spell_reflection = true,
             },
         },
         [ 129370 ] = {
@@ -464,6 +467,10 @@ local spellFilters = {
                 name = "Necrotic Bolt",
                 spell_reflection = true,
             },
+			[ 324079 ] = {
+				name = "Reaping Scythe",
+				blessing_of_spellwarding = true,
+			},
         },
         [ 165946 ] = {
             name = "Mordretha, the Endless Empress",
@@ -523,6 +530,7 @@ local spellFilters = {
             [ 167385 ] = {
                 name = "Uber Strike",
                 spell_reflection = true, -- for testing
+				blessing_of_spellwarding = true, -- for testing
             },
         },
     },
@@ -576,6 +584,13 @@ local spellFilters = {
                 spell_reflection = true,
             },
         },
+		[ 207207 ] = {
+			name = "Voidstone Monstrosity",
+			[ 445457 ] = {
+				name = "Oblivion Wave",
+				blessing_of_spellwarding = true,
+			},
+		},
     },
 
     [ 2649 ] = {
@@ -615,6 +630,10 @@ local spellFilters = {
                 name = "Holy Smite",
                 spell_reflection = true,
             },
+			[ 444608 ] = {
+				name = "Inner Fire",
+				blessing_of_spellwarding = true,
+			},
         },
         [ 207946 ] = {
             name = "Captain Dailcry",
@@ -634,6 +653,10 @@ local spellFilters = {
                 name = "Fireball",
                 spell_reflection = true,
             },
+			[ 424462 ] = {
+				name = "Ember Storm",
+				blessing_of_spellwarding = true,
+			},
         },
         [ 221760 ] = {
             name = "Risen Mage",
@@ -653,6 +676,20 @@ local spellFilters = {
                 spell_reflection = true,
             },
         },
+		[ 217658 ] = {
+			name = "Sir Braunpyke",
+			[ 435165 ] = {
+				name = "Blazing Strike",
+				blessing_of_spellwarding = true,
+			},
+		},
+		[ 206710 ] = {
+			name = "Lightspawn",
+			[ 448787 ] = {
+				name = "Purification",
+				blessing_of_spellwarding = true,
+			},
+		},
     },
 
     [ 2651 ] = {
@@ -707,6 +744,13 @@ local spellFilters = {
                 spell_reflection = true,
             },
         },
+		[ 210539 ] = {
+			name = "Corridor Creeper",
+			[ 469620 ] = {
+				name = "Creeping Shadow",
+				blessing_of_spellwarding = true,
+			},
+		},
     },
 
     [ 2652 ] = {
@@ -1026,6 +1070,20 @@ local spellFilters = {
                 interrupt = true,
             },
         },
+		[ 210265 ] = {
+			name = "Worker Bee",
+			[ 443487 ] = {
+				name = "Final String",
+				blessing_of_spellwarding = true,
+			},
+		},
+		[ 218000 ] = {
+			name = "Benk Buzzbee",
+			[ 440134 ] = {
+				name = "Honey Marinade",
+				blessing_of_spellwarding = true,
+			},
+		},
     },
 
     [ 2662 ] = {
@@ -1248,6 +1306,10 @@ local spellFilters = {
                 name = "Mudslide",
                 spell_reflection = true,
             },
+			[ 469478 ] = {
+				name = "Sludge Claws",
+				blessing_of_spellwarding = true,
+			},
         },
         [ 229069 ] = {
             name = "Mechadrone Sniper",
@@ -1283,6 +1345,10 @@ local spellFilters = {
                 name = "Backwash",
                 spell_reflection = true,
             },
+			[ 469818 ] = {
+				name = "Bubble Burp",
+				blessing_of_spellwarding = true,
+			},
         },
         [ 231312 ] = {
             name = "Venture Co. Electrician",
@@ -1291,6 +1357,20 @@ local spellFilters = {
                 spell_reflection = true,
             },
         },
+		[ 226398 ] = {
+			name = "Big M.O.M.M.A.",
+			[ 473351 ] = {
+				name = "Electrocrush",
+				blessing_of_spellwarding = true,
+			},
+		},
+		[ 242255 ] = {
+			name = "Geezle Gigazap",
+			[ 466190 ] = {
+				name = "Thunder Punch",
+				blessing_of_spellwarding = true,
+			},
+		},
     },
 }
 

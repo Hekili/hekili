@@ -8,9 +8,8 @@ local Hekili = _G[ addon ]
 local class, state = Hekili.Class, Hekili.State
 
 local FindUnitDebuffByID = ns.FindUnitDebuffByID
-local UnitTokenFromGUID = _G.UnitTokenFromGUID
-
 local GetSpellInfo = C_Spell.GetSpellInfo
+
 state.sqrt = math.sqrt
 
 local spec = Hekili:NewSpecialization( 265 )
@@ -72,7 +71,7 @@ spec:RegisterTalents( {
     demonic_tactics                = {  71925, 452894, 1 }, -- Your spells have a 5% increased chance to deal a critical strike. You gain 10% more of the Critical Strike stat from all sources.
     diabolic_ritual                = {  94855, 428514, 1 }, -- Casting Chaos Bolt, Rain of Fire, or Shadowburn grants Diabolic Ritual for 20 sec. If Diabolic Ritual is already active, its duration is reduced by 1 sec instead. When Diabolic Ritual expires you gain Demonic Art, causing your next Chaos Bolt, Rain of Fire, or Shadowburn to summon an Overlord, Mother of Chaos, or Pit Lord that unleashes a devastating attack against your enemies.
     fel_armor                      = {  71950, 386124, 2 }, -- When Soul Leech absorbs damage, 5% of damage taken is absorbed and spread out over 5 sec. Reduces damage taken by 1.5%.
-    fel_domination                 = {  71931, 333889, 1 }, -- Your next Imp, Voidwalker, Incubus, Succubus, Felhunter, or Felguard Summon spell is free and has its casting time reduced by 90%. 
+    fel_domination                 = {  71931, 333889, 1 }, -- Your next Imp, Voidwalker, Incubus, Succubus, Felhunter, or Felguard Summon spell is free and has its casting time reduced by 90%.
     fel_pact                       = {  71932, 386113, 1 }, -- Reduces the cooldown of Fel Domination by 60 sec.
     fel_synergy                    = {  71924, 389367, 2 }, -- Soul Leech also heals you for 8% and your pet for 25% of the absorption it grants.
     fiendish_stride                = {  71948, 386110, 1 }, -- Reduces the damage dealt by Burning Rush by 10%. Burning Rush increases your movement speed by an additional 20%.
@@ -89,7 +88,7 @@ spec:RegisterTalents( {
     mortal_coil                    = {  71947,   6789, 1 }, -- Horrifies an enemy target into fleeing, incapacitating for 3 sec and healing you for 20% of maximum health.
     nightmare                      = {  71916, 386648, 1 }, -- Increases the amount of damage required to break your fear effects by 60%.
     pact_of_gluttony               = {  71926, 386689, 1 }, -- Healthstones you conjure for yourself are now Demonic Healthstones and can be used multiple times in combat. Demonic Healthstones cannot be traded.  Demonic Healthstone Instantly restores 25% health. 60 sec cooldown.
-    resolute_barrier               = {  71915, 389359, 2 }, -- Attacks received that deal at least 5% of your health decrease Unending Resolve's cooldown by 10 sec. Cannot occur more than once every 30 sec. 
+    resolute_barrier               = {  71915, 389359, 2 }, -- Attacks received that deal at least 5% of your health decrease Unending Resolve's cooldown by 10 sec. Cannot occur more than once every 30 sec.
     ruination                      = {  94830, 428522, 1 }, -- Summoning a Pit Lord causes your next Chaos Bolt to become Ruination.  Ruination Call down a demon-infested meteor from the depths of the Twisting Nether, dealing 157,144 Chaos damage on impact to all enemies within 8 yds of the target and summoning 3 Wild Imps. Damage is reduced beyond 8 targets.
     sargerei_technique             = {  93179, 405955, 2 }, -- Shadow Bolt and Drain Soul damage increased by 8%.
     secrets_of_the_coven           = {  94826, 428518, 1 }, -- Mother of Chaos empowers your next Incinerate to become Infernal Bolt.  Infernal Bolt Hurl a bolt enveloped in the infernal flames of the abyss, dealing 136,055 Fire damage to your enemy target and generating 3 Soul Shards.
@@ -186,16 +185,16 @@ spec:RegisterTalents( {
 } )
 
 -- PvP Talents
-spec:RegisterPvpTalents( { 
+spec:RegisterPvpTalents( {
     bloodstones         = 5695, -- (1218692) Your Healthstones are replaced with Bloodstones which increase their user's haste by 20% for 12 sec instead of healing.
     bonds_of_fel        = 5546, -- (353753) Encircle enemy players with Bonds of Fel. If any affected player leaves the 8 yd radius they explode, dealing 101,423 Fire damage split amongst all nearby enemies.
-    essence_drain       =   19, -- (221711) 
+    essence_drain       =   19, -- (221711)
     gateway_mastery     =   15, -- (248855) Increases the range of your Demonic Gateway by 20 yards, and reduces the cast time by 30%. Reduces the time between how often players can take your Demonic Gateway by 30 sec.
     impish_instincts    = 5579, -- (409835) Taking direct Physical damage reduces the cooldown of Demonic Circle by 3 sec. Cannot occur more than once every 5 sec.
-    jinx                = 5386, -- (426352) 
+    jinx                = 5386, -- (426352)
     nether_ward         =   18, -- (212295) Surrounds the caster with a shield that lasts 3 sec, reflecting all harmful spells cast on you.
-    rampant_afflictions = 5379, -- (335052) 
-    rot_and_decay       =   16, -- (212371) 
+    rampant_afflictions = 5379, -- (335052)
+    rot_and_decay       =   16, -- (212371)
     shadow_rift         = 5392, -- (353294) Conjure a Shadow Rift at the target location lasting 2 sec. Enemy players within the rift when it expires are teleported to your Demonic Circle. Must be within 40 yds of your Demonic Circle to cast.
     soul_rip            = 5608, -- (410598) Fracture the soul of up to 3 target players within 20 yds into the shadows, reducing their damage done by 25% and healing received by 25% for 8 sec. Souls are fractured up to 20 yds from the player's location. Players can retrieve their souls to remove this effect.
     soul_swap           = 5662, -- (386951) Copies your damage over time effects and Haunt from the target, preserving their duration. Your next use of Soul Swap within 10 sec will exhale a copy damage of the effects onto a new target.
@@ -875,24 +874,34 @@ spec:RegisterStateExpr( "time_to_shard", function ()
     return 1 / ( 0.16 / sqrt( num_agony ) * ( num_agony == 1 and 1.15 or 1 ) * num_agony / debuff.agony.tick_time )
 end )
 
+
+local corruption = spec.auras.corruption.id
+
+local applyEvent = {
+    SPELL_AURA_APPLIED = 1,
+    SPELL_AURA_APPLIED_DOSE = 1,
+    SPELL_AURA_REFRESH = 1
+}
+
+local corruptionTargets = {}
+
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike, ... )
-    if sourceGUID == GUID then
-        if spellName == class.abilities.seed_of_corruption.name then
-            if subtype == "SPELL_CAST_SUCCESS" then
-                action.seed_of_corruption.flying = GetTime()
-            elseif subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" then
-                action.seed_of_corruption.flying = 0
-            end
-        end
+    if sourceGUID ~= GUID then return end
+    if spellID == corruption and applyEvent[ subtype ] then
+        corruptionTargets[ destGUID ] = GetTime()
     end
 end, false )
+
+spec:RegisterHook( "combatExit", function()
+    wipe( corruptionTargets )
+end )
 
 -- The War Within
 spec:RegisterGear( "tww2", 229325, 229323, 229328, 229326, 229324 )
 spec:RegisterAuras( {
 -- 2-set
 -- https://www.wowhead.com/spell=1219034/jackpot
--- Your spells and abilities have a chance to hit a Jackpot! that increases your haste by 12% for 12 sec. Casting Summon Darkglare always hits a Jackpot! 
+-- Your spells and abilities have a chance to hit a Jackpot! that increases your haste by 12% for 12 sec. Casting Summon Darkglare always hits a Jackpot!
     jackpot = {
         id = 1219034,
         duration = 12,
@@ -983,8 +992,6 @@ local SUMMON_DEMON_TEXT
 spec:RegisterHook( "reset_precast", function ()
     soul_shards.actual = nil
 
-    local icd = 25
-
     if debuff.drain_soul.up then
         local ticks = debuff.drain_soul.ticks_remain
         if pvptalent.rot_and_decay.enabled then
@@ -1011,6 +1018,22 @@ spec:RegisterHook( "reset_precast", function ()
         debuff.agony.applied = 0
         debuff.agony.count = 0
         debuff.agony.caster = "nobody"
+    end
+
+
+    if debuff.corruption.down and corruptionTargets[ target.guid ] then
+        local corruptionExpires = corruptionTargets[ target.guid ] + spec.auras.corruption.duration
+
+        if expires > state.now then
+            debuff.corruption.expires = corruptionExpires
+            debuff.corruption.duration = spec.auras.corruption.duration
+            debuff.corruption.applied = corruptionTargets[ target.guid ]
+            debuff.corruption.count = 1
+            debuff.corruption.caster = "player"
+
+            Hekili:Error( "WARNING: Corruption applied virtually due to aura missing from target." )
+            if Hekili.ActiveDebug then Hekili:Debug( "WARNING: Corruption applied virtrually due to aura missing from target." ) end
+        end
     end
 
     if buff.casting.up and buff.casting.v1 == 234153 then
