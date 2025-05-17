@@ -2019,9 +2019,15 @@ spec:RegisterAbilities( {
             if extra_shards > 0 then insert( guldan_v, query_time + 0.8 ) end
             if extra_shards > 1 then insert( guldan_v, query_time + 1 ) end
 
+            -- Tier version
             if debuff.doom_brand.up then
                 debuff.doom_brand.expires = debuff.doom_brand.expires - ( 1 + extra_shards )
                 -- TODO: Decide if tracking Doomfiends is worth it.
+            end
+
+            -- Talent version
+            if debuff.doom.up then
+                debuff.doom.expires = debuff.doom.expires - ( 1 + extra_shards )
             end
 
             if talent.dread_calling.enabled then
