@@ -130,7 +130,8 @@ all:RegisterAuras({
             "master_poisoner",
             "earth_and_moon",
             "ebon_plaguebringer",
-            "fire_breath"
+            "fire_breath",
+            "jinx_curse_of_the_elements"
         },
         aliasMode = "latest",
         aliasType = "debuff",
@@ -170,6 +171,14 @@ all:RegisterAuras({
     fire_breath = {
         id = 34889,
         duration = 15,
+        max_stack = 1,
+        shared = "target",
+        shared_aura = true
+    },
+    jinx_curse_of_the_elements = {
+        id = 86105,
+        copy = { 86105, 85547 },
+        duration = 3,
         max_stack = 1,
         shared = "target",
         shared_aura = true
