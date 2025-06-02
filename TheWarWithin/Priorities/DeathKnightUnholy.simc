@@ -126,7 +126,7 @@ actions.cds_cleave_san+=/unholy_assault,if=buff.dark_transformation.up&buff.dark
 actions.cds_cleave_san+=/apocalypse,cycle_targets=1
 actions.cds_cleave_san+=/outbreak,cycle_targets=1,if=(dot.virulent_plague.refreshable|talent.morbidity&buff.infliction_of_sorrow.up&talent.superstrain&dot.frost_fever.refreshable&dot.blood_plague.refreshable)&(!talent.unholy_blight|talent.unholy_blight&cooldown.dark_transformation.remains>6)&(!talent.raise_abomination|talent.raise_abomination&cooldown.raise_abomination.remains>5)
 ## [Syrif] This line may be changed soon
-actions.cds_cleave_san+=/abomination_limb,if=!buff.gift_of_the_sanlayn.up&!buff.sudden_doom.react&buff.festermight.up&debuff.festering_wound.stack<=2|!buff.gift_of_the_sanlayn.up&boss&fight_remains<12
+actions.cds_cleave_san+=/abomination_limb,if=!buff.gift_of_the_sanlayn.up&!buff.sudden_doom.up&buff.festermight.up&debuff.festering_wound.stack<=2|!buff.gift_of_the_sanlayn.up&boss&fight_remains<12
 
 # San'layn Cooldowns
 actions.cds_san+=/dark_transformation,if=variable.st_planning&(talent.apocalypse&pet.apoc_ghoul.active|!talent.apocalypse)|boss&fight_remains<20
@@ -142,7 +142,7 @@ actions.cleave+=/any_dnd,if=!death_and_decay.ticking&variable.adds_remain&(coold
 actions.cleave+=/death_coil,if=!variable.pooling_runic_power&talent.improved_death_coil
 actions.cleave+=/wound_spender,if=buff.vampiric_strike.up
 actions.cleave+=/death_coil,if=!variable.pooling_runic_power&!talent.improved_death_coil
-actions.cleave+=/festering_strike,cycle_targets=1,if=buff.vampiric_strike.down&!variable.pop_wounds&debuff.festering_wound.stack<2|buff.festering_scythe.react
+actions.cleave+=/festering_strike,cycle_targets=1,if=buff.vampiric_strike.down&!variable.pop_wounds&debuff.festering_wound.stack<2|buff.festering_scythe.up
 actions.cleave+=/festering_strike,cycle_targets=1,if=buff.vampiric_strike.down&cooldown.apocalypse.remains<variable.apoc_timing&debuff.festering_wound.down
 actions.cleave+=/wound_spender,if=variable.pop_wounds
 
