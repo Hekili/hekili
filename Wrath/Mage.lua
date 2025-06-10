@@ -1717,6 +1717,11 @@ spec:RegisterAuras( {
         -- talent.arcane_flows[44379] #0 -- APPLY_AURA, ADD_PCT_MODIFIER, COOLDOWN, points: -30, target: TARGET_UNIT_CASTER
     },
     -- $s2 Fire damage every $t2 seconds.
+    pushing_the_limit ={
+        id = 70753,
+        duration = 5,
+        max_stack = 1,
+    },
     pyroblast = {
         id = 42891,
         duration = 12,
@@ -1807,6 +1812,11 @@ spec:RegisterAuras( {
         -- talent.hot_streak[48108] #0 -- APPLY_AURA, ADD_PCT_MODIFIER, CAST_TIME, sp_bonus: 1.0, points: -100, target: TARGET_UNIT_CASTER
     },
     -- Replenishes $s1% of maximum mana per 5 sec.
+    quad_core = {
+        id = 70747,
+        duration = 30,
+        max_stack = 1,
+    },
     replenishment = {
         id = 57669,
         duration = 15,
