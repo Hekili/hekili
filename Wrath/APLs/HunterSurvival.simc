@@ -1,25 +1,34 @@
 ## Survival Hunter
-## 11 February 2023
+## July 13 2025 @theglance
 
+# Precombat
 actions.precombat+=/aspect_of_the_dragonhawk
 actions.precombat+=/hunters_mark,if=down
 actions.precombat+=/potion
-actions.precombat+=/steady_shot
 
-actions+=/hunters_mark,if=down
+actions+=/tranquilizing_shot,line_cd=tranquilizing_shot_cooldown
+
+# Regular Rotation
+actions+=/aspect_of_the_dragonhawk,if=down&mana.pct>10
+actions+=/hunters_mark,if=down&target.time_to_die>20
 actions+=/rapid_fire
 actions+=/call_of_the_wild
 actions+=/kill_command
-## actions+=/furious_howl
+# actions+=/furious_howl
 actions+=/potion
 actions+=/use_items
-actions+=/explosive_shot,if=debuff.explosive_shot.down
-actions+=/black_arrow,if=target.outside10
-actions+=/explosive_trap,if=target.within10
-actions+=/multishot,if=active_enemies>2
-actions+=/volley,if=active_enemies>2
+
 actions+=/kill_shot
+actions+=/trap_launcher_explosive_trap,if=target.time_to_die>10&!dot.explosive_trap.ticking
+actions+=/explosive_shot
+actions+=/black_arrow,if=dot.explosive_trap.ticking&cooldown.black_arrow.remains=0&!dot.black_arrow.ticking
+actions+=/call_action_list,name=aoe,if=active_enemies>2
+actions+=/serpent_sting,if=debuff.stings.down&target.time_to_die>6
 actions+=/aimed_shot
-actions+=/serpent_sting,if=debuff.stings.down
-actions+=/frost_trap,if=target.within10
+actions+=/multishot
 actions+=/steady_shot
+actions+=/serpent_sting,if=moving
+
+# AoE
+actions.aoe+=/multishot,if=active_enemies<4
+actions.aoe+=/volley
