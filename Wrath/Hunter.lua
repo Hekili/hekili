@@ -776,6 +776,7 @@ local cool_traps = setfenv( function()
     setCooldown( "freezing_trap", action.freezing_trap.cooldown )
     setCooldown( "frost_trap", action.frost_trap.cooldown )
     setCooldown( "immolation_trap", action.immolation_trap.cooldown )
+    setCooldown( "trap_launcher_explosive_trap", action.trap_launcher_explosive_trap.cooldown )
 end, state )
 
 local repeating = 0
@@ -2196,6 +2197,25 @@ spec:RegisterAbilities( {
         handler = function ()
             removeDebuff( "target", "dispellable_enrage" )
             removeDebuff( "target", "dispellable_magic" )
+        end,
+    },
+
+
+    -- Launch a fire trap to a nearby location where it will explode when an enemy approaches, causing (Ranged attack power * 0.1 + 523) to (Ranged attack power * 0.1 + 671) Fire damage and burning all enemies for (90 * 10 + Ranged attack power) additional Fire damage over 20 sec to all within 10 yards.  Trap will exist for 30 sec.  Only one trap can be active at a time.
+    trap_launcher_explosive_trap = {
+        id = 425777,
+        cast = 0,
+        cooldown = function() return mod_resourcefulness_cd( 30 ) end,
+        gcd = "spell",
+
+        spend = function() return mod_beast_within(mod_resourcefulness_cost(0.19)) end,
+        spendType = "mana",
+
+        startsdCombat = false,
+        texture = 135826,
+
+        handler = function ()
+            cool_traps()
         end,
     },
 
