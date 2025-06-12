@@ -30,5 +30,5 @@ actions+=/steady_shot
 actions+=/serpent_sting,if=moving
 
 # AoE
-actions.aoe+=/multishot,if=active_enemies<4
-actions.aoe+=/volley
+actions.aoe+=/volley,if=active_enemies>4
+actions.aoe+=/multishot
