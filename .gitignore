@@ -46,6 +46,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# IDEs and text editors
+.idea/
+*.swp
+
 # Actual Stuff in my folder.
 Libs/AceAddon-3.0
 Libs/AceBucket-3.0
