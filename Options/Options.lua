@@ -1424,16 +1424,9 @@ return end
                                 width = "full",
                                 order = 2,
                                 disabled = function()
-                                    return name == "Multi"
+                                    return false
                                 end,
                                 hidden = function( info, val )
-                                    local n = #info
-                                    local display = info[2]
-
-                                    if display == "Primary" or display == "AOE" then
-                                        return true
-                                    end
-
                                     return false
                                 end,
                             },

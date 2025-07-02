@@ -1650,7 +1650,7 @@ function Hekili.Update()
             if debug then Hekili:Debug( "Combat Timer: %.2f", state.time ) end
 
             local isMain = ( dispName == "Primary" and dispName == "AOE" )
-            local defaultMax = isMain and 15 or ( display.forecastPeriod or 15 )
+            local defaultMax = display.forecastPeriod or 15
 
             if class.file == "DEATHKNIGHT" then
                 defaultMax = max( defaultMax, 0.01 + 20 * state.haste )
@@ -1671,7 +1671,7 @@ function Hekili.Update()
 
                 local action, wait, depth
                 local isMain = ( dispName == "Primary" or dispName == "AOE" )
-                local defaultMax = 15
+                local defaultMax = display.forecastPeriod or 15
 
                 if class.file == "DEATHKNIGHT" then
                     defaultMax = max( defaultMax, 0.01 + 20 * state.haste )
