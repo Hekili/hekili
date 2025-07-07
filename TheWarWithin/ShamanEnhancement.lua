@@ -706,19 +706,19 @@ spec:RegisterAuras( {
     stone_bulwark = {
         id = 114893,
         duration = 15,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Mastery increased by $w1%.
     storm_swell = {
         id = 455089,
         duration = 6.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Your next Stormstrike deals $s1% additional damage as Nature damage.
     stormblast = {
         id = 470466,
         duration = 12,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Your next Lightning Bolt or Chain Lightning will deal $s2% increased damage and be instant cast.
     -- https://wowhead.com/ptr-2/spell=383009
@@ -733,7 +733,13 @@ spec:RegisterAuras( {
     stormsurge = {
         id = 201846,
         duration = 12.0,
-        max_stack = 1,
+        max_stack = 1
+    },
+    -- PVP Talent
+    stormweaver = {
+        id = 410681,
+        duration = 30,
+        max_stack = 10
     },
     -- Talent: Incapacitated.
     -- https://wowhead.com/ptr-2/spell=197214
@@ -746,7 +752,7 @@ spec:RegisterAuras( {
     surging_currents = {
         id = 454376,
         duration = 30.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Tempest
     -- https://www.wowhead.com/spell=454015/tempest
@@ -1441,6 +1447,10 @@ spec:RegisterStateFunction( "consume_maelstrom", function( cap )
     removeStack( "maelstrom_weapon", stacks )
     if set_bonus.tier29_4pc > 0 then addStack( "fury_of_the_storm", nil, stacks ) end
 
+    if pvptalent.stormweaver.enabled then
+        addStack( "stormweaver", nil, stacks )
+    end
+
     -- TODO: Have to actually track consumed MW stacks.
     if legendary.legacy_oF_the_frost_witch.enabled and stacks > 4 or talent.legacy_of_the_frost_witch.enabled and stacks > 9 then
         setCooldown( "stormstrike", 0 )
@@ -1457,8 +1467,12 @@ spec:RegisterStateFunction( "gain_maelstrom", function( stacks )
     addStack( "maelstrom_weapon", nil, stacks )
 end )
 
-spec:RegisterStateFunction( "maelstrom_mod", function( amount )
-    local mod = max( 0, 1 - ( 0.2 * buff.maelstrom_weapon.stack ) )
+spec:RegisterStateFunction( "maelstrom_mod", function( amount, stormweaver_spender )
+    local mod
+    if not stormweaver_spender then mod = max( 0, 1 - ( 0.2 * buff.maelstrom_weapon.stack ) )
+    else mod = max( 0, 1 - ( 0.2 * buff.stormweaver.stack ) )
+    end
+
     return mod * amount
 end )
 
@@ -1551,7 +1565,7 @@ spec:RegisterAbilities( {
             if buff.chains_of_devastation_ch.up then return 0 end
             if buff.natures_swiftness.up then return 0 end
             if buff.surging_currents.up then return 0 end
-            return 2.5 * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
+            return maelstrom_mod( 2.5, true ) * haste
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1564,7 +1578,11 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            consume_maelstrom()
+            if pvptalent.stormweaver.enabled then
+                removeBuff( "stormweaver" )
+            else
+                consume_maelstrom()
+            end
 
             removeBuff( "chains_of_devastation_ch" )
             if buff.natures_swiftness.up then removeBuff( "natures_swiftness" )
@@ -2201,7 +2219,7 @@ spec:RegisterAbilities( {
         cast = function ()
             if buff.natures_swiftness.up then return 0 end
             if buff.surging_currents.up then return 0 end
-            return maelstrom_mod( 1.5 ) * haste
+            return maelstrom_mod( 1.5, true ) * haste
         end,
         cooldown = 0,
         gcd = "spell",
@@ -2213,7 +2231,11 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            consume_maelstrom()
+            if pvptalent.stormweaver.enabled then
+                removeBuff( "stormweaver" )
+            else
+                consume_maelstrom()
+            end
 
             if buff.natures_swiftness.up then removeBuff( "natures_swiftness" )
             elseif buff.surging_currents.up then removeBuff( "surging_currents" ) end
