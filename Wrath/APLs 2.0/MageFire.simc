@@ -1,18 +1,14 @@
 # Mage: Fire
-# July 13 2025 @theglance
+# July 08 2025 @theglance
 
 ## Precombat
 actions.precombat+=/arcane_brilliance,if=raid&buff.arcane_brilliance.down
 actions.precombat+=/arcane_intellect,if=!raid&buff.arcane_brilliance.down&buff.arcane_intellect.down
 actions.precombat+=/molten_armor,if=buff.unique_armor.down
-actions.precombat+=/focus_magic,if=group&active_dot.focus_magic=0
+# actions.precombat+=/focus_magic,if=group&active_dot.focus_magic=0
 actions.precombat+=/conjure_mana_gem,if=mana_gem_charges<3
 actions.precombat+=/potion
-actions.precombat+=/fireball
-
-## Default
-actions+=/counterspell
-actions+=/spellsteal,line_cd=spellsteal_cooldown
+# actions.precombat+=/fireball
 
 actions.combustion+=/mirror_image
 actions.combustion+=/combustion
@@ -22,15 +18,19 @@ actions.combustion+=/use_items
 actions.aoe+=/living_bomb,cycle_targets=1,max_cycle_targets=living_bomb_cap,if=target.time_to_die>12&debuff.living_bomb.down
 actions.aoe+=/flamestrike
 
-# Use any trinkets that aren't otherwise specified.
-actions+=/use_items
+# actions.replenish+=/replenish_mana,if=mana.deficit>4000
+# actions.replenish+=/evocation,if=mana.pct<30&cooldown.combustion.remains>10&buff.combustion.down
+
+actions+=/counterspell
+actions+=/spellsteal,line_cd=spellsteal_cooldown
+
 
 # Regular Rotation
 actions+=/call_action_list,name=combustion,if=cooldown.combustion.remains=0&buff.combustion.down&!buff.hot_streak.react&(debuff.living_bomb.down|debuff.living_bomb.remains>5)
 actions+=/living_bomb,if=target.time_to_die>12&debuff.living_bomb.down
+actions+=/use_items
 actions+=/pyroblast,if=buff.hot_streak.react&buff.pushing_the_limit.down
+actions+=/scorch,if=debuff.shadow_mastery.down&debuff.improved_scorch.down
 actions+=/call_action_list,name=aoe,if=active_enemies>3
-actions+=/replenish_mana,if=mana.deficit>3500
-actions+=/evocation,if=mana.pct<30&cooldown.combustion.remains>10&buff.combustion.down
 actions+=/fire_blast,if=moving
 actions+=/fireball
