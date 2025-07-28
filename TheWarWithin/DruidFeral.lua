@@ -832,7 +832,7 @@ spec:RegisterAuras( {
         copy = 340698
     },
     symbiotic_relationship = {
-        id = 474754,
+        id = 474750,
         duration = 3600,
         dot = "buff",
         friendly = true,
