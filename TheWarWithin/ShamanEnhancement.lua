@@ -15,7 +15,7 @@ local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 local GetSpellCastCount = C_Spell.GetSpellCastCount
 local strformat = string.format
 local insert, wipe = table.insert, table.wipe
-
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local spec = Hekili:NewSpecialization( 263 )
 
 spec:RegisterResource( Enum.PowerType.Maelstrom )
@@ -901,6 +901,8 @@ local molten_weapons, virtual_molten_weapons = {}, {}
 local icy_edges, virtual_icy_edges = {}, {}
 local crackling_surges, virtual_crackling_surges = {}, {}
 local earthen_weapons, virtual_earthen_weapons = {}, {}
+local MSW_CLEU = 0
+local TempestMaelstromSpent = 0
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     -- Deaths/despawns.
@@ -943,6 +945,18 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
 
         -- For any Maelstrom Weapon changes, force an immediate update for responsiveness.
         elseif spellID == 344179 then
+            if subtype == "SPELL_AURA_REMOVED" then
+                -- All stacks were consumed
+                -- Hekili:Print( "stacks spent: " .. MSW_CLEU .. " | TempestMaelstromSpent: " .. TempestMaelstromSpent )
+                TempestMaelstromSpent = ( TempestMaelstromSpent + MSW_CLEU ) % 40
+                MSW_CLEU = 0
+            elseif subtype == "SPELL_AURA_APPLIED" or "SPELL_AURA_APPLIED_DOSE" then
+                -- Stacks were gained?
+                local msw_aura = GetPlayerAuraBySpellID( 344179 )
+                MSW_CLEU = msw_aura.applications
+                -- Hekili:Print( "Stacks gained, current count: " .. MSW_CLEU .. " | TempestMaelstromSpent: " .. TempestMaelstromSpent )
+            end
+
             Hekili:ForceUpdate( subtype, true )
 
         elseif state.talent.alpha_wolf.enabled and ( spellID == 187874 or spellID == 188443 ) then
@@ -1161,7 +1175,7 @@ spec:RegisterStateExpr( "ti_chain_lightning", function ()
 end)
 
 spec:RegisterStateExpr( "tempest_mael_count", function ()
-    return GetSpellCastCount( class.abilities.tempest.id )
+    return TempestMaelstromSpent
 end )
 
 spec:RegisterStateExpr( "time_since_tr", function ()
@@ -1176,7 +1190,6 @@ spec:RegisterStateExpr( "tww3_procs_to_asc", function()
     return 8
     -- I don't think this is trackable in-game, but I see it in SimulationCraft reeee
 end )
-
 
 spec:RegisterHook( "reset_precast", function ()
     tempest_mael_count = nil
@@ -1455,7 +1468,6 @@ spec:RegisterGear({
     }
 } )
 
-
 spec:RegisterStateFunction( "consume_maelstrom", function( cap )
     local stacks = min( buff.maelstrom_weapon.stack, cap or ( talent.overflowing_maelstrom.enabled and 10 or 5 ) )
 
@@ -1466,7 +1478,24 @@ spec:RegisterStateFunction( "consume_maelstrom", function( cap )
     removeStack( "maelstrom_weapon", stacks )
     if set_bonus.tier29_4pc > 0 then addStack( "fury_of_the_storm", nil, stacks ) end
 
-    -- TODO: Have to actually track consumed MW stacks.
+    if hero_tree.stormbringer then
+        -- Track tempest stacks
+        tempest_mael_count = tempest_mael_count + stacks
+
+        if tempest_mael_count >= 40 then
+            tempest_mael_count = tempest_mael_count % 40
+            addStack( "tempest" )
+        end
+    end
+
+    if talent.witch_doctors_ancestry.enabled and not action.feral_spirit.disabled then
+        reduceCooldown( "feral_spirit", stacks * talent.witch_doctors_ancestry.rank )
+    end
+
+    if talent.ascendance.enabled and buff.ascendance.up then
+        addStack( "maelstrom_weapon", nil, stacks )
+   end
+
     if legendary.legacy_oF_the_frost_witch.enabled and stacks > 4 or talent.legacy_of_the_frost_witch.enabled and stacks > 9 then
         setCooldown( "stormstrike", 0 )
         setCooldown( "windstrike", 0 )
