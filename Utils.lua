@@ -112,10 +112,16 @@ end
 local LT = LibStub( "LibTranslit-1.0" )
 
 -- Converts `s' to a SimC-like key: strip non alphanumeric characters, replace spaces with _, convert to lower case.
+-- Cache pattern matching for performance
+local colorPattern = "|c........"
+local resetPattern = "|r"
+local invalidPattern = "[^a-z0-9_ ]"
+local spacePattern = "%s+"
+
 function ns.formatKey( s )
-    s = s:gsub( "|c........", "" ):gsub( "|r", "" )
+    s = gsub( gsub( s, colorPattern, "" ), resetPattern, "" )
     s = LT:Transliterate( s )
-    s = lower( s or '' ):gsub( "[^a-z0-9_ ]", "" ):gsub( "%s+", "_" )
+    s = gsub( gsub( lower( s or '' ), invalidPattern, "" ), spacePattern, "_" )
     return s
 end
 
@@ -276,9 +282,11 @@ end
 
 function ns.safeMin( ... )
     local result
+    local vals = { ... }
+    local n = #vals
 
-    for i = 1, select( "#", ... ) do
-        local val = select( i, ... )
+    for i = 1, n do
+        local val = vals[i]
         if val then result = ( not result or val < result ) and val or result end
     end
 
@@ -288,9 +296,11 @@ end
 
 function ns.safeMax( ... )
     local result
+    local vals = { ... }
+    local n = #vals
 
-    for i = 1, select( "#", ... ) do
-        local val = select( i, ... )
+    for i = 1, n do
+        local val = vals[i]
         if val and type(val) == 'number' then result = ( not result or val > result ) and val or result end
     end
 

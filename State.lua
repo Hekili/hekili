@@ -38,6 +38,11 @@ local FindPlayerAuraByID, IsAbilityDisabled, IsDisabledCovenantSpell = ns.FindPl
 local insert, remove, sort, tcopy, unpack, wipe = table.insert, table.remove, table.sort, ns.tableCopy, table.unpack, table.wipe
 local format = string.format
 
+-- Cache math functions for performance
+local max, min = math.max, math.min
+local abs = math.abs
+local floor, ceil = math.floor, math.ceil
+
 local Mark, SuperMark, ClearMarks = ns.Mark, ns.SuperMark, ns.ClearMarks
 
 local RC = LibStub( "LibRangeCheck-3.0" )
@@ -1461,7 +1466,7 @@ do
                     v.name = k
 
                     if i > 0 and v.next >= 0 then
-                        table.insert( events, v )
+                        insert( events, v )
                     end
                 end
             end
