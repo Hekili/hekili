@@ -31,12 +31,13 @@ local IsSpellKnownOrOverridesKnown = C_SpellBook.IsSpellInSpellBook
 local Glyphed = IsSpellKnownOrOverridesKnown
 
 spec:RegisterResource( Enum.PowerType.SoulShards, {
-        rampaging_demonic_soul = {
+    rampaging_demonic_soul = {
         resource = "soul_shards",
         aura = "rampaging_demonic_soul",
+        set_bonus = "tww3_4pc",
 
         last = function()
-            local app = state.set_bonus.tww3 >= 4 and state.buff.rampaging_demonic_soul.applied or 0
+            local app = state.buff.rampaging_demonic_soul.applied
             local t = state.query_time
             return app + floor((t - app) / 3) * 3
         end,
