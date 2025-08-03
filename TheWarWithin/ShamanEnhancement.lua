@@ -1467,13 +1467,8 @@ spec:RegisterStateFunction( "gain_maelstrom", function( stacks )
     addStack( "maelstrom_weapon", nil, stacks )
 end )
 
-spec:RegisterStateFunction( "maelstrom_mod", function( amount, stormweaver_spender )
-    local mod
-    if not stormweaver_spender then mod = max( 0, 1 - ( 0.2 * buff.maelstrom_weapon.stack ) )
-    else mod = max( 0, 1 - ( 0.2 * buff.stormweaver.stack ) )
-    end
-
-    return mod * amount
+spec:RegisterStateFunction( "maelstrom_mod", function( amount, stormweaver )
+    return amount * max( 0, 1 - ( 0.2 * ( stormweaver and buff.stormweaver.stack or buff.maelstrom_weapon.stack ) ) )
 end )
 
 spec:RegisterTotems( {
