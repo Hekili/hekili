@@ -94,20 +94,6 @@ local legendaries = {
     [7098] = { "verdant_infusion", 1, 105 }, -- 338829
     [7099] = { "vision_of_unending_growth", 1, 105 }, -- 338832
 
-    -- Hunter/Beast Mastery
-    [7715] = { "bag_of_munitions", 1, 253 }, -- 356264
-    [7003] = { "call_of_the_wild", 1, 253 }, -- 336742
-    [7006] = { "craven_strategem", 1, 253 }, -- 336747
-    [7716] = { "fragments_of_the_elder_antlers", 1, 253 }, -- 356375
-    [7004] = { "nessingwarys_trapping_apparatus", "nesingwarys_trapping_apparatus", 1, 253 }, -- 336743
-    [7714] = { "pact_of_the_soulstalkers", 1, 253 }, -- 356262
-    [7717] = { "pouch_of_razor_fragments", 1, 253 }, -- 356618
-    [7005] = { "soulforge_embers", 1, 253 }, -- 336745
-    [7007] = { "dire_command", 1, 253 }, -- 336819
-    [7008] = { "flamewakers_cobra_sting", 1, 253 }, -- 336822
-    [7009] = { "qapla,_eredun_war_order", 1, 253 }, -- 336830
-    [7010] = { "rylakstalkers_piercing_fangs", 1, 253 }, -- 336844
-
     -- Hunter/Marksmanship
     [7011] = { "eagletalons_true_focus", 1, 254 }, -- 336849
     [7014] = { "secrets_of_the_unblinking_vigil", 1, 254 }, -- 336878

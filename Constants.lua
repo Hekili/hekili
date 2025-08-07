@@ -136,11 +136,6 @@ ns.Specializations = {
         class = "DRUID",
         ranged = true
     },
-    [253] = {
-        key = "beast_mastery",
-        class = "HUNTER",
-        ranged = true
-    },
     [254] = {
         key = "marksmanship",
         class = "HUNTER",
