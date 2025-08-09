@@ -1197,10 +1197,10 @@ local incompleteSpecWarned = false
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( event, unit, _, spellID )
     if not noClassWarned and not class.initialized then
-        Hekili:Notify( UnitClass( "player" ) .. " does not have any Hekili modules loaded (yet).\nWatch for updates.", 5 )
+        Hekili:Notify( UnitClass( "player" ) .. " does not have any Hekili modules loaded (yet).\nWatch for updates.", 10 )
         noClassWarned = true
     elseif not lowLevelWarned and UnitLevel( "player" ) < maxLevel then
-        Hekili:Notify( "Hekili is designed for level " .. maxLevel .. " content.\nUse below level " .. maxLevel .. " at your own risk.", 5 )
+        Hekili:Notify( "Hekili is designed for level " .. maxLevel .. " characters.\nYou may experience issues with the addon while below level " .. maxLevel .. ".", 10 )
         lowLevelWarned = true
     elseif not incompleteSpecWarned and class.initialized then
         local specID = ns.getSpecializationID()
