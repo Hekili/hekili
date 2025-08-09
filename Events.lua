@@ -1189,18 +1189,38 @@ do
     end
 end
 
-
+local maxLevel = GetMaxLevelForLatestExpansion()
 local lowLevelWarned = false
 local noClassWarned = false
+local incompleteSpecWarned = false
 
 -- Need to make caching system.
 RegisterUnitEvent( "UNIT_SPELLCAST_SUCCEEDED", "player", "target", function( event, unit, _, spellID )
     if not noClassWarned and not class.initialized then
         Hekili:Notify( UnitClass( "player" ) .. " does not have any Hekili modules loaded (yet).\nWatch for updates.", 5 )
         noClassWarned = true
-    elseif not lowLevelWarned and UnitLevel( "player" ) < 70 then
-        Hekili:Notify( "Hekili is designed for current content.\nUse below level 70 at your own risk.", 5 )
+    elseif not lowLevelWarned and UnitLevel( "player" ) < maxLevel then
+        Hekili:Notify( "Hekili is designed for level " .. maxLevel .. " content.\nUse below level " .. maxLevel .. " at your own risk.", 5 )
         lowLevelWarned = true
+    elseif not incompleteSpecWarned and class.initialized then
+        local specID = ns.getSpecializationID()
+        local specInfo = ns.Specializations[ specID ]
+
+        if specInfo and specInfo.current_patch == false then
+            local specName = select( 2, GetSpecializationInfo( GetSpecialization() ) )
+            local className = UnitClass( "player" )
+
+            -- Get patch version in format "11.2.0"
+            local version, _, _, _ = GetBuildInfo()
+            local patchVersion = version or "the current patch"
+
+            Hekili:Notify(
+                specName .. " has not been fully updated for patch " .. patchVersion .. "\n" ..
+                "Please check for Hekili updates regularly in the first 1-2 weeks of a patch!",
+                12
+            )
+            incompleteSpecWarned = true
+        end
     end
 
     if unit == "player" then

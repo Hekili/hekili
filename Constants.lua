@@ -104,197 +104,236 @@ ns.Specializations = {
     [250] = {
         key = "blood",
         class = "DEATHKNIGHT",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [251] = {
         key = "frost",
         class = "DEATHKNIGHT",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [252] = {
         key = "unholy",
         class = "DEATHKNIGHT",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [102] = {
         key = "balance",
         class = "DRUID",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [103] = {
         key = "feral",
         class = "DRUID",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [104] = {
         key = "guardian",
         class = "DRUID",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [105] = {
         key = "restoration",
         class = "DRUID",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [253] = {
         key = "beast_mastery",
         class = "HUNTER",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [254] = {
         key = "marksmanship",
         class = "HUNTER",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [255] = {
         key = "survival",
         class = "HUNTER",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [62] = {
         key = "arcane",
         class = "MAGE",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [63] = {
         key = "fire",
         class = "MAGE",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [64] = {
         key = "frost",
         class = "MAGE",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [268] = {
         key = "brewmaster",
         class = "MONK",
-        ranged = false
+        ranged = false,
+        current_patch = false
     },
     [269] = {
         key = "windwalker",
         class = "MONK",
-        ranged = false
+        ranged = false,
+        current_patch = false
     },
     [270] = {
         key = "mistweaver",
         class = "MONK",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [65] = {
         key = "holy",
         class = "PALADIN",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [66] = {
         key = "protection",
         class = "PALADIN",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [70] = {
         key = "retribution",
         class = "PALADIN",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [256] = {
         key = "discipline",
         class = "PRIEST",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [257] = {
         key = "holy",
         class = "PRIEST",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [258] = {
         key = "shadow",
         class = "PRIEST",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [259] = {
         key = "assassination",
         class = "ROGUE",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [260] = {
         key = "outlaw",
         class = "ROGUE",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [261] = {
         key = "subtlety",
         class = "ROGUE",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [262] = {
         key = "elemental",
         class = "SHAMAN",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [263] = {
         key = "enhancement",
         class = "SHAMAN",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [264] = {
         key = "restoration",
         class = "SHAMAN",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [265] = {
         key = "affliction",
         class = "WARLOCK",
-        ranged = true
+        ranged = true,
+        current_patch = false
     },
     [266] = {
         key = "demonology",
         class = "WARLOCK",
-        ranged = true
+        ranged = true,
+        current_patch = false
     },
     [267] = {
         key = "destruction",
         class = "WARLOCK",
-        ranged = true
+        ranged = true,
+        current_patch = false
     },
     [71] = {
         key = "arms",
         class = "WARRIOR",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [72] = {
         key = "fury",
         class = "WARRIOR",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [73] = {
         key = "protection",
         class = "WARRIOR",
-        ranged = false
+        ranged = false,
+        current_patch = true
     },
     [577] = {
         key = "havoc",
         class = "DEMONHUNTER",
-        ranged = false
+        ranged = false,
+        current_patch = false
     },
     [581] = {
         key = "vengeance",
         class = "DEMONHUNTER",
-        ranged = false
+        ranged = false,
+        current_patch = false
     },
     [1467] = {
         key = "devastation",
         class = "EVOKER",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [1468] = {
         key = "preservation",
         class = "EVOKER",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
     [1473] = {
         key = "augmentation",
         class = "EVOKER",
-        ranged = true
+        ranged = true,
+        current_patch = true
     },
 }
 
