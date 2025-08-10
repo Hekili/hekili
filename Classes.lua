@@ -2430,6 +2430,28 @@ all:RegisterAuras( {
 
     dispellable_curse = {
         generate = function( t )
+            -- Check friendly target first
+            if UnitCanAssist( "player", "target" ) then
+                local i = 1
+                local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "target", i, "RAID" )
+
+                while( name ) do
+                    if debuffType == "Curse" then break end
+
+                    i = i + 1
+                    name, _, count, debuffType, duration, expirationTime = UnitDebuff( "target", i, "RAID" )
+                end
+
+                if name then
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    t.caster = "nobody"
+                    return
+                end
+            end
+
+            -- Fallback to checking player
             local i = 1
             local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
@@ -2457,6 +2479,28 @@ all:RegisterAuras( {
 
     dispellable_poison = {
         generate = function( t )
+            -- Check friendly target first
+            if UnitCanAssist( "player", "target" ) then
+                local i = 1
+                local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "target", i, "RAID" )
+
+                while( name ) do
+                    if debuffType == "Poison" then break end
+
+                    i = i + 1
+                    name, _, count, debuffType, duration, expirationTime = UnitDebuff( "target", i, "RAID" )
+                end
+
+                if name then
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    t.caster = "nobody"
+                    return
+                end
+            end
+
+            -- Fallback to checking player
             local i = 1
             local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
@@ -2484,6 +2528,28 @@ all:RegisterAuras( {
 
     dispellable_disease = {
         generate = function( t )
+            -- Check friendly target first
+            if UnitCanAssist( "player", "target" ) then
+                local i = 1
+                local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "target", i, "RAID" )
+
+                while( name ) do
+                    if debuffType == "Disease" then break end
+
+                    i = i + 1
+                    name, _, count, debuffType, duration, expirationTime = UnitDebuff( "target", i, "RAID" )
+                end
+
+                if name then
+                    t.count = count > 0 and count or 1
+                    t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                    t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                    t.caster = "nobody"
+                    return
+                end
+            end
+
+            -- Fallback to checking player
             local i = 1
             local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
@@ -2531,6 +2597,28 @@ all:RegisterAuras( {
                 end
 
             else
+                -- Check friendly target first
+                if UnitCanAssist( "player", "target" ) then
+                    local i = 1
+                    local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "target", i, "RAID" )
+
+                    while( name ) do
+                        if debuffType == "Magic" then break end
+
+                        i = i + 1
+                        name, _, count, debuffType, duration, expirationTime = UnitDebuff( "target", i, "RAID" )
+                    end
+
+                    if name then
+                        t.count = count > 0 and count or 1
+                        t.expires = expirationTime > 0 and expirationTime or query_time + 5
+                        t.applied = expirationTime > 0 and ( expirationTime - duration ) or query_time
+                        t.caster = "nobody"
+                        return
+                    end
+                end
+
+                -- Fallback to checking player
                 local i = 1
                 local name, _, count, debuffType, duration, expirationTime = UnitDebuff( "player", i, "RAID" )
 
