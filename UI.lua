@@ -2351,7 +2351,8 @@ do
                 self.activeThreadTime = 0
                 self.activeThreadStart = debugprofilestop()
                 self.activeThreadFrames = 0
-                local ceiling = pset.frameCeiling
+                -- Default to 10 as a failsafe if the DB value isn't loaded for some reason.
+                local ceiling = Hekili.DB.profile.performance.frameTimeBudget or 10
 
                 if not self.firstThreadCompleted then
                     Hekili.maxFrameTime = ceiling

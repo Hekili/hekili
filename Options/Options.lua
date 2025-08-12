@@ -5106,22 +5106,36 @@ found = true end
                             name = "Performance",
                             order = 10,
                             args = {
-                                mode = {
+                                updateFrequency = {
                                     type = "select",
-                                    name = "CPU Utilization",
-                                    desc = "Select the performance option that works best for your system/CPU.\n" ..
-                                        "• Low (default): Minimize CPU usage to reduce FPS impact, especially on older systems.\n" ..
-                                        "• Medium: Increased CPU usage for smoother updates, likely to impact FPS on older systems.\n" ..
-                                        "• High: Optimized CPU usage for smoothest updates, intended only for high-end processors.",
+                                    name = "Update Frequency (Polling)",
+                                    desc = "Controls how frequently the addon checks for updates. More frequent updates are more responsive but use more CPU on average.",
                                     order = 1,
                                     values = { "Low", "Medium", "High" },
                                     get = function(info)
-                                        return Hekili.DB.profile.performance.mode
+                                        return Hekili.DB.profile.performance.mode or "Low"
                                     end,
                                     set = function(info, v)
                                         Hekili.DB.profile.performance.mode = v
                                     end,
                                     width = 1.5,
+                                },
+                                frameTimeBudget = {
+                                    type = "range",
+                                    name = "CPU Time Budget Target (ms)",
+                                    desc = "Sets a target CPU time (in milliseconds) for the addon to use when generating recommendations in a single frame.\n\nNote: This is a 'soft' target, not a hard cap. The addon may occasionally exceed this budget.\n\nThe addon's performance is dynamic. To prevent stutter, it automatically uses the lowest of three separate time targets:\n\n  • A real-time target based on your current FPS.\n  • A self-learning target based on its historical needs.\n  • The manual target you set here.\n\nThis gives you final control over the addon's performance profile. A lower value prevents stutter but may make recommendations less accurate. 10ms is a good starting point.",
+                                    order = 2,
+                                    min = 1,
+                                    max = 20,
+                                    step = 1,
+                                    get = function(info)
+                                        -- Read value from the DB, default to 10ms.
+                                        return Hekili.DB.profile.performance.frameTimeBudget or 10
+                                    end,
+                                    set = function(info, v)
+                                        Hekili.DB.profile.performance.frameTimeBudget = v
+                                    end,
+                                    width = "full",
                                 },
                             },
                         },
