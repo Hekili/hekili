@@ -2361,9 +2361,9 @@ do
 
                     if HekiliEngine.threadUpdates then
                         local dyn = HekiliEngine.threadUpdates.meanWorkTime / floor( HekiliEngine.threadUpdates.meanFrames )
-                        Hekili.maxFrameTime = 0.8 * max( ceiling, min( 16.667, spf, dyn ) )
+                        Hekili.maxFrameTime = 0.8 * min( ceiling, min( 16.667, spf, dyn ) )
                     else
-                        Hekili.maxFrameTime = 0.8 * max( ceiling, min( 16.667, spf ) )
+                        Hekili.maxFrameTime = 0.8 * min( ceiling, min( 16.667, spf ) )
                     end
                 end
 
