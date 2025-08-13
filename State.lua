@@ -244,9 +244,9 @@ state.trinket = {
     t1 = {
         slot = "t1",
 
-        --[[ has_cooldown = {
+        cooldown = {
             slot = "t1"
-        }, ]]
+        },
 
         stacking_stat = {
             slot = "t1"
@@ -270,9 +270,9 @@ state.trinket = {
     t2 = {
         slot = "t2",
 
-        --[[ has_cooldown = {
-            slot = "t2",
-        }, ]]
+        cooldown = {
+            slot = "t2"
+        },
 
         stacking_stat = {
             slot = "t2"
@@ -296,9 +296,9 @@ state.trinket = {
     main_hand = {
         slot = "main_hand",
 
-        --[[ has_cooldown = {
-            slot = "main_hand",
-        }, ]]
+        cooldown = {
+            slot = "main_hand"
+        },
 
         stacking_stat = {
             slot = "main_hand"
@@ -321,8 +321,6 @@ state.trinket = {
     any = {},
 
     cooldown = {
-    },
-    has_cooldown = {
     },
 
     stacking_stat = {
@@ -465,7 +463,9 @@ local mt_trinket = {
         elseif k == "remains" then
             return isEnabled and class.trinkets[ t.id ].buff and state.buff[ class.trinkets[ t.id ].buff ].remains or 0
         elseif k == "has_cooldown" then
-            return isEnabled and ( GetItemSpell( t.id ) ~= nil ) or false
+            if not isEnabled or not t.ability then return false end
+            local ability = class.abilities[ t.ability ]
+            return ability and ability.cooldown and ability.cooldown > 0 or false
         elseif k == "ready_cooldown" then
             if isEnabled and t.usable and t.ability then
                 return t.cooldown.ready
@@ -477,7 +477,7 @@ local mt_trinket = {
             end
             return state.cooldown.null_cooldown
 
-        elseif k == "cast_time" or k == "cast_time" then
+        elseif k == "cast_time" then
             return t.usable and t.ability and class.abilities[ t.ability ] and class.abilities[ t.ability ].cast or 0
         end
 
@@ -506,7 +506,7 @@ setmetatable( state.trinket.t2.is, mt_trinket_is )
 setmetatable( state.trinket.main_hand.is, mt_trinket_is )
 
 
---[[ local mt_trinket_cooldown = {
+local mt_trinket_cooldown = {
     __index = function(t, k)
         if k == "duration" or k == "expires" then
             -- Refresh the ID in case we changed specs and ability is spec dependent.
@@ -534,7 +534,8 @@ setmetatable( state.trinket.main_hand.is, mt_trinket_is )
 }
 
 setmetatable( state.trinket.t1.cooldown, mt_trinket_cooldown )
-setmetatable( state.trinket.t2.cooldown, mt_trinket_cooldown ) ]]
+setmetatable( state.trinket.t2.cooldown, mt_trinket_cooldown )
+setmetatable( state.trinket.main_hand.cooldown, mt_trinket_cooldown )
 
 local mt_trinket_has_stacking_stat = {
     __index = function( t, k )
