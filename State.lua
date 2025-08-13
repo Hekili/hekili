@@ -476,6 +476,8 @@ local mt_trinket = {
                 return state.cooldown[ t.ability ]
             end
             return state.cooldown.null_cooldown
+        elseif k == "cooldown_remains" then
+            return t.cooldown.remains
 
         elseif k == "cast_time" or k == "cast_time" then
             return t.usable and t.ability and class.abilities[ t.ability ] and class.abilities[ t.ability ].cast or 0
@@ -596,6 +598,18 @@ local mt_trinket_has_stat = {
 setmetatable( state.trinket.t1.has_stat, mt_trinket_has_stat )
 setmetatable( state.trinket.t2.has_stat, mt_trinket_has_stat )
 setmetatable( state.trinket.main_hand.has_stat, mt_trinket_has_stat )
+
+
+local mt_trinket_with_stat = {
+    __index = function( t, k )
+        local trinket = state.trinket[ t.slot ]
+        return trinket and trinket.has_stat[ k ] and trinket or no_trinket
+    end
+}
+
+setmetatable( state.trinket.t1.stat, mt_trinket_with_stat )
+setmetatable( state.trinket.t2.stat, mt_trinket_with_stat )
+setmetatable( state.trinket.main_hand.stat, mt_trinket_with_stat )
 
 
 local mt_trinkets_has_stat = {

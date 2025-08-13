@@ -432,7 +432,8 @@ do
                                     details = format( "%s\n    - Excluded by pet range.", details )
                                 end
                             end
-
+                            -- FIXME It looks like some kind of resolution/backup plan is needed for range checking (note to self: see Targets.lua line 436)
+                            -- https://github.com/Hekili/hekili/issues/4845
                             if not excluded and checkPlates then
                                 local _, maxR = RC:GetRange( unit )
                                 excluded = maxR ~= nil and maxR > checkPlates

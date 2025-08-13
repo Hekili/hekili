@@ -3,6 +3,7 @@
 -- Patch 11.2
 
 -- TODO: Support other sources of queued fragments, like sigils.
+-- TODO: Improve timeliness of soul fragments
 
 if UnitClassBase( "player" ) ~= "DEMONHUNTER" then return end
 
@@ -1330,6 +1331,7 @@ spec:RegisterAbilities( {
     -- Engulf yourself in flames, $?a320364 [instantly causing $258921s1 $@spelldesc395020 damage to enemies within $258921A1 yards and ][]radiating ${$258922s1*$d} $@spelldesc395020 damage over $d.$?s320374[    |cFFFFFFFFGenerates $<havocTalentFury> Fury over $d.|r][]$?(s212612 & !s320374)[    |cFFFFFFFFGenerates $<havocFury> Fury.|r][]$?s212613[    |cFFFFFFFFGenerates $<vengeFury> Fury over $d.|r][]
     immolation_aura = {
         id = function() return buff.demonsurge_hardcast.up and 452487 or 258920 end,
+        flash = { 452487, 258920 },
         cast = 0,
         cooldown = 15,
         hasteCD = true,

@@ -1,6 +1,6 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/warrior_protection.simc
-## SimulationCraft Commit Sync: 5340e2f
-## Date: 2025-08-06
+## SimulationCraft Commit Sync: bc73745
+## Date: 2025-08-12
 
 actions.precombat+=/battle_stance,toggle=on
 actions.precombat+=/battle_shout
@@ -27,20 +27,21 @@ actions+=/impending_victory,if=health.pct<victory_rush_health_pct&talent.impendi
 actions+=/ravager
 actions+=/demoralizing_shout,if=talent.booming_voice.enabled
 actions+=/champions_spear
-actions+=/thunder_blast,if=spell_targets.thunder_blast>=2&buff.thunder_blast.stack=2
+actions+=/thunder_blast,if=active_enemies>=2&buff.thunder_blast.stack=2
 actions+=/demolish,if=buff.colossal_might.stack>=3
 actions+=/thunderous_roar
 actions+=/shield_charge
 actions+=/shield_block,if=buff.shield_block.remains<=10
-actions+=/run_action_list,name=aoe,strict=1,if=spell_targets.thunder_clap>=3
+actions+=/run_action_list,name=aoe,strict=1,if=active_enemies>=3
 actions+=/call_action_list,name=generic
 
 actions.aoe+=/thunder_blast,if=dot.rend.remains<=1
 actions.aoe+=/thunder_clap,if=dot.rend.remains<=1
-actions.aoe+=/thunder_blast,if=buff.violent_outburst.up&spell_targets.thunderclap>=2&buff.avatar.up&talent.unstoppable_force.enabled
-actions.aoe+=/thunder_clap,if=buff.violent_outburst.up&spell_targets.thunderclap>=4&buff.avatar.up&talent.unstoppable_force.enabled&talent.crashing_thunder.enabled|buff.violent_outburst.up&spell_targets.thunderclap>6&buff.avatar.up&talent.unstoppable_force.enabled
-actions.aoe+=/revenge,if=rage>=70&talent.seismic_reverberation.enabled&spell_targets.revenge>=3
-actions.aoe+=/shield_slam,if=rage<=60|buff.violent_outburst.up&spell_targets.thunderclap<=4&talent.crashing_thunder.enabled
+actions.aoe+=/thunder_blast,if=buff.violent_outburst.up&active_enemies>=2&buff.avatar.up&talent.unstoppable_force.enabled
+actions.aoe+=/execute,if=spell_targets.execute>=2&(rage>=50|buff.sudden_death.up)&talent.heavy_handed.enabled
+actions.aoe+=/thunder_clap,if=buff.violent_outburst.up&active_enemies>=4&buff.avatar.up&talent.unstoppable_force.enabled&talent.crashing_thunder.enabled|buff.violent_outburst.up&active_enemies>6&buff.avatar.up&talent.unstoppable_force.enabled
+actions.aoe+=/revenge,if=rage>=70&talent.seismic_reverberation.enabled&active_enemies>=3
+actions.aoe+=/shield_slam,if=rage<=60|buff.violent_outburst.up&active_enemies<=4&talent.crashing_thunder.enabled
 actions.aoe+=/thunder_blast
 actions.aoe+=/thunder_clap
 actions.aoe+=/revenge,if=rage>=30|rage>=40&talent.barbaric_training.enabled
@@ -52,11 +53,11 @@ actions.generic+=/shield_slam
 actions.generic+=/thunder_blast,if=dot.rend.remains<=2&buff.violent_outburst.down
 actions.generic+=/thunder_blast
 actions.generic+=/thunder_clap,if=dot.rend.remains<=2&buff.violent_outburst.down
-actions.generic+=/thunder_blast,if=(spell_targets.thunder_clap>1|cooldown.shield_slam.remains&!buff.violent_outburst.up)
-actions.generic+=/thunder_clap,if=(spell_targets.thunder_clap>1|cooldown.shield_slam.remains&!buff.violent_outburst.up)
+actions.generic+=/thunder_blast,if=(active_enemies>1|cooldown.shield_slam.remains&!buff.violent_outburst.up)
+actions.generic+=/thunder_clap,if=(active_enemies>1|cooldown.shield_slam.remains&!buff.violent_outburst.up)
 actions.generic+=/revenge,if=(rage>=80&target.health.pct>20|buff.revenge.up&target.health.pct<=20&rage<=18&cooldown.shield_slam.remains|buff.revenge.up&target.health.pct>20)|(rage>=80&target.health.pct>35|buff.revenge.up&target.health.pct<=35&rage<=18&cooldown.shield_slam.remains|buff.revenge.up&target.health.pct>35)&talent.massacre.enabled
 actions.generic+=/execute
 actions.generic+=/revenge
-actions.generic+=/thunder_blast,if=(spell_targets.thunder_clap>=1|cooldown.shield_slam.remains&buff.violent_outburst.up)
-actions.generic+=/thunder_clap,if=(spell_targets.thunder_clap>=1|cooldown.shield_slam.remains&buff.violent_outburst.up)
+actions.generic+=/thunder_blast,if=(active_enemies>=1|cooldown.shield_slam.remains&buff.violent_outburst.up)
+actions.generic+=/thunder_clap,if=(active_enemies>=1|cooldown.shield_slam.remains&buff.violent_outburst.up)
 actions.generic+=/devastate

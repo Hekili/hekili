@@ -9480,6 +9480,8 @@ do
         { "target%.1%.time_to_die"                          , "time_to_die"                             },
         { "time_to_pct_(%d+)%.remains"                      , "time_to_pct_%1"                          },
         { "trinket%.(%d)%.([%w%._]+)"                       , "trinket.t%1.%2"                          },
+        --[[ { "trinket%.(t?%d)%.stat%.([%w_]+)%.([%w%._]+)", -- Christ.
+                                                              "trinket.%1.has_stat.%2&trinket.%1.%3" }, ]]
         { "trinket%.([%w_]+)%.cooldown"                     , "trinket.%1.cooldown.duration"            },
         { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration"     , "trinket.%1.buff_duration"                },
         { "trinket%.([%w_]+)%.buff%.a?n?y?%.?duration"      , "trinket.%1.buff_duration"                },
