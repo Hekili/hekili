@@ -409,7 +409,7 @@ spec:RegisterStateExpr( "recall_totem_2", function()
     return recallTotem2
 end )
 
-spec:RegisterStateExpr( "earth_shield", function()
+spec:RegisterStateExpr( "earth_shield", function() 
     return "earth_shield"
 end )
 
@@ -771,6 +771,31 @@ spec:RegisterAbilities( {
 
         handler = function ()
             summonTotem( "healing_stream_totem" )
+        end,
+    },
+
+    -- Remove Curse effects from a friendly target.
+    purify_spirit = {
+        id = 77130,
+        cast = 0,
+        cooldown = 8,
+        gcd = "spell",
+        school = "nature",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 236288,
+
+        toggle = "interrupts",
+        usable = function() return debuff.dispellable_magic.up or ( talent.improved_purify_spirit.enabled and debuff.dispellable_curse.up ), "requires a dispellable effect" end,
+
+        handler = function ()
+            removeDebuff( "player", "dispellable_magic" )
+            if talent.improved_purify_spirit.enabled then
+                removeDebuff( "player", "dispellable_curse" )
+            end
         end,
     },
 
