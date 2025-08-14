@@ -409,7 +409,7 @@ spec:RegisterStateExpr( "recall_totem_2", function()
     return recallTotem2
 end )
 
-spec:RegisterStateExpr( "earth_shield", function() 
+spec:RegisterStateExpr( "earth_shield", function()
     return "earth_shield"
 end )
 
