@@ -24,11 +24,12 @@ end
 ns.UnitBuff = function( unit, index, filter )
     return UnpackAuraData( GetBuffDataByIndex( unit, index, filter ) )
 end
+local UnitBuff = ns.UnitBuff
 
 ns.UnitDebuff = function( unit, index, filter )
     return UnpackAuraData( GetDebuffDataByIndex( unit, index, filter ) )
 end
-
+local UnitDebuff = ns.UnitDebuff
 
 ns.UnitBuffByID = function( unitToken, spellID, filter )
     local playerOrPet = UnitIsUnit( "player", unitToken ) or UnitIsUnit( "pet", unitToken )
@@ -107,7 +108,7 @@ function ns.SpaceOut( str )
     str = str:trim()
     return str
 end
-
+local SpaceOut = ns.SpaceOut
 
 local LT = LibStub( "LibTranslit-1.0" )
 
@@ -272,6 +273,7 @@ end
 function ns.orderedPairs( t )
     return orderedNext, t, nil
 end
+local orderedPairs = ns.orderedPairs
 
 
 function ns.safeMin( ... )
@@ -1090,4 +1092,798 @@ do
         Dirty = marked,
         Cleaned = pool
     }
+end
+
+-- Importer
+-- Import/Export
+-- Nicer string encoding from WeakAuras, thanks to Stanzilla.
+
+local bit_band, bit_lshift, bit_rshift = bit.band, bit.lshift, bit.rshift
+local string_char = string.char
+
+local bytetoB64 = {
+    [0]="a","b","c","d","e","f","g","h",
+    "i","j","k","l","m","n","o","p",
+    "q","r","s","t","u","v","w","x",
+    "y","z","A","B","C","D","E","F",
+    "G","H","I","J","K","L","M","N",
+    "O","P","Q","R","S","T","U","V",
+    "W","X","Y","Z","0","1","2","3",
+    "4","5","6","7","8","9","(",")"
+}
+
+local B64tobyte = {
+    a = 0, b = 1, c = 2, d = 3, e = 4, f = 5, g = 6, h = 7,
+    i = 8, j = 9, k = 10, l = 11, m = 12, n = 13, o = 14, p = 15,
+    q = 16, r = 17, s = 18, t = 19, u = 20, v = 21, w = 22, x = 23,
+    y = 24, z = 25, A = 26, B = 27, C = 28, D = 29, E = 30, F = 31,
+    G = 32, H = 33, I = 34, J = 35, K = 36, L = 37, M = 38, N = 39,
+    O = 40, P = 41, Q = 42, R = 43, S = 44, T = 45, U = 46, V = 47,
+    W = 48, X = 49, Y = 50, Z = 51,["0"]=52,["1"]=53,["2"]=54,["3"]=55,
+    ["4"]=56,["5"]=57,["6"]=58,["7"]=59,["8"]=60,["9"]=61,["("]=62,[")"]=63
+}
+
+-- This code is based on the Encode7Bit algorithm from LibCompress
+-- Credit goes to Galmok (galmok@gmail.com)
+local encodeB64Table = {}
+
+local function encodeB64(str)
+    local B64 = encodeB64Table
+    local remainder = 0
+    local remainder_length = 0
+    local encoded_size = 0
+    local l=#str
+    local code
+    for i=1,l do
+        code = string.byte(str, i)
+        remainder = remainder + bit_lshift(code, remainder_length)
+        remainder_length = remainder_length + 8
+        while(remainder_length) >= 6 do
+            encoded_size = encoded_size + 1
+            B64[encoded_size] = bytetoB64[bit_band(remainder, 63)]
+            remainder = bit_rshift(remainder, 6)
+            remainder_length = remainder_length - 6
+        end
+    end
+    if remainder_length > 0 then
+        encoded_size = encoded_size + 1
+        B64[encoded_size] = bytetoB64[remainder]
+    end
+    return table.concat(B64, "", 1, encoded_size)
+end
+
+local decodeB64Table = {}
+
+local function decodeB64(str)
+    local bit8 = decodeB64Table
+    local decoded_size = 0
+    local ch
+    local i = 1
+    local bitfield_len = 0
+    local bitfield = 0
+    local l = #str
+    while true do
+        if bitfield_len >= 8 then
+            decoded_size = decoded_size + 1
+            bit8[decoded_size] = string_char(bit_band(bitfield, 255))
+            bitfield = bit_rshift(bitfield, 8)
+            bitfield_len = bitfield_len - 8
+        end
+        ch = B64tobyte[str:sub(i, i)]
+        bitfield = bitfield + bit_lshift(ch or 0, bitfield_len)
+        bitfield_len = bitfield_len + 6
+        if i > l then
+            break
+        end
+        i = i + 1
+    end
+    return table.concat(bit8, "", 1, decoded_size)
+end
+
+-- Import/Export Strings
+local Compresser = LibStub:GetLibrary("LibCompress")
+local Encoder = Compresser:GetChatEncodeTable()
+
+local LibDeflate = LibStub:GetLibrary("LibDeflate")
+local ldConfig = { level = 5 }
+
+local Serializer = LibStub:GetLibrary("AceSerializer-3.0")
+
+TableToString = function( inTable, forChat )
+    local serialized = Serializer:Serialize( inTable )
+    local compressed = LibDeflate:CompressDeflate( serialized, ldConfig )
+
+    return format( "Hekili:%s", forChat and ( LibDeflate:EncodeForPrint( compressed ) ) or ( LibDeflate:EncodeForWoWAddonChannel( compressed ) ) )
+end
+
+StringToTable = function( inString, fromChat )
+    local modern = false
+    if inString:sub( 1, 7 ) == "Hekili:" then
+        modern = true
+        inString = inString:sub( 8 )
+    end
+
+    local decoded, decompressed, errorMsg
+
+    if modern then
+        decoded = fromChat and LibDeflate:DecodeForPrint(inString) or LibDeflate:DecodeForWoWAddonChannel(inString)
+        if not decoded then return "Unable to decode." end
+
+        decompressed = LibDeflate:DecompressDeflate(decoded)
+        if not decompressed then return "Unable to decompress decoded string." end
+    else
+        decoded = fromChat and decodeB64(inString) or Encoder:Decode(inString)
+        if not decoded then return "Unable to decode." end
+
+        decompressed, errorMsg = Compresser:Decompress(decoded)
+        if not decompressed then return "Unable to decompress decoded string: " .. errorMsg end
+    end
+
+    local success, deserialized = Serializer:Deserialize(decompressed)
+    if not success then return "Unable to deserialized decompressed string: " .. deserialized end
+
+    return deserialized
+end
+
+SerializeActionPack = function( name )
+    local pack
+
+    if type( name ) == "string" then
+        pack = rawget( Hekili.DB.profile.packs, name )
+        pack = pack and tableCopy( pack )
+    else
+        pack = name
+        name = pack.name
+    end
+
+    if not pack then return end
+
+    local serial = {
+        type = "package",
+        name = name,
+        date = tonumber( date("%Y%m%d.%H%M%S") ),
+        payload = pack
+    }
+
+    serial.payload.builtIn = false
+
+    return TableToString( serial, true )
+end
+Hekili.SerializeActionPack = SerializeActionPack
+
+DeserializeActionPack = function( str )
+    local serial = StringToTable( str, true )
+
+    if not serial or type( serial ) == "string" or serial.type ~= "package" then
+        return serial or "Unable to restore Priority from the provided string."
+    end
+
+    serial.payload.builtIn = false
+
+    return serial
+end
+Hekili.DeserializeActionPack = DeserializeActionPack
+
+SerializeStyle = function( ... )
+    local serial = {
+        type = "style",
+        date = tonumber( date("%Y%m%d.%H%M%S") ),
+        payload = {}
+    }
+
+    local hasPayload = false
+
+    for i = 1, select( "#", ... ) do
+        local dispName = select( i, ... )
+        local display = rawget( Hekili.DB.profile.displays, dispName )
+
+        if not display then return "Attempted to serialize an invalid display (" .. dispName .. ")" end
+
+        serial.payload[ dispName ] = tableCopy( display )
+        hasPayload = true
+    end
+
+    if not hasPayload then return "No displays selected to export." end
+    return TableToString( serial, true )
+end
+Hekili.SerializeStyle = SerializeStyle
+
+DeserializeStyle = function( str )
+    local serial = StringToTable( str, true )
+
+    if not serial or type( serial ) == 'string' or not serial.type == "style" then
+        return nil, serial
+    end
+
+    return serial.payload
+end
+Hekili.DeserializeStyle = DeserializeStyle
+
+-- End Import/Export Strings
+
+local Sanitize
+
+-- Begin APL Parsing
+do
+    local ignore_actions = {
+        snapshot_stats = 1,
+        flask = 1,
+        food = 1,
+        augmentation = 1
+    }
+
+    local expressions = {
+        { "stealthed"                                       , "stealthed.rogue"                         },
+        { "rtb_buffs%.normal"                               , "rtb_buffs_normal"                        },
+        { "rtb_buffs%.min_remains"                          , "rtb_buffs_min_remains"                   },
+        { "rtb_buffs%.max_remains"                          , "rtb_buffs_max_remains"                   },
+        { "rtb_buffs%.shorter"                              , "rtb_buffs_shorter"                       },
+        { "rtb_buffs%.longer"                               , "rtb_buffs_longer"                        },
+        { "rtb_buffs%.will_lose%.([%w_]+)"                  , "rtb_buffs_will_lose_buff.%1"             },
+        { "rtb_buffs%.will_lose"                            , "rtb_buffs_will_lose"                     },
+        { "rtb_buffs%.total"                                , "rtb_buffs"                               },
+        { "buff.supercharge_(%d).up"                        , "supercharge_%1"                          },
+        { "hyperthread_wristwraps%.([%w_]+)%.first_remains" , "hyperthread_wristwraps.first_remains.%1" },
+        { "hyperthread_wristwraps%.([%w_]+)%.count"         , "hyperthread_wristwraps.%1"               },
+        { "cooldown"                                        , "action_cooldown"                         },
+        { "covenant%.([%w_]+)%.enabled"                     , "covenant.%1"                             },
+        { "talent%.([%w_]+)"                                , "talent.%1.enabled",                      true },
+        { "legendary%.([%w_]+)"                             , "legendary.%1.enabled"                    },
+        { "runeforge%.([%w_]+)"                             , "runeforge.%1.enabled"                    },
+        { "rune_word%.([%w_]+)"                             , "buff.rune_word_%1.up"                    },
+        { "rune_word%.([%w_]+)%.enabled"                    , "buff.rune_word_%1.up"                    },
+        { "conduit%.([%w_]+)"                               , "conduit.%1.enabled"                      },
+        { "soulbind%.([%w_]+)"                              , "soulbind.%1.enabled"                     },
+        { "soul_shard%.deficit"                             , "soul_shard_deficit"                      },
+        { "pet.[%w_]+%.([%w_]+)%.([%w%._]+)"                , "%1.%2"                                   },
+        { "essence%.([%w_]+).rank(%d)"                      , "essence.%1.rank>=%2"                     },
+        { "target%.1%.time_to_die"                          , "time_to_die"                             },
+        { "time_to_pct_(%d+)%.remains"                      , "time_to_pct_%1"                          },
+        { "trinket%.(%d)%.([%w%._]+)"                       , "trinket.t%1.%2"                          },
+        --[[ { "trinket%.(t?%d)%.stat%.([%w_]+)%.([%w%._]+)", -- Christ.
+                                                              "trinket.%1.has_stat.%2&trinket.%1.%3" }, ]]
+        { "trinket%.([%w_]+)%.cooldown"                     , "trinket.%1.cooldown.duration"            },
+        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration"     , "trinket.%1.buff_duration"                },
+        { "trinket%.([%w_]+)%.buff%.a?n?y?%.?duration"      , "trinket.%1.buff_duration"                },
+        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"       , "trinket.%1.has_use_buff"                 },
+        { "trinket%.([%w_]+)%.has_buff%.([%w_]+)"           , "trinket.%1.has_use_buff"                 },
+        { "trinket%.([%w_]+)%.has_use_buff%.([%w_]+)"       , "trinket.%1.has_use_buff"                 },
+        { "min:([%w_]+)"                                    , "%1"                                      },
+        { "position_back"                                   , "true"                                    },
+        { "max:(%w_]+)"                                     , "%1"                                      },
+        { "incanters_flow_time_to%.(%d+)"                   , "incanters_flow_time_to_%.%1.any"         },
+        { "exsanguinated%.([%w_]+)"                         , "debuff.%1.exsanguinated"                 },
+        { "time_to_sht%.(%d+)%.plus"                        , "time_to_sht_plus.%1"                     },
+        { "target"                                          , "target.unit"                             },
+        { "player"                                          , "player.unit"                             },
+        { "gcd"                                             , "gcd.max"                                 },
+        { "howl_summon%.([%w_]+)%.([%w_]+)"                 , "howl_summon.%1_%2"                       },
+
+        { "equipped%.(%d+)", nil, function( item )
+            item = tonumber( item )
+
+            if not item then return "equipped.none" end
+
+            if class.abilities[ item ] then
+                return "equipped." .. ( class.abilities[ item ].key or "none" )
+            end
+
+            return "equipped[" .. item .. "]"
+        end },
+
+        { "trinket%.([%w_]+)%.cooldown%.([%w_]+)", nil, function( trinket, token )
+            if class.abilities[ trinket ] then
+                return "cooldown." .. trinket .. "." .. token
+            end
+
+            return "trinket." .. trinket .. ".cooldown." .. token
+        end,  },
+
+    }
+
+    local operations = {
+        { "=="  , "="  },
+        { "%%"  , "/"  },
+        { "//"  , "%%" }
+    }
+
+
+    function Hekili:AddSanitizeExpr( from, to, func )
+        insert( expressions, { from, to, func } )
+    end
+
+    function Hekili:AddSanitizeOper( from, to )
+        insert( operations, { from, to } )
+    end
+
+    Sanitize = function( segment, i, line, warnings )
+        if i == nil then return end
+
+        local operators = {
+            [">"] = true,
+            ["<"] = true,
+            ["="] = true,
+            ["~"] = true,
+            ["+"] = true,
+            ["-"] = true,
+            ["%%"] = true,
+            ["*"] = true
+        }
+
+        local maths = {
+            ['+'] = true,
+            ['-'] = true,
+            ['*'] = true,
+            ['%%'] = true
+        }
+
+        local times = 0
+        local output, pre = "", ""
+
+        for op1, token, op2 in gmatch( i, "([^%w%._ ]*)([%w%._]+)([^%w%._ ]*)" ) do
+
+            if token and token:len() > 0 then
+                pre = token
+                for _, subs in ipairs( expressions ) do
+                    local ignore = type( subs[3] ) == "boolean" and subs[3]
+                    if subs[2] then
+                        times = 0
+                        local s1, s2, s3, s4, s5 = token:match( "^" .. subs[1] .. "$" )
+                        if s1 then
+                            token = subs[2]
+                            token, times = token:gsub( "%%1", s1 )
+
+                            if s2 then token = token:gsub( "%%2", s2 ) end
+                            if s3 then token = token:gsub( "%%3", s3 ) end
+                            if s4 then token = token:gsub( "%%4", s4 ) end
+                            if s5 then token = token:gsub( "%%5", s5 ) end
+
+                            if times > 0 and not ignore then
+                                insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. token .. "' (" .. times .. "x)." )
+                            end
+                        end
+                    elseif subs[3] and type( subs[3] ) == "function" then
+                        local val, v2, v3, v4, v5 = token:match( "^" .. subs[1] .. "$" )
+                        if val ~= nil then
+                            token = subs[3]( val, v2, v3, v4, v5 )
+                            insert( warnings, "Line " .. line .. ": Converted '" .. pre .. "' to '" .. token .. "'." )
+                        end
+                    end
+                end
+            end
+
+            output = output .. ( op1 or "" ) .. ( token or "" ) .. ( op2 or "" )
+        end
+
+        local ops_swapped = false
+        pre = output
+
+        -- Replace operators after its been stitched back together.
+        for _, subs in ipairs( operations ) do
+            output, times = output:gsub( subs[1], subs[2] )
+            if times > 0 then
+                ops_swapped = true
+            end
+        end
+
+        if ops_swapped then
+            insert( warnings, "Line " .. line .. ": Converted operations in '" .. pre .. "' to '" .. output .. "'." )
+        end
+
+        return output
+    end
+
+    local function strsplit( str, delimiter )
+        local result = {}
+        local from = 1
+
+        if not delimiter or delimiter == "" then
+            result[1] = str
+            return result
+        end
+
+        local delim_from, delim_to = string.find( str, delimiter, from )
+
+        while delim_from do
+            insert( result, string.sub( str, from, delim_from - 1 ) )
+            from = delim_to + 1
+            delim_from, delim_to = string.find( str, delimiter, from )
+        end
+
+        insert( result, string.sub( str, from ) )
+        return result
+    end
+
+    local parseData = {
+        warnings = {},
+        missing = {},
+    }
+
+    local nameMap = {
+        call_action_list = "list_name",
+        run_action_list = "list_name",
+        variable = "var_name",
+        cancel_action = "action_name",
+        cancel_buff = "buff_name",
+        op = "op",
+    }
+
+    function Hekili:ParseActionList( list )
+        local line, times = 0, 0
+        local output, warnings, missing = {}, parseData.warnings, parseData.missing
+
+        wipe( warnings )
+        wipe( missing )
+
+        list = list:gsub( "(|)([^|])", "%1|%2" ):gsub( "|||", "||" )
+
+        local n = 0
+        for aura in list:gmatch( "buff%.([a-zA-Z0-9_]+)" ) do
+            if not class.auras[ aura ] then
+                missing[ aura ] = true
+                n = n + 1
+            end
+        end
+
+        for aura in list:gmatch( "active_dot%.([a-zA-Z0-9_]+)" ) do
+            if not class.auras[ aura ] then
+                missing[ aura ] = true
+                n = n + 1
+            end
+        end
+
+        -- TODO: Revise to start from beginning of string.
+        for i in list:gmatch( "action.-=/?([^\n^$]*)") do
+            line = line + 1
+
+            if i:sub(1, 3) == 'jab' then
+                for token in i:gmatch( 'cooldown%.expel_harm%.remains>=gcd' ) do
+
+                    local times = 0
+                    while (i:find(token)) do
+                        local strpos, strend = i:find(token)
+
+                        local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
+                        local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
+                        local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
+
+                        local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
+                        local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
+
+                        i = start .. repl .. finish
+                        times = times + 1
+                    end
+                    insert( warnings, "Line " .. line .. ": Removed unnecessary expel_harm cooldown check from action entry for jab (" .. times .. "x)." )
+                end
+            end
+
+            if i:sub(1, 13) == 'fists_of_fury' then
+                for token in i:gmatch( "energy.time_to_max>cast_time" ) do
+                    local times = 0
+                    while (i:find(token)) do
+                        local strpos, strend = i:find(token)
+
+                        local pre = strpos > 1 and i:sub( strpos - 1, strpos - 1 ) or ''
+                        local post = strend < i:len() and i:sub( strend + 1, strend + 1 ) or ''
+                        local repl = ( ( strend < i:len() and pre ) and pre or post ) or ""
+
+                        local start = strpos > 2 and i:sub( 1, strpos - 2 ) or ''
+                        local finish = strend < i:len() - 1 and i:sub( strend + 2 ) or ''
+
+                        i = start .. repl .. finish
+                        times = times + 1
+                    end
+                    insert( warnings, "Line " .. line .. ": Removed unnecessary energy cap check from action entry for fists_of_fury (" .. times .. "x)." )
+                end
+            end
+
+            local components = strsplit( i, "," )
+            local result = {}
+
+            for a, str in ipairs( components ) do
+                -- First element is the action, if supported.
+                if a == 1 then
+                    local ability = str:trim()
+
+                    if ability and ( ability == "use_item" or class.abilities[ ability ] ) then
+                        if ability == "pocketsized_computation_device" then ability = "cyclotronic_blast"
+                        else result.action = ability end
+                    elseif not ignore_actions[ ability ] then
+                        insert( warnings, "Line " .. line .. ": Unsupported action '" .. ability .. "'." )
+                        result.action = ability
+                    end
+
+                else
+                    local key, value = str:match( "^(.-)=(.-)$" )
+
+                    if key and value then
+                        -- TODO:  Automerge multiple criteria.
+                        if key == 'if' or key == 'condition' then key = 'criteria' end
+
+                        if key == 'criteria' or key == 'target_if' or key == 'value' or key == 'value_else' or key == 'sec' or key == 'wait' or key == 'strict_if' then
+                            value = Sanitize( 'c', value, line, warnings )
+                            value = SpaceOut( value )
+                        end
+
+                        if key == 'caption' then
+                            value = value:gsub( "||", "|" ):gsub( ";", "," )
+                        end
+
+                        if key == 'description' then
+                            value = value:gsub( ";", "," )
+                        end
+
+                        result[ key ] = value
+                    end
+                end
+            end
+
+            if nameMap[ result.action ] then
+                result[ nameMap[ result.action ] ] = result.name
+                result.name = nil
+            end
+
+            if result.target_if then result.target_if = result.target_if:gsub( "min:", "" ):gsub( "max:", "" ) end
+
+            -- As of 11/11/2022 (11/11/2022 in Europe), empower_to is purely a number 1-4.
+            if result.empower_to and ( result.empower_to == "max" or result.empower_to == "maximum" ) then result.empower_to = "max_empower" end
+            if result.for_next then result.for_next = tonumber( result.for_next ) end
+            if result.cycle_targets then result.cycle_targets = tonumber( result.cycle_targets ) end
+            if result.max_energy then result.max_energy = tonumber( result.max_energy ) end
+
+            if result.use_off_gcd then result.use_off_gcd = tonumber( result.use_off_gcd ) end
+            if result.use_while_casting then result.use_while_casting = tonumber( result.use_while_casting ) end
+            if result.strict then result.strict = tonumber( result.strict ) end
+            if result.moving then
+                result.enable_moving = true
+                result.moving = tonumber( result.moving )
+            end
+
+            if result.target_if and not result.criteria then
+                result.criteria = result.target_if
+                result.target_if = nil
+            end
+
+            if result.action == "use_item" then
+                if result.effect_name and class.abilities[ result.effect_name ] then
+                    result.action = class.abilities[ result.effect_name ].key
+                elseif result.name and class.abilities[ result.name ] then
+                    result.action = result.name
+                elseif ( result.slot or result.slots ) and class.abilities[ result.slot or result.slots ] then
+                    result.action = result.slot or result.slots
+                end
+
+                if result.action == "use_item" then
+                    insert( warnings, "Line " .. line .. ": Unsupported use_item action [ " .. ( result.effect_name or result.name or "unknown" ) .. "]; entry disabled." )
+                    result.action = nil
+                    result.enabled = false
+                end
+            end
+
+            if result.action == "wait_for_cooldown" then
+                if result.name then
+                    result.action = "wait"
+                    result.sec = "cooldown." .. result.name .. ".remains"
+                    result.name = nil
+                else
+                    insert( warnings, "Line " .. line .. ": Unable to convert wait_for_cooldown,name=X to wait,sec=cooldown.X.remains; entry disabled." )
+                    result.action = "wait"
+                    result.enabled = false
+                end
+            end
+
+            if result.action == 'use_items' and ( result.slot or result.slots ) then
+                result.action = result.slot or result.slots
+            end
+
+            if result.action == 'variable' and not result.op then
+                result.op = 'set'
+            end
+
+            if result.cancel_if and not result.interrupt_if then
+                result.interrupt_if = result.cancel_if
+                result.cancel_if = nil
+            end
+
+            insert( output, result )
+        end
+
+        if n > 0 then
+            insert( warnings, "The following auras were used in the action list but were not found in the addon database:" )
+            for k in orderedPairs( missing ) do
+                insert( warnings, " - " .. k )
+            end
+        end
+
+        return #output > 0 and output or nil, #warnings > 0 and warnings or nil
+    end
+end
+
+local impControl = {
+    name = "",
+    source = UnitName( "player" ) .. " @ " .. GetRealmName(),
+    apl = "Paste your SimulationCraft action priority list or profile here.",
+
+    lists = {},
+    warnings = ""
+}
+Hekili.ImporterData = impControl
+
+ns.packTemplate = {
+    spec = 0,
+    builtIn = false,
+
+    author = UnitName("player"),
+    desc = "This is a package of action lists for Hekili.",
+    source = "",
+    date = tonumber( date("%Y%M%D.%H%M") ),
+    warnings = "",
+
+    hidden = false,
+
+    lists = {
+        precombat = {
+            {
+                enabled = false,
+                action = "heart_essence",
+            },
+        },
+        default = {
+            {
+                enabled = false,
+                action = "heart_essence",
+            },
+        },
+    }
+}
+
+do
+    local function AddWarning( s )
+        if impControl.warnings then
+            impControl.warnings = impControl.warnings .. s .. "\n"
+            return
+        end
+
+        impControl.warnings = s .. "\n"
+    end
+
+
+    function Hekili:GetImporterOption( info )
+        return impControl[ info[ #info ] ]
+    end
+
+
+    function Hekili:SetImporterOption( info, value )
+        if type( value ) == 'string' then value = value:trim() end
+        impControl[ info[ #info ] ] = value
+        impControl.warnings = nil
+    end
+
+
+    function Hekili:ImportSimcAPL( name, source, apl )
+        name   = name   or impControl.name
+        source = source or impControl.source
+        apl    = apl    or impControl.apl
+
+        impControl.warnings = ""
+
+        local lists = {
+            precombat = "",
+            default = "",
+        }
+
+        local count = 0
+
+        -- Rename the default action list to 'default'
+        apl = "\n" .. apl
+        apl = apl:gsub( "actions(%+?)=", "actions.default%1=" )
+
+        local comment
+
+        for line in apl:gmatch( "\n([^\n^$]*)") do
+            local newComment = line:match( "^# (.+)" )
+            if newComment then
+                if comment then
+                    comment = comment .. ' ' .. newComment
+                else
+                    comment = newComment
+                end
+            end
+
+            local list, action = line:match( "^[ +]?actions%.(%S-)%+?=/?([^\n^$]*)" )
+
+            if list and action then
+                lists[ list ] = lists[ list ] or ""
+
+                if action:sub( 1, 16 ) == "call_action_list" or action:sub( 1, 15 ) == "run_action_list" then
+                    local name = action:match( ",name=(.-)," ) or action:match( ",name=(.-)$" )
+                    if name then action:gsub( ",name=" .. name, ",name=\"" .. name .. "\"" ) end
+                end
+
+                if comment then
+                    -- Comments can have the form 'Caption::Description'.
+                    -- Any whitespace around the '::' is truncated.
+                    local caption, description = comment:match( "(.+)::(.*)" )
+                    if caption and description then
+                        -- Truncate whitespace and change commas to semicolons.
+                        caption = caption:gsub( "%s+$", "" ):gsub( ",", ";" )
+                        description = description:gsub( "^%s+", "" ):gsub( ",", ";" )
+                        -- Replace "[<texture-id>]" in the caption with the escape sequence for the texture.
+                        caption = caption:gsub( "%[(%d+)%]", "|T%1:0|t" )
+                        -- Replace "[h:<text>]" in the caption with the escape sequence for the texture string.
+                        caption = caption:gsub( "%[h:(.-)%]", "|TInterface\\AddOns\\Hekili\\Textures\\%1:0|t" )
+                        -- Replace "[<text>:<height>:<width>]" in the caption with the escape sequence for the atlas.
+                        caption = caption:gsub( "%[(.-):(%d+):(%d+)%]", "|A:%1:%2:%3|a" )
+                        action = action .. ',caption=' .. caption .. ',description=' .. description
+                    else
+                        -- Change commas to semicolons.
+                        action = action .. ',description=' .. comment:gsub( ",", ";" )
+                    end
+                    comment = nil
+                end
+
+                lists[ list ] = lists[ list ] .. "actions+=/" .. action .. "\n"
+            end
+        end
+
+        if lists.precombat:len() == 0 then lists.precombat = "actions+=/heart_essence,enabled=0" end
+        if lists.default  :len() == 0 then lists.default   = "actions+=/heart_essence,enabled=0" end
+
+        local count = 0
+        local output = {}
+
+        for name, list in pairs( lists ) do
+            local import, warnings = self:ParseActionList( list )
+
+            if warnings then
+                AddWarning( "The import for '" .. name .. "' required some automated changes." )
+
+                for i, warning in ipairs( warnings ) do
+                    AddWarning( warning )
+                end
+
+                AddWarning( "" )
+            end
+
+            if import then
+                output[ name ] = import
+
+                for i, entry in ipairs( import ) do
+                    if entry.enabled == nil then entry.enabled = not ( entry.action == 'heroism' or entry.action == 'bloodlust' )
+                    elseif entry.enabled == "0" then entry.enabled = false end
+                end
+
+                count = count + 1
+            end
+        end
+
+        local use_items_found = false
+        local trinket1_found = false
+        local trinket2_found = false
+
+        for _, list in pairs( output ) do
+            for i, entry in ipairs( list ) do
+                if entry.action == "use_items" then use_items_found = true
+                elseif entry.action == "trinket1" then trinket1_found = true
+                elseif entry.action == "trinket2" then trinket2_found = true end
+            end
+        end
+
+        if not use_items_found and not ( trinket1_found and trinket2_found ) then
+            AddWarning( "This profile is missing support for generic trinkets.  It is recommended that every priority includes either:\n" ..
+                " - [Use Items], which includes any trinkets not explicitly included in the priority; or\n" ..
+                " - [Trinket 1] and [Trinket 2], which will recommend the trinket for the numbered slot." )
+        end
+
+        if not output.default then output.default = {} end
+        if not output.precombat then output.precombat = {} end
+
+        if count == 0 then
+            AddWarning( "No action lists were imported from this profile." )
+        else
+            AddWarning( "Imported " .. count .. " action lists." )
+        end
+
+        return output, impControl.warnings
+    end
 end

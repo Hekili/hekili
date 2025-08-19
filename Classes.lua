@@ -7,6 +7,10 @@ local Hekili = _G[ addon ]
 local class = Hekili.Class
 local state = Hekili.State
 
+local LSR = LibStub( "SpellRange-1.0" )
+
+local SerializeActionPack = Hekili.SerializeActionPack
+
 local CommitKey = ns.commitKey
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 local GetItemInfo = ns.CachedGetItemInfo
@@ -14,14 +18,13 @@ local GetResourceInfo, GetResourceKey = ns.GetResourceInfo, ns.GetResourceKey
 local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local RegisterEvent = ns.RegisterEvent
 local RegisterUnitEvent = ns.RegisterUnitEvent
+local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 
 local getSpecializationKey = ns.getSpecializationKey
-
-local LSR = LibStub( "SpellRange-1.0" )
+local mt_resource = ns.metatables.mt_resource
+local tCopy = ns.tableCopy
 
 local insert, wipe = table.insert, table.wipe
-
-local mt_resource = ns.metatables.mt_resource
 
 local GetActiveLossOfControlData, GetActiveLossOfControlDataCount = C_LossOfControl.GetActiveLossOfControlData, C_LossOfControl.GetActiveLossOfControlDataCount
 local GetItemCooldown = C_Item.GetItemCooldown
@@ -31,7 +34,6 @@ local GetItemSpell, GetItemCount, IsUsableItem = C_Item.GetItemSpell, C_Item.Get
 local GetSpellInfo = C_Spell.GetSpellInfo
 local GetSpellLink = C_Spell.GetSpellLink
 
-local UnitBuff, UnitDebuff = ns.UnitBuff, ns.UnitDebuff
 
 local specTemplate = {
     enabled = true,
@@ -1041,13 +1043,141 @@ local HekiliSpecMixin = {
     end,
 
     RegisterPack = function( self, name, version, import )
-        self.packs[ name ] = {
-            version = tonumber( version ),
-            import = import:gsub("([^|])|([^|])", "%1||%2")
+        if not name or type( name ) ~= "string" or name:len() < 4 then
+            Hekili:Error( "RegisterPack: name (arg2) '%s' is invalid for spec %d.", name or "nil", spec.id )
+            return
+        end
+
+        -- TODO: Move out of this function.
+        local DEFAULTS = {
+            AUTHOR  = "Hekili AddOn Devs",
+            DESC    = [[This is a default priority pack for %s.\nThese are typically imported and modified by Hekili devs for in-game compatibility.]],
+            SOURCE  = "SimulationCraft (probably)",
+            WARNINGS = "• None.",
+            BUILTIN = true,
+            HIDDEN  = false,
+
+            MIN_VERSION = 20000000,
+            MAX_VERSION = 20991231,
+
+            IMPORT_LEN  = 8, -- ( "Hekili:X" ):len() is 8. 
+            APL_LEN     = 12 -- ( "actions=kick" ):len() is 12.
         }
+
+        if version < DEFAULTS.MIN_VERSION or version > DEFAULTS.MAX_VERSION then
+            Hekili:Error( "RegisterPack: version (arg2) is out of date-bounds ( %.2f < %d or > %d ) in pack '%s' for spec %d.", version, DEFAULTS.MIN_VERSION, DEFAULTS.MAX_VERSION, name, spec.id )
+            return
+        end
+
+        local importType = import and type( import )
+        local importLen  = import and import:len()
+
+        local importError = not import and "blank" or 
+            ( importType ~= "string" and strformat( "wrong type(%s vs. string)", importType ) ) or 
+            ( importLen < DEFAULTS.IMPORT_LEN and strformat( "too short(%d < %d)", importLen, DEFAULTS.IMPORT_LEN ) )
+
+        if importError then
+            Hekili:Error( "RegisterPack: faulty import string (arg3) is %s in pack '%s' for spec %d.", importError, name, spec.id )
+            return
+        end
+
+        if not self.packs[ name ] then self.packs[ name ] = {} end
+        local pack = self.packs[ name ]
+        
+        pack.version = tonumber( version )
+        pack.import  = import:gsub( "([^|])|([^|])", "%1||%2" )
     end,
 
-    RegisterPriority = function( self, name, version, notes, priority )
+
+    RegisterPriority = function( self, name, version, import, data )
+        local spec = self.id
+
+        if not name or type( name ) ~= "string" or name:len() < 5 then
+            Hekili:Error( "RegisterPriority: missing or erroneous priority name (arg1) in %d.", spec )
+            return
+        end
+
+        -- TODO: Move out of this function.
+        local DEFAULTS = {
+            AUTHOR   = "Hekili AddOn Devs",
+            DESC     = [[This is a default priority pack for %s.\nThese are typically imported and modified by Hekili devs for in-game compatibility.]],
+            SOURCE   = "SimulationCraft (probably)",
+            WARNINGS = "• None.",
+            HIDDEN   = false,
+
+            MIN_VERSION = 20000000,
+            MAX_VERSION = 20991231,
+
+            IMPORT_LEN  = 8, -- ( "Hekili:X" ):len() is 8. 
+            APL_LEN     = 12 -- ( "actions=kick" ):len() is 12.
+        }
+
+        if not version or type( version ) ~= "number" then
+            Hekili:Error( "RegisterPriority: missing or erroneous version (arg2) in priority '%s' for spec %d.", name, spec )
+            return
+        end
+
+        local importType = import and type( import )
+        local importLen  = import and import:len()
+
+        -- ( "actions+=/kick" ):len() is 14. 
+        local importError = not import and "blank" or 
+            ( importType ~= "string" and strformat( "wrong type(%s vs. string)", importType ) ) or 
+            ( importLen < DEFAULTS.APL_LEN and strformat( "too short(%d < %d)", importLen, DEFAULTS.APL_LEN ) )
+
+        if importError then
+            Hekili:Error( "RegisterPriority: faulty import string (arg3) is %s in pack '%s' for spec %d.", importError, name, spec.id )
+            return
+        end
+
+        -- TODO: Move out of this function.
+        local MIN_VERSION, MAX_VERSION = 20000000, 20991231
+            
+        if version < 20000000 or version > 20991231 then
+            Hekili:Error( "RegisterPriority: version (arg2) is out of date-bounds ( %.2f < %d or > %d ) in priority '%s' for spec %d.", version, MIN_VERSION, MAX_VERSION, name, spec )
+            return
+        end
+
+        if not data or type( data ) ~= "table" then
+            Hekili:Error( "RegisterPriority: missing or erroneous priority data (arg3) in %d.", spec )
+            return
+        end
+
+        local prio = tCopy( ns.packTemplate )
+        
+        prio.spec    = spec
+        prio.version = version
+        
+        prio.author  = data.author or DEFAULTS.AUTHOR
+        prio.desc    = data.desc or strformat( DEFAULTS.DESC, spec.name )
+        prio.source  = data.source or DEFAULTS.SOURCE
+        
+        if data.hidden  ~= nil then prio.hidden = data.hidden end
+        
+        local profile = import:gsub( '"', '' )
+        prio.profile = profile
+
+        local result, warnings = Hekili:ImportSimcAPL( nil, nil, profile )
+
+        if not result or next( result ) == nil then
+            Hekili:Error( "RegisterPriority: conversion of profile string failed in priority '%s' for spec %d.", name, spec )
+            return
+        end
+
+        prio.lists = result
+        prio.warnings = warnings or DEFAULTS.WARNINGS
+
+        --[[ local pack = SerializeActionPack( prio )
+        if not pack then
+            Hekili:Error( "RegisterPriority: failed to serialize priority '%s' for spec %d.", name, spec )
+            return
+        end ]]
+
+        self.packs[ name ] = {
+            version = version,
+            package = tCopy( prio )
+            -- import  = pack
+        }
     end,
 
     RegisterRanges = function( self, ... )
@@ -1236,13 +1366,19 @@ function Hekili:RestoreDefaults()
         local existing = rawget( p.packs, k )
 
         if not existing or not existing.version or existing.version ~= v.version then
-            local data = self.DeserializeActionPack( v.import )
+            -- Modern, non-import string via RegisterPriority.
+            local data = v.package
+            if data and type( data ) == "table" then p.packs[ k ] = data
+            else
+                if not data then
+                    data = self.DeserializeActionPack( v.import )
+                    data = data and data.payload
+                end
+            end
 
             if data and type( data ) == "table" then
-                p.packs[ k ] = data.payload
-                data.payload.version = v.version
-                data.payload.date = v.version
-                data.payload.builtIn = true
+                data.builtIn = true
+                p.packs[ k ] = data
 
                 if not existing or not existing.version or existing.version < v.version then
                     insert( changed, k )
@@ -1250,7 +1386,7 @@ function Hekili:RestoreDefaults()
                     insert( reverted, k )
                 end
 
-                local specID = data.payload.spec
+                local specID = data.spec
 
                 if specID then
                     local spec = rawget( p.specs, specID )
@@ -1327,7 +1463,6 @@ end
 
 function Hekili:RestoreDefault( name )
     local p = self.DB.profile
-
     local default = class.packs[ name ]
 
     if default then
