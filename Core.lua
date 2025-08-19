@@ -703,7 +703,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
 
     local pack
     if ( packName == "UseItems" ) then pack = class.itemPack
-    else pack = self.DB.profile.packs[ packName ] end
+    else pack = rawget( self.DB.profile.packs, packName ) end
 
     local packInfo = scripts.PackInfo[ spec.package ]
     local list = pack.lists[ listName ]

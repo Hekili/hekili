@@ -1103,7 +1103,8 @@ local HekiliSpecMixin = {
             DESC     = [[This is a default priority pack for %s.\nThese are typically imported and modified by Hekili devs for in-game compatibility.]],
             SOURCE   = "SimulationCraft (probably)",
             WARNINGS = "• None.",
-            HIDDEN   = false,
+            BUILTIN = true,
+            HIDDEN  = false,
 
             MIN_VERSION = 20000000,
             MAX_VERSION = 20991231,
@@ -1152,12 +1153,13 @@ local HekiliSpecMixin = {
         prio.desc    = data.desc or strformat( DEFAULTS.DESC, spec.name )
         prio.source  = data.source or DEFAULTS.SOURCE
         
-        if data.hidden  ~= nil then prio.hidden = data.hidden end
+        if data.hidden  ~= nil then prio.hidden  = data.hidden  else prio.hidden  = DEFAULTS.HIDDEN  end
+        if data.builtIn ~= nil then prio.builtIn = data.builtIn else prio.builtIn = DEFAULTS.BUILTIN end
         
         local profile = import:gsub( '"', '' )
         prio.profile = profile
 
-        local result, warnings = Hekili:ImportSimcAPL( nil, nil, profile )
+        --[[ local result, warnings = Hekili:ImportSimcAPL( nil, nil, profile )
 
         if not result or next( result ) == nil then
             Hekili:Error( "RegisterPriority: conversion of profile string failed in priority '%s' for spec %d.", name, spec )
@@ -1165,7 +1167,7 @@ local HekiliSpecMixin = {
         end
 
         prio.lists = result
-        prio.warnings = warnings or DEFAULTS.WARNINGS
+        prio.warnings = warnings or DEFAULTS.WARNINGS ]]
 
         --[[ local pack = SerializeActionPack( prio )
         if not pack then
@@ -1357,6 +1359,8 @@ local HekiliSpecMixin = {
 }
 
 
+local packageImported = {}
+
 function Hekili:RestoreDefaults()
     local p = self.DB.profile
     local reverted = {}
@@ -1367,17 +1371,34 @@ function Hekili:RestoreDefaults()
 
         if not existing or not existing.version or existing.version ~= v.version then
             -- Modern, non-import string via RegisterPriority.
-            local data = v.package
-            if data and type( data ) == "table" then p.packs[ k ] = data
-            else
-                if not data then
-                    data = self.DeserializeActionPack( v.import )
-                    data = data and data.payload
+            local data   = v.package
+
+            if data and type( data ) == "table" then
+                data.version = v.version or data.version
+                
+                if not packageImported[ k ] then
+                    print( 1 )
+                    local result, warnings = Hekili:ImportSimcAPL( nil, nil, data.profile )
+                    
+                    if not result or next( result ) == nil then
+                        print( 2 )
+                        Hekili:Error( "RegisterPriority: conversion of profile string failed in priority '%s' for spec %d.", name, spec )
+                    else
+                        print( 3 )
+                        data.lists    = result
+                        data.warnings = warnings or DEFAULTS.WARNINGS
+
+                        packageImported[ k ] = true
+                    end
                 end
+            elseif v.import then
+                data = self.DeserializeActionPack( v.import )
+                data = data and data.payload
             end
 
             if data and type( data ) == "table" then
                 data.builtIn = true
+                data.version = v.version or data.version
                 p.packs[ k ] = data
 
                 if not existing or not existing.version or existing.version < v.version then
@@ -1392,7 +1413,7 @@ function Hekili:RestoreDefaults()
                     local spec = rawget( p.specs, specID )
                     if spec then
                         if spec.package then
-                            local currPack = p.packs[ spec.package ]
+                            local currPack = rawget( p.packs, spec.package )
                             if not currPack or currPack.spec ~= specID then
                                 spec.package = k
                             end
@@ -1462,17 +1483,65 @@ end
 
 
 function Hekili:RestoreDefault( name )
+    if not name then return end
+
     local p = self.DB.profile
     local default = class.packs[ name ]
 
-    if default then
-        local data = self.DeserializeActionPack( default.import )
+    if not default or type( default ) ~= "table" then return end
 
-        if data and type( data ) == "table" then
-            p.packs[ name ] = data.payload
-            data.payload.version = default.version
-            data.payload.date = default.version
-            data.payload.builtIn = true
+    local data = default.package
+
+    -- This is a modern priority from RegisterPriority.
+    -- We haven't loaded the default from profile string yet.
+    if data and packageImported[ name ] then
+        local result, warnings = Hekili:ImportSimcAPL( nil, nil, data.profile )
+
+        if not result or next( result ) == nil then
+            Hekili:Print( "RestoreDefault: conversion of profile string failed in priority '%s' for spec %d.", name, data.spec )
+            return
+        end
+
+        data.lists    = result
+        data.warnings = warnings or ""
+
+        packageImported[ name ] = true
+    end
+
+    -- This isn't a modern priority.
+    if not data and default.import then
+        data = DeserializeActionPack( default.import )
+        data = data and data.payload
+
+        if not data then
+            Hekili:Print( "RestoreDefault: conversion of export string to priority table in '%s' for spec %d.", name, data.spec )
+            return
+        end
+
+        data.builtIn = true
+        data.version = default.version or data.version
+        
+        -- ...but we can act like it is, once we deserialize the import string.
+        default.package = data
+    end
+
+    if data and type( data ) == "table" then
+        -- Prevent edits via Options from impacting the default.
+        p.packs[ name ] = tCopy( data )
+
+        local specID = data.spec
+        if specID then
+            local spec = rawget( p.specs, specID )
+            if spec then
+                if spec.package then
+                    local currPack = rawget( p.packs, spec.package )
+                    if not currPack or currPack.spec ~= specID then
+                        spec.package = k
+                    end
+                else
+                    spec.package = k
+                end
+            end
         end
     end
 end

@@ -103,7 +103,7 @@ local oneTimeFixes = {
     end,
 
     fixHavocPriorityVersion_20240805 = function( p )
-        local havoc = p.packs[ "Havoc" ]
+        local havoc = rawget( p.packs, "Havoc" )
         if havoc and ( havoc.date == 20270727 or havoc.version == 20270727 ) then
             havoc.date = 20240727
             havoc.version = 20240727
@@ -5035,7 +5035,9 @@ found = true end
         local n = #info
         local pack, option = info[ 2 ], info[ n ]
 
-        if rawget( self.DB.profile.packs[ pack ].lists, packControl.listName ) == nil then
+        local package = rawget( Hekili.DB.profile.packs, pack )
+
+        if rawget( package.lists, packControl.listName ) == nil then
             packControl.listName = "default"
         end
 
@@ -5133,7 +5135,9 @@ found = true end
         local n = #info
         local category, subcat, option = info[ 2 ], info[ 3 ], info[ n ]
 
-        if rawget( self.DB.profile.packs, category ) and rawget( self.DB.profile.packs[ category ].lists, packControl.listName ) == nil then
+        local pack = rawget( self.DB.profile.packs, category )
+
+        if pack and rawget( pack.lists, packControl.listName ) == nil then
             packControl.listName = "default"
         end
 
@@ -5567,6 +5571,7 @@ found = true end
                     func = function ()
                         ACD:SelectGroup( "Hekili", "packs", pack )
                     end,
+                    hidden = function() return rawget( Hekili.DB.profile.packs, pack ) == nil end
                 }
 
                 local opts = packs.plugins.packages[ pack ] or {
@@ -6594,9 +6599,9 @@ packControl.actionID = format( "%04d", id ) end
                                             type = "toggle",
                                             name = function ()
                                                 local n = packControl.actionID
-n = tonumber( n ) + 1
-                                                local e = Hekili.DB.profile.packs[ pack ].lists[ packControl.listName ][ n ]
+                                                n = tonumber( n ) + 1
 
+                                                local e = Hekili.DB.profile.packs[ pack ].lists[ packControl.listName ][ n ]
                                                 local ability = e and e.action and class.abilities[ e.action ]
                                                 ability = ability and ability.name or "Not Set"
 
