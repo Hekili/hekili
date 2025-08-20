@@ -366,9 +366,9 @@ function SnapshotUtil.FormatLegacyContent()
     for k, v in orderedPairs( s.conduit ) do
         if v.enabled then
             if conduits then
-                conduits = format("%s\n   %s = %d", conduits, k, v.rank)
+                conduits = format( "%s\n   %s = %d", conduits, k, v.rank )
             else
-                conduits = format("%s = %d", k, v.rank)
+                conduits = format( "%s = %d", k, v.rank )
             end
         end
     end
@@ -377,27 +377,27 @@ function SnapshotUtil.FormatLegacyContent()
     local soulbinds
     local activeBind = C_Soulbinds.GetActiveSoulbindID()
     if activeBind then
-        soulbinds = "[" .. formatKey(C_Soulbinds.GetSoulbindData(activeBind).name) .. "]"
+        soulbinds = "[" .. formatKey( C_Soulbinds.GetSoulbindData( activeBind ).name ) .. "]"
     end
 
-    for k, v in orderedPairs(s.soulbind) do
+    for k, v in orderedPairs( s.soulbind ) do
         if v.enabled then
             if soulbinds then
-                soulbinds = format("%s\n   %s = %d", soulbinds, k, v.rank)
+                soulbinds = format( "%s\n   %s = %d", soulbinds, k, v.rank )
             else
-                soulbinds = format("%s = %d", k, v.rank)
+                soulbinds = format( "%s = %d", k, v.rank )
             end
         end
     end
 
     -- Legendaries
     local legendaries
-    for k, v in orderedPairs(state.legendary) do
+    for k, v in orderedPairs( state.legendary ) do
         if k ~= "no_trait" and v.rank > 0 then
             if legendaries then
-                legendaries = format("%s\n    %s = %d", legendaries, k, v.rank)
+                legendaries = format( "%s\n    %s = %d", legendaries, k, v.rank )
             else
-                legendaries = format("%s = %d", k, v.rank)
+                legendaries = format( "%s = %d", k, v.rank )
             end
         end
     end
@@ -421,31 +421,31 @@ function SnapshotUtil.FormatGearAndItems()
 
     -- Sets
     local sets
-    for k, v in orderedPairs(class.gear) do
-        if s.set_bonus[k] > 0 then
+    for k, v in orderedPairs( class.gear ) do
+        if s.set_bonus[ k ] > 0 then
             if sets then
-                sets = format("%s\n    %s = %d", sets, k, s.set_bonus[k])
+                sets = format( "%s\n    %s = %d", sets, k, s.set_bonus[ k ] )
             else
-                sets = format("%s = %d", k, s.set_bonus[k])
+                sets = format( "%s = %d", k, s.set_bonus[ k ] )
             end
         end
     end
 
     -- Gear and Items
     local gear, items
-    for k, v in orderedPairs(state.set_bonus) do
-        if type(v) == "number" and v > 0 then
-            if type(k) == 'string' then
+    for k, v in orderedPairs( state.set_bonus ) do
+        if type( v ) == "number" and v > 0 then
+            if type( k ) == 'string' then
                 if gear then
-                    gear = format("%s\n    %s = %d", gear, k, v)
+                    gear = format( "%s\n    %s = %d", gear, k, v )
                 else
-                    gear = format("%s = %d", k, v)
+                    gear = format( "%s = %d", k, v )
                 end
-            elseif type(k) == 'number' then
+            elseif type( k ) == 'number' then
                 if items then
-                    items = format("%s, %d", items, k)
+                    items = format( "%s, %d", items, k )
                 else
-                    items = tostring(k)
+                    items = tostring( k )
                 end
             end
         end
@@ -468,21 +468,21 @@ function SnapshotUtil.FormatSettings()
     local settings
 
     if s.settings.spec then
-        for k, v in orderedPairs(s.settings.spec) do
-            if type(v) ~= "table" then
+        for k, v in orderedPairs( s.settings.spec ) do
+            if type( v ) ~= "table" then
                 if settings then
-                    settings = format("%s\n    %s = %s", settings, k, tostring(v))
+                    settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
                 else
-                    settings = format("%s = %s", k, tostring(v))
+                    settings = format( "%s = %s", k, tostring( v ) )
                 end
             end
         end
-        for k, v in orderedPairs(s.settings.spec.settings) do
-            if type(v) ~= "table" then
+        for k, v in orderedPairs( s.settings.spec.settings ) do
+            if type( v ) ~= "table" then
                 if settings then
-                    settings = format("%s\n    %s = %s", settings, k, tostring(v))
+                    settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
                 else
-                    settings = format("%s = %s", k, tostring(v))
+                    settings = format( "%s = %s", k, tostring( v ) )
                 end
             end
         end
@@ -499,16 +499,16 @@ end
 function SnapshotUtil.FormatToggles()
     local toggles
 
-    for k, v in orderedPairs(Hekili.DB.profile.toggles) do
-        if type(v) == "table" and rawget(v, "value") ~= nil then
+    for k, v in orderedPairs( Hekili.DB.profile.toggles ) do
+        if type( v ) == "table" and rawget( v, "value" ) ~= nil then
             if toggles then
-                toggles = format("%s\n    %s = %s %s", toggles, k, tostring(v.value),
-                    (v.separate and "[separate]" or
-                     (k ~= "cooldowns" and v.override and Hekili.DB.profile.toggles.cooldowns.value and "[overridden]") or ""))
+                toggles = format( "%s\n    %s = %s %s", toggles, k, tostring( v.value ),
+                    ( v.separate and "[separate]" or
+                     ( k ~= "cooldowns" and v.override and Hekili.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
             else
-                toggles = format("%s = %s %s", k, tostring(v.value),
-                    (v.separate and "[separate]" or
-                     (k ~= "cooldowns" and v.override and Hekili.DB.profile.toggles.cooldowns.value and "[overridden]") or ""))
+                toggles = format( "%s = %s %s", k, tostring( v.value ),
+                    ( v.separate and "[separate]" or
+                     ( k ~= "cooldowns" and v.override and Hekili.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
             end
         end
     end
@@ -525,21 +525,21 @@ function SnapshotUtil.FormatKeybinds()
     local bindLength = 1
 
     -- Find longest keybind name for alignment
-    for name in pairs(Hekili.KeybindInfo) do
+    for name in pairs( Hekili.KeybindInfo ) do
         if name:len() > bindLength then
             bindLength = name:len()
         end
     end
 
     -- Format keybinds
-    for name, data in orderedPairs(Hekili.KeybindInfo) do
-        local action = format("%-" .. bindLength .. "s =", name)
+    for name, data in orderedPairs( Hekili.KeybindInfo ) do
+        local action = format( "%-" .. bindLength .. "s =", name )
         local count = 0
         for i = 1, 12 do
-            local bar = data.upper[i]
+            local bar = data.upper[ i ]
             if bar then
                 if count > 0 then action = action .. "," end
-                action = format("%s %-4s[%02d]", action, bar, i)
+                action = format( "%s %-4s[%02d]", action, bar, i )
                 count = count + 1
             end
         end
@@ -556,11 +556,11 @@ end
 function SnapshotUtil.FormatWarnings()
     local warnings
 
-    for i, err in ipairs(Hekili.ErrorKeys) do
+    for i, err in ipairs( Hekili.ErrorKeys ) do
         if warnings then
-            warnings = format("%s\n[#%d] %s", warnings, i, err:gsub("\n\n", "\n"))
+            warnings = format( "%s\n[#%d] %s", warnings, i, err:gsub( "\n\n", "\n" ) )
         else
-            warnings = format("[#%d] %s", i, err:gsub("\n\n", "\n"))
+            warnings = format( "[#%d] %s", i, err:gsub( "\n\n", "\n" ) )
         end
     end
 
