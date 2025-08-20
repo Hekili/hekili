@@ -14,6 +14,7 @@ local formatKey = ns.formatKey
 local getSpecializationID = ns.getSpecializationID
 local getResourceName = ns.getResourceName
 local orderedPairs = ns.orderedPairs
+local SnapshotUtil = ns.SnapshotUtil
 local tableCopy = ns.tableCopy
 local timeToReady = ns.timeToReady
 
@@ -1694,7 +1695,10 @@ function Hekili.Update()
                 end
 
                 if isMain and #events > 0 then
-                    if debug then Hekili:Debug( 1, "There are %d queued events to review.", #events ) end
+                    if debug then
+                        -- Display consolidated events list using SnapshotUtil
+                        SnapshotUtil.DebugEventQueue()
+                    end
 
                     local event = events[ 1 ]
                     local n = 1
@@ -1711,12 +1715,21 @@ function Hekili.Update()
                         if debug then
                             eStart = debugprofilestop()
 
-                            local resources
+                            -- Display resources using SnapshotUtil
+                            -- Determine if we need deltas (for recommendation slots 2+)
+                            local includeDeltas = i > 1
+                            local previousResources = nil
 
-                            for k in orderedPairs( class.resources ) do
-                                resources = ( resources and ( resources .. ", " ) or "" ) .. string.format( "%s[ %.2f / %.2f ]", k, state[ k ].current, state[ k ].max )
+                            if includeDeltas and ns.lastSnapshotResources then
+                                previousResources = ns.lastSnapshotResources
                             end
-                            Hekili:Debug( 1, "Resources: %s\n", resources )
+
+                            SnapshotUtil.DebugResourcesTable(includeDeltas, previousResources)
+
+                            -- Capture current resource state for next delta calculation
+                            if i == 1 then
+                                ns.lastSnapshotResources = SnapshotUtil.CaptureResourceState()
+                            end
 
                             if state.channeling then
                                 Hekili:Debug( 1, "Currently channeling ( %s ) until ( %.2f ).\n", state.channel, state.channel_remains )
@@ -1803,12 +1816,8 @@ function Hekili.Update()
                                 if t >= 0 then
                                     state.advance( t )
 
-                                    local resources
-
-                                    for k in orderedPairs( class.resources ) do
-                                        resources = ( resources and ( resources .. ", " ) or "" ) .. string.format( "%s[ %.2f / %.2f ]", k, state[ k ].current, state[ k ].max )
-                                    end
-                                    Hekili:Debug( 1, "Resources: %s\n", resources )
+                                    -- Display compact resource format using SnapshotUtil
+                                    SnapshotUtil.DebugResourcesCompact()
                                 end
                                 event = events[ 1 ]
                             else
@@ -1816,7 +1825,7 @@ function Hekili.Update()
 
                                 hadProj = true
 
-                                if debug then Hekili:Debug( 1, "Queued event #%d (%s %s) due at %.2f; checking pre-event recommendations.\n", overrideIndex or n, overrideAction or event.action, overrideType or event.type, overrideTime or t ) end
+                                if debug then Hekili:Debug( 1, "Processing event #%d (%s %s) at +%.2f", overrideIndex or n, overrideAction or event.action, overrideType or event.type, overrideTime or t ) end
 
                                 if casting or channeling then
                                     state:ApplyCastingAuraFromQueue()
@@ -1904,12 +1913,21 @@ function Hekili.Update()
                     if hadProj and debug then Hekili:Debug( "[ ** ] No recommendation before queued event(s), checking recommendations after %.2f.", state.offset ) end
 
                     if debug then
-                        local resources
+                        -- Display resources using SnapshotUtil
+                        -- Determine if we need deltas (for recommendation slots 2+)
+                        local includeDeltas = i > 1
+                        local previousResources = nil
 
-                        for k in orderedPairs( class.resources ) do
-                            resources = ( resources and ( resources .. ", " ) or "" ) .. string.format( "%s[ %.2f / %.2f ]", k, state[ k ].current, state[ k ].max )
+                        if includeDeltas and ns.lastSnapshotResources2 then
+                            previousResources = ns.lastSnapshotResources2
                         end
-                        Hekili:Debug( 1, "Resources: %s", resources or "none" )
+
+                        SnapshotUtil.DebugResourcesTable(includeDeltas, previousResources)
+
+                        -- Capture current resource state for next delta calculation
+                        if i == 1 then
+                            ns.lastSnapshotResources2 = SnapshotUtil.CaptureResourceState()
+                        end
                         ns.callHook( "step" )
 
                         if state.channeling then
