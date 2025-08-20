@@ -4109,6 +4109,7 @@ function Hekili:SpecializationChanged()
 
     wipe( state.buff )
     wipe( state.debuff )
+    wipe( state.cooldown )
 
     wipe( class.auras )
     wipe( class.abilities )
