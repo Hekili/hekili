@@ -1069,16 +1069,10 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, so
                 ExpireObliteration()
             end
 
-            if state.talent.exterminate.enabled then
-                local exterminate = GetPlayerAuraBySpellID( 441416 )
-                exterminate = exterminate and exterminate.applications or 0
-                
-                -- print( strformat( "%6.3f - %s cast with %d Exterminate stacks at time of CLEU event. ", now, spellName, exterminate ) )
-                if exterminate > 1 then
-                    -- We don't really need to care why KM is pending, just that it's pending.
-                    PendingKillingMachine = now + 1
-                    -- print( strformat( "%6.3f - Virtual KM from Exterminate[%d] %s expected within 1s.", now, exterminate, spellName ) )
-                end
+            if state.talent.exterminate.enabled and GetPlayerAuraBySpellID( 441416 ) then
+                -- We don't really need to care why KM is pending, just that it's pending.
+                PendingKillingMachine = now + 1
+                -- print( strformat( "%6.3f - Virtual KM from Exterminate %s expected within 1s.", now, spellName ) )
             end
         end
 
