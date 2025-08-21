@@ -8626,6 +8626,23 @@ do
                         width = "full",
                         disabled = function() return #ns.snapshots == 0 end,
                     },
+                    openSnapshotWindow = {
+                        type = "execute",
+                        name = "Get This Snapshot",
+                        desc = "Open the selected snapshot in a popup window with pre-selected text for easy copying.",
+                        func = function()
+                            -- This still seems to produce a rootFrame error in ace dialog, but it also seems harmless and doesn't affect user experience
+                            local success, err = pcall( function()
+                                Hekili:OpenSnapshotWindow( snapshots.selected )
+                            end )
+                            if not success then
+                                Hekili:Print( "Error opening snapshot window: " .. tostring( err ) )
+                            end
+                        end,
+                        order = 3.5,
+                        width = "normal",
+                        disabled = function() return snapshots.selected == 0 or #ns.snapshots == 0 end,
+                    },
                     autoSnapshot = {
                         type = "toggle",
                         name = "Auto Snapshot",
