@@ -47,6 +47,85 @@ local resourceFormatting = {
 -- UTILITY FUNCTIONS
 -- ==========================================
 
+-- Calculates optimal column widths for a table based on content and headers
+function SnapshotUtil.CalculateTableWidths( items, columnConfigs, headers )
+    local widths = {}
+
+    -- Initialize widths with minimum values from config
+    for i, config in ipairs( columnConfigs ) do
+        widths[ i ] = config.minWidth or 8
+    end
+
+    -- Use header width as minimum baseline if headers provided
+    if headers then
+        for i, header in ipairs( headers ) do
+            if columnConfigs[ i ] then
+                local headerWidth = #header + 2  -- +2 for spaces around header in table
+                widths[ i ] = math.max( widths[ i ], headerWidth )
+            end
+        end
+    end
+
+    -- Scan all items to find maximum content width for each column
+    for _, item in ipairs( items ) do
+        for i, value in ipairs( item ) do
+            if columnConfigs[ i ] then
+                local valueStr = tostring( value or "" )
+                local contentWidth = #valueStr
+
+                -- Add padding if specified
+                if columnConfigs[ i ].padding then
+                    contentWidth = contentWidth + columnConfigs[ i ].padding
+                end
+
+                widths[ i ] = math.max( widths[ i ], contentWidth )
+            end
+        end
+    end
+
+    return widths
+end
+
+-- Generates table header and separator lines with calculated widths
+function SnapshotUtil.GenerateTableHeaders( headers, widths )
+    local headerLine = "|"
+    local separatorLine = "|"
+
+    for i, header in ipairs( headers ) do
+        local width = widths[ i ] or 8
+        local headerStr = " " .. header
+        local paddingNeeded = width - #headerStr - 1  -- -1 for trailing space
+        if paddingNeeded > 0 then
+            headerStr = headerStr .. string.rep( " ", paddingNeeded )
+        end
+        headerStr = headerStr .. " |"
+
+        headerLine = headerLine .. headerStr
+        separatorLine = separatorLine .. string.rep( "-", width ) .. "|"
+    end
+
+    return headerLine, separatorLine
+end
+
+-- Generates a table row with calculated widths
+function SnapshotUtil.GenerateTableRow( values, widths )
+    local row = "|"
+
+    for i, value in ipairs( values ) do
+        local width = widths[ i ] or 8
+        local valueStr = " " .. tostring( value or "" )
+        local paddingNeeded = width - #valueStr - 1  -- -1 for trailing space
+        if paddingNeeded > 0 then
+            valueStr = valueStr .. string.rep( " ", paddingNeeded )
+        end
+        valueStr = valueStr .. " |"
+
+        row = row .. valueStr
+    end
+
+    return row
+end
+
 -- Formats a number based on resource type
 function SnapshotUtil.FormatResourceNumber( value, resourceKey )
     local rules = resourceFormatting[ resourceKey ] or { decimals = 2 }
@@ -151,37 +230,66 @@ end
 function SnapshotUtil.FormatResourcesTable( includeDeltas, previousResources )
     local output = {}
 
-    if includeDeltas and previousResources then
-        output[ #output + 1 ] = "### Resources ###"
-        output[ #output + 1 ] = "| Resource      | Current | Max       | Usage | Delta |"
-        output[ #output + 1 ] = "|---------------|---------|-----------|-------|-------|"
-    else
-        output[ #output + 1 ] = "### Resources ###"
-        output[ #output + 1 ] = "| Resource      | Current | Max       | Usage |"
-        output[ #output + 1 ] = "|---------------|---------|-----------|-------|"
-    end
+    output[ #output + 1 ] = "### Resources ###"
 
+    -- Collect resources data for width calculation
+    local resourcesData = {}
     for k in orderedPairs( class.resources ) do
         local current = state[ k ].current
         local maximum = state[ k ].max
         local usage = maximum > 0 and math.floor( ( current / maximum ) * 100 ) or 0
 
-        -- Format resource name (capitalize first letter, replace underscores)
-        local resourceName = k:gsub( "_", " " ):gsub( "(%a)([%w_']*)", function( first, rest )
-            return first:upper() .. rest:lower()
-        end )
+        -- Use key/token format for resource name (no formatting)
+        local resourceName = k
 
         -- Format numbers for display based on resource type
         local currentStr = SnapshotUtil.FormatResourceNumber( current, k )
         local maxStr = SnapshotUtil.FormatResourceNumber( maximum, k )
+        local usageStr = format( "%d%%", usage )
 
         if includeDeltas and previousResources and previousResources[ k ] then
             local delta = current - previousResources[ k ].current
             local deltaStr = delta > 0 and ( "+" .. SnapshotUtil.FormatResourceNumber( delta, k ) ) or SnapshotUtil.FormatResourceNumber( delta, k )
-            output[ #output + 1 ] = format( "| %-13s | %7s | %9s | %4d%% | %5s |", resourceName, currentStr, maxStr, usage, deltaStr )
+            resourcesData[ #resourcesData + 1 ] = { resourceName, currentStr, maxStr, usageStr, deltaStr }
         else
-            output[ #output + 1 ] = format( "| %-13s | %7s | %9s | %4d%% |", resourceName, currentStr, maxStr, usage )
+            resourcesData[ #resourcesData + 1 ] = { resourceName, currentStr, maxStr, usageStr }
         end
+    end
+
+    -- Calculate optimal column widths
+    local columnConfigs
+    if includeDeltas and previousResources then
+        columnConfigs = {
+            { minWidth = 8, padding = 2 },  -- Resource name
+            { minWidth = 6, padding = 2 },  -- Current
+            { minWidth = 5, padding = 2 },  -- Max
+            { minWidth = 5, padding = 2 },  -- Usage
+            { minWidth = 5, padding = 2 }   -- Delta
+        }
+    else
+        columnConfigs = {
+            { minWidth = 8, padding = 2 },  -- Resource name
+            { minWidth = 6, padding = 2 },  -- Current
+            { minWidth = 5, padding = 2 },  -- Max
+            { minWidth = 5, padding = 2 }   -- Usage
+        }
+    end
+    local headers
+    if includeDeltas and previousResources then
+        headers = { "Resource", "Current", "Max", "Usage", "Delta" }
+    else
+        headers = { "Resource", "Current", "Max", "Usage" }
+    end
+    local widths = SnapshotUtil.CalculateTableWidths( resourcesData, columnConfigs, headers )
+
+    -- Generate headers
+    local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+    output[ #output + 1 ] = headerLine
+    output[ #output + 1 ] = separatorLine
+
+    -- Generate rows
+    for _, rowData in ipairs( resourcesData ) do
+        output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
     end
 
     output[ #output + 1 ] = "" -- Add blank line after table
@@ -307,23 +415,47 @@ end
 -- Formats the talents section with import string and talent list
 function SnapshotUtil.FormatTalents()
     local s = state
-    local talents = Hekili:GetLoadoutExportString()
+    local importString = Hekili:GetLoadoutExportString()
+    local output = {}
 
+    output[ #output + 1 ] = "### Talents ###"
+    output[ #output + 1 ] = ""
+    output[ #output + 1 ] = format( "**Import String:** `%s`", importString or "none" )
+    output[ #output + 1 ] = ""
+
+    -- Collect talent data for width calculation
+    local talentData = {}
     for k, v in orderedPairs( s.talent ) do
         if v.enabled then
-            if talents then
-                talents = format( "%s\n    %s = %d/%d", talents, k, v.rank, v.max )
-            else
-                talents = format( "%s = %d/%d", k, v.rank, v.max )
+            local rankDisplay = ""
+            -- Only show rank if max rank > 1
+            if v.max > 1 then
+                rankDisplay = format( "%d / %d", v.rank, v.max )
             end
+            talentData[ #talentData + 1 ] = { k, rankDisplay }
         end
     end
 
-    return format(
-        "### Talents ###\n\n" ..
-        "In-Game Import: %s\n",
-        talents or "none"
-    )
+    -- Calculate optimal column widths
+    local columnConfigs = {
+        { minWidth = 8, padding = 2 },  -- Talent name
+        { minWidth = 6, padding = 2 }   -- Rank
+    }
+    local headers = { "Talent", "Rank" }
+    local widths = SnapshotUtil.CalculateTableWidths( talentData, columnConfigs, headers )
+
+    -- Generate headers
+    local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+    output[ #output + 1 ] = headerLine
+    output[ #output + 1 ] = separatorLine
+
+    -- Generate rows
+    for _, rowData in ipairs( talentData ) do
+        output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+    end
+
+    output[ #output + 1 ] = ""
+    return table.concat( output, "\n" ) .. "\n"
 end
 
 -- Formats the PvP talents section
@@ -350,6 +482,10 @@ end
 -- Formats the legacy content section (covenant, conduits, soulbinds, legendaries)
 function SnapshotUtil.FormatLegacyContent()
     local s = state
+    local output = {}
+
+    output[ #output + 1 ] = "### Legacy Content ###"
+    output[ #output + 1 ] = ""
 
     -- Covenant detection
     local covenants = { "kyrian", "necrolord", "night_fae", "venthyr" }
@@ -360,196 +496,425 @@ function SnapshotUtil.FormatLegacyContent()
             break
         end
     end
+    output[ #output + 1 ] = format( "**Covenant:** %s", covenant )
+    output[ #output + 1 ] = ""
 
     -- Conduits
-    local conduits
+    local hasConduits = false
     for k, v in orderedPairs( s.conduit ) do
         if v.enabled then
-            if conduits then
-                conduits = format( "%s\n   %s = %d", conduits, k, v.rank )
-            else
-                conduits = format( "%s = %d", k, v.rank )
+            hasConduits = true
+            break
+        end
+    end
+
+    if hasConduits then
+        -- Collect conduits data for width calculation
+        local conduitsData = {}
+        for k, v in orderedPairs( s.conduit ) do
+            if v.enabled then
+                conduitsData[ #conduitsData + 1 ] = { k, tostring( v.rank ) }
             end
         end
+
+        -- Calculate optimal column widths
+        local columnConfigs = {
+            { minWidth = 8, padding = 2 },  -- Conduit name
+            { minWidth = 4, padding = 2 }   -- Rank
+        }
+        local headers = { "Conduit", "Rank" }
+        local widths = SnapshotUtil.CalculateTableWidths( conduitsData, columnConfigs, headers )
+
+        output[ #output + 1 ] = "**Conduits:**"
+        local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+        output[ #output + 1 ] = headerLine
+        output[ #output + 1 ] = separatorLine
+
+        -- Generate rows
+        for _, rowData in ipairs( conduitsData ) do
+            output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+        end
+        output[ #output + 1 ] = ""
+    else
+        output[ #output + 1 ] = "**Conduits:** None"
+        output[ #output + 1 ] = ""
     end
 
     -- Soulbinds
-    local soulbinds
+    local hasSoulbinds = false
     local activeBind = C_Soulbinds.GetActiveSoulbindID()
-    if activeBind then
-        soulbinds = "[" .. formatKey( C_Soulbinds.GetSoulbindData( activeBind ).name ) .. "]"
-    end
 
-    for k, v in orderedPairs( s.soulbind ) do
-        if v.enabled then
-            if soulbinds then
-                soulbinds = format( "%s\n   %s = %d", soulbinds, k, v.rank )
-            else
-                soulbinds = format( "%s = %d", k, v.rank )
+    if activeBind then
+        hasSoulbinds = true
+    else
+        for k, v in orderedPairs( s.soulbind ) do
+            if v.enabled then
+                hasSoulbinds = true
+                break
             end
         end
+    end
+
+    if hasSoulbinds then
+        -- Collect soulbinds data for width calculation
+        local soulbindsData = {}
+
+        if activeBind then
+            soulbindsData[ #soulbindsData + 1 ] = { "[" .. formatKey( C_Soulbinds.GetSoulbindData( activeBind ).name ) .. "]", "active" }
+        end
+
+        for k, v in orderedPairs( s.soulbind ) do
+            if v.enabled then
+                soulbindsData[ #soulbindsData + 1 ] = { k, tostring( v.rank ) }
+            end
+        end
+
+        -- Calculate optimal column widths
+        local columnConfigs = {
+            { minWidth = 8, padding = 2 },  -- Soulbind name
+            { minWidth = 6, padding = 2 }   -- Rank
+        }
+        local headers = { "Soulbind", "Rank" }
+        local widths = SnapshotUtil.CalculateTableWidths( soulbindsData, columnConfigs, headers )
+
+        output[ #output + 1 ] = "**Soulbinds:**"
+        local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+        output[ #output + 1 ] = headerLine
+        output[ #output + 1 ] = separatorLine
+
+        -- Generate rows
+        for _, rowData in ipairs( soulbindsData ) do
+            output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+        end
+        output[ #output + 1 ] = ""
+    else
+        output[ #output + 1 ] = "**Soulbinds:** None"
+        output[ #output + 1 ] = ""
     end
 
     -- Legendaries
-    local legendaries
+    local hasLegendaries = false
     for k, v in orderedPairs( state.legendary ) do
         if k ~= "no_trait" and v.rank > 0 then
-            if legendaries then
-                legendaries = format( "%s\n    %s = %d", legendaries, k, v.rank )
-            else
-                legendaries = format( "%s = %d", k, v.rank )
-            end
+            hasLegendaries = true
+            break
         end
     end
 
-    return format(
-        "### Legacy Content ###\n\n" ..
-        "covenant: %s\n" ..
-        "conduits: %s\n" ..
-        "soulbinds: %s\n" ..
-        "legendaries: %s\n\n",
-        covenant or "none",
-        conduits or "none",
-        soulbinds or "none",
-        legendaries or "none"
-    )
+    if hasLegendaries then
+        -- Collect legendaries data for width calculation
+        local legendariesData = {}
+        for k, v in orderedPairs( state.legendary ) do
+            if k ~= "no_trait" and v.rank > 0 then
+                legendariesData[ #legendariesData + 1 ] = { k, tostring( v.rank ) }
+            end
+        end
+
+        -- Calculate optimal column widths
+        local columnConfigs = {
+            { minWidth = 8, padding = 2 },  -- Legendary name
+            { minWidth = 4, padding = 2 }   -- Rank
+        }
+        local headers = { "Legendary", "Rank" }
+        local widths = SnapshotUtil.CalculateTableWidths( legendariesData, columnConfigs, headers )
+
+        output[ #output + 1 ] = "**Legendaries:**"
+        local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+        output[ #output + 1 ] = headerLine
+        output[ #output + 1 ] = separatorLine
+
+        -- Generate rows
+        for _, rowData in ipairs( legendariesData ) do
+            output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+        end
+        output[ #output + 1 ] = ""
+    else
+        output[ #output + 1 ] = "**Legendaries:** None"
+        output[ #output + 1 ] = ""
+    end
+
+    return table.concat( output, "\n" ) .. "\n"
 end
 
 -- Formats the gear and items section
 function SnapshotUtil.FormatGearAndItems()
     local s = state
+    local output = {}
+
+    output[ #output + 1 ] = "### Gear & Items ###"
+    output[ #output + 1 ] = ""
 
     -- Sets
-    local sets
+    local hasSets = false
     for k, v in orderedPairs( class.gear ) do
         if s.set_bonus[ k ] > 0 then
-            if sets then
-                sets = format( "%s\n    %s = %d", sets, k, s.set_bonus[ k ] )
-            else
-                sets = format( "%s = %d", k, s.set_bonus[ k ] )
-            end
+            hasSets = true
+            break
         end
     end
 
-    -- Gear and Items
-    local gear, items
+    if hasSets then
+        -- Collect sets data for width calculation
+        local setsData = {}
+        for k, v in orderedPairs( class.gear ) do
+            if s.set_bonus[ k ] > 0 then
+                local countDisplay = ""
+                -- Only show count if > 1
+                if s.set_bonus[ k ] > 1 then
+                    countDisplay = tostring( s.set_bonus[ k ] )
+                end
+                setsData[ #setsData + 1 ] = { k, countDisplay }
+            end
+        end
+
+        -- Calculate optimal column widths for sets
+        local columnConfigs = {
+            { minWidth = 8, padding = 2 },  -- Item name
+            { minWidth = 3, padding = 2 }   -- Count
+        }
+        local headers = { "Item", "#" }
+        local widths = SnapshotUtil.CalculateTableWidths( setsData, columnConfigs, headers )
+
+        output[ #output + 1 ] = "**Sets:**"
+        local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+        output[ #output + 1 ] = headerLine
+        output[ #output + 1 ] = separatorLine
+
+        -- Generate rows
+        for _, rowData in ipairs( setsData ) do
+            output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+        end
+        output[ #output + 1 ] = ""
+    else
+        output[ #output + 1 ] = "**Sets:** None"
+        output[ #output + 1 ] = ""
+    end
+
+    -- Gear
+    local hasGear = false
+    local items = {}
     for k, v in orderedPairs( state.set_bonus ) do
         if type( v ) == "number" and v > 0 then
             if type( k ) == 'string' then
-                if gear then
-                    gear = format( "%s\n    %s = %d", gear, k, v )
-                else
-                    gear = format( "%s = %d", k, v )
-                end
+                hasGear = true
             elseif type( k ) == 'number' then
-                if items then
-                    items = format( "%s, %d", items, k )
-                else
-                    items = tostring( k )
-                end
+                items[ #items + 1 ] = tostring( k )
             end
         end
     end
 
-    return format(
-        "### Gear & Items ###\n\n" ..
-        "sets:\n    %s\n\n" ..
-        "gear:\n    %s\n\n" ..
-        "itemIDs: %s\n\n",
-        sets or "none",
-        gear or "none",
-        items or "none"
-    )
+    if hasGear then
+        -- Collect gear data for width calculation
+        local gearData = {}
+        for k, v in orderedPairs( state.set_bonus ) do
+            if type( v ) == "number" and v > 0 and type( k ) == 'string' then
+                local countDisplay = ""
+                -- Only show count if > 1
+                if v > 1 then
+                    countDisplay = tostring( v )
+                end
+                gearData[ #gearData + 1 ] = { k, countDisplay, "NYI" }
+            end
+        end
+
+        -- Calculate optimal column widths for gear
+        local columnConfigs = {
+            { minWidth = 8, padding = 2 },  -- Item name
+            { minWidth = 3, padding = 2 },  -- Count
+            { minWidth = 8, padding = 2 }   -- Item IDs
+        }
+        local headers = { "Item", "#", "Item IDs" }
+        local widths = SnapshotUtil.CalculateTableWidths( gearData, columnConfigs, headers )
+
+        output[ #output + 1 ] = "**Gear:**"
+        local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+        output[ #output + 1 ] = headerLine
+        output[ #output + 1 ] = separatorLine
+
+        -- Generate rows
+        for _, rowData in ipairs( gearData ) do
+            output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+        end
+        output[ #output + 1 ] = ""
+    else
+        output[ #output + 1 ] = "**Gear:** None"
+        output[ #output + 1 ] = ""
+    end
+
+    -- Item IDs
+    output[ #output + 1 ] = format( "**Item IDs:** %s", #items > 0 and table.concat( items, ", " ) or "None" )
+    output[ #output + 1 ] = ""
+
+    return table.concat( output, "\n" ) .. "\n"
 end
 
 -- Formats the settings section
 function SnapshotUtil.FormatSettings()
     local s = state
-    local settings
+    local output = {}
+
+    output[ #output + 1 ] = "### Settings ###"
+
+    -- Collect settings data for width calculation
+    local settingsData = {}
+    local hasSettings = false
 
     if s.settings.spec then
         for k, v in orderedPairs( s.settings.spec ) do
             if type( v ) ~= "table" then
-                if settings then
-                    settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
-                else
-                    settings = format( "%s = %s", k, tostring( v ) )
-                end
+                hasSettings = true
+                settingsData[ #settingsData + 1 ] = { k, tostring( v ) }
             end
         end
         for k, v in orderedPairs( s.settings.spec.settings ) do
             if type( v ) ~= "table" then
-                if settings then
-                    settings = format( "%s\n    %s = %s", settings, k, tostring( v ) )
-                else
-                    settings = format( "%s = %s", k, tostring( v ) )
-                end
+                hasSettings = true
+                settingsData[ #settingsData + 1 ] = { k, tostring( v ) }
             end
         end
     end
 
-    return format(
-        "### Settings ###\n\n" ..
-        "Settings:\n    %s\n\n",
-        settings or "none"
-    )
+    if not hasSettings then
+        settingsData[ #settingsData + 1 ] = { "none", "-" }
+    end
+
+    -- Calculate optimal column widths
+    local columnConfigs = {
+        { minWidth = 8, padding = 2 },  -- Setting name
+        { minWidth = 6, padding = 2 }   -- Value
+    }
+    local headers = { "Setting", "Value" }
+    local widths = SnapshotUtil.CalculateTableWidths( settingsData, columnConfigs, headers )
+
+    -- Generate headers
+    local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+    output[ #output + 1 ] = headerLine
+    output[ #output + 1 ] = separatorLine
+
+    -- Generate rows
+    for _, rowData in ipairs( settingsData ) do
+        output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+    end
+
+    output[ #output + 1 ] = ""
+    return table.concat( output, "\n" ) .. "\n"
 end
 
 -- Formats the toggles section
 function SnapshotUtil.FormatToggles()
-    local toggles
+    local output = {}
+
+    output[ #output + 1 ] = "### Toggles ###"
+
+    -- Collect toggles data for width calculation
+    local togglesData = {}
+    local hasToggles = false
 
     for k, v in orderedPairs( Hekili.DB.profile.toggles ) do
         if type( v ) == "table" and rawget( v, "value" ) ~= nil then
-            if toggles then
-                toggles = format( "%s\n    %s = %s %s", toggles, k, tostring( v.value ),
-                    ( v.separate and "[separate]" or
-                     ( k ~= "cooldowns" and v.override and Hekili.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
+            hasToggles = true
+            local status = tostring( v.value )
+            local subsetting = ""
+
+            if v.separate then
+                subsetting = "separate"
+            elseif k ~= "cooldowns" and v.override and Hekili.DB.profile.toggles.cooldowns.value then
+                subsetting = "overridden"
             else
-                toggles = format( "%s = %s %s", k, tostring( v.value ),
-                    ( v.separate and "[separate]" or
-                     ( k ~= "cooldowns" and v.override and Hekili.DB.profile.toggles.cooldowns.value and "[overridden]" ) or "" ) )
+                subsetting = "-"
             end
+
+            togglesData[ #togglesData + 1 ] = { k, status, subsetting }
         end
     end
 
-    return format(
-        "Toggles:\n    %s\n\n",
-        toggles or "none"
-    )
+    if not hasToggles then
+        togglesData[ #togglesData + 1 ] = { "none", "-", "-" }
+    end
+
+    -- Calculate optimal column widths
+    local columnConfigs = {
+        { minWidth = 6, padding = 2 },  -- Toggle name
+        { minWidth = 6, padding = 2 },  -- Status
+        { minWidth = 8, padding = 2 }   -- Sub-setting
+    }
+    local headers = { "Toggle", "Status", "Sub-setting" }
+    local widths = SnapshotUtil.CalculateTableWidths( togglesData, columnConfigs, headers )
+
+    -- Generate headers
+    local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+    output[ #output + 1 ] = headerLine
+    output[ #output + 1 ] = separatorLine
+
+    -- Generate rows
+    for _, rowData in ipairs( togglesData ) do
+        output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+    end
+
+    output[ #output + 1 ] = ""
+    return table.concat( output, "\n" ) .. "\n"
 end
 
 -- Formats the keybinds section
 function SnapshotUtil.FormatKeybinds()
-    local keybinds = ""
-    local bindLength = 1
+    local output = {}
 
-    -- Find longest keybind name for alignment
-    for name in pairs( Hekili.KeybindInfo ) do
-        if name:len() > bindLength then
-            bindLength = name:len()
-        end
-    end
+    output[ #output + 1 ] = "### Keybinds ###"
 
-    -- Format keybinds
+    -- Collect keybinds data for width calculation
+    local keybindsData = {}
+    local hasKeybinds = false
+
     for name, data in orderedPairs( Hekili.KeybindInfo ) do
-        local action = format( "%-" .. bindLength .. "s =", name )
-        local count = 0
+        hasKeybinds = true
+        local binds = {}
         for i = 1, 12 do
             local bar = data.upper[ i ]
             if bar then
-                if count > 0 then action = action .. "," end
-                action = format( "%s %-4s[%02d]", action, bar, i )
-                count = count + 1
+                binds[ #binds + 1 ] = { bar = bar, slot = i }
             end
         end
-        keybinds = keybinds .. "\n    " .. action
+
+        -- Fill up to 3 binds max
+        local bind1 = binds[1] and binds[1].bar or "-"
+        local bar1 = binds[1] and format( "%02d", binds[1].slot ) or "-"
+        local bind2 = binds[2] and binds[2].bar or "-"
+        local bar2 = binds[2] and format( "%02d", binds[2].slot ) or "-"
+        local bind3 = binds[3] and binds[3].bar or "-"
+        local bar3 = binds[3] and format( "%02d", binds[3].slot ) or "-"
+
+        keybindsData[ #keybindsData + 1 ] = { name, bind1, bar1, bind2, bar2, bind3, bar3 }
     end
 
-    return format(
-        "Keybinds:%s\n\n",
-        keybinds or "none"
-    )
+    if not hasKeybinds then
+        keybindsData[ #keybindsData + 1 ] = { "none", "-", "-", "-", "-", "-", "-" }
+    end
+
+    -- Calculate optimal column widths
+    local columnConfigs = {
+        { minWidth = 8, padding = 2 },  -- Action name
+        { minWidth = 4, padding = 2 },  -- Bind 1
+        { minWidth = 3, padding = 2 },  -- Bar 1
+        { minWidth = 4, padding = 2 },  -- Bind 2
+        { minWidth = 3, padding = 2 },  -- Bar 2
+        { minWidth = 4, padding = 2 },  -- Bind 3
+        { minWidth = 3, padding = 2 }   -- Bar 3
+    }
+    local headers = { "Action", "Bind 1", "Bar 1", "Bind 2", "Bar 2", "Bind 3", "Bar 3" }
+    local widths = SnapshotUtil.CalculateTableWidths( keybindsData, columnConfigs, headers )
+
+    -- Generate headers
+    local headerLine, separatorLine = SnapshotUtil.GenerateTableHeaders( headers, widths )
+    output[ #output + 1 ] = headerLine
+    output[ #output + 1 ] = separatorLine
+
+    -- Generate rows
+    for _, rowData in ipairs( keybindsData ) do
+        output[ #output + 1 ] = SnapshotUtil.GenerateTableRow( rowData, widths )
+    end
+
+    output[ #output + 1 ] = ""
+    return table.concat( output, "\n" ) .. "\n"
 end
 
 -- Formats the warnings section
