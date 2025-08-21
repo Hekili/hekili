@@ -28,6 +28,7 @@ local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 -- local IsSpellOverlayed = C_SpellActivationOverlay.IsSpellOverlayed
 -- local IsSpellKnownOrOverridesKnown = C_SpellBook.IsSpellInSpellBook
 -- local IsActiveSpell = ns.IsActiveSpell
+local NewTimer = C_Timer.NewTimer
 
 -- Specialization-specific local functions (if any)
 
@@ -509,11 +510,7 @@ spec:RegisterAuras( {
     exterminate = {
         id = 441416,
         duration = 30,
-        max_stack = function()
-            local base = talent.reapers_onslaught.enabled and 1 or 2
-            local tier_bonus = set_bonus.tww3 >= 2 and 1 or 0
-            return base + tier_bonus
-        end
+        max_stack = function() return ( talent.reapers_onslaught.enabled and 1 or 2 ) + ( set_bonus.tww3 > 1 and 1 or 0 ) end,
     },
     -- Reduces damage dealt to $@auracaster by $m1%.
     -- https://wowhead.com/beta/spell=327092
@@ -676,7 +673,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=207256
     obliteration = {
         id = 207256,
-        duration = 3600,
+        duration = 9,
         max_stack = 1
     },
     -- Grants the ability to walk across water.
@@ -1027,66 +1024,74 @@ spec:RegisterHook( "TALENTS_UPDATED", function()
     rawset( cooldown, "any_dnd", cooldown.death_and_decay )
 end )
 
-local ERWDiscount = 0
 
-spec:RegisterStateExpr( "erw_discount", function()
-    return ERWDiscount
-end )
+local PendingKillingMachine = 0
+local PendingObliteration, ObliterationTimer = 0
 
---[[
-Exterminate Killing Machine Prediction System
+local function ExpireObliteration()
+    if PendingObliteration == 0 then return end
+    
+    -- local now = GetTime()
+    -- local duration = 10 + now - PendingObliteration
+    -- print( strformat( "%6.3f - Obliteration: Discount expired after %.3f; overlayed: %s.", now, duration, IsSpellOverlayed( 49020 ) and "YES" or "NO" ) )
 
-Problem: When using Obliterate/Frostscythe with Exterminate, there's a ~0.5 GCD delay
-between the ability cast and when the Killing Machine proc actually appears. This causes
-recommendation flickering as Hekili doesn't know the KM proc is coming.
-
-Solution: Track Exterminate consumption via combat logs and provide immediate KM procs
-in the simulation to bridge the timing gap until the real proc arrives.
-
-Components:
-1. Combat log tracking of Exterminate buff state (ExterminatesReady -> exterminates_ready)
-2. Immediate KM grants in ability handlers for instant feedback
-3. Backup KM grants in reset_precast for cases where immediate grants aren't sufficient
---]]
-
--- Track current Exterminate stack count for Killing Machine proc prediction
-local ExterminatesReady = 0
--- Track if the last frostscythe/obliterate consumed exterminate for better KM prediction
-local LastCastHadExterminate = false
-
--- Register state expression so the simulation engine can access this variable
-spec:RegisterStateExpr( "exterminates_ready", function()
-    return ExterminatesReady
-end )
-
--- Register state expression for tracking last cast exterminate status
-spec:RegisterStateExpr( "last_cast_had_exterminate", function()
-    return LastCastHadExterminate
-end )
+    PendingObliteration = 0
+end
 
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName )
-    if spellID == 47568 and ( subtype == "SPELL_CAST_SUCCESS" ) and state.talent.obliteration.enabled and state.buff.pillar_of_frost.up then
-        ERWDiscount = 1
-    elseif spellID == 49020 or spellID == 207230 then
-        ERWDiscount = 0
-        -- Track if this Obliterate (49020) or Frostscythe (207230) was cast with Exterminate
-        if subtype == "SPELL_CAST_SUCCESS" and sourceGUID == state.GUID and state.talent.exterminate.enabled then
-            -- Check if we had exterminate when we cast
-            LastCastHadExterminate = ExterminatesReady > 0
+    if sourceGUID ~= state.GUID then return end
+
+    local now = GetTime()
+
+    -- ERW -> KM often has a delay, but no more than 1s.
+    if subtype == "SPELL_CAST_SUCCESS" then
+        if spellID == 47568 then
+            PendingKillingMachine = now + 1
+            -- print( strformat( "%6.3f - ERW Cast; Virtual KM expected within 1s.", now ) )
+        end
+
+        if state.talent.obliteration.enabled and GetPlayerAuraBySpellID( 51271 ) then
+            -- Frost Strike, Glacial Advance, and Howling Blast
+            if spellID == 49143 or spellID == 194913 or spellID == 49184 then
+                PendingKillingMachine = now + 1
+                -- print( strformat( "%6.3f - %s during PoF; Virtual KM expected within 1s.", now, spellName ) )
+            
+            elseif spellID == 47568 then
+                PendingObliteration = now + 10
+                ObliterationTimer = NewTimer( 10, ExpireObliteration )
+                -- print( strformat( "%6.3f - ERW during PoF; next Obliterate or Frostscythe within ~10s is free.", now ) )
+            end
+        end
+
+        if spellID == 207230 or spellID == 49020 then
+            if PendingObliteration > 0 then
+                ObliterationTimer:Cancel()
+                ExpireObliteration()
+            end
+
+            if state.talent.exterminate.enabled then
+                local exterminate = GetPlayerAuraBySpellID( 441416 )
+                exterminate = exterminate and exterminate.applications or 0
+                
+                -- print( strformat( "%6.3f - %s cast with %d Exterminate stacks at time of CLEU event. ", now, spellName, exterminate ) )
+                if exterminate > 1 then
+                    -- We don't really need to care why KM is pending, just that it's pending.
+                    PendingKillingMachine = now + 1
+                    -- print( strformat( "%6.3f - Virtual KM from Exterminate[%d] %s expected within 1s.", now, exterminate, spellName ) )
+                end
+            end
+        end
+
+        -- All SPELL_CAST_SUCCESS events completed.
+        return
+    end
+    
+    if spellID == 51124 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REFRESH" ) then
+        if PendingKillingMachine > 0 then
+            PendingKillingMachine = 0
+            -- print( strformat( "%6.3f - Virtual KM consumed.", now ) )
         end
     end
-
-    -- Track Exterminate buff changes to maintain accurate stack count
-    -- Spell ID 441416 is the Exterminate buff that grants empowered Obliterate/Frostscythe
-    if sourceGUID == state.GUID and spellID == 441416 and state.talent.exterminate.enabled then
-        if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or
-           subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" then
-            -- Sync with actual buff state using API call (more reliable than simulation state)
-            local aura = GetPlayerAuraBySpellID( 441416 )
-            ExterminatesReady = aura and aura.applications or 0
-        end
-    end
-
 end )
 
 local BreathOfSindragosaExpire = setfenv( function()
@@ -1112,49 +1117,33 @@ spec:RegisterHook( "reset_precast", function ()
         state:QueueAuraEvent( "breath_of_sindragosa", BreathOfSindragosaExpire, buff.breath_of_sindragosa.expires, "AURA_EXPIRATION" )
     end
 
-    -- Force refresh of exterminates_ready and last_cast_had_exterminate by setting to nil
-    -- This ensures state expressions retrieve fresh data from local variables
-    exterminates_ready = nil
-    last_cast_had_exterminate = nil
-
-    -- Predictive KM logic for Exterminate consumption
-    -- The handler adds KM immediately, but the simulation might need reinforcement
-    -- during the GCD to ensure recommendations don't flicker
-    if talent.exterminate.enabled then
-        local prev_gcd1 = prev_gcd[1]
-        local recently_used_empowered = prev_gcd1.frostscythe or prev_gcd1.obliterate
-
-        if recently_used_empowered then
-            -- Only add predictive KM if we don't already have it
-            -- This prevents double-adding while ensuring KM is present for recommendations
-
-            -- Case 1: We still have exterminate stacks and no KM
-            -- (KM was consumed but exterminate should grant another)
-            if exterminates_ready > 0 and not buff.killing_machine.up then
-                addStack( "killing_machine" )
-
-            -- Case 2: We just consumed the last exterminate stack
-            -- The handler should have added KM, but reinforce if missing
-            elseif last_cast_had_exterminate and exterminates_ready == 0 and not buff.killing_machine.up then
-                addStack( "killing_machine" )
-            end
+    if PendingKillingMachine > 0 then
+        if PendingKillingMachine > now then
+            addStack( "killing_machine" )
+            if Hekili.ActiveDebug then Hekili:Debug( "Applied virtual KM.", now ) end
+        else
+            PendingKillingMachine = 0
+            if Hekili.ActiveDebug then Hekili:Debug( "Virtual KM expired.", now ) end
         end
     end
 
+    if PendingObliteration > 0 then
+        applyBuff( "obliteration", nil, PendingObliteration - now )
+        if Hekili.ActiveDebug then Hekili:Debug( "Applied virtual 'Obliteration' (%.2f) discount for Oblit / Frostscythe.", buff.obliteration.remains ) end
+    end
 end )
 
 
 
 local KillingMachineConsumer = setfenv( function ()
+    local stacksConsumed = 1
 
-    local stacksConsumed = 0
     -- Killing Streak
     if talent.killing_streak.enabled then
         stacksConsumed = buff.killing_machine.stack
         removeBuff( "killing_machine" )
-        addStack( "killing_streak", stacksConsumed )
+        addStack( "killing_streak", buff.killing_machine.stack )
     else
-        stacksConsumed = 1
         removeStack( "killing_machine" )
     end
 
@@ -1575,14 +1564,14 @@ spec:RegisterAbilities( {
 
     -- A sweeping attack that strikes all enemies in front of you for $s2 Frost damage. This attack always critically strikes and critical strikes with Frostscythe deal $s3 times normal damage. Deals reduced damage beyond $s5 targets. ; Consuming Killing Machine reduces the cooldown of Frostscythe by ${$s1/1000}.1 sec.
     frostscythe = {
-        id = 207230,
+        id = 207230, 
         cast = 0,
         cooldown = 0,
         gcd = "spell",
 
         spend = function()
-            if talent.obliteration.enabled and erw_discount > 0 then return 0 end
-            if talent.exterminate.enabled and buff.exterminate.up then return 1 end
+            if buff.obliteration.up then return 0 end
+            if buff.exterminate.up  then return 1 end
             return 2
         end,
         spendType = "runes",
@@ -1594,27 +1583,18 @@ spec:RegisterAbilities( {
 
         handler = function ()
             removeStack( "inexorable_assault", 3 )
-
-            if talent.obliteration.enabled then erw_discount = 0 end
+            removeBuff( "obliteration" )
 
             -- Handle KM and Exterminate atomically to prevent flickering
             if buff.exterminate.up then
-                -- Process KM consumption and exterminate proc together
-                if buff.killing_machine.up then
-                    -- Consume KM but we'll immediately replace it from exterminate
-                    KillingMachineConsumer( )
-                end
-                -- Exterminate empowers this cast to summon two scythes
-                -- First scythe: Grants Killing Machine proc (immediate for prediction accuracy)
+                if buff.killing_machine.up then KillingMachineConsumer() end
+
                 addStack( "killing_machine" )
-                -- Second scythe: Applies Frost Fever to all enemies around target
                 applyDebuff( "target", "frost_fever" )
                 active_dot.frost_fever = max ( active_dot.frost_fever, active_enemies )
+
                 removeStack( "exterminate" )
-            else
-                -- No exterminate, just consume KM normally
-                if buff.killing_machine.up then KillingMachineConsumer( ) end
-            end
+            elseif buff.killing_machine.up then KillingMachineConsumer() end
 
             -- Horsemen interactions
             if talent.trollbanes_icy_fury.enabled and ( debuff.chains_of_ice_trollbane_slow.up or debuff.chains_of_ice_trollbane_damage.up ) then
@@ -1786,8 +1766,8 @@ spec:RegisterAbilities( {
         gcd = "spell",
 
         spend = function()
-            if talent.obliteration.enabled and erw_discount > 0 then return 0 end
-            if talent.exterminate.enabled and buff.exterminate.up then return 1 end
+            if buff.obliteration.up then return 0 end
+            if buff.exterminate.up then return 1 end
             return 2
         end,
         spendType = "runes",
@@ -1803,26 +1783,18 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.inexorable_assault.enabled then removeStack( "inexorable_assault", 3 ) end
-            if talent.obliteration.enabled then erw_discount = 0 end
+            removeBuff( "obliteration" )
 
             -- Handle KM and Exterminate atomically to prevent flickering
             if buff.exterminate.up then
-                -- Process KM consumption and exterminate proc together
-                if buff.killing_machine.up then
-                    -- Consume KM but we'll immediately replace it from exterminate
-                    KillingMachineConsumer( )
-                end
-                -- Exterminate empowers this cast to summon two scythes
-                -- First scythe: Grants Killing Machine proc (immediate for prediction accuracy)
+                if buff.killing_machine.up then KillingMachineConsumer() end
+
                 addStack( "killing_machine" )
-                -- Second scythe: Applies Frost Fever to all enemies around target
                 applyDebuff( "target", "frost_fever" )
                 active_dot.frost_fever = max ( active_dot.frost_fever, active_enemies )
+
                 removeStack( "exterminate" )
-            else
-                -- No exterminate, just consume KM normally
-                if buff.killing_machine.up then KillingMachineConsumer( ) end
-            end
+            elseif buff.killing_machine.up then KillingMachineConsumer() end
 
             -- Horsemen interactions
             if talent.trollbanes_icy_fury.enabled and ( debuff.chains_of_ice_trollbane_slow.up or debuff.chains_of_ice_trollbane_damage.up ) then
