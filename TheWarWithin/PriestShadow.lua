@@ -147,6 +147,37 @@ spec:RegisterResource( Enum.PowerType.Insanity, {
 
         interval = function () return 1.5 * state.haste * ( state.conduit.rabid_shadows.enabled and 0.85 or 1 ) end,
         value = 2
+    },
+
+    -- Gain 10 insanity every new halo ring via power surge (5s)
+    halo_power_surge = {
+        aura = "power_surge",
+
+        last = function ()
+            local app = state.buff.power_surge.applied
+            local t = state.query_time
+
+            return app + floor( t - app )
+        end,
+
+        interval = 5,
+        value = 10,
+    },
+
+    -- Gain 10 insanity over 5s
+    halo_power_surge_tww3_2pc = {
+        aura = "power_surge",
+        set_bonus = "tww3_2pc",
+
+        last = function ()
+            local app = state.buff.power_surge.applied
+            local t = state.query_time
+
+            return app + floor( t - app )
+        end,
+
+        interval = 1,
+        value = 2,
     }
 } )
 spec:RegisterResource( Enum.PowerType.Mana )
@@ -1504,10 +1535,10 @@ spec:RegisterAbilities( {
         startsCombat = true,
 
         handler = function ()
-            gain( 10, "insanity" )
             if talent.power_surge.enabled then
                 if buff.power_surge.down then
                     -- Don't repeatedly run these during "additional Halos", only run during initial cast
+                    gain( 10, "insanity" )
                     applyBuff( "power_surge", nil, 10 )
                     for i = 5, 10, 5 do
                         -- Queue the additional Halos, one every 5 seconds until expiry
@@ -1523,6 +1554,8 @@ spec:RegisterAbilities( {
                         addStack( "sustained_potency" )
                     end
                 end
+            else
+                gain( 10, "insanity" )
             end
         end,
     },
