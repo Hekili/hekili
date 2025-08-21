@@ -8600,6 +8600,20 @@ do
                         order = 1,
                         width = "full"
                     },
+                    quickStart = {
+                        type = "description",
+                        name = function()
+                            local snapshotKey = Hekili.DB.profile.toggles.snapshot.key or "NOT BOUND"
+                            return "|cFFFFD100Quick Start|r\n" ..
+                            "1. Generate a snapshot (keybind: |cffffd100" .. snapshotKey .. "|r or when issue occurs)\n" ..
+                            "2. Select it from dropdown below\n" ..
+                            "3. Click |cffffd100Open Snapshot Window|r - text is pre-selected\n" ..
+                            "4. Press |cffffd100Ctrl+C|r to copy - done!"
+                        end,
+                        order = 1.5,
+                        width = "full",
+                        fontSize = "medium",
+                    },
                     SnapID = {
                         type = "select",
                         name = "Select a Snapshot",
@@ -8620,6 +8634,10 @@ do
                             snapshots.selected = val
                         end,
                         get = function( info )
+                            -- Auto-select most recent snapshot if none selected and snapshots exist
+                            if ( snapshots.selected == 0 or snapshots.selected == nil ) and #ns.snapshots > 0 then
+                                snapshots.selected = #ns.snapshots
+                            end
                             return snapshots.selected
                         end,
                         order = 3,
@@ -8628,10 +8646,10 @@ do
                     },
                     openSnapshotWindow = {
                         type = "execute",
-                        name = "Get This Snapshot",
-                        desc = "Open the selected snapshot in a popup window with pre-selected text for easy copying.",
+                        name = "Open Snapshot Window",
+                        desc = "Opens a popup window with the snapshot text pre-selected and ready to copy.",
                         func = function()
-                            -- This still seems to produce a rootFrame error in ace dialog, but it also seems harmless and doesn't affect user experience
+                            -- Safely call the snapshot window function
                             local success, err = pcall( function()
                                 Hekili:OpenSnapshotWindow( snapshots.selected )
                             end )
@@ -8640,7 +8658,7 @@ do
                             end
                         end,
                         order = 3.5,
-                        width = "normal",
+                        width = "double",
                         disabled = function() return snapshots.selected == 0 or #ns.snapshots == 0 end,
                     },
                     autoSnapshot = {
@@ -8659,107 +8677,96 @@ do
                         order = 2.1,
                         width = "normal",
                     },
-                    issueReporting_snapshot = {
+                    snapshotInstructions = {
                         type = "group",
-                        name = "What is a snapshot?",
+                        name = "Snapshot Instructions",
                         order = 4,
                         args = {
-                            issueReporting_snapshot_what = {
+                            snapshotInstructions_info = {
                                 type = "description",
                                 name = function()
-                                    return "Snapshots are logs of the addon's decision-making process for a set of recommendations.  If you have questions about -- or disagree with -- the addon's recommendations, " ..
-                                    "reviewing a snapshot can help identify what factors led to the specific recommendations that you saw.\n\n" ..
-                                    "Snapshots only capture a specific point in time, and explain the current recommendation as well as all future recommendations based on icons shown. So if you show 3 icons in the addon, the snapshot will explain the current recommendation and the next 2." ..
-                                    "\n\nYou can also freeze the addon's recommendations using the |cffffd100Pause|r binding ( |cffffd100" .. ( Hekili.DB.profile.toggles.pause.key or "NOT BOUND" ) .. "|r ).  Doing so will freeze the addon's recommendations, allowing you to mouseover the display " ..
-                                    "and see which conditions were met to display those recommendations.  Press Pause again to unfreeze the addon.\n\n" ..
-                                    "Using the settings at the top of this panel, you can ask the addon to automatically generate a snapshot for you when no recommendations were able to be made.\n\n"
+                                    local snapshotKey = Hekili.DB.profile.toggles.snapshot.key or "NOT BOUND"
+                                    local pauseKey = Hekili.DB.profile.toggles.pause.key or "NOT BOUND"
+                                    return "|cFFFFD100When to Create|r\n" ..
+                                    "Generate snapshots when the issue is actively happening. If recommendations seem wrong, that's the time to capture it.\n\n" ..
+                                    "|cFFFFD100How to Create|r\n" ..
+                                    "• Snapshot keybind: |cffffd100" .. snapshotKey .. "|r\n" ..
+                                    "• Pause keybind: |cffffd100" .. pauseKey .. "|r\n" ..
+                                    "• Auto-generated when no recommendations found (enable above)\n\n" ..
+                                    "|cFFFFD100How to Share|r\n" ..
+                                    "1. Copy snapshot using |cffffd100Open Snapshot Window|r button\n" ..
+                                    "2. Go to Pastebin.com and paste (Ctrl+V)\n" ..
+                                    "3. Click 'Create New Paste' and share the link"
                                 end,
-                                order = 4,
-                                width = "full",
-                                fontSize = "medium",
-                            },
-                        },
-                    },
-
-                    issueReporting_snapshot_how = {
-                        type = "group",
-                        name = "How do I get one?",
-                        order = 5,
-                        args = {
-                            issueReporting_snapshot_how_info = {
-                                type = "description",
-                                name = function()
-                                return "|cFFFFD100When should I do it|r\n" ..
-                                "You should generate the snapshot when the issue is actively happening. If you look at the recommendations and think \"this seems wrong\", that's when you should do it. Most of the time, issues can be recreated at training dummies." ..
-                                "\n\nFor example, if the issue usually happens 20 seconds into your rotation, then an out-of-combat prepull snapshot isn't going to help the Dev or other community members diagnose and fix the issue." ..
-                                "\n\n|cFFFFD100How do I do it|r\n" ..
-                                "You can generate a snapshot one of 3 ways:\n" ..
-                                "• Pressing the snapshot keybind: |cffffd100" .. ( Hekili.DB.profile.toggles.snapshot.key or "NOT BOUND" ) .. "|r" ..
-                                "\n• Pressing the pause keybind: |cffffd100" .. ( Hekili.DB.profile.toggles.pause.key or "NOT BOUND" ) .. "|r" ..
-                                "\n• One can be automatically generated if the addon fails to recommend something, if you allow it to via the checkbox at the top of this window (|cFFFFD100Auto Snapshot|r)" ..
-                                "\n\n|cFFFFD100Okay I made one, where is it?|r\n" ..
-                                "The snapshot can be retrieved by picking it from dropdown list near the top of this window, then copying it from the textbox that appears. Be sure to press |cFFFFD100Ctrl + A|r before copying it so that you get the entire thing. It should be very, very long."
-                                end,
-                                order = 4.1,
-                                fontSize = "medium",
-                                width = "full",
-                                },
-                        },
-                    },
-                    issueReporting_snapshot_next = {
-                        type = "group",
-                        name = "How to Submit",
-                        order = 6,
-                        args = {
-                            issueReporting_snapshot_next_info = {
-                                type = "description",
-                                name = "With the Snapshot Data copied to your clipboard, navigate to Pastebin.",
-                                fontSize = "medium",
                                 order = 1,
                                 width = "full",
+                                fontSize = "medium",
                             },
-                            issueReporting_snapshot_next_info_2 = {
+                            pastebin_link = {
                                 type = "input",
                                 name = "Pastebin",
                                 dialogControl = "SFX-Info-URL",
-                                get = function() return "https://pastebin.org/" end,
+                                get = function() return "https://pastebin.com/" end,
                                 set = function() end,
                                 order = 2,
                                 width = "full",
                             },
-                            issueReporting_snapshot_next_info_3 = {
-                                type = "description",
-                                name = "Paste the Snapshot Data in the large textbox ( |cFFFFD100CTRL+V|r ), then click |cFFFFD100Create New Paste|r.\n\n"
-                                    .. "Copy the link address from your browser and provide it where appropriate, whether Discord or in a GitHub issue report.",
-                                fontSize = "medium",
-                                order = 3,
-                                width = "full"
-                            },
-                            issueReporting_snapshot_next_info_4 = {
+                            discord_link = {
                                 type = "input",
                                 name = "Discord",
                                 dialogControl = "SFX-Info-URL",
                                 get = function() return "https://discord.gg/3cCTFxM" end,
                                 set = function() end,
-                                order = 2,
+                                order = 3,
                                 width = "full",
                             },
-                            issueReporting_snapshot_next_info_5 = {
+                            github_link = {
                                 type = "input",
                                 name = "GitHub Issues",
                                 dialogControl = "SFX-Info-URL",
                                 get = function() return "http://github.com/Hekili/hekili/issues" end,
                                 set = function() end,
-                                order = 2,
+                                order = 4,
+                                width = "full",
+                            },
+                        },
+                    },
+
+                    issueReporting_snapshot_what = {
+                        type = "group",
+                        name = "What is a snapshot?",
+                        order = 5,
+                        args = {
+                            issueReporting_snapshot_what_info = {
+                                type = "description",
+                                name = function()
+                                    return "|cFFFFD100What is a snapshot?|r\n" ..
+                                    "A snapshot is a comprehensive diagnostic log that captures your character's complete state at a specific moment in time. It records everything the addon 'sees' when making the recommendations currently displayed on your screen, including:\n\n" ..
+                                    "• |cFF00CCFFCharacter Stats|r: Your current health, resources ( mana/energy/rage ), buffs, debuffs, talents, and equipment\n" ..
+                                    "• |cFF00CCFFCombat State|r: Whether you're in combat, your current target, enemy debuffs, and distance from enemies\n" ..
+                                    "• |cFF00CCFFAbility Information|r: Cooldown timers, charges available, cast times, and resource costs\n" ..
+                                    "• |cFF00CCFFDecision Logic|r: The addon's step-by-step reasoning for each recommendation\n" ..
+                                    "• |cFF00CCFFPriority Lists|r: Which action priority list ( APL ) conditions were checked and their results\n\n" ..
+                                    "|cFFFFD100Why are snapshots important?|r\n" ..
+                                    "When you report a bug like 'the addon should recommend Fireball but it's recommending Frostbolt,' developers need to see exactly what the addon was 'thinking' at that moment. A snapshot doesn't look backwards - it provides information about the recommendations currently visible on your screen. Without a snapshot, it's nearly impossible to reproduce and fix issues because:\n\n" ..
+                                    "• Your character's exact state matters ( talents, gear, buffs, resources )\n" ..
+                                    "• Combat situations are complex and change rapidly\n" ..
+                                    "• The addon's logic involves hundreds of conditions and calculations\n\n" ..
+                                    "|cFFFFD100What makes a good snapshot?|r\n" ..
+                                    "The best snapshots are taken when the issue is actively occurring. If you see a recommendation that looks wrong, generate the snapshot immediately. The snapshot should be very long ( hundreds or thousands of lines ) - if it's only one line, something went wrong.\n\n" ..
+                                    "Think of a snapshot like a 'black box recorder' for the addon - it tells developers exactly what happened so they can understand and fix the problem."
+                                end,
+                                order = 1,
+                                fontSize = "medium",
                                 width = "full",
                             },
                         },
                     },
                     Snapshot = {
                         type = 'input',
-                        name = "Snapshot Data",
-                        desc = "Click here and press CTRL+A, CTRL+C to copy the snapshot.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket.",
-                        order = 20,
+                        name = "Alternative: Manual Copy",
+                        desc = "Copy directly from this textbox if preferred.\n\nPaste in a text editor to review or upload to Pastebin to support an issue ticket.",
+                        order = 25,
                         get = function( info )
                             if snapshots.selected == 0 then return "" end
                             return ns.snapshots[ snapshots.selected ].log
@@ -8771,8 +8778,7 @@ do
 
                     SnapshotInstructions = {
                         type = "description",
-                        name = "|cFF00CCFFClick the textbox above and press |cFFFFD100CTRL+A|r to select ALL text and |cFFFFD100CTRL+C|r to copy it to the clipboard.\n\n"
-                            .. "When pasted to a text file or Pastebin.org, the snapshot should be hundreds or thousands of lines long.",
+                        name = "|cFF00CCFFFor easier copying, use the |cFFFFD100Open Snapshot Window|r button above.",
                         order = 30,
                         width = "full",
                         fontSize = "medium",
