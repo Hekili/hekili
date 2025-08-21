@@ -1319,7 +1319,7 @@ spec:RegisterAbilities( {
         cast = 0.0,
         cooldown = function() return 10 - ( 2 * talent.deadeye.rank ) end,
         charges = function() if talent.deadeye.enabled then return 2 end end,
-        recharge = function() if talent.deadeye.enabled then return 10 end end,
+        recharge = function() if talent.deadeye.enabled then return 8 end end,
         gcd = "spell",
         school = "shadow",
 
@@ -1335,16 +1335,17 @@ spec:RegisterAbilities( {
 
         usable = function () return buff.deathblow.up or target.health_pct < 20 or target.health_pct > 80, "Requires deathblow, or target health either below 20% or above 80%" end,
         handler = function ()
-            applyDebuff( "target", "black_arrow" )
             spec.abilities.kill_shot.handler()
         end,
-
+        
         impact = function()
+            applyDebuff( "target", "black_arrow" )
             if talent.umbral_reach.enabled and active_enemies > 1 then
-                active_dot.black_arrow = min( active_dot.black_arrow, true_active_enemies )
+                active_dot.black_arrow = min( active_dot.black_arrow + 1, true_active_enemies )
                 if talent.trick_shots.enabled then applyBuff( "trick_shots" ) end
             end
         end,
+
         bind = "kill_shot"
     },
 
