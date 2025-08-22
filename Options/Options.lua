@@ -5122,19 +5122,46 @@ found = true end
                                     end,
                                     width = 1.5,
                                 },
-
                                 frameBudgetInfo = {
                                     type = "description",
-                                    name = "\nThis setting exists to try and prevent stutters and frame drops by limiting how much computation time Hekili is allowed to use each frame.\n\n" ..
-                                        "|cFFFFD700Lower values|r = slower recommendation updates, but leaves more frame time for the rest of your game and addons\n" ..
-                                        "|cFFFFD700Higher values|r = faster recommendation updates, more likely to cause stutters if the addon uses too much of your frame time\n\n" ..
-                                        "|cFF87CEFAWhat's my best setting?|r\n" ..
-                                        "The highest value that doesn't impact your FPS or cause stuttering. Everyones particular situation may vary, 70% is the starting default you can adjust from.\n\n" ..
-                                        "The frame budget automatically adjusts based on your current FPS. If you experience stutters or frame drops, try lowering this value which scales down the calculated frame budget.",
+                                    name = function()
+                                        -- Use smoothed FPS from UI.lua to avoid menu-induced frame drops
+                                        local smoothedFPS = Hekili.GetSmoothedFPS and Hekili.GetSmoothedFPS() or nil
+                                        local rawFPS = GetFramerate()
+                                        local fps = smoothedFPS or 60
+
+                                        -- Safeguard: ensure FPS is reasonable (between 10 and 300)
+                                        if fps < 10 then
+                                            -- print( "[Hekili Debug] WARNING: Unreasonable FPS value detected:", fps, "- using fallback" )
+                                            fps = 60
+                                        end
+
+                                        local budget = Hekili.DB.profile.performance.frameBudget or 70
+                                        local frameBudgetMs = ( 1000 / fps ) * ( budget / 100 )
+
+                                        return
+                                            "\nControls how much of each frame Hekili is allowed to use for calculations. " ..
+                                            "Adjust this to balance |cFF00FF00smooth gameplay|r and |cFF00FF00responsive recommendations|r.\n\n" ..
+
+                                            "|cFFFFD700Lower values:|r Updates less frequently, leaving more frame time for the game and other addons.\n" ..
+                                            "|cFFFFD700Higher values:|r Updates more quickly, but may cause stutters or frame drops if too much frame time is used.\n\n" ..
+
+                                            "|cFF87CEFARecommended Setting:|r\n" ..
+                                            "Use the highest value that feels smooth on your system without stuttering. " ..
+                                            "As a baseline, |cFFFFD70070%|r is a good starting point.\n\n" ..
+
+                                            "This setting adapts automatically to your current framerate. " ..
+                                            "At |cFFFFD700" .. format( "%.1f", fps ) .. " FPS|r, a budget of |cFFFFD700" .. budget .. "%|r " ..
+                                            "allows up to |cFFFFD700" .. format( "%.2f", frameBudgetMs ) .. " ms|r of frame time per update.\n\n" ..
+
+
+                                            "If you notice stutters or frame drops, lower this value to give WoW and your UI more breathing room."
+                                    end,
                                     order = 2,
                                     width = "full",
                                     fontSize = "medium",
-                                },
+                                }
+
                             },
                         },
                     },

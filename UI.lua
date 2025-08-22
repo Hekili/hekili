@@ -78,6 +78,11 @@ local function updateSmoothedFPS()
     return fpsTracker.smoothedFPS
 end
 
+-- Expose smoothed FPS for use in other places
+function Hekili.GetSmoothedFPS()
+    return updateSmoothedFPS()
+end
+
 -- Calculate frame budget based on user percentage
 local function calculateFrameBudget()
 
