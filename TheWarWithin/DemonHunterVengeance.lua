@@ -860,20 +860,15 @@ local sigilList = {
 }
 
 local DemonsurgeHardcast = false
-local HardcastTriggerTime = 0
 
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= GUID then return end
 
     if spellID == 187827 and state.talent.demonic_intensity.enabled then
-        -- local now = GetTime()
         if subtype == "SPELL_CAST_SUCCESS" then
             DemonsurgeHardcast = true
-            -- Hekili:Print( "hardcast up" )
-            -- HardcastTriggerTime = now
-        elseif subtype == "SPELL_AURA_REMOVED" then -- ( HardcastTriggerTime > 0 ) and ( now - HardcastTriggerTime >= 19.5 )
+        elseif subtype == "SPELL_AURA_REMOVED" then
             DemonsurgeHardcast = false
-            -- Hekili:Print( "hardcast removed" )
         end
     end
 
