@@ -47,14 +47,14 @@ actions+=/hand_of_guldan,if=demonic_art&soul_shard>=3
 actions+=/variable,name=impl,op=set,value=buff.tyrant.down,if=active_enemies>1+(talent.sacrificed_souls.enabled)
 actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<6,if=active_enemies>2+(talent.sacrificed_souls.enabled)&active_enemies<5+(talent.sacrificed_souls.enabled)
 actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<8,if=active_enemies>4+(talent.sacrificed_souls.enabled)
-actions+=/implosion,if=cooldown.summon_demonic_tyrant.remains_expected>10&(active_enemies>3&set_bonus.tww2_4pc&buff.wild_imps.stack>7&!buff.demonic_core.react&!prev_gcd.1.implosion|!set_bonus.tww2_4pc&active_enemies>2&two_cast_imps>2&!prev_gcd.1.implosion&variable.impl)
+actions+=/implosion,if=cooldown.summon_demonic_tyrant.remains_expected>10&(active_enemies>3&set_bonus.tww2_4pc>0&buff.wild_imps.stack>7&buff.demonic_core.down&!prev_gcd.1.implosion|set_bonus.tww2_4pc=0&active_enemies>2&two_cast_imps>2&!prev_gcd.1.implosion&variable.impl)
 actions+=/ruination
 actions+=/demonbolt,cycle_targets=1,if=soul_shard<4&buff.demonic_core.stack>=3&talent.doom
 actions+=/demonbolt,if=soul_shard<4&buff.demonic_core.stack>=3&!talent.doom
 actions+=/power_siphon,if=!buff.demonic_core.up
 actions+=/infernal_bolt,if=soul_shard<3
 actions+=/hand_of_guldan,if=soul_shard>=3
-actions+=/demonbolt,if=soul_shard<4&buff.demonic_core.react
+actions+=/demonbolt,if=soul_shard<4&buff.demonic_core.up
 actions+=/shadow_bolt
 actions+=/infernal_bolt
 
@@ -96,7 +96,7 @@ actions.items+=/use_item,use_off_gcd=1,slot=main_hand,name=neural_synapse_enhanc
 ## actions.opener+=/infernal_bolt
 ## actions.opener+=/shadow_bolt,if=soul_shard<5&buff.dreadstalkers.remains&pet.wild_imp.active<3
 ## actions.opener+=/hand_of_guldan,if=soul_shard>=3&pet.wild_imp.active<10
-## actions.opener+=/demonbolt,if=buff.demonic_core.react&buff.dreadstalkers.remains&soul_shard<4
+## actions.opener+=/demonbolt,if=buff.demonic_core.up&buff.dreadstalkers.remains&soul_shard<4
 ## actions.opener+=/hand_of_guldan,if=variable.first_tyrant_time<gcd.max+action.summon_demonic_tyrant.cast_time
 ## actions.opener+=/shadow_bolt,if=buff.dreadstalkers.remains
 

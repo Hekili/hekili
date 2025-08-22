@@ -528,6 +528,9 @@ do
         { "^time_to_imps%.(.+)$" , "time_to_imps[%1]"             }, -- Demo Warlock
         { "^!?diabolic_ritual$"  , "buff.diabolic_ritual.remains" }, -- Warlocks
         { "^!?demonic_art$"      , "buff.demonic_art.remains"     },
+        
+        { "^!?two_cast_imps>(.-)$" , "time_to_n_cast_imps_exceeds_y(2,1+(%1))" },
+        { "^!?last_cast_imps>(.-)$", "time_to_n_cast_imps_exceeds_y(1,1+(%1))" },
 
         { "^active_bt_triggers$"       , "time_to_bt_triggers(0)"    }, -- Feral Druid w/ Bloodtalons.
         { "^active_bt_triggers<?=0$"   , "time_to_bt_triggers(0)"    }, -- Feral Druid w/ Bloodtalons.
