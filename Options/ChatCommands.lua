@@ -222,7 +222,6 @@ function Hekili:HandleSetCommand( args )
 end
 
 function Hekili:HandleFixCommand( args )
-
     local DB = Hekili.DB
     local profile = DB.profile
     local defaults = DB.defaults
@@ -232,7 +231,7 @@ function Hekili:HandleFixCommand( args )
 
     if fixType == "pack" then
         local packName = state.system.packName
-        local pack = profile.packs[ packName ]
+        local pack = rawget( profile.packs, packName )
 
         if not pack or not pack.builtIn then
             return false
@@ -593,7 +592,8 @@ function Hekili:HandlePriorityCommand( args )
 
         -- Search for the built-in default priority in the current spec
         for _, priority in ipairs( priorities ) do
-            if Hekili.DB.profile.packs[ priority ].builtIn then
+            local pack = rawget( Hekili.DB.profile.packs, priority )
+            if pack and pack.builtIn then
                 defaultPriority = priority
                 break
             end
@@ -602,7 +602,8 @@ function Hekili:HandlePriorityCommand( args )
         -- Set the default priority if found
         if defaultPriority then
             Hekili.DB.profile.specs[ spec ].package = defaultPriority
-            local output = format("Switched to the built-in default priority for your specialization: %s%s|r.", Hekili.DB.profile.packs[ defaultPriority ].builtIn and BlizzBlue or "|cFFFFD100", defaultPriority )
+            local pack = rawget( Hekili.DB.profile.packs, defaultPriority )
+            local output = format("Switched to the built-in default priority for your specialization: %s%s|r.", pack.builtIn and BlizzBlue or "|cFFFFD100", defaultPriority )
             self:Print( output )
             self:ForceUpdate( "CLI_TOGGLE" )
         else
@@ -622,7 +623,8 @@ function Hekili:HandlePriorityCommand( args )
             output = output .. "\nValid priority |cFFFFD100name|rs are:"
             for _, priority in ipairs( priorities ) do
                 local isCurrent = Hekili.DB.profile.specs[ spec ].package == priority
-                output = format( "%s\n - %s%s|r %s", output, Hekili.DB.profile.packs[ priority ].builtIn and BlizzBlue or "|cFFFFD100", priority, isCurrent and "|cFF00FF00(current)|r" or "" )
+                local pack = rawget( Hekili.DB.profile.packs, defaultPriority )
+                output = format( "%s\n - %s%s|r %s", output, pack.builtIn and BlizzBlue or "|cFFFFD100", priority, isCurrent and "|cFF00FF00(current)|r" or "" )
             end
         end
 
@@ -638,7 +640,8 @@ function Hekili:HandlePriorityCommand( args )
     for _, priority in ipairs( priorities ) do
         if priority:lower():match( pattern ) then
             Hekili.DB.profile.specs[ spec ].package = priority
-            local output = format( "Priority set to %s%s|r.", Hekili.DB.profile.packs[ priority ].builtIn and BlizzBlue or "|cFFFFD100", priority )
+            local pack = rawget( Hekili.DB.profile.packs, defaultPriority )
+            local output = format( "Priority set to %s%s|r.", pack.builtIn and BlizzBlue or "|cFFFFD100", priority )
             self:Print( output )
             self:ForceUpdate( "CLI_TOGGLE" )
             return true
@@ -648,7 +651,8 @@ function Hekili:HandlePriorityCommand( args )
     -- If no matching priority found, display valid options
     local output = format( "No match found for priority '%s'.\nValid options are:", rawName )
     for i, priority in ipairs( priorities ) do
-        output = output .. format( " %s%s|r%s", Hekili.DB.profile.packs[ priority ].builtIn and BlizzBlue or "|cFFFFD100", priority, i == #priorities and "." or "," )
+        local pack = rawget( Hekili.DB.profile.packs, defaultPriority )
+        output = output .. format( " %s%s|r%s", pack.builtIn and BlizzBlue or "|cFFFFD100", priority, i == #priorities and "." or "," )
     end
     self:Print( output )
     return true

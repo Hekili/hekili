@@ -1871,7 +1871,7 @@ end
 
 
 function Hekili:LoadScript( pack, list, id )
-    local pData = self.DB.profile.packs[ pack ]
+    local pData = rawget( self.DB.profile.packs, pack )
     local data = pData.lists[ list ][ id ]
     local specData = pData.spec and class.specs[ pData.spec ]
     local scriptID = pack .. ":" .. list .. ":" .. id

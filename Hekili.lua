@@ -214,11 +214,13 @@ function Hekili:SetupDebug( display )
 
 	lastIndent = 0
 
-	local pack = self.State.system.packName
+	local packName = self.State.system.packName
+    if not packName then return end
 
+    local pack = rawget( self.DB.profile.packs, packName )
     if not pack then return end
 
-	self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using %s( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), self.DB.profile.packs[ pack ].builtIn and "built-in " or "", pack )
+	self:Debug( "New Recommendations for [ %s ] requested at %s ( %.2f ); using %s( %s ) priority.", display, date( "%H:%M:%S"), GetTime(), pack.builtIn and "built-in " or "", packName )
 end
 
 
@@ -614,7 +616,7 @@ function Hekili:SaveDebugSnapshot( dispName )
 
             local custom = ""
 
-            local pack = self.DB.profile.packs[ state.system.packName ]
+            local pack = rawget( self.DB.profile.packs, state.system.packName )
             if not pack.builtIn then
                 custom = format( " |cFFFFA700(*%s[%d])|r", state.spec.name, state.spec.id )
             end
