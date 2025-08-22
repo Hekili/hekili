@@ -1848,6 +1848,9 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyBuff( "pillar_of_frost" )
+            -- Delay by 0.1s to help match trinket usage to simulation.
+            buff.pillar_of_frost.applied = buff.pillar_of_frost.applied + 0.1
+
             if talent.frozen_dominion.enabled then spec.abilities.remorseless_winter.handler() end
 
             -- 2-piece tier set: Pillar of Frost summons Trollbane for 10 sec
