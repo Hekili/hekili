@@ -87,6 +87,7 @@ TheWarWithin\WarriorProtection.lua
 Targets.lua
 Options\DevTools.lua
 Options\SnapshotUtil.lua
+Options\SnapshotWindow.lua
 Options\ChatCommands.lua
 Options\Options.lua
 UI.lua

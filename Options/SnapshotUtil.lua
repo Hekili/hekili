@@ -88,8 +88,8 @@ end
 
 -- Generates table header and separator lines with calculated widths
 function SnapshotUtil.GenerateTableHeaders( headers, widths )
-    local headerLine = "|"
-    local separatorLine = "|"
+    local headerLine = ""
+    local separatorLine = ""
 
     for i, header in ipairs( headers ) do
         local width = widths[ i ] or 8
@@ -98,10 +98,15 @@ function SnapshotUtil.GenerateTableHeaders( headers, widths )
         if paddingNeeded > 0 then
             headerStr = headerStr .. string.rep( " ", paddingNeeded )
         end
-        headerStr = headerStr .. " |"
-
+        headerStr = headerStr .. " "
+        
+        if i > 1 then
+            headerLine = headerLine .. "|"
+            separatorLine = separatorLine .. "|"
+        end
+        
         headerLine = headerLine .. headerStr
-        separatorLine = separatorLine .. string.rep( "-", width ) .. "|"
+        separatorLine = separatorLine .. string.rep( "-", width )
     end
 
     return headerLine, separatorLine
@@ -109,7 +114,7 @@ end
 
 -- Generates a table row with calculated widths
 function SnapshotUtil.GenerateTableRow( values, widths )
-    local row = "|"
+    local row = ""
 
     for i, value in ipairs( values ) do
         local width = widths[ i ] or 8
@@ -118,8 +123,12 @@ function SnapshotUtil.GenerateTableRow( values, widths )
         if paddingNeeded > 0 then
             valueStr = valueStr .. string.rep( " ", paddingNeeded )
         end
-        valueStr = valueStr .. " |"
-
+        valueStr = valueStr .. " "
+        
+        if i > 1 then
+            row = row .. "|"
+        end
+        
         row = row .. valueStr
     end
 
