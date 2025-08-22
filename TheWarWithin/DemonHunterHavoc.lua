@@ -1005,6 +1005,8 @@ local death_events = {
     SPELL_INSTAKILL         = true,
 }
 
+local DemonsurgeHardcast = false
+
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
         if spellID == 228532 then
@@ -1017,12 +1019,15 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
             elseif spellID == 228537 then
                 -- Generated
                 soul_fragments.reset()
+            elseif ( spellID == 191427 or spellID == 200166 ) and state.talent.demonic_intensity.enabled then
+                DemonsurgeHardcast = true
             end
         elseif state.set_bonus.tier30_2pc > 0 and subtype == "SPELL_AURA_APPLIED" and spellID == 408737 then
             furySpent = max( 0, furySpent - 175 )
-
         elseif state.talent.initiative.enabled and subtype == "SPELL_DAMAGE" then
             initiative_actual[ destGUID ] = true
+        elseif subtype == "SPELL_AURA_REMOVED" and spellID == 162264 then
+            DemonsurgeHardcast = false
         end
     elseif destGUID == GUID and ( subtype == "SPELL_DAMAGE" or subtype == "SPELL_PERIODIC_DAMAGE" ) then
         initiative_actual[ sourceGUID ] = true
@@ -1203,13 +1208,8 @@ spec:RegisterHook( "reset_precast", function ()
                 demonsurgeLastSeen[ name ] = query_time
             end
         end
-        if talent.demonic_intensity.enabled and cooldown.metamorphosis.remains then
-            local metaApplied = buff.metamorphosis.applied - 0.2
-            local metaLastCast = action.metamorphosis.lastCast
-            local beamLastCast = action.eye_beam.lastCast
-            if metaLastCast >= metaApplied or ( beamLastCast >= metaApplied and beamLastCast >= metaLastCast ) then
-                applyBuff( "demonsurge_hardcast", metaRemains )
-            end
+        if DemonsurgeHardcast then
+            applyBuff( "demonsurge_hardcast", metaRemains )
             for _, name in ipairs( demonsurge.hardcast ) do
                 local ability_name = demonsurge_spell_map[name] or name
                 if class.abilities[ ability_name ] and IsSpellOverlayed( class.abilities[ ability_name ].id ) then
@@ -2211,6 +2211,7 @@ spec:RegisterAbilities( {
         end,
 
         handler = function ()
+
             -- Standard effects/Talents
             applyBuff( "vengeful_retreat_movement" )
             if cooldown.fel_rush.remains < 1 then setCooldown( "fel_rush", 1 ) end

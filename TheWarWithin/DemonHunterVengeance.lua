@@ -859,8 +859,23 @@ local sigilList = {
     sigil_of_chains = { 202138, 389807 }
 }
 
+local DemonsurgeHardcast = false
+local HardcastTriggerTime = 0
+
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= GUID then return end
+
+    if spellID == 187827 and state.talent.demonic_intensity.enabled then
+        -- local now = GetTime()
+        if subtype == "SPELL_CAST_SUCCESS" then
+            DemonsurgeHardcast = true
+            -- Hekili:Print( "hardcast up" )
+            -- HardcastTriggerTime = now
+        elseif subtype == "SPELL_AURA_REMOVED" then -- ( HardcastTriggerTime > 0 ) and ( now - HardcastTriggerTime >= 19.5 )
+            DemonsurgeHardcast = false
+            -- Hekili:Print( "hardcast removed" )
+        end
+    end
 
     if state.talent.charred_flesh.enabled and subtype == "SPELL_DAMAGE" and spellID == 258922 and destGUID == initial_fiery_brand_guid then
         bonus_time_from_immo_aura = bonus_time_from_immo_aura + ( 0.25 * state.talent.charred_flesh.rank )
@@ -873,18 +888,14 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sour
 
         if spellID == 204255 then
             soul_fragments.activateFragment()
-        end
-
-        -- Fracture:  Generate 2-3 frags
-        if spellID == 263642 then
+        elseif spellID == 263642 then
+            -- Fracture:  Generate 2-3 frags
             local timeStamp = GetTime()
             local metaActive = GetPlayerAuraBySpellID( 187827 )
             local frags = 2 + ( metaActive and 1 or 0 )
             soul_fragments.queueFragments( frags, timeStamp )
-        end
-
-        -- Shear:  Generate 1-2 frags
-        if spellID == 203782 then
+        elseif spellID == 203782 then
+            -- Shear:  Generate 1-2 frags
             local timeStamp = GetTime()
             local metaActive = GetPlayerAuraBySpellID( 187827 )
             local frags = 1 + ( metaActive and 1 or 0 )
@@ -911,7 +922,6 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _ , subtype, _, sour
         -- We consumed or generated a fragment for real, so let's purge the inactive queue.
     elseif spellID == 203981 and soul_fragments.inactive > 0 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" ) then
         soul_fragments.inactive = max( 0, soul_fragments.inactive - 1 )
-
     end
 end, false )
 
@@ -975,11 +985,8 @@ spec:RegisterHook( "reset_precast", function ()
                 applyBuff( "demonsurge_" .. name, metaRemains )
             end
         end
-        if talent.demonic_intensity.enabled then
-            local metaApplied = ( buff.metamorphosis.applied - 0.05 ) -- fudge-factor because GetTime has ms precision
-            if action.metamorphosis.lastCast >= metaApplied or action.fel_devastation.lastCast >= metaApplied then
-                applyBuff( "demonsurge_hardcast", metaRemains )
-            end
+        if DemonsurgeHardcast then
+            applyBuff( "demonsurge_hardcast", metaRemains )
             for _, name in ipairs( demonsurge.hardcast ) do
                 local ability_name = demonsurge_spell_map[name] or name
                 if class.abilities[ ability_name ] and IsSpellOverlayed( class.abilities[ ability_name ].id ) then
@@ -997,8 +1004,8 @@ spec:RegisterHook( "reset_precast", function ()
                 " - Sigil of Doom " .. ( buff.demonsurge_sigil_of_doom.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Soul Sunder " .. ( buff.demonsurge_soul_sunder.up and "ACTIVE" or "INACTIVE" ) .. "\n" ..
                 " - Spirit Burst " .. ( buff.demonsurge_spirit_burst.up and "ACTIVE" or "INACTIVE" ) )
+            end
         end
-    end
 
     fiery_brand_dot_primary_expires = nil
     fury_spent = nil
