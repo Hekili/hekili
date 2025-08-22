@@ -5106,22 +5106,34 @@ found = true end
                             name = "Performance",
                             order = 10,
                             args = {
-                                mode = {
-                                    type = "select",
-                                    name = "CPU Utilization",
-                                    desc = "Select the performance option that works best for your system/CPU.\n" ..
-                                        "• Low (default): Minimize CPU usage to reduce FPS impact, especially on older systems.\n" ..
-                                        "• Medium: Increased CPU usage for smoother updates, likely to impact FPS on older systems.\n" ..
-                                        "• High: Optimized CPU usage for smoothest updates, intended only for high-end processors.",
+                                frameBudget = {
+                                    type = "range",
+                                    name = "Frame Budget",
+                                    desc = "Controls what percentage of frame time Hekili can use for calculations.",
                                     order = 1,
-                                    values = { "Low", "Medium", "High" },
+                                    min = 20,
+                                    max = 90,
+                                    step = 5,
                                     get = function(info)
-                                        return Hekili.DB.profile.performance.mode
+                                        return Hekili.DB.profile.performance.frameBudget or 70
                                     end,
                                     set = function(info, v)
-                                        Hekili.DB.profile.performance.mode = v
+                                        Hekili.DB.profile.performance.frameBudget = v
                                     end,
                                     width = 1.5,
+                                },
+
+                                frameBudgetInfo = {
+                                    type = "description",
+                                    name = "\nThis setting exists to try and prevent stutters and frame drops by limiting how much computation time Hekili is allowed to use each frame.\n\n" ..
+                                        "|cFFFFD700Lower values|r = slower recommendation updates, but leaves more frame time for the rest of your game and addons\n" ..
+                                        "|cFFFFD700Higher values|r = faster recommendation updates, more likely to cause stutters if the addon uses too much of your frame time\n\n" ..
+                                        "|cFF87CEFAWhat's my best setting?|r\n" ..
+                                        "The highest value that doesn't impact your FPS or cause stuttering. Everyones particular situation may vary, 70% is the starting default you can adjust from.\n\n" ..
+                                        "The frame budget automatically adjusts based on your current FPS. If you experience stutters or frame drops, try lowering this value which scales down the calculated frame budget.",
+                                    order = 2,
+                                    width = "full",
+                                    fontSize = "medium",
                                 },
                             },
                         },
