@@ -137,18 +137,11 @@ state.off_hand = {
 
 state.gcd = {}
 
-state.hero_tree = setmetatable( {}, {
+state.hero_tree = setmetatable( {
+    current = "none"
+}, {
     __index = function( t, k )
-
-        if state.level < 71 then
-            return false
-        end
-
-        if k == "current" then
-            return ns.getActiveHeroTreeName()
-        end
-
-        return ns.getActiveHeroTreeName() == k
+        return k == t.current
     end
 } )
 

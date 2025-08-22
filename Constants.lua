@@ -527,9 +527,9 @@ end
 -- Get the name of the currently active Hero Tree
 ns.getActiveHeroTreeName = function ()
     local id = C_ClassTalents and C_ClassTalents.GetActiveHeroTalentSpec()
-    if not id or id == 0 then return nil end -- 0 is the API return for no tree
+    if not id or id == 0 then return "none" end -- 0 is the API return for no tree
     local tree = ns.HeroTrees[ id ]
-    return tree and tree.name or nil
+    return tree and tree.name or "none"
 end
 
 -- Get the key talent from the currently active Hero Tree (with per-spec support)
