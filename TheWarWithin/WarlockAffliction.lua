@@ -793,7 +793,7 @@ spec:RegisterAuras( {
     -- Suffering $w1 Shadowflame damage every $t1 sec.$?a339892[ ; Damage taken by Chaos Bolt and Incinerate increased by $w2%.][]
     wither = {
         id = 445474,
-        duration = function() return 18.0 * ( 1 - 0.15 * talent.hatefury_rituals.rank ) end,
+        duration = function() return talent.absolute_corruption.enabled and ( target.is_player and 24 or 3600 ) or ( 18.0 * ( 1 - 0.15 * talent.hatefury_rituals.rank ) ) end,
         tick_time = function() return 2.0 * ( 1 - 0.15 * talent.creeping_death.rank ) * ( 1 - 0.25 * talent.sataiels_volition.rank) end,
         pandemic = true,
         max_stack = 8 -- ??

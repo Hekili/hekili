@@ -3790,7 +3790,7 @@ local mt_resource = {
             -- Assassination, April 2021
             -- Using the same as time_to_max because our time_to_max uses modeled regen events...
             return state:TimeToResource( t, t.max )
-        
+
         elseif k:sub(1, 16) == "time_to_deficit_" then
             local amount = k:sub(17)
             amount = tonumber(amount)
@@ -5214,7 +5214,7 @@ do
             local moment = state.query_time
             local applied = meta and meta.applied and meta.applied( t, "debuff" ) or t.applied
             local expires = meta and meta.expires and meta.expires( t, "debuff" ) or t.expires
-            local remains = meta and meta.remains and meta.remains( t, "debuff" ) or applied > 0 and applied <= moment and expires > moment and expires - moment or 0
+            local remains = meta and meta.remains and meta.remains( t, "debuff" ) or applied ~= 0 and applied <= moment and expires > moment and expires - moment or 0
 
             if k == "remains" then return remains end
 
