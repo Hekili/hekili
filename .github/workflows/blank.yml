@@ -1,0 +1,146 @@
+name: APL Sync Check
+
+on:
+  schedule:
+    - cron: "17 * * * *"   # hourly at :17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hekili
+        uses: actions/checkout@v4
+
+      - name: Run sync check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const glob = require('glob');
+
+            const files = glob.sync('TheWarWithin/Priorities/*.lua');
+            const upstream = { owner: 'simulationcraft', repo: 'simc', branch: 'thewarwithin' };
+
+            function head(filepath, n=6) {
+              return fs.readFileSync(filepath, 'utf8').split(/\r?\n/).slice(0, n);
+            }
+
+            const results = [];
+            for (const f of files) {
+              const top = head(f, 6);
+
+              const upstreamLine = top.find(l => l.startsWith('## Upstream:'));
+              const shaLine      = top.find(l => l.toLowerCase().includes('simulationcraft commit sync'));
+
+              if (!upstreamLine || !shaLine) {
+                results.push({ file: f, status: 'missing_header' });
+                continue;
+              }
+
+              // Extract upstream path (strip repo URL, keep path after branch/)
+              const matchPath = upstreamLine.match(/ActionPriorityLists\/default\/[A-Za-z0-9._-]+\.simc/);
+              const matchSha  = shaLine.match(/[0-9a-f]{7,40}/i);
+
+              if (!matchPath || !matchSha) {
+                results.push({ file: f, status: 'unparseable_header' });
+                continue;
+              }
+
+              const upstreamPath = matchPath[0];
+              const recordedSha  = matchSha[0];
+
+              // Get latest commit touching that upstream file
+              const { data: commits } = await github.rest.repos.listCommits({
+                owner: upstream.owner,
+                repo: upstream.repo,
+                sha: upstream.branch,
+                path: upstreamPath,
+                per_page: 1
+              });
+
+              if (!commits.length) {
+                results.push({ file: f, status: 'upstream_not_found', upstreamPath });
+                continue;
+              }
+
+              const latestShaFull = commits[0].sha;
+              const latestSha7    = latestShaFull.slice(0,7);
+              const recordedSha7  = recordedSha.slice(0,7);
+
+              const upToDate = (latestSha7 === recordedSha7);
+
+              results.push({
+                file: f,
+                upstreamPath,
+                recordedSha,
+                latestSha: latestShaFull,
+                upToDate
+              });
+            }
+
+            // Build markdown report
+            const rows = [];
+            rows.push('| File | Upstream `.simc` | Recorded SHA | Latest Upstream SHA | Status |');
+            rows.push('|------|-------------------|--------------|---------------------|--------|');
+
+            let outCount = 0;
+            for (const r of results) {
+              if (r.status) {
+                rows.push(`| ${r.file} | ${r.upstreamPath ?? '—'} | ${r.recordedSha ?? '—'} | ${r.latestSha ?? '—'} | ${r.status} |`);
+                outCount++;
+                continue;
+              }
+              const compareLink = `[compare](${`https://github.com/${upstream.owner}/${upstream.repo}/compare/${r.recordedSha}...${r.latestSha}`})`;
+              const status = r.upToDate ? '✅ Up to date' : `❌ Out of date ${compareLink}`;
+              if (!r.upToDate) outCount++;
+              rows.push(`| ${r.file} | ${r.upstreamPath} | \`${r.recordedSha}\` | \`${r.latestSha.slice(0,7)}\` | ${status} |`);
+            }
+
+            const body = [
+              `This issue is updated automatically. It compares the recorded **SimulationCraft Commit Sync** in each Lua priority file against the latest commit that touched the corresponding upstream **.simc** file on \`${upstream.branch}\`.`,
+              '',
+              rows.join('\n'),
+              '',
+              '_Last run: ' + new Date().toISOString() + '_'
+            ].join('\n');
+
+            const issueTitle = 'APL sync status (auto)';
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'automation,apl-sync',
+              per_page: 100
+            });
+
+            let issue = existing.find(i => i.title === issueTitle);
+
+            const wantedLabels = ['automation','apl-sync'];
+            for (const l of wantedLabels) {
+              try { await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name: l }); }
+              catch { await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name: l }); }
+            }
+
+            if (issue) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body,
+                labels: wantedLabels
+              });
+            }
+
+            core.setOutput('out_of_date_count', String(outCount));
