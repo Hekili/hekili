@@ -1,6 +1,6 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/shaman_enhancement.simc
-## SimulationCraft Commit Sync: 02ddd83
-## Date: 2025-08-19
+## SimulationCraft Commit Sync: b45bf25
+## Date: 2025-08-21
 
 actions.precombat+=/windfury_weapon
 actions.precombat+=/flametongue_weapon
