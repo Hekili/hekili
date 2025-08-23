@@ -1,6 +1,6 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/hunter_beast_mastery.simc
-## SimulationCraft Commit Sync: 74ddbc1
-## Date: 2025-08-12
+## SimulationCraft Commit Sync: 5fb0f24
+## Date: 2025-08-23
 
 actions.precombat+=/summon_pet
 # Determine the stronger trinket to sync with cooldowns. In descending priority: buff effects > damage effects, longer > shorter cooldowns, longer > shorter cast times. Special case to consider Mirror of Fractured Tomorrows weaker than other buff effects since its power is split between the dmg effect and the buff effect.
@@ -26,7 +26,7 @@ actions.cds+=/ancestral_call,if=buff.call_of_the_wild.up|!talent.call_of_the_wil
 actions.cds+=/fireblood,if=buff.call_of_the_wild.up|!talent.call_of_the_wild&buff.bestial_wrath.up|boss&fight_remains<9
 actions.cds+=/potion,if=buff.call_of_the_wild.up|!talent.call_of_the_wild&buff.bestial_wrath.up|boss&fight_remains<31
 
-actions.cleave+=/bestial_wrath,if=((buff.howl_of_the_pack_leader_cooldown.remains)-(buff.lead_from_the_front.duration))<((buff.lead_from_the_front.duration)%gcd*0.5)|!set_bonus.tww3_4pc
+actions.cleave+=/bestial_wrath,if=(buff.howl_of_the_pack_leader_cooldown.remains-buff.lead_from_the_front.duration)<(buff.lead_from_the_front.duration%(gcd*0.5))|!set_bonus.tww3_4pc|talent.multishot
 actions.cleave+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd|charges_fractional>=cooldown.kill_command.charges_fractional|talent.call_of_the_wild&cooldown.call_of_the_wild.ready|howl_summon.ready&full_recharge_time<8
 actions.cleave+=/bloodshed
 actions.cleave+=/multishot,if=pet.main.buff.beast_cleave.down&(!talent.bloody_frenzy|cooldown.call_of_the_wild.remains)
