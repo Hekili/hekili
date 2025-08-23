@@ -741,10 +741,11 @@ spec:RegisterAuras( {
     -- Talent: Dealing $196771s1 Frost damage to enemies within $196771A1 yards each second.
     -- https://wowhead.com/beta/spell=196770
     remorseless_winter = {
-        id = function() if talent.frozen_dominion.enabled then return 1233152 else return 196770 end end,
-        duration = function() return 8 + ( 4 * talent.frozen_dominion.rank ) + ( 2 * talent.mawsworn_menace.rank ) end,
+        id = 196770,
+        duration = function() return 8 + ( talent.frozen_dominion.enabled and 4 or 0 ) + ( talent.mawsworn_menace.enabled and 2 or 0 ) end,
         tick_time = 1,
-        max_stack = 1
+        max_stack = 1,
+        copy = { 196770, 1233152 } -- talent.frozen_dominion changes the ID
     },
     -- Talent: Movement speed reduced by $s1%.
     -- https://wowhead.com/beta/spell=211793
@@ -1030,7 +1031,7 @@ local PendingObliteration, ObliterationTimer = 0
 
 local function ExpireObliteration()
     if PendingObliteration == 0 then return end
-    
+
     -- local now = GetTime()
     -- local duration = 10 + now - PendingObliteration
     -- print( strformat( "%6.3f - Obliteration: Discount expired after %.3f; overlayed: %s.", now, duration, IsSpellOverlayed( 49020 ) and "YES" or "NO" ) )
@@ -1055,7 +1056,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, so
             if spellID == 49143 or spellID == 194913 or spellID == 49184 then
                 PendingKillingMachine = now + 1
                 -- print( strformat( "%6.3f - %s during PoF; Virtual KM expected within 1s.", now, spellName ) )
-            
+
             elseif spellID == 47568 then
                 PendingObliteration = now + 10
                 ObliterationTimer = NewTimer( 10, ExpireObliteration )
@@ -1079,7 +1080,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, so
         -- All SPELL_CAST_SUCCESS events completed.
         return
     end
-    
+
     if spellID == 51124 and ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REFRESH" ) then
         if PendingKillingMachine > 0 then
             PendingKillingMachine = 0
@@ -1558,7 +1559,7 @@ spec:RegisterAbilities( {
 
     -- A sweeping attack that strikes all enemies in front of you for $s2 Frost damage. This attack always critically strikes and critical strikes with Frostscythe deal $s3 times normal damage. Deals reduced damage beyond $s5 targets. ; Consuming Killing Machine reduces the cooldown of Frostscythe by ${$s1/1000}.1 sec.
     frostscythe = {
-        id = 207230, 
+        id = 207230,
         cast = 0,
         cooldown = 0,
         gcd = "spell",
