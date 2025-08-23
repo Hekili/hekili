@@ -774,6 +774,31 @@ spec:RegisterAbilities( {
         end,
     },
 
+    -- Remove Curse effects from a friendly target.
+    purify_spirit = {
+        id = 77130,
+        cast = 0,
+        cooldown = 8,
+        gcd = "spell",
+        school = "nature",
+
+        spend = 0.06,
+        spendType = "mana",
+
+        startsCombat = false,
+        texture = 236288,
+
+        toggle = "interrupts",
+        usable = function() return debuff.dispellable_magic.up or ( talent.improved_purify_spirit.enabled and debuff.dispellable_curse.up ), "requires a dispellable effect" end,
+
+        handler = function ()
+            removeDebuff( "player", "dispellable_magic" )
+            if talent.improved_purify_spirit.enabled then
+                removeDebuff( "player", "dispellable_curse" )
+            end
+        end,
+    },
+
     -- A quick surge of healing energy that restores $s1 of a friendly target's health.
     healing_surge = {
         id = 8004,

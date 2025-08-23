@@ -854,6 +854,33 @@ spec:RegisterAbilities( {
         end,
     },
 
+   -- Removes all harmful Poison, Disease, Magic, and Curse effects from the target.
+    detox = {
+        id = 115450,
+        cast = 0,
+        charges = 1,
+        cooldown = 8,
+        recharge = 8,
+        gcd = "spell",
+        school = "physical",
+        startsCombat = false,
+        toggle = "interrupts",
+        
+        usable = function ()
+            if debuff.dispellable_magic.up then return true end
+            if talent.improved_detox.enabled and ( debuff.dispellable_poison.up or debuff.dispellable_disease.up ) then return true end
+            return false, "requires dispellable_magic/poison/disease"
+        end,
+
+        handler = function ()
+            removeDebuff( "player", "dispellable_magic" )
+            if talent.improved_detox.enabled then
+                removeDebuff( "player", "dispellable_poison" )
+                removeDebuff( "player", "dispellable_disease" )
+            end
+        end,
+    },
+
     -- $?c2[The August Celestials empower you, causing you to radiate ${$443039s1*$s7} healing onto up to $s3 injured allies and ${$443038s1*$s7} Nature damage onto enemies within $s6 yds over $d, split evenly among them. Healing and damage increased by $s1% per target, up to ${$s1*$s3}%.]?c3[The August Celestials empower you, causing you to radiate ${$443038s1*$s7} Nature damage onto enemies and ${$443039s1*$s7} healing onto up to $s3 injured allies within $443038A2 yds over $d, split evenly among them. Healing and damage increased by $s1% per enemy struck, up to ${$s1*$s3}%.][]; You may move while channeling, but casting other healing or damaging spells cancels this effect.;
     celestial_conduit = {
         id = 443028,
