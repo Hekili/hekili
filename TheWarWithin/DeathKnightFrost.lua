@@ -742,7 +742,7 @@ spec:RegisterAuras( {
     -- https://wowhead.com/beta/spell=196770
     remorseless_winter = {
         id = 196770,
-        duration = function() return 8 + ( talent.frozen_dominion.enabled and 2 or 0 ) + ( talent.mawsworn_menace.enabled and 2 or 0 ) end,
+        duration = function() return 8 + ( talent.frozen_dominion.enabled and 4 or 0 ) + ( talent.mawsworn_menace.enabled and 2 or 0 ) end,
         tick_time = 1,
         max_stack = 1,
         copy = { 196770, 1233152 } -- talent.frozen_dominion changes the ID
