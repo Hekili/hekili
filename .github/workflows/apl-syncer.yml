@@ -16,7 +16,7 @@ jobs:
       - name: Checkout Hekili (thewarwithin)
         uses: actions/checkout@v4
         with:
-          ref: thewarwithin      # <-- important
+          ref: thewarwithin
 
       - name: Run sync check
         uses: actions/github-script@v7
@@ -24,7 +24,7 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            const core = require('@actions/core');
+            // 'core', 'github', and 'context' are already provided by github-script
 
             const dir = 'TheWarWithin/Priorities';
             const files = fs.existsSync(dir)
@@ -32,9 +32,6 @@ jobs:
               : [];
 
             core.info(`Found ${files.length} Lua priority files under ${dir}`);
-            if (files.length === 0) {
-              core.warning('No files found. Did you checkout the correct branch/path?');
-            }
 
             const upstream = { owner: 'simulationcraft', repo: 'simc', branch: 'thewarwithin' };
 
@@ -79,16 +76,18 @@ jobs:
               }
 
               const latestShaFull = commits[0].sha;
-              const status = latestShaFull.slice(0,7) === recordedSha.slice(0,7)
-                ? '✅ Up to date'
-                : `❌ Out of date [compare](https://github.com/${upstream.owner}/${upstream.repo}/compare/${recordedSha}...${latestShaFull})`;
+              const latestSha7    = latestShaFull.slice(0,7);
+              const recordedSha7  = recordedSha.slice(0,7);
+              const upToDate      = latestSha7 === recordedSha7;
 
               results.push({
                 file: f,
                 upstreamPath,
                 recordedSha,
                 latestSha: latestShaFull,
-                status
+                status: upToDate
+                  ? '✅ Up to date'
+                  : `❌ Out of date [compare](https://github.com/${upstream.owner}/${upstream.repo}/compare/${recordedSha}...${latestShaFull})`
               });
             }
 
@@ -118,11 +117,11 @@ jobs:
             });
 
             let issue = existing.find(i => i.title === issueTitle);
+
             const wantedLabels = ['automation','apl-sync'];
             for (const l of wantedLabels) {
               try { await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name: l }); }
-              catch { try { await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name: l }); } catch {}
-              }
+              catch { try { await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name: l }); } catch {} }
             }
 
             if (issue) {
