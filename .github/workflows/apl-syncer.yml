@@ -2,7 +2,7 @@ name: apl-syncer
 
 on:
   schedule:
-    - cron: "17 * * * *"   # hourly at :17 UTC
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -13,8 +13,10 @@ jobs:
   check-sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Hekili
+      - name: Checkout Hekili (thewarwithin)
         uses: actions/checkout@v4
+        with:
+          ref: thewarwithin      # <-- important
 
       - name: Run sync check
         uses: actions/github-script@v7
@@ -22,12 +24,17 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
+            const core = require('@actions/core');
 
-            // List *.lua files in TheWarWithin/Priorities without using 'glob'
             const dir = 'TheWarWithin/Priorities';
-            const files = fs.readdirSync(dir)
-              .filter(f => f.endsWith('.lua'))
-              .map(f => path.join(dir, f));
+            const files = fs.existsSync(dir)
+              ? fs.readdirSync(dir).filter(f => f.endsWith('.lua')).map(f => path.join(dir, f))
+              : [];
+
+            core.info(`Found ${files.length} Lua priority files under ${dir}`);
+            if (files.length === 0) {
+              core.warning('No files found. Did you checkout the correct branch/path?');
+            }
 
             const upstream = { owner: 'simulationcraft', repo: 'simc', branch: 'thewarwithin' };
 
@@ -47,7 +54,6 @@ jobs:
                 continue;
               }
 
-              // Extract upstream path and recorded SHA
               const matchPath = upstreamLine.match(/ActionPriorityLists\/default\/[A-Za-z0-9._-]+\.simc/);
               const matchSha  = shaLine.match(/[0-9a-f]{7,40}/i);
 
@@ -59,7 +65,6 @@ jobs:
               const upstreamPath = matchPath[0];
               const recordedSha  = matchSha[0];
 
-              // Get latest commit touching that upstream file on thewarwithin
               const { data: commits } = await github.rest.repos.listCommits({
                 owner: upstream.owner,
                 repo: upstream.repo,
@@ -74,36 +79,26 @@ jobs:
               }
 
               const latestShaFull = commits[0].sha;
-              const latestSha7    = latestShaFull.slice(0,7);
-              const recordedSha7  = recordedSha.slice(0,7);
-              const upToDate      = latestSha7 === recordedSha7;
+              const status = latestShaFull.slice(0,7) === recordedSha.slice(0,7)
+                ? '✅ Up to date'
+                : `❌ Out of date [compare](https://github.com/${upstream.owner}/${upstream.repo}/compare/${recordedSha}...${latestShaFull})`;
 
               results.push({
                 file: f,
                 upstreamPath,
                 recordedSha,
                 latestSha: latestShaFull,
-                upToDate
+                status
               });
             }
 
-            // Build the issue body
-            const rows = [];
-            rows.push('| File | Upstream `.simc` | Recorded SHA | Latest Upstream SHA | Status |');
-            rows.push('|------|-------------------|--------------|---------------------|--------|');
-
-            let outCount = 0;
-            for (const r of results) {
-              if (r.status) {
-                rows.push(`| ${r.file} | ${r.upstreamPath ?? '—'} | ${r.recordedSha ?? '—'} | ${r.latestSha ?? '—'} | ${r.status} |`);
-                outCount++;
-                continue;
-              }
-              const compareLink = `[compare](https://github.com/${upstream.owner}/${upstream.repo}/compare/${r.recordedSha}...${r.latestSha})`;
-              const status = r.upToDate ? '✅ Up to date' : `❌ Out of date ${compareLink}`;
-              if (!r.upToDate) outCount++;
-              rows.push(`| ${r.file} | ${r.upstreamPath} | \`${r.recordedSha}\` | \`${r.latestSha.slice(0,7)}\` | ${status} |`);
-            }
+            const rows = [
+              '| File | Upstream `.simc` | Recorded SHA | Latest Upstream SHA | Status |',
+              '|------|-------------------|--------------|---------------------|--------|',
+              ...results.map(r =>
+                `| ${r.file} | ${r.upstreamPath ?? '—'} | \`${r.recordedSha ?? '—'}\` | \`${r.latestSha ? r.latestSha.slice(0,7) : '—'}\` | ${r.status ?? 'missing'} |`
+              )
+            ];
 
             const body = [
               `This issue updates automatically. It compares the recorded **SimulationCraft Commit Sync** in each Lua priority file with the latest commit that touched the corresponding upstream **.simc** on \`${upstream.branch}\`.`,
@@ -123,8 +118,6 @@ jobs:
             });
 
             let issue = existing.find(i => i.title === issueTitle);
-
-            // Ensure labels exist
             const wantedLabels = ['automation','apl-sync'];
             for (const l of wantedLabels) {
               try { await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name: l }); }
@@ -133,20 +126,7 @@ jobs:
             }
 
             if (issue) {
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                body
-              });
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number, body });
             } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title: issueTitle,
-                body,
-                labels: wantedLabels
-              });
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: issueTitle, body, labels: wantedLabels });
             }
-
-            core.setOutput('out_of_date_count', String(outCount));
