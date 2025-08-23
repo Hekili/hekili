@@ -31,8 +31,7 @@ jobs:
               ? fs.readdirSync(dir).filter(f => f.endsWith('.simc')).map(f => path.join(dir, f))
               : [];
 
-
-            core.info(`Found ${files.length} Lua priority files under ${dir}`);
+            core.info(`Found ${files.length} priority files under ${dir}`);
 
             const upstream = { owner: 'simulationcraft', repo: 'simc', branch: 'thewarwithin' };
 
@@ -92,16 +91,19 @@ jobs:
               });
             }
 
+            // Build markdown table with filenames only
             const rows = [
               '| File | Upstream `.simc` | Recorded SHA | Latest Upstream SHA | Status |',
-              '|------|-------------------|--------------|---------------------|--------|',
-              ...results.map(r =>
-                `| ${r.file} | ${r.upstreamPath ?? '—'} | \`${r.recordedSha ?? '—'}\` | \`${r.latestSha ? r.latestSha.slice(0,7) : '—'}\` | ${r.status ?? 'missing'} |`
-              )
+              '|------|------------------|--------------|---------------------|--------|',
+              ...results.map(r => {
+                const localFile    = r.file ? path.basename(r.file) : '—';
+                const upstreamFile = r.upstreamPath ? path.basename(r.upstreamPath) : '—';
+                return `| ${localFile} | ${upstreamFile} | \`${r.recordedSha ?? '—'}\` | \`${r.latestSha ? r.latestSha.slice(0,7) : '—'}\` | ${r.status ?? 'missing'} |`;
+              })
             ];
 
             const body = [
-              `This issue updates automatically. It compares the recorded **SimulationCraft Commit Sync** in each Lua priority file with the latest commit that touched the corresponding upstream **.simc** on \`${upstream.branch}\`.`,
+              `This issue updates automatically. It compares the recorded **SimulationCraft Commit Sync** in each priority file with the latest commit that touched the corresponding upstream **.simc** on \`${upstream.branch}\`.`,
               '',
               rows.join('\n'),
               '',
