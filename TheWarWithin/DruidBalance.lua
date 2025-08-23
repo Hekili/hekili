@@ -585,7 +585,7 @@ spec:RegisterAuras( {
         id = 102560,
         duration = function () return 20 + ( conduit.precise_alignment.mod * 0.001 ) end,
         max_stack = 1,
-        copy = "incarnation_chosen_of_elune",
+        copy = { "incarnation_chosen_of_elune", 390414 }
 
         -- Affected by:
         -- druid[137009] #3: { 'type': APPLY_AURA, 'subtype': MOD_GLOBAL_COOLDOWN_BY_HASTE_REGEN, 'sp_bonus': 0.25, 'points': 100.0, 'value': 11, 'schools': ['physical', 'holy', 'nature'], 'target': TARGET_UNIT_CASTER, }
@@ -1626,7 +1626,7 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         eclipse.starfire_counter = GetSpellCastCount( 197628 ) or 0
         eclipse.wrath_counter    = GetSpellCastCount(   5176 ) or 0
 
-        if buff.eclipse_solar.up and buff.eclipse_lunar.up then
+        if buff.ca_inc.up or buff.eclipse_solar.up and buff.eclipse_lunar.up then
             eclipse.state = "IN_BOTH"
             state:QueueAuraExpiration( "ca_inc", ExitEclipse, buff.ca_inc.expires )
         elseif buff.eclipse_solar.up then
@@ -1700,10 +1700,10 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
         end
         -- Legacy
         if set_bonus.tier29_4pc > 0 then applyBuff( "touch_the_cosmos" ) end
-
     end, state ),
 
     advance = setfenv( function( spell )
+        if buff.ca_inc.up or buff.eclipse_lunar.up or buff.eclipse_solar.up then return end
 
         if spell == "wrath" then
             eclipse.wrath_counter = eclipse.wrath_counter - 1
@@ -1712,48 +1712,47 @@ spec:RegisterStateTable( "eclipse", setmetatable( {
             eclipse.starfire_counter = eclipse.starfire_counter - 1
             if eclipse.starfire_counter == 0 then eclipse.trigger_eclipse( "solar", 15 ) end
         end
-
     end, state ),
 
 }, {
     __index = function( t, k )
         -- any_next
         if k == "any_next" then
-            return eclipse.state == "IN_NONE"
+            return t.state == "IN_NONE"
         -- in_any
         elseif k == "in_any" or k == "in_eclipse" then
-            return eclipse.state ~= "IN_NONE"
+            return t.remains > 0
         elseif k == "in_none" then
-            return eclipse.state == "IN_NONE"
+            return t.remains == 0 and t.state == "IN_NONE"
         -- in_solar
         elseif k == "in_solar" then
-            return eclipse.state == "IN_SOLAR"
+            return t.remains > 0 and t.state == "IN_SOLAR"
         -- in_lunar
         elseif k == "in_lunar" then
-            return eclipse.state == "IN_LUNAR"
+            return t.remains > 0 and t.state == "IN_LUNAR"
         -- in_both
         elseif k == "in_both" then
-            return eclipse.state == "IN_BOTH"
+            return t.remains > 0 and t.state == "IN_BOTH"
         -- solar_in
         elseif k == "solar_in" then
-            return eclipse.starfire_counter
+            return t.remains == 0 and t.starfire_counter
         -- solar_in_2
         elseif k == "solar_in_2" then
-            return eclipse.starfire_counter == 2
+            return t.remains == 0 and t.starfire_counter == 2
         -- solar_in_1
         elseif k == "solar_in_1" then
-            return eclipse.starfire_counter == 1
+            return t.remains == 0 and t.starfire_counter == 1
         -- lunar_in
         elseif k == "lunar_in" then
-            return eclipse.wrath_counter
+            return t.remains == 0 and t.wrath_counter or 0
         -- lunar_in_2
         elseif k == "lunar_in_2" then
-            return eclipse.wrath_counter == 2
+            return t.remains == 0 and t.wrath_counter == 2 or 0
         -- lunar_in_1
         elseif k == "lunar_in_1" then
-            return eclipse.wrath_counter == 1
+            return t.remains == 0 and t.wrath_counter == 1 or 0
         elseif k == "remains" then
-            return eclipse.state == "IN_NONE" and 0 or max( buff.eclipse_solar.remains, buff.eclipse_lunar.remains )
+            return t.state == "IN_NONE" and 0 or max( buff.eclipse_solar.remains, buff.eclipse_lunar.remains, buff.ca_inc.remains )
         end
     end
 } ) )
@@ -1798,6 +1797,17 @@ local TreantMoonfires = setfenv( function()
 end, state )
 
 
+spec:RegisterHook( "TALENTS_UPDATED", function()
+    if talent.incarnation.enabled then
+        rawset( cooldown, "ca_inc", cooldown.incarnation )
+        rawset( buff, "ca_inc", buff.incarnation )
+    else
+        rawset( cooldown, "ca_inc", cooldown.celestial_alignment )
+        rawset( buff, "ca_inc", buff.celestial_alignment )
+    end
+end )
+
+
 spec:RegisterHook( "reset_precast", function ()
     if IsActiveSpell( class.abilities.new_moon.id ) then active_moon = "new_moon"
     elseif IsActiveSpell( class.abilities.half_moon.id ) then active_moon = "half_moon"
@@ -1814,15 +1824,6 @@ spec:RegisterHook( "reset_precast", function ()
             buff.bounteous_bloom.applied = buff.force_of_nature.applied
             buff.bounteous_bloom.duration = 10
         end
-    end
-
-    -- UGLY
-    if talent.incarnation.enabled then
-        rawset( cooldown, "ca_inc", cooldown.incarnation )
-        rawset( buff, "ca_inc", buff.incarnation )
-    else
-        rawset( cooldown, "ca_inc", cooldown.celestial_alignment )
-        rawset( buff, "ca_inc", buff.celestial_alignment )
     end
 
     --[[ Needs more work
@@ -2870,10 +2871,6 @@ spec:RegisterAbilities( {
                 removeStack( "owlkin_frenzy" )
             end
 
-            if azerite.dawning_sun.enabled then applyBuff( "dawning_sun" ) end
-        end,
-
-        finish = function ()
             if talent.fluid_form.enabled and buff.moonkin_form.down then shift( "moonkin_form" ) end
         end,
 
@@ -2934,7 +2931,6 @@ spec:RegisterAbilities( {
             end
 
             removeBuff( "oneths_clear_vision" )
-            removeBuff( "sunblaze" )
 
             if pvptalent.moonkin_aura.enabled then
                 addStack( "moonkin_aura", nil, 1 )
@@ -3265,7 +3261,6 @@ spec:RegisterAbilities( {
             eclipse.advance( "wrath" )
 
             removeBuff( "dawning_sun" )
-            if azerite.sunblaze.enabled then applyBuff( "sunblaze" ) end
         end,
 
         finish = function ()

@@ -37,7 +37,7 @@ actions.precombat+=/incinerate
 
 actions+=/spell_lock
 actions+=/call_action_list,name=variables
-actions+=/call_action_list,name=aoe,strict_if=!variable.cleave_apl,strict=1,if=(active_enemies>=3)&!variable.cleave_apl
+actions+=/call_action_list,name=aoe,strict=1,if=(active_enemies>=3)&!variable.cleave_apl
 # This entry is manually translated and will differ from SIMC, but maintains the same functionality.
 actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>1
 actions+=/call_action_list,name=ogcd
@@ -81,15 +81,16 @@ actions.aoe+=/soul_fire,cycle_targets=1,if=(buff.decimation.up)&!talent.raging_d
 actions.aoe+=/soul_fire,cycle_targets=1,if=buff.decimation.up&active_dot.immolate<=4
 actions.aoe+=/infernal_bolt,if=soul_shard<2.5
 actions.aoe+=/chaos_bolt,if=((soul_shard>3.5-(0.1*active_enemies))&!action.rain_of_fire.enabled)|(!talent.wither&talent.cataclysm&active_enemies<=3)
+actions.aoe+=/cataclysm,if=!talent.wither&(active_enemies>active_dot.immolate|dot.immolate.refreshable)
 actions.aoe+=/cataclysm,if=talent.wither
 actions.aoe+=/havoc,cycle_targets=1,if=(!cooldown.summon_infernal.up|!talent.summon_infernal)&target.time_to_die>8&(cooldown.malevolence.remains>15|!talent.malevolence)|time<5
-actions.aoe+=/wither,cycle_targets=1,if=dot.wither.refreshable&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.wither.remains)&(!(talent.raging_demonfire&talent.channel_demonfire)|cooldown.channel_demonfire.remains>remains|time<5)&active_dot.wither<=active_enemies&target.time_to_die>18
+actions.aoe+=/wither,cycle_targets=1,if=dot.wither.refreshable&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>=dot.wither.remains)&(!(talent.raging_demonfire&talent.channel_demonfire)|cooldown.channel_demonfire.remains>remains|time<5)&active_dot.wither<=active_enemies&target.time_to_die>18
 actions.aoe+=/immolate,cycle_targets=1,if=dot.immolate.refreshable&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains)&(!(talent.raging_demonfire&talent.channel_demonfire)|cooldown.channel_demonfire.remains>remains|time<5)&active_dot.immolate<=6&target.time_to_die>18
 actions.aoe+=/summon_infernal,if=buff.power_infusion.up|fight_remains>=120
 actions.aoe+=/rain_of_fire,if=debuff.pyrogenics.down&active_enemies<=4&!talent.diabolic_ritual
 actions.aoe+=/channel_demonfire,if=dot.immolate.remains+dot.wither.remains>cast_time
-actions.aoe+=/immolate,cycle_targets=1,if=((dot.immolate.refreshable&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains))|active_enemies>active_dot.immolate)&target.time_to_die>10&!havoc_active
-actions.aoe+=/immolate,cycle_targets=1,if=((dot.immolate.refreshable&variable.havoc_immo_time<5.4)|(dot.immolate.remains<2&dot.immolate.remains<havoc_remains)|!dot.immolate.ticking|(variable.havoc_immo_time<2)*havoc_active)&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains)&target.time_to_die>11
+actions.aoe+=/immolate,cycle_targets=1,if=dot.immolate.refreshable&((!talent.cataclysm.enabled|cooldown.cataclysm.remains>=dot.immolate.remains)|cycle_enemies>active_dot.immolate)&target.time_to_die>10&!havoc_active
+actions.aoe+=/immolate,cycle_targets=1,if=dot.immolate.refreshable&(variable.havoc_immo_time<5.4|dot.immolate.remains<2&dot.immolate.remains<havoc_remains|!dot.immolate.ticking|(variable.havoc_immo_time<2)*havoc_active)&(!talent.cataclysm.enabled|cooldown.cataclysm.remains>dot.immolate.remains)&target.time_to_die>11
 actions.aoe+=/dimensional_rift
 actions.aoe+=/soul_fire,cycle_targets=1,if=buff.decimation.up
 actions.aoe+=/incinerate,if=talent.fire_and_brimstone.enabled&buff.backdraft.up
@@ -161,5 +162,5 @@ actions.variables+=/variable,name=pooling_condition,value=(soul_shard>=3|(talent
 actions.variables+=/variable,name=pooling_condition_cb,value=variable.pooling_condition|pet.infernal.active&soul_shard>=3,default=1,op=set
 ## actions.variables+=/cycling_variable,name=havoc_immo_time,op=add,value=dot.immolate.remains*debuff.havoc.up<?dot.wither.remains*debuff.havoc.up
 actions.variables+=/variable,name=infernal_active,op=set,value=pet.infernal.active|(cooldown.summon_infernal.duration-cooldown.summon_infernal.remains)<20
-actions.variables+=/variable,name=trinket_1_will_lose_cast,value=((floor((fight_remains%trinket.1.cooldown.duration)+1)!=floor((fight_remains+(cooldown.summon_infernal.duration-cooldown.summon_infernal.remains))%cooldown.summon_infernal.duration))&(floor((fight_remains%trinket.1.cooldown.duration)+1))!=(floor(((fight_remains-cooldown.summon_infernal.remains)%trinket.1.cooldown.duration)+1))|((floor((fight_remains%trinket.1.cooldown.duration)+1)=floor((fight_remains+(cooldown.summon_infernal.duration-cooldown.summon_infernal.remains))%cooldown.summon_infernal.duration))&(((fight_remains-cooldown.summon_infernal.remains%%trinket.1.cooldown.duration)-cooldown.summon_infernal.remains-variable.trinket_1_buff_duration)>0)))&cooldown.summon_infernal.remains>20
-actions.variables+=/variable,name=trinket_2_will_lose_cast,value=((floor((fight_remains%trinket.2.cooldown.duration)+1)!=floor((fight_remains+(cooldown.summon_infernal.duration-cooldown.summon_infernal.remains))%cooldown.summon_infernal.duration))&(floor((fight_remains%trinket.2.cooldown.duration)+1))!=(floor(((fight_remains-cooldown.summon_infernal.remains)%trinket.2.cooldown.duration)+1))|((floor((fight_remains%trinket.2.cooldown.duration)+1)=floor((fight_remains+(cooldown.summon_infernal.duration-cooldown.summon_infernal.remains))%cooldown.summon_infernal.duration))&(((fight_remains-cooldown.summon_infernal.remains%%trinket.2.cooldown.duration)-cooldown.summon_infernal.remains-variable.trinket_2_buff_duration)>0)))&cooldown.summon_infernal.remains>20
+actions.variables+=/variable,name=trinket_1_will_lose_cast,value=(((1+floor(fight_remains%trinket.1.cooldown.duration))!=floor((fight_remains+cooldown.summon_infernal.duration-cooldown.summon_infernal.remains)%cooldown.summon_infernal.duration))&((1+floor(fight_remains%trinket.1.cooldown.duration))!=(1+floor((fight_remains-cooldown.summon_infernal.remains)%trinket.1.cooldown.duration)))|((1+floor(fight_remains%trinket.1.cooldown.duration))=floor((fight_remains+cooldown.summon_infernal.duration-cooldown.summon_infernal.remains)%cooldown.summon_infernal.duration))&(((fight_remains-cooldown.summon_infernal.remains%%trinket.1.cooldown.duration)-cooldown.summon_infernal.remains-variable.trinket_1_buff_duration)>0))&cooldown.summon_infernal.remains>20
+actions.variables+=/variable,name=trinket_2_will_lose_cast,value=(((1+floor(fight_remains%trinket.2.cooldown.duration))!=floor((fight_remains+cooldown.summon_infernal.duration-cooldown.summon_infernal.remains)%cooldown.summon_infernal.duration))&((1+floor(fight_remains%trinket.2.cooldown.duration))!=(1+floor((fight_remains-cooldown.summon_infernal.remains)%trinket.2.cooldown.duration)))|((1+floor(fight_remains%trinket.2.cooldown.duration))=floor((fight_remains+cooldown.summon_infernal.duration-cooldown.summon_infernal.remains)%cooldown.summon_infernal.duration))&(((fight_remains-cooldown.summon_infernal.remains%%trinket.2.cooldown.duration)-cooldown.summon_infernal.remains-variable.trinket_1_buff_duration)>0))&cooldown.summon_infernal.remains>20

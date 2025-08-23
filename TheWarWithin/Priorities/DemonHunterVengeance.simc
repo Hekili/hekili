@@ -118,7 +118,7 @@ actions.fs+=/sigil_of_flame,if=!talent.student_of_suffering&!variable.hold_sof_f
 actions.fs+=/sigil_of_flame,if=!variable.hold_sof_for_precombat&(charges=max_charges|(!variable.hold_sof_for_student&!variable.hold_sof_for_dot&!variable.hold_sof_for_meta&!variable.hold_sof_for_fel_dev))
 actions.fs+=/fiery_brand,if=active_dot.fiery_brand=0&(!talent.fiery_demise|((talent.down_in_flames&charges>=max_charges)|variable.fiery_brand_back_before_meta))
 actions.fs+=/call_action_list,name=fs_execute,if=fight_remains<20
-actions.fs+=/call_action_list,name=fel_dev,if=buff.metamorphosis.up&!buff.demonsurge_hardcast.up&(buff.demonsurge_soul_sunder.up|buff.demonsurge_spirit_burst.up)
+actions.fs+=/call_action_list,name=fel_dev,strict_if=buff.metamorphosis.up,if=buff.metamorphosis.up&!buff.demonsurge_hardcast.up&(buff.demonsurge_soul_sunder.up|buff.demonsurge_spirit_burst.up)
 actions.fs+=/call_action_list,name=metamorphosis,strict=1,if=buff.metamorphosis.up&buff.demonsurge_hardcast.up
 actions.fs+=/call_action_list,name=fel_dev_prep,if=!buff.demonsurge_hardcast.up&(cooldown.fel_devastation.up|(cooldown.fel_devastation.remains<=(gcd.max*3)))
 actions.fs+=/call_action_list,name=meta_prep,if=(cooldown.metamorphosis.remains<=variable.meta_prep_time)&!cooldown.fel_devastation.up&!cooldown.fel_devastation.remains<10&!buff.demonsurge_soul_sunder.up&!buff.demonsurge_spirit_burst.up

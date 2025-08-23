@@ -10,6 +10,7 @@ local C_ClassTalents, C_Traits = _G.C_ClassTalents, _G.C_Traits
 local IsPlayerSpell = _G.IsPlayerSpell
 
 local ResetDisabledGearAndSpells, WipeCovenantCache = ns.ResetDisabledGearAndSpells, ns.WipeCovenantCache
+local getActiveHeroTreeName = ns.getActiveHeroTreeName
 
 local state, class = Hekili.State, Hekili.Class
 
@@ -77,6 +78,8 @@ do
                 }
             end
         end
+
+        state.hero_tree.current = getActiveHeroTreeName()
 
         ns.callHook( "TALENTS_UPDATED" )
     end
