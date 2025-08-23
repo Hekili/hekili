@@ -1,6 +1,6 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/priest_shadow.simc
-## SimulationCraft Commit Sync: bd9a80c
-## Date: 2025-08-10
+## SimulationCraft Commit Sync: df4f2e8
+## Date: 2025-08-23
 
 actions.precombat+=/power_word_fortitude
 actions.precombat+=/shadowform,if=!buff.shadowform.up
@@ -50,11 +50,13 @@ actions.cds+=/ancestral_call,if=buff.power_infusion.up&(buff.voidform.up|buff.da
 ## actions.cds+=/cancel_buff,name=power_infusion,if=cooldown.power_infusion.up&cooldown.power_infusion.duration>0&set_bonus.tww2_4pc&buff.power_infusion.remains<=2
 ## ## actions.cds+=/invoke_external_buff,name=power_infusion,if=(buff.voidform.up|buff.dark_ascension.up|set_bonus.tww2_4pc)&!buff.power_infusion.up
 ## actions.cds+=/invoke_external_buff,name=bloodlust,if=buff.power_infusion.up&boss&fight_remains<120|boss&fight_remains<=40
+# Use Flash Heal to proc Nexus-King's Command trinket
+actions.cds+=/flash_heal,if=equipped.nexuskings_command&buff.oathbound.up&(!buff.boon_of_the_oathsworn.up|buff.boon_of_the_oathsworn.remains<3)&((talent.void_eruption&(buff.voidform.up|cooldown.void_eruption.up))|(talent.dark_ascension&cooldown.dark_ascension.up)|(talent.power_surge&cooldown.halo.up)|(talent.entropic_rift&cooldown.void_torrent.up))
 # Sync Power Infusion with Voidform or Dark Ascension
 actions.cds+=/power_infusion,if=(buff.voidform.up|buff.dark_ascension.up&(fight_remains<=80|fight_remains>=140))&(!buff.power_infusion.up|set_bonus.tww2_4pc&buff.power_infusion.remains<=15)
 # Make sure Mindbender is active before popping Dark Ascension unless you have insignificant talent points or too many targets
 actions.cds+=/halo,if=talent.power_surge&(pet.fiend.active&cooldown.fiend.remains>=4&talent.mindbender|!talent.mindbender&!cooldown.fiend.up|active_enemies>2&!talent.inescapable_torment|!talent.dark_ascension)&(cooldown.mind_blast.charges=0|!cooldown.void_torrent.up|!talent.void_eruption|cooldown.void_eruption.remains>=gcd.max*4|buff.mind_devourer.up&talent.mind_devourer)
-# Make sure Mindbender is active before popping Void Eruption and dump charges of Mind Blast before casting
+# Make sure Mindbender is active before popping Void Eruption and dump charges of Mind Blast if Mind Devourer is not active and you are not Archon
 actions.cds+=/void_eruption,if=(pet.fiend.active&cooldown.fiend.remains>=4|!talent.mindbender&!cooldown.fiend.up|active_enemies>2&!talent.inescapable_torment)&(cooldown.mind_blast.charges=0|time>15|buff.mind_devourer.up&talent.mind_devourer|buff.power_surge.up)
 # Use Dark Ascension when you have enough Insanity to cast Devouring Plague.
 actions.cds+=/dark_ascension,if=(pet.fiend.active&cooldown.fiend.remains>=4|!talent.mindbender&!cooldown.fiend.up|active_enemies>2&!talent.inescapable_torment)&(active_dot.devouring_plague>=1|insanity>=(20-(5*talent.minds_eye)+(5*talent.distorted_reality)-(pet.fiend.active*2)))
