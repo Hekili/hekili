@@ -28,8 +28,9 @@ jobs:
 
             const dir = 'TheWarWithin/Priorities';
             const files = fs.existsSync(dir)
-              ? fs.readdirSync(dir).filter(f => f.endsWith('.lua')).map(f => path.join(dir, f))
+              ? fs.readdirSync(dir).filter(f => f.endsWith('.simc')).map(f => path.join(dir, f))
               : [];
+
 
             core.info(`Found ${files.length} Lua priority files under ${dir}`);
 
