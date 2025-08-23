@@ -1989,7 +1989,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holy",
 
-        spend = function() return talent.vanguards_momentum.enabled and -2 or -1 end,
+        spend = function() return ( talent.vanguards_momentum.enabled and target.health_pct < 20 and -2 ) or -1 end,
         spendType = "holy_power",
 
         talent = "hammer_of_wrath",
@@ -2078,7 +2078,7 @@ spec:RegisterAbilities( {
         id = 20271,
         cast = 0,
         charges = function() if talent.improved_judgment.enabled then return 2 end end,
-        cooldown = function() return ( ( talent.swift_justice.enabled and 10 or 12 ) - 0.5 * talent.seal_of_alacrity.rank ) * haste end,
+        cooldown = function() return ( talent.swift_justice.enabled and 10 or 12 ) * haste end,
         recharge = function() if talent.improved_judgment.enabled then return ( talent.swift_justice.enabled and 10 or 12 ) * haste end end,
         hasteCD = true,
         gcd = "spell",

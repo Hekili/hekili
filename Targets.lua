@@ -217,6 +217,7 @@ local enemyExclusions = {
     [237968] = true,              -- Gallywix: Charged Giga Bomb
     [151579] = true,              -- Operation: Mechagon - Shield Generator
     [219588] = true,              -- Cinderbrew Meadery - Yes Man (etc.),
+    [165913] = true,              -- Halls of Atonement: Ghastly Parishioner
     [237763] = 1228284,           -- Manaforge Omega: Nexus King Salad Bar - Royal Ward immunity
     [245705] = true               -- Manaforge Omega: Dimensius - Voidwarden (one should be focussed/cleaved down off miniboss, no reason to full AoE)
 }
