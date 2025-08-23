@@ -74,7 +74,7 @@ jobs:
             const classIndex = new Map(order.map(([c],i)=>[c,i]));
             const specIndex  = new Map(order.flatMap(([c,specs])=>specs.map((s,j)=>[`${c}:${s}`,j])));
 
-            // Healer list
+            // Healer list (not strictly tracked against SimC APLs)
             const healers = new Set([
               'Evoker:Preservation',
               'Paladin:Holy',
@@ -96,6 +96,43 @@ jobs:
               return {classKey,specKey};
             }
 
+            // Fetch all commits for a file path until we hit the recorded SHA (prefix match ok)
+            async function listMissingCommitsSince(pathInRepo, recordedShaShort, limit = 50) {
+              // We paginate through commits that touched this path (newest first) until we find the recorded SHA
+              let page = 1;
+              const per_page = 100; // max
+              const misses = [];
+
+              while (misses.length < limit) {
+                const { data: batch } = await github.rest.repos.listCommits({
+                  owner: upstreamRepo.owner,
+                  repo: upstreamRepo.repo,
+                  sha: upstreamRepo.branch,
+                  path: pathInRepo,
+                  per_page,
+                  page
+                });
+                if (!batch.length) break;
+
+                for (const c of batch) {
+                  const sha = c.sha;
+                  if (sha.startsWith(recordedShaShort)) {
+                    // Found the recorded base; stop paging
+                    return misses;
+                  }
+                  misses.push({
+                    sha,
+                    url: c.html_url,
+                    message: (c.commit && c.commit.message ? c.commit.message.split('\n')[0] : '').trim()
+                  });
+                  if (misses.length >= limit) break;
+                }
+                if (batch.length < per_page) break; // no more pages
+                page++;
+              }
+              return misses; // if we never found recordedShaShort, we just return everything we saw (could be a rewritten history)
+            }
+
             const results=[];
             for(const f of files){
               const top=head(f,6);
@@ -112,25 +149,56 @@ jobs:
               if(!upstreamLine||!shaLine){
                 results.push({classKey,specKey,status:'missing_header'}); continue;
               }
+
               const matchPath=upstreamLine.match(/ActionPriorityLists\/default\/[A-Za-z0-9._-]+\.simc/);
               const matchSha=shaLine.match(/[0-9a-f]{7,40}/i);
+
               if(!matchPath||!matchSha){
                 results.push({classKey,specKey,status:'unparseable_header'}); continue;
               }
+
+              const upstreamPath=matchPath[0];
               const recordedSha=matchSha[0];
-              const {data:commits}=await github.rest.repos.listCommits({
-                owner:upstreamRepo.owner,repo:upstreamRepo.repo,sha:upstreamRepo.branch,path:matchPath[0],per_page:1});
-              if(!commits.length){
+              const recordedShort=recordedSha.slice(0,7);
+
+              // Find the latest commit touching that path
+              const {data:latestBatch}=await github.rest.repos.listCommits({
+                owner:upstreamRepo.owner, repo:upstreamRepo.repo, sha:upstreamRepo.branch, path:upstreamPath, per_page:1
+              });
+
+              if(!latestBatch.length){
                 results.push({classKey,specKey,recordedSha,status:'upstream_not_found'}); continue;
               }
-              const latestShaFull=commits[0].sha;
-              const latestUrl=commits[0].html_url;
-              const upToDate=latestShaFull.slice(0,7)===recordedSha.slice(0,7);
+
+              const latestShaFull=latestBatch[0].sha;
+              const latestShort=latestShaFull.slice(0,7);
+
+              if (latestShort === recordedShort) {
+                results.push({
+                  classKey, specKey,
+                  recordedSha, latestSha: latestShaFull,
+                  status: '✅ Up to date'
+                });
+                continue;
+              }
+
+              // Get the list of commits since recordedSha for this file (cap to 50 to keep output sane)
+              const missing = await listMissingCommitsSince(upstreamPath, recordedShort, 50);
+
+              // Build a compact details block
+              const items = missing.map(m => {
+                const msg = m.message ? ` — ${m.message.replace(/\|/g,'\\|').slice(0,120)}` : '';
+                return `- [\`${m.sha.slice(0,7)}\`](${m.url})${msg}`;
+              }).join('\n');
+
+              const details = missing.length
+                ? `❌ Out of date\n<details><summary>what changed (${missing.length})</summary>\n\n${items}\n\n</details>`
+                : `❌ Out of date`; // fallback
+
               results.push({
-                classKey,specKey,
-                recordedSha,
-                latestSha:latestShaFull,
-                status:upToDate?'✅ Up to date':`❌ Out of date [what changed](${latestUrl})`
+                classKey, specKey,
+                recordedSha, latestSha: latestShaFull,
+                status: details
               });
             }
 
@@ -153,6 +221,7 @@ jobs:
               '| Spec                | Addon SHA    | SimC SHA   | Status         |',
               '|---------------------|--------------|------------|----------------|',
             ];
+
             const rows=results.map(r=>{
               const specName=`${specDisplay[r.specKey]??r.specKey} ${classDisplay[r.classKey]??r.classKey}`.trim();
               if(r.isHealer){
