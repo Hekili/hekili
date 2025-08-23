@@ -24,7 +24,7 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            // 'core', 'github', and 'context' are already provided by github-script
+            // 'core', 'github', and 'context' are provided by github-script
 
             const dir = 'TheWarWithin/Priorities';
             const files = fs.existsSync(dir)
@@ -33,10 +33,109 @@ jobs:
 
             core.info(`Found ${files.length} priority files under ${dir}`);
 
-            const upstream = { owner: 'simulationcraft', repo: 'simc', branch: 'thewarwithin' };
+            const upstreamRepo = { owner: 'simulationcraft', repo: 'simc', branch: 'thewarwithin' };
 
             function head(filepath, n = 6) {
               return fs.readFileSync(filepath, 'utf8').split(/\r?\n/).slice(0, n);
+            }
+
+            // Pretty-name helpers
+            const classDisplay = {
+              DeathKnight: 'Death Knight',
+              DemonHunter: 'Demon Hunter',
+              Druid: 'Druid',
+              Evoker: 'Evoker',
+              Hunter: 'Hunter',
+              Mage: 'Mage',
+              Monk: 'Monk',
+              Paladin: 'Paladin',
+              Priest: 'Priest',
+              Rogue: 'Rogue',
+              Shaman: 'Shaman',
+              Warlock: 'Warlock',
+              Warrior: 'Warrior',
+            };
+
+            const specDisplay = {
+              // Common multi-word specs
+              BeastMastery: 'Beast Mastery',
+              Marksmanship: 'Marksmanship',
+              Blood: 'Blood',
+              Frost: 'Frost',
+              Unholy: 'Unholy',
+              Havoc: 'Havoc',
+              Vengeance: 'Vengeance',
+              Balance: 'Balance',
+              Feral: 'Feral',
+              Guardian: 'Guardian',
+              Restoration: 'Restoration',
+              Augmentation: 'Augmentation',
+              Devastation: 'Devastation',
+              Preservation: 'Preservation',
+              Arcane: 'Arcane',
+              Fire: 'Fire',
+              Brewmaster: 'Brewmaster',
+              Mistweaver: 'Mistweaver',
+              Windwalker: 'Windwalker',
+              Holy: 'Holy',
+              Protection: 'Protection',
+              Retribution: 'Retribution',
+              Discipline: 'Discipline',
+              Shadow: 'Shadow',
+              Assassination: 'Assassination',
+              Outlaw: 'Outlaw',
+              Subtlety: 'Subtlety',
+              Elemental: 'Elemental',
+              Enhancement: 'Enhancement',
+              Affliction: 'Affliction',
+              Demonology: 'Demonology',
+              Destruction: 'Destruction',
+              Arms: 'Arms',
+              Fury: 'Fury',
+            };
+
+            // Desired sort order by class/spec
+            const order = [
+              ['DeathKnight', ['Blood','Frost','Unholy']],
+              ['DemonHunter', ['Havoc','Vengeance']],
+              ['Druid', ['Balance','Feral','Guardian','Restoration']],
+              ['Evoker', ['Augmentation','Devastation','Preservation']],
+              ['Hunter', ['BeastMastery','Marksmanship','Survival']],
+              ['Mage', ['Arcane','Fire','Frost']],
+              ['Monk', ['Brewmaster','Mistweaver','Windwalker']],
+              ['Paladin', ['Holy','Protection','Retribution']],
+              ['Priest', ['Discipline','Holy','Shadow']],
+              ['Rogue', ['Assassination','Outlaw','Subtlety']],
+              ['Shaman', ['Elemental','Enhancement','Restoration']],
+              ['Warlock', ['Affliction','Demonology','Destruction']],
+              ['Warrior', ['Arms','Fury','Protection']],
+            ];
+            const classIndex = new Map(order.map(([c], i) => [c, i]));
+            const specIndex = new Map(order.flatMap(([c, specs]) => specs.map((s, j) => [`${c}:${s}`, j])));
+
+            function inferClassSpec(filename) {
+              // Expect names like DeathKnightBlood.simc, DemonHunterHavoc.simc, HunterBeastMastery.simc, etc.
+              const base = path.basename(filename, '.simc');
+              const parts = base.match(/^([A-Z][a-zA-Z]+?)([A-Z].*)$/); // split CamelCase: Class + Spec
+              if (!parts) return { classKey: 'Unknown', specKey: 'Unknown' };
+
+              let classKey = parts[1];
+              let specKey = parts[2];
+
+              // Normalize a few class keys that are two words squashed
+              if (classKey === 'Death' && specKey.startsWith('Knight')) {
+                classKey = 'DeathKnight';
+                specKey = specKey.replace(/^Knight/, '');
+              } else if (classKey === 'Demon' && specKey.startsWith('Hunter')) {
+                classKey = 'DemonHunter';
+                specKey = specKey.replace(/^Hunter/, '');
+              }
+
+              // For specs like BeastMastery, Marksmanship, etc., specKey already looks right (CamelCase)
+              // Trim any leading separators accidentally left
+              specKey = specKey.replace(/^[_-]/, '');
+
+              return { classKey, specKey };
             }
 
             const results = [];
@@ -47,7 +146,12 @@ jobs:
               const shaLine      = top.find(l => l.toLowerCase().includes('simulationcraft commit sync'));
 
               if (!upstreamLine || !shaLine) {
-                results.push({ file: f, status: 'missing_header' });
+                const { classKey, specKey } = inferClassSpec(f);
+                results.push({
+                  file: f,
+                  classKey, specKey,
+                  status: 'missing_header'
+                });
                 continue;
               }
 
@@ -55,7 +159,12 @@ jobs:
               const matchSha  = shaLine.match(/[0-9a-f]{7,40}/i);
 
               if (!matchPath || !matchSha) {
-                results.push({ file: f, status: 'unparseable_header' });
+                const { classKey, specKey } = inferClassSpec(f);
+                results.push({
+                  file: f,
+                  classKey, specKey,
+                  status: 'unparseable_header'
+                });
                 continue;
               }
 
@@ -63,49 +172,73 @@ jobs:
               const recordedSha  = matchSha[0];
 
               const { data: commits } = await github.rest.repos.listCommits({
-                owner: upstream.owner,
-                repo: upstream.repo,
-                sha: upstream.branch,
+                owner: upstreamRepo.owner,
+                repo: upstreamRepo.repo,
+                sha: upstreamRepo.branch,
                 path: upstreamPath,
                 per_page: 1
               });
 
+              const { classKey, specKey } = inferClassSpec(f);
+
               if (!commits.length) {
-                results.push({ file: f, status: 'upstream_not_found', upstreamPath });
+                results.push({
+                  file: f,
+                  classKey, specKey,
+                  upstreamPath,
+                  recordedSha,
+                  status: 'upstream_not_found'
+                });
                 continue;
               }
 
               const latestShaFull = commits[0].sha;
-              const latestSha7    = latestShaFull.slice(0,7);
-              const recordedSha7  = recordedSha.slice(0,7);
-              const upToDate      = latestSha7 === recordedSha7;
+              const upToDate = latestShaFull.slice(0,7) === recordedSha.slice(0,7);
 
               results.push({
                 file: f,
+                classKey, specKey,
                 upstreamPath,
                 recordedSha,
                 latestSha: latestShaFull,
                 status: upToDate
                   ? '✅ Up to date'
-                  : `❌ Out of date [compare](https://github.com/${upstream.owner}/${upstream.repo}/compare/${recordedSha}...${latestShaFull})`
+                  : `❌ Out of date [compare](https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${recordedSha}...${latestShaFull})`
               });
             }
 
-            // Build markdown table with filenames only
-            const rows = [
-              '| File | Upstream `.simc` | Recorded SHA | Latest Upstream SHA | Status |',
-              '|------|------------------|--------------|---------------------|--------|',
-              ...results.map(r => {
-                const localFile    = r.file ? path.basename(r.file) : '—';
-                const upstreamFile = r.upstreamPath ? path.basename(r.upstreamPath) : '—';
-                return `| ${localFile} | ${upstreamFile} | \`${r.recordedSha ?? '—'}\` | \`${r.latestSha ? r.latestSha.slice(0,7) : '—'}\` | ${r.status ?? 'missing'} |`;
-              })
+            // Sort by desired class/spec order; unknowns go last alphabetically
+            results.sort((a, b) => {
+              const ai = classIndex.has(a.classKey) ? classIndex.get(a.classKey) : 999;
+              const bi = classIndex.has(b.classKey) ? classIndex.get(b.classKey) : 999;
+              if (ai !== bi) return ai - bi;
+              const as = specIndex.has(`${a.classKey}:${a.specKey}`) ? specIndex.get(`${a.classKey}:${a.specKey}`) : 999;
+              const bs = specIndex.has(`${b.classKey}:${b.specKey}`) ? specIndex.get(`${b.classKey}:${b.specKey}`) : 999;
+              if (as !== bs) return as - bs;
+              // fallback: alphabetical by display name
+              const an = `${specDisplay[a.specKey] ?? a.specKey} ${classDisplay[a.classKey] ?? a.classKey}`;
+              const bn = `${specDisplay[b.specKey] ?? b.specKey} ${classDisplay[b.classKey] ?? b.classKey}`;
+              return an.localeCompare(bn);
+            });
+
+            // Build compact table
+            const header = [
+              '| Spec                | Addon SHA    | SimC SHA   | Status         |',
+              '|---------------------|--------------|------------|----------------|',
             ];
 
+            const rows = results.map(r => {
+              const specName  = `${specDisplay[r.specKey] ?? r.specKey} ${classDisplay[r.classKey] ?? r.classKey}`.trim();
+              const addonSha  = r.recordedSha ? '`' + r.recordedSha.slice(0,7) + '`' : '—';
+              const simcSha   = r.latestSha ? '`' + r.latestSha.slice(0,7) + '`' : '—';
+              const status    = r.status ?? 'missing';
+              return `| ${specName} | ${addonSha} | ${simcSha} | ${status} |`;
+            });
+
             const body = [
-              `This issue updates automatically. It compares the recorded **SimulationCraft Commit Sync** in each priority file with the latest commit that touched the corresponding upstream **.simc** on \`${upstream.branch}\`.`,
+              `This issue updates automatically. It compares the recorded **SimulationCraft Commit Sync** in each priority file with the latest commit that touched the corresponding upstream **.simc** on \`${upstreamRepo.branch}\`.`,
               '',
-              rows.join('\n'),
+              [...header, ...rows].join('\n'),
               '',
               '_Last run: ' + new Date().toISOString() + '_'
             ].join('\n');
