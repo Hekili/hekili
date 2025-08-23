@@ -1,4 +1,4 @@
-## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/monk_windwalker.simc
+## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/monk_windwalker.simc
 ## Up to date with SimC: March 17 2025 - c02ee75
 
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
