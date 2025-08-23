@@ -96,10 +96,10 @@ jobs:
               return {classKey,specKey};
             }
 
-            // Fetch all commits for a file path until we hit the recorded SHA (prefix match ok)
+            // Get commits touching a file since recorded short SHA (newest→oldest), limited
             async function listMissingCommitsSince(pathInRepo, recordedShaShort, limit = 50) {
               let page = 1;
-              const per_page = 100; // max
+              const per_page = 100;
               const misses = [];
 
               while (misses.length < limit) {
@@ -116,7 +116,7 @@ jobs:
                 for (const c of batch) {
                   const sha = c.sha;
                   if (sha.startsWith(recordedShaShort)) {
-                    return misses;
+                    return misses; // stop when we reach the recorded SHA
                   }
                   misses.push({
                     sha,
@@ -159,7 +159,7 @@ jobs:
               const recordedSha=matchSha[0];
               const recordedShort=recordedSha.slice(0,7);
 
-              // Find the latest commit touching that path
+              // Latest commit touching that path
               const {data:latestBatch}=await github.rest.repos.listCommits({
                 owner:upstreamRepo.owner, repo:upstreamRepo.repo, sha:upstreamRepo.branch, path:upstreamPath, per_page:1
               });
@@ -180,25 +180,20 @@ jobs:
                 continue;
               }
 
-              // Get the list of commits since recordedSha for this file (cap to 50)
+              // Missing commits and link to the most recent one
               const missing = await listMissingCommitsSince(upstreamPath, recordedShort, 50);
-
-              // Bullet-list inside <details> to avoid table pipe issues
-              const items = missing.map(m => {
-                const msg = m.message ? ` — ${m.message.replace(/\r?\n/g, ' ').slice(0,120)}` : '';
-                return `- [\`${m.sha.slice(0,7)}\`](${m.url})${msg}`;
-              }).join('\n');
-
-              const details = `❌ Out of date\n<details><summary>what changed (${missing.length})</summary>\n\n${items}\n\n</details>`;
+              const count = missing.length;
+              const newestUrl = count ? missing[0].url : latestBatch[0].html_url; // fallback to latest commit if list empty
+              const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${newestUrl})`;
 
               results.push({
                 classKey, specKey,
                 recordedSha, latestSha: latestShaFull,
-                status: details
+                status
               });
             }
 
-            // Sort: non-healers first by order, healers last (but sorted nicely)
+            // Sort: non-healers first by order, healers last
             results.sort((a,b)=>{
               const aHealer=!!a.isHealer; const bHealer=!!b.isHealer;
               if(aHealer!==bHealer) return aHealer?1:-1;
