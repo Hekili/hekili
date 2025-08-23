@@ -1,4 +1,4 @@
-- name: Run sync check
+- name: apl-syncer
   uses: actions/github-script@v7
   with:
     script: |
