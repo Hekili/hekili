@@ -2,7 +2,7 @@ name: apl-sync-status
 
 on:
   schedule:
-    - cron: "17 8 * * *"
+    - cron: "0 12 * * *"
   workflow_dispatch:
 
 permissions:
@@ -181,9 +181,9 @@ jobs:
               const count = misses.length;
               const baseForCompare = baseFullSha || recordedSha;
 
-              // Repo-wide compare URL (quick overview)
-              const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}`;
-              const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${compareUrl})`;
+              // File-specific commit history URL
+              const historyUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/commits/${upstreamRepo.branch}/${upstreamPath}`;
+              const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${historyUrl})`;
 
               // ALSO fetch file-only patch from Compare API and stash for a section below the table
               try {
@@ -202,7 +202,8 @@ jobs:
                   diffs.push({
                     specName,
                     count,
-                    link: compareUrl,
+                    baseShort: recordedShort,
+                    latestShort,
                     patch: patchLines.join('\n')
                   });
                 }
@@ -252,7 +253,7 @@ jobs:
             if (diffs.length) {
               const blocks = diffs.map(d => {
                 const parts = [];
-                parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing • <a href="' + d.link + '">compare</a></summary>');
+                parts.push('<details><summary>' + d.specName + ' — ' + d.baseShort + ' to ' + d.latestShort + ' (' + d.count + ' commit' + (d.count===1?'':'s') + ')</summary>');
                 parts.push('');
                 parts.push('```diff');
                 parts.push(d.patch);
@@ -305,7 +306,7 @@ jobs:
                 '',
                 diffs.map(d => {
                   const parts = [];
-                  parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing</summary>');
+                  parts.push('<details><summary>' + d.specName + ' — ' + d.baseShort + ' to ' + d.latestShort + ' (' + d.count + ' commit' + (d.count===1?'':'s') + ')</summary>');
                   parts.push('');
                   parts.push('```diff');
                   parts.push(d.patch);
