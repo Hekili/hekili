@@ -305,7 +305,7 @@ jobs:
                 '',
                 diffs.map(d => {
                   const parts = [];
-                  parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing • <a href="' + d.link + '">compare</a></summary>');
+                  parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing</summary>');
                   parts.push('');
                   parts.push('```diff');
                   parts.push(d.patch);
