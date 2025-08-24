@@ -128,7 +128,7 @@ jobs:
             }
 
             const results=[];
-            const diffs=[]; // collect per-file diff blocks for a section BELOW the table
+            const diffs=[]; // per-file diff blocks BELOW the table
 
             for(const f of files){
               const top=head(f,6);
@@ -185,15 +185,13 @@ jobs:
               const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}`;
               const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${compareUrl})`;
 
-              // ALSO fetch file-only patch from Compare API and stash for the "details" section
+              // ALSO fetch file-only patch from Compare API and stash for a section below the table
               try {
                 const { data: cmp } = await github.rest.repos.compareCommits({
-                  owner: upstreamRepo.owner, repo: upstreamRepo.repo,
-                  base: baseForCompare, head: latestShaFull
+                  owner: upstreamRepo.owner, repo: upstreamRepo.repo, base: baseForCompare, head: latestShaFull
                 });
-                const target = cmp.files?.find(f => f.filename === upstreamPath);
-                if (target?.patch) {
-                  // Keep the diff reasonable
+                const target = (cmp.files || []).find(fl => fl.filename === upstreamPath);
+                if (target && target.patch) {
                   const maxLines = 400;
                   let patchLines = target.patch.split('\n');
                   if (patchLines.length > maxLines) {
@@ -249,18 +247,21 @@ jobs:
               return `| ${specName} | ${addonSha} | ${simcSha} | ${r.status} |`;
             });
 
-            // Per-file diffs section (BELOW the table, so it won't break table layout)
+            // Per-file diffs section BELOW the table (built without template literals to keep YAML happy)
             let diffsSection = '';
             if (diffs.length) {
-              const blocks = diffs.map(d =>
-                `<details><summary>${d.specName} — ${d.count} commit${d.count===1?'':'s'} missing • <a href="${d.link}">compare</a></summary>
+              const blocks = diffs.map(d => {
+                const parts = [];
+                parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing • <a href="' + d.link + '">compare</a></summary>');
+                parts.push('');
+                parts.push('```diff');
+                parts.push(d.patch);
+                parts.push('```');
+                parts.push('');
+                parts.push('</details>');
+                return parts.join('\n');
+              }).join('\n\n');
 
-\`\`\`diff
-${d.patch}
-\`\`\`
-
-</details>`
-              ).join('\n\n');
               diffsSection = [
                 '---',
                 '',
@@ -272,13 +273,13 @@ ${d.patch}
             }
 
             const body=[
-              `This issue updates automatically. Non-healer DPS/tank specs are checked against SimulationCraft. Healer specs are listed separately at the bottom as not tracked by SimC.`,
+              'This issue updates automatically. Non-healer DPS/tank specs are checked against SimulationCraft. Healer specs are listed separately at the bottom as not tracked by SimC.',
               '',
-              [...header,...rows].join('\n'),
+              header.concat(rows).join('\n'),
               '',
               diffsSection,
               '',
-              '_Last run: '+new Date().toISOString()+'_'
+              '_Last run: ' + new Date().toISOString() + '_'
             ].join('\n');
 
             const issueTitle='APL sync status (auto)';
