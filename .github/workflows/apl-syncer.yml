@@ -181,9 +181,9 @@ jobs:
               const count = misses.length;
               const baseForCompare = baseFullSha || recordedSha;
 
-              // Repo-wide compare URL (quick overview)
-              const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}`;
-              const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${compareUrl})`;
+              // File-specific commit history URL
+              const historyUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/commits/${upstreamRepo.branch}/${upstreamPath}`;
+              const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${historyUrl})`;
 
               // ALSO fetch file-only patch from Compare API and stash for a section below the table
               try {
