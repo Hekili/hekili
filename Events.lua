@@ -756,7 +756,8 @@ do
         state.trinket.t1.__usable = false
         state.trinket.t1.__has_use_buff = false
         state.trinket.t1.__has_use_damage = false
-        state.trinket.t1.__use_buff_duration = nil
+        state.trinket.t1.__use_buff_duration = 0.01
+        state.trinket.t1.__proc = false
 
         if T1 then
             state.trinket.t1.__id = T1
@@ -800,7 +801,7 @@ do
                 state.trinket.t1.cooldown = state.cooldown.null_cooldown
             end
 
-            state.trinket.t1.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 13, true, true )
+            if not isUsable then state.trinket.t1.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 13, true, true ) end
         end
 
         local T2 = GetInventoryItemID( "player", 14 )
@@ -810,7 +811,8 @@ do
         state.trinket.t2.__usable = false
         state.trinket.t2.__has_use_buff = false
         state.trinket.t2.__has_use_damage = false
-        state.trinket.t2.__use_buff_duration = nil
+        state.trinket.t2.__use_buff_duration = 0.01
+        state.trinket.t2.__proc = false
         state.trinket.t2.ilvl = 0
 
         if T2 then
@@ -855,13 +857,22 @@ do
                 state.trinket.t2.cooldown = state.cooldown.null_cooldown
             end
 
-            state.trinket.t2.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 14, true, true )
+            if not isUsable then state.trinket.t2.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 14, true, true ) end
         end
 
         state.main_hand.size = 0
         state.off_hand.size = 0
 
         local MH = GetInventoryItemID( "player", 16 )
+
+        state.trinket.main_hand.__id = 0
+        state.trinket.main_hand.__ability = "null_cooldown"
+        state.trinket.main_hand.__usable = false
+        state.trinket.main_hand.__has_use_buff = false
+        state.trinket.main_hand.__has_use_damage = false
+        state.trinket.main_hand.__use_buff_duration = 0.01
+        state.trinket.main_hand.__proc = false
+        state.trinket.main_hand.ilvl = 0
 
         class.abilities.main_hand = class.abilities.actual_main_hand
 
@@ -897,7 +908,7 @@ do
                 state.trinket.main_hand.cooldown = state.cooldown.null_cooldown
             end
 
-            state.trinket.main_hand.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 16, true, true )
+            if not isUsable then state.trinket.t2.__proc = FindStringInInventoryItemTooltip( "^" .. ITEM_SPELL_TRIGGER_ONEQUIP, 16, true, true ) end
         end
 
         for i = 1, 19 do

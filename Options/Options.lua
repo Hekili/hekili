@@ -9467,9 +9467,9 @@ do
         { "time_to_pct_(%d+)%.remains"                      , "time_to_pct_%1"                          },
         { "trinket%.(%d)%.([%w%._]+)"                       , "trinket.t%1.%2"                          },
         --[[ { "trinket%.(t?%d)%.stat%.([%w_]+)%.([%w%._]+)", -- Christ.
-                                                              "trinket.%1.has_stat.%2&trinket.%1.%3" }, ]]
+                                                              "trinket.%1.has_stat.%2&trinket.%1.%3"    }, ]]
         { "trinket%.([%w_]+)%.cooldown"                     , "trinket.%1.cooldown.duration"            },
-        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration"     , "trinket.%1.buff_duration"                },
+        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration"     , "trinket.%1.proc_duration"                },
         { "trinket%.([%w_]+)%.buff%.a?n?y?%.?duration"      , "trinket.%1.buff_duration"                },
         { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"       , "trinket.%1.has_use_buff"                 },
         { "trinket%.([%w_]+)%.has_buff%.([%w_]+)"           , "trinket.%1.has_use_buff"                 },
