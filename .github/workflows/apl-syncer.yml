@@ -24,7 +24,6 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            const crypto = require('crypto');
 
             const dir = 'TheWarWithin/Priorities';
             const files = fs.existsSync(dir)
@@ -39,7 +38,7 @@ jobs:
               return fs.readFileSync(filepath, 'utf8').split(/\r?\n/).slice(0, n);
             }
 
-            // Display names
+            // Pretty display helpers
             const classDisplay = {
               DeathKnight:'Death Knight', DemonHunter:'Demon Hunter', Druid:'Druid', Evoker:'Evoker',
               Hunter:'Hunter', Mage:'Mage', Monk:'Monk', Paladin:'Paladin', Priest:'Priest', Rogue:'Rogue',
@@ -75,7 +74,7 @@ jobs:
             const classIndex = new Map(order.map(([c],i)=>[c,i]));
             const specIndex  = new Map(order.flatMap(([c,specs])=>specs.map((s,j)=>[`${c}:${s}`,j])));
 
-            // Healers (listed, but not compared)
+            // Healers (not tracked)
             const healers = new Set([
               'Evoker:Preservation',
               'Paladin:Holy',
@@ -97,7 +96,10 @@ jobs:
               return {classKey,specKey};
             }
 
-            // Walk commit history for a file until we reach recorded short SHA; return misses and the resolved full base SHA
+            /**
+             * Walk commits touching a given file until we hit the recorded short SHA.
+             * Returns { misses: Commit[], baseFullSha?: string } (misses newest→older)
+             */
             async function listMissingCommitsAndResolveBase(pathInRepo, recordedShaShort, limit = 400) {
               let page = 1;
               const per_page = 100;
@@ -113,9 +115,8 @@ jobs:
                 });
                 if (!batch.length) break;
                 for (const c of batch) {
-                  const sha = c.sha;
-                  if (sha.startsWith(recordedShaShort)) {
-                    return { misses, baseFullSha: sha };
+                  if (c.sha.startsWith(recordedShaShort)) {
+                    return { misses, baseFullSha: c.sha };
                   }
                   misses.push(c);
                   if (misses.length >= limit) break;
@@ -127,6 +128,8 @@ jobs:
             }
 
             const results=[];
+            const diffs=[]; // collect per-file diff blocks for a section BELOW the table
+
             for(const f of files){
               const top=head(f,6);
               const upstreamLine=top.find(l=>l.startsWith('## Upstream:'));
@@ -145,7 +148,6 @@ jobs:
 
               const matchPath=upstreamLine.match(/ActionPriorityLists\/default\/[A-Za-z0-9._-]+\.simc/);
               const matchSha=shaLine.match(/[0-9a-f]{7,40}/i);
-
               if(!matchPath||!matchSha){
                 results.push({classKey,specKey,status:'unparseable_header'}); continue;
               }
@@ -158,7 +160,6 @@ jobs:
               const {data:latestBatch}=await github.rest.repos.listCommits({
                 owner:upstreamRepo.owner, repo:upstreamRepo.repo, sha:upstreamRepo.branch, path:upstreamPath, per_page:1
               });
-
               if(!latestBatch.length){
                 results.push({classKey,specKey,recordedSha,status:'upstream_not_found'}); continue;
               }
@@ -175,16 +176,41 @@ jobs:
                 continue;
               }
 
-              // Count missing commits & build a file-anchored compare URL
+              // Determine count and resolved base SHA for proper compare
               const { misses, baseFullSha } = await listMissingCommitsAndResolveBase(upstreamPath, recordedShort, 400);
               const count = misses.length;
+              const baseForCompare = baseFullSha || recordedSha;
 
-              // file anchor is sha256 of the repo-relative path used in the diff
-              const anchor = 'diff-' + crypto.createHash('sha256').update(upstreamPath).digest('hex');
-
-              const baseForCompare = baseFullSha || recordedSha; // resolve to full if we found it
-              const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}#${anchor}`;
+              // Repo-wide compare URL (quick overview)
+              const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}`;
               const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${compareUrl})`;
+
+              // ALSO fetch file-only patch from Compare API and stash for the "details" section
+              try {
+                const { data: cmp } = await github.rest.repos.compareCommits({
+                  owner: upstreamRepo.owner, repo: upstreamRepo.repo,
+                  base: baseForCompare, head: latestShaFull
+                });
+                const target = cmp.files?.find(f => f.filename === upstreamPath);
+                if (target?.patch) {
+                  // Keep the diff reasonable
+                  const maxLines = 400;
+                  let patchLines = target.patch.split('\n');
+                  if (patchLines.length > maxLines) {
+                    patchLines = patchLines.slice(0, maxLines);
+                    patchLines.push('... (truncated) ...');
+                  }
+                  const specName = `${specDisplay[specKey] ?? specKey} ${classDisplay[classKey] ?? classKey}`.trim();
+                  diffs.push({
+                    specName,
+                    count,
+                    link: compareUrl,
+                    patch: patchLines.join('\n')
+                  });
+                }
+              } catch (e) {
+                core.warning(`Compare API failed for ${upstreamPath}: ${e.message}`);
+              }
 
               results.push({
                 classKey, specKey,
@@ -208,11 +234,11 @@ jobs:
               return an.localeCompare(bn);
             });
 
+            // Main table
             const header=[
               '| Spec                | Addon SHA    | SimC SHA   | Status         |',
               '|---------------------|--------------|------------|----------------|',
             ];
-
             const rows=results.map(r=>{
               const specName=`${specDisplay[r.specKey]??r.specKey} ${classDisplay[r.classKey]??r.classKey}`.trim();
               if(r.isHealer){
@@ -223,10 +249,34 @@ jobs:
               return `| ${specName} | ${addonSha} | ${simcSha} | ${r.status} |`;
             });
 
+            // Per-file diffs section (BELOW the table, so it won't break table layout)
+            let diffsSection = '';
+            if (diffs.length) {
+              const blocks = diffs.map(d =>
+                `<details><summary>${d.specName} — ${d.count} commit${d.count===1?'':'s'} missing • <a href="${d.link}">compare</a></summary>
+
+\`\`\`diff
+${d.patch}
+\`\`\`
+
+</details>`
+              ).join('\n\n');
+              diffsSection = [
+                '---',
+                '',
+                '### File-only diffs',
+                'The following diffs show **only** the upstream changes to each spec’s `.simc` file between the recorded addon SHA and the latest upstream SHA.',
+                '',
+                blocks
+              ].join('\n');
+            }
+
             const body=[
               `This issue updates automatically. Non-healer DPS/tank specs are checked against SimulationCraft. Healer specs are listed separately at the bottom as not tracked by SimC.`,
               '',
               [...header,...rows].join('\n'),
+              '',
+              diffsSection,
               '',
               '_Last run: '+new Date().toISOString()+'_'
             ].join('\n');
