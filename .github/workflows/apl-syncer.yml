@@ -272,14 +272,13 @@ jobs:
               ].join('\n');
             }
 
+            // Main issue body without diffs to stay under 65,536 character limit
             const body=[
               '_Last run: ' + new Date().toISOString() + '_',
               '',
-              'This issue updates automatically. Non-healer DPS/tank specs are checked against SimulationCraft. Healer specs are listed separately at the bottom as not tracked by SimC.',
+              'This issue updates automatically. DPS and Tank specs are checked against SimulationCraft. Healer specs are listed separately at the bottom as they are not tracked by SimC.',
               '',
-              header.concat(rows).join('\n'),
-              '',
-              diffsSection
+              header.concat(rows).join('\n')
             ].join('\n');
 
             const issueTitle='APL Sync Status';
@@ -294,5 +293,51 @@ jobs:
             if(issue){
               await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:issue.number,body});
             }else{
-              await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:issueTitle,body,labels:wantedLabels});
+              issue = await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:issueTitle,body,labels:wantedLabels});
+              issue = issue.data; // Extract data from create response
+            }
+
+            // Post diffs as a separate comment if there are any
+            if (diffsSection.trim()) {
+              const diffComment = [
+                '### File-only diffs',
+                'The following diffs show **only** the upstream changes to each spec\'s `.simc` file between the recorded addon SHA and the latest upstream SHA.',
+                '',
+                diffs.map(d => {
+                  const parts = [];
+                  parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing • <a href="' + d.link + '">compare</a></summary>');
+                  parts.push('');
+                  parts.push('```diff');
+                  parts.push(d.patch);
+                  parts.push('```');
+                  parts.push('');
+                  parts.push('</details>');
+                  return parts.join('\n');
+                }).join('\n\n')
+              ].join('\n');
+
+              // Delete existing bot comments first to avoid accumulation
+              const {data: comments} = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number
+              });
+              
+              for (const comment of comments) {
+                if (comment.user.login === 'github-actions[bot]' && comment.body.includes('### File-only diffs')) {
+                  await github.rest.issues.deleteComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: comment.id
+                  });
+                }
+              }
+
+              // Post new diff comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: diffComment
+              });
             }
