@@ -96,12 +96,14 @@ jobs:
               return {classKey,specKey};
             }
 
-            // Get commits touching a file since recorded short SHA (newest→oldest), limited
-            async function listMissingCommitsSince(pathInRepo, recordedShaShort, limit = 50) {
+            /**
+             * Paginate commits touching a file (newest→oldest) until we reach the recorded short SHA.
+             * Returns { misses: Commit[], baseFullSha?: string }
+             */
+            async function listMissingCommitsAndResolveBase(pathInRepo, recordedShaShort, limit = 400) {
               let page = 1;
-              const per_page = 100;
+              const per_page = 100; // API max
               const misses = [];
-
               while (misses.length < limit) {
                 const { data: batch } = await github.rest.repos.listCommits({
                   owner: upstreamRepo.owner,
@@ -116,19 +118,17 @@ jobs:
                 for (const c of batch) {
                   const sha = c.sha;
                   if (sha.startsWith(recordedShaShort)) {
-                    return misses; // stop when we reach the recorded SHA
+                    // Found the recorded base; stop and return full base SHA
+                    return { misses, baseFullSha: sha };
                   }
-                  misses.push({
-                    sha,
-                    url: c.html_url,
-                    message: (c.commit && c.commit.message ? c.commit.message.split('\n')[0] : '').trim()
-                  });
+                  misses.push(c);
                   if (misses.length >= limit) break;
                 }
                 if (batch.length < per_page) break;
                 page++;
               }
-              return misses;
+              // Did not find the recorded SHA in history
+              return { misses, baseFullSha: undefined };
             }
 
             const results=[];
@@ -180,11 +180,14 @@ jobs:
                 continue;
               }
 
-              // Missing commits and link to the most recent one
-              const missing = await listMissingCommitsSince(upstreamPath, recordedShort, 50);
-              const count = missing.length;
-              const newestUrl = count ? missing[0].url : latestBatch[0].html_url; // fallback to latest commit if list empty
-              const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${newestUrl})`;
+              // Get the missing commits and resolve full base SHA for compare
+              const { misses, baseFullSha } = await listMissingCommitsAndResolveBase(upstreamPath, recordedShort, 400);
+              const count = misses.length;
+
+              // Build compare link: base (recorded) ... latest
+              const baseForCompare = baseFullSha || recordedSha; // fall back to what we have
+              const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}`;
+              const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${compareUrl})`;
 
               results.push({
                 classKey, specKey,
