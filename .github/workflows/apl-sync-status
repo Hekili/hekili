@@ -1,0 +1,343 @@
+name: apl-sync-status
+
+on:
+  schedule:
+    - cron: "17 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hekili (thewarwithin)
+        uses: actions/checkout@v4
+        with:
+          ref: thewarwithin
+
+      - name: Run sync check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const dir = 'TheWarWithin/Priorities';
+            const files = fs.existsSync(dir)
+              ? fs.readdirSync(dir).filter(f => f.endsWith('.simc')).map(f => path.join(dir, f))
+              : [];
+
+            core.info(`Found ${files.length} priority files under ${dir}`);
+
+            const upstreamRepo = { owner: 'simulationcraft', repo: 'simc', branch: 'thewarwithin' };
+
+            function head(filepath, n = 6) {
+              return fs.readFileSync(filepath, 'utf8').split(/\r?\n/).slice(0, n);
+            }
+
+            // Pretty display helpers
+            const classDisplay = {
+              DeathKnight:'Death Knight', DemonHunter:'Demon Hunter', Druid:'Druid', Evoker:'Evoker',
+              Hunter:'Hunter', Mage:'Mage', Monk:'Monk', Paladin:'Paladin', Priest:'Priest', Rogue:'Rogue',
+              Shaman:'Shaman', Warlock:'Warlock', Warrior:'Warrior'
+            };
+            const specDisplay = {
+              BeastMastery:'Beast Mastery', Marksmanship:'Marksmanship', Blood:'Blood', Frost:'Frost',
+              Unholy:'Unholy', Havoc:'Havoc', Vengeance:'Vengeance', Balance:'Balance', Feral:'Feral',
+              Guardian:'Guardian', Restoration:'Restoration', Augmentation:'Augmentation', Devastation:'Devastation',
+              Preservation:'Preservation', Arcane:'Arcane', Fire:'Fire', Brewmaster:'Brewmaster', Mistweaver:'Mistweaver',
+              Windwalker:'Windwalker', Holy:'Holy', Protection:'Protection', Retribution:'Retribution',
+              Discipline:'Discipline', Shadow:'Shadow', Assassination:'Assassination', Outlaw:'Outlaw',
+              Subtlety:'Subtlety', Elemental:'Elemental', Enhancement:'Enhancement', Affliction:'Affliction',
+              Demonology:'Demonology', Destruction:'Destruction', Arms:'Arms', Fury:'Fury'
+            };
+
+            // Desired ordering
+            const order = [
+              ['DeathKnight',['Blood','Frost','Unholy']],
+              ['DemonHunter',['Havoc','Vengeance']],
+              ['Druid',['Balance','Feral','Guardian','Restoration']],
+              ['Evoker',['Augmentation','Devastation','Preservation']],
+              ['Hunter',['BeastMastery','Marksmanship','Survival']],
+              ['Mage',['Arcane','Fire','Frost']],
+              ['Monk',['Brewmaster','Mistweaver','Windwalker']],
+              ['Paladin',['Holy','Protection','Retribution']],
+              ['Priest',['Discipline','Holy','Shadow']],
+              ['Rogue',['Assassination','Outlaw','Subtlety']],
+              ['Shaman',['Elemental','Enhancement','Restoration']],
+              ['Warlock',['Affliction','Demonology','Destruction']],
+              ['Warrior',['Arms','Fury','Protection']],
+            ];
+            const classIndex = new Map(order.map(([c],i)=>[c,i]));
+            const specIndex  = new Map(order.flatMap(([c,specs])=>specs.map((s,j)=>[`${c}:${s}`,j])));
+
+            // Healers (not tracked)
+            const healers = new Set([
+              'Evoker:Preservation',
+              'Paladin:Holy',
+              'Priest:Holy',
+              'Priest:Discipline',
+              'Shaman:Restoration',
+              'Druid:Restoration',
+              'Monk:Mistweaver'
+            ]);
+
+            function inferClassSpec(filename) {
+              const base = path.basename(filename,'.simc');
+              const parts = base.match(/^([A-Z][a-zA-Z]+?)([A-Z].*)$/);
+              if (!parts) return {classKey:'Unknown',specKey:'Unknown'};
+              let classKey=parts[1], specKey=parts[2];
+              if (classKey==='Death'&&specKey.startsWith('Knight')){classKey='DeathKnight';specKey=specKey.replace(/^Knight/,'');}
+              else if (classKey==='Demon'&&specKey.startsWith('Hunter')){classKey='DemonHunter';specKey=specKey.replace(/^Hunter/,'');}
+              specKey=specKey.replace(/^[_-]/,'');
+              return {classKey,specKey};
+            }
+
+            /**
+             * Walk commits touching a given file until we hit the recorded short SHA.
+             * Returns { misses: Commit[], baseFullSha?: string } (misses newest→older)
+             */
+            async function listMissingCommitsAndResolveBase(pathInRepo, recordedShaShort, limit = 400) {
+              let page = 1;
+              const per_page = 100;
+              const misses = [];
+              while (misses.length < limit) {
+                const { data: batch } = await github.rest.repos.listCommits({
+                  owner: upstreamRepo.owner,
+                  repo: upstreamRepo.repo,
+                  sha: upstreamRepo.branch,
+                  path: pathInRepo,
+                  per_page,
+                  page
+                });
+                if (!batch.length) break;
+                for (const c of batch) {
+                  if (c.sha.startsWith(recordedShaShort)) {
+                    return { misses, baseFullSha: c.sha };
+                  }
+                  misses.push(c);
+                  if (misses.length >= limit) break;
+                }
+                if (batch.length < per_page) break;
+                page++;
+              }
+              return { misses, baseFullSha: undefined };
+            }
+
+            const results=[];
+            const diffs=[]; // per-file diff blocks BELOW the table
+
+            for(const f of files){
+              const top=head(f,6);
+              const upstreamLine=top.find(l=>l.startsWith('## Upstream:'));
+              const shaLine=top.find(l=>l.toLowerCase().includes('simulationcraft commit sync'));
+              const {classKey,specKey}=inferClassSpec(f);
+              const key=`${classKey}:${specKey}`;
+
+              if(healers.has(key)){
+                results.push({classKey,specKey,isHealer:true});
+                continue;
+              }
+
+              if(!upstreamLine||!shaLine){
+                results.push({classKey,specKey,status:'missing_header'}); continue;
+              }
+
+              const matchPath=upstreamLine.match(/ActionPriorityLists\/default\/[A-Za-z0-9._-]+\.simc/);
+              const matchSha=shaLine.match(/[0-9a-f]{7,40}/i);
+              if(!matchPath||!matchSha){
+                results.push({classKey,specKey,status:'unparseable_header'}); continue;
+              }
+
+              const upstreamPath=matchPath[0];
+              const recordedSha=matchSha[0];
+              const recordedShort=recordedSha.slice(0,7);
+
+              // Latest commit touching that path
+              const {data:latestBatch}=await github.rest.repos.listCommits({
+                owner:upstreamRepo.owner, repo:upstreamRepo.repo, sha:upstreamRepo.branch, path:upstreamPath, per_page:1
+              });
+              if(!latestBatch.length){
+                results.push({classKey,specKey,recordedSha,status:'upstream_not_found'}); continue;
+              }
+
+              const latestShaFull=latestBatch[0].sha;
+              const latestShort=latestShaFull.slice(0,7);
+
+              if (latestShort === recordedShort) {
+                results.push({
+                  classKey, specKey,
+                  recordedSha, latestSha: latestShaFull,
+                  status: '✅ Up to date'
+                });
+                continue;
+              }
+
+              // Determine count and resolved base SHA for proper compare
+              const { misses, baseFullSha } = await listMissingCommitsAndResolveBase(upstreamPath, recordedShort, 400);
+              const count = misses.length;
+              const baseForCompare = baseFullSha || recordedSha;
+
+              // Repo-wide compare URL (quick overview)
+              const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}`;
+              const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${compareUrl})`;
+
+              // ALSO fetch file-only patch from Compare API and stash for a section below the table
+              try {
+                const { data: cmp } = await github.rest.repos.compareCommits({
+                  owner: upstreamRepo.owner, repo: upstreamRepo.repo, base: baseForCompare, head: latestShaFull
+                });
+                const target = (cmp.files || []).find(fl => fl.filename === upstreamPath);
+                if (target && target.patch) {
+                  const maxLines = 400;
+                  let patchLines = target.patch.split('\n');
+                  if (patchLines.length > maxLines) {
+                    patchLines = patchLines.slice(0, maxLines);
+                    patchLines.push('... (truncated) ...');
+                  }
+                  const specName = `${specDisplay[specKey] ?? specKey} ${classDisplay[classKey] ?? classKey}`.trim();
+                  diffs.push({
+                    specName,
+                    count,
+                    link: compareUrl,
+                    patch: patchLines.join('\n')
+                  });
+                }
+              } catch (e) {
+                core.warning(`Compare API failed for ${upstreamPath}: ${e.message}`);
+              }
+
+              results.push({
+                classKey, specKey,
+                recordedSha, latestSha: latestShaFull,
+                status
+              });
+            }
+
+            // Sort: non-healers first by order, healers last
+            results.sort((a,b)=>{
+              const aHealer=!!a.isHealer; const bHealer=!!b.isHealer;
+              if(aHealer!==bHealer) return aHealer?1:-1;
+              const ai=classIndex.has(a.classKey)?classIndex.get(a.classKey):999;
+              const bi=classIndex.has(b.classKey)?classIndex.get(b.classKey):999;
+              if(ai!==bi)return ai-bi;
+              const as=specIndex.has(`${a.classKey}:${a.specKey}`)?specIndex.get(`${a.classKey}:${a.specKey}`):999;
+              const bs=specIndex.has(`${b.classKey}:${b.specKey}`)?specIndex.get(`${b.classKey}:${b.specKey}`):999;
+              if(as!==bs)return as-bs;
+              const an=`${specDisplay[a.specKey]??a.specKey} ${classDisplay[a.classKey]??a.classKey}`;
+              const bn=`${specDisplay[b.specKey]??b.specKey} ${classDisplay[b.classKey]??b.classKey}`;
+              return an.localeCompare(bn);
+            });
+
+            // Main table
+            const header=[
+              '| Spec                | Addon SHA    | SimC SHA   | Status         |',
+              '|---------------------|--------------|------------|----------------|',
+            ];
+            const rows=results.map(r=>{
+              const specName=`${specDisplay[r.specKey]??r.specKey} ${classDisplay[r.classKey]??r.classKey}`.trim();
+              if(r.isHealer){
+                return `| ${specName} | — | — | _(not tracked by SimC)_ |`;
+              }
+              const addonSha=r.recordedSha?'`'+r.recordedSha.slice(0,7)+'`':'—';
+              const simcSha=r.latestSha?'`'+r.latestSha.slice(0,7)+'`':'—';
+              return `| ${specName} | ${addonSha} | ${simcSha} | ${r.status} |`;
+            });
+
+            // Per-file diffs section BELOW the table (built without template literals to keep YAML happy)
+            let diffsSection = '';
+            if (diffs.length) {
+              const blocks = diffs.map(d => {
+                const parts = [];
+                parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing • <a href="' + d.link + '">compare</a></summary>');
+                parts.push('');
+                parts.push('```diff');
+                parts.push(d.patch);
+                parts.push('```');
+                parts.push('');
+                parts.push('</details>');
+                return parts.join('\n');
+              }).join('\n\n');
+
+              diffsSection = [
+                '---',
+                '',
+                '### File-only diffs',
+                'The following diffs show **only** the upstream changes to each spec’s `.simc` file between the recorded addon SHA and the latest upstream SHA.',
+                '',
+                blocks
+              ].join('\n');
+            }
+
+            // Main issue body without diffs to stay under 65,536 character limit
+            const body=[
+              '_Last run: ' + new Date().toISOString() + '_',
+              '',
+              'This issue updates automatically. DPS and Tank specs are checked against SimulationCraft. Healer specs are listed separately at the bottom as they are not tracked by SimC.',
+              '',
+              header.concat(rows).join('\n')
+            ].join('\n');
+
+            const issueTitle='APL Sync Status';
+            const {data:existing}=await github.rest.issues.listForRepo({
+              owner:context.repo.owner,repo:context.repo.repo,state:'open',labels:'automation,apl-sync-status',per_page:100});
+            let issue=existing.find(i=>i.title===issueTitle);
+            const wantedLabels=['automation','apl-sync-status'];
+            for(const l of wantedLabels){
+              try{await github.rest.issues.getLabel({owner:context.repo.owner,repo:context.repo.repo,name:l});}
+              catch{try{await github.rest.issues.createLabel({owner:context.repo.owner,repo:context.repo.repo,name:l});}catch{}}
+            }
+            if(issue){
+              await github.rest.issues.update({owner:context.repo.owner,repo:context.repo.repo,issue_number:issue.number,body});
+            }else{
+              issue = await github.rest.issues.create({owner:context.repo.owner,repo:context.repo.repo,title:issueTitle,body,labels:wantedLabels});
+              issue = issue.data; // Extract data from create response
+            }
+
+            // Post diffs as a separate comment if there are any
+            if (diffsSection.trim()) {
+              const diffComment = [
+                '### File-only diffs',
+                'The following diffs show **only** the upstream changes to each spec\'s `.simc` file between the recorded addon SHA and the latest upstream SHA.',
+                '',
+                diffs.map(d => {
+                  const parts = [];
+                  parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing</summary>');
+                  parts.push('');
+                  parts.push('```diff');
+                  parts.push(d.patch);
+                  parts.push('```');
+                  parts.push('');
+                  parts.push('</details>');
+                  return parts.join('\n');
+                }).join('\n\n')
+              ].join('\n');
+
+              // Delete existing bot comments first to avoid accumulation
+              const {data: comments} = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number
+              });
+              
+              for (const comment of comments) {
+                if (comment.user.login === 'github-actions[bot]' && comment.body.includes('### File-only diffs')) {
+                  await github.rest.issues.deleteComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: comment.id
+                  });
+                }
+              }
+
+              // Post new diff comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: diffComment
+              });
+            }
