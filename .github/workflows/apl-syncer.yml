@@ -24,6 +24,7 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
+            const crypto = require('crypto');
 
             const dir = 'TheWarWithin/Priorities';
             const files = fs.existsSync(dir)
@@ -38,7 +39,7 @@ jobs:
               return fs.readFileSync(filepath, 'utf8').split(/\r?\n/).slice(0, n);
             }
 
-            // Display name helpers
+            // Display names
             const classDisplay = {
               DeathKnight:'Death Knight', DemonHunter:'Demon Hunter', Druid:'Druid', Evoker:'Evoker',
               Hunter:'Hunter', Mage:'Mage', Monk:'Monk', Paladin:'Paladin', Priest:'Priest', Rogue:'Rogue',
@@ -55,7 +56,7 @@ jobs:
               Demonology:'Demonology', Destruction:'Destruction', Arms:'Arms', Fury:'Fury'
             };
 
-            // Desired main ordering
+            // Desired ordering
             const order = [
               ['DeathKnight',['Blood','Frost','Unholy']],
               ['DemonHunter',['Havoc','Vengeance']],
@@ -74,7 +75,7 @@ jobs:
             const classIndex = new Map(order.map(([c],i)=>[c,i]));
             const specIndex  = new Map(order.flatMap(([c,specs])=>specs.map((s,j)=>[`${c}:${s}`,j])));
 
-            // Healer list (not strictly tracked against SimC APLs)
+            // Healers (listed, but not compared)
             const healers = new Set([
               'Evoker:Preservation',
               'Paladin:Holy',
@@ -96,13 +97,10 @@ jobs:
               return {classKey,specKey};
             }
 
-            /**
-             * Paginate commits touching a file (newest→oldest) until we reach the recorded short SHA.
-             * Returns { misses: Commit[], baseFullSha?: string }
-             */
+            // Walk commit history for a file until we reach recorded short SHA; return misses and the resolved full base SHA
             async function listMissingCommitsAndResolveBase(pathInRepo, recordedShaShort, limit = 400) {
               let page = 1;
-              const per_page = 100; // API max
+              const per_page = 100;
               const misses = [];
               while (misses.length < limit) {
                 const { data: batch } = await github.rest.repos.listCommits({
@@ -114,11 +112,9 @@ jobs:
                   page
                 });
                 if (!batch.length) break;
-
                 for (const c of batch) {
                   const sha = c.sha;
                   if (sha.startsWith(recordedShaShort)) {
-                    // Found the recorded base; stop and return full base SHA
                     return { misses, baseFullSha: sha };
                   }
                   misses.push(c);
@@ -127,7 +123,6 @@ jobs:
                 if (batch.length < per_page) break;
                 page++;
               }
-              // Did not find the recorded SHA in history
               return { misses, baseFullSha: undefined };
             }
 
@@ -180,13 +175,15 @@ jobs:
                 continue;
               }
 
-              // Get the missing commits and resolve full base SHA for compare
+              // Count missing commits & build a file-anchored compare URL
               const { misses, baseFullSha } = await listMissingCommitsAndResolveBase(upstreamPath, recordedShort, 400);
               const count = misses.length;
 
-              // Build compare link: base (recorded) ... latest
-              const baseForCompare = baseFullSha || recordedSha; // fall back to what we have
-              const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}`;
+              // file anchor is sha256 of the repo-relative path used in the diff
+              const anchor = 'diff-' + crypto.createHash('sha256').update(upstreamPath).digest('hex');
+
+              const baseForCompare = baseFullSha || recordedSha; // resolve to full if we found it
+              const compareUrl = `https://github.com/${upstreamRepo.owner}/${upstreamRepo.repo}/compare/${baseForCompare}...${latestShaFull}#${anchor}`;
               const status = `❌ Out of date — [${count} commit${count===1?'':'s'} missing](${compareUrl})`;
 
               results.push({
