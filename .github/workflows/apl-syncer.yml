@@ -1,8 +1,8 @@
-name: apl-syncer
+name: apl-sync-status
 
 on:
   schedule:
-    - cron: "17 * * * *"
+    - cron: "17 8 * * *"
   workflow_dispatch:
 
 permissions:
@@ -273,20 +273,20 @@ jobs:
             }
 
             const body=[
+              '_Last run: ' + new Date().toISOString() + '_',
+              '',
               'This issue updates automatically. Non-healer DPS/tank specs are checked against SimulationCraft. Healer specs are listed separately at the bottom as not tracked by SimC.',
               '',
               header.concat(rows).join('\n'),
               '',
-              diffsSection,
-              '',
-              '_Last run: ' + new Date().toISOString() + '_'
+              diffsSection
             ].join('\n');
 
-            const issueTitle='APL sync status (auto)';
+            const issueTitle='APL Sync Status';
             const {data:existing}=await github.rest.issues.listForRepo({
-              owner:context.repo.owner,repo:context.repo.repo,state:'open',labels:'automation,apl-sync',per_page:100});
+              owner:context.repo.owner,repo:context.repo.repo,state:'open',labels:'automation,apl-sync-status',per_page:100});
             let issue=existing.find(i=>i.title===issueTitle);
-            const wantedLabels=['automation','apl-sync'];
+            const wantedLabels=['automation','apl-sync-status'];
             for(const l of wantedLabels){
               try{await github.rest.issues.getLabel({owner:context.repo.owner,repo:context.repo.repo,name:l});}
               catch{try{await github.rest.issues.createLabel({owner:context.repo.owner,repo:context.repo.repo,name:l});}catch{}}
