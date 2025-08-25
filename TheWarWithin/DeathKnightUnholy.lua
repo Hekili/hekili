@@ -1224,10 +1224,10 @@ local dnd_model = setmetatable( {}, {
         if k == "ticking" then
             -- Disabled
             -- if state.query_time - class.abilities.any_dnd.lastCast < 10 then return true end
-            return debuff.death_and_decay.up
+            return buff.death_and_decay.up
 
         elseif k == "remains" then
-            return debuff.death_and_decay.remains
+            return buff.death_and_decay.remains
 
         end
 
@@ -1820,6 +1820,10 @@ spec:RegisterAbilities( {
 
             if talent.plaguebringer.enabled then
                 applyBuff( "plaguebringer" )
+            end
+
+            if talent.trollbanes_icy_fury.enabled and debuff.chains_of_ice_trollbane_slow.up then
+                removeDebuff( "target", "chains_of_ice_trollbane_slow" )
             end
 
             -- Legacy
@@ -2522,6 +2526,10 @@ spec:RegisterAbilities( {
                 removeDebuff( "target", "virulent_plague" )
                 removeBuff( "infliction_of_sorrow" )
                 applyBuff( "visceral_strength_unholy" )
+            end
+
+            if talent.trollbanes_icy_fury.enabled and debuff.chains_of_ice_trollbane_slow.up then
+                removeDebuff( "target", "chains_of_ice_trollbane_slow" )
             end
 
             if conduit.lingering_plague.enabled and debuff.virulent_plague.up then
