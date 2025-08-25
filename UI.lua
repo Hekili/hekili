@@ -1101,6 +1101,10 @@ do
                 if self.HasRecommendations and self.RecommendationsStr and self.RecommendationsStr:len() == 0 then
                     for i, b in ipairs( self.Buttons ) do b:Hide() end
                     self.HasRecommendations = false
+
+                elseif self:IsThreadLocked() then
+                    self.HasRecommendations = true
+                    
                 else
                     self.HasRecommendations = true
 
@@ -1221,15 +1225,16 @@ do
                                 b.glowing = false
                             end
 
-                            b.Action = action
-                            b.Text = caption
-                            b.Indicator = indicator
-                            b.Keybind = keybind
-                            b.Ability = ability
-                            b.ExactTime = exact_time
                         else
                             b:Hide()
                         end
+
+                        b.Action = action
+                        b.Text = caption
+                        b.Indicator = indicator
+                        b.Keybind = keybind
+                        b.Ability = ability
+                        b.ExactTime = exact_time
                     end
 
                     self:RefreshCooldowns( "RECS_UPDATED" )
