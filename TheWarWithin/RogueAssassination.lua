@@ -2756,7 +2756,7 @@ spec:RegisterAbilities( {
         recharge = 60,
         icd = 1,
         gcd = "off",
-        texture = 381623,
+        texture = 132819,
 
         spend = -100,
         spendType = "energy",
