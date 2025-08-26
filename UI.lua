@@ -1104,7 +1104,7 @@ do
 
                 elseif self:IsThreadLocked() then
                     self.HasRecommendations = true
-                    
+
                 else
                     self.HasRecommendations = true
 
@@ -2518,12 +2518,14 @@ do
 
         -- Indicator Icons.
         b.Icon = b.Icon or b:CreateTexture( nil, "OVERLAY" )
-        b.Icon: SetSize( max( 10, b:GetWidth() / 3 ), max( 10, b:GetHeight() / 3 ) )
+        b.Icon:SetSize( conf.indicators.width or 20, conf.indicators.height or 20 )
 
-        if conf.keepAspectRatio and b.Icon:GetHeight() ~= b.Icon:GetWidth() then
-            local biggest = max( b.Icon:GetHeight(), b.Icon:GetWidth() )
-            local height = 0.5 * b.Icon:GetHeight() / biggest
-            local width = 0.5 * b.Icon:GetWidth() / biggest
+        local zoom = 1 - ( ( conf.indicators.zoom or 0) / 200 )
+
+        if conf.indicators.keepAspectRatio and conf.indicators.height ~= conf.indicators.width then
+            local biggest = max( conf.indicators.height or 20, conf.indicators.width or 20 )
+            local height = 0.5 * zoom * ( conf.indicators.height or 20 ) / biggest
+            local width = 0.5 * zoom * ( conf.indicators.width or 20 ) / biggest
 
             b.Icon:SetTexCoord( 0.5 - width, 0.5 + width, 0.5 - height, 0.5 + height )
         else
