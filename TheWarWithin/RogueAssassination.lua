@@ -2950,12 +2950,12 @@ spec:RegisterSetting( "priority_rotation", false, {
 
 spec:RegisterSetting( "fok_critical_cp_prediction", "predict", {
     name = strformat( "%s Critical Combo Point Prediction", Hekili:GetSpellLinkWithTexture( 51723 ) ),  -- Fan of Knives
-    desc = strformat( "%sThis setting controls how %s predicts critical strikes for combo point generation.%s " ..
-                      "|n|n%sThis option only works if the %s talent is selected.%s\n\n" ..
+    desc = strformat( "This setting controls how %s predicts critical strikes for combo point generation.\n\n" ..
+                      "%sThis option only works if the %s talent is selected.%s\n\n" ..
                       "|cFF00FF00• Predict:|r Assumes a certain number of critical hits will occur based on your current critical strike chance and number of nearby enemies.\n\n" ..
                       "|cFF00FF00• Predict Conservatively:|r The predicted number of combo points is reduced by 1 in order to prevent more jarring rotation changes from unlucky critical strikes.\n\n" ..
                       "|cFF00FF00• Do Not Predict:|r Disables critical prediction, using only guaranteed combo points from casting %s.",
-                      "|cFFFFD100", Hekili:GetSpellLinkWithTexture( 51723 ), "|r",
+                      Hekili:GetSpellLinkWithTexture( 51723 ),
                       "|cFFFF0000", Hekili:GetSpellLinkWithTexture( 14190 ), "|r",
                       Hekili:GetSpellLinkWithTexture( 51723 )
     ),
@@ -3016,7 +3016,8 @@ spec:RegisterSetting( "shiv_one_charge", true, {
 
 spec:RegisterSetting( "shiv_tea_macro", false, {
     name = strformat( "%s %s: Macro with %s", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
-    desc = strformat( "If checked, it will be assumed that %s is used (via macro) any time %s is recommended. This feature will prevent %s from being recommended proactively.",
+    desc = strformat( "If checked, it will be assumed that %s is used (via macro) any time %s is recommended.\n\n" ..
+            "This feature will prevent %s from being recommended proactively.",
             Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ),  Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
     type = "toggle",
     width = "full"
@@ -3071,7 +3072,7 @@ spec:RegisterSetting( "solo_vanish", true, {
 
 spec:RegisterSetting( "allow_shadowmeld", nil, {
     name = strformat( "Allow %s", Hekili:GetSpellLinkWithTexture( 58984 ) ),  -- Shadowmeld
-    desc = strformat( "If checked, %s can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change. " ..
+    desc = strformat( "If checked, %s can be recommended for Night Elves when its conditions are met.  Your stealth-based abilities can be used in Shadowmeld, even if your action bar does not change.\n\n" ..
                       "%s can only be recommended in boss fights or when you are in a group (to avoid resetting combat).",
                       Hekili:GetSpellLinkWithTexture( 58984 ), Hekili:GetSpellLinkWithTexture( 58984 ) ),
     type = "toggle",
