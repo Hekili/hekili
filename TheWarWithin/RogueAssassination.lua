@@ -2965,7 +2965,7 @@ spec:RegisterSetting( "fok_critical_cp_prediction", "predict", {
         ["predict_conservatively"] = "Predict Conservatively",
         ["do_not_predict"] = "Do Not Predict"
     },
-    width = 1.5,
+    width = "full"
 } )
 
 spec:RegisterSetting( "max_garrote_spread", 10, {
@@ -2995,7 +2995,7 @@ spec:RegisterSetting( "cooldowns_ttd", 0, {
     softMax = 16,
     max = 30,
     step = 0.25,
-    width = 1.5
+    width = "full"
 } )
 
 spec:RegisterSetting( "shiv_settings_header", false, {
@@ -3059,7 +3059,7 @@ spec:RegisterSetting( "vanish_charges_reserved", 0, {
     min = 0,
     max = 2,
     step = 0.1,
-    width = 1.5
+    width = "full"
 } )
 
 spec:RegisterSetting( "solo_vanish", true, {
