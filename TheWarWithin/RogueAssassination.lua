@@ -2610,6 +2610,8 @@ spec:RegisterAbilities( {
         talent = "shiv",
         startsCombat = true,
 
+        indicator = function() if settings.shiv_tea_macro and talent.thistle_tea.enabled and cooldown.thistle_tea.charges > 0 then return spec.abilities.thistle_tea.texture end end,
+
         toggle = function ()
             if talent.lightweight_shiv.enabled and settings.shiv_one_charge then
                 if cooldown.shiv.true_time_to_max_charges > gcd.max then return "cooldowns" end
@@ -2762,7 +2764,7 @@ spec:RegisterAbilities( {
         talent = "thistle_tea",
         startsCombat = false,
 
-        usable = function() if settings.shiv_tea_macro then return false, "User has indicated they are using the Shiv/Tea Macro, Tea won't be individually recommended" end end,
+        usable = function() if settings.shiv_tea_macro then return false, "Shiv/Tea Macro setting enabled" end end,
 
         toggle = function() if not settings.shiv_tea_macro then return "cooldowns" end end,
 
@@ -2935,6 +2937,8 @@ spec:RegisterOptions( {
     package = "Assassination",
 } )
 
+local NewFeature = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
+
 spec:RegisterSetting( "priority_rotation", false, {
     name = "Assassination Rogue is able to do funnel damage. Head over to |cFFFFD100Toggles|r to learn how to turn the feature on and off. " ..
     "If funnel is enabled, the default priority will change slightly to do priority damage to a mob.\n\n",
@@ -2981,7 +2985,7 @@ spec:RegisterSetting( "max_garrote_spread", 10, {
 
 
 spec:RegisterSetting( "cooldowns_ttd", 0, {
-    name = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t Hold Cooldowns at Low Health",
+    name = "Hold Cooldowns at Low Health",
     desc = strformat( "If set above 0, your focused burst abilities will |cFFDD0000not|r be recommended if your |cFFDD0000non-boss|r target is expected to die within this " ..
                       "number of seconds. This setting applies to:\n\n%s\n%s\n%s\n\nThis setting is experimental, but may help avoid wasting your major cooldowns on " ..
                       "low-health trash packs.",
@@ -3001,7 +3005,7 @@ spec:RegisterSetting( "shiv_settings_header", false, {
 } )
 
 spec:RegisterSetting( "shiv_one_charge", true, {
-    name = strformat( "%s: Reserve 1 Charge for Cooldowns Toggle", Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ) ),
+    name = strformat( "%s %s: Reserve 1 Charge for Cooldowns Toggle", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ) ),
     desc = strformat( "If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\n"
             .. "If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled.\n\n"
             .. "|cFFFF0000This setting only applies when talented into 2 %s charges.|r",
@@ -3011,18 +3015,17 @@ spec:RegisterSetting( "shiv_one_charge", true, {
 } )
 
 spec:RegisterSetting( "shiv_tea_macro", false, {
-    name = strformat( "%s + %s Macro", Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
-    desc = strformat( "If checked, the addon assumes you are using a macro that casts %s and %s together simultaneously.\n\n"
-            .. "This is a rotational optimization for 11.1 onwards, as the APL no longer considers the auto-proc from %s.\n\n"
-            .. "|cFFFFD100Recommended Macro:|r",
-            Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
+    name = strformat( "%s %s + %s Macro", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
+    desc = strformat( "If checked, it will be assumed that %s is used (via macro) any time %s is recommended. This prevents individual %s recommendations.\n\n",
+            Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ),  Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "shiv_tea_macro_text", nil, {
-    name = strformat( "%s + %s Macro Text", Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
-    desc = "Copy and paste this macro to optimize your Shiv usage:",
+    name = strformat( "%s %s + %s Macro Text", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
+    desc = strformat( "When %s + %s Macro is enabled, use the following macro in place of your %s ability to ensure %s is used at the same time.",
+            Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
     type = "input",
     width = "full",
     multiline = true,
@@ -3037,11 +3040,11 @@ spec:RegisterSetting( "vanish_settings_header", false, {
 } )
 
 spec:RegisterSetting( "vanish_one_charge", false, {
-    name = strformat( "%s: Reserve 1 Charge for Cooldowns Toggle", Hekili:GetSpellLinkWithTexture( 1856 ) ),
+    name = strformat( "%s %s: Reserve 1 Charge for Cooldowns Toggle", NewFeature, Hekili:GetSpellLinkWithTexture( 1856 ) ),
     desc = strformat( "If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\n"
             .. "If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled.\n\n"
             .. "|cFFFF0000This setting only applies when talented into multiple %s charges.|r\n\n"
-            .. "|cFFFFD100Note:|r This works alongside the 'Reserve Vanish Charges' setting below - both conditions must be met.",
+            .. "If |cFFFFD100Reserve Vanish Charges|r is also used, both conditions must be met.",
             Hekili:GetSpellLinkWithTexture( 1856 ), "Vanish", Hekili:GetSpellLinkWithTexture( 1856 ) ),
     type = "toggle",
     width = "full"
@@ -3050,10 +3053,7 @@ spec:RegisterSetting( "vanish_one_charge", false, {
 spec:RegisterSetting( "vanish_charges_reserved", 0, {
     name = strformat( "Reserve %s Charges", Hekili:GetSpellLinkWithTexture( 1856 ) ),
     desc = strformat( "If set above zero, %s will not be recommended if it would leave you with fewer than this number of (fractional) charges.\n\n"
-            .. "|cFFFFD100How it works with the toggle setting above:|r\n"
-            .. "• Toggle setting: Allows %s when Cooldowns is OFF (but keeps 1 charge)\n"
-            .. "• This setting: Hard limit that blocks %s regardless of toggle state\n"
-            .. "• Both settings work together - this one takes priority as a safety limit",
+            .. "If |cFFFFD100%s: Reserve 1 Charge for Cooldowns Toggle|r is checked, both conditions must be met.",
             Hekili:GetSpellLinkWithTexture( 1856 ), Hekili:GetSpellLinkWithTexture( 1856 ), Hekili:GetSpellLinkWithTexture( 1856 ) ),
     type = "range",
     min = 0,
