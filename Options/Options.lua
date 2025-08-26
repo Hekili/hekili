@@ -173,6 +173,7 @@ local displayTemplate = {
 
     elvuiCooldown = false,
     hideOmniCC = false,
+    hideSwipe = false,
 
     queue = {
         anchor = 'RIGHT',
@@ -1387,6 +1388,14 @@ return end
                                 width = "full",
                                 order = 16,
                                 hidden = function () return _G["ElvUI"] == nil end,
+                            },
+
+                            hideSwipe = {
+                                type = "toggle",
+                                name = "Hide Cooldown Swipe",
+                                desc = "If checked, the radial cooldown swipe animation (darkening overlay) will be hidden on this display's icons.  This does not affect numeric cooldown text from addons like OmniCC.",
+                                width = "full",
+                                order = 16.1,
                             },
 
                             numIcons = {

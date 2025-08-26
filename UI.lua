@@ -2596,6 +2596,10 @@ do
         b.Cooldown:SetFrameLevel( b:GetFrameLevel() + 1 )
         b.Cooldown:SetDrawBling( false )
         b.Cooldown:SetDrawEdge( false )
+        -- Allow user to disable the radial swipe animation.
+        if b.Cooldown.SetDrawSwipe then
+            b.Cooldown:SetDrawSwipe( not conf.hideSwipe )
+        end
 
         b.Cooldown.noCooldownCount = conf.hideOmniCC
 
