@@ -2943,7 +2943,7 @@ return "Position" end,
                             size = {
                                 type = "group",
                                 inline = true,
-                                name = "Size & Appearance",
+                                name = "Appearance",
                                 order = 1.5,
                                 args = {
                                     width = {
