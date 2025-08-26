@@ -68,7 +68,6 @@ spec:RegisterResource( Enum.PowerType.Energy, {
 
 -- Talents
 spec:RegisterTalents( {
-
     -- Rogue
     acrobatic_strikes              = {  90752,  455143, 1 }, -- Auto-attacks increase auto-attack damage and movement speed by $s1% for $s2 sec, stacking up to $s3%
     airborne_irritant              = {  90741,  200733, 1 }, -- Blind has $s1% reduced cooldown, $s2% reduced duration, and applies to all nearby enemies
@@ -279,6 +278,10 @@ spec:RegisterAuras( {
     disorienting_strikes = {
         duration = 3600,
         max_stack = 2
+    },
+    double_jeopardy = {
+        duration = 3600,
+        max_stack = 1
     },
     echoing_reprimand = {
         id = 470671,
@@ -528,6 +531,18 @@ spec:RegisterAuras( {
     },
 } )
 
+
+local killing_spree_cp
+
+local inStealth = false
+local exitedStealth = 0
+
+spec:RegisterEvent( "UPDATE_STEALTH", function()
+    local stealthed = IsStealthed()
+    if inStealth and not stealthed then exitedStealth = GetTime() end
+    inStealth = stealthed
+end )
+
 local lastShot, numShots = 0, 0
 local lastUnseenBlade, disorientStacks = 0, 0
 local lastRoll = 0
@@ -552,15 +567,12 @@ local restless_blades_list = {
     "vanish"
 }
 
-local killing_spree_cp
-
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= state.GUID then return end
-
-    local now = GetTime()
-
+    
     -- SPELL_CAST_SUCCESS
     if subtype == "SPELL_CAST_SUCCESS" then
+        local now = GetTime()
 
         if spellID == 185763 and state.talent.fan_the_hammer.enabled then
             -- Opportunity: Fan the Hammer can queue 1-2 extra Pistol Shots.
@@ -573,16 +585,20 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             else
                 numShots = max( 0, numShots - 1 )
             end
+
+            return
         end
 
         if spellID == 51690 and state.talent.disorienting_strikes.enabled then -- Killing Spree grants 2 stacks of Disorienting Strikes (hidden aura)
             disorientStacks = 2
+            return
         end
 
         if spellID == 193315 or spellID == 8676 then -- Sinister Strike (193315) or Ambush (8676) consumes 1 Disorienting Strike stack.
             disorientStacks = disorientStacks - 1
-
+            return
         end
+
         if spellID == 315508 then
             -- 1. ‑‑ compute pandemic before we overwrite rollDuration
             local elapsed    = now - lastRoll           -- time since previous roll
@@ -591,34 +607,29 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
             -- 2. ‑‑ reset container
             lastRoll     = now                          -- real start‑time
             rollDuration = 30 + pandemic                -- 30 s + up‑to‑9 s
+            return
         end
+
+        return
     end
 
     -- SPELL_DAMAGE
     if subtype == "SPELL_DAMAGE" then
+        local now = GetTime()
         if spellID == 441144 then  -- Unseen Blade damage event.
             if disorientStacks < 0 then
                 lastUnseenBlade = now
             end
         end
+        return
     end
 
-    -- SPELL_AURA_APPLIED / SPELL_AURA_REFRESH
-   --[[ if spellID == 315508 then
-        if subtype == "SPELL_AURA_APPLIED" then
-            lastRoll = now
-            rollDuration = 30
-        elseif subtype == "SPELL_AURA_REFRESH" then
-            local pandemicExtension = min( 9, 60 - ( now - lastRoll ) )
-            rollDuration = 30 + pandemicExtension
-            lastRoll = now
+    if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" then
+        if exitedStealth > 0 and ( spellID == class.auras.fatebound_coin_heads.id or spellID == class.auras.fatebound_coin_tails.id ) then
+            exitedStealth = 0
         end
-
-        if Hekili.ActiveDebug then
-            Hekili:Debug( "Updated lastRoll to %.2f, rollDuration to %.2f", lastRoll, rollDuration )
-        end
-    end ]]
-end)
+    end
+end )
 
 spec:RegisterStateExpr( "rtb_buffs", function ()
     return buff.roll_the_bones.count
@@ -645,7 +656,6 @@ spec:RegisterStateExpr( "unseen_blades_available", function ()
 end )
 
 local TriggerUnseenBlade = setfenv( function( )
-
     if unseen_blades_available > 0 then
         -- Handle ICD vs bypass
         if buff.disorienting_strikes.remains then
@@ -660,7 +670,6 @@ local TriggerUnseenBlade = setfenv( function( )
         applyDebuff( "target", "fazed" )
         unseen_blades_available = unseen_blades_available - 1
     end
-
 end, state )
 
 spec:RegisterStateExpr( "rtb_primary_remains", function ()
@@ -811,8 +820,6 @@ end )
 spec:RegisterHook( "runHandler", function( ability )
     local a = class.abilities[ ability ]
 
-    -- if ability ~= "coup_de_grace" then coup_de_bug = false end
-
     if stealthed.all and ( not a or a.startsCombat ) then
         if buff.stealth.up then
             setCooldown( "stealth", 2 )
@@ -822,6 +829,10 @@ spec:RegisterHook( "runHandler", function( ability )
             if talent.subterfuge.enabled then
                 applyBuff( "subterfuge" )
             end
+        end
+        
+        if talent.double_jeopardy.enabled then
+            applyBuff( "double_jeopardy" )
         end
 
         if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
@@ -871,9 +882,6 @@ for i = 1, 7 do
 end
 
 spec:RegisterHook( "reset_precast", function()
-
-    local now = query_time
-
     -- Supercharged Combo Point handling
     local cPoints = GetUnitChargedPowerPoints( "player" )
     if talent.supercharger.enabled and cPoints then
@@ -895,7 +903,6 @@ spec:RegisterHook( "reset_precast", function()
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
     if talent.unseen_blade.enabled then
-
         -- Sync CDG availabilty with gamestate
         if talent.coup_de_grace.enabled and IsSpellOverlayed( 2098 ) then
             applyBuff( "coup_de_grace" )
@@ -980,6 +987,10 @@ spec:RegisterHook( "reset_precast", function()
         end
     end
 
+    if talent.double_jeopardy.enabled and exitedStealth > 0 then
+        if Hekili.ActiveDebug then Hekili:Debug( "Double Jeopardy: Applying pseudobuff since Fatebound Coin not applied since exiting Stealth at %.2f.", exitedStealth ) end
+        applyBuff( "double_jeopardy" )
+    end
 end )
 
 spec:RegisterGear( {
@@ -1154,6 +1165,8 @@ spec:RegisterAbilities( {
                 applyBuff( "greenskins_wickers" )
             end
 
+            if buff.double_jeopardy.up and combo_points.current > 4 then removeBuff( "double_jeopardy" ) end
+
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
         end
@@ -1215,6 +1228,7 @@ spec:RegisterAbilities( {
         usable = function() return combo_points.current > 0, "requires combo points" end,
 
         handler = function ()
+            if buff.double_jeopardy.up and combo_points.current > 4 then removeBuff( "double_jeopardy" ) end
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
         end
@@ -1268,6 +1282,8 @@ spec:RegisterAbilities( {
 
             if set_bonus.tier29_2pc > 0 then applyBuff( "vicious_followup" ) end
 
+            if buff.double_jeopardy.up and combo_points.current > 4 then removeBuff( "double_jeopardy" ) end
+
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
         end,
@@ -1294,7 +1310,6 @@ spec:RegisterAbilities( {
         talent = "coup_de_grace",
 
         handler = function ()
-
             spec.abilities.dispatch.handler()
 
             if debuff.fazed.up then addStack( "flawless_form", nil, 5 ) end
@@ -1310,7 +1325,6 @@ spec:RegisterAbilities( {
             end
 
             setCooldown( "global_cooldown", 1.2 * ( buff.adrenaline_rush.up and haste or 1) )
-
         end,
 
         bind = "dispatch"
@@ -1407,6 +1421,8 @@ spec:RegisterAbilities( {
         end,
 
         start = function ()
+            if buff.double_jeopardy.up and combo_points.current > 4 then removeBuff( "double_jeopardy" ) end
+
             applyBuff( "killing_spree" )
             killing_spree_cp = effective_combo_points
             spend( combo_points.current, "combo_points" )
@@ -1421,7 +1437,7 @@ spec:RegisterAbilities( {
         end,
 
         finish = function()
-            gain ( killing_spree_cp, "combo_points" )
+            gain( killing_spree_cp, "combo_points" )
         end
     },
 
