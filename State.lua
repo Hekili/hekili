@@ -2592,6 +2592,72 @@ end
 ns.metatables.mt_state = mt_state
 
 
+--[[
+    Custom helpers for extended APL syntax.
+    active_enemies.contains=1234  -> active_enemies_contains(1234)
+    active_enemies.cast=1234      -> active_enemies_cast(1234)
+
+    These scan currently relevant hostile units ( boss/arena/target/focus/nameplates ) once per query_time
+    and build caches of active NPC IDs and currently casting/channelling spellIDs.
+]]
+do
+    local scan_t, npcCache, castCache = 0, {}, {}
+
+    local function ScanActiveEnemies()
+        local t = state.query_time
+        if scan_t == t then return end -- already scanned for this simulation frame.
+
+        scan_t = t
+        wipe( npcCache )
+        wipe( castCache )
+
+        local unitIDs = _G.Hekili and _G.Hekili.unitIDs or { "target" }
+        local npGUIDs = _G.Hekili and _G.Hekili.npGUIDs or {}
+
+        local function ConsiderUnit( unit )
+            if not UnitExists( unit ) or UnitIsDead( unit ) or not UnitCanAttack( "player", unit ) then return end
+            -- Prefer units that are in combat with us or are boss/arena units; mimic counting logic heuristically.
+            if not UnitAffectingCombat( unit ) and not unit:match( "^boss" ) and not unit:match( "^arena" ) then return end
+
+            local guid = UnitGUID( unit )
+            if not guid then return end
+            local id = tonumber( ( guid ):match( "(%d+)-%x-$" ) )
+            if id then npcCache[ id ] = true end
+
+            -- Casting / Channeling
+            local _, _, _, _, _, _, _, _, spellID = UnitCastingInfo( unit )
+            if spellID then castCache[ spellID ] = true end
+            local _, _, _, _, _, _, notInterruptible, chSpellID = UnitChannelInfo( unit )
+            if chSpellID then castCache[ chSpellID ] = true end
+        end
+
+        -- Fixed important units.
+        for _, unit in ipairs( unitIDs ) do
+            ConsiderUnit( unit )
+        end
+
+        -- Nameplate units (keys are unit tokens in npGUIDs table).
+        for unit in pairs( npGUIDs ) do
+            ConsiderUnit( unit )
+        end
+    end
+
+    function state.active_enemies_contains( id )
+        if type( id ) ~= "number" then id = tonumber( id ) end
+        if not id then return false end
+        ScanActiveEnemies()
+        return npcCache[ id ] or false
+    end
+
+    function state.active_enemies_cast( spellID )
+        if type( spellID ) ~= "number" then spellID = tonumber( spellID ) end
+        if not spellID then return false end
+        ScanActiveEnemies()
+        return castCache[ spellID ] or false
+    end
+end
+
+
 local mt_spec = {
     __index = function(t, k)
         return false

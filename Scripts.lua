@@ -378,6 +378,14 @@ local function SimToLua( str, modifier )
     -- Condense bracketed expressions.
     str = str:gsub("%b[]", space_killer)
 
+    -- Custom: active_enemies.contains=1234 | active_enemies.cast=1234
+    -- Translate to function calls active_enemies_contains(1234) / active_enemies_cast(1234)
+    -- Support comparison operators (==,=,~=) with truthiness; numeric literal is what matters.
+    -- We only convert the simple '=.?' equality style since SimC pattern provided by user was '=ID'.
+    str = str:gsub("active_enemies%.contains[=]=?(%d+)", "active_enemies_contains(%1)")
+    str = str:gsub("active_enemies%.cast[=]=?(%d+)", "active_enemies_cast(%1)")
+    -- Negation via !active_enemies.contains=1234 already handled earlier to not(...).
+
     return HandleLanguageIncompatibilities( str )
 end
 scripts.SimToLua = SimToLua
