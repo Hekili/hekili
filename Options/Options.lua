@@ -467,7 +467,7 @@ do
 
                 flashTexture = "Interface\\Cooldown\\star4",
                 performance = {
-                    mode = 1,    -- 1=Low, 2=Medium, 3=High
+                    frameBudget = 0.7,
                 },
                 toggles = {
                     pause = {
@@ -5109,18 +5109,17 @@ found = true end
                                 frameBudget = {
                                     type = "range",
                                     name = "Frame Budget",
-                                    desc = "Controls what percentage of frame time Hekili can use for calculations.",
+                                    desc = "This setting determines how much time can be used to calculate recommendations.",
+                                    min = 0.1,
+                                    softMin = 0.2,
+                                    softMax = 0.9,
+                                    max = 1,
+                                    step = 0.05,
+                                    isPercent = true,
+                                    get = function( _ ) return Hekili.DB.profile.performance.frameBudget or 0.7 end,
+                                    set = function( _, v ) Hekili.DB.profile.performance.frameBudget = v end,
                                     order = 1,
-                                    min = 20,
-                                    max = 90,
-                                    step = 5,
-                                    get = function(info)
-                                        return Hekili.DB.profile.performance.frameBudget or 70
-                                    end,
-                                    set = function(info, v)
-                                        Hekili.DB.profile.performance.frameBudget = v
-                                    end,
-                                    width = 1.5,
+                                    width = "full"
                                 },
                                 frameBudgetInfo = {
                                     type = "description",
@@ -5136,35 +5135,31 @@ found = true end
                                             fps = 60
                                         end
 
-                                        local budget = Hekili.DB.profile.performance.frameBudget or 70
-                                        local frameBudgetMs = ( 1000 / fps ) * ( budget / 100 )
+                                        local budget = Hekili.DB.profile.performance.frameBudget or 0.7
+                                        local frameBudgetMs = ( 1000 / fps ) * budget
 
                                         return
-                                            "\nControls how much of each frame Hekili is allowed to use for calculations. " ..
-                                            "Adjust this to balance |cFF00FF00smooth gameplay|r and |cFF00FF00responsive recommendations|r.\n\n" ..
+                                            "\nThis setting determines how much time can be used to generate recommendations.\n\n" ..
+                                            "|cFFFFD100• Higher values|r allow recommendations to |cFF00FF00update more quickly|r but may risk lowering your frame rate, " ..
+                                            "especially when other addons are working at the same time.\n" ..
+                                            "|cFFFFD100• Lower values|r mean recommendations may update more slowly but may |cFF00FF00preserve your frame rate|r.\n\n" .. 
+                                            
+                                            "Adjust this budget to balance |cFF00FF00smooth gameplay|r and |cFF00FF00responsive recommendations|r. " ..
+                                            "Use the highest value that feels smooth on your system without your screen freezing or stuttering.\n\n" ..
+                                            
+                                            "|cFF00B4FFDefault (recommended)|r: |cFFFFD10070%|r\n\n" ..
 
-                                            "|cFFFFD700Lower values:|r Updates less frequently, leaving more frame time for the game and other addons.\n" ..
-                                            "|cFFFFD700Higher values:|r Updates more quickly, but may cause stutters or frame drops if too much frame time is used.\n\n" ..
-
-                                            "|cFF87CEFARecommended Setting:|r\n" ..
-                                            "Use the highest value that feels smooth on your system without stuttering. " ..
-                                            "As a baseline, |cFFFFD70070%|r is a good starting point.\n\n" ..
-
-                                            "This setting adapts automatically to your current framerate. " ..
-                                            "At |cFFFFD700" .. format( "%.1f", fps ) .. " FPS|r, a budget of |cFFFFD700" .. budget .. "%|r " ..
-                                            "allows up to |cFFFFD700" .. format( "%.2f", frameBudgetMs ) .. " ms|r of frame time per update.\n\n" ..
-
-
-                                            "If you notice stutters or frame drops, lower this value to give WoW and your UI more breathing room."
+                                            "At |cFFFFD700" .. format( "%.1f", fps ) .. " FPS|r, a budget of |cFFFFD700" .. ( budget * 100 ) .. "%|r " ..
+                                            "allows up to |cFFFFD700" .. format( "%.2f", frameBudgetMs ) .. " ms|r of frame time per update. Recommendations that take longer " ..
+                                            "to calculate will be delayed by at least 1 frame."
                                     end,
+                                    fontSize = "medium",
                                     order = 2,
                                     width = "full",
-                                    fontSize = "medium",
                                 }
-
-                            },
-                        },
-                    },
+                            }
+                        }
+                    }
                 }
 
                 local specCfg = class.specs[ id ] and class.specs[ id ].settings

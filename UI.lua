@@ -85,16 +85,15 @@ end
 
 -- Calculate frame budget based on user percentage
 local function calculateFrameBudget()
-
     local smoothedFPS = updateSmoothedFPS()
-    local rawFPS = GetFramerate()
-    local frameBudget = Hekili.DB.profile.performance.frameBudget or 70
+    local frameBudget = Hekili.DB.profile.performance.frameBudget or 0.7
+    -- local rawFPS = GetFramerate()
 
     -- Calculate frame time
     local frameTime = 1000 / math.max( smoothedFPS, 30 ) -- min 30 FPS
 
     -- Apply user percentage directly to frame time
-    local userBudget = frameTime * ( frameBudget / 100 )
+    local userBudget = frameTime * frameBudget
 
     -- Debug output
     -- print(string.format("[Hekili Budget] Setting: %d%%, Raw FPS: %.1f, Smoothed FPS: %.1f, Frame Time: %.2fms, Budget: %.2fms",
@@ -105,11 +104,6 @@ end
 
 function Hekili:GetScale()
     return PixelUtil.GetNearestPixelSize( 1, PixelUtil.GetPixelToUIUnitFactor(), 1 )
-    --[[ local monitorIndex = (tonumber(GetCVar("gxMonitor")) or 0) + 1
-    local resolutions = {GetScreenResolutions()}
-    local resolution = resolutions[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
-
-    return (GetCVar("UseUIScale") == "1" and (GetScreenHeight() / resolution:match("%d+x(%d+)")) or 1) ]]
 end
 
 
