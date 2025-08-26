@@ -173,7 +173,6 @@ local displayTemplate = {
 
     elvuiCooldown = false,
     hideOmniCC = false,
-    hideSwipe = false,
 
     queue = {
         anchor = 'RIGHT',
@@ -325,6 +324,7 @@ local displayTemplate = {
         fade = false,
         extend = true,
         elvuiCooldowns = false,
+        hideSwipe = false,
 
         font = ElvUI and 'PT Sans Narrow' or 'Arial Narrow',
         fontSize = 12,
@@ -1390,13 +1390,6 @@ return end
                                 hidden = function () return _G["ElvUI"] == nil end,
                             },
 
-                            hideSwipe = {
-                                type = "toggle",
-                                name = "Hide Cooldown Swipe",
-                                desc = "If checked, the radial cooldown swipe animation (darkening overlay) will be hidden on this display's icons.  This does not affect numeric cooldown text from addons like OmniCC.",
-                                width = "full",
-                                order = 16.1,
-                            },
 
                             numIcons = {
                                 type = 'range',
@@ -2850,6 +2843,14 @@ return "Position" end,
                                 desc = "Desaturate the primary icon when you should wait before using the ability.",
                                 width = 1.49,
                                 order = 1.15
+                            },
+
+                            hideSwipe = {
+                                type = "toggle",
+                                name = "Hide Cooldown Swipe",
+                                desc = "If checked, the radial cooldown swipe animation (darkening overlay) will be hidden on this display's icons.  This does not affect numeric cooldown text from addons like OmniCC.",
+                                width = 1.49,
+                                order = 1.17,
                             },
 
                             break01 = {

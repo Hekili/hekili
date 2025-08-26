@@ -2598,7 +2598,7 @@ do
         b.Cooldown:SetDrawEdge( false )
         -- Allow user to disable the radial swipe animation.
         if b.Cooldown.SetDrawSwipe then
-            b.Cooldown:SetDrawSwipe( not conf.hideSwipe )
+            b.Cooldown:SetDrawSwipe( not ( conf.delays and conf.delays.hideSwipe ) )
         end
 
         b.Cooldown.noCooldownCount = conf.hideOmniCC
