@@ -1,6 +1,6 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/rogue_subtlety.simc
-## SimulationCraft Commit Sync: ca92fe3
-## Date: 2025-08-05
+## SimulationCraft Commit Sync: b45bf25
+## Date: 2025-08-26
 
 actions.precombat+=/apply_poison
 # Swap to priority rotation if the variable is enabled
@@ -31,6 +31,8 @@ actions+=/ancestral_call,if=variable.racial_sync
 actions+=/use_item,name=treacherous_transmitter,if=cooldown.flagellation.remains<=2|boss&fight_remains<=15
 ## actions+=/do_treacherous_transmitter_task,if=buff.shadow_dance.up|boss&fight_remains<=15
 actions+=/use_item,name=imperfect_ascendancy_serum,use_off_gcd=1,if=dot.rupture.ticking&buff.flagellation_buff.up
+actions+=/use_item,name=cursed_stone_idol,use_off_gcd=1,if=dot.rupture.remains>=25&buff.flagellation_buff.up|boss&fight_remains<=20
+actions+=/use_item,name=unyielding_netherprism,use_off_gcd=1,if=buff.shadow_blades.up&(buff.latent_energy.stack>=8+8*(trinket.arazs_ritual_forge.cooldown.ready|!equipped.arazs_ritual_forge)|!equipped.arazs_ritual_forge&fight_remains<=90)|boss&fight_remains<=20
 actions+=/use_item,name=mad_queens_mandate,if=(!talent.lingering_darkness|buff.lingering_darkness.up|equipped.treacherous_transmitter)&(!equipped.treacherous_transmitter|trinket.treacherous_transmitter.cooldown.remains>20)|boss&fight_remains<=15
 actions+=/use_items,slots=trinket1,if=(variable.trinket_sync_slot=1&(buff.shadow_blades.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=2&(!trinket.2.cooldown.ready&cooldown.shadow_blades.remains>20))|!variable.trinket_sync_slot)
 actions+=/use_items,slots=trinket2,if=(variable.trinket_sync_slot=2&(buff.shadow_blades.up|boss&fight_remains<=20)|(variable.trinket_sync_slot=1&(!trinket.1.cooldown.ready&cooldown.shadow_blades.remains>20))|!variable.trinket_sync_slot)
@@ -83,7 +85,7 @@ actions.finish+=/rupture,cycle_targets=1,if=!variable.skip_rupture&!variable.pri
 actions.finish+=/rupture,if=talent.unseen_blade&variable.cooldowns_soon&active_enemies>=3&dot.rupture.remains<fight_remains
 # Direct Damage Finisher
 actions.finish+=/coup_de_grace,if=debuff.fazed.up&(cooldown.flagellation.remains>=20|!talent.flagellation)|fight_remains<=10
-actions.finish+=/black_powder,if=!variable.priority_rotation&variable.maintenance&(((active_enemies>=2&talent.deathstalkers_mark&(!buff.darkest_night.up|buff.shadow_dance.up&active_enemies>=5))|talent.unseen_blade&active_enemies>=5)|action.coup_de_grace.ready&active_enemies>=3)
+actions.finish+=/black_powder,if=!variable.priority_rotation&variable.maintenance&(((active_enemies>=2&talent.deathstalkers_mark&(!buff.darkest_night.up|buff.shadow_dance.up&active_enemies>=5))|talent.unseen_blade&active_enemies>=4)|action.coup_de_grace.ready&active_enemies>=3)
 actions.finish+=/eviscerate,if=(cooldown.flagellation.remains>=10|!talent.flagellation)|active_enemies>=3
 
 # Shadow Dance, Vanish, Shadowmeld

@@ -532,6 +532,8 @@ local mt_trinket = {
             return isEnabled and t.__proc or false
         elseif k == "proc_duration" then
             return t.__proc and t.__use_buff_duration or 0
+        elseif k == "duration" then
+            return t.__use_buff_duration or 0
         end
 
         if k == "up" or k == "ticking" or k == "active" then
@@ -693,6 +695,11 @@ setmetatable( state.trinket.none.stat, mt_trinket_with_stat )
 setmetatable( state.trinket.t1.stat, mt_trinket_with_stat )
 setmetatable( state.trinket.t2.stat, mt_trinket_with_stat )
 setmetatable( state.trinket.main_hand.stat, mt_trinket_with_stat )
+
+state.trinket.none.proc = state.trinket.none.stat
+state.trinket.t1.proc = state.trinket.t1.stat
+state.trinket.t2.proc = state.trinket.t2.stat
+state.trinket.main_hand.proc = state.trinket.main_hand.stat
 
 
 local mt_trinkets_has_stat = {
