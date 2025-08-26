@@ -1,13 +1,13 @@
 ## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/rogue_assassination.simc
-## SimulationCraft Commit Sync: 96a5d2e
-## Date: 2025-08-12
+## SimulationCraft Commit Sync: f7fc80f
+## Date: 2025-08-26
 
 actions.precombat+=/apply_poison
 # Check which trinket slots have Stat Values
 actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_use_buff&(!trinket.2.has_use_buff|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)&!trinket.2.is.treacherous_transmitter|trinket.1.is.treacherous_transmitter|trinket.1.is.house_of_cards
 actions.precombat+=/variable,name=trinket_sync_slot,value=2,if=trinket.2.has_use_buff&(!trinket.1.has_use_buff|trinket.2.cooldown.duration>trinket.1.cooldown.duration)&!trinket.1.is.treacherous_transmitter|trinket.2.is.treacherous_transmitter|trinket.2.is.house_of_cards
 # Determine combo point finish condition
-actions.precombat+=/variable,name=effective_spend_cp,value=cp_max_spend-2<?5*talent.hand_of_fate
+actions.precombat+=/variable,name=effective_spend_cp,value=cp_max_spend-2<?5
 # Pre-cast Slice and Dice if possible
 actions.precombat+=/stealth
 ## actions.precombat+=/slice_and_dice,precombat_seconds=1,if=refreshable&!buff.indiscriminate_carnage.up
@@ -71,14 +71,14 @@ actions.cds+=/call_action_list,name=items
 actions.cds+=/call_action_list,name=shiv,if=!buff.darkest_night.up
 # Cast Deathmark if the target will survive long enough
 actions.cds+=/deathmark,if=(variable.deathmark_condition&target.time_to_die>=10)|boss&fight_remains<=20
-actions.cds+=/kingsbane,if=(debuff.shiv.up|cooldown.shiv.remains<6)&(buff.envenom.up|active_enemies>1)&(cooldown.deathmark.remains>=50-15*set_bonus.tww3_fatebound_4pc|dot.deathmark.ticking)|boss&fight_remains<=15
+actions.cds+=/kingsbane,if=(debuff.shiv.up|cooldown.shiv.remains<6)&(buff.envenom.up|active_enemies>1)&(cooldown.deathmark.remains>=50-15*(set_bonus.tww3_fatebound_4pc)|dot.deathmark.ticking)|boss&fight_remains<=15
 # Use with shiv or in niche cases at the end of Kingsbane if not already up
-actions.cds+=/thistle_tea,if=!buff.thistle_tea.up&debuff.shiv.remains>=6|!buff.thistle_tea.up&dot.kingsbane.ticking&dot.kingsbane.remains<=6|!buff.thistle_tea.up&fight_remains<=cooldown.thistle_tea.charges*6
+actions.cds+=/thistle_tea,if=hero_tree.deathstalker&(!buff.thistle_tea.up&debuff.shiv.remains>=6|!buff.thistle_tea.up&dot.kingsbane.ticking&dot.kingsbane.remains<=6|!buff.thistle_tea.up&fight_remains<=cooldown.thistle_tea.charges*6)
 # Potion/Racials/Other misc cooldowns
 actions.cds+=/call_action_list,name=misc_cds
 actions.cds+=/call_action_list,name=vanish,if=!stealthed.all&(master_assassin_remains=0|talent.indiscriminate_carnage&!talent.improved_garrote&!variable.scent_saturation&active_dot.rupture<active_enemies&active_enemies>=3)
 # Cold Blood for Edge Case or Envenoms during shiv
-actions.cds+=/cold_blood,use_off_gcd=1,if=(buff.fatebound_coin_tails.stack>0&buff.fatebound_coin_heads.stack>0)|debuff.shiv.up&(cooldown.deathmark.remains>50|!talent.inevitabile_end&effective_combo_points>=variable.effective_spend_cp)
+actions.cds+=/cold_blood,use_off_gcd=1,if=(buff.fatebound_coin_tails.stack>0&buff.fatebound_coin_heads.stack>0)|debuff.shiv.up&(cooldown.deathmark.remains>50&(!set_bonus.tww3_fatebound_4pc)|dot.kingsbane.ticking&(set_bonus.tww3_fatebound_4pc)|!talent.inevitabile_end&effective_combo_points>=variable.effective_spend_cp)
 
 # Core damage over time abilities used everywhere Maintain Garrote
 actions.core_dot+=/garrote,if=combo_points.deficit>=1&(pmultiplier<=1)&refreshable&target.time_to_die-remains>12
@@ -87,7 +87,7 @@ actions.core_dot+=/rupture,if=combo_points>=variable.effective_spend_cp&(pmultip
 # Maintain Crimson Tempest unless it would remove a stronger cast
 actions.core_dot+=/crimson_tempest,if=combo_points>=variable.effective_spend_cp&refreshable&pmultiplier<=persistent_multiplier&!buff.darkest_night.up&!talent.amplifying_poison&active_enemies=1
 
-# Direct Damage Abilities Envenom at applicable cp if not pooling, capped on amplifying poison stacks, on an animacharged CP, or in aoe.  Maintain Caustic Spatter
+# Direct Damage Abilities Envenom at applicable cp if not pooling, capped on amplifying poison stacks, on an animacharged CP, or in aoe. Maintain Caustic Spatter
 actions.direct+=/variable,name=use_caustic_filler,value=talent.caustic_spatter&dot.rupture.ticking&(!debuff.caustic_spatter.up|debuff.caustic_spatter.remains<=2)&combo_points.deficit>=1&!variable.single_target
 actions.direct+=/pool_resource,for_next=1,extra_amount=energy.max*(0.5+0.3*talent.hand_of_fate.rank-0.15*talent.vicious_venoms.rank)-action.envenom.cost,if=active_dot.envenom=0   
 actions.direct+=/mutilate,if=variable.use_caustic_filler
@@ -98,7 +98,8 @@ actions.direct+=/envenom,if=!buff.darkest_night.up&combo_points>=variable.effect
 actions.direct+=/envenom,if=buff.darkest_night.up&effective_combo_points>=cp_max_spend
 # Various Checks to see if we need to use a generator
 actions.direct+=/variable,name=use_filler,value=combo_points<=variable.effective_spend_cp&!variable.cd_soon|variable.not_pooling|active_enemies>1
-actions.direct+=/variable,name=fok_target_count,value=(buff.clear_the_witnesses.up&(active_enemies>=2-(buff.lingering_darkness.up|!talent.vicious_venoms)))|(active_enemies>=3-(talent.momentum_of_despair&talent.thrown_precision)+talent.vicious_venoms+talent.blindside)
+actions.direct+=/fan_of_knives,if=buff.clear_the_witnesses.up&(active_enemies>=(2-(buff.lingering_darkness.up|!talent.vicious_venoms)))
+actions.direct+=/variable,name=fok_target_count,value=active_enemies>=(3-(talent.momentum_of_despair&talent.thrown_precision)+talent.vicious_venoms+talent.blindside)
 # Fan of Knives at 6cp for special case Darkest Night
 actions.direct+=/fan_of_knives,if=buff.darkest_night.up&combo_points=6&(!talent.vicious_venoms|active_enemies>=2)
 # Fan of Knives at 3+ targets, accounting for various edge cases
@@ -112,10 +113,10 @@ actions.direct+=/mutilate,if=variable.use_filler
 
 # Special Case Trinkets
 actions.items+=/variable,name=base_trinket_condition,value=dot.rupture.ticking&cooldown.deathmark.remains<2&!cooldown.deathmark.ready|dot.deathmark.ticking|boss&fight_remains<=22
-actions.items+=/use_item,name=astral_gladiators_badge_of_ferocity,use_off_gcd=1,if=dot.kingsbane.ticking|dot.deathmkark.ticking|(cooldown.kingsbane.remains>60|cooldown.deathmark.remains>60)
+actions.items+=/use_item,name=astral_gladiators_badge_of_ferocity,use_off_gcd=1,if=dot.kingsbane.ticking|dot.deathmark.ticking|(cooldown.kingsbane.remains>60|cooldown.deathmark.remains>60)
 actions.items+=/use_item,name=treacherous_transmitter,use_off_gcd=1,if=variable.base_trinket_condition
 actions.items+=/use_item,name=mad_queens_mandate,if=cooldown.deathmark.remains>=30&!dot.deathmark.ticking|boss&fight_remains<=3
-actions.items+=/use_item,name=junkmaestros_mega_magnet,if=cooldown.deathmark.remains>=30&!dot.deathmark.ticking&!debuff.shiv.up&(!talent.deathstalkers_mark|buff.lingering_darkness.up&buff.junkmaestros_mega_magnet.stack>5)|boss&fight_remains<=10
+actions.items+=/use_item,name=junkmaestros_mega_magnet,if=cooldown.deathmark.remains>=30&!dot.deathmark.ticking&!debuff.shiv.up&(!hero_tree.deathstalker|buff.lingering_darkness.up&buff.junkmaestros_mega_magnet.stack>5)|boss&fight_remains<=10
 ## actions.items+=/do_treacherous_transmitter_task,use_off_gcd=1,if=dot.deathmark.ticking&active_enemies=1|buff.realigning_nexus_convergence_divergence.up&buff.realigning_nexus_convergence_divergence.remains<=2|buff.cryptic_instructions.up&buff.cryptic_instructions.remains<=2|buff.errant_manaforge_emission.up&buff.errant_manaforge_emission.remains<=2|fight_remains<=15
 actions.items+=/use_item,name=unyielding_netherprism,use_off_gcd=1,if=dot.deathmark.ticking&(buff.latent_energy.stack>=16|fight_remains<=90|time<=15)|boss&fight_remains<=20
 actions.items+=/use_item,name=imperfect_ascendancy_serum,use_off_gcd=1,if=variable.base_trinket_condition
@@ -132,7 +133,7 @@ actions.misc_cds+=/berserking,if=debuff.deathmark.up
 actions.misc_cds+=/fireblood,if=debuff.deathmark.up
 actions.misc_cds+=/ancestral_call,if=debuff.deathmark.up
 
-# Shiv conditions  Generic Variables to check for basic shiv eligibility
+# Shiv conditions Generic Variables to check for basic shiv eligibility
 actions.shiv+=/variable,name=shiv_condition,value=!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&active_enemies<=5
 actions.shiv+=/variable,name=shiv_kingsbane_condition,value=talent.kingsbane&buff.envenom.up&variable.shiv_condition
 # Shiv for Fatebound Edge Case Coins Before Deathmark + Kingsbane with new Tier Set
@@ -140,23 +141,23 @@ actions.shiv+=/shiv,if=talent.lightweight_shiv&variable.shiv_kingsbane_condition
 # Shiv for aoe with Arterial Precision
 actions.shiv+=/shiv,if=talent.arterial_precision&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking&active_enemies>=4&dot.crimson_tempest.ticking&(target.health.pct<=35&talent.zoldyck_recipe|cooldown.shiv.charges_fractional>=1.9)
 # Single-charge Shiv case for Kingsbane
-actions.shiv+=/shiv,if=!talent.lightweight_shiv.enabled&variable.shiv_kingsbane_condition&(dot.kingsbane.ticking&dot.kingsbane.remains<(8+3*set_bonus.tww3_deathstalker_4pc)|!dot.kingsbane.ticking&cooldown.kingsbane.remains>=20)&(!talent.crimson_tempest.enabled|variable.single_target|dot.crimson_tempest.ticking)
+actions.shiv+=/shiv,if=!talent.lightweight_shiv.enabled&variable.shiv_kingsbane_condition&(dot.kingsbane.ticking&dot.kingsbane.remains<(8+3*(set_bonus.tww3_deathstalker_4pc))|!dot.kingsbane.ticking&cooldown.kingsbane.remains>=20)&(!talent.crimson_tempest.enabled|variable.single_target|dot.crimson_tempest.ticking)
 # Shiv for big Darkest Night Envenom during Lingering Darkness
 ctions.shiv+=/shiv,if=debuff.deathstalkers_mark.stack<=2&combo_points>=variable.effective_spend_cp&buff.lingering_darkness.up
 # Double-charge Shiv case for Kingsbane
-actions.shiv+=/shiv,if=talent.lightweight_shiv.enabled&variable.shiv_kingsbane_condition&(dot.kingsbane.ticking&dot.kingsbane.remains<(8+3*set_bonus.tww3_deathstalker_4pc)&dot.kingsbane.remains>4|cooldown.kingsbane.remains<=1&cooldown.shiv.charges_fractional>=1.7)
+actions.shiv+=/shiv,if=talent.lightweight_shiv.enabled&variable.shiv_kingsbane_condition&(dot.kingsbane.ticking&dot.kingsbane.remains<(8+3*(set_bonus.tww3_deathstalker_4pc))&dot.kingsbane.remains>4|cooldown.kingsbane.remains<=1&cooldown.shiv.charges_fractional>=1.7)
 # Fallback shiv for arterial during deathmark - WIP needs checking when Fatebound Kingsbane stacks are fixed, as it currently is munching shiv before the last 8 seconds of KB.
 actions.shiv+=/shiv,if=debuff.deathmark.up&talent.arterial_precision&!debuff.shiv.up&dot.garrote.ticking&dot.rupture.ticking
 # Fallback if no special cases apply
 actions.shiv+=/shiv,if=!debuff.deathmark.up&!talent.kingsbane&variable.shiv_condition&(dot.crimson_tempest.ticking|talent.amplifying_poison)&(((talent.lightweight_shiv+1)-cooldown.shiv.charges_fractional)*30<cooldown.deathmark.remains)&raid_event.adds.in>20
 actions.shiv+=/shiv,if=!talent.kingsbane&!talent.arterial_precision&variable.shiv_condition&(!talent.crimson_tempest.enabled|active_enemies=1|dot.crimson_tempest.ticking)
 # Dump Shiv on fight end
-actions.shiv+=/shiv,if=boss&fight_remains<=cooldown.shiv.charges*(8+2*set_bonus.tww3_deathstalker_4pc)
+actions.shiv+=/shiv,if=boss&fight_remains<=cooldown.shiv.charges*(8+3*(set_bonus.tww3_deathstalker_4pc))
 
 # Stealthed Actions
 actions.stealthed+=/pool_resource,for_next=1
 # Apply Deathstalkers Mark if it has fallen off or waiting for Rupture in AoE
-actions.stealthed+=/ambush,if=!debuff.deathstalkers_mark.up&talent.deathstalkers_mark&combo_points<variable.effective_spend_cp&(dot.rupture.ticking|variable.single_target|!talent.subterfuge)
+actions.stealthed+=/ambush,if=!debuff.deathstalkers_mark.up&hero_tree.deathstalker&combo_points<variable.effective_spend_cp&(dot.rupture.ticking|variable.single_target|!talent.subterfuge)
 # Make sure to have Shiv up during Kingsbane as a final check [Hekili] with Lightweight Shiv only
 actions.stealthed+=/shiv,if=talent.kingsbane&dot.kingsbane.ticking&dot.kingsbane.remains<8&(!debuff.shiv.up&debuff.shiv.remains<1)&buff.envenom.up
 # Envenom to maintain the buff during Subterfuge
@@ -173,7 +174,7 @@ actions.stealthed+=/garrote,if=stealthed.improved_garrote&(pmultiplier<=1|refres
 # Stealth Cooldowns   Vanish Sync for Improved Garrote with Deathmark
 actions.vanish+=/pool_resource,for_next=1,extra_amount=45
 # Vanish to fish for Fateful Ending
-actions.vanish+=/vanish,if=buff.cold_blood.up&buff.fatebound_coin_tails.stack>=1&buff.fatebound_coin_heads.stack>=1|!buff.fatebound_lucky_coin.up&effective_combo_points>=variable.effective_spend_cp&(buff.fatebound_coin_tails.stack>=5|buff.fatebound_coin_heads.stack>=5)
+actions.vanish+=/vanish,if=dot.deathmark.ticking&buff.cold_blood.up&buff.fatebound_coin_tails.stack>=1&buff.fatebound_coin_heads.stack>=1
 # Vanish to spread Garrote during Deathmark without Indiscriminate Carnage
 actions.vanish+=/vanish,if=!talent.master_assassin&!talent.indiscriminate_carnage&talent.improved_garrote&cooldown.garrote.up&(dot.garrote.pmultiplier<=1|dot.garrote.refreshable)&(debuff.deathmark.up|cooldown.deathmark.remains<4)&combo_points.deficit>=(active_enemies>?4)
 actions.vanish+=/pool_resource,for_next=1,extra_amount=45
