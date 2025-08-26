@@ -3015,16 +3015,16 @@ spec:RegisterSetting( "shiv_one_charge", true, {
 } )
 
 spec:RegisterSetting( "shiv_tea_macro", false, {
-    name = strformat( "%s %s + %s Macro", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
-    desc = strformat( "If checked, it will be assumed that %s is used (via macro) any time %s is recommended. This prevents individual %s recommendations.\n\n",
+    name = strformat( "%s %s: Macro with %s", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
+    desc = strformat( "If checked, it will be assumed that %s is used (via macro) any time %s is recommended. This feature will prevent %s from being recommended proactively.",
             Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ),  Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
     type = "toggle",
     width = "full"
 } )
 
 spec:RegisterSetting( "shiv_tea_macro_text", nil, {
-    name = strformat( "%s %s + %s Macro Text", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
-    desc = strformat( "When %s + %s Macro is enabled, use the following macro in place of your %s ability to ensure %s is used at the same time.",
+    name = strformat( "%s %s and %s Macro Text", NewFeature, Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
+    desc = strformat( "When |cffffd100%s: Macro with %s|r is enabled, use the following macro in place of your %s ability to ensure %s is used at the same time.",
             Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.shiv.id ), Hekili:GetSpellLinkWithTexture( spec.abilities.thistle_tea.id ) ),
     type = "input",
     width = "full",
@@ -3040,7 +3040,7 @@ spec:RegisterSetting( "vanish_settings_header", false, {
 } )
 
 spec:RegisterSetting( "vanish_one_charge", false, {
-    name = strformat( "%s %s: Reserve 1 Charge for Cooldowns Toggle", NewFeature, Hekili:GetSpellLinkWithTexture( 1856 ) ),
+    name = strformat( "%s: Reserve 1 Charge for Cooldowns Toggle", Hekili:GetSpellLinkWithTexture( 1856 ) ),
     desc = strformat( "If checked, %s can be recommended while Cooldowns are disabled, as long as you will retain 1 remaining charge.\n\n"
             .. "If |W%s's|w |cFFFFD100Required Toggle|r is changed from |cFF00B4FFDefault|r, this feature is disabled.\n\n"
             .. "|cFFFF0000This setting only applies when talented into multiple %s charges.|r\n\n"
