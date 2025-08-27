@@ -3336,8 +3336,8 @@ do
                         when 10s passes, the spell CD will jump from 5s to 6.5s.
                     ]]--
 
-                    if debuff.voidbinding.up and modRate and modRate ~= 1 then
-                        local extraTime = start + duration - query_time - debuff.voidbinding.remains                        
+                    if state.debuff.voidbinding.up and modRate and modRate ~= 1 then
+                        local extraTime = start + duration - state.query_time - state.debuff.voidbinding.remains
                         if extraTime > 0 then
                             if Hekili.ActiveDebug then Hekili:Debug( "Extending '%s' remaining cooldown by %.2f because the cooldown exceeds Voidbinding's remaining time by %.2f.", ( extraTime * 0.3 ), extraTime ) end
                             duration = duration + ( extraTime * 0.3 )
