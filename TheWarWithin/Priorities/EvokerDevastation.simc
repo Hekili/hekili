@@ -1,5 +1,5 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/evoker_devastation.simc
-## SimulationCraft Commit Sync: 2950571
+## SimulationCraft Commit Sync: 04a038d
 ## Date: 2025-08-05
 
 actions.precombat+=/variable,name=trinket_1_buffs,value=trinket.1.has_buff.intellect|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit|trinket.1.is.mirror_of_fractured_tomorrows|trinket.1.is.signet_of_the_priory

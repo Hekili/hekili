@@ -1,5 +1,4 @@
-## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/monk_mistweaver.simc
-## SimulationCraft Commit Sync: 
+## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/monk_mistweaver.simc
 
 actions.precombat+=/potion
 actions.precombat+=/chi_burst
