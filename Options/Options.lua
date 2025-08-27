@@ -303,6 +303,11 @@ local displayTemplate = {
         anchor = "RIGHT",
         x = 0,
         y = 0,
+
+        width = 20,
+        height = 20,
+        zoom = 30,
+        keepAspectRatio = true,
     },
 
     targets = {
@@ -467,7 +472,7 @@ do
 
                 flashTexture = "Interface\\Cooldown\\star4",
                 performance = {
-                    mode = 1,    -- 1=Low, 2=Medium, 3=High
+                    frameBudget = 0.7,
                 },
                 toggles = {
                     pause = {
@@ -2935,6 +2940,63 @@ return "Position" end,
                                 disabled = function () return data.indicators.enabled == false end,
                             },
 
+                            size = {
+                                type = "group",
+                                inline = true,
+                                name = "Appearance",
+                                order = 1.5,
+                                args = {
+                                    width = {
+                                        type = "range",
+                                        name = "Width",
+                                        desc = "Specify the width of indicator icons.",
+                                        min = 8,
+                                        max = 100,
+                                        step = 1,
+                                        width = 1.49,
+                                        order = 1,
+                                    },
+
+                                    height = {
+                                        type = "range",
+                                        name = "Height",
+                                        desc = "Specify the height of indicator icons.",
+                                        min = 8,
+                                        max = 100,
+                                        step = 1,
+                                        width = 1.49,
+                                        order = 2,
+                                    },
+
+                                    spacer01 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 3
+                                    },
+
+                                    zoom = {
+                                        type = "range",
+                                        name = "Icon Zoom",
+                                        desc = "Select the zoom percentage for indicator icon textures. (Roughly 30% will trim off the default Blizzard borders.)",
+                                        min = 0,
+                                        softMax = 100,
+                                        max = 200,
+                                        step = 1,
+                                        width = 1.49,
+                                        order = 4,
+                                    },
+
+                                    keepAspectRatio = {
+                                        type = "toggle",
+                                        name = "Keep Aspect Ratio",
+                                        desc = "When enabled, indicator icons will maintain their original aspect ratio when resized.",
+                                        width = 1.49,
+                                        order = 5,
+                                    },
+                                }
+                            },
+
                             pos = {
                                 type = "group",
                                 inline = true,
@@ -5106,26 +5168,60 @@ found = true end
                             name = "Performance",
                             order = 10,
                             args = {
-                                mode = {
-                                    type = "select",
-                                    name = "CPU Utilization",
-                                    desc = "Select the performance option that works best for your system/CPU.\n" ..
-                                        "• Low (default): Minimize CPU usage to reduce FPS impact, especially on older systems.\n" ..
-                                        "• Medium: Increased CPU usage for smoother updates, likely to impact FPS on older systems.\n" ..
-                                        "• High: Optimized CPU usage for smoothest updates, intended only for high-end processors.",
+                                frameBudget = {
+                                    type = "range",
+                                    name = "Frame Budget",
+                                    desc = "This setting determines how much time can be used to calculate recommendations.",
+                                    min = 0.1,
+                                    softMin = 0.2,
+                                    softMax = 0.9,
+                                    max = 1,
+                                    step = 0.05,
+                                    isPercent = true,
+                                    get = function( _ ) return Hekili.DB.profile.performance.frameBudget or 0.7 end,
+                                    set = function( _, v ) Hekili.DB.profile.performance.frameBudget = v end,
                                     order = 1,
-                                    values = { "Low", "Medium", "High" },
-                                    get = function(info)
-                                        return Hekili.DB.profile.performance.mode
-                                    end,
-                                    set = function(info, v)
-                                        Hekili.DB.profile.performance.mode = v
-                                    end,
-                                    width = 1.5,
+                                    width = "full"
                                 },
-                            },
-                        },
-                    },
+                                frameBudgetInfo = {
+                                    type = "description",
+                                    name = function()
+                                        -- Use smoothed FPS from UI.lua to avoid menu-induced frame drops
+                                        local smoothedFPS = Hekili.GetSmoothedFPS and Hekili.GetSmoothedFPS() or nil
+                                        local rawFPS = GetFramerate()
+                                        local fps = smoothedFPS or 60
+
+                                        -- Safeguard: ensure FPS is reasonable (between 10 and 300)
+                                        if fps < 10 then
+                                            -- print( "[Hekili Debug] WARNING: Unreasonable FPS value detected:", fps, "- using fallback" )
+                                            fps = 60
+                                        end
+
+                                        local budget = Hekili.DB.profile.performance.frameBudget or 0.7
+                                        local frameBudgetMs = ( 1000 / fps ) * budget
+
+                                        return
+                                            "\nThis setting determines how much time can be used to generate recommendations.\n\n" ..
+                                            "|cFFFFD100• Higher values|r allow recommendations to |cFF00FF00update more quickly|r but may risk lowering your frame rate, " ..
+                                            "especially when other addons are working at the same time.\n" ..
+                                            "|cFFFFD100• Lower values|r mean recommendations may update more slowly but may |cFF00FF00preserve your frame rate|r.\n\n" .. 
+                                            
+                                            "Adjust this budget to balance |cFF00FF00smooth gameplay|r and |cFF00FF00responsive recommendations|r. " ..
+                                            "Use the highest value that feels smooth on your system without your screen freezing or stuttering.\n\n" ..
+                                            
+                                            "|cFF00B4FFDefault (recommended)|r: |cFFFFD10070%|r\n\n" ..
+
+                                            "At |cFFFFD700" .. format( "%.1f", fps ) .. " FPS|r, a budget of |cFFFFD700" .. ( budget * 100 ) .. "%|r " ..
+                                            "allows up to |cFFFFD700" .. format( "%.2f", frameBudgetMs ) .. " ms|r of frame time per update. Recommendations that take longer " ..
+                                            "to calculate will be delayed by at least 1 frame."
+                                    end,
+                                    fontSize = "medium",
+                                    order = 2,
+                                    width = "full",
+                                }
+                            }
+                        }
+                    }
                 }
 
                 local specCfg = class.specs[ id ] and class.specs[ id ].settings
@@ -9467,11 +9563,11 @@ do
         { "time_to_pct_(%d+)%.remains"                      , "time_to_pct_%1"                          },
         { "trinket%.(%d)%.([%w%._]+)"                       , "trinket.t%1.%2"                          },
         --[[ { "trinket%.(t?%d)%.stat%.([%w_]+)%.([%w%._]+)", -- Christ.
-                                                              "trinket.%1.has_stat.%2&trinket.%1.%3" }, ]]
+                                                              "trinket.%1.has_stat.%2&trinket.%1.%3"    }, ]]
         { "trinket%.([%w_]+)%.cooldown"                     , "trinket.%1.cooldown.duration"            },
-        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration"     , "trinket.%1.buff_duration"                },
+        --[[ { "trinket%.([%w_]+)%.proc%.([%w_]+)%.duration"     , "trinket.%1.proc_duration"                }, ]]
         { "trinket%.([%w_]+)%.buff%.a?n?y?%.?duration"      , "trinket.%1.buff_duration"                },
-        { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"       , "trinket.%1.has_use_buff"                 },
+        -- { "trinket%.([%w_]+)%.proc%.([%w_]+)%.[%w_]+"       , "trinket.%1.has_use_buff"                 },
         { "trinket%.([%w_]+)%.has_buff%.([%w_]+)"           , "trinket.%1.has_use_buff"                 },
         { "trinket%.([%w_]+)%.has_use_buff%.([%w_]+)"       , "trinket.%1.has_use_buff"                 },
         { "min:([%w_]+)"                                    , "%1"                                      },
