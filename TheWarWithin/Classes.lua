@@ -1393,13 +1393,3 @@ do
 
     class.interruptibleFilters = interruptibleFilters
 end
-
-local all = class.specs[ 0 ]
-
--- TWW (de)buff granted by Void Emissary; has 30% CD regeneration effect.
-
-all:RegisterAura( "voidbinding", {
-    id = 462661,
-    duration = 30,
-    max_stack = 1
-} )
