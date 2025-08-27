@@ -2,7 +2,7 @@ name: apl-sync-status
 
 on:
   schedule:
-    - cron: "17 8 * * *"
+    - cron: "0 12 * * *"
   workflow_dispatch:
 
 permissions:
@@ -202,7 +202,8 @@ jobs:
                   diffs.push({
                     specName,
                     count,
-                    link: compareUrl,
+                    baseShort: recordedShort,
+                    latestShort,
                     patch: patchLines.join('\n')
                   });
                 }
@@ -252,7 +253,7 @@ jobs:
             if (diffs.length) {
               const blocks = diffs.map(d => {
                 const parts = [];
-                parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing • <a href="' + d.link + '">compare</a></summary>');
+                parts.push('<details><summary>' + d.specName + ' — ' + d.baseShort + ' to ' + d.latestShort + ' (' + d.count + ' commit' + (d.count===1?'':'s') + ')</summary>');
                 parts.push('');
                 parts.push('```diff');
                 parts.push(d.patch);
@@ -305,7 +306,7 @@ jobs:
                 '',
                 diffs.map(d => {
                   const parts = [];
-                  parts.push('<details><summary>' + d.specName + ' — ' + d.count + ' commit' + (d.count===1?'':'s') + ' missing</summary>');
+                  parts.push('<details><summary>' + d.specName + ' — ' + d.baseShort + ' to ' + d.latestShort + ' (' + d.count + ' commit' + (d.count===1?'':'s') + ')</summary>');
                   parts.push('');
                   parts.push('```diff');
                   parts.push(d.patch);
