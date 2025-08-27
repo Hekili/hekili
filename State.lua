@@ -3321,11 +3321,27 @@ do
                 local start, duration = 0, 0
 
                 if id > 0 then
-                    start, duration = GetCooldown( id )
+                    local _, modRate = nil, 1
+                    start, duration, _, modRate = GetCooldown( id )
+
                     local lossStart, lossDuration = GetSpellLossOfControlCooldown( id )
                     if lossStart and lossDuration and lossStart + lossDuration > start + duration then
                         start = lossStart
                         duration = lossDuration
+                    end
+
+                    --[[ 
+                        Void Emissary: Voidbinding
+                        If Voidbinding has 10s remaining, and the affected spell shows 15s remaining on its cooldown, then
+                        when 10s passes, the spell CD will jump from 5s to 6.5s.
+                    ]]--
+
+                    if state.debuff.voidbinding.up and modRate and modRate ~= 1 then
+                        local extraTime = start + duration - state.query_time - state.debuff.voidbinding.remains
+                        if extraTime > 0 then
+                            if Hekili.ActiveDebug then Hekili:Debug( "Extending '%s' remaining cooldown by %.2f because the cooldown exceeds Voidbinding's remaining time by %.2f.", ( extraTime * 0.3 ), extraTime ) end
+                            duration = duration + ( extraTime * 0.3 )
+                        end
                     end
                 end
 
@@ -3362,6 +3378,8 @@ do
                 if ability.charges and ability.charges > 1 then
                     local charges, _
                     charges, _, start, duration = GetSpellCharges( id )
+
+                    -- TODO: Determine if any charged abilities matter enough to solve for Voidbinding CDR.
 
                     if not duration then duration = max( ability.recharge or 0, ability.cooldown or 0 ) end
 
