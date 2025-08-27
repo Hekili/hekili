@@ -2,7 +2,6 @@
 ## SimulationCraft Commit Sync: 7877e91
 ## Date: 2025-08-26
 
-
 actions.precombat+=/deaths_caress
 actions.precombat+=/variable,name=bone_shield_refresh_value,value=7
 
