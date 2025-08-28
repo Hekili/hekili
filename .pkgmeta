@@ -54,8 +54,6 @@ externals:
         url: https://github.com/SafeteeWoW/LibDeflate.git
     Libs/LibDualSpec-1.0:
         url: https://git.wowace.com/wow/libdualspec-1-0/mainline.git
-    Libs/LibItemBuffs-1.0:
-        url: https://github.com/AdiAddons/LibItemBuffs-1.0.git
     Libs/LibCustomGlow-1.0:
         url: https://github.com/Stanzilla/LibCustomGlow.git
     Libs/LibChatAnims:
