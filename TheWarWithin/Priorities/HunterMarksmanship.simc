@@ -1,11 +1,8 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/hunter_marksmanship.simc
-## SimulationCraft Commit Sync: 1febfbb
-## Date: 2025-08-14
+## SimulationCraft Commit Sync: 60f10a3
+## Date: 2025-08-28
 
 actions.precombat+=/summon_pet,if=talent.unbreakable_bond
-# Determine the stronger trinket to sync with cooldowns. In descending priority: buff effects > damage effects, longer > shorter cooldowns, longer > shorter cast times. Special case to consider Mirror of Fractured Tomorrows weaker than other buff effects since its power is split between the dmg effect and the buff effect.
-actions.precombat+=/variable,name=trinket_1_stronger,value=!trinket.2.has_cooldown|trinket.1.has_use_buff&(!trinket.2.has_use_buff|!trinket.1.is.mirror_of_fractured_tomorrows&(trinket.2.is.mirror_of_fractured_tomorrows|trinket.2.cooldown.duration<trinket.1.cooldown.duration|trinket.2.cast_time<trinket.1.cast_time|trinket.2.cast_time=trinket.1.cast_time&trinket.2.cooldown.duration=trinket.1.cooldown.duration))|!trinket.1.has_use_buff&(!trinket.2.has_use_buff&(trinket.2.cooldown.duration<trinket.1.cooldown.duration|trinket.2.cast_time<trinket.1.cast_time|trinket.2.cast_time=trinket.1.cast_time&trinket.2.cooldown.duration=trinket.1.cooldown.duration))
-actions.precombat+=/variable,name=trinket_2_stronger,value=!variable.trinket_1_stronger
 actions.precombat+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.time_to_pct_80>20
 actions.precombat+=/aimed_shot,if=active_enemies<3|talent.black_arrow&talent.headshot
 actions.precombat+=/steady_shot
@@ -13,15 +10,21 @@ actions.precombat+=/steady_shot
 actions+=/counter_shot
 actions+=/tranquilizing_shot
 # Determine if it is a good time to use Trueshot. Raid event optimization takes priority so usage is saved for multiple targets as long as it won't delay over half its duration. Otherwise allow for small delays to line up buff effect trinkets, and when using Bullseye, delay the last usage of the fight for max stacks.
-actions+=/variable,name=trueshot_ready,value=cooldown.trueshot.ready&(!talent.bullseye|fight_remains>cooldown.trueshot.duration_guess+buff.trueshot.duration%2|buff.bullseye.stack=buff.bullseye.max_stack)&(!trinket.1.has_use_buff|trinket.1.cooldown.remains>30|trinket.1.cooldown.ready)&(!trinket.2.has_use_buff|trinket.2.cooldown.remains>30|trinket.2.cooldown.ready)|boss&fight_remains<25
+actions+=/variable,name=trueshot_ready,value=!talent.bullseye|fight_remains>cooldown.trueshot.duration+10|buff.bullseye.stack=buff.bullseye.max_stack|boss&fight_remains<25
+## [Syrif] - Variable to account for target outside of HP range, which means we also want to get a deathblow proc. More coverage of being 1:1 with sim
+## This will probably change soon in the sims and we can adjust.
+actions+=/variable,name=fish_for_deathblow,value=(cooldown.black_arrow.remains|!action.black_arrow.usable)
 actions+=/mend_pet,if=pet.health_pct<pet_healing
 actions+=/call_action_list,name=cds
 actions+=/call_action_list,name=trinkets
 actions+=/hunters_mark,if=(settings.mark_any|target.is_boss)&active_dot.hunters_mark=0&target.time_to_pct_80>20
-actions+=/call_action_list,name=trickshots,strict=1,if=active_enemies>2&talent.trick_shots
-actions+=/call_action_list,name=cleave,strict=1,if=active_enemies>1
-actions+=/call_action_list,name=drst,strict=1,if=active_enemies=1&talent.black_arrow
-actions+=/call_action_list,name=sentst,if=active_enemies=1&!talent.black_arrow
+## [Syrif] - Hero tree checks modified to be sub-level-71 friendly
+actions+=/call_action_list,name=drtrickshots,strict=1,if=active_enemies>2&talent.trick_shots&hero_tree.dark_ranger
+actions+=/call_action_list,name=senttrickshots,strict=1,if=active_enemies>2&talent.trick_shots&!hero_tree.dark_ranger
+actions+=/call_action_list,name=drcleave,strict=1,if=active_enemies>1&hero_tree.dark_ranger
+actions+=/call_action_list,name=sentcleave,strict=1,if=active_enemies>1&!hero_tree.dark_ranger
+actions+=/call_action_list,name=drst,strict=1,if=active_enemies=1&hero_tree.dark_ranger
+actions+=/call_action_list,name=sentst,if=active_enemies=1&!hero_tree.dark_ranger
 
 ## actions.cds+=/invoke_external_buff,name=power_infusion,if=buff.trueshot.remains>12|fight_remains<13
 actions.cds+=/berserking,if=buff.trueshot.up|boss&fight_remains<13
@@ -31,103 +34,105 @@ actions.cds+=/fireblood,if=buff.trueshot.up|cooldown.trueshot.remains>30|boss&fi
 actions.cds+=/lights_judgment,if=buff.trueshot.down
 actions.cds+=/potion,if=buff.trueshot.up&(buff.bloodlust.up|target.health.pct<20)|boss&fight_remains<31
 
-# ################# 2 targets (2+ without Trick Shots)
-## [Syrif] - prev.1.aimed_shot is more stable for this interaction than action.aimed_shot.in_flight
-## actions.cleave=explosive_shot,if=talent.precision_detonation&action.aimed_shot.in_flight&(buff.trueshot.down|!talent.windrunner_quiver)
-actions.cleave+=/explosive_shot,if=talent.precision_detonation&prev.1.aimed_shot&(buff.trueshot.down|!talent.windrunner_quiver)
-actions.cleave+=/black_arrow,if=buff.precise_shots.up&buff.moving_target.down&variable.trueshot_ready
-actions.cleave+=/volley,if=(talent.double_tap&buff.double_tap.down|!talent.aspect_of_the_hydra)&(buff.precise_shots.down|buff.moving_target.up)
-actions.cleave+=/rapid_fire,if=talent.bulletstorm&buff.bulletstorm.down&(!talent.double_tap|buff.double_tap.up|!talent.aspect_of_the_hydra&buff.trick_shots.remains>execute_time)&(buff.precise_shots.down|buff.moving_target.up|!talent.volley)
-actions.cleave+=/volley,if=!talent.double_tap&(buff.precise_shots.down|buff.moving_target.up)
-## [Syrif] - Using buff.lunar_storm_cooldown.up works better because we can just ask the API without any trickery.
-## actions.cleave+=/trueshot,if=variable.trueshot_ready&(buff.double_tap.down|!talent.volley)&(buff.lunar_storm_ready.down|!talent.double_tap|!talent.volley)&(buff.precise_shots.down|buff.moving_target.up|!talent.volley)
-actions.cleave+=/trueshot,if=variable.trueshot_ready&(buff.double_tap.down|!talent.volley)&(buff.lunar_storm_cooldown.up|!talent.double_tap|!talent.volley)&(buff.precise_shots.down|buff.moving_target.up|!talent.volley)
-# Queue Steady Shot after Aimed Shot if a Deathblow hasn't already been up long enough to be reacted to. Sentinel only seems to like this due to the Precise Shots gcd bug.
-## [Syrif] - The bug is fixed, also again, prev.1 more stable
-## actions.cleave+=/steady_shot,if=(talent.black_arrow|bugs)&focus+cast_regen<focus.max&action.aimed_shot.in_flight&!buff.deathblow.react&buff.trueshot.down&cooldown.trueshot.remains
-actions.cleave+=/steady_shot,if=talent.black_arrow&focus+cast_regen<focus.max&prev.1.aimed_shot&!buff.deathblow.react&buff.trueshot.down&cooldown.trueshot.remains
-actions.cleave+=/rapid_fire,if=talent.lunar_storm&buff.lunar_storm_cooldown.down&(buff.precise_shots.down|buff.moving_target.up|cooldown.volley.remains&cooldown.trueshot.remains|!talent.volley)
-actions.cleave+=/kill_shot,cycle_targets=1,if=talent.headshot&buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)|!talent.headshot&buff.razor_fragments.up
-actions.cleave+=/black_arrow,if=talent.headshot&buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)|!talent.headshot&buff.razor_fragments.up
-actions.cleave+=/multishot,cycle_targets=1,if=buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)&!talent.aspect_of_the_hydra&(talent.symphonic_arsenal|talent.small_game_hunter)
-actions.cleave+=/arcane_shot,cycle_targets=1,if=buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)
-# Prioritize Aimed Shot a little higher when close to capping charges.
-actions.cleave+=/aimed_shot,cycle_targets=1,if=(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)&full_recharge_time<action.rapid_fire.execute_time+cast_time&(!talent.bulletstorm|buff.bulletstorm.up)&talent.windrunner_quiver
-actions.cleave+=/rapid_fire,if=!talent.bulletstorm|buff.bulletstorm.stack<=10|talent.aspect_of_the_hydra
-actions.cleave+=/aimed_shot,cycle_targets=1,if=buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up
-actions.cleave+=/rapid_fire
-actions.cleave+=/explosive_shot,if=talent.precision_detonation|buff.trueshot.down
-actions.cleave+=/black_arrow,if=!talent.headshot
-actions.cleave+=/steady_shot
+# 2 targets (2+ without Trick Shots)
+actions.drcleave+=/explosive_shot,if=buff.trueshot.down&talent.precision_detonation&(!talent.shrapnel_shot|buff.lock_and_load.down&cooldown.aimed_shot.charges_fractional<=1.1)
+actions.drcleave+=/black_arrow,if=buff.precise_shots.up&buff.moving_target.down&variable.trueshot_ready
+actions.drcleave+=/volley,if=(talent.double_tap&buff.double_tap.down|!talent.aspect_of_the_hydra)&(buff.precise_shots.down|buff.moving_target.up)&(!talent.shrapnel_shot|!talent.salvo|buff.lock_and_load.down)
+actions.drcleave+=/rapid_fire,if=talent.bulletstorm&buff.bulletstorm.down&(!talent.double_tap|buff.double_tap.up|!talent.aspect_of_the_hydra&buff.trick_shots.remains>execute_time)&(buff.precise_shots.down|buff.moving_target.up|!talent.volley)
+actions.drcleave+=/volley,if=!talent.double_tap&(buff.precise_shots.down|buff.moving_target.up)&(!talent.shrapnel_shot|buff.lock_and_load.down)
+actions.drcleave+=/trueshot,if=variable.trueshot_ready&(buff.double_tap.down|!talent.volley)&(buff.precise_shots.down|buff.moving_target.up|!talent.volley)&(!talent.volley|!action.volley.ready)
+## [Syrif] - Add variable to fix black arrow logic in this entry, pending SimC update
+## actions.drcleave+=/steady_shot,if=focus+cast_regen<focus.max&action.aimed_shot.in_flight&!buff.deathblow.up&buff.trueshot.down&cooldown.trueshot.remains
+actions.drcleave+=/steady_shot,if=focus+cast_regen<focus.max&variable.fish_for_deathblow&buff.trueshot.down&cooldown.trueshot.remains
+actions.drcleave+=/black_arrow,if=talent.headshot&buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)|!talent.headshot&buff.razor_fragments.up
+actions.drcleave+=/aimed_shot,cycle_targets=1,if=buff.trueshot.up&buff.precise_shots.down|buff.lock_and_load.up&buff.moving_target.up
+actions.drcleave+=/rapid_fire,if=!talent.bulletstorm|buff.bulletstorm.stack<=10|talent.aspect_of_the_hydra&buff.trick_shots.remains<action.aimed_shot.cast_time
+actions.drcleave+=/arcane_shot,cycle_targets=1,|max_prio_damage,if=buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)
+actions.drcleave+=/aimed_shot,cycle_targets=1,if=buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up
+actions.drcleave+=/rapid_fire
+actions.drcleave+=/explosive_shot,if=talent.precision_detonation|buff.trueshot.down
+actions.drcleave+=/black_arrow,if=!talent.headshot
+actions.drcleave+=/steady_shot
 
-# ########## 1 target
-## [Syrif] This whole list depends on talent.black_arrow, so some below are removed
-## [Syrif] - prev.1 more stable
-## actions.drst+=/explosive_shot,if=talent.precision_detonation&action.aimed_shot.in_flight&buff.trueshot.down&buff.lock_and_load.down
-actions.drst+=/explosive_shot,if=talent.precision_detonation&prev.1.aimed_shot&buff.trueshot.down&buff.lock_and_load.down
+# 1 target
+actions.drst+=/explosive_shot,if=talent.precision_detonation&buff.lock_and_load.down&cooldown.aimed_shot.charges_fractional<=1.1&buff.trueshot.down
 actions.drst+=/volley,if=buff.double_tap.down&(!raid_event.adds.exists|raid_event.adds.in>cooldown)
-## [Syrif] - The bug is fixed, also again, prev.1 more stable
-## actions.drst+=/steady_shot,if=(talent.black_arrow|bugs)&focus+cast_regen<focus.max&action.aimed_shot.in_flight&(!action.black_arrow.cooldown_react)&buff.trueshot.down&cooldown.trueshot.remains
-actions.drst+=/steady_shot,if=focus+cast_regen<focus.max&prev.1.aimed_shot&(!cooldown.black_arrow.ready)&buff.trueshot.down&cooldown.trueshot.remains
-actions.drst+=/black_arrow,if=!talent.headshot|talent.headshot&buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)
+# Queue Steady Shot after Aimed Shot if a Deathblow hasn't already been up long enough to be reacted to.
+## [Syrif] - Add variable to fix black arrow logic in this entry, pending SimC update
+actions.drst+=/steady_shot,if=focus+cast_regen<focus.max&action.aimed_shot.in_flight&variable.fish_for_deathblow&buff.trueshot.down&cooldown.trueshot.remains
+actions.drst+=/trueshot,if=variable.trueshot_ready&buff.double_tap.down&!cooldown.black_arrow.ready&(!talent.bulletstorm|buff.bulletstorm.up)
+actions.drst+=/black_arrow,if=talent.headshot&buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)|!talent.headshot
 actions.drst+=/aimed_shot,if=buff.trueshot.up&buff.precise_shots.down|buff.lock_and_load.up&buff.moving_target.up
 actions.drst+=/rapid_fire,if=!buff.deathblow.up
-actions.drst+=/trueshot,if=variable.trueshot_ready&buff.double_tap.down&buff.deathblow.down
+actions.drst+=/trueshot,if=variable.trueshot_ready&buff.double_tap.down&!buff.deathblow.up
 actions.drst+=/arcane_shot,if=buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)
 actions.drst+=/aimed_shot,if=buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up
 actions.drst+=/explosive_shot,if=talent.shrapnel_shot&buff.lock_and_load.down
 actions.drst+=/steady_shot
 
-actions.sentst+=/explosive_shot,if=talent.precision_detonation&action.aimed_shot.in_flight&buff.trueshot.down
+# 3+ targets (with Trick Shots)
+actions.drtrickshots+=/explosive_shot,if=talent.precision_detonation&buff.trueshot.down&(!talent.shrapnel_shot|buff.lock_and_load.down)
+actions.drtrickshots+=/volley,if=buff.double_tap.down&(!talent.shrapnel_shot|buff.lock_and_load.down)
+actions.drtrickshots+=/rapid_fire,if=buff.trick_shots.remains>execute_time&talent.bulletstorm&buff.bulletstorm.down
+## [Syrif] - Add variable to fix black arrow logic in this entry, pending SimC update
+actions.drtrickshots+=/steady_shot,if=focus+cast_regen<focus.max&action.aimed_shot.in_flight&variable.fish_for_deathblow&buff.trueshot.down&cooldown.trueshot.remains
+actions.drtrickshots+=/black_arrow,if=!talent.headshot|buff.precise_shots.up|buff.trick_shots.down
+actions.drtrickshots+=/multishot,cycle_targets=1,if=buff.precise_shots.up&buff.moving_target.down|buff.trick_shots.down
+actions.drtrickshots+=/trueshot,if=variable.trueshot_ready&buff.double_tap.down
+actions.drtrickshots+=/volley,if=buff.double_tap.down&(!talent.salvo|!talent.precision_detonation|(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up))
+actions.drtrickshots+=/aimed_shot,if=buff.trick_shots.remains>cast_time&(buff.trueshot.up&buff.precise_shots.down|buff.lock_and_load.up&buff.moving_target.up)
+actions.drtrickshots+=/rapid_fire,if=buff.trick_shots.remains>execute_time&!buff.deathblow.up&(talent.no_scope|talent.double_tap)
+actions.drtrickshots+=/explosive_shot,if=!talent.shrapnel_shot|buff.lock_and_load.down&(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)
+actions.drtrickshots+=/aimed_shot,if=buff.trick_shots.remains>cast_time&(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)
+actions.drtrickshots+=/steady_shot
+
+actions.sentcleave+=/explosive_shot,if=talent.precision_detonation&action.aimed_shot.in_flight&(buff.trueshot.down|!talent.windrunner_quiver)
+actions.sentcleave+=/volley,if=(talent.double_tap&buff.double_tap.down|!talent.aspect_of_the_hydra)&(buff.precise_shots.down|buff.moving_target.up)
+actions.sentcleave+=/rapid_fire,if=talent.bulletstorm&buff.bulletstorm.down&(!talent.double_tap|buff.double_tap.up|!talent.aspect_of_the_hydra&buff.trick_shots.remains>execute_time)&(buff.precise_shots.down|buff.moving_target.up|!talent.volley)
+actions.sentcleave+=/volley,if=!talent.double_tap&(buff.precise_shots.down|buff.moving_target.up)
+## [Syrif] - buff.lunar_storm_cooldown.up is better than buff.lunar_storm_ready.down
+## actions.sentcleave+=/trueshot,if=variable.trueshot_ready&(buff.double_tap.down|!talent.volley)&(buff.lunar_storm_ready.down|!talent.double_tap|!talent.volley)&(buff.precise_shots.down|buff.moving_target.up|!talent.volley)
+actions.sentcleave+=/trueshot,if=variable.trueshot_ready&(buff.double_tap.down|!talent.volley)&(buff.lunar_storm_cooldown.up|!talent.double_tap|!talent.volley)&(buff.precise_shots.down|buff.moving_target.up|!talent.volley)
+actions.sentcleave+=/rapid_fire,if=talent.lunar_storm&buff.lunar_storm_cooldown.down&(buff.precise_shots.down|buff.moving_target.up|cooldown.volley.remains&cooldown.trueshot.remains|!talent.volley)
+actions.sentcleave+=/kill_shot,cycle_targets=1,|max_prio_damage,if=talent.headshot&buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)|!talent.headshot&buff.razor_fragments.up
+actions.sentcleave+=/multishot,cycle_targets=1,|max_prio_damage,if=buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)&!talent.aspect_of_the_hydra
+actions.sentcleave+=/arcane_shot,cycle_targets=1,|max_prio_damage,if=buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)
+actions.sentcleave+=/aimed_shot,cycle_targets=1,if=(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)&full_recharge_time<action.rapid_fire.execute_time+cast_time&(!talent.bulletstorm|buff.bulletstorm.up)&talent.windrunner_quiver
+actions.sentcleave+=/rapid_fire,if=!talent.bulletstorm|buff.bulletstorm.stack<=10|talent.aspect_of_the_hydra
+actions.sentcleave+=/aimed_shot,cycle_targets=1,if=buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up
+actions.sentcleave+=/rapid_fire
+actions.sentcleave+=/explosive_shot,if=talent.precision_detonation|buff.trueshot.down
+actions.sentcleave+=/steady_shot
+
+actions.sentst+=/explosive_shot,if=talent.shrapnel_shot&buff.lock_and_load.down&cooldown.aimed_shot.charges_fractional<=1.1&buff.trueshot.down
 actions.sentst+=/volley,if=buff.double_tap.down&(!raid_event.adds.exists|raid_event.adds.in>cooldown)
-actions.sentst+=/trueshot,if=variable.trueshot_ready&buff.double_tap.down
-# Queue Steady Shot after Aimed Shot if a Deathblow hasn't already been up long enough to be reacted to. Sentinel only seems to like this due to the Precise Shots gcd bug.
-## [Syrif] - The bug is fixed, this entry can never pass now, I expect SimC to remove it soon
-## actions.sentst+=/steady_shot,if=(talent.black_arrow|bugs)&focus+cast_regen<focus.max&action.aimed_shot.in_flight&!buff.deathblow.react&buff.trueshot.down&cooldown.trueshot.remains
 actions.sentst+=/rapid_fire,if=talent.lunar_storm&buff.lunar_storm_cooldown.down
+actions.sentst+=/trueshot,if=variable.trueshot_ready&buff.double_tap.down&(!talent.bulletstorm|buff.bulletstorm.up)
 actions.sentst+=/kill_shot,if=talent.headshot&buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)|!talent.headshot&buff.razor_fragments.up
+actions.sentst+=/aimed_shot,if=buff.trueshot.up&buff.precise_shots.down|buff.lock_and_load.up&buff.moving_target.up
+actions.sentst+=/rapid_fire,if=!talent.no_scope|buff.precise_shots.down
 actions.sentst+=/arcane_shot,if=buff.precise_shots.up&(debuff.spotters_mark.down|buff.moving_target.down)
-# Prioritize Aimed Shot a little higher when close to capping charges.
-actions.sentst+=/aimed_shot,if=(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)&full_recharge_time<action.rapid_fire.execute_time+cast_time&(!talent.bulletstorm|buff.bulletstorm.up)&talent.windrunner_quiver
 actions.sentst+=/rapid_fire
 actions.sentst+=/aimed_shot,if=buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up
 actions.sentst+=/explosive_shot,if=talent.precision_detonation|buff.trueshot.down
 actions.sentst+=/steady_shot
 
-# ################ 3+ targets (with Trick Shots)
-actions.trickshots+=/explosive_shot,if=talent.precision_detonation&prev.1.aimed_shot&buff.trueshot.down&(!talent.shrapnel_shot|buff.lock_and_load.down)
-actions.trickshots+=/volley,if=buff.double_tap.down&(!talent.shrapnel_shot|buff.lock_and_load.down)
-actions.trickshots+=/rapid_fire,if=talent.bulletstorm&buff.bulletstorm.down&buff.trick_shots.remains>execute_time
-actions.trickshots+=/rapid_fire,if=hero_tree.sentinel&buff.lunar_storm_cooldown.down&buff.trick_shots.remains>execute_time
-# Queue Steady Shot after Aimed Shot if a Deathblow hasn't already been up long enough to be reacted to.
-actions.trickshots+=/steady_shot,if=talent.black_arrow&focus+cast_regen<focus.max&prev.1.aimed_shot&!buff.deathblow.react&buff.trueshot.down&cooldown.trueshot.remains
-actions.trickshots+=/black_arrow,if=!talent.headshot|buff.precise_shots.up|buff.trick_shots.down
-# Retarget to possibly spread an extra Spotter's Mark if able.
-actions.trickshots+=/multishot,cycle_targets=1,if=buff.precise_shots.up&buff.moving_target.down|buff.trick_shots.down
-actions.trickshots+=/trueshot,if=variable.trueshot_ready&buff.double_tap.down
-actions.trickshots+=/volley,if=buff.double_tap.down&(!talent.salvo|!talent.precision_detonation|(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up))
-# Prioritize Aimed Shot a little higher when close to capping charges.
-actions.trickshots+=/aimed_shot,if=(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)&buff.trick_shots.up&buff.bulletstorm.up&full_recharge_time<gcd
-actions.trickshots+=/rapid_fire,if=buff.trick_shots.remains>execute_time&(!talent.black_arrow|buff.deathblow.down)&(!talent.no_scope|debuff.spotters_mark.down)&(talent.no_scope|buff.bulletstorm.down)
-actions.trickshots+=/explosive_shot,if=talent.precision_detonation&talent.shrapnel_shot&buff.lock_and_load.down&(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)
-actions.trickshots+=/aimed_shot,if=(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)&buff.trick_shots.up
-actions.trickshots+=/explosive_shot,if=!talent.shrapnel_shot
-actions.trickshots+=/steady_shot,if=focus+cast_regen<focus.max
-actions.trickshots+=/multishot
+actions.senttrickshots+=/explosive_shot,if=talent.shrapnel_shot&buff.lock_and_load.down&cooldown.aimed_shot.charges_fractional<=1.1&buff.trueshot.down
+actions.senttrickshots+=/volley,if=buff.double_tap.down&(!talent.shrapnel_shot|buff.lock_and_load.down)
+actions.senttrickshots+=/rapid_fire,if=buff.trick_shots.remains>execute_time&(talent.bulletstorm&buff.bulletstorm.down|buff.lunar_storm_cooldown.down)
+actions.senttrickshots+=/multishot,cycle_targets=1,if=buff.precise_shots.up&buff.moving_target.down|buff.trick_shots.down
+actions.senttrickshots+=/trueshot,if=variable.trueshot_ready&buff.double_tap.down
+actions.senttrickshots+=/volley,if=buff.double_tap.down&(!talent.salvo|!talent.precision_detonation|(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up))
+actions.senttrickshots+=/aimed_shot,if=buff.trick_shots.remains>execute_time&(buff.trueshot.up&buff.precise_shots.down|buff.lock_and_load.up&buff.moving_target.up)
+actions.senttrickshots+=/rapid_fire,if=buff.trick_shots.remains>execute_time
+actions.senttrickshots+=/explosive_shot,if=talent.shrapnel_shot&buff.lock_and_load.down
+actions.senttrickshots+=/aimed_shot,if=buff.trick_shots.remains>execute_time&(buff.precise_shots.down|debuff.spotters_mark.up&buff.moving_target.up)
+actions.senttrickshots+=/explosive_shot,if=talent.precision_detonation&!talent.shrapnel_shot
+actions.senttrickshots+=/steady_shot,if=focus+cast_regen<focus.max
+actions.senttrickshots+=/multishot
 
-
-# True if effects that are desirable to sync a trinket buff with are ready.
-## [Syrif] - More realistic sync condition, particularly for Mythic+
-## actions.trinkets=variable,name=buff_sync_ready,value=variable.trueshot_ready
-actions.trinkets+=/variable,name=buff_sync_ready,value=cooldown.trueshot.ready
-# Time until the effects that are desirable to sync a trinket buff with will be ready.
-actions.trinkets+=/variable,name=buff_sync_remains,value=cooldown.trueshot.remains
-# True if effecs that are desirable to sync a trinket buff with are active.
-actions.trinkets+=/variable,name=buff_sync_active,value=buff.trueshot.up
-# True if effects that are desirable to sync trinket damage with are active.
-actions.trinkets+=/variable,name=damage_sync_active,value=buff.trueshot.up
-# Time until the effects that are desirable to sync trinket damage with will be ready.
-actions.trinkets+=/variable,name=damage_sync_remains,value=cooldown.trueshot.remains
-# Uses buff effect trinkets with cooldowns and is willing to delay usage up to half the trinket cooldown if it won't lose a usage in the fight. Fills in downtime with weaker buff effects if they won't also be saved for later cooldowns (happens if it won't delay over half the trinket cooldown and a stronger trinket won't be up in time) or damage effects if they won't inferfere with any buff effect usage. Intended to be slot-agnostic so that any order of the same trinket pair should result in the same usage.
-actions.trinkets+=/use_item,use_off_gcd=1,slot=trinket1,if=trinket.1.has_use_buff&(variable.sync_ready&(variable.trinket_1_stronger|trinket.2.cooldown.remains)|!variable.sync_ready&(variable.trinket_1_stronger&(variable.sync_remains>trinket.1.cooldown.duration%3&fight_remains>trinket.1.cooldown.duration+20|trinket.2.has_use_buff&trinket.2.cooldown.remains>variable.sync_remains-15&trinket.2.cooldown.remains-5<variable.sync_remains&variable.sync_remains+45>fight_remains)|variable.trinket_2_stronger&(trinket.2.cooldown.remains&(trinket.2.cooldown.remains-5<variable.sync_remains&variable.sync_remains>=20|trinket.2.cooldown.remains-5>=variable.sync_remains&(variable.sync_remains>trinket.1.cooldown.duration%3|trinket.1.cooldown.duration<fight_remains&(variable.sync_remains+trinket.1.cooldown.duration>fight_remains)))|trinket.2.cooldown.ready&variable.sync_remains>20&variable.sync_remains<trinket.2.cooldown.duration%3)))|!trinket.1.has_use_buff&(trinket.1.cast_time=0|!variable.sync_active)&(!trinket.2.has_use_buff&(variable.trinket_1_stronger|trinket.2.cooldown.remains)|trinket.2.has_use_buff&(variable.sync_remains>20|trinket.2.cooldown.remains>20))|boss&fight_remains<25&(variable.trinket_1_stronger|trinket.2.cooldown.remains)
-actions.trinkets+=/use_item,use_off_gcd=1,slot=trinket2,if=trinket.2.has_use_buff&(variable.sync_ready&(variable.trinket_2_stronger|trinket.1.cooldown.remains)|!variable.sync_ready&(variable.trinket_2_stronger&(variable.sync_remains>trinket.2.cooldown.duration%3&fight_remains>trinket.2.cooldown.duration+20|trinket.1.has_use_buff&trinket.1.cooldown.remains>variable.sync_remains-15&trinket.1.cooldown.remains-5<variable.sync_remains&variable.sync_remains+45>fight_remains)|variable.trinket_1_stronger&(trinket.1.cooldown.remains&(trinket.1.cooldown.remains-5<variable.sync_remains&variable.sync_remains>=20|trinket.1.cooldown.remains-5>=variable.sync_remains&(variable.sync_remains>trinket.2.cooldown.duration%3|trinket.2.cooldown.duration<fight_remains&(variable.sync_remains+trinket.2.cooldown.duration>fight_remains)))|trinket.1.cooldown.ready&variable.sync_remains>20&variable.sync_remains<trinket.1.cooldown.duration%3)))|!trinket.2.has_use_buff&(trinket.2.cast_time=0|!variable.sync_active)&(!trinket.1.has_use_buff&(variable.trinket_2_stronger|trinket.1.cooldown.remains)|trinket.1.has_use_buff&(variable.sync_remains>20|trinket.1.cooldown.remains>20))|boss&fight_remains<25&(variable.trinket_2_stronger|trinket.1.cooldown.remains)
+## [Syrif] - We don't support this syntax (yet?)
+## actions.trinkets+=/use_items,slots=trinket1:trinket2,if=!this_trinket.has_use_buff|buff.trueshot.remains>13|cooldown.trueshot.remains>45
+actions.trinkets+=/use_items,slots=trinket1,if=!trinket.1.has_use_buff|buff.trueshot.remains>13|cooldown.trueshot.remains>45
+actions.trinkets+=/use_items,slots=trinket2,if=!trinket.2.has_use_buff|buff.trueshot.remains>13|cooldown.trueshot.remains>45
+actions.trinkets+=/use_item,name=unyielding_netherprism,if=buff.latent_energy.stack>5&(buff.trueshot.remains>13|buff.latent_energy.stack=18|boss&fight_remains<25)
