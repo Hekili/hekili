@@ -162,19 +162,31 @@ local function atToAbs( str )
  end
 
 
- local mathBreak = {
+ local leftBreak = {
     ["<"] = true,
     [">"] = true,
     ["="] = true,
     ["&"] = true,
     ["|"] = true,
     [","] = true,
+    ["?"] = true,
+    ["("] = true
+}
+
+local rightBreak = {
+    ["<"] = true,
+    [">"] = true,
+    ["="] = true,
+    ["&"] = true,
+    ["|"] = true,
+    [","] = true,
+    ["?"] = true,
     ["+"] = true,
     ["-"] = true,
     ["%"] = true,
     ["*"] = true,
     ["/"] = true,
-    ["?"] = true
+    [")"] = true
 }
 
 local function HandleDeprecatedOperators( str, opStr, prefix )
@@ -198,7 +210,7 @@ local function HandleDeprecatedOperators( str, opStr, prefix )
                 if char == ")" then
                     -- Grab the full bracketed pair and move on.
                     i = i + left:sub( 1, 1 + leftLen - i ):match( "(%b())$" ):len()
-                elseif mathBreak[ char ] or char == "(" then
+                elseif leftBreak[ char ] then
                     eos = i - 1
                     break
                 end
@@ -229,7 +241,7 @@ local function HandleDeprecatedOperators( str, opStr, prefix )
 
                 if char == "(" then
                     i = i + right:sub( i ):match( "^(%b())" ):len()
-                elseif mathBreak[char] or char == ")" then
+                elseif rightBreak[ char ] then
                     eos = i - 1
                     break
                 end
@@ -788,11 +800,10 @@ do
 
         if #exprs > 0 then
             for i, expr in ipairs( exprs ) do
-                expr = SimToLua( expr )
                 local converted, calc, why = ConvertTimeComparison( expr )
 
                 if converted then
-                    -- calc = SimToLua( calc )
+                    calc = SimToLua( calc )
                     calc = self:EmulateSyntax( calc, true )
 
                     local rslt, msg = Hekili:Loadstring( "return " .. calc )
