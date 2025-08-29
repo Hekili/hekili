@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/evoker_augmentation.simc
-## SimulationCraft Commit Sync: 5340e2f
-## Date: 2025-08-05
+## SimulationCraft Commit Sync: 9d80a47
+## Date: 2025-08-27
 
 actions.precombat+=/variable,name=spam_heal,default=0,op=reset
 actions.precombat+=/variable,name=minimum_opener_delay,op=reset,default=0
@@ -36,13 +36,13 @@ actions+=/unravel
 actions+=/variable,name=temp_wound,value=debuff.temporal_wound.remains
 actions+=/variable,name=eons_remains,op=set,value=cooldown.breath_of_eons.remains
 ## actions+=/variable,name=eons_remains,op=set,value=cooldown.allied_virtual_cd_time.remains,if=!talent.breath_of_eons
-actions+=/variable,name=pool_for_id,if=talent.imminent_destruction&(!set_bonus.tww3_4pc|!hero_tree.chronowarden),default=0,op=set,value=(variable.eons_remains<8&talent.breath_of_eons|cooldown.deep_breath.remains<8&!talent.breath_of_eons)&essence.deficit>=1&!buff.essence_burst.up
+actions+=/variable,name=pool_for_id,default=0,op=set,value=(variable.eons_remains<8&talent.breath_of_eons&(target.time_to_die>13&raid_event.adds.in>15|boss&fight_remains<30)|cooldown.deep_breath.remains<8&!talent.breath_of_eons)&essence.deficit>=1&!buff.essence_burst.up,if=(!set_bonus.tww3_4pc|!hero_tree.chronowarden)&talent.imminent_destruction
 actions+=/hover,use_off_gcd=1,if=gcd.remains>=0.5&(!raid_event.movement.exists&(trinket.1.is.ovinaxs_mercurial_egg|trinket.2.is.ovinaxs_mercurial_egg)|raid_event.movement.in<=6)
 # actions+=/time_skip,target_if=max:debuff.bombardments.remains,if=cooldown.fire_breath.full_recharge_time>0&cooldown.prescience.full_recharge_time>0&cooldown.breath_of_eons.full_recharge_time>0&cooldown.upheaval.full_recharge_time>0 actions+=/prescience,target_if=min:(debuff.prescience.remains-200*(target.role.attack|target.role.spell|target.role.dps)+50*target.spec.augmentation),if=((full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold|boss&fight_remains<=30)|variable.eons_remains<=8|talent.anachronism&buff.imminent_destruction.up&essence<1&!cooldown.fire_breath.up&!cooldown.upheaval.up)&debuff.prescience.remains<gcd.max*2&(!talent.anachronism|buff.essence_burst.stack<buff.essence_burst.max_stack|time<=10)&full_recharge_time<=gcd.max
 actions+=/prescience,cycle_targets=1,if=(solo&buff.prescience.remains<1|group&active_dot.prescience<2)&((full_recharge_time<=gcd.max*3|cooldown.ebon_might.remains<=gcd.max*3&(buff.ebon_might_self.remains-gcd.max*3)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold|boss&fight_remains<=30)|variable.eons_remains<=8|talent.anachronism&buff.imminent_destruction.up&essence<1&!cooldown.fire_breath.up&!cooldown.upheaval.up)&(solo&buff.prescience.remains<gcd.max*2|active_dot.prescience<active_allies)&(!talent.anachronism|buff.essence_burst.stack<buff.essence_burst.max_stack|time<=10)
 ## actions+=/prescience,cycle_targets=1,if=full_recharge_time<=gcd.max*3&debuff.prescience.remains<gcd.max*2&(target.spec.augmentation|target.role.tank)&(!talent.anachronism|buff.essence_burst.stack<buff.essence_burst.max_stack|time<=5)
 actions+=/potion,if=variable.eons_remains<=0|boss&fight_remains<=30
-actions+=/ebon_might,if=(buff.ebon_might_self.remains-action.ebon_might.cast_time)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold&(variable.eons_remains>0|!talent.breath_of_eons&cooldown.deep_breath.remains>0|raid_event.adds.in<=3|time>30|talent.molten_embers&(set_bonus.tww2_2pc|!talent.breath_of_eons|talent.overlord))&(!buff.imminent_destruction.up|buff.ebon_might_self.remains<=gcd.max)
+actions+=/ebon_might,if=(((buff.ebon_might_self.remains-cast_time)<=buff.ebon_might_self.duration*variable.ebon_might_pandemic_threshold)&(variable.eons_remains>0|!talent.breath_of_eons&cooldown.deep_breath.remains>0|raid_event.adds.in<=3|time>30|talent.molten_embers&(set_bonus.tww2_2pc|!talent.breath_of_eons|talent.overlord))&(!buff.imminent_destruction.up|buff.ebon_might_self.remains<=gcd.max)|variable.eons_remains>0&buff.ebon_might_self.value<=0.3&!cooldown.fire_breath.up&!cooldown.upheaval.up&talent.doubletime)&(buff.ebon_might_self.value<=0.3|(buff.ebon_might_self.remains-cast_time)<=buff.ebon_might_self.duration*0.3)
 actions+=/call_action_list,name=items
 actions+=/run_action_list,name=opener_filler,if=variable.opener_delay>0
 ## [Syrif] - Don't actually recommend the lust
