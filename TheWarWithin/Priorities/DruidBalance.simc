@@ -17,8 +17,10 @@ actions.precombat+=/starfire,if=!talent.stellar_flare&hero_tree.elunes_chosen
 actions.precombat+=/stellar_flare
 
 actions+=/solar_beam
-# [Edited] Trigger Lunar Eclipse if we failed to precast Wrath x2
-actions+=/wrath,if=time<2&eclipse.lunar_in_1
+# [Edited] Trigger Lunar Eclipse if we failed to precast Wrath x2.
+actions+=/wrath,if=time<2*gcd.max&eclipse.lunar_in_1
+# "Precombat" Starfire if we just entered Lunar Eclipse per our opener.
+actions+=/starfire,if=time<3*gcd.max&prev.1.wrath&prev.2.wrath&eclipse.in_lunar
 # VARIABLES
 actions+=/variable,name=passive_asp,value=6%spell_haste+talent.natures_balance+((talent.bounteous_bloom&buff.bounteous_bloom.up)*15)+talent.orbit_breaker*dot.moonfire.ticking*(buff.orbit_breaker.stack>(27-2*buff.solstice.up))*24
 # Variable to map CA's effective CD, not always reliable to reference when using Whirling Stars
@@ -101,11 +103,11 @@ actions.kotg_pre_cd+=/fury_of_elune,if=!buff.ca_inc.up&variable.kotg_ca_conditio
 # Make Warrior of Elune work if talented (don't talent this)
 actions.kotg_st=warrior_of_elune,if=eclipse.remains<=7
 actions.kotg_st+=/wait,if=buff.dryad.up&buff.dryad.remains<gcd.max,sec=buff.dryad.remains
-+# Wait line to prevent not being able to spend dryads favor before CA runs out
+# Wait line to prevent not being able to spend dryads favor before CA runs out
 actions.kotg_st+=/wait,if=!talent.incarnation_chosen_of_elune&buff.dryad.up&buff.ca_inc.remains<(cooldown.ca_inc.remains>?2*gcd.max),sec=buff.dryad.remains
 # Enter Eclipse if variable.enter_lunar is true or false
-actions.kotg_st+=/wrath,if=variable.enter_lunar&eclipse.in_eclipse&variable.eclipse_remains<cast_time|(variable.kotg_ca_condition|variable.kotg_inc_condition)&buff.parting_skies.up&(variable.eclipse_remains<cast_time|eclipse.in_none)
-actions.kotg_st+=/starfire,if=!variable.enter_lunar&eclipse.in_eclipse&variable.eclipse_remains<cast_time&!buff.dryads_favor.up&(!variable.kotg_ca_condition|!variable.kotg_inc_condition)
+actions.kotg_st+=/wrath,if=variable.enter_lunar&eclipse.in_eclipse&eclipse.remains<cast_time|(variable.kotg_ca_condition|variable.kotg_inc_condition)&buff.parting_skies.up&(eclipse.remains<cast_time|eclipse.in_none)
+actions.kotg_st+=/starfire,if=!variable.enter_lunar&eclipse.in_eclipse&eclipse.remains<cast_time&!buff.dryads_favor.up&(!variable.kotg_ca_condition|!variable.kotg_inc_condition)
 # Use dots if less than 3 seconds remaining or if you're about to use CDs
 actions.kotg_st+=/moonfire,if=(remains<3&(!talent.treants_of_the_moon|cooldown.force_of_nature.remains>3&!buff.harmony_of_the_grove.up))|!dot.moonfire.ticking
 actions.kotg_st+=/sunfire,if=remains<3|remains<(12>?buff.ca_inc.duration)&variable.kotg_ca_condition&!buff.ca_inc.up
