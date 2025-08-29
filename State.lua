@@ -3330,7 +3330,7 @@ do
                         duration = lossDuration
                     end
 
-                    --[[ 
+                    --[[
                         Void Emissary: Voidbinding
                         If Voidbinding has 10s remaining, and the affected spell shows 15s remaining on its cooldown, then
                         when 10s passes, the spell CD will jump from 5s to 6.5s.
@@ -4978,16 +4978,16 @@ do
     } )
 end
 
+local tierSetAliasMap = {
+    -- For specs with APLs that don't use the normal tier/season identifier that the majority uses
+    thewarwithin_season_2 = "tww2",
+    thewarwithin_season_3 = "tww3",
+}
+
 -- Table of set bonuses. Some string manipulation to honor the SimC syntax.
 local mt_set_bonuses = {
     __index = function( t, k )
         if type( k ) == "number" then return 0 end
-
-        local aliasMap = {
-            -- For specs with APLs that don't use the normal tier/season identifier that the majority uses
-            thewarwithin_season_2 = "tww2",
-            thewarwithin_season_3 = "tww3",
-        }
 
         -- Match specific set bonus effect checks, 2pc/4pc
           -- standard (tww2_2pc)
@@ -4997,50 +4997,30 @@ local mt_set_bonuses = {
             pieces = tonumber( pieces )
 
             -- Try as hero tree first (contains additional underscore for hero tree name)
-            local heroSet, heroTree = prefix:match( "^([%w_]+)_(.+)$" )
-            if heroSet and heroTree then
-                heroSet = aliasMap[ heroSet ] or heroSet
-                local count = rawget( t, heroSet )
-                if count and state.hero_tree and state.hero_tree.current == heroTree then
-                    if count >= pieces then
-                        return 1
-                    end
-                end
+            local heroSet = prefix:match( "^([%w_]+)_" .. state.hero_tree.current .. "$" )
+            if heroSet then
+                heroSet = tierSetAliasMap[ heroSet ] or heroSet
+                return ( rawget( t, heroSet ) or 0 ) >= pieces and 1 or 0
             end
 
             -- Try as standard set bonus (no additional hero tree part)
-            local standardSet = aliasMap[ prefix ] or prefix
-            local count = rawget( t, standardSet )
-            if count and count >= pieces then
-                return 1
-            end
-
-            -- No match found for this 2pc/4pc pattern
-            return 0
+            local standardSet = tierSetAliasMap[ prefix ] or prefix
+            return ( rawget( t, standardSet ) or 0 ) >= pieces and 1 or 0
         end
 
         -- Check if this is a basic set name that should be aliased first
-        local aliasedKey = aliasMap[ k ]
-        if aliasedKey then
-            local count = rawget( t, aliasedKey )
-            return count or 0
-        end
+        if tierSetAliasMap[ k ] then return rawget( t,  tierSetAliasMap[ k ] ) or 0 end
 
         -- Match hero tree set name (tww3_rider_of_the_apocalypse)
-        local heroSet, heroTree = k:match( "^([%w_]+)_(.+)$" )
-        if heroSet and heroTree then
+        local heroSet = k:match( "^([%w_]-)_" .. state.hero_tree.current .. "$" )
+        if heroSet then
             -- Hero tree set name
-            heroSet = aliasMap[ heroSet ] or heroSet
-            local count = rawget( t, heroSet )
-            if count and state.hero_tree and state.hero_tree.current == heroTree then
-                return count
-            end
-            return 0
-        else
-            -- Basic set name (no alias found, no underscores)
-            local count = rawget( t, k )
-            return count or 0
+            heroSet = tierSetAliasMap[ heroSet ] or heroSet
+            return rawget( t, heroSet ) or 0
         end
+
+        -- t[ k ] is nil or this metafunction would not have fired.
+        return 0
     end
 }
 ns.metatables.mt_set_bonuses = mt_set_bonuses
