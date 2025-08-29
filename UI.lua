@@ -38,7 +38,7 @@ end
 local GetSpecialization = C_SpecializationInfo.GetSpecialization
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
 
-local floor, format, insert = math.floor, string.format, table.insert
+local floor, format, insert, remove = math.floor, string.format, table.insert, table.remove
 
 local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi
 local Tooltip = ns.Tooltip
@@ -61,15 +61,15 @@ local function updateSmoothedFPS()
         local currentFPS = GetFramerate()
 
         -- Add to sliding window
-        table.insert( fpsTracker.samples, currentFPS )
+        fpsTracker.samples[#fpsTracker.samples + 1] = currentFPS
         if #fpsTracker.samples > fpsTracker.maxSamples then
             table.remove( fpsTracker.samples, 1 )
         end
 
         -- Calculate smoothed average
         local sum = 0
-        for _, fps in ipairs( fpsTracker.samples ) do
-            sum = sum + fps
+        for i = 1, #fpsTracker.samples do
+            sum = sum + fpsTracker.samples[i]
         end
         fpsTracker.smoothedFPS = sum / #fpsTracker.samples
         fpsTracker.lastUpdate = now
