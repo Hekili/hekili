@@ -974,7 +974,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, _, _, _, targe
             local delay = now - castData.castTime
 
             if Hekili.ActiveDebug then
-                Hekili:Debug("Flurry impact %d: %.3fs after cast (predicted: %.3f)",
+                Hekili:Debug( "Flurry impact %d: %.3fs after cast ( predicted: %.3f )",
                     castData.impactsReceived, delay,
                     castData.impactsReceived == 1 and castData.distance / 48 or
                     castData.impactsReceived == 2 and ( castData.distance / 48 + 0.31 * castData.gcdMax ) or
@@ -983,7 +983,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, _, _, _, targe
 
             -- Clean up after all 3 impacts received
             if castData.impactsReceived >= 3 then
-                flurryCastData[targetGUID] = nil
+                flurryCastData[ targetGUID ] = nil
             end
         end
     end
@@ -1368,8 +1368,8 @@ spec:RegisterAbilities( {
 
             -- Queue all 3 impacts with proper timing (virtual queue)
             state:QueueEvent( "flurry", query_time, impact1Time, "PROJECTILE_IMPACT", target.unit, false )
-            state:QueueEvent( "flurry", query_time, impact1Time + (0.31 * gcdMax), "PROJECTILE_IMPACT", target.unit, false )
-            state:QueueEvent( "flurry", query_time, impact1Time + (0.56 * gcdMax), "PROJECTILE_IMPACT", target.unit, false )
+            state:QueueEvent( "flurry", query_time, impact1Time + ( 0.31 * gcdMax ), "PROJECTILE_IMPACT", target.unit, false )
+            state:QueueEvent( "flurry", query_time, impact1Time + ( 0.56 * gcdMax ), "PROJECTILE_IMPACT", target.unit, false )
 
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
             elseif legendary.sinful_delight.enabled then gainChargeTime( "mirrors_of_torment", 4 )
