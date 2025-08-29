@@ -1,5 +1,5 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/demonhunter_vengeance.simc
-## SimulationCraft Commit Sync: 04a038d
+## SimulationCraft Commit Sync: 65d756b
 ## Date: 2025-08-11
 
 actions.precombat+=/variable,name=single_target,value=active_enemies=1
