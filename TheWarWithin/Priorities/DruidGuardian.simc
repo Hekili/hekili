@@ -39,8 +39,8 @@ actions.bear+=/maul,if=buff.ravage.up&active_enemies<2
 actions.bear+=/raze,if=(buff.tooth_and_claw.stack>1|buff.tooth_and_claw.up&buff.tooth_and_claw.remains<1+gcd|buff.vicious_cycle_maul.stack=3)
 actions.bear+=/thrash_bear,if=active_enemies>=5&talent.lunar_calling.enabled
 actions.bear+=/ironfur,cycle_targets=1,if=!debuff.tooth_and_claw.up&!buff.ironfur.up&rage>50&tanking&variable.if_build=0&!buff.rage_of_the_sleeper.up|rage>90&variable.if_build=0|!debuff.tooth_and_claw.up&!buff.ironfur.up&rage>50&tanking&variable.if_build=0&!buff.rage_of_the_sleeper.up
-actions.bear+=/ironfur,if=!buff.ravage.up&((rage>40&variable.If_build=1|rage>90&variable.If_build=1&!talent.fount_of_strength.enabled|rage>110&variable.If_build=1&talent.fount_of_strength.enabled|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.If_build=1&buff.rage_of_the_sleeper.up&talent.rage_of_the_sleeper.enabled))
-actions.bear+=/ironfur,if=!buff.ravage.up&(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.If_build=1
+actions.bear+=/ironfur,if=!buff.ravage.up&((rage>40&variable.if_build=1|rage>90&variable.if_build=1&!talent.fount_of_strength.enabled|rage>110&variable.if_build=1&talent.fount_of_strength.enabled|(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.if_build=1&buff.rage_of_the_sleeper.up&talent.rage_of_the_sleeper.enabled))
+actions.bear+=/ironfur,if=!buff.ravage.up&(buff.incarnation.up|buff.berserk_bear.up)&rage>20&variable.if_build=1
 actions.bear+=/ferocious_bite,if=(buff.cat_form.up&buff.feline_potential.up&(buff.incarnation.up|buff.berserk_bear.up)&!dot.rip.refreshable)
 actions.bear+=/rip,if=(buff.cat_form.up&buff.feline_potential.up)
 actions.bear+=/mangle,if=buff.gore.up&active_enemies<11|buff.incarnation_guardian_of_ursoc.up&buff.feline_potential_counter.stack<6&talent.wildpower_surge.enabled
