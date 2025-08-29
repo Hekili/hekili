@@ -38,7 +38,7 @@ end
 local GetSpecialization = C_SpecializationInfo.GetSpecialization
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
 
-local floor, format, insert = math.floor, string.format, table.insert
+local floor, format = math.floor, string.format
 
 local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi
 local Tooltip = ns.Tooltip
@@ -48,11 +48,14 @@ local _
 
 -- FPS smoothing system for stable budget calculations
 local fpsTracker = {
-    samples         = {}, -- Sliding window of FPS samples
-    maxSamples      = 30, -- 30 samples for smoothing
-    smoothedFPS     = 60, -- Current smoothed FPS value
-    lastUpdate      = 0,  -- Last update time
-    updateInterval  = 0.1 -- Update every 100ms
+    samples         = {},  -- Sliding window of FPS samples
+    maxSamples      = 30,  -- 30 samples for smoothing
+    smoothedFPS     = 60,  -- Current smoothed FPS value
+    lastUpdate      = 0,   -- Last update time
+    updateInterval  = 0.1, -- Update every 100ms
+    index           = 1,   -- Ring tracker
+    count           = 0,   -- Total samples
+    sum             = 0    -- Sum of all samples
 }
 
 local function updateSmoothedFPS()
@@ -60,21 +63,25 @@ local function updateSmoothedFPS()
     if now - fpsTracker.lastUpdate >= fpsTracker.updateInterval then
         local currentFPS = GetFramerate()
 
-        -- Add to sliding window
-        table.insert( fpsTracker.samples, currentFPS )
-        if #fpsTracker.samples > fpsTracker.maxSamples then
-            table.remove( fpsTracker.samples, 1 )
+        -- If overwriting an old sample, subtract it first
+        if fpsTracker.count == fpsTracker.maxSamples then
+            fpsTracker.sum = fpsTracker.sum - fpsTracker.samples[ fpsTracker.index ]
+        else
+            fpsTracker.count = fpsTracker.count + 1
         end
+        
+        -- Add to sliding window
+        fpsTracker.samples[ fpsTracker.index ] = currentFPS
+        fpsTracker.sum = fpsTracker.sum + currentFPS
+
+        -- Shift the index
+        fpsTracker.index = ( fpsTracker.index % fpsTracker.maxSamples ) + 1
 
         -- Calculate smoothed average
-        local sum = 0
-        for _, fps in ipairs( fpsTracker.samples ) do
-            sum = sum + fps
-        end
-        fpsTracker.smoothedFPS = sum / #fpsTracker.samples
+        fpsTracker.smoothedFPS = fpsTracker.sum / fpsTracker.count
         fpsTracker.lastUpdate = now
     end
-
+    
     return fpsTracker.smoothedFPS
 end
 
@@ -110,7 +117,7 @@ end
 local movementData = {}
 
 local function startScreenMovement(frame)
-    movementData.origX, movementData.origY = select( 4, frame:GetPoint() )
+    movementData.origX, movementrigY = select( 4, frame:GetPoint() )
     frame:StartMoving()
     movementData.fromX, movementData.fromY = select( 4, frame:GetPoint() )
     frame.Moving = true
