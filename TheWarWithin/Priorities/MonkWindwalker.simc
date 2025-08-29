@@ -1,5 +1,6 @@
-## https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/monk_windwalker.simc
-## SimC: August 22 2025 - 65d756b
+## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/monk_windwalker.simc
+## SimulationCraft Commit Sync: 65d756b
+## Date: 2025-08-22
 
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
 ## [Hekili] Implemented in MonkWindwalker.lua
