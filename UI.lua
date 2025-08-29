@@ -63,7 +63,7 @@ local function updateSmoothedFPS()
         -- Add to sliding window
         fpsTracker.samples[#fpsTracker.samples + 1] = currentFPS
         if #fpsTracker.samples > fpsTracker.maxSamples then
-            table.remove( fpsTracker.samples, 1 )
+            remove( fpsTracker.samples, 1 )
         end
 
         -- Calculate smoothed average
