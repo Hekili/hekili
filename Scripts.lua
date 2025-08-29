@@ -1225,24 +1225,33 @@ end
 scripts.stripScript = stripScript
 
 
-function scripts:StoreValues( tbl, node, mod )
-    wipe( tbl )
+do
+    local ignore = {
+        min = 1,
+        max = 1
+    }
 
-    if type( node ) == 'string' then node = self.DB[ node ] end
-    if not node then return end
+    function scripts:StoreValues( tbl, node, mod )
+        wipe( tbl )
 
-    local elems
-    if mod then elems = node.ModElements[ mod ]
-    else elems = node.Elements end
+        if type( node ) == 'string' then node = self.DB[ node ] end
+        if not node then return end
 
-    if not elems then return end
+        local elems
+        if mod then elems = node.ModElements[ mod ]
+        else elems = node.Elements end
 
-    for k, v in pairs( elems ) do
-        local s, r = pcall( v )
+        if not elems then return end
 
-        if s then tbl[ k ] = r
-        elseif type( r ) == 'string' then tbl[ k ] = r:match( "lua:(%d+: .*)" ) or r end
-        if tbl[ k ] == nil then tbl[ k ] = 'nil' end
+        for k, v in pairs( elems ) do
+            if not ignore[ k ] then
+                local s, r = pcall( v )
+
+                if s then tbl[ k ] = r
+                elseif type( r ) == 'string' then tbl[ k ] = r:match( "lua:(%d+: .*)" ) or r end
+                if tbl[ k ] == nil then tbl[ k ] = 'nil' end
+            end
+        end
     end
 end
 
