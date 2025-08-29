@@ -2853,7 +2853,7 @@ return "Position" end,
                             hideSwipe = {
                                 type = "toggle",
                                 name = "Hide Cooldown Swipe",
-                                desc = "If checked, the radial cooldown swipe animation (darkening overlay) will be hidden on this display's icons.  This does not affect numeric cooldown text from addons like OmniCC.",
+                                desc = "If checked, the radial cooldown swipe animation (darkening overlay) will be hidden on this display's icons. This also removes numeric cooldown text on the icon.",
                                 width = 1.49,
                                 order = 1.17,
                             },
