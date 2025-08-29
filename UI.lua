@@ -48,11 +48,13 @@ local _
 
 -- FPS smoothing system for stable budget calculations
 local fpsTracker = {
-    samples         = {}, -- Sliding window of FPS samples
-    maxSamples      = 30, -- 30 samples for smoothing
-    smoothedFPS     = 60, -- Current smoothed FPS value
-    lastUpdate      = 0,  -- Last update time
-    updateInterval  = 0.1 -- Update every 100ms
+    samples         = {},  -- Sliding window of FPS samples
+    maxSamples      = 30,  -- 30 samples for smoothing
+    smoothedFPS     = 60,  -- Current smoothed FPS value
+    lastUpdate      = 0,   -- Last update time
+    updateInterval  = 0.1, -- Update every 100ms
+    index           = 1,   -- Ring tracker
+    count           = 0    -- Total samples
 }
 
 local function updateSmoothedFPS()
@@ -61,20 +63,22 @@ local function updateSmoothedFPS()
         local currentFPS = GetFramerate()
 
         -- Add to sliding window
-        fpsTracker.samples[#fpsTracker.samples + 1] = currentFPS
-        if #fpsTracker.samples > fpsTracker.maxSamples then
-            remove( fpsTracker.samples, 1 )
+        fpsTracker.samples[fpsTracker.index] = currentFPS
+        fpsTracker.index = (fpsTracker.index % fpsTracker.maxSamples) + 1
+
+        if fpsTracker.count < fpsTracker.maxSamples then
+            fpsTracker.count = fpsTracker.count + 1
         end
 
         -- Calculate smoothed average
         local sum = 0
-        for i = 1, #fpsTracker.samples do
+        for i = 1, fpsTracker.count do
             sum = sum + fpsTracker.samples[i]
         end
-        fpsTracker.smoothedFPS = sum / #fpsTracker.samples
+        fpsTracker.smoothedFPS = sum / fpsTracker.count
         fpsTracker.lastUpdate = now
     end
-
+    
     return fpsTracker.smoothedFPS
 end
 
