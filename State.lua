@@ -5000,14 +5000,12 @@ local mt_set_bonuses = {
             local heroSet = prefix:match( "^([%w_]+)_" .. state.hero_tree.current .. "$" )
             if heroSet then
                 heroSet = tierSetAliasMap[ heroSet ] or heroSet
-                local count = rawget( t, heroSet ) or 0
-                return count >= pieces and 1 or 0
+                return ( rawget( t, heroSet ) or 0 ) >= pieces and 1 or 0
             end
 
             -- Try as standard set bonus (no additional hero tree part)
             local standardSet = tierSetAliasMap[ prefix ] or prefix
-            local count = rawget( t, standardSet ) or 0
-            return count >= pieces and 1 or 0
+            return ( rawget( t, standardSet ) or 0 ) >= pieces and 1 or 0
         end
 
         -- Check if this is a basic set name that should be aliased first
@@ -5021,9 +5019,8 @@ local mt_set_bonuses = {
             return rawget( t, heroSet ) or 0
         end
 
-        -- Basic set name (no alias found, return raw count)
-        local count = rawget( t, k )
-        return count or 0
+        -- t[ k ] is nil or this metafunction would not have fired.
+        return 0
     end
 }
 ns.metatables.mt_set_bonuses = mt_set_bonuses
