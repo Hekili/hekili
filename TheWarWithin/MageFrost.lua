@@ -989,7 +989,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, _, _, _, targe
     end
 end)
 
--- Optional: Clean up old cast data periodically to prevent memory leaks
+--[[ Optional: Clean up old cast data periodically
 local function cleanupOldCastData()
     local now = GetTime()
     for targetGUID, data in pairs( flurryCastData ) do
@@ -1002,6 +1002,8 @@ end
 
 -- Clean up every 30 seconds
 C_Timer.NewTicker( 30, cleanupOldCastData )
+
+--]]
 
 spec:RegisterStateExpr( "brain_freeze_active", function ()
     return buff.brain_freeze.up -- frost_info.virtual_brain_freeze
