@@ -54,7 +54,8 @@ local fpsTracker = {
     lastUpdate      = 0,   -- Last update time
     updateInterval  = 0.1, -- Update every 100ms
     index           = 1,   -- Ring tracker
-    count           = 0    -- Total samples
+    count           = 0,   -- Total samples
+    sum             = 0    -- Sum of all samples
 }
 
 local function updateSmoothedFPS()
@@ -62,20 +63,22 @@ local function updateSmoothedFPS()
     if now - fpsTracker.lastUpdate >= fpsTracker.updateInterval then
         local currentFPS = GetFramerate()
 
-        -- Add to sliding window
-        fpsTracker.samples[fpsTracker.index] = currentFPS
-        fpsTracker.index = (fpsTracker.index % fpsTracker.maxSamples) + 1
-
-        if fpsTracker.count < fpsTracker.maxSamples then
+        -- If overwriting an old sample, subtract it first
+        if fpsTracker.count == fpsTracker.maxSamples then
+            fpsTracker.sum = fpsTracker.sum - fpsTracker.samples[fpsTracker.index]
+        else
             fpsTracker.count = fpsTracker.count + 1
         end
+        
+        -- Add to sliding window
+        fpsTracker.samples[fpsTracker.index] = currentFPS
+        fpsTracker.sum = fpsTracker.sum + currentFPS
+
+        -- Shift the index
+        fpsTracker.index = (fpsTracker.index % fpsTracker.maxSamples) + 1
 
         -- Calculate smoothed average
-        local sum = 0
-        for i = 1, fpsTracker.count do
-            sum = sum + fpsTracker.samples[i]
-        end
-        fpsTracker.smoothedFPS = sum / fpsTracker.count
+        fpsTracker.smoothedFPS = fpsTracker.sum / fpsTracker.count
         fpsTracker.lastUpdate = now
     end
     
@@ -114,7 +117,7 @@ end
 local movementData = {}
 
 local function startScreenMovement(frame)
-    movementData.origX, movementData.origY = select( 4, frame:GetPoint() )
+    movementData.origX, movementrigY = select( 4, frame:GetPoint() )
     frame:StartMoving()
     movementData.fromX, movementData.fromY = select( 4, frame:GetPoint() )
     frame.Moving = true
