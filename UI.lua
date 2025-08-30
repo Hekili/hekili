@@ -69,7 +69,7 @@ local function updateSmoothedFPS()
         else
             fpsTracker.count = fpsTracker.count + 1
         end
-        
+
         -- Add to sliding window
         fpsTracker.samples[ fpsTracker.index ] = currentFPS
         fpsTracker.sum = fpsTracker.sum + currentFPS
@@ -81,7 +81,7 @@ local function updateSmoothedFPS()
         fpsTracker.smoothedFPS = fpsTracker.sum / fpsTracker.count
         fpsTracker.lastUpdate = now
     end
-    
+
     return fpsTracker.smoothedFPS
 end
 
@@ -117,7 +117,7 @@ end
 local movementData = {}
 
 local function startScreenMovement(frame)
-    movementData.origX, movementrigY = select( 4, frame:GetPoint() )
+    movementData.origX,movementData.origY = select( 4, frame:GetPoint() )
     frame:StartMoving()
     movementData.fromX, movementData.fromY = select( 4, frame:GetPoint() )
     frame.Moving = true
