@@ -669,6 +669,7 @@ ns.TargetDummies = {
     [ 225983 ] = "Dungeoneer's Training Dummy",
     [ 225984 ] = "Training Dummy",
     [ 235830 ] = "Training Dummy",
+    [ 225985 ] = "Kelpfist",
 }
 
 

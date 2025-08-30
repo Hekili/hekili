@@ -1,19 +1,9 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/warlock_demonology.simc
-## SimulationCraft Commit Sync: e599542
-## Date: 2025-08-19
-
-## PW-1: https://www.raidbots.com/simbot/report/dvuXjHdsyi1DgtqqTAnJpi
-## PW-5: https://www.raidbots.com/simbot/report/b5kQDoKACzSrorhETW1oqN
-##  HAC: https://www.raidbots.com/simbot/report/sECK1EzH5oZjB8t3v2J9qd
+## SimulationCraft Commit Sync: 73eaae9
+## Date: 2025-08-28
 
 actions.precombat+=/fel_domination,if=time>0&!pet.alive&!buff.grimoire_of_sacrifice.up
 actions.precombat+=/summon_pet,if=!pet.alive&!buff.grimoire_of_sacrifice.up
-## actions.precombat+=/variable,name=first_tyrant_time,op=set,value=15
-## actions.precombat+=/variable,name=first_tyrant_time,op=add,value=action.grimoire_felguard.execute_time,if=talent.grimoire_felguard.enabled
-## actions.precombat+=/variable,name=first_tyrant_time,op=add,value=action.summon_vilefiend.execute_time,if=talent.summon_vilefiend.enabled
-## actions.precombat+=/variable,name=first_tyrant_time,op=add,value=gcd.max,if=talent.grimoire_felguard.enabled|talent.summon_vilefiend.enabled
-## actions.precombat+=/variable,name=first_tyrant_time,op=sub,value=action.summon_demonic_tyrant.execute_time+action.shadow_bolt.execute_time
-## actions.precombat+=/variable,name=first_tyrant_time,op=min,value=10
 ## actions.precombat+=/variable,name=in_opener,op=set,value=1
 actions.precombat+=/power_siphon,if=buff.wild_imps.stack>1
 actions.precombat+=/demonbolt,if=soul_shards.deficit>1&(boss&buff.demonic_core.down|!boss&buff.demonic_core.up)
@@ -21,35 +11,78 @@ actions.precombat+=/shadow_bolt
 
 ## Executed every time the actor is available.
 actions+=/axe_toss
-actions+=/potion,if=pet.demonic_tyrant.active
-actions+=/call_action_list,name=racials,if=pet.demonic_tyrant.active|boss&fight_remains<22,use_off_gcd=1
+actions+=/potion,if=buff.tyrant.up
+actions+=/call_action_list,name=racials,if=buff.tyrant.up|boss&fight_remains<22,use_off_gcd=1
 actions+=/call_action_list,name=items,use_off_gcd=1
-## [Hekili] Opener not needed in most recent testing.
-## actions+=/call_action_list,name=opener,if=time<variable.first_tyrant_time
 ## actions+=/invoke_external_buff,name=power_infusion,if=variable.imp_despawn&variable.imp_despawn<time+gcd.max*6+cast_time
-## [Hekili] Simplified logic.
-## actions+=/summon_demonic_tyrant,if=variable.imp_despawn&pet.dreadstalker.active&(!talent.summon_vilefiend|cooldown.summon_vilefiend.remains)&(!talent.grimoire_felguard|cooldown.grimoire_felguard.remains)&(variable.imp_despawn<time+gcd.max+cast_time|buff.wild_imps.stack>=9-2*prev_gcd.1.hand_of_guldan)
+
+## TYRANT LOGIC:
+
+## [Hekili] Split to make it clearer why Tyrant was cast.
+## actions+=/summon_demonic_tyrant,if=
+## 1 - (variable.imp_despawn&pet.vilefiend.active&pet.dreadstalker.active&(
+##     # Must unpack this for Felguard, Vilefiend, Dreadstalkers, Imps.
+## 1a  - variable.imp_despawn<time+gcd.max+cast_time
+## 1b  - buff.wild_imps.stack>=9-2*prev_gcd.1.hand_of_guldan))
+## 2 - (buff.grimoire_felguard.remains>cast_time&buff.grimoire_felguard.remains<action.hand_of_guldan.cast_time+cast_time+gcd.max)
+## 3 - (buff.dreadstalkers.remains>cast_time&(
+## 3a  - (buff.dreadstalkers.remains<action.hand_of_guldan.cast_time+cast_time+gcd.max)
+## 3b  - (variable.hog_after_ds&(time>10|buff.wild_imps.stack>=9-2*prev_gcd.1.hand_of_guldan))))
+
+# [Hekili] This essentially unpacks imp_despawn.
+actions+=/variable,name=vf_ds_condition,value=(!talent.summon_vilefiend|buff.vilefiend.remains>action.summon_demonic_tyrant.cast_time)&buff.dreadstalkers.remains>action.summon_demonic_tyrant.cast_time
+actions+=/variable,name=hog_after_ds,value=action.call_dreadstalkers.time_since>(action.ruination.time_since>?action.hand_of_guldan.time_since)
+## VF + DS + HoG and Felguard will expire.  Bypassed because there's a lighter Felguard condition below.
+## actions+=/summon_demonic_tyrant,if=variable.vf_ds_condition&variable.hog_after_ds&buff.grimoire_felguard.remains>cast_time&buff.grimoire_felguard.remains<action.hand_of_guldan.cast_time+cast_time+gcd.max
+# VF + DS + HoG and Vilefiend will expire.
+actions+=/summon_demonic_tyrant,if=variable.vf_ds_condition&variable.hog_after_ds&buff.vilefiend.remains<action.hand_of_guldan.cast_time+cast_time+gcd.max
+## VF + DS + HoG and Dreadstalkers will expire.  Bypassed because there's a lighter Dreadstalker condition below.
+## actions+=/summon_demonic_tyrant,if=variable.vf_ds_condition&variable.hog_after_ds&buff.dreadstalkers.remains<action.hand_of_guldan.cast_time+cast_time+gcd.max
+# VF + DS + HoG and 9+ Wild Imps.
+actions+=/summon_demonic_tyrant,if=variable.vf_ds_condition&variable.hog_after_ds&buff.wild_imps.stack_after_tyrant>8
+# VF + DS + HoG and Wild Imps will expire soon.
+actions+=/summon_demonic_tyrant,if=variable.vf_ds_condition&variable.hog_after_ds&buff.wild_imps.stack_after_tyrant_and_gcd<buff.wild_imps.stack_after_tyrant
+# Never let a Felguard expire.
 actions+=/summon_demonic_tyrant,if=buff.grimoire_felguard.remains>cast_time&buff.grimoire_felguard.remains<action.hand_of_guldan.cast_time+cast_time+gcd.max
-actions+=/summon_demonic_tyrant,if=buff.vilefiend.remains>cast_time&buff.vilefiend.remains<action.hand_of_guldan.cast_time+cast_time+gcd.max
+# Never let Dreadstalkers expire.
 actions+=/summon_demonic_tyrant,if=buff.dreadstalkers.remains>cast_time&buff.dreadstalkers.remains<action.hand_of_guldan.cast_time+cast_time+gcd.max
-# actions+=/summon_demonic_tyrant,if=action.hand_of_guldan.time_since<action.call_dreadstalkers.time_since&buff.dreadstalkers.remains>cast_time&(time>10|buff.wild_imps.stack>7-prev_gcd.1.hand_of_guldan)
-actions+=/grimoire_felguard,if=cooldown.summon_demonic_tyrant.remains<=15&cooldown.call_dreadstalkers.remains<10
-actions+=/summon_vilefiend,if=cooldown.summon_demonic_tyrant.remains>=25+cast_time|cooldown.summon_demonic_tyrant.remains<=13&cooldown.call_dreadstalkers.remains<10
-# actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains>=10|cooldown.summon_demonic_tyrant.remains<=10
+# DS + HoG and you have 9+ Wild Imps.
+actions+=/summon_demonic_tyrant,if=buff.dreadstalkers.remains>cast_time&variable.hog_after_ds&buff.wild_imps.stack_after_tyrant>8
+## END TYRANT LOGIC.
+
+actions+=/hand_of_guldan,if=soul_shard>=3&cooldown.summon_demonic_tyrant.remains_expected<10&buff.dreadstalkers.up
+# [Hekili] Use Ruination when ramping.
+actions+=/ruination,if=cooldown.summon_demonic_tyrant.remains_expected<10&buff.dreadstalkers.up
+actions+=/grimoire_felguard,if=(boss|fight_remains>10)&cooldown.summon_demonic_tyrant.remains<=15&cooldown.call_dreadstalkers.remains<10
+actions+=/summon_vilefiend,if=(boss|fight_remains>10)&cooldown.summon_demonic_tyrant.remains>=25+cast_time|cooldown.summon_demonic_tyrant.remains<=13&cooldown.call_dreadstalkers.remains<10
+## [Hekili] Disabled this line in favor of the others.
+## actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains>=10|cooldown.summon_demonic_tyrant.remains<=10
+# Align with Felguard.
 actions+=/call_dreadstalkers,if=buff.grimoire_felguard.up&buff.grimoire_felguard.remains<12+gcd.max+cast_time
+# Align with Vilefiend.
 actions+=/call_dreadstalkers,if=buff.vilefiend.up&buff.vilefiend.remains<12+gcd.max+cast_time
+# Use if it won't delay a Tyrant.
 actions+=/call_dreadstalkers,if=cooldown.summon_demonic_tyrant.remains>cooldown+gcd.max+action.summon_demonic_tyrant.cast_time
+# Use if it won't delay a Felguard or Vilefiend.
 actions+=/call_dreadstalkers,if=(!talent.grimoire_felguard|buff.grimoire_felguard.down&cooldown.grimoire_felguard.remains>cooldown-gcd.max-cast_time-action.summon_demonic_tyrant.cast_time)&(!talent.summon_vilefiend|buff.vilefiend.down>cooldown-gcd.max-cast_time-action.summon_demonic_tyrant.cast_time)
-actions+=/demonbolt,cycle_targets=1,if=buff.demonic_core.stack>=3-(talent.doom&debuff.doom.down)*2&soul_shard<=3&talent.doom
-actions+=/demonic_strength,if=pet.demonic_tyrant.active&active_enemies>1
+actions+=/demonbolt,cycle_targets=1,if=talent.doom&buff.demonic_core.up&soul_shard<=3
+actions+=/demonic_strength,if=buff.tyrant.up
 actions+=/bilescourge_bombers,if=active_enemies>1
 actions+=/hand_of_guldan,if=demonic_art&soul_shard>=3
-actions+=/variable,name=impl,op=set,value=buff.tyrant.down,if=active_enemies>1+(talent.sacrificed_souls.enabled)
-actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<6,if=active_enemies>2+(talent.sacrificed_souls.enabled)&active_enemies<5+(talent.sacrificed_souls.enabled)
-actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<8,if=active_enemies>4+(talent.sacrificed_souls.enabled)
-actions+=/implosion,if=cooldown.summon_demonic_tyrant.remains_expected>10&(active_enemies>3&set_bonus.tww2_4pc>0&buff.wild_imps.stack>7&buff.demonic_core.down&!prev_gcd.1.implosion|set_bonus.tww2_4pc=0&active_enemies>2&two_cast_imps>2&!prev_gcd.1.implosion&variable.impl)
+# [Hekili] Demonic Art
+actions+=/ruination,if=demonic_art
+## actions+=/variable,name=impl,op=set,value=buff.tyrant.down,if=active_enemies>1+(talent.sacrificed_souls.enabled)
+## actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<6,if=active_enemies>2+(talent.sacrificed_souls.enabled)&active_enemies<5+(talent.sacrificed_souls.enabled)
+## actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<8,if=active_enemies>4+(talent.sacrificed_souls.enabled)
+actions+=/variable,name=impl,op=set,value=buff.tyrant.remains<8&active_enemies>4+(talent.sacrificed_souls.enabled)|buff.tyrant.remains<6&active_enemies>2+(talent.sacrificed_souls.enabled)&active_enemies<5+(talent.sacrificed_souls.enabled)|buff.tyrant.down&active_enemies>1+(talent.sacrificed_souls.enabled)
+# Season 2 4pc
+actions+=/implosion,if=cooldown.summon_demonic_tyrant.remains_expected>10&active_enemies>3&set_bonus.tww2_4pc>0&buff.wild_imps.stack>7&!buff.demonic_core.up&!prev_gcd.1.implosion
+# No Season 2 4pc; check target counts.
+actions+=/implosion,if=cooldown.summon_demonic_tyrant.remains_expected>10&set_bonus.tww2_4pc=0&active_enemies>2&two_cast_imps>2&!prev_gcd.1.implosion&(buff.tyrant.down&active_enemies>1+talent.sacrificed_souls|buff.tyrant.remains<6&active_enemies>2+talent.sacrificed_souls&active_enemies<5+talent.sacrificed_souls|buff.tyrant.remains<8&active_enemies>4+talent.sacrificed_souls)
+# [Hekili] Bonus Implosion if you're not going to mess up a Tyrant and the math is mathing.
+actions+=/implosion,if=cooldown.summon_demonic_tyrant.remains_expected>10&buff.tyrant.remains<8&!prev_gcd.1.implosion&active_enemies*buff.wild_imps.stack>49
 actions+=/ruination
-actions+=/demonbolt,cycle_targets=1,if=soul_shard<4&buff.demonic_core.stack>=3&talent.doom
+actions+=/demonbolt,cycle_targets=1,if=talent.doom&soul_shard<4&buff.demonic_core.stack>=3
 actions+=/demonbolt,if=soul_shard<4&buff.demonic_core.stack>=3&!talent.doom
 actions+=/power_siphon,if=!buff.demonic_core.up
 actions+=/infernal_bolt,if=soul_shard<3
@@ -71,47 +104,21 @@ actions.items+=/variable,name=trinket_1_sync,op=setif,value=1,value_else=0.5,con
 actions.items+=/variable,name=trinket_2_sync,op=setif,value=1,value_else=0.5,condition=variable.trinket_2_buffs&(trinket.2.cooldown.duration%%cooldown.summon_demonic_tyrant.duration=0|cooldown.summon_demonic_tyrant.duration%%trinket.2.cooldown.duration=0)
 actions.items+=/variable,name=damage_trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&!variable.trinket_2_buffs&trinket.2.ilvl>trinket.1.ilvl
 actions.items+=/variable,name=trinket_priority,op=setif,value=2,value_else=1,condition=!variable.trinket_1_buffs&variable.trinket_2_buffs|variable.trinket_2_buffs&((trinket.2.cooldown.duration%variable.trinket_2_buff_duration)*(1.5+trinket.2.has_buff.intellect)*(variable.trinket_2_sync))>(((trinket.1.cooldown.duration%variable.trinket_1_buff_duration)*(1.5+trinket.1.has_buff.intellect)*(variable.trinket_1_sync))*(1+((trinket.1.ilvl-trinket.2.ilvl)%100)))
-actions.items+=/use_item,use_off_gcd=1,slot=trinket1,if=variable.trinket_1_buffs&!variable.trinket_1_manual&(!pet.demonic_tyrant.active&trinket.1.cast_time>0|!trinket.1.cast_time>0)&(pet.demonic_tyrant.active|!talent.summon_demonic_tyrant|variable.trinket_priority=2&cooldown.summon_demonic_tyrant.remains>20&!pet.demonic_tyrant.active&trinket.2.cooldown.remains<cooldown.summon_demonic_tyrant.remains+5)&(variable.trinket_2_exclude|!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1&!variable.trinket_2_manual)|variable.trinket_1_buff_duration>=fight_remains
-actions.items+=/use_item,use_off_gcd=1,slot=trinket2,if=variable.trinket_2_buffs&!variable.trinket_2_manual&(!pet.demonic_tyrant.active&trinket.2.cast_time>0|!trinket.2.cast_time>0)&(pet.demonic_tyrant.active|!talent.summon_demonic_tyrant|variable.trinket_priority=1&cooldown.summon_demonic_tyrant.remains>20&!pet.demonic_tyrant.active&trinket.1.cooldown.remains<cooldown.summon_demonic_tyrant.remains+5)&(variable.trinket_1_exclude|!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2&!variable.trinket_1_manual)|variable.trinket_2_buff_duration>=fight_remains
-actions.items+=/use_item,use_off_gcd=1,slot=trinket1,if=!variable.trinket_1_buffs&!variable.trinket_1_manual&((variable.damage_trinket_priority=1|trinket.2.cooldown.remains)&(trinket.1.cast_time>0&!pet.demonic_tyrant.active|!trinket.1.cast_time>0)|(time<20&variable.trinket_2_buffs)|cooldown.summon_demonic_tyrant.remains_expected>20)
-actions.items+=/use_item,use_off_gcd=1,slot=trinket2,if=!variable.trinket_2_buffs&!variable.trinket_2_manual&((variable.damage_trinket_priority=2|trinket.1.cooldown.remains)&(trinket.2.cast_time>0&!pet.demonic_tyrant.active|!trinket.2.cast_time>0)|(time<20&variable.trinket_1_buffs)|cooldown.summon_demonic_tyrant.remains_expected>20)
-actions.items+=/use_item,use_off_gcd=1,name=spymasters_web,if=pet.demonic_tyrant.active&boss&fight_remains<=80&buff.spymasters_report.stack>=30&(!variable.trinket_1_buffs&trinket.2.is.spymasters_web|!variable.trinket_2_buffs&trinket.1.is.spymasters_web)|boss&fight_remains<=20&(trinket.1.cooldown.remains&trinket.2.is.spymasters_web|trinket.2.cooldown.remains&trinket.1.is.spymasters_web|!variable.trinket_1_buffs|!variable.trinket_2_buffs)
-actions.items+=/use_item,use_off_gcd=1,name=imperfect_ascendancy_serum,if=pet.demonic_tyrant.active|boss&fight_remains<=30
+actions.items+=/use_item,use_off_gcd=1,slot=trinket1,if=variable.trinket_1_buffs&!variable.trinket_1_manual&(!buff.tyrant.up&trinket.1.cast_time>0|!trinket.1.cast_time>0)&(buff.tyrant.up|!talent.summon_demonic_tyrant|variable.trinket_priority=2&cooldown.summon_demonic_tyrant.remains>20&!buff.tyrant.up&trinket.2.cooldown.remains<cooldown.summon_demonic_tyrant.remains+5)&(variable.trinket_2_exclude|!trinket.2.has_cooldown|trinket.2.cooldown.remains|variable.trinket_priority=1&!variable.trinket_2_manual)|variable.trinket_1_buff_duration>=fight_remains
+actions.items+=/use_item,use_off_gcd=1,slot=trinket2,if=variable.trinket_2_buffs&!variable.trinket_2_manual&(!buff.tyrant.up&trinket.2.cast_time>0|!trinket.2.cast_time>0)&(buff.tyrant.up|!talent.summon_demonic_tyrant|variable.trinket_priority=1&cooldown.summon_demonic_tyrant.remains>20&!buff.tyrant.up&trinket.1.cooldown.remains<cooldown.summon_demonic_tyrant.remains+5)&(variable.trinket_1_exclude|!trinket.1.has_cooldown|trinket.1.cooldown.remains|variable.trinket_priority=2&!variable.trinket_1_manual)|variable.trinket_2_buff_duration>=fight_remains
+actions.items+=/use_item,use_off_gcd=1,slot=trinket1,if=!variable.trinket_1_buffs&!variable.trinket_1_manual&((variable.damage_trinket_priority=1|trinket.2.cooldown.remains)&(trinket.1.cast_time>0&!buff.tyrant.up|!trinket.1.cast_time>0)|(time<20&variable.trinket_2_buffs)|cooldown.summon_demonic_tyrant.remains_expected>20)
+actions.items+=/use_item,use_off_gcd=1,slot=trinket2,if=!variable.trinket_2_buffs&!variable.trinket_2_manual&((variable.damage_trinket_priority=2|trinket.1.cooldown.remains)&(trinket.2.cast_time>0&!buff.tyrant.up|!trinket.2.cast_time>0)|(time<20&variable.trinket_1_buffs)|cooldown.summon_demonic_tyrant.remains_expected>20)
+actions.items+=/use_item,use_off_gcd=1,name=spymasters_web,if=buff.tyrant.up&boss&fight_remains<=80&buff.spymasters_report.stack>=30&(!variable.trinket_1_buffs&trinket.2.is.spymasters_web|!variable.trinket_2_buffs&trinket.1.is.spymasters_web)|boss&fight_remains<=20&(trinket.1.cooldown.remains&trinket.2.is.spymasters_web|trinket.2.cooldown.remains&trinket.1.is.spymasters_web|!variable.trinket_1_buffs|!variable.trinket_2_buffs)
+actions.items+=/use_item,use_off_gcd=1,name=imperfect_ascendancy_serum,if=buff.tyrant.up|boss&fight_remains<=30
 actions.items+=/use_item,name=mirror_of_fractured_tomorrows,if=trinket.1.is.mirror_of_fractured_tomorrows&variable.trinket_priority=2|trinket.2.is.mirror_of_fractured_tomorrows&variable.trinket_priority=1
 actions.items+=/use_item,slot=trinket1,if=!variable.trinket_1_buffs&(variable.damage_trinket_priority=1|trinket.2.cooldown.remains)
 actions.items+=/use_item,slot=trinket2,if=!variable.trinket_2_buffs&(variable.damage_trinket_priority=2|trinket.1.cooldown.remains)
 actions.items+=/use_item,use_off_gcd=1,slot=main_hand,name=!neural_synapse_enhancer
-actions.items+=/use_item,use_off_gcd=1,slot=main_hand,name=neural_synapse_enhancer,if=(pet.demonic_tyrant.active|boss&fight_remains<=15)&!variable.trinket_1_buffs&!variable.trinket_2_buffs
-actions.items+=/use_item,use_off_gcd=1,slot=main_hand,name=neural_synapse_enhancer,if=(pet.demonic_tyrant.active|boss&fight_remains<=15|trinket.2.cooldown.remains>cooldown.summon_demonic_tyrant.remains)&variable.trinket_2_buffs
-actions.items+=/use_item,use_off_gcd=1,slot=main_hand,name=neural_synapse_enhancer,if=(pet.demonic_tyrant.active|boss&fight_remains<=15|trinket.1.cooldown.remains>cooldown.summon_demonic_tyrant.remains)&variable.trinket_1_buffs
-
-## [Hekili] Not used.
-## actions.opener=summon_demonic_tyrant,if=buff.wild_imps.stack>=9&buff.dreadstalkers.remains&(buff.vilefiend.up|!talent.summon_vilefiend)&(buff.grimoire_felguard.up|cooldown.grimoire_felguard.remains>30|!talent.grimoire_felguard)
-## actions.opener+=/grimoire_felguard,if=soul_shard>=5-talent.fel_invocation
-## actions.opener+=/summon_vilefiend,if=soul_shard=5
-## actions.opener+=/shadow_bolt,if=soul_shard<5&cooldown.call_dreadstalkers.up
-## actions.opener+=/call_dreadstalkers,if=soul_shard=5
-## actions.opener+=/Ruination
-## actions.opener+=/hand_of_guldan,if=soul_shard>=3&buff.infernal_bolt.up
-## actions.opener+=/infernal_bolt
-## actions.opener+=/shadow_bolt,if=soul_shard<5&buff.dreadstalkers.remains&pet.wild_imp.active<3
-## actions.opener+=/hand_of_guldan,if=soul_shard>=3&pet.wild_imp.active<10
-## actions.opener+=/demonbolt,if=buff.demonic_core.up&buff.dreadstalkers.remains&soul_shard<4
-## actions.opener+=/hand_of_guldan,if=variable.first_tyrant_time<gcd.max+action.summon_demonic_tyrant.cast_time
-## actions.opener+=/shadow_bolt,if=buff.dreadstalkers.remains
+actions.items+=/use_item,use_off_gcd=1,slot=main_hand,name=neural_synapse_enhancer,if=(buff.tyrant.up|boss&fight_remains<=15)&!variable.trinket_1_buffs&!variable.trinket_2_buffs
+actions.items+=/use_item,use_off_gcd=1,slot=main_hand,name=neural_synapse_enhancer,if=(buff.tyrant.up|boss&fight_remains<=15|trinket.2.cooldown.remains>cooldown.summon_demonic_tyrant.remains)&variable.trinket_2_buffs
+actions.items+=/use_item,use_off_gcd=1,slot=main_hand,name=neural_synapse_enhancer,if=(buff.tyrant.up|boss&fight_remains<=15|trinket.1.cooldown.remains>cooldown.summon_demonic_tyrant.remains)&variable.trinket_1_buffs
 
 actions.racials=berserking,use_off_gcd=1
 actions.racials+=/blood_fury
 actions.racials+=/fireblood
 actions.racials+=/ancestral_call
-
-## [Hekili] These aren't needed.
-## actions.variables=variable,name=next_tyrant_cd,op=set,value=cooldown.summon_demonic_tyrant.remains_expected
-## actions.variables+=/variable,name=in_opener,op=set,value=0,if=pet.demonic_tyrant.active
-## [Hekili] Simplified Tyrant conditions following simc testing on 2025-08-18.
-## actions.variables+=/variable,name=imp_despawn,op=set,value=buff.dreadstalkers.remains+time,if=prev_gcd.1.hand_of_guldan&buff.dreadstalkers.up&cooldown.summon_demonic_tyrant.remains<13&variable.imp_despawn=0
-## actions.variables+=/variable,name=imp_despawn,op=set,value=variable.imp_despawn>?buff.vilefiend.remains+time,if=variable.imp_despawn&buff.vilefiend.up
-## actions.variables+=/variable,name=imp_despawn,op=set,value=variable.imp_despawn>?buff.grimoire_felguard.remains+time,if=variable.imp_despawn&buff.grimoire_felguard.up
-## actions.variables+=/variable,name=imp_despawn,op=set,value=0,if=buff.tyrant.up
-## [Hekili] Not used.
-## actions.variables+=/variable,name=pool_cores_for_tyrant,op=set,value=cooldown.summon_demonic_tyrant.remains<20&variable.next_tyrant_cd<20&(buff.demonic_core.stack<=2|!buff.demonic_core.up)&cooldown.summon_vilefiend.remains<gcd.max*8&cooldown.call_dreadstalkers.remains<gcd.max*8
