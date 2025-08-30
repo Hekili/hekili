@@ -6,8 +6,8 @@ actions.precombat+=/arcane_intellect
 actions.precombat+=/mirror_image
 ## [Hekili] Create spec option?
 # Option to sim offsetting your primary burst into the Arcane Soul window as Sunfury.
-actions.precombat+=/variable,name=soul_burst,default=0,op=reset
-actions.precombat+=/variable,name=soul_cd,op=set,value=1,if=set_bonus.thewarwithin_season_3_4pc>0&talent.spellfire_spheres&talent.resonance&!talent.magis_spark&(active_enemies>=3)&variable.soul_burst
+actions.precombat+=/variable,name=soul_burst,op=set,value=0
+actions.precombat+=/variable,name=soul_cd,op=set,value=1,value_else=0,if=set_bonus.thewarwithin_season_3_4pc>0&talent.spellfire_spheres&talent.resonance&!talent.magis_spark&(active_enemies>=3)&variable.soul_burst
 actions.precombat+=/evocation,if=talent.evocation&!variable.soul_cd
 actions.precombat+=/arcane_surge,if=variable.soul_cd
 
@@ -38,8 +38,8 @@ actions+=/variable,name=aoe_target_count,op=set,value=9,if=!talent.arcing_cleave
 actions+=/variable,name=aoe_list,default=0,op=reset
 actions+=/variable,name=opener,op=set,value=debuff.touch_of_the_magi.up|action.touch_of_the_magi.time_since<time|cooldown.touch_of_the_magi.remains>=2*gcd.max
 ## [Hekili] The cd_opener lists is for opening CDs, but not specifically start of combat.  Sims consistently exit cd_opener with TOTM on CD.
-actions+=/call_action_list,name=cd_opener,strict_if=!variable.soul_cd,if=!variable.soul_cd&(cooldown.touch_of_the_magi.remains<2*gcd.max|cooldown.evocation.remains<2*gcd.max|cooldown.arcane_surge.remains<2*gcd.max)
-actions+=/call_action_list,name=cd_opener_soul,strict_if=variable.soul_cd,if=variable.soul_cd&(cooldown.touch_of_the_magi.remains<2*gcd.max|cooldown.evocation.remains<2*gcd.max|cooldown.arcane_surge.remains<2*gcd.max)
+actions+=/call_action_list,name=cd_opener,strict_if=variable.soul_cd=0,if=!variable.soul_cd&(cooldown.touch_of_the_magi.remains<2*gcd.max|cooldown.evocation.remains<2*gcd.max|cooldown.arcane_surge.remains<2*gcd.max)
+actions+=/call_action_list,name=cd_opener_soul,strict_if=variable.soul_cd=1,if=variable.soul_cd&(cooldown.touch_of_the_magi.remains<2*gcd.max|cooldown.evocation.remains<2*gcd.max|cooldown.arcane_surge.remains<2*gcd.max)
 actions+=/call_action_list,name=sunfury,strict=1,if=talent.spellfire_spheres
 actions+=/call_action_list,name=spellslinger,strict=1,if=!talent.spellfire_spheres
 actions+=/arcane_barrage
