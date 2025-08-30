@@ -18,6 +18,7 @@ actions+=/kick
 actions+=/variable,name=ambush_condition,value=(talent.hidden_opportunity|combo_points.deficit>=2+talent.improved_ambush+buff.broadside.up)&energy>=50
 # Use finishers if at -1 from max combo points, or -2 in Stealth with Crackshot. With the hero trees, Hidden Opportunity builds also finish at -2 if Audacity or Opportunity is active.
 actions+=/variable,name=finish_condition,value=combo_points>=cp_max_spend-1-(stealthed.all&talent.crackshot|(hero_tree.fatebound|hero_tree.trickster)&talent.hidden_opportunity&(buff.audacity.up|buff.opportunity.up))
+actions+=/variable,name=buffs_above_pandemic,value=(buff.broadside.remains>39)+(buff.ruthless_precision.remains>39)+(buff.true_bearing.remains>39)+(buff.grand_melee.remains>39)+(buff.buried_treasure.remains>39)+(buff.skull_and_crossbones.remains>39)
 actions+=/call_action_list,name=cds
 # High priority stealth list, will fall through if no conditions are met.
 actions+=/call_action_list,name=stealth,strict=1,if=stealthed.all
