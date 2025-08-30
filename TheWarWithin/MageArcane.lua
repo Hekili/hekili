@@ -767,6 +767,10 @@ local intuition_blp_last_er_ae_timestamp = 0
 local intuition_blp_has_clearcasting = false
 local intuition_blp_is_harmony_intuition = false
 
+-- Intuition consumption tracking for charge flicker fix
+local intuition_just_consumed = false
+local intuition_consumed_timestamp = 0
+
 -- Spell IDs that can trigger BLP stack increment
 local intuitionBLPSpellIDs = {
     [30451] = true,   -- arcane_blast
@@ -829,6 +833,9 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
                 elseif subtype == "SPELL_AURA_REMOVED" then
                     if not intuition_blp_is_harmony_intuition then
                         intuitionBLPStacks = 0 -- Reset BLP on normal intuition consumption
+                        -- Track consumption for charge flicker fix
+                        intuition_just_consumed = true
+                        intuition_consumed_timestamp = now
                     end
                     intuition_blp_is_harmony_intuition = false
                 end
@@ -848,6 +855,9 @@ end, false )
 
 spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     totm_casts = 0
+    -- Clear intuition consumption tracking
+    intuition_just_consumed = false
+    intuition_consumed_timestamp = 0
 end )
 
 -- Reset BLP tracking on encounter/M+ start
@@ -1315,6 +1325,18 @@ spec:RegisterHook( "reset_precast", function ()
     end
 
     if arcane_charges.current > 0 then applyBuff( "arcane_charge", nil, arcane_charges.current ) end
+
+    -- Fix charge flicker after Intuition consumption
+    if talent.intuition.enabled and intuition_just_consumed then
+        local time_since_consumption = query_time - intuition_consumed_timestamp
+        -- If within the flicker window (0.5 seconds), fake having 4 charges
+        if time_since_consumption < gcd.max and arcane_charges.current < 4 then
+            applyBuff( "arcane_charge", nil, 4 )
+        elseif time_since_consumption >= gcd.max then
+            -- Clear the flag after the flicker period
+            intuition_just_consumed = false
+        end
+    end
 
     if buff.arcane_surge.up and set_bonus.tier30_4pc > 0 then
         state:QueueAuraEvent( "arcane_overload", TriggerArcaneOverloadT30, buff.arcane_surge.expires, "AURA_EXPIRATION" )
