@@ -21,7 +21,7 @@ local abs, ceil, floor, max, sqrt = math.abs, math.ceil, math.floor, math.max, m
 -- local GetSpellCastCount = C_Spell.GetSpellCastCount
 -- local GetSpellInfo = C_Spell.GetSpellInfo
 -- local GetSpellInfo = ns.GetUnpackedSpellInfo
--- local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 -- local IsSpellOverlayed = C_SpellActivationOverlay.IsSpellOverlayed
 local IsSpellKnownOrOverridesKnown = C_SpellBook.IsSpellInSpellBook
@@ -761,25 +761,102 @@ end )
 local totm_casts = 0
 local clearcasting_consumed = 0
 
+-- Intuition Bad Luck Protection tracking
+local intuitionBLPStacks = 0
+local intuition_blp_last_er_ae_timestamp = 0
+local intuition_blp_has_clearcasting = false
+local intuition_blp_is_harmony_intuition = false
+
+-- Spell IDs that can trigger BLP stack increment
+local intuitionBLPSpellIDs = {
+    [30451] = true,   -- arcane_blast
+    [5143] = true,    -- arcane_missiles
+    [44425] = true,   -- arcane_barrage
+    [1449] = true,    -- arcane_explosion
+    [365350] = true,  -- arcane_surge
+}
+
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
+        local now = GetTime()
+
         if subtype == "SPELL_CAST_SUCCESS" and spellID == 321507 then
             totm_casts = ( totm_casts + 1 ) % 2
 
         elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) and spellID == 458411 then
             -- Handle Arcane Orb projectile.
             local travel = ( UnitExists( "target" ) and select( 2, RC:GetRange( "target" ) ) or 40 ) / 30
-            state:QueueEvent( "arcane_orb", GetTime(), 0.05 + travel, "PROJECTILE_IMPACT", UnitGUID( "target" ), true )
+            state:QueueEvent( "arcane_orb", now, 0.05 + travel, "PROJECTILE_IMPACT", UnitGUID( "target" ), true )
 
         elseif subtype == "SPELL_AURA_REMOVED" and ( spellID == 276743 or spellID == 263725 ) then
             -- Clearcasting was consumed.
-            clearcasting_consumed = GetTime()
+            clearcasting_consumed = now
+
+        -- Intuition BLP tracking
+        elseif state.talent.intuition.enabled then
+            local has_intuition_buff = GetPlayerAuraBySpellID( 1223797 ) -- intuition buff
+
+            -- Handle BLP stack increments (only when Intuition buff is not active)
+            if not has_intuition_buff then
+                if subtype == "SPELL_CAST_SUCCESS" and intuitionBLPSpellIDs[ spellID ] then
+                    intuitionBLPStacks = intuitionBLPStacks + 1
+
+                elseif subtype == "SPELL_ENERGIZE" and spellID == 153626 then -- arcane_orb
+                    intuitionBLPStacks = intuitionBLPStacks + 1
+
+                elseif subtype == "SPELL_CAST_SUCCESS" and spellID == 1449 and intuition_blp_has_clearcasting then -- echoed arcane explosion
+                    C_Timer.After( 0.5, function()
+                        if not GetPlayerAuraBySpellID( 1223797 ) then
+                            intuitionBLPStacks = intuitionBLPStacks + 1
+                        end
+                    end )
+
+                elseif subtype == "SPELL_DAMAGE" and spellID == 461508 then -- energy reconstitution arcane explosion
+                    if now - intuition_blp_last_er_ae_timestamp > 0.1 then
+                        intuition_blp_last_er_ae_timestamp = now
+                        intuitionBLPStacks = intuitionBLPStacks + 1
+                    end
+                end
+            end
+
+            -- Handle Intuition proc consumption and BLP reset
+            if spellID == 1223797 then -- intuition
+                if subtype == "SPELL_AURA_APPLIED" then
+                    local harmony_aura = GetPlayerAuraBySpellID( 384455 ) -- arcane_harmony
+                    local harmony_stacks = harmony_aura and harmony_aura.applications or 0
+                    intuition_blp_is_harmony_intuition = ( harmony_stacks == 20 ) and state.set_bonus.tww2 >= 4 and state.hero_tree.spellslinger
+
+                elseif subtype == "SPELL_AURA_REMOVED" then
+                    if not intuition_blp_is_harmony_intuition then
+                        intuitionBLPStacks = 0 -- Reset BLP on normal intuition consumption
+                    end
+                    intuition_blp_is_harmony_intuition = false
+                end
+            end
+
+            -- Track clearcasting for echoed arcane explosion detection
+            if spellID == 263725 or spellID == 276743 then -- clearcasting
+                if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" then
+                    intuition_blp_has_clearcasting = true
+                elseif subtype == "SPELL_AURA_REMOVED" then
+                    intuition_blp_has_clearcasting = false
+                end
+            end
         end
     end
 end, false )
 
 spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     totm_casts = 0
+end )
+
+-- Reset BLP tracking on encounter/M+ start
+spec:RegisterEvent( "ENCOUNTER_START", function ()
+        intuitionBLPStacks = 0
+end )
+
+spec:RegisterEvent( "CHALLENGE_MODE_START", function ()
+    intuitionBLPStacks = 0
 end )
 
 -- actions.precombat+=/variable,name=conserve_mana,op=set,value=0
@@ -1042,6 +1119,19 @@ spec:RegisterHook( "runHandler", function( action )
         local ability = class.abilities[ action ]
         if ability and ability.cast > 0 and ability.cast < 10 then removeStack( "ice_floes" ) end
     end
+
+    -- Virtually increment BLP for intuition tracking
+    if talent.intuition.enabled and not buff.intuition.up then
+        local spellID = class.abilities[ action ] and class.abilities[ action ].id
+        if spellID and intuitionBLPSpellIDs[ spellID ] or action == "arcane_orb" then
+            if intuition_blp_stacks == 10 then
+                applyBuff( "intuition" )
+                intuition_blp_stacks = 0
+            else
+                intuition_blp_stacks = intuition_blp_stacks + 1
+            end
+        end
+    end
 end )
 
 spec:RegisterStateTable( "incanters_flow", {
@@ -1199,6 +1289,10 @@ spec:RegisterStateExpr( "full_reduction", function ()
     return action.shifting_power.cdr
 end )
 
+spec:RegisterStateExpr( "intuition_blp_stacks", function ()
+    return talent.intuition.enabled and intuitionBLPStacks or 0
+end )
+
 local NetherMunitions = setfenv( function()
     applyDebuff( "target", "nether_munitions" )
     active_dot.nether_munitions = true_active_enemies
@@ -1232,6 +1326,12 @@ spec:RegisterHook( "reset_precast", function ()
 
     if talent.nether_munitions.enabled and debuff.touch_of_the_magi.up then
         state:QueueAuraExpiration( "touch_of_the_magi", NetherMunitions, debuff.touch_of_the_magi.expires )
+    end
+
+    -- Initialize BLP tracking state for clearcasting detection and reset virtual counter
+    if talent.intuition.enabled then
+        intuition_blp_has_clearcasting = buff.clearcasting.up
+        intuition_blp_stacks = nil -- Reset to sync with real CLEU variable
     end
 end )
 
@@ -1437,7 +1537,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        usable = function () return not settings.check_explosion_range or target.maxR < 10, "target out of range" end,
+        usable = function () if state.spec.arcane then return not settings.check_explosion_range or target.maxR < 10, "target out of range" end end,
         handler = function ()
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
             else
