@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/mage_frost.simc
 ## SimulationCraft Commit Sync: e8d92c5
-## Date: 2025-08-29
+## Date: 2025-08-30
 
 ## [Syrif] - Replaced many references to prev.1.spell_name with action.spell_name.in_flight, re: Flurry
 ## This is an addon-specific tweak that improves recovery, as they are synonymous in a sim iteration but not real gameplay
@@ -12,6 +12,8 @@ actions.precombat+=/use_item,name=treacherous_transmitter
 actions.precombat+=/use_item,name=ingenious_mana_battery
 actions.precombat+=/blizzard,if=active_enemies>=3
 actions.precombat+=/frostbolt,if=active_enemies<=2
+## [Syrif] - SimC treats frostbolt/frostfire bolt as a combined action in this case, so we need our own FF entry here to match 1:1 with sim opener
+actions.precombat+=/frostfire_bolt,if=active_enemies<=2
 
 actions+=/counterspell
 actions+=/call_action_list,name=cds
