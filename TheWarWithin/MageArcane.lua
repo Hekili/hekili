@@ -824,7 +824,7 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
                 if subtype == "SPELL_AURA_APPLIED" then
                     local harmony_aura = GetPlayerAuraBySpellID( 384455 ) -- arcane_harmony
                     local harmony_stacks = harmony_aura and harmony_aura.applications or 0
-                    intuition_blp_is_harmony_intuition = ( harmony_stacks == 20 ) and state.set_bonus.tww2 >= 4 and state.hero_tree.spellslinger
+                    intuition_blp_is_harmony_intuition = ( harmony_stacks == 20 ) and state.set_bonus.tww3_spellslinger >= 4 or false
 
                 elseif subtype == "SPELL_AURA_REMOVED" then
                     if not intuition_blp_is_harmony_intuition then
@@ -1123,7 +1123,7 @@ spec:RegisterHook( "runHandler", function( action )
     -- Virtually increment BLP for intuition tracking
     if talent.intuition.enabled and not buff.intuition.up then
         local spellID = class.abilities[ action ] and class.abilities[ action ].id
-        if spellID and intuitionBLPSpellIDs[ spellID ] or action == "arcane_orb" then
+        if ( spellID and intuitionBLPSpellIDs[ spellID ] or action == "arcane_orb" ) and buff.intuition.down then
             if intuition_blp_stacks == 10 then
                 applyBuff( "intuition" )
                 intuition_blp_stacks = 0
@@ -1302,6 +1302,14 @@ spec:RegisterHook( "reset_precast", function ()
    --[[ if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
     else removeBuff( "rune_of_power" ) end --]]
 
+        -- Initialize BLP tracking state for clearcasting detection and reset virtual counter
+    if talent.intuition.enabled then
+        intuition_blp_has_clearcasting = buff.clearcasting.up
+        intuition_blp_stacks = nil -- Reset to sync with real CLEU variable
+        if buff.intuition.up then intuition_blp_stacks = 0 end
+        if Hekili.ActiveDebug then Hekili:Debug( strformat( "Intuition Bad Luck protection: %s of 10 unlucky casts. Next cast will grant buff: %s", intuitionBLPStacks, ( intuitionBLPStacks == 10 and "Yes" or "No" ) ) ) end
+    end
+
     if buff.casting.up and buff.casting.v1 == 5143 and abs( action.arcane_missiles.lastCast - clearcasting_consumed ) < 0.15 then
         applyBuff( "clearcasting_channel", buff.casting.remains )
     end
@@ -1328,11 +1336,6 @@ spec:RegisterHook( "reset_precast", function ()
         state:QueueAuraExpiration( "touch_of_the_magi", NetherMunitions, debuff.touch_of_the_magi.expires )
     end
 
-    -- Initialize BLP tracking state for clearcasting detection and reset virtual counter
-    if talent.intuition.enabled then
-        intuition_blp_has_clearcasting = buff.clearcasting.up
-        intuition_blp_stacks = nil -- Reset to sync with real CLEU variable
-    end
 end )
 
 -- Abilities
