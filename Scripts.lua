@@ -1303,6 +1303,7 @@ local newModifiers = {
     moving = 'bool',
     only_cwc = 'bool',
     strict = 'bool',
+    strict_if = 'bool',
     target_if = 'bool',
     use_off_gcd = 'bool',
     use_while_casting = 'bool',
@@ -1319,7 +1320,6 @@ local newModifiers = {
     sec = 'raw',
     value = 'raw',
     value_else = 'raw',
-    strict_if = 'raw',
 
     sync = 'string', -- should be an ability's name.
     action_name = 'string',
