@@ -883,15 +883,7 @@ spec:RegisterHook( "reset_precast", function( amt, resource )
             end
         end
 
-
     end
-
-
-
-
-
-    -- if prev_gcd[1].coup_de_grace then removeBuff( "coup_de_grace" ); removeBuff( "escalating_blade" ) end
-    -- if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ); removeBuff( "escalating_blade" ) end
 
 end )
 

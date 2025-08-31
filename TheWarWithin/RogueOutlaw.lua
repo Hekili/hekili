@@ -963,7 +963,6 @@ spec:RegisterHook( "reset_precast", function()
             end
         end
 
-
     end
 
     -- Debugging for Roll the Bones
