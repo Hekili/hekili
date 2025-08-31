@@ -768,6 +768,11 @@ local intuitionBLPHasClearcasting = false
 local intuitionBLPIsHarmonyIntuition = false
 local hasIntuitionBuff = false
 
+local function delayedIntuitionBLPStack()
+    if hasIntuitionBuff then return end
+    intuitionBLPStacks = intuitionBLPStacks + 1
+end
+
 -- Intuition consumption tracking for charge flicker fix
 local intuition_just_consumed = false
 local intuition_consumed_timestamp = 0
@@ -783,15 +788,13 @@ local intuitionBLPSpellIDs = {
 
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
-
         if subtype == "SPELL_CAST_SUCCESS" and spellID == 321507 then
             totm_casts = ( totm_casts + 1 ) % 2
 
         elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) and spellID == 458411 then
             -- Handle Arcane Orb projectile.
-            local now = GetTime()
             local travel = ( UnitExists( "target" ) and select( 2, RC:GetRange( "target" ) ) or 40 ) / 30
-            state:QueueEvent( "arcane_orb", now, 0.05 + travel, "PROJECTILE_IMPACT", UnitGUID( "target" ), true )
+            state:QueueEvent( "arcane_orb", GetTime(), 0.05 + travel, "PROJECTILE_IMPACT", UnitGUID( "target" ), true )
 
         elseif subtype == "SPELL_AURA_REMOVED" and ( spellID == 276743 or spellID == 263725 ) then
             -- Clearcasting was consumed.
@@ -808,11 +811,7 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
                     intuitionBLPStacks = intuitionBLPStacks + 1
 
                 elseif subtype == "SPELL_CAST_SUCCESS" and spellID == 1449 and intuitionBLPHasClearcasting then -- echoed arcane explosion
-                    C_Timer.After( 0.5, function()
-                        if not hasIntuitionBuff then
-                            intuitionBLPStacks = intuitionBLPStacks + 1
-                        end
-                    end )
+                    C_Timer.After( 0.5, delayedIntuitionBLPStack )
 
                 elseif subtype == "SPELL_DAMAGE" and spellID == 461508 then -- energy reconstitution arcane explosion
                     local now = GetTime()
@@ -830,7 +829,7 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
                     if state.set_bonus.tww3_spellslinger >= 4 then
                         local harmony_aura = GetPlayerAuraBySpellID( 384455 ) -- arcane_harmony
                         local harmony_stacks = harmony_aura and harmony_aura.applications or 0
-                        intuitionBLPIsHarmonyIntuition = ( harmony_stacks == 20 ) or false
+                        intuitionBLPIsHarmonyIntuition = ( harmony_stacks == 20 )
                     end
                 elseif subtype == "SPELL_AURA_REMOVED" then
                     hasIntuitionBuff = false
@@ -838,7 +837,7 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
                         intuitionBLPStacks = 0 -- Reset BLP on normal intuition consumption
                         -- Track consumption for charge flicker fix
                         intuition_just_consumed = true
-                        intuition_consumed_timestamp = now
+                        intuition_consumed_timestamp = GetTime()
                     end
                     intuitionBLPIsHarmonyIntuition = false
                 end
@@ -865,7 +864,7 @@ end )
 
 -- Reset BLP tracking on encounter/M+ start
 spec:RegisterEvent( "ENCOUNTER_START", function ()
-        intuitionBLPStacks = 0
+    intuitionBLPStacks = 0
 end )
 
 spec:RegisterEvent( "CHALLENGE_MODE_START", function ()
@@ -1312,10 +1311,7 @@ local NetherMunitions = setfenv( function()
 end, state )
 
 spec:RegisterHook( "reset_precast", function ()
-   --[[ if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
-    else removeBuff( "rune_of_power" ) end --]]
-
-        -- Initialize BLP tracking state for clearcasting detection and reset virtual counter
+    -- Initialize BLP tracking state for clearcasting detection and reset virtual counter
     if talent.intuition.enabled then
         intuitionBLPHasClearcasting = buff.clearcasting.up
         intuition_blp_stacks = nil -- Reset to sync with real CLEU variable
@@ -1332,12 +1328,10 @@ spec:RegisterHook( "reset_precast", function ()
     -- Fix charge flicker after Intuition consumption
     if talent.intuition.enabled and intuition_just_consumed then
         local time_since_consumption = query_time - intuition_consumed_timestamp
-        -- If within the flicker window (0.5 seconds), fake having 4 charges
-        if time_since_consumption < gcd.max and arcane_charges.current < 4 then
+        if time_since_consumption >= gcd.max then intuition_just_consumed = false
+        elseif time_since_consumption < gcd.max and arcane_charges.current < 4 then
+            -- If within the flicker window (GCD), fake having 4 charges
             applyBuff( "arcane_charge", nil, 4 )
-        elseif time_since_consumption >= gcd.max then
-            -- Clear the flag after the flicker period
-            intuition_just_consumed = false
         end
     end
 
@@ -1360,7 +1354,6 @@ spec:RegisterHook( "reset_precast", function ()
     if talent.nether_munitions.enabled and debuff.touch_of_the_magi.up then
         state:QueueAuraExpiration( "touch_of_the_magi", NetherMunitions, debuff.touch_of_the_magi.expires )
     end
-
 end )
 
 -- Abilities
