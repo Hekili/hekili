@@ -34,7 +34,20 @@ local GetUnitChargedPowerPoints = GetUnitChargedPowerPoints
 local FindPlayerAuraByID = ns.FindPlayerAuraByID
 local min = ns.safeMin
 
-spec:RegisterResource( Enum.PowerType.ComboPoints )
+spec:RegisterResource( Enum.PowerType.ComboPoints, {
+    -- Gain 1 CP every 0.5 s while channeling Killing Spree
+    killing_spree = {
+        channel = "killing_spree",                     -- only active during the channel
+        last = function ()                             -- time of the most recent tick
+            local app  = state.buff.casting.applied    -- channel started here
+            local tick = 0.5 * state.haste
+            local t    = state.query_time
+            return app + floor( ( t - app ) / tick ) * tick
+        end,
+        interval = function () return 0.5 * state.haste end,
+        value    = 1,                                  -- add 1 combo-point per tick
+    },
+} )
 spec:RegisterResource( Enum.PowerType.Energy, {
         blade_rush = {
             aura = "blade_rush",
@@ -532,7 +545,6 @@ spec:RegisterAuras( {
 } )
 
 
-local killing_spree_cp
 
 local inStealth = false
 local exitedStealth = 0
@@ -1402,43 +1414,35 @@ spec:RegisterAbilities( {
         id = 51690,
         cast = function () return 0.5 * effective_combo_points * haste end,
         channeled = true,
-        cooldown = function() return 180 * ( talent.disorienting_strikes.enabled and 0.9 or 1 ) end,
+
+        cooldown = function () return 180 * ( talent.disorienting_strikes.enabled and 0.9 or 1 ) end,
         gcd = "totem",
         school = "physical",
         texture = 6735718,
-
-        spend = function() return 45 * ( talent.tight_spender.enabled and 0.94 or 1 ) end,
+        spend = function () return 45 * ( talent.tight_spender.enabled and 0.94 or 1 ) end,
         spendType = "energy",
-
         talent = "killing_spree",
         startsCombat = true,
-
         toggle = "cooldowns",
-        usable = function() return combo_points.current > 0, "requires combo_points" end,
-
+        usable = function () return combo_points.current > 0, "requires combo points" end,
         handler = function ()
 
         end,
 
+        -- No tick_time/tick, no finish-refund – resource model does it.
         start = function ()
             if buff.double_jeopardy.up and combo_points.current > 4 then removeBuff( "double_jeopardy" ) end
-
+                
             applyBuff( "killing_spree" )
-            killing_spree_cp = effective_combo_points
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
-
             if talent.disorienting_strikes.enabled then
                 applyBuff( "disorienting_strikes" )
                 unseen_blades_available = unseen_blades_available + 2
             end
-
             if talent.flawless_form.enabled then addStack( "flawless_form" ) end
         end,
-
-        finish = function()
-            gain( killing_spree_cp, "combo_points" )
-        end
+        finish = function() end,
     },
 
     -- Draw a concealed pistol and fire a quick shot at an enemy, dealing ${$s1*$<CAP>/$AP} Physical damage and reducing movement speed by $s3% for $d.    |cFFFFFFFFAwards $s2 combo $lpoint:points;.|r
