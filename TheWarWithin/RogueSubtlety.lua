@@ -200,6 +200,27 @@ spec:RegisterAuras( {
         duration = function() return 60 * ( talent.airborne_irritant.enabled and 0.6 or 1 ) end,
         max_stack = 1
     },
+    coup_de_grace = {
+    id = 462127,
+    duration = 3600,
+    max_stack = 1,
+    generate = function( t )
+        local eb = buff.escalating_blade
+        if eb.up and eb.at_max_stacks then
+            t.name = "coup_de_grace"
+            t.count = 1
+            t.expires = eb.expires
+            t.applied = query_time
+            t.caster = "player"
+        else
+            t.name = "coup_de_grace"
+            t.count = 0
+            t.expires = 0
+            t.applied = 0
+            t.caster = "nobody"
+        end
+    end
+},
     darkest_night = {
         id = 457280,
         duration = 30,
@@ -438,7 +459,7 @@ spec:RegisterAuras( {
 local true_stealth_change, emu_stealth_change = 0, 0
 local last_mh, last_oh, last_shadow_techniques, swings_since_sht, sht = 0, 0, 0, 0, {} -- Shadow Techniques
 local danse_ends, danse_macabre_actual = 0, {}
-
+local lastUnseenBlade, disorientStacks = 0, 0
 spec:RegisterEvent( "UPDATE_STEALTH", function ()
     true_stealth_change = GetTime()
 end )
@@ -463,6 +484,24 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
 
         if offhand then last_mh = GetTime()
         else last_mh = GetTime() end
+    elseif subtype == "SPELL_DAMAGE" then
+        local now = GetTime()
+        if spellID == 441144 then  -- Unseen Blade damage event.
+            if disorientStacks < 0 then
+                lastUnseenBlade = now
+            end
+        end
+        return
+    elseif subtype == "SPELL_CAST_SUCCESS" then
+        if spellID == 280719 and state.talent.disorienting_strikes.enabled then -- SecTec grants 2 stacks of Disorienting Strikes (hidden aura)
+            disorientStacks = 2
+            return
+        end
+
+        if spellID == 53 or spellID == 185438 then -- Backstab (53) or Shadowstrike (185438) consumes 1 Disorienting Strike stack.
+            disorientStacks = disorientStacks - 1
+            return
+        end
     end
 
     if state.talent.danse_macabre.enabled and subtype == "SPELL_CAST_SUCCESS" then
@@ -480,6 +519,45 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
         end
     end
 end )
+
+spec:RegisterStateExpr( "last_unseen_blade", function ()
+    return lastUnseenBlade
+end )
+
+spec:RegisterStateExpr( "disorient_stacks", function ()
+    return disorientStacks
+end )
+
+spec:RegisterStateExpr( "unseen_blades_available", function ()
+    local count = 0
+
+    -- add 1 if the ICD is cooled down
+    if state.query_time - lastUnseenBlade >= 20 then count = count + 1 end
+
+    -- add the # of bypasses that are available
+    if disorientStacks > 0 then count = count + disorientStacks end
+
+    return count
+end )
+
+local TriggerUnseenBlade = setfenv( function( )
+    if unseen_blades_available > 0 then
+        -- Handle ICD vs bypass
+        if disorient_stacks > 0 then
+            disorient_stacks = disorient_stacks - 1
+        else
+            last_unseen_blade = query_time
+            applyDebuff( "player", "unseen_blade" )
+        end
+
+        if buff.escalating_blade.stack < 4 then
+            addStack( "escalating_blade" )
+            if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ) end
+        end
+        applyDebuff( "target", "fazed" )
+        unseen_blades_available = unseen_blades_available - 1
+    end
+end, state )
 
 spec:RegisterStateTable( "time_to_sht", setmetatable( {}, {
     __index = function( t, k )
@@ -773,8 +851,48 @@ spec:RegisterHook( "reset_precast", function( amt, resource )
         buff.first_dance.applied = query_time + buff.first_dance_prep.remains
     end
 
-    if prev_gcd[1].coup_de_grace then removeBuff( "coup_de_grace" ); removeBuff( "escalating_blade" ) end
-    if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ); removeBuff( "escalating_blade" ) end
+
+    if talent.unseen_blade.enabled then
+
+        -- Resync with real-data local variables first
+        last_unseen_blade = nil
+        disorient_stacks = nil
+
+        -- Sync unseen blade ICD with gamestate
+        local unseenBladeCD = 20 - ( query_time - last_unseen_blade )
+        if unseenBladeCD > 0 then
+            applyDebuff( "player", "unseen_blade", unseenBladeCD )
+        else
+            removeDebuff( "player", "unseen_blade" )
+        end
+
+        if Hekili.ActiveDebug then
+            Hekili:Debug( "UB-Status: unseen_blades_available=%d DS=%d  ICD=%.1f",
+              unseen_blades_available,
+              disorient_stacks or 0,
+              ( unseenBladeCD > 0 and unseenBladeCD or 0 )
+            )
+        end
+
+        if prev[1].coup_de_grace and buff.escalating_blade.at_max_stacks then
+            if set_bonus.tww3 >= 4 then
+                local dur = 5 + ( gcd.max ) - ( query_time - action.coup_de_grace.lastCast )
+                applyBuff( "tww3_trickster_4pc", dur )
+                applyBuff( "escalating_blade", dur, 4 )
+                applyBuff( "coup_de_grace", dur )
+            end
+        end
+
+
+    end
+
+
+
+
+
+    -- if prev_gcd[1].coup_de_grace then removeBuff( "coup_de_grace" ); removeBuff( "escalating_blade" ) end
+    -- if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ); removeBuff( "escalating_blade" ) end
+
 end )
 
 spec:RegisterHook( "step", function()
@@ -807,8 +925,9 @@ spec:RegisterGear({
                 duration = 5,
                 max_stack = 1,
                 generate = function( t )
-                    local cdg = buff.coup_de_grace
-                    if set_bonus.tww3 >= 4 and cdg.up and cdg.remains <= 10 then
+                    local cdg = buff.escalating_blade
+                    local delta = query_time - action.coup_de_grace.lastCast
+                    if set_bonus.tww3 >= 4 and cdg.up and cdg.at_max_stacks and delta < 5 then
                         -- Only treat this as the "trickster window" version if it's the 5s duration .. use 10s just as a safety net. The other version of the aura is 3600
                         t.name = "tww3_trickster_4pc"
                         t.count = 1
@@ -985,6 +1104,7 @@ spec:RegisterAbilities( {
                 addStack( "perforate" )
                 gainChargeTime( "shadow_blades", 0.5 )
             end
+            if talent.unseen_blade.enabled then TriggerUnseenBlade() end
         end,
 
         bind = "gloomblade"
@@ -1151,9 +1271,9 @@ spec:RegisterAbilities( {
             if debuff.fazed.up then addStack( "flawless_form", nil, 5 ) end
 
             if set_bonus.tww3 >= 4 and buff.tww3_trickster_4pc.down  then
-                applyBuff( "coup_de_grace", 5 ) -- recast within 5 seconds
-                applyBuff( "tww3_trickster_4pc" )
-                applyBuff( "escalating_blade", 5, 4 )
+                applyBuff( "coup_de_grace", ( 5 + gcd.max ) ) -- recast within 5 seconds
+                applyBuff( "tww3_trickster_4pc", ( 5 + gcd.max ) )
+                applyBuff( "escalating_blade", ( 5 + gcd.max ), 4 )
             else
                 removeBuff( "coup_de_grace" )
                 removeBuff( "escalating_blade" )
@@ -1276,6 +1396,10 @@ spec:RegisterAbilities( {
             if talent.goremaws_bite.enabled and buff.goremaws_bite.up then removeStack( "goremaws_bite" ) end
             spend( combo_points.current, "combo_points" )
             if talent.shadowcraft.enabled and buff.symbols_of_death.up then Shadowcraft() end
+            if talent.disorienting_strikes.enabled then
+                disorient_stacks = 2
+                unseen_blades_available = unseen_blades_available + 2
+            end
         end
     },
 
@@ -1394,7 +1518,7 @@ spec:RegisterAbilities( {
                 addStack( "perforated_veins" )
             end
             if azerite.blade_in_the_shadows.enabled then addStack( "blade_in_the_shadows" ) end
-
+            if talent.unseen_blade.enabled then TriggerUnseenBlade() end
 
         end,
 
