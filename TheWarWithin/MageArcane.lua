@@ -763,9 +763,10 @@ local clearcasting_consumed = 0
 
 -- Intuition Bad Luck Protection tracking
 local intuitionBLPStacks = 0
-local intuition_blp_last_er_ae_timestamp = 0
-local intuition_blp_has_clearcasting = false
-local intuition_blp_is_harmony_intuition = false
+local intuitionBLPLastErAeTimestamp = 0
+local intuitionBLPHasClearcasting = false
+local intuitionBLPIsHarmonyIntuition = false
+local hasIntuitionBuff = false
 
 -- Intuition consumption tracking for charge flicker fix
 local intuition_just_consumed = false
@@ -782,42 +783,41 @@ local intuitionBLPSpellIDs = {
 
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
-        local now = GetTime()
 
         if subtype == "SPELL_CAST_SUCCESS" and spellID == 321507 then
             totm_casts = ( totm_casts + 1 ) % 2
 
         elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REFRESH" ) and spellID == 458411 then
             -- Handle Arcane Orb projectile.
+            local now = GetTime()
             local travel = ( UnitExists( "target" ) and select( 2, RC:GetRange( "target" ) ) or 40 ) / 30
             state:QueueEvent( "arcane_orb", now, 0.05 + travel, "PROJECTILE_IMPACT", UnitGUID( "target" ), true )
 
         elseif subtype == "SPELL_AURA_REMOVED" and ( spellID == 276743 or spellID == 263725 ) then
             -- Clearcasting was consumed.
-            clearcasting_consumed = now
+            clearcasting_consumed = GetTime()
 
         -- Intuition BLP tracking
         elseif state.talent.intuition.enabled then
-            local has_intuition_buff = GetPlayerAuraBySpellID( 1223797 ) -- intuition buff
-
             -- Handle BLP stack increments (only when Intuition buff is not active)
-            if not has_intuition_buff then
+            if not hasIntuitionBuff then
                 if subtype == "SPELL_CAST_SUCCESS" and intuitionBLPSpellIDs[ spellID ] then
                     intuitionBLPStacks = intuitionBLPStacks + 1
 
                 elseif subtype == "SPELL_ENERGIZE" and spellID == 153626 then -- arcane_orb
                     intuitionBLPStacks = intuitionBLPStacks + 1
 
-                elseif subtype == "SPELL_CAST_SUCCESS" and spellID == 1449 and intuition_blp_has_clearcasting then -- echoed arcane explosion
+                elseif subtype == "SPELL_CAST_SUCCESS" and spellID == 1449 and intuitionBLPHasClearcasting then -- echoed arcane explosion
                     C_Timer.After( 0.5, function()
-                        if not GetPlayerAuraBySpellID( 1223797 ) then
+                        if not hasIntuitionBuff then
                             intuitionBLPStacks = intuitionBLPStacks + 1
                         end
                     end )
 
                 elseif subtype == "SPELL_DAMAGE" and spellID == 461508 then -- energy reconstitution arcane explosion
-                    if now - intuition_blp_last_er_ae_timestamp > 0.1 then
-                        intuition_blp_last_er_ae_timestamp = now
+                    local now = GetTime()
+                    if now - intuitionBLPLastErAeTimestamp > 0.1 then
+                        intuitionBLPLastErAeTimestamp = now
                         intuitionBLPStacks = intuitionBLPStacks + 1
                     end
                 end
@@ -826,27 +826,30 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
             -- Handle Intuition proc consumption and BLP reset
             if spellID == 1223797 then -- intuition
                 if subtype == "SPELL_AURA_APPLIED" then
-                    local harmony_aura = GetPlayerAuraBySpellID( 384455 ) -- arcane_harmony
-                    local harmony_stacks = harmony_aura and harmony_aura.applications or 0
-                    intuition_blp_is_harmony_intuition = ( harmony_stacks == 20 ) and state.set_bonus.tww3_spellslinger >= 4 or false
-
+                    hasIntuitionBuff = true
+                    if state.set_bonus.tww3_spellslinger >= 4 then
+                        local harmony_aura = GetPlayerAuraBySpellID( 384455 ) -- arcane_harmony
+                        local harmony_stacks = harmony_aura and harmony_aura.applications or 0
+                        intuitionBLPIsHarmonyIntuition = ( harmony_stacks == 20 ) or false
+                    end
                 elseif subtype == "SPELL_AURA_REMOVED" then
-                    if not intuition_blp_is_harmony_intuition then
+                    hasIntuitionBuff = false
+                    if not intuitionBLPIsHarmonyIntuition then
                         intuitionBLPStacks = 0 -- Reset BLP on normal intuition consumption
                         -- Track consumption for charge flicker fix
                         intuition_just_consumed = true
                         intuition_consumed_timestamp = now
                     end
-                    intuition_blp_is_harmony_intuition = false
+                    intuitionBLPIsHarmonyIntuition = false
                 end
             end
 
             -- Track clearcasting for echoed arcane explosion detection
             if spellID == 263725 or spellID == 276743 then -- clearcasting
                 if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" then
-                    intuition_blp_has_clearcasting = true
+                    intuitionBLPHasClearcasting = true
                 elseif subtype == "SPELL_AURA_REMOVED" then
-                    intuition_blp_has_clearcasting = false
+                    intuitionBLPHasClearcasting = false
                 end
             end
         end
@@ -1314,7 +1317,7 @@ spec:RegisterHook( "reset_precast", function ()
 
         -- Initialize BLP tracking state for clearcasting detection and reset virtual counter
     if talent.intuition.enabled then
-        intuition_blp_has_clearcasting = buff.clearcasting.up
+        intuitionBLPHasClearcasting = buff.clearcasting.up
         intuition_blp_stacks = nil -- Reset to sync with real CLEU variable
         if buff.intuition.up then intuition_blp_stacks = 0 end
         if Hekili.ActiveDebug then Hekili:Debug( strformat( "Intuition Bad Luck protection: %s of 10 unlucky casts. Next cast will grant buff: %s", intuitionBLPStacks, ( intuitionBLPStacks == 10 and "Yes" or "No" ) ) ) end
