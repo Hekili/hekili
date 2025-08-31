@@ -66,6 +66,7 @@ actions.standard+=/hammer_of_the_righteous,if=(buff.blessed_assurance.up&spell_t
 actions.standard+=/blessed_hammer,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<3)|buff.shake_the_heavens.up
 actions.standard+=/crusader_strike,if=(buff.blessed_assurance.up&spell_targets.shield_of_the_righteous<2)|buff.shake_the_heavens.up
 actions.standard+=/avengers_shield,if=!talent.lights_guidance.enabled
+actions.standard+=/consecration,if=!consecration.up
 actions.standard+=/eye_of_tyr,if=(talent.inmost_light.enabled&raid_event.adds.in>=45|spell_targets.shield_of_the_righteous>=3)&!talent.lights_deliverance.enabled
 actions.standard+=/holy_armaments,if=next_armament=holy_bulwark
 actions.standard+=/blessed_hammer
