@@ -134,8 +134,8 @@ actions.stealth+=/dispatch,if=variable.finish_condition
 actions.stealth+=/pistol_shot,if=talent.crackshot&talent.fan_the_hammer.rank>=2&buff.opportunity.stack>=6&(buff.broadside.up&combo_points<=1|buff.greenskins_wickers.up)
 actions.stealth+=/ambush,if=talent.hidden_opportunity
 
-# Vanish usage for standard builds  TWW3 Fatebound always attempts to align Vanish with Ghostly Strike.
-actions.vanish+=/vanish,if=set_bonus.tww3_fatebound_2pc&cooldown.ghostly_strike.ready&talent.ghostly_strike
+# Vanish usage for standard builds  TWW3 Fatebound always attempts to align Vanish with Ghostly Strike; [Hekili] modified for folks who disable Ghostly Strike recommendations.
+actions.vanish+=/vanish,if=set_bonus.tww3_fatebound_2pc&cooldown.ghostly_strike.true_remains=0&talent.ghostly_strike
 # Fatebound without TWW3, or builds without Killing Spree attempt to hold Vanish for when BtE is on cooldown and Ruthless Precision is active.
 actions.vanish+=/vanish,if=(hero_tree.fatebound|!talent.killing_spree)&(!cooldown.between_the_eyes.ready&buff.ruthless_precision.remains>4|buff.supercharge_1.up)&(!set_bonus.tww3_fatebound_2pc|!talent.ghostly_strike)
 # Trickster builds with Killing Spree should Vanish if Killing Spree is not up soon. With TWW3 Trickster, attempt to align Vanish with a recently used Coup de Grace.
