@@ -42,7 +42,7 @@ spec:RegisterResource( Enum.PowerType.ComboPoints, {
             local app  = state.buff.casting.applied    -- channel started here
             local tick = 0.5 * state.haste
             local t    = state.query_time
-            return app + floor( ( t - app ) / tick ) * tick
+            return app + math.floor( ( t - app ) / tick ) * tick
         end,
         interval = function () return 0.5 * state.haste end,
         value    = 1,                                  -- add 1 combo-point per tick
