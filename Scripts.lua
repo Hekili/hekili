@@ -497,6 +497,7 @@ do
         { "^cooldown%.([a-z0-9_]+)%.ready$"                      , "cooldown.%1.remains"                      },
         { "^cooldown%.([a-z0-9_]+)%.up$"                         , "cooldown.%1.remains"                      },
         { "^!?cooldown%.([a-z0-9_]+)%.remains$"                  , "cooldown.%1.remains"                      },
+        { "^!?cooldown%.([a-z0-9_]+)%.true_remains$"             , "cooldown.%1.true_remains"                 },
         { "^charges_fractional=(.-)$"                            , "(%1-charges_fractional)*recharge"         },
         { "^charges_fractional>=?(.-)$"                          , "0.01+(%1-charges_fractional)*recharge"    },
         { "^charges=(.-)$"                                       , "(%1-charges_fractional)*recharge"         },
@@ -588,6 +589,7 @@ do
     -- Things that tick down.
     local decreases = {
         ["remains$"] = true,
+        ["true_remains$"] = true,
         ["ticks_remain$"] = true,
         ["execute_remains$"] = true,
         ["channel_remains$"] = true,
