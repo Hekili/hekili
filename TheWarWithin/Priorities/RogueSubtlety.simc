@@ -64,7 +64,7 @@ actions.build+=/backstab
 # Cooldowns
 actions.cds+=/cold_blood,if=cooldown.secret_technique.up&buff.shadow_dance.up&combo_points>=6&variable.secret&buff.flagellation_persist.up
 actions.cds+=/potion,if=buff.bloodlust.up|boss&fight_remains<30|buff.flagellation_buff.up
-actions.cds+=/symbols_of_death,if=(buff.symbols_of_death.remains<=3.5&variable.maintenance&(active_enemies>=3|!buff.flagellation_buff.up|dot.rupture.remains>=30)&(!talent.flagellation|cooldown.flagellation.remains>=30-15*!talent.death_perception&cooldown.secret_technique.remains<8|!talent.death_perception)|boss&fight_remains<=15)
+actions.cds+=/symbols_of_death,if=(buff.symbols_of_death.remains<=3.5&variable.maintenance&(active_enemies>=3|!buff.flagellation_buff.up|dot.rupture.remains>=30)&(!talent.flagellation|cooldown.flagellation.remains>=30-15*!talent.death_perception&cooldown.secret_technique.remains<8|!talent.death_perception)|boss&fight_remains<=15&buff.symbols_of_death.down)
 actions.cds+=/shadow_blades,if=variable.maintenance&variable.shd_cp&buff.shadow_dance.up&!buff.premeditation.up
 actions.cds+=/thistle_tea,if=buff.shadow_dance.remains>2&!buff.thistle_tea.up
 actions.cds+=/flagellation,if=combo_points>=5&cooldown.shadow_blades.remains<=3|boss&fight_remains<=25

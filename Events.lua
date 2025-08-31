@@ -1291,60 +1291,30 @@ end
 
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_START", "player", nil, function( event, unit, cast, spellID )
     local ability = class.abilities[ spellID ]
+    if not ability then return end
 
-    if ability then
-        Hekili:ForceUpdate( event )
-        if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
-    end
+    if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
+    Hekili:ForceUpdate( event )
 end )
 
 
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_STOP", "player", nil, function( event, unit, cast, spellID )
-    local ability = class.abilities[ spellID ]
-    if ability then
-        Hekili:ForceUpdate( event )
-        if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
-    end
+    Hekili:ForceUpdate( event )
+
 end )
 
 
 RegisterUnitEvent( "UNIT_SPELLCAST_CHANNEL_UPDATE", "player", nil, function( event, unit, _, spellID )
-    local ability = class.abilities[ spellID ]
-    if not ability or not ability.channeled then return end
-
-    state:RemoveSpellEvent( action, true, "CHANNEL_TICK" )
-    state:RemoveSpellEvent( action, true, "CHANNEL_FINISH", true )
-
-    local _, _, _, start, finish = UnitChannelInfo( "player" )
-
-    if start then
-        start = start / 1000
-        finish = finish / 1000
-
-        state:QueueEvent( ability.key, start, finish, "CHANNEL_FINISH", destGUID, true )
-
-        local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
-
-        if tick_time and tick_time > 0 then
-            local tick = tick_time
-
-            while ( start + tick < finish ) do
-                state:QueueEvent( ability.key, start, start + tick, "CHANNEL_TICK", destGUID, true )
-                tick = tick + tick_time
-            end
-        end
-    end
-
     Hekili:ForceUpdate( event )
 end )
 
 
 RegisterUnitEvent( "UNIT_SPELLCAST_STOP", "player", nil, function( event, unit, cast, spellID )
     local ability = class.abilities[ spellID ]
-    if ability then
-        Hekili:ForceUpdate( event )
-        if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
-    end
+    if not ability then return end
+
+    if state.holds[ ability.key ] then Hekili:RemoveHold( ability.key, true ) end
+    Hekili:ForceUpdate( event )
 end )
 
 

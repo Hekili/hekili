@@ -1511,7 +1511,8 @@ all:RegisterAuras( {
     voidbinding = {
         id = 462661,
         duration = 30,
-        max_stack = 1
+        max_stack = 1,
+        shared = "player"
     },
     -- Priory of the Sacred Flame
     blessing_of_the_sacred_flame = {

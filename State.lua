@@ -3339,7 +3339,7 @@ do
                     if state.debuff.voidbinding.up and modRate and modRate ~= 1 then
                         local extraTime = start + duration - state.query_time - state.debuff.voidbinding.remains
                         if extraTime > 0 then
-                            if Hekili.ActiveDebug then Hekili:Debug( "Extending '%s' remaining cooldown by %.2f because the cooldown exceeds Voidbinding's remaining time by %.2f.", ( extraTime * 0.3 ), extraTime ) end
+                            if Hekili.ActiveDebug then Hekili:Debug( "Extending '%s' remaining cooldown by %.2f because the cooldown exceeds Voidbinding's remaining time by %.2f.", ability.key, ( extraTime * 0.3 ), extraTime ) end
                             duration = duration + ( extraTime * 0.3 )
                         end
                     end
@@ -7076,23 +7076,24 @@ do
             elseif not state:IsChanneling() and channeled then
                 state:QueueEvent( casting, state.buff.casting.applied, state.buff.casting.expires, "CHANNEL_FINISH", destGUID )
 
-                if channeled and ability then
+                if ability then
                     local tick_time = ability.tick_time or ( ability.aura and class.auras[ ability.aura ].tick_time )
 
                     if tick_time and tick_time > 0 then
-                        local eoc = state.buff.casting.expires - tick_time
+                        local next_tick = state.buff.casting.applied + tick_time
+                        local expires = state.buff.cast.expires
 
-                        while ( eoc > state.now ) do
-                            state:QueueEvent( casting, state.buff.casting.applied, eoc, "CHANNEL_TICK", destGUID )
-                            eoc = eoc - tick_time
+                        while( next_tick < expires ) do
+                            state:QueueEvent( casting, state.buff.casting.applied, next_tick, "CHANNEL_TICK", destGUID )
+                            next_tick = next_tick + tick_time
                         end
                     end
-                end
 
-                -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
-                if ability and ability.isProjectile then
-                    state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
-                    -- state:QueueEvent( action, "projectile", true )
+                        -- Projectile spells have two handlers, effectively.  An onCast handler, and then an onImpact handler.
+                    if ability.isProjectile then
+                        state:QueueEvent( ability.key, state.buff.casting.expires, nil, "PROJECTILE_IMPACT", destGUID )
+                        -- state:QueueEvent( action, "projectile", true )
+                    end
                 end
             end
 
