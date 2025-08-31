@@ -904,7 +904,7 @@ spec:RegisterHook( "reset_precast", function()
         if charged > 0 then applyBuff( "supercharged_combo_points", nil, charged ) end
     end
 
-    if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
+   -- if buff.killing_spree.up then setCooldown( "global_cooldown", max( gcd.remains, buff.killing_spree.remains ) ) end
 
     if buff.adrenaline_rush.up and talent.improved_adrenaline_rush.enabled then
         state:QueueAuraExpiration( "adrenaline_rush", ExpireAdrenalineRush, buff.adrenaline_rush.expires )
@@ -1414,9 +1414,8 @@ spec:RegisterAbilities( {
         id = 51690,
         cast = function () return 0.5 * effective_combo_points * haste end,
         channeled = true,
-
         cooldown = function () return 180 * ( talent.disorienting_strikes.enabled and 0.9 or 1 ) end,
-        gcd = "totem",
+        gcd = "spell",
         school = "physical",
         texture = 6735718,
         spend = function () return 45 * ( talent.tight_spender.enabled and 0.94 or 1 ) end,
