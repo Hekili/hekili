@@ -1414,6 +1414,7 @@ spec:RegisterAbilities( {
         id = 51690,
         cast = function () return 0.5 * effective_combo_points * haste end,
         channeled = true,
+        tick_time = function () return 0.5 * haste end,
         cooldown = function () return 180 * ( talent.disorienting_strikes.enabled and 0.9 or 1 ) end,
         gcd = "spell",
         school = "physical",
