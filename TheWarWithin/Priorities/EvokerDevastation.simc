@@ -74,13 +74,15 @@ actions.aoe+=/fire_breath,cycle_targets=1,empower_to=4,if=talent.scorching_ember
 # R2 funny breath good default.
 actions.aoe+=/fire_breath,cycle_targets=1,empower_to=2,if=variable.can_use_empower&(fight_remains>=duration|empowering.fire_breath)
 # DR if mobs will live 15s or there are no add events or pull events.
-actions.aoe+=/dragonrage,if=fight_remains>=15|boss
-actions.aoe+=/call_action_list,name=es,strict_if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity),if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity)&(!buff.jackpot.up|!set_bonus.tww2_4pc|talent.mass_disintegrate)
-actions.aoe+=/deep_breath,if=!buff.dragonrage.up&essence.deficit>3
+actions.aoe+=/dragonrage
 ## Engulf if Firebreath is up and Enkindle is up. Ruby embers is ignored here. Probably can improve this with a target_if=max:dot.fire_breath_damage.remains> etc. Make FB up = 3, others no special interaction so 1 is fine. In if recheck for >=4 value.
 ## actions.aoe+=/engulf,cycle_targets=1,if=(dot.fire_breath_damage.remains>travel_time)&(dot.enkindle.remains>travel_time|!talent.enkindle)&(!talent.scorching_embers|dot.fire_breath_damage.duration<=6|fight_remains<=30)&(cooldown.dragonrage.remains>=cooldown.engulf.duration+full_recharge_time|!talent.dragonrage|buff.tip_the_scales.up&cooldown.fire_breath.up|buff.dragonrage.up|full_recharge_time<=cooldown.fire_breath.duration_expected)
 # [Hekili] Re-revised Fire Breath debuff remaining so that you get back-to-back Engulfs easier.
 actions.aoe+=/engulf,cycle_targets=1,if=dot.fire_breath_damage.remains>(action.engulf.travel_time+2*action.engulf.in_flight)&(cooldown.dragonrage.remains>=cooldown.engulf.duration+full_recharge_time|!talent.dragonrage|buff.tip_the_scales.up&cooldown.fire_breath.up|buff.dragonrage.up|full_recharge_time<=cooldown.fire_breath.duration_expected)
+# [Hekili] Simplified Engulf such that you don't waste charges waiting for perfect multipliers.
+actions.aoe+=/engulf,if=settings.simplify_engulf&active_enemies<3&(dot.fire_breath_damage.remains>travel_time)&(!talent.scorching_embers|dot.fire_breath_damage.rank=max_empower|fight_remains<=30)&(variable.next_dragonrage>=cooldown*1.2|!talent.dragonrage)
+actions.aoe+=/call_action_list,name=es,strict_if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity),if=(!talent.dragonrage|buff.dragonrage.up|cooldown.dragonrage.remains>variable.dr_prep_time_aoe|!talent.animosity)&(!buff.jackpot.up|!set_bonus.tww2_4pc|talent.mass_disintegrate)
+actions.aoe+=/deep_breath,if=!buff.dragonrage.up&essence.deficit>3
 actions.aoe+=/pyre,if=buff.charged_blast.stack>=12&(cooldown.dragonrage.remains>gcd.max*4|!talent.dragonrage)
 # Use Mass Disintegrate if CB wont't overcap
 actions.aoe+=/disintegrate,cycle_targets=1,if=buff.mass_disintegrate_stacks.up&talent.mass_disintegrate&(!variable.pool_for_id|buff.mass_disintegrate_stacks.remains<=buff.mass_disintegrate_stacks.stack*(duration+0.1))
@@ -112,7 +114,7 @@ actions.green+=/verdant_embrace
 
 actions.st+=/deep_breath,if=talent.maneuverability&set_bonus.tww3_4pc,cancel_if=gcd.remains=0&ticks>=8&active_enemies=1
 # CD on CD
-actions.st+=/dragonrage,if=fight_remains>=30|boss
+actions.st+=/dragonrage
 actions.st+=/eternity_surge,empower_to=1,if=set_bonus.tww3_4pc&buff.dragonrage.up&cooldown.engulf.full_recharge_time<gcd.max*3&cooldown.fire_breath.remains<gcd.max*3
 actions.st+=/living_flame,if=set_bonus.tww3_4pc&cooldown.engulf.remains<=execute_time*2&buff.essence_burst.stack<(2-talent.arcane_vigor.enabled)&buff.dragonrage.up&cooldown.fire_breath.remains<=execute_time*2
 # Flap wings
@@ -120,7 +122,7 @@ actions.st+=/hover,use_off_gcd=1,if=raid_event.movement.in<6&!buff.hover.up&gcd.
 # Become a faster dragon (for one empower)
 actions.st+=/tip_the_scales,use_off_gcd=1,if=buff.dragonrage.up&cooldown.fire_breath.remains<=cooldown.eternity_surge.remains
 # Dont overcap with Vigor.
-actions.st+=/shattering_star,if=(!buff.essence_burst.at_max_stacks|!talent.arcane_vigor|talent.engulf)&(set_bonus.tww2_2pc|!talent.scorching_embers|!talent.engulf|dot.fire_breath_damage.ticking&dot.fire_breath_damage.duration<=6|(action.engulf.usable_in<?cooldown.fire_breath.remains_expected+4)>=15)
+actions.st+=/shattering_star,if=(!buff.essence_burst.at_max_stacks|!talent.arcane_vigor|talent.engulf)&(set_bonus.tww2_2pc|!talent.scorching_embers|!talent.engulf|dot.fire_breath_damage.ticking&dot.fire_breath_damage.rank=max_empower|(action.engulf.usable_in<?cooldown.fire_breath.remains_expected+4)>=15)
 # Engulf at R4 with Scorch.
 actions.st+=/fire_breath,cycle_targets=1,empower_to=4,if=(talent.scorching_embers&talent.engulf&action.engulf.usable_in<=duration+0.5)&variable.can_use_empower&(active_dot.shattering_star>0|cooldown.shattering_star.remains<=duration+0.5+6-gcd.max|!talent.shattering_star|cooldown.engulf.full_recharge_time<=cooldown.fire_breath.duration_expected+4|empowering.fire_breath)
 # R2 funny breath good default for SC.
@@ -130,9 +132,9 @@ actions.st+=/fire_breath,empower_to=1,if=variable.can_use_empower|empowering.fir
 ## Gulf :garf:
 ## actions.st+=/engulf,if=(dot.fire_breath_damage.remains>travel_time)&(dot.living_flame_damage.remains>travel_time|!talent.ruby_embers)&(dot.enkindle.remains>travel_time|!talent.enkindle)&(!talent.iridescence|buff.iridescence_red.up)&(!talent.scorching_embers|dot.fire_breath_damage.duration<=6|fight_remains<=30)&(debuff.shattering_star_debuff.remains>travel_time|full_recharge_time<action.shattering_star.usable_in|talent.scorching_embers)&(cooldown.dragonrage.remains>=cooldown.engulf.duration+full_recharge_time|!talent.dragonrage|buff.tip_the_scales.up&cooldown.fire_breath.up|buff.dragonrage.up|full_recharge_time<=cooldown.fire_breath.duration_expected)
 # [Hekili] Modified to ignore Ruby Embers if applying it is going to waste the Fire Breath dot.
-actions.st+=/engulf,if=(dot.fire_breath_damage.remains>travel_time)&(dot.living_flame_damage.remains>travel_time|dot.fire_breath_damage.remains<action.living_flame.cast_time+travel_time+0.5|!talent.ruby_embers)&(dot.enkindle.remains>travel_time|!talent.enkindle)&(!talent.iridescence|buff.iridescence_red.up)&(!talent.scorching_embers|dot.fire_breath_damage.duration<=6|boss&fight_remains<=30)&(debuff.shattering_star_debuff.remains>travel_time|full_recharge_time<action.shattering_star.usable_in|talent.scorching_embers)
+actions.st+=/engulf,if=(dot.fire_breath_damage.remains>travel_time)&(dot.living_flame_damage.remains>travel_time|dot.fire_breath_damage.remains<action.living_flame.cast_time+travel_time+0.5|!talent.ruby_embers)&(dot.enkindle.remains>travel_time|!talent.enkindle)&(!talent.iridescence|buff.iridescence_red.up)&(!talent.scorching_embers|dot.fire_breath_damage.rank=max_empower|boss&fight_remains<=30)&(debuff.shattering_star_debuff.remains>travel_time|full_recharge_time<action.shattering_star.usable_in|talent.scorching_embers)
 # [Hekili] Simplified Engulf such that you don't waste charges waiting for perfect multipliers.
-actions.st+=/engulf,if=settings.simplify_engulf&active_enemies<3&(dot.fire_breath_damage.remains>travel_time)&(!talent.scorching_embers|dot.fire_breath_damage.duration<=6|fight_remains<=30)&(variable.next_dragonrage>=cooldown*1.2|!talent.dragonrage)
+actions.st+=/engulf,if=settings.simplify_engulf&active_enemies<3&(dot.fire_breath_damage.remains>travel_time)&(!talent.scorching_embers|dot.fire_breath_damage.rank=max_empower|fight_remains<=30)&(variable.next_dragonrage>=cooldown*1.2|!talent.dragonrage)
 # Burnout LF for EB if DR expire soon
 actions.st+=/living_flame,if=buff.dragonrage.up&buff.dragonrage.remains<(buff.essence_burst.max_stack-buff.essence_burst.stack)*gcd.max&buff.burnout.up
 # AS for EB if DR expire soon
