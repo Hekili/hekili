@@ -42,7 +42,7 @@ spec:RegisterResource( Enum.PowerType.ComboPoints, {
             local app  = state.buff.casting.applied    -- channel started here
             local tick = 0.5 * state.haste
             local t    = state.query_time
-            return app + math.floor( ( t - app ) / tick ) * tick
+            return app + floor( ( t - app ) / tick ) * tick
         end,
         interval = function () return 0.5 * state.haste end,
         value    = 1,                                  -- add 1 combo-point per tick
@@ -581,7 +581,7 @@ local restless_blades_list = {
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= state.GUID then return end
-    
+
     -- SPELL_CAST_SUCCESS
     if subtype == "SPELL_CAST_SUCCESS" then
         local now = GetTime()
@@ -842,7 +842,7 @@ spec:RegisterHook( "runHandler", function( ability )
                 applyBuff( "subterfuge" )
             end
         end
-        
+
         if talent.double_jeopardy.enabled then
             applyBuff( "double_jeopardy" )
         end
@@ -1432,7 +1432,7 @@ spec:RegisterAbilities( {
         -- No tick_time/tick, no finish-refund – resource model does it.
         start = function ()
             if buff.double_jeopardy.up and combo_points.current > 4 then removeBuff( "double_jeopardy" ) end
-                
+
             applyBuff( "killing_spree" )
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
