@@ -4145,7 +4145,7 @@ self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
                 width = 1.5,
                 order = 2,
                 values = function ()
-                    table.wipe( toggles )
+                    wipe( toggles )
 
                     local t = class.abilities[ v ].toggle or "none"
                     if t == "essences" then t = "covenants" end
@@ -4280,7 +4280,7 @@ self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
                         width = 1.5,
                         order = 1.2,
                         values = function ()
-                            table.wipe( toggles )
+                            wipe( toggles )
 
                             local t = class.abilities[ v ].toggle or "none"
                             if t == "essences" then t = "covenants" end
@@ -4567,7 +4567,7 @@ found = true end
                 width = 1.5,
                 order = 3,
                 values = function ()
-                    table.wipe( toggles )
+                    wipe( toggles )
 
                     toggles.none = "None"
                     toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
@@ -4683,7 +4683,7 @@ found = true end
                         width = 1.5,
                         order = 3,
                         values = function ()
-                            table.wipe( toggles )
+                            wipe( toggles )
 
                             toggles.none = "None"
                             toggles.default = "Default" .. ( class.abilities[ v ].toggle and ( " |cffffd100(" .. class.abilities[ v ].toggle .. ")|r" ) or " |cffffd100(none)|r" )
@@ -5204,11 +5204,11 @@ found = true end
                                             "\nThis setting determines how much time can be used to generate recommendations.\n\n" ..
                                             "|cFFFFD100• Higher values|r allow recommendations to |cFF00FF00update more quickly|r but may risk lowering your frame rate, " ..
                                             "especially when other addons are working at the same time.\n" ..
-                                            "|cFFFFD100• Lower values|r mean recommendations may update more slowly but may |cFF00FF00preserve your frame rate|r.\n\n" .. 
-                                            
+                                            "|cFFFFD100• Lower values|r mean recommendations may update more slowly but may |cFF00FF00preserve your frame rate|r.\n\n" ..
+
                                             "Adjust this budget to balance |cFF00FF00smooth gameplay|r and |cFF00FF00responsive recommendations|r. " ..
                                             "Use the highest value that feels smooth on your system without your screen freezing or stuttering.\n\n" ..
-                                            
+
                                             "|cFF00B4FFDefault (recommended)|r: |cFFFFD10070%|r\n\n" ..
 
                                             "At |cFFFFD700" .. format( "%.1f", fps ) .. " FPS|r, a budget of |cFFFFD700" .. ( budget * 100 ) .. "%|r " ..
@@ -5676,7 +5676,7 @@ found = true end
                                                     insert( listNames, k )
                                                 end
 
-                                                table.sort( listNames )
+                                                sort( listNames )
 
                                                 local o
 
@@ -7424,7 +7424,7 @@ n = tonumber( n ) + 1
                                                 local body = entry.text or "|cff777777<No message provided>|r"
                                                 local coloredKey = ColorizeAPLIdentifier( key )
 
-                                                table.insert( output, format(
+                                                insert( output, format(
                                                     "|cff888888[%s (%dx)]|r %s\n%s",
                                                     entry.last or "??", entry.n or 1, coloredKey, body
                                                 ))
@@ -7440,20 +7440,20 @@ n = tonumber( n ) + 1
 
                                         -- 1. Stress Test
                                         if type( stressTestResults ) == "string" and stressTestResults ~= "" then
-                                            table.insert( finalOutput, "|cffa0a0ffAutomatic Stress Test:|r " .. stressTestResults )
+                                            insert( finalOutput, "|cffa0a0ffAutomatic Stress Test:|r " .. stressTestResults )
                                         end
                                         -- 2. Header
                                         if exportData.linked then
-                                            table.insert( finalOutput, "|cffff0000WARNING:|r There are unresolved Warnings related to this priority. Please review before exporting." )
+                                            insert( finalOutput, "|cffff0000WARNING:|r There are unresolved Warnings related to this priority. Please review before exporting." )
                                         elseif exportData.unrelated then
-                                            table.insert( finalOutput, "|cffffff00NOTICE:|r There are unresolved Warnings since reloading the UI. These may not be related to this priority." )
+                                            insert( finalOutput, "|cffffff00NOTICE:|r There are unresolved Warnings since reloading the UI. These may not be related to this priority." )
                                         end
                                         -- 3. Error entries
                                         for _, line in ipairs( output ) do
-                                            table.insert( finalOutput, line )
+                                            insert( finalOutput, line )
                                         end
                                         if not exportData.linked and not exportData.unrelated and #output == 0 then
-                                            table.insert( finalOutput, "|cff00ff00No warnings or errors detected!|r\n" )
+                                            insert( finalOutput, "|cff00ff00No warnings or errors detected!|r\n" )
                                         end
 
                                         exportData.stress = table.concat( finalOutput, "\n\n" )

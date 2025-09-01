@@ -753,7 +753,7 @@ end
 
 ns.wipeDebuffs = function()
     for k, _ in pairs(debuffs) do
-        table.wipe(debuffs[k])
+        wipe(debuffs[k])
         debuffCount[k] = 0
     end
 end

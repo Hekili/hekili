@@ -956,7 +956,6 @@ local death_events = {
 }
 
 local summon = {}
-local wipe = table.wipe
 
 local vesper_heal = 0
 local vesper_damage = 0
@@ -1593,7 +1592,7 @@ spec:RegisterHook( "reset_precast", function ()
     if talent.elemental_equilibrium.enabled then
         elemental_equilibrium.refresh_timers()
     end
-    
+
     if talent.fusion_of_elements.enabled then
         local FusionDuration = 20 - action.icefury.time_since
         local FusionBoth = FusionDuration > 19.5 and not ( FusionFire or FusionNature )
@@ -1632,7 +1631,7 @@ local fol_spells = {}
 spec:RegisterStateFunction( "flash_of_lightning", function()
     if #fol_spells == 0 then
         for k, v in pairs( class.abilityList ) do
-            if v.school == "nature" then table.insert( fol_spells, k ) end
+            if v.school == "nature" then insert( fol_spells, k ) end
         end
     end
 

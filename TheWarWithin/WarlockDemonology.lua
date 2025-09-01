@@ -246,36 +246,36 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
             -- Wild Imp: 104317 (40) and 279910 (20).
             if spellID == 104317 or spellID == 279910 then
                 local dur = ( spellID == 279910 and 20 or 40 )
-                table.insert( wild_imps, now + dur )
+                insert( wild_imps, now + dur )
 
                 imps[ destGUID ] = {
                     t = now,
                     casts = 0,
-                    expires = math.ceil( now + dur ),
-                    max = math.ceil( now + dur )
+                    expires = ceil( now + dur ),
+                    max = ceil( now + dur )
                 }
 
                 if guldan[ 1 ] then
                     -- If this imp is impacting within 0.15s of the expected queued imp, remove that imp from the queue.
                     if abs( now - guldan[ 1 ] ) < 0.15 then
-                        table.remove( guldan, 1 )
+                        remove( guldan, 1 )
                     end
                 end
 
                 -- Expire missed/lost Gul'dan predictions.
                 while( guldan[ 1 ] ) do
                     if guldan[ 1 ] < now then
-                        table.remove( guldan, 1 )
+                        remove( guldan, 1 )
                     else
                         break
                     end
                 end
 
             -- Grimoire Felguard
-            elseif spellID == 111898 then table.insert( grim_felguard, now + 17 )
+            elseif spellID == 111898 then insert( grim_felguard, now + 17 )
 
             -- Demonic Tyrant: 265187, 15 seconds uptime.
-            elseif spellID == 265187 then table.insert( demonic_tyrant, now + 15 )
+            elseif spellID == 265187 then insert( demonic_tyrant, now + 15 )
                 for i = 1, #dreadstalkers do dreadstalkers[ i ] = dreadstalkers[ i ] + 15 end
                 for i = 1, #vilefiend do vilefiend[ i ] = vilefiend[ i ] + 15 end
                 for i = 1, #grim_felguard do grim_felguard[ i ] = grim_felguard[ i ] + 15 end
@@ -303,8 +303,8 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
             -- 267995 - Wrathguard
             -- 267996 - Darkhound
             -- 268001 - Ur'zul
-            elseif spellID >= 267986 and spellID <= 268001 then table.insert( other_demon, now + 15 )
-            elseif spellID == 387590 then table.insert( pit_lord, now + 10 ) end -- Pit Lord from Gul'dan's Ambition
+            elseif spellID >= 267986 and spellID <= 268001 then insert( other_demon, now + 15 )
+            elseif spellID == 387590 then insert( pit_lord, now + 10 ) end -- Pit Lord from Gul'dan's Ambition
 
         elseif spellID == 387458 and imps[ destGUID ] then
             imps[ destGUID ].boss = true
@@ -316,13 +316,13 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
         elseif subtype == "SPELL_CAST_SUCCESS" then
             -- Implosion.
             if spellID == 196277 then
-                table.wipe( wild_imps )
-                table.wipe( imps )
+                wipe( wild_imps )
+                wipe( imps )
 
             -- Power Siphon.
             elseif spellID == 264130 then
-                if wild_imps[1] then table.remove( wild_imps, 1 ) end
-                if wild_imps[1] then table.remove( wild_imps, 1 ) end
+                if wild_imps[1] then remove( wild_imps, 1 ) end
+                if wild_imps[1] then remove( wild_imps, 1 ) end
 
                 for i = 1, 2 do
                     local lowest
@@ -343,10 +343,10 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, source, _, _, _, destGUID,
             elseif spellID == 105174 then
                 hog_time = now
 
-                if shards_for_guldan >= 1 then table.insert( guldan, now + 0.6 ) end
-                if shards_for_guldan >= 2 then table.insert( guldan, now + 0.8 ) end
-                if shards_for_guldan >= 3 then table.insert( guldan, now + 1 ) end
-            
+                if shards_for_guldan >= 1 then insert( guldan, now + 0.6 ) end
+                if shards_for_guldan >= 2 then insert( guldan, now + 0.8 ) end
+                if shards_for_guldan >= 3 then insert( guldan, now + 1 ) end
+
             -- Call Dreadstalkers (use travel time to determine buffer delay for Demonic Cores).
             elseif spellID == 104316 then
                 local info = GetSpellInfo( 104316 )
@@ -400,7 +400,7 @@ spec:RegisterHook( "reset_precast", function()
 
     while( wild_imps[ i ] ) do
         if wild_imps[ i ] < now then
-            table.remove( wild_imps, i )
+            remove( wild_imps, i )
         else
             i = i + 1
         end
@@ -410,17 +410,17 @@ spec:RegisterHook( "reset_precast", function()
     wipe( imp_gang_boss_v )
 
     for n, t in pairs( imps ) do
-        table.insert( wild_imps_v, t.expires )
-        if t.boss then table.insert( imp_gang_boss_v, t.expires ) end
+        insert( wild_imps_v, t.expires )
+        if t.boss then insert( imp_gang_boss_v, t.expires ) end
     end
 
-    table.sort( wild_imps_v )
-    table.sort( imp_gang_boss_v )
+    sort( wild_imps_v )
+    sort( imp_gang_boss_v )
 
     local difference = #wild_imps_v - GetSpellCastCount( 196277 )
 
     while difference > 0 do
-        table.remove( wild_imps_v, 1 )
+        remove( wild_imps_v, 1 )
         difference = difference - 1
     end
 
@@ -430,7 +430,7 @@ spec:RegisterHook( "reset_precast", function()
     i = 1
     while( other_demon[ i ] ) do
         if other_demon[ i ] < now then
-            table.remove( other_demon, i )
+            remove( other_demon, i )
         else
             i = i + 1
         end
@@ -443,7 +443,7 @@ spec:RegisterHook( "reset_precast", function()
     local pl_expires = 0
     while( pit_lord[ i ] ) do
         if pit_lord[ i ] < now then
-            table.remove( pit_lord, i )
+            remove( pit_lord, i )
         elseif pit_lord[ i ] > pl_expires then
             pl_expires = pit_lord[ i ]
             i = i + 1
@@ -488,10 +488,10 @@ spec:RegisterHook( "reset_precast", function()
 
     end
 
-    if #grim_felguard_v > 1 then table.sort( grim_felguard_v ) end
-    if #vilefiend_v > 1 then table.sort( vilefiend_v ) end
-    if #dreadstalkers_v > 1 then table.sort( dreadstalkers_v ) end
-    if #demonic_tyrant_v > 1 then table.sort( demonic_tyrant_v ) end
+    if #grim_felguard_v > 1 then sort( grim_felguard_v ) end
+    if #vilefiend_v > 1 then sort( vilefiend_v ) end
+    if #dreadstalkers_v > 1 then sort( dreadstalkers_v ) end
+    if #demonic_tyrant_v > 1 then sort( demonic_tyrant_v ) end
 
     if demonic_tyrant_v[ 1 ] and demonic_tyrant_v[ 1 ] > now then
         summonPet( "demonic_tyrant", demonic_tyrant_v[ 1 ] - now )
@@ -716,7 +716,7 @@ spec:RegisterStateFunction( "summon_demon", function( name, duration, count )
     last_summon.count = count
 
     for i = 1, count do
-        table.insert( db, expires )
+        insert( db, expires )
     end
 end )
 
@@ -749,12 +749,12 @@ spec:RegisterStateFunction( "consume_demons", function( name, count )
     elseif name == "demonic_tyrant"    then db = demonic_tyrant_v end
 
     if type( count ) == "string" and count == "all" then
-        table.wipe( db )
+        wipe( db )
 
         -- Wipe queued Guldan imps that should have landed by now.
         if name == "wild_imps" then
             while( guldan_v[ 1 ] ) do
-                if guldan_v[ 1 ] < now then table.remove( guldan_v, 1 )
+                if guldan_v[ 1 ] < now then remove( guldan_v, 1 )
                 else break end
             end
         end
@@ -765,17 +765,17 @@ spec:RegisterStateFunction( "consume_demons", function( name, count )
 
     if count >= #db then
         count = count - #db
-        table.wipe( db )
+        wipe( db )
     end
 
     while( count > 0 ) do
         if not db[1] then break end
 
-        local d = table.remove( db, 1 )
+        local d = remove( db, 1 )
         if name == "wild_imps" and #imp_gang_boss_v > 0 then
             for i, v in ipairs( imp_gang_boss_v ) do
                 if d == v then
-                    table.remove( imp_gang_boss_v, i )
+                    remove( imp_gang_boss_v, i )
                     break
                 end
             end
@@ -787,7 +787,7 @@ spec:RegisterStateFunction( "consume_demons", function( name, count )
     if name == "wild_imps" and count > 0 then
         while( count > 0 ) do
             if not guldan_v[1] or guldan_v[1] > now then break end
-            table.remove( guldan_v, 1 )
+            remove( guldan_v, 1 )
             count = count - 1
         end
     end
@@ -1227,7 +1227,7 @@ spec:RegisterAuras( {
         max_stack = 1,
         generate = function( t )
             local expires = gcd.max + doom_core_consumed
-            
+
             -- Expiration is based on actual reset time; virtual used_core will get applied in handlers.
             if expires > now then
                 t.name = "Demonic Core Consumed"

@@ -40,7 +40,7 @@ spec:RegisterResource( Enum.PowerType.Runes, {
 
         interval = function( time, val )
             local r = state.runes
-            val = math.floor( val )
+            val = floor( val )
 
             if val == 6 then return -1 end
             return r.expiry[ val + 1 ] - time
@@ -72,17 +72,17 @@ spec:RegisterResource( Enum.PowerType.Runes, {
             t.expiry[ i ] = ready and 0 or ( start + duration )
             t.cooldown = duration
         end
-        table.sort( t.expiry )
+        sort( t.expiry )
         t.actual = nil -- Reset actual to force recalculation
     end,
 
     gain = function( amount )
         local t = state.runes
         for i = 1, amount do
-            table.insert( t.expiry, 0 )
+            insert( t.expiry, 0 )
             t.expiry[ 7 ] = nil
         end
-        table.sort( t.expiry )
+        sort( t.expiry )
         t.actual = nil
     end,
 
@@ -91,7 +91,7 @@ spec:RegisterResource( Enum.PowerType.Runes, {
 
         for i = 1, amount do
             t.expiry[ 1 ] = ( t.expiry[ 4 ] > 0 and t.expiry[ 4 ] or state.query_time ) + t.cooldown
-            table.sort( t.expiry )
+            sort( t.expiry )
         end
 
         local rpGainMultiplier = state.buff.rune_of_hysteria.up and 1.2 or 1
@@ -257,7 +257,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, so
             end
 
             -- May require tuning.
-            local tOffset = math.abs( info.expirationTime - info.duration - GetTime() )
+            local tOffset = abs( info.expirationTime - info.duration - GetTime() )
             if tOffset < matchThreshold then
                 insert( storage, info.auraInstanceID )
                 while( #storage > 3 ) do storage[ remove( storage, 1 ) ] = nil end

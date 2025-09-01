@@ -1567,7 +1567,7 @@ do
                     v.name = k
 
                     if i > 0 and v.next >= 0 then
-                        table.insert( events, v )
+                        insert( events, v )
                     end
                 end
             end
@@ -1587,7 +1587,7 @@ do
             iter = iter + 1
 
             if e.next > finish or not r or not r.actual then
-                table.remove( events, 1 )
+                remove( events, 1 )
             else
                 now = e.next
 
@@ -1597,7 +1597,7 @@ do
                 local channel = ( e.channel and state.buff.casting.expires < now )
 
                 if stop or aura or channel then
-                    table.remove( events, 1 )
+                    remove( events, 1 )
                     local v = max( 0, min( r.max, r.forecast[ r.fcount ].v + bonus ) )
                     local idx
 
@@ -1642,7 +1642,7 @@ do
                     if e.next > finish or step < 0 or
                        ( e.aura and state[ e.debuff and "debuff" or "buff" ][ e.aura ].expires < e.next ) or
                        ( e.channel and state.buff.casting.expires < e.next ) then
-                        table.remove( events, 1 )
+                        remove( events, 1 )
                     end
                 end
 
@@ -6748,8 +6748,8 @@ function state:RunHandler( key, noStart )
     self.prev.last = key
     self[ ability.gcd == "off" and "prev_off_gcd" or "prev_gcd" ].last = key
 
-    table.insert( self.predictions, 1, key )
-    table.insert( self[ ability.gcd == "off" and 'predictionsOff' or 'predictionsOn' ], 1, key )
+    insert( self.predictions, 1, key )
+    insert( self[ ability.gcd == "off" and 'predictionsOff' or 'predictionsOn' ], 1, key )
 
     self.history.casts[ key ] = self.query_time
 

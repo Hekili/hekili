@@ -31,6 +31,7 @@ local IsSpellKnownOrOverridesKnown = C_SpellBook.IsSpellInSpellBook
 -- local IsActiveSpell = ns.IsActiveSpell
 
 -- Specialization-specific local functions (if any)
+local concat = table.concat
 
 spec:RegisterResource( Enum.PowerType.Fury, {
     -- Immolation Aura now grants 8 up front, then 2 per second
@@ -945,7 +946,7 @@ spec:RegisterHook( "reset_precast", function ()
         for i, activation_time in ipairs( true_inactive_fragments ) do
             insert( real_times, strformat( "%.2fs", activation_time - GetTime() ) )
         end
-        local real_str = #real_times > 0 and table.concat( real_times, ", " ) or "none"
+        local real_str = #real_times > 0 and concat( real_times, ", " ) or "none"
 
         Hekili:Debug( "Soul Fragments - Active: %d, Inactive: %d, Total: %d, Buff Stack: %d, Next: %.2fs, Real: [%s]",
             soul_fragments.active or 0,

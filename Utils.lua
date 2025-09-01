@@ -5,7 +5,7 @@ local addon, ns = ...
 local Hekili = _G[ addon ]
 
 local format, gsub, lower = string.format, string.gsub, string.lower
-local insert, remove = table.insert, table.remove
+local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
 local class = Hekili.Class
 local state = Hekili.State
@@ -162,7 +162,7 @@ local tblUnpack = {}
 
 ns.multiUnpack = function( ... )
 
-    table.wipe( tblUnpack )
+    wipe( tblUnpack )
 
     for i = 1, select( '#', ... ) do
         for _, value in ipairs( select( i, ... ) ) do
@@ -239,9 +239,9 @@ local function __genOrderedIndex( t )
     end
 
     for key in pairs( t ) do
-        table.insert( orderedIndex, key )
+        insert( orderedIndex, key )
     end
-    table.sort( orderedIndex, sortHelper )
+    sort( orderedIndex, sortHelper )
     return orderedIndex
 end
 

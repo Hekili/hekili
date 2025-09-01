@@ -242,7 +242,7 @@ function SkeletonGen:GetBuffTooltip( unit, index, filter )
     for i = 1, tooltip:NumLines() do
         local line = _G[ "HekiliTooltipTextLeft" .. i ]
         if line then
-            table.insert( tooltipText, line:GetText() or "" )
+            insert( tooltipText, line:GetText() or "" )
         end
     end
 
@@ -293,11 +293,11 @@ end
 
 --[[
 local function trackAuraApplication( token, spellID, time )
-    table.insert( SkeletonGen._applications, { token = token, id = spellID, time = time } )
+    insert( SkeletonGen._applications, { token = token, id = spellID, time = time } )
 end
 
 local function trackAuraRemoval( token, spellID, time )
-    table.insert( SkeletonGen._removals, { token = token, id = spellID, time = time } )
+    insert( SkeletonGen._removals, { token = token, id = spellID, time = time } )
 end
 
 local function assignAuraToLastCast( auraType, token, spellID )
@@ -609,14 +609,14 @@ function SkeletonGen:PrepareSpecData()
                                                 if not existingTalent.alternativeNodes then
                                                     existingTalent.alternativeNodes = {}
                                                 end
-                                                table.insert( existingTalent.alternativeNodes, nodeID )
+                                                insert( existingTalent.alternativeNodes, nodeID )
                                             end
                                         else
                                             -- Same node, same spell ID = should not happen, but track as alternative
                                             if not existingTalent.alternativeNodes then
                                                 existingTalent.alternativeNodes = {}
                                             end
-                                            table.insert( existingTalent.alternativeNodes, nodeID )
+                                            insert( existingTalent.alternativeNodes, nodeID )
                                         end
                                     end
 
@@ -707,7 +707,7 @@ function SkeletonGen:PrepareSpecData()
                 if not nameToSpells[ baseName ] then
                     nameToSpells[ baseName ] = {}
                 end
-                table.insert( nameToSpells[ baseName ], { token = token, spellID = talent.id, talent = talent, spellName = spellName } )
+                insert( nameToSpells[ baseName ], { token = token, spellID = talent.id, talent = talent, spellName = spellName } )
             end
         end
     end
@@ -727,7 +727,7 @@ function SkeletonGen:PrepareSpecData()
 
             if #spells == 2 and uniqueSpellCount == 2 then -- Only handle pairs with different spell IDs
                 -- Sort spells by ID to ensure consistent ordering
-                table.sort( spells, function( a, b ) return a.spellID < b.spellID end )
+                sort( spells, function( a, b ) return a.spellID < b.spellID end )
 
                 -- Check if we have custom suffixes for this talent in config
                 local customSuffixes = choiceNodeSuffixes[ baseName ]
@@ -792,9 +792,9 @@ function SkeletonGen:PrepareSpecData()
     local sorted = {}
     for k, v in pairs( self.pvptalents ) do
         v.name = k
-        table.insert( sorted, v )
+        insert( sorted, v )
     end
-    table.sort( sorted, function( a, b ) return a.name < b.name end )
+    sort( sorted, function( a, b ) return a.name < b.name end )
     self.pvptalents = {}
     for _, v in ipairs( sorted ) do
         self.pvptalents[ v.name ] = v
@@ -977,17 +977,17 @@ function SkeletonGen:Generate()
     for k, v in pairs( self.talents ) do
         local talentType = v.isHero and formatKey( v.tree or "unknown" ) or v.isSpec and specName or className
         groups[ talentType ] = groups[ talentType ] or {}
-        table.insert( groups[ talentType ], { k, v } )
+        insert( groups[ talentType ], { k, v } )
     end
 
     -- Capture hero tree keys for sorting
     local heroKeys = {}
     for k in pairs( groups ) do
         if k ~= className and k ~= specName then
-            table.insert( heroKeys, k )
+            insert( heroKeys, k )
         end
     end
-    table.sort( heroKeys )
+    sort( heroKeys )
 
     -- Class and Spec talents
     for _, section in ipairs( { className, specName } ) do
@@ -1005,7 +1005,7 @@ function SkeletonGen:Generate()
     for _, key in ipairs( heroKeys ) do
         local list = groups[ key ]
         if list then
-            table.sort( list, function( a, b ) return a[ 1 ] < b[ 1 ] end )
+            sort( list, function( a, b ) return a[ 1 ] < b[ 1 ] end )
             self:Blank()
             self:Append( "-- " .. TitleCase( key ) )
             for _, entry in ipairs( list ) do

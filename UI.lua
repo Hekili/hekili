@@ -38,7 +38,7 @@ end
 local GetSpecialization = C_SpecializationInfo.GetSpecialization
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
 
-local floor, format, insert = math.floor, string.format, table.insert
+local floor, format, insert, wipe = math.floor, string.format, table.insert, table.wipe
 
 local HasVehicleActionBar, HasOverrideActionBar, IsInPetBattle, UnitHasVehicleUI, UnitOnTaxi = HasVehicleActionBar, HasOverrideActionBar, C_PetBattles.IsInBattle, UnitHasVehicleUI, UnitOnTaxi
 local Tooltip = ns.Tooltip
@@ -1372,7 +1372,7 @@ do
                         self.flashColor.r, self.flashColor.g, self.flashColor.b = unpack( conf.flash.color )
 
                         catchFlash = GetTime()
-                        table.wipe( lastFramesFlashed )
+                        wipe( lastFramesFlashed )
 
                         if ability.item then
                             local iname = LSF.ItemName( ability.item )
@@ -2075,7 +2075,7 @@ do
                     else events[ k ] = 1 end
                 end
 
-                table.wipe( self.eventsTriggered )
+                wipe( self.eventsTriggered )
             end ]]
         -- end
 

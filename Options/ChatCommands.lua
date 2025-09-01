@@ -21,11 +21,11 @@ function Hekili:countPriorities()
 
     for priority, data in pairs( Hekili.DB.profile.packs ) do
         if data.spec == spec then
-            table.insert( priorities, priority )
+            insert( priorities, priority )
         end
     end
 
-    table.sort( priorities )
+    sort( priorities )
     return priorities
 end
 
@@ -42,7 +42,7 @@ function Hekili:CmdLine( input )
     -- Parse arguments into a table
     local args = {}
     for arg in string.gmatch( input, "%S+" ) do
-        table.insert( args, arg )
+        insert( args, arg )
     end
 
     -- Alias maps for argument substitutions

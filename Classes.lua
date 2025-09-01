@@ -19,7 +19,8 @@ local getSpecializationKey = ns.getSpecializationKey
 
 local LSR = LibStub( "SpellRange-1.0" )
 
-local insert, wipe = table.insert, table.wipe
+-- Tables
+local insert, remove, sort, wipe = table.insert, table.remove, table.sort, table.wipe
 
 local mt_resource = ns.metatables.mt_resource
 
@@ -594,7 +595,7 @@ local HekiliSpecMixin = {
                 if arg2.items then
                     for _, item in ipairs( arg2.items ) do
                         if not gear[ item ] then
-                            table.insert( gear, item )
+                            insert( gear, item )
                             gear[ item ] = true
                             found = true
                         end
@@ -615,7 +616,7 @@ local HekiliSpecMixin = {
                     local item = select( i, ... )
 
                     if not gear[ item ] then
-                        table.insert( gear, item )
+                        insert( gear, item )
                         gear[ item ] = true
                         found = true
                     end
@@ -859,7 +860,7 @@ local HekiliSpecMixin = {
                                 else
                                     if self.pendingItemSpells[ a.itemSpellName ] then
                                         if type( self.pendingItemSpells[ a.itemSpellName ] ) == "table" then
-                                            table.insert( self.pendingItemSpells[ a.itemSpellName ], ability )
+                                            insert( self.pendingItemSpells[ a.itemSpellName ], ability )
                                         else
                                             local first = self.pendingItemSpells[ a.itemSpellName ]
                                             self.pendingItemSpells[ a.itemSpellName ] = {
@@ -956,7 +957,7 @@ local HekiliSpecMixin = {
                         if v == a then class.abilityList[ k ] = nil end
                     end
                     Hekili.InvalidSpellIDs = Hekili.InvalidSpellIDs or {}
-                    table.insert( Hekili.InvalidSpellIDs, a.id )
+                    insert( Hekili.InvalidSpellIDs, a.id )
                     Hekili:Error( "Name info not available for " .. a.id .. "." )
                     return
                 end
@@ -1197,7 +1198,7 @@ local HekiliSpecMixin = {
     RegisterSetting = function( self, key, value, option )
         CommitKey( key )
 
-        table.insert( self.settings, {
+        insert( self.settings, {
             name = key,
             default = value,
             info = option
@@ -3536,7 +3537,7 @@ do
         { "prized_aspirants_badge_of_ferocity", 229491 },
         { "prized_gladiators_badge_of_ferocity", 229780 },
         { "astral_aspirants_badge_of_ferocity", 230352 },
-        { "astral_gladiators_badge_of_ferocity", 230638 }  
+        { "astral_gladiators_badge_of_ferocity", 230638 }
     }
 
     local pvp_badges_copy = {}
@@ -3808,7 +3809,7 @@ all:RegisterAbility( "the_horsemans_sinister_slicer", {
 
 ns.addToggle = function( name, default, optionName, optionDesc )
 
-    table.insert( class.toggles, {
+    insert( class.toggles, {
         name = name,
         state = default,
         option = optionName,
@@ -3824,7 +3825,7 @@ end
 
 ns.addSetting = function( name, default, options )
 
-    table.insert( class.settings, {
+    insert( class.settings, {
         name = name,
         state = default,
         option = options
@@ -3839,7 +3840,7 @@ end
 
 ns.addWhitespace = function( name, size )
 
-    table.insert( class.settings, {
+    insert( class.settings, {
         name = name,
         option = {
             name = " ",

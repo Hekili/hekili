@@ -28,6 +28,7 @@ local GetSpellCastCount = C_Spell.GetSpellCastCount
 -- local IsActiveSpell = ns.IsActiveSpell
 
 -- Specialization-specific local functions (if any)
+local upper = string.upper
 
 spec:RegisterResource( Enum.PowerType.Energy, {
     crackling_jade_lightning = {
@@ -924,12 +925,12 @@ local XuenCasts = 0
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == state.GUID then
         local ability = class.abilities[ spellID ] and class.abilities[ spellID ].key
-        
+
         if ability then
             if ability == "tiger_palm" and subtype == "SPELL_MISSED" and not state.talent.hit_combo.enabled then
-                if ns.castsAll[1] == "tiger_palm" then table.remove( ns.castsAll, 1 ) end
-                if ns.castsAll[2] == "tiger_palm" then table.remove( ns.castsAll, 2 ) end
-                if ns.castsOn[1]  == "tiger_palm" then table.remove( ns.castsOn, 1  ) end
+                if ns.castsAll[1] == "tiger_palm" then remove( ns.castsAll, 1 ) end
+                if ns.castsAll[2] == "tiger_palm" then remove( ns.castsAll, 2 ) end
+                if ns.castsOn[1]  == "tiger_palm" then remove( ns.castsOn, 1  ) end
 
                 actual_combo = ns.castsOn[ 1 ] or "none"
                 Hekili:ForceUpdate( "WW_MISSED" )
@@ -947,7 +948,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
             if subtype == "SPELL_CAST_SUCCESS" and spellID == spec.abilities.invoke_xuen.id then
                 print( strformat( "Added Xuen Cast %d.", XuenCasts ) )
             end
-        
+
         elseif subtype == "SPELL_AURA_REMOVED" then
             if spellID == class.auras.flurry_charge.id then ShadoPanFlurryChargeEnergy = 0
             elseif spellID == class.auras.flurry_charge_tww3_tier.id then TWW3FlurryChargeEnergy = 0 end
@@ -1024,14 +1025,14 @@ spec:RegisterHook( "spend", function( amt, resource )
         if amt > 50 and talent.efficient_training.enabled then
             reduceCooldown( "storm_earth_and_fire", 1 )
         end
-        
+
         if buff.flurry_charge.up then
             if flurry_charge_energy + amt > 240 then
                 flurry_charge_energy = 0
                 removeBuff( "flurry_charge" )
             else flurry_charge_energy = flurry_charge_energy + amt end
         end
-        
+
         if buff.flurry_charge_tww3_tier.up then
             if flurry_charge_tww3_energy + amt > ( set_bonus.tww3 > 3 and buff.storm_earth_and_fire.up and 120 or 240 ) then
                 flurry_charge_tww3_energy = 0
@@ -1161,7 +1162,7 @@ spec:RegisterTotems( {
 
 spec:RegisterUnitEvent( "UNIT_POWER_UPDATE", "player", nil, function( event, unit, resource )
     if resource == "CHI" then
-        if UnitPower( "player", Enum.PowerType.Chi ) < 2 and ns.castsOn[ 1 ] == "tiger_palm" then table.remove( ns.castsOn, 1 ) end
+        if UnitPower( "player", Enum.PowerType.Chi ) < 2 and ns.castsOn[ 1 ] == "tiger_palm" then remove( ns.castsOn, 1 ) end
         Hekili:ForceUpdate( event, true )
     end
 end )
@@ -2019,7 +2020,7 @@ spec:RegisterAbilities( {
 
         handler = function ()
             applyDebuff( "target", "strike_of_the_windlord" )
-            
+
             -- if talent.darting_hurricane.enabled then addStack( "darting_hurricane", nil, 2 ) end
             if talent.gale_force.enabled then applyDebuff( "target", "gale_force" ) end
             if talent.heart_of_the_jade_serpent.enabled then applyBuff( "heart_of_the_jade_serpent_cdr" ) end
@@ -2140,7 +2141,7 @@ spec:RegisterAbilities( {
         id = 122470,
         cast = 0,
         cooldown = 90,
-        gcd = "off",        
+        gcd = "off",
         school = "physical",
 
         startsCombat = true,
@@ -2364,7 +2365,7 @@ spec:RegisterSetting( "use_diffuse", false, {
         local t = class.abilities.diffuse_magic.toggle
         if t then
             local active = Hekili.DB.profile.toggles[ t ].value
-            m = m .. "\n\n" .. ( active and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires " .. t:gsub("^%l", string.upper) .. " Toggle|r"
+            m = m .. "\n\n" .. ( active and "|cFF00FF00" or "|cFFFF0000" ) .. "Requires " .. t:gsub("^%l", upper) .. " Toggle|r"
         end
 
         return m

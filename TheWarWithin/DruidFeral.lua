@@ -1540,14 +1540,14 @@ spec:RegisterStateFunction( "time_to_bt_triggers", function( n )
     if not talent.bloodtalons.enabled or buff.bt_triggers.stack == n then return 0 end
     if buff.bt_triggers.stack < n then return 3600 end
 
-    table.wipe( bt_remainingTime )
+    wipe( bt_remainingTime )
 
     for bt_aura in pairs( bt_auras ) do
         local rem = buff[ bt_aura ].remains
         if rem > 0 then bt_remainingTime[ bt_aura ] = rem end
     end
 
-    table.sort( bt_remainingTime )
+    sort( bt_remainingTime )
     return bt_remainingTime[ n ]
 end )
 

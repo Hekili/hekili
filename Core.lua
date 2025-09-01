@@ -23,7 +23,7 @@ local trim = string.trim
 
 
 local tcopy = ns.tableCopy
-local tinsert, tremove, twipe = table.insert, table.remove, table.wipe
+local tinsert, tremove, twipe, tsort = table.insert, table.remove, table.wipe, table.sort
 
 
 -- checkImports()
@@ -302,7 +302,7 @@ local function blockHelper( ... )
         end
     end
 
-    table.sort( blockValues )
+    tsort( blockValues )
 end
 
 
@@ -2282,11 +2282,11 @@ function Hekili:DumpFrameInfo()
 
             db.peak = v.peakUsage
 
-            table.insert( usedCPU, db )
+            tinsert( usedCPU, db )
         end
     end
 
-    table.sort( usedCPU, function( a, b ) return a.usage < b.usage end )
+    tsort( usedCPU, function( a, b ) return a.usage < b.usage end )
 
     print( "Frame CPU Usage Data" )
     for i, v in ipairs( usedCPU ) do

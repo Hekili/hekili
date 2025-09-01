@@ -2184,7 +2184,7 @@ local function ReadKeybindings( event )
         -- Bartender4 support; if BT4 bindings are set, use them, otherwise fall back on default UI bindings below.
         -- This will still get viewed as misleading...
         if _G["Bartender4"] then
-            table.wipe( slotsUsed )
+            wipe( slotsUsed )
 
             for i = 1, 180 do
                 local keybind = "CLICK BT4Button" .. i .. ":Keybind"
@@ -2198,7 +2198,7 @@ local function ReadKeybindings( event )
 
         -- Dominos support
         elseif C_AddOns.IsAddOnLoaded("Dominos") then
-            table.wipe( slotsUsed )
+            wipe( slotsUsed )
 
             for i = 1, 14 do
                 local bar = _G["DominosFrame" .. i]
@@ -2242,7 +2242,7 @@ local function ReadKeybindings( event )
 
         -- Use ElvUI's actionbars only if they are actually enabled.
         elseif _G["ElvUI"] and _G[ "ElvUI_Bar1Button1" ] then
-            table.wipe( slotsUsed )
+            wipe( slotsUsed )
 
             for i = 1, 15 do
                 for b = 1, 12 do

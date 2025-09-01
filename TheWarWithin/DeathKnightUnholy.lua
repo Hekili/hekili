@@ -61,17 +61,17 @@ spec:RegisterResource( Enum.PowerType.Runes, {
             t.expiry[ i ] = ready and 0 or ( start + duration )
             t.cooldown = duration
         end
-        table.sort( t.expiry )
+        sort( t.expiry )
         t.actual = nil -- Reset actual to force recalculation
     end,
 
     gain = function( amount )
         local t = state.runes
         for i = 1, amount do
-            table.insert( t.expiry, 0 )
+            insert( t.expiry, 0 )
             t.expiry[ 7 ] = nil
         end
-        table.sort( t.expiry )
+        sort( t.expiry )
         t.actual = nil
     end,
 
@@ -79,8 +79,8 @@ spec:RegisterResource( Enum.PowerType.Runes, {
         local t = state.runes
         for i = 1, amount do
             local nextReady = ( t.expiry[ 4 ] > 0 and t.expiry[ 4 ] or state.query_time ) + t.cooldown
-            table.remove( t.expiry, 1 )
-            table.insert( t.expiry, nextReady )
+            remove( t.expiry, 1 )
+            insert( t.expiry, nextReady )
         end
 
         state.gain( amount * 10, "runic_power" )
@@ -1538,7 +1538,7 @@ local runeforges = {
 }
 
 local function ResetRuneforges()
-    table.wipe( state.death_knight.runeforge )
+    wipe( state.death_knight.runeforge )
 end
 
 local function UpdateRuneforge( slot, item )

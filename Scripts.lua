@@ -18,7 +18,7 @@ local safeMax = ns.safeMax
 
 local format, trim = string.format, string.trim
 
-local twipe, insert = table.wipe, table.insert
+local twipe, insert, tremove = table.wipe, table.insert, table.remove
 
 
 -- Forgive the name, but this should properly replace ! characters with not, accounting for appropriate bracketing.
@@ -451,13 +451,13 @@ do
                     local subExpr = scripts:SplitExpr( meat )
 
                     for _, v in ipairs( subExpr ) do
-                        table.insert( output, v )
+                        insert( output, v )
                     end
                 else
-                    table.insert( output, expr )
+                    insert( output, expr )
                 end
             else
-                table.insert( output, expr )
+                insert( output, expr )
             end
             str = str:sub( finish + 2, str:len() )
         end
@@ -556,7 +556,7 @@ do
         { "^time_to_imps%.(.+)$" , "time_to_imps[%1]"             }, -- Demo Warlock
         { "^!?diabolic_ritual$"  , "buff.diabolic_ritual.remains" }, -- Warlocks
         { "^!?demonic_art$"      , "buff.demonic_art.remains"     },
-        
+
         { "^!?two_cast_imps>(.-)$" , "time_to_n_cast_imps_exceeds_y(2,1+(%1))" },
         { "^!?last_cast_imps>(.-)$", "time_to_n_cast_imps_exceeds_y(1,1+(%1))" },
 
@@ -935,7 +935,7 @@ do
                 if depth == 0 then
                     local expr = p:sub( 1, i )
 
-                    table.insert( results, {
+                    insert( results, {
                         s = expr:trim(),
                         t = "expr"
                     } )
@@ -951,7 +951,7 @@ do
                 if i > 1 then
                     local expr = p:sub( 1, i - 1 )
 
-                    table.insert( results, {
+                    insert( results, {
                         s = expr:trim(),
                         t = "expr"
                     } )
@@ -961,7 +961,7 @@ do
 
                 c = p:sub( i ):match( "^([&%|%-%+*%%/><!%?=%~@][&%|%-%+*/><%?=%~]?)" )
 
-                table.insert( results, {
+                insert( results, {
                     s = c,
                     t = "op",
                     a = c:trim() --sub(1,1)
@@ -979,7 +979,7 @@ do
         p = p:trim()
 
         if p:len() > 0 then
-            table.insert( results, {
+            insert( results, {
                     s = p:trim(),
                     t = "expr",
                     l = true
@@ -999,7 +999,7 @@ do
 
             -- If we get a math op (*) followed by a not (!) followed by an expression, we want to safely wrap up the !expr in safenum().
             if prev and prev.t == "op" and math_ops[ prev.a ] and piece.t == "op" and piece.a == "!" and next and next.t == "expr" then
-                table.remove( results, i )
+                tremove( results, i )
                 piece = results[ i ]
                 next = results[ i + 1 ]
                 piece.s = "(!" .. piece.s .. ")"
@@ -1023,7 +1023,7 @@ do
                         if abss then orig = orig:gsub( "@", " abs " ) end
 
                         esDepth = esDepth - 1
-                        table.remove( tree )
+                        tremove( tree )
 
                         return orig
                     end
@@ -1119,7 +1119,7 @@ do
         output = output:gsub( "%(%s*(%b())%s*%)", "%1" )
 
         esDepth = esDepth - 1
-        table.remove( tree )
+        tremove( tree )
         return output
     end
 end
@@ -1466,7 +1466,7 @@ local function ConvertScript( node, hasModifiers, header )
 
             if k:sub( 1, 8 ) == "variable" then
                 varPool = varPool or {}
-                table.insert( varPool, k:sub( 10 ) )
+                insert( varPool, k:sub( 10 ) )
             end
         end
 
@@ -1579,7 +1579,7 @@ local function ConvertScript( node, hasModifiers, header )
                         for k, v in pairs( modElements[ m ] ) do
                             if k:sub( 1, 8 ) == "variable" then
                                 varPool = varPool or {}
-                                table.insert( varPool, k:sub( 10 ) )
+                                insert( varPool, k:sub( 10 ) )
                             end
                         end
                     end

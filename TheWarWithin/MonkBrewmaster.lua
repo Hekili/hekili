@@ -913,7 +913,7 @@ local function trackBrewmasterDamage( _, subtype, _, sourceGUID, sourceName, _, 
             local now = GetTime()
 
             if arg1 == destGUID and arg5 == 115069 then
-                local dmg = table.remove( staggered_damage_pool, 1 ) or {}
+                local dmg = remove( staggered_damage_pool, 1 ) or {}
 
                 dmg.t = now
                 dmg.d = arg8
@@ -921,10 +921,10 @@ local function trackBrewmasterDamage( _, subtype, _, sourceGUID, sourceName, _, 
 
                 total_staggered = total_staggered + arg8
 
-                table.insert( staggered_damage, 1, dmg )
+                insert( staggered_damage, 1, dmg )
 
             elseif arg8 == 115069 then
-                local dmg = table.remove( staggered_damage_pool, 1 ) or {}
+                local dmg = remove( staggered_damage_pool, 1 ) or {}
 
                 dmg.t = now
                 dmg.d = arg11
@@ -932,11 +932,11 @@ local function trackBrewmasterDamage( _, subtype, _, sourceGUID, sourceName, _, 
 
                 total_staggered = total_staggered + arg11
 
-                table.insert( staggered_damage, 1, dmg )
+                insert( staggered_damage, 1, dmg )
 
             end
         elseif subtype == "SPELL_PERIODIC_DAMAGE" and sourceGUID == state.GUID and arg1 == 124255 then
-            table.insert( stagger_ticks, 1, arg4 )
+            insert( stagger_ticks, 1, arg4 )
             stagger_ticks[ 31 ] = nil
 
         end
@@ -947,7 +947,7 @@ end
 spec:RegisterCombatLogEvent( trackBrewmasterDamage )
 
 spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
-    table.wipe( stagger_ticks )
+    wipe( stagger_ticks )
 end )
 
 function stagger_in_last( t )
@@ -956,7 +956,7 @@ function stagger_in_last( t )
     for i = #staggered_damage, 1, -1 do
         if staggered_damage[ i ].t + 10 < now then
             total_staggered = max( 0, total_staggered - staggered_damage[ i ].d )
-            staggered_damage_pool[ #staggered_damage_pool + 1 ] = table.remove( staggered_damage, i )
+            staggered_damage_pool[ #staggered_damage_pool + 1 ] = remove( staggered_damage, i )
         end
     end
 

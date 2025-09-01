@@ -34,6 +34,8 @@ local GetSpellBookItemName = function( index, bookType )
     return C_SpellBook.GetSpellBookItemName( index, spellBank );
 end
 
+local concat = table.concat
+
 spec:RegisterResource( Enum.PowerType.Rage )
 spec:RegisterResource( Enum.PowerType.LunarPower, {
     fury_of_elune = {
@@ -1207,7 +1209,6 @@ do
 
     -- Flow:  Cast -> In Flight -> Application -> Ticks -> Removal -> In Flight -> Application -> Ticks -> Removal -> ...
     -- If the swarm target dies, it will jump again.
-    local insert, remove = table.insert, table.remove
 
     function Hekili:EmbedAdaptiveSwarm( s )
         s:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
@@ -1397,7 +1398,7 @@ do
         function Hekili:DumpSwarmInfo()
             local line = "Flights:"
             for k, v in pairs( flights ) do
-                line = line .. " " .. k .. ":" .. table.concat( v, ":" )
+                line = line .. " " .. k .. ":" .. concat( v, ":" )
             end
             print( line )
 

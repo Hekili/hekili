@@ -496,7 +496,7 @@ spec:RegisterStateTable( "time_to_sht", setmetatable( {}, {
         local oh_speed = swings.offhand_speed
         local oh_next = ( swings.offhand > now - 3 ) and ( swings.offhand + oh_speed ) or now
 
-        table.wipe( sht )
+        wipe( sht )
 
         if mh_speed and mh_speed > 0 then
             for i = 1, 4 do
@@ -514,14 +514,14 @@ spec:RegisterStateTable( "time_to_sht", setmetatable( {}, {
 
         while( sht[i] ) do
             if sht[i] < last_shadow_techniques + 3 then
-                table.remove( sht, i )
+                remove( sht, i )
             else
                 i = i + 1
             end
         end
 
         if #sht > 0 and n - swings_since_sht < #sht then
-            table.sort( sht )
+            sort( sht )
             return max( 0, sht[ n - swings_since_sht ] - query_time )
         else
             return 3600
