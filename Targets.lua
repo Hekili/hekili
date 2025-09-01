@@ -752,9 +752,9 @@ function ns.saveDebuffModifier( id, val )
 end
 
 ns.wipeDebuffs = function()
-    for k, _ in pairs(debuffs) do
-        wipe(debuffs[k])
-        debuffCount[k] = 0
+    for k, _ in pairs( debuffs ) do
+        wipe( debuffs[ k ] )
+        debuffCount[ k ] = 0
     end
 end
 
@@ -763,22 +763,22 @@ ns.actorHasDebuff = function( target, spell )
 end
 
 ns.trackDebuff = function( spell, target, time, application, snapshotHaste )
-    debuffs[spell] = debuffs[spell] or {}
-    debuffCount[spell] = debuffCount[spell] or 0
+    debuffs[ spell ] = debuffs[ spell ] or {}
+    debuffCount[ spell ] = debuffCount[ spell ] or 0
 
     if not time then
-        if debuffs[spell][target] then
+        if debuffs[ spell ][target] then
             -- Remove it.
-            debuffs[spell][target] = nil
-            debuffCount[spell] = max( 0, debuffCount[spell] - 1 )
+            debuffs[ spell ][ target ] = nil
+            debuffCount[ spell ] = max( 0, debuffCount[ spell ] - 1 )
         end
     else
-        if not debuffs[spell][target] then
-            debuffs[spell][target] = {}
-            debuffCount[spell] = debuffCount[spell] + 1
+        if not debuffs[ spell ][ target ] then
+            debuffs[ spell ][ target ]= {}
+            debuffCount[ spell ] = debuffCount[ spell ] + 1
         end
 
-        local debuff = debuffs[spell][target]
+        local debuff = debuffs[ spell ][ target ]
 
         debuff.last_seen = time
         debuff.applied = debuff.applied or time
