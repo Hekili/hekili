@@ -8863,14 +8863,12 @@ do
                         get = GetCurrentSpec,
                         values = GetCurrentSpecList,
                     },
-
                     disable_items = {
                         type = "toggle",
                         name = "Disable Gear and Items",
-                        desc = "If checked, no usable gear or items (i.e., trinkets and weapons and armor with On Use effects) will be recommended for this |cFFFFD100Specialization|r.\n\n"
-                            .. "Individual item settings can be updated below, but will be ignored when this option is checked.\n\n"
-                            .. "This option does not apply to potions, which are controlled by |cFF00B4FFToggles > Potions|r.",
-                            order = 0.2,
+                        desc = "If checked, no equipped trinkets, weapons, or armor with |cFFFFD100Use:|r effects will be recommended for this specialization, " 
+                            .. "regardless of any other options selected below.",
+                        order = 0.2,
                         width = 1.49,
                         get = function()
                             local spec = GetCurrentSpec()
