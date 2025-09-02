@@ -22,7 +22,7 @@ actions+=/call_action_list,name=senttrickshots,strict=1,if=active_enemies>2&tale
 actions+=/call_action_list,name=drcleave,strict=1,if=active_enemies>1&hero_tree.dark_ranger
 actions+=/call_action_list,name=sentcleave,strict=1,if=active_enemies>1&!hero_tree.dark_ranger
 actions+=/call_action_list,name=drst,strict=1,if=hero_tree.dark_ranger
-actions+=/call_action_list,name=sentst
+actions+=/call_action_list,name=sentst,strict=1,if=!hero_tree.dark_ranger
 
 ## actions.cds+=/invoke_external_buff,name=power_infusion,if=buff.trueshot.remains>12|fight_remains<13
 actions.cds+=/berserking,if=buff.trueshot.up|boss&fight_remains<13
