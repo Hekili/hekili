@@ -21,7 +21,7 @@ local abs, ceil, floor, max, sqrt = math.abs, math.ceil, math.floor, math.max, m
 -- local GetSpellCastCount = C_Spell.GetSpellCastCount
 -- local GetSpellInfo = C_Spell.GetSpellInfo
 -- local GetSpellInfo = ns.GetUnpackedSpellInfo
--- local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
+local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID
 local FindUnitBuffByID, FindUnitDebuffByID = ns.FindUnitBuffByID, ns.FindUnitDebuffByID
 -- local IsSpellOverlayed = C_SpellActivationOverlay.IsSpellOverlayed
 local IsSpellKnownOrOverridesKnown = C_SpellBook.IsSpellInSpellBook
@@ -761,6 +761,31 @@ end )
 local totm_casts = 0
 local clearcasting_consumed = 0
 
+-- Intuition Bad Luck Protection tracking
+local intuitionBLPStacks = 0
+local intuitionBLPLastErAeTimestamp = 0
+local intuitionBLPHasClearcasting = false
+local intuitionBLPIsHarmonyIntuition = false
+local hasIntuitionBuff = false
+
+local function delayedIntuitionBLPStack()
+    if hasIntuitionBuff then return end
+    intuitionBLPStacks = intuitionBLPStacks + 1
+end
+
+-- Intuition consumption tracking for charge flicker fix
+local intuition_just_consumed = false
+local intuition_consumed_timestamp = 0
+
+-- Spell IDs that can trigger BLP stack increment
+local intuitionBLPSpellIDs = {
+    [30451] = true,   -- arcane_blast
+    [5143] = true,    -- arcane_missiles
+    [44425] = true,   -- arcane_barrage
+    [1449] = true,    -- arcane_explosion
+    [365350] = true,  -- arcane_surge
+}
+
 spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID == GUID then
         if subtype == "SPELL_CAST_SUCCESS" and spellID == 321507 then
@@ -774,12 +799,76 @@ spec:RegisterHook( "COMBAT_LOG_EVENT_UNFILTERED", function( _, subtype, _, sourc
         elseif subtype == "SPELL_AURA_REMOVED" and ( spellID == 276743 or spellID == 263725 ) then
             -- Clearcasting was consumed.
             clearcasting_consumed = GetTime()
+
+        -- Intuition BLP tracking
+        elseif state.talent.intuition.enabled then
+            -- Handle BLP stack increments (only when Intuition buff is not active)
+            if not hasIntuitionBuff then
+                if subtype == "SPELL_CAST_SUCCESS" and intuitionBLPSpellIDs[ spellID ] then
+                    intuitionBLPStacks = intuitionBLPStacks + 1
+
+                elseif subtype == "SPELL_ENERGIZE" and spellID == 153626 then -- arcane_orb
+                    intuitionBLPStacks = intuitionBLPStacks + 1
+
+                elseif subtype == "SPELL_CAST_SUCCESS" and spellID == 1449 and intuitionBLPHasClearcasting then -- echoed arcane explosion
+                    C_Timer.After( 0.5, delayedIntuitionBLPStack )
+
+                elseif subtype == "SPELL_DAMAGE" and spellID == 461508 then -- energy reconstitution arcane explosion
+                    local now = GetTime()
+                    if now - intuitionBLPLastErAeTimestamp > 0.1 then
+                        intuitionBLPLastErAeTimestamp = now
+                        intuitionBLPStacks = intuitionBLPStacks + 1
+                    end
+                end
+            end
+
+            -- Handle Intuition proc consumption and BLP reset
+            if spellID == 1223797 then -- intuition
+                if subtype == "SPELL_AURA_APPLIED" then
+                    hasIntuitionBuff = true
+                    if state.set_bonus.tww3_spellslinger >= 4 then
+                        local harmony_aura = GetPlayerAuraBySpellID( 384455 ) -- arcane_harmony
+                        local harmony_stacks = harmony_aura and harmony_aura.applications or 0
+                        intuitionBLPIsHarmonyIntuition = ( harmony_stacks == 20 )
+                    end
+                elseif subtype == "SPELL_AURA_REMOVED" then
+                    hasIntuitionBuff = false
+                    if not intuitionBLPIsHarmonyIntuition then
+                        intuitionBLPStacks = 0 -- Reset BLP on normal intuition consumption
+                        -- Track consumption for charge flicker fix
+                        intuition_just_consumed = true
+                        intuition_consumed_timestamp = GetTime()
+                    end
+                    intuitionBLPIsHarmonyIntuition = false
+                end
+            end
+
+            -- Track clearcasting for echoed arcane explosion detection
+            if spellID == 263725 or spellID == 276743 then -- clearcasting
+                if subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_APPLIED_DOSE" then
+                    intuitionBLPHasClearcasting = true
+                elseif subtype == "SPELL_AURA_REMOVED" then
+                    intuitionBLPHasClearcasting = false
+                end
+            end
         end
     end
 end, false )
 
 spec:RegisterEvent( "PLAYER_REGEN_ENABLED", function ()
     totm_casts = 0
+    -- Clear intuition consumption tracking
+    intuition_just_consumed = false
+    intuition_consumed_timestamp = 0
+end )
+
+-- Reset BLP tracking on encounter/M+ start
+spec:RegisterEvent( "ENCOUNTER_START", function ()
+    intuitionBLPStacks = 0
+end )
+
+spec:RegisterEvent( "CHALLENGE_MODE_START", function ()
+    intuitionBLPStacks = 0
 end )
 
 -- actions.precombat+=/variable,name=conserve_mana,op=set,value=0
@@ -1042,6 +1131,19 @@ spec:RegisterHook( "runHandler", function( action )
         local ability = class.abilities[ action ]
         if ability and ability.cast > 0 and ability.cast < 10 then removeStack( "ice_floes" ) end
     end
+
+    -- Virtually increment BLP for intuition tracking
+    if talent.intuition.enabled and not buff.intuition.up then
+        local spellID = class.abilities[ action ] and class.abilities[ action ].id
+        if ( spellID and intuitionBLPSpellIDs[ spellID ] or action == "arcane_orb" ) and buff.intuition.down then
+            if intuition_blp_stacks == 10 then
+                applyBuff( "intuition" )
+                intuition_blp_stacks = 0
+            else
+                intuition_blp_stacks = intuition_blp_stacks + 1
+            end
+        end
+    end
 end )
 
 spec:RegisterStateTable( "incanters_flow", {
@@ -1199,20 +1301,39 @@ spec:RegisterStateExpr( "full_reduction", function ()
     return action.shifting_power.cdr
 end )
 
+spec:RegisterStateExpr( "intuition_blp_stacks", function ()
+    return talent.intuition.enabled and intuitionBLPStacks or 0
+end )
+
 local NetherMunitions = setfenv( function()
     applyDebuff( "target", "nether_munitions" )
     active_dot.nether_munitions = true_active_enemies
 end, state )
 
 spec:RegisterHook( "reset_precast", function ()
-   --[[ if pet.rune_of_power.up then applyBuff( "rune_of_power", pet.rune_of_power.remains )
-    else removeBuff( "rune_of_power" ) end --]]
+    -- Initialize BLP tracking state for clearcasting detection and reset virtual counter
+    if talent.intuition.enabled then
+        intuitionBLPHasClearcasting = buff.clearcasting.up
+        intuition_blp_stacks = nil -- Reset to sync with real CLEU variable
+        if buff.intuition.up then intuition_blp_stacks = 0 end
+        if Hekili.ActiveDebug then Hekili:Debug( strformat( "Intuition Bad Luck protection: %s of 10 unlucky casts. Next cast will grant buff: %s", intuitionBLPStacks, ( intuitionBLPStacks == 10 and "Yes" or "No" ) ) ) end
+    end
 
     if buff.casting.up and buff.casting.v1 == 5143 and abs( action.arcane_missiles.lastCast - clearcasting_consumed ) < 0.15 then
         applyBuff( "clearcasting_channel", buff.casting.remains )
     end
 
     if arcane_charges.current > 0 then applyBuff( "arcane_charge", nil, arcane_charges.current ) end
+
+    -- Fix charge flicker after Intuition consumption
+    if talent.intuition.enabled and intuition_just_consumed then
+        local time_since_consumption = query_time - intuition_consumed_timestamp
+        if time_since_consumption >= gcd.max then intuition_just_consumed = false
+        elseif time_since_consumption < gcd.max and arcane_charges.current < 4 then
+            -- If within the flicker window (GCD), fake having 4 charges
+            applyBuff( "arcane_charge", nil, 4 )
+        end
+    end
 
     if buff.arcane_surge.up and set_bonus.tier30_4pc > 0 then
         state:QueueAuraEvent( "arcane_overload", TriggerArcaneOverloadT30, buff.arcane_surge.expires, "AURA_EXPIRATION" )
@@ -1437,7 +1558,7 @@ spec:RegisterAbilities( {
 
         startsCombat = true,
 
-        usable = function () return not settings.check_explosion_range or target.maxR < 10, "target out of range" end,
+        usable = function () if state.spec.arcane then return not settings.check_explosion_range or target.maxR < 10, "target out of range" end end,
         handler = function ()
             if buff.expanded_potential.up then removeBuff( "expanded_potential" )
             else
