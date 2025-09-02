@@ -861,10 +861,6 @@ spec:RegisterHook( "runHandler", function( ability )
             end
         end
 
-        if talent.double_jeopardy.enabled then
-            applyBuff( "double_jeopardy" )
-        end
-
         if legendary.mark_of_the_master_assassin.enabled and stealthed.mantle then
             applyBuff( "master_assassins_mark" )
         end
@@ -1021,9 +1017,14 @@ spec:RegisterHook( "reset_precast", function()
         end
     end
 
-    if talent.double_jeopardy.enabled and exitedStealth > 0 then
-        if Hekili.ActiveDebug then Hekili:Debug( "Double Jeopardy: Applying pseudobuff since Fatebound Coin not applied since exiting Stealth at %.2f.", exitedStealth ) end
-        applyBuff( "double_jeopardy" )
+    if talent.double_jeopardy.enabled then
+        if exitedStealth > 0 then
+            if Hekili.ActiveDebug then Hekili:Debug( "Double Jeopardy: Applying pseudobuff since Fatebound Coin not applied since exiting Stealth at %.2f.", exitedStealth ) end
+            applyBuff( "double_jeopardy" )
+        elseif stealthed.all then
+            if Hekili.ActiveDebug then Hekili:Debug( "Double Jeopardy: Applying pseudobuff since we are Stealth.", exitedStealth ) end
+            applyBuff( "double_jeopardy" )
+        end
     end
 end )
 
@@ -1489,8 +1490,7 @@ spec:RegisterAbilities( {
             removeBuff( "deadshot" )
             removeBuff( "concealed_blunderbuss" ) -- Generating 2 extra combo points is purely a guess.
             removeBuff( "greenskins_wickers" )
-            removeBuff( "tornado_trigger" )
-
+            
             if buff.opportunity.up then
                 removeStack( "opportunity" )
                 if set_bonus.tier29_4pc > 0 then applyBuff( "brutal_opportunist" ) end

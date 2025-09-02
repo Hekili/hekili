@@ -2729,7 +2729,7 @@ spec:RegisterAbilities( {
             applyBuff( "stealth" )
 
             if talent.crackshot.enabled then setCooldown( "between_the_eyes", 0 ) end
-
+            if talent.double_jeopardy.enabled then applyBuff( "double_jeopardy" ) end
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote_aura" ) end
             if talent.indiscriminate_carnage.enabled then applyBuff( "indiscriminate_carnage_aura" ) end
             if talent.master_assassin.enabled then applyBuff( "master_assassin_aura" ) end
@@ -2828,6 +2828,7 @@ spec:RegisterAbilities( {
             applyBuff( "stealth" )
             if talent.crackshot.enabled then setCooldown( "between_the_eyes", 0 ) end
 
+            if talent.double_jeopardy.enabled then applyBuff( "double_jeopardy" ) end
             if talent.improved_garrote.enabled then applyBuff( "improved_garrote" ) end
             if talent.invigorating_shadowdust.enabled then
                 for name, cd in pairs( cooldown ) do
