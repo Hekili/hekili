@@ -7541,6 +7541,13 @@ do
 
         local option = ability.item and spec.items[ spell ] or spec.abilities[ spell ]
 
+        if ability.item and ability.toggle ~= "potions" then
+            local sp = rawget( profile.specs, state.spec.id )
+            if sp and sp.disable_items then
+                return true, "preference - spec disables gear/items"
+            end
+        end
+
         if not strict then
             local toggle = option.toggle
             if not toggle or toggle == "default" then toggle = ability.toggle end

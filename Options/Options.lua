@@ -5204,11 +5204,11 @@ found = true end
                                             "\nThis setting determines how much time can be used to generate recommendations.\n\n" ..
                                             "|cFFFFD100• Higher values|r allow recommendations to |cFF00FF00update more quickly|r but may risk lowering your frame rate, " ..
                                             "especially when other addons are working at the same time.\n" ..
-                                            "|cFFFFD100• Lower values|r mean recommendations may update more slowly but may |cFF00FF00preserve your frame rate|r.\n\n" .. 
-                                            
+                                            "|cFFFFD100• Lower values|r mean recommendations may update more slowly but may |cFF00FF00preserve your frame rate|r.\n\n" ..
+
                                             "Adjust this budget to balance |cFF00FF00smooth gameplay|r and |cFF00FF00responsive recommendations|r. " ..
                                             "Use the highest value that feels smooth on your system without your screen freezing or stuttering.\n\n" ..
-                                            
+
                                             "|cFF00B4FFDefault (recommended)|r: |cFFFFD10070%|r\n\n" ..
 
                                             "At |cFFFFD700" .. format( "%.1f", fps ) .. " FPS|r, a budget of |cFFFFD700" .. ( budget * 100 ) .. "%|r " ..
@@ -8858,10 +8858,28 @@ do
                         name = "Specialization",
                         desc = "These options apply to your selected specialization.",
                         order = 0.1,
-                        width = "full",
+                        width = 1.49,
                         set = SetCurrentSpec,
                         get = GetCurrentSpec,
                         values = GetCurrentSpecList,
+                    },
+                    disable_items = {
+                        type = "toggle",
+                        name = "Disable Gear and Items",
+                        desc = function()
+                            return format( "If checked, no equipped trinkets, weapons, or armor with |cFF00FF00Use:|r effects will be recommended for |cFFFFD100%s|r, " 
+                            .. "regardless of any other options selected below.", ( GetCurrentSpec() and GetCurrentSpecList()[ GetCurrentSpec() ] or "this specialization" ) )
+                        end,
+                        order = 0.2,
+                        width = 1.49,
+                        get = function()
+                            local spec = GetCurrentSpec()
+                            return Hekili.DB.profile.specs[ spec ].disable_items or false
+                        end,
+                        set = function( info, val )
+                            local spec = GetCurrentSpec()
+                            Hekili.DB.profile.specs[ spec ].disable_items = val
+                        end,
                     },
                 },
                 plugins = {
