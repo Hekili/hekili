@@ -1,6 +1,9 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/mage_frost.simc
 ## SimulationCraft Commit Sync: e8d92c5
-## Date: 2025-08-12
+## Date: 2025-08-30
+
+## [Syrif] - Replaced many references to prev.1.spell_name with action.spell_name.in_flight, re: Flurry
+## This is an addon-specific tweak that improves recovery, as they are synonymous in a sim iteration but not real gameplay
 
 actions.precombat+=/arcane_intellect
 actions.precombat+=/mirror_image
@@ -9,6 +12,8 @@ actions.precombat+=/use_item,name=treacherous_transmitter
 actions.precombat+=/use_item,name=ingenious_mana_battery
 actions.precombat+=/blizzard,if=active_enemies>=3
 actions.precombat+=/frostbolt,if=active_enemies<=2
+## [Syrif] - SimC treats frostbolt/frostfire bolt as a combined action in this case, so we need our own FF entry here to match 1:1 with sim opener
+actions.precombat+=/frostfire_bolt,if=active_enemies<=2
 
 actions+=/counterspell
 actions+=/call_action_list,name=cds
@@ -58,8 +63,8 @@ actions.cds+=/ancestral_call
 actions.ff_aoe+=/cone_of_cold,if=talent.coldest_snap&prev_gcd.1.comet_storm
 # Against freezable targets prioritize Pet Freeze and Ice Nova to shatter Glacial Spike and Comet Storm.
 actions.ff_aoe+=/freeze,if=freezable&action.cone_of_cold.time_since>8&(prev_gcd.1.glacial_spike&remaining_winters_chill=0&debuff.winters_chill.down|prev_gcd.1.comet_storm)
-actions.ff_aoe+=/ice_nova,if=!prev_off_gcd.freeze&freezable&action.cone_of_cold.time_since>8&(prev_gcd.1.glacial_spike&remaining_winters_chill=0&debuff.winters_chill.down|prev_gcd.1.comet_storm)
-actions.ff_aoe+=/flurry,if=!prev_off_gcd.freeze&remaining_winters_chill=0&debuff.winters_chill.down&prev_gcd.1.glacial_spike
+actions.ff_aoe+=/ice_nova,if=!prev_off_gcd.freeze&freezable&action.cone_of_cold.time_since>8&(action.glacial_spike.in_flight&remaining_winters_chill=0&debuff.winters_chill.down|prev_gcd.1.comet_storm)
+actions.ff_aoe+=/flurry,if=!prev_off_gcd.freeze&remaining_winters_chill=0&debuff.winters_chill.down&action.glacial_spike.in_flight
 actions.ff_aoe+=/frozen_orb
 actions.ff_aoe+=/ice_lance,if=buff.excess_fire.stack=2&cooldown.comet_storm.up
 actions.ff_aoe+=/blizzard,if=talent.ice_caller|talent.freezing_rain
@@ -82,7 +87,7 @@ actions.ff_aoe+=/frostfire_bolt
 actions.ff_aoe+=/call_action_list,name=movement
 
 # If one of your targets doesnt have Winter's Chill up, target-swap and queue a Flurry after casting Glacial Spike, Frostfire Bolt or Comet Storm.
-actions.ff_cleave+=/flurry,cycle_targets=1,if=prev_gcd.1.glacial_spike|prev_gcd.1.frostfire_bolt|prev_gcd.1.comet_storm
+actions.ff_cleave+=/flurry,cycle_targets=1,if=(action.glacial_spike.in_flight|action.frostfire_bolt.in_flight|action.comet_storm.time_since<=1)&debuff.winters_chill.down
 actions.ff_cleave+=/comet_storm
 actions.ff_cleave+=/glacial_spike,if=buff.icicles.stack=5
 actions.ff_cleave+=/frozen_orb
@@ -96,7 +101,7 @@ actions.ff_cleave+=/ice_lance,cycle_targets=1,if=!talent.deaths_chill&remaining_
 actions.ff_cleave+=/frostfire_bolt,cycle_targets=1
 actions.ff_cleave+=/call_action_list,name=movement
 
-actions.ff_st+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&prev_gcd.1.glacial_spike
+actions.ff_st+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&action.glacial_spike.in_flight
 # Cast Flurry with 3+ Icicles to guarantee shattering the Glacial Spike + Pyroblast into Winter's Chill. This also means queueing Flurry when casting Frostfire Bolt with 2+ Icicles and overcapping freely.
 actions.ff_st+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&(buff.icicles.stack>=3|!talent.glacial_spike)
 actions.ff_st+=/comet_storm,if=remaining_winters_chill
@@ -110,10 +115,13 @@ actions.ff_st+=/ice_lance,if=remaining_winters_chill
 actions.ff_st+=/frostfire_bolt
 actions.ff_st+=/call_action_list,name=movement
 
-# The Boltspam roation is used whenever all of Death's Chill, Cold Front, Slick Ice and at least one point of Deep Shatter is talented.
-actions.ff_st_boltspam+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&prev_gcd.1.glacial_spike
-# Queue Flurry whenever casting Frostfire Bolt with 2+ Icicles.
-actions.ff_st_boltspam+=/flurry,if=prev_gcd.1.frostfire_bolt&buff.icicles.stack>=3
+## [Syrif] - The 2 below Flurry entries have been refactored to make it 1 entry, and apply an additional WC check to
+## The second entry logic, which prevents projectile weirdness the Sim doesn't have to deal with but we do
+## The Boltspam roation is used whenever all of Death's Chill, Cold Front, Slick Ice and at least one point of Deep Shatter is talented.
+## actions.ff_st_boltspam+=/flurry,if=cooldown_react&remaining_winters_chill=0&debuff.winters_chill.down&prev_gcd.1.glacial_spike
+## Queue Flurry whenever casting Frostfire Bolt with 2+ Icicles.
+## actions.ff_st_boltspam+=/flurry,if=cooldown_react&prev_gcd.1.frostfire_bolt&buff.icicles.react>=3
+actions.ff_st_boltspam+=/flurry,if=remaining_winters_chill=0&((debuff.winters_chill.down&action.glacial_spike.in_flight)|(action.frostfire_bolt.in_flight&buff.icicles.stack>=3))
 actions.ff_st_boltspam+=/comet_storm,if=remaining_winters_chill
 actions.ff_st_boltspam+=/glacial_spike,if=buff.icicles.stack=5
 actions.ff_st_boltspam+=/shifting_power,if=buff.icy_veins.down&cooldown.comet_storm.remains>8&cooldown.icy_veins.remains>8
@@ -134,9 +142,9 @@ actions.ss_aoe+=/cone_of_cold,if=talent.coldest_snap&(prev_gcd.1.frozen_orb|cool
 # Cast Ice Nova against 5+ freezable targets to consume the Winter's Chill debuff applied by Cone of Cold in the very last moment of its duration.
 actions.ss_aoe+=/ice_nova,if=(freezable|talent.unerring_proficiency)&active_enemies>=5&action.cone_of_cold.time_since<8&action.cone_of_cold.time_since>7
 # Cast Pet Freeze whenever you cast Glacial Spike against freezable targets to shatter the second Glacial Spike.
-actions.ss_aoe+=/freeze,if=freezable&(prev_gcd.1.glacial_spike|!talent.glacial_spike&action.cone_of_cold.time_since>8)
-actions.ss_aoe+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&prev_gcd.1.glacial_spike
-actions.ss_aoe+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&prev_gcd.1.frostbolt
+actions.ss_aoe+=/freeze,if=freezable&(action.glacial_spike.in_flight|!talent.glacial_spike&action.cone_of_cold.time_since>8)
+actions.ss_aoe+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&action.glacial_spike.in_flight
+actions.ss_aoe+=/flurry,if=remaining_winters_chill=0&debuff.winters_chill.down&action.frostbolt.in_flight
 # Cast Flurry regardless of Winter's Chill to spend the Cold Front buff.
 actions.ss_aoe+=/flurry,if=buff.cold_front_ready.up
 actions.ss_aoe+=/frozen_orb
@@ -157,8 +165,8 @@ actions.ss_aoe+=/frostbolt
 actions.ss_aoe+=/call_action_list,name=movement
 
 # Flurry the off-target after Glacial Spike to make it shatter on both targets.
-actions.ss_cleave+=/flurry,cycle_targets=1,if=prev_gcd.1.glacial_spike
-actions.ss_cleave+=/flurry,if=debuff.winters_chill.down&remaining_winters_chill=0&prev_gcd.1.frostbolt
+actions.ss_cleave+=/flurry,cycle_targets=1,if=action.glacial_spike.in_flight
+actions.ss_cleave+=/flurry,if=debuff.winters_chill.down&remaining_winters_chill=0&action.frostbolt.in_flight
 # With Shifting Shards talented cast Flurry with or without precast to spend the Cold Front buff.
 actions.ss_cleave+=/flurry,if=debuff.winters_chill.down&remaining_winters_chill=0&talent.shifting_shards&buff.cold_front_ready.up
 # Not munching Fingers of Frost is more important than munching Icicles.
@@ -177,8 +185,8 @@ actions.ss_cleave+=/shifting_power,if=equipped.arazs_ritual_forge&buff.icy_veins
 actions.ss_cleave+=/frostbolt
 actions.ss_cleave+=/call_action_list,name=movement
 
-actions.ss_st+=/flurry,if=debuff.winters_chill.down&remaining_winters_chill=0&prev_gcd.1.glacial_spike
-actions.ss_st+=/flurry,if=debuff.winters_chill.down&remaining_winters_chill=0&(buff.icicles.stack<5|!talent.glacial_spike)&prev_gcd.1.frostbolt
+actions.ss_st+=/flurry,if=debuff.winters_chill.down&remaining_winters_chill=0&action.glacial_spike.in_flight
+actions.ss_st+=/flurry,if=debuff.winters_chill.down&remaining_winters_chill=0&(buff.icicles.stack<5|!talent.glacial_spike)&action.frostbolt.in_flight
 actions.ss_st+=/frozen_orb
 actions.ss_st+=/comet_storm,if=buff.icy_veins.down&remaining_winters_chill&talent.shifting_shards
 actions.ss_st+=/ray_of_frost,if=buff.icy_veins.down&remaining_winters_chill=1
