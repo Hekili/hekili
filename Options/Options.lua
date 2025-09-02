@@ -8866,8 +8866,10 @@ do
                     disable_items = {
                         type = "toggle",
                         name = "Disable Gear and Items",
-                        desc = "If checked, no equipped trinkets, weapons, or armor with |cFF00FF00Use:|r effects will be recommended for this specialization, " 
-                            .. "regardless of any other options selected below.",
+                        desc = function()
+                            return format( "If checked, no equipped trinkets, weapons, or armor with |cFF00FF00Use:|r effects will be recommended for |cFFFFD100%s|r, " 
+                            .. "regardless of any other options selected below.", ( GetCurrentSpec() and GetCurrentSpecList()[ GetCurrentSpec() ] or "this specialization" ) )
+                        end,
                         order = 0.2,
                         width = 1.49,
                         get = function()
