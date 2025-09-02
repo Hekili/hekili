@@ -8866,7 +8866,7 @@ do
                     disable_items = {
                         type = "toggle",
                         name = "Disable Gear and Items",
-                        desc = "If checked, no equipped trinkets, weapons, or armor with |cFFFFD100Use:|r effects will be recommended for this specialization, " 
+                        desc = "If checked, no equipped trinkets, weapons, or armor with |cFF00FF00Use:|r effects will be recommended for this specialization, " 
                             .. "regardless of any other options selected below.",
                         order = 0.2,
                         width = 1.49,
