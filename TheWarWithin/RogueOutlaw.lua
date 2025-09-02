@@ -286,7 +286,23 @@ spec:RegisterAuras( {
     coup_de_grace = {
         id = 462127,
         duration = 3600,
-        max_stack = 1
+        max_stack = 1,
+        generate = function( t )
+            local eb = buff.escalating_blade
+            if eb.up and eb.at_max_stacks then
+                t.name = "coup_de_grace"
+                t.count = 1
+                t.expires = eb.expires
+                t.applied = query_time
+                t.caster = "player"
+            else
+                t.name = "coup_de_grace"
+                t.count = 0
+                t.expires = 0
+                t.applied = 0
+                t.caster = "nobody"
+            end
+        end
     },
     disorienting_strikes = {
         duration = 3600,
@@ -581,7 +597,7 @@ local restless_blades_list = {
 
 spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName )
     if sourceGUID ~= state.GUID then return end
-    
+
     -- SPELL_CAST_SUCCESS
     if subtype == "SPELL_CAST_SUCCESS" then
         local now = GetTime()
@@ -670,15 +686,17 @@ end )
 local TriggerUnseenBlade = setfenv( function( )
     if unseen_blades_available > 0 then
         -- Handle ICD vs bypass
-        if buff.disorienting_strikes.remains then
-            removeStack( "disorienting_strikes" )
+        if disorient_stacks > 0 then
+            disorient_stacks = disorient_stacks - 1
         else
             last_unseen_blade = query_time
             applyDebuff( "player", "unseen_blade" )
         end
 
-        addStack( "escalating_blade" )
-        if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ) end
+        if buff.escalating_blade.stack < 4 then
+            addStack( "escalating_blade" )
+            if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ) end
+        end
         applyDebuff( "target", "fazed" )
         unseen_blades_available = unseen_blades_available - 1
     end
@@ -842,7 +860,7 @@ spec:RegisterHook( "runHandler", function( ability )
                 applyBuff( "subterfuge" )
             end
         end
-        
+
         if talent.double_jeopardy.enabled then
             applyBuff( "double_jeopardy" )
         end
@@ -915,32 +933,36 @@ spec:RegisterHook( "reset_precast", function()
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
     if talent.unseen_blade.enabled then
-        -- Sync CDG availabilty with gamestate
-        if talent.coup_de_grace.enabled and IsSpellOverlayed( 2098 ) then
-            applyBuff( "coup_de_grace" )
-        end
+
+        -- Resync with real-data local variables first
+        last_unseen_blade = nil
+        disorient_stacks = nil
 
         -- Sync unseen blade ICD with gamestate
-        local unseenBladeCD = 20 - ( now - last_unseen_blade )
+        local unseenBladeCD = 20 - ( query_time - last_unseen_blade )
         if unseenBladeCD > 0 then
             applyDebuff( "player", "unseen_blade", unseenBladeCD )
         else
             removeDebuff( "player", "unseen_blade" )
         end
 
-        -- sync disorienting strike stacks with gamestate
-        if disorient_stacks > 0 then
-            applyBuff( "disorienting_strikes", nil, disorient_stacks )
-        else
-            removeBuff( "disorienting_strikes" )
-        end
         if Hekili.ActiveDebug then
             Hekili:Debug( "UB-Status: unseen_blades_available=%d DS=%d  ICD=%.1f",
               unseen_blades_available,
-              buff.disorienting_strikes.stack or 0,
-              unseenBladeCD
+              disorient_stacks or 0,
+              ( unseenBladeCD > 0 and unseenBladeCD or 0 )
             )
         end
+
+        if prev[1].coup_de_grace and buff.escalating_blade.at_max_stacks then
+            if set_bonus.tww3 >= 4 then
+                local dur = 5 + ( gcd.max ) - ( query_time - action.coup_de_grace.lastCast )
+                applyBuff( "tww3_trickster_4pc", dur )
+                applyBuff( "escalating_blade", dur, 4 )
+                applyBuff( "coup_de_grace", dur )
+            end
+        end
+
     end
 
     -- Debugging for Roll the Bones
@@ -1015,8 +1037,9 @@ spec:RegisterGear( {
                 duration = 5,
                 max_stack = 1,
                 generate = function( t )
-                    local cdg = buff.coup_de_grace
-                    if set_bonus.tww3 >= 4 and cdg.up and cdg.remains <= 10 then
+                    local cdg = buff.escalating_blade
+                    local delta = query_time - action.coup_de_grace.lastCast
+                    if set_bonus.tww3 >= 4 and cdg.up and cdg.at_max_stacks and delta < 5 then
                         -- Only treat this as the "trickster window" version if it's the 5s duration .. use 10s just as a safety net. The other version of the aura is 3600
                         t.name = "tww3_trickster_4pc"
                         t.count = 1
@@ -1327,9 +1350,9 @@ spec:RegisterAbilities( {
             if debuff.fazed.up then addStack( "flawless_form", nil, 5 ) end
 
             if set_bonus.tww3 >= 4 and buff.tww3_trickster_4pc.down  then
-                applyBuff( "coup_de_grace", 5 ) -- recast within 5 seconds
-                applyBuff( "tww3_trickster_4pc" )
-                applyBuff( "escalating_blade", 5, 4 )
+                applyBuff( "coup_de_grace", ( 5 + gcd.max ) ) -- recast within 5 seconds
+                applyBuff( "tww3_trickster_4pc", ( 5 + gcd.max ) )
+                applyBuff( "escalating_blade", ( 5 + gcd.max ), 4 )
             else
                 removeBuff( "coup_de_grace" )
                 removeBuff( "escalating_blade" )
@@ -1432,12 +1455,12 @@ spec:RegisterAbilities( {
         -- No tick_time/tick, no finish-refund – resource model does it.
         start = function ()
             if buff.double_jeopardy.up and combo_points.current > 4 then removeBuff( "double_jeopardy" ) end
-                
+
             applyBuff( "killing_spree" )
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
             if talent.disorienting_strikes.enabled then
-                applyBuff( "disorienting_strikes" )
+                disorient_stacks = 2
                 unseen_blades_available = unseen_blades_available + 2
             end
             if talent.flawless_form.enabled then addStack( "flawless_form" ) end
