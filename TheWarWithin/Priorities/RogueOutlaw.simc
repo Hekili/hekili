@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/rogue_outlaw.simc
 ## SimulationCraft Commit Sync: bafa87f
-## Date: 2025-08-26
+## Date: 2025-09-03
 
 actions.precombat+=/apply_poison
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
@@ -8,7 +8,7 @@ actions.precombat+=/stealth,precombat_seconds=2
 # Prepull Adrenaline Rush if using Trickster+KIR+Loaded Dice. Fatebound would rather AR on pull for Coin damage.
 actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=!hero_tree.fatebound&talent.keep_it_rolling&talent.loaded_dice&buff.adrenaline_rush.down
 # Prepull Roll the Bones if using Trickster or not using Loaded Dice.
-actions.precombat+=/roll_the_bones,precombat_seconds=1,if=!hero_tree.fatebound|!talent.loaded_dice
+actions.precombat+=/roll_the_bones,precombat_seconds=1,if=(!hero_tree.fatebound|!talent.loaded_dice)&rtb_buffs=0
 actions.precombat+=/adrenaline_rush,precombat_seconds=1,if=talent.improved_adrenaline_rush&buff.adrenaline_rush.down
 
 # Restealth if possible (no vulnerable enemies in combat).
