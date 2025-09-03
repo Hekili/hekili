@@ -2709,7 +2709,11 @@ do
         {
             name = "cavedwellers_delight",
             items = { 212242, 212243, 212244 }
-        }
+        },
+        {
+            name = "invigorating_healing_potion",
+            items = { 244835, 244838, 244839 }
+        }        
     }
 
 ---@diagnostic disable-next-line: need-check-nil
