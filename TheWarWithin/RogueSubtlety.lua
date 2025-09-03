@@ -465,7 +465,7 @@ spec:RegisterEvent( "UPDATE_STEALTH", function ()
 end )
 
 spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, _, spellID, spellName, _, amount, interrupt, a, b, c, d, offhand, multistrike )
-    if not sourceGUID == state.GUID then return end
+    if sourceGUID ~= state.GUID then return end
 
     if subtype == "SPELL_ENERGIZE" and spellID == 196911 then
         last_shadow_techniques = GetTime()
@@ -484,6 +484,7 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
 
         if offhand then last_mh = GetTime()
         else last_mh = GetTime() end
+
     elseif subtype == "SPELL_DAMAGE" then
         local now = GetTime()
         if spellID == 441144 then  -- Unseen Blade damage event.
@@ -492,29 +493,27 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
             end
         end
         return
+
     elseif subtype == "SPELL_CAST_SUCCESS" then
         if spellID == 280719 and state.talent.disorienting_strikes.enabled then -- SecTec grants 2 stacks of Disorienting Strikes (hidden aura)
             disorientStacks = 2
-            return
         end
 
         if spellID == 53 or spellID == 185438 then -- Backstab (53) or Shadowstrike (185438) consumes 1 Disorienting Strike stack.
             disorientStacks = disorientStacks - 1
-            return
         end
-    end
 
-    if state.talent.danse_macabre.enabled and subtype == "SPELL_CAST_SUCCESS" then
-        if spellID == 185313 then
-            -- Start fresh with each Shadow Dance.
-            wipe( danse_macabre_actual )
-            danse_ends = GetTime() + 8
+        if state.talent.danse_macabre.enabled then
+            if spellID == 185313 then
+                -- Start fresh with each Shadow Dance.
+                wipe( danse_macabre_actual )
+                danse_ends = GetTime() + 8
+                return
+            end
 
-        elseif danse_ends > GetTime() then
-            local ability = class.abilities[ spellName ] -- use spellName to capture spellID variants
-
-            if ability then
-                danse_macabre_actual[ ability.key ] = true
+            if danse_ends > GetTime() then
+                local ability = class.abilities[ spellName ] -- use spellName to capture spellID variants
+                if ability then danse_macabre_actual[ ability.key ] = true end
             end
         end
     end
