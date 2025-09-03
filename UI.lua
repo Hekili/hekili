@@ -1171,9 +1171,7 @@ do
 
                         local ability = class.abilities[ action ]
 
-                        if ability and ability.id < 0 and ability.id > -100 or exact_time == nil then
-                            ability = nil
-                        end
+                        if ability and ability.id < 0 and ability.id > -100 and action ~= "cancel_buff" or exact_time == nil then ability = nil end
 
                         if ability then
                             if ( conf.flash.enabled and conf.flash.suppress ) then b:Hide()
