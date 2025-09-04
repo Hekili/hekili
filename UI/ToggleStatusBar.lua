@@ -219,14 +219,22 @@ function Hekili:BuildStandardToggleBar( bar )
     if anchorTarget ~= "UIParent" then
         -- Use the proper anchoring system
         local conf = {
-            anchorTarget = anchorTarget == "HekiliDisplay1" and "PRIMARY" or "SCREEN",
-            anchorPoint = barSettings.anchor or "CENTER",
-            relativePoint = barSettings.anchorPoint or "CENTER",
+            anchorTarget = (anchorTarget == "HekiliDisplay1" or anchorTarget == "PRIMARY") and "PRIMARY" or "SCREEN",
+            anchorPoint = barSettings.anchorPoint or "CENTER",
+            relativePoint = barSettings.relativePoint or "CENTER",
             anchorX = barSettings.x or 0,
             anchorY = barSettings.y or -200,
         }
 
+        -- Check if PRIMARY display exists before trying to anchor
+        if conf.anchorTarget == "PRIMARY" and (not Hekili.DisplayPool or not Hekili.DisplayPool.Primary) then
+            -- Primary display doesn't exist yet, defer anchoring
+            C_Timer.After( 0.1, function() self:BuildToggleStatusBar() end )
+            return
+        end
+        
         local anchored = Hekili.TrySetAnchor( bar, conf )
+        
         if not anchored then
             -- Fallback to screen positioning
             bar:SetPoint( "CENTER", UIParent, "CENTER", barSettings.x or 0, barSettings.y or -200 )
@@ -322,7 +330,7 @@ function Hekili:BuildStandardToggleBar( bar )
                     local status = toggleValue and "On" or "Off"
 
                     GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
-                    GameTooltip:SetText( "Hekili " .. ( btnData.label or btnData.toggle ) .. " Toggle: " .. status )
+                    GameTooltip:SetText( "Hekili " .. ( btnData.toggle or btnData.label ) .. " Toggle: " .. status )
                     GameTooltip:Show()
                 end
             end )
@@ -481,6 +489,7 @@ function Hekili:BuildStandardToggleBar( bar )
                 custom2 = 134400
             }
             btn.icon:SetTexture( defaultIcons[ btnData.toggle ] or 132329 )
+            btn.icon:SetTexCoord( 0.08, 0.92, 0.08, 0.92 )
         end
 
         local value = Hekili:GetToggleState( btnData.toggle )

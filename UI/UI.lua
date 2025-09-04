@@ -3141,9 +3141,9 @@ function Hekili:BuildUI()
     -- Build the toggle status bar
     self:BuildToggleStatusBar()
     
-    -- Re-evaluate display anchors after toggle bar is built
-    -- This ensures toggle bar properly anchors to positioned displays
-    C_Timer.After( 0.1, function() self:EvaluateDisplayAnchors() end )
+    -- Rebuild toggle bar after displays are positioned
+    -- This ensures toggle bar properly anchors to the Primary display
+    C_Timer.After( 0.5, function() self:BuildToggleStatusBar() end )
 end
 
 local T = ns.lib.Format.Tokens
