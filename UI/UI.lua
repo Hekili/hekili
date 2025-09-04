@@ -368,6 +368,33 @@ function ns.StartConfiguration( external )
             v:Hide()
         end
     end
+    
+    -- Show toggle status bar backdrop if enabled and disable button mouse interaction
+    if Hekili.ToggleStatusBar and Hekili.ToggleStatusBar.Backdrop then
+        local barSettings = Hekili.DB and Hekili.DB.profile and Hekili.DB.profile.toggleBar
+        if barSettings and barSettings.enabled then
+            Hekili.ToggleStatusBar.Backdrop:SetBackdropBorderColor( 1, 1, 1, 1 )
+            Hekili.ToggleStatusBar.Backdrop:SetBackdropColor( 0, 0, 0, 0.8 )
+            Hekili.ToggleStatusBar.Backdrop:Show()
+            
+            -- Disable mouse interaction on all toggle buttons (like primary displays)
+            if Hekili.ToggleStatusBar.buttons then
+                for i = 1, 9 do
+                    if Hekili.ToggleStatusBar.buttons[i] then
+                        Hekili.ToggleStatusBar.buttons[i]:EnableMouse( false )
+                    end
+                end
+            end
+            
+            if Hekili.ToggleStatusBar.miniButtons then
+                for i = 1, 3 do
+                    if Hekili.ToggleStatusBar.miniButtons[i] then
+                        Hekili.ToggleStatusBar.miniButtons[i]:EnableMouse( false )
+                    end
+                end
+            end
+        end
+    end
 
     if not external then
         if not Hekili.OptionsReady then Hekili:RefreshOptions() end
@@ -439,14 +466,65 @@ function ns.StopConfiguration()
     HekiliNotification:SetMovable( false )
     HekiliNotification.Mover:Hide()
     -- HekiliNotification.Mover.Header:Hide()
+    
+    -- Hide toggle status bar backdrop and re-enable button mouse interaction
+    if Hekili.ToggleStatusBar and Hekili.ToggleStatusBar.Backdrop then
+        Hekili.ToggleStatusBar.Backdrop:Hide()
+        
+        -- Re-enable mouse interaction on toggle buttons (like primary displays)
+        local barSettings = Hekili.DB and Hekili.DB.profile and Hekili.DB.profile.toggleBar
+        local clickable = barSettings and barSettings.clickable
+        
+        if Hekili.ToggleStatusBar.buttons then
+            for i = 1, 9 do
+                if Hekili.ToggleStatusBar.buttons[i] then
+                    Hekili.ToggleStatusBar.buttons[i]:EnableMouse( clickable or false )
+                end
+            end
+        end
+        
+        if Hekili.ToggleStatusBar.miniButtons then
+            for i = 1, 3 do
+                if Hekili.ToggleStatusBar.miniButtons[i] then
+                    Hekili.ToggleStatusBar.miniButtons[i]:EnableMouse( clickable or false )
+                end
+            end
+        end
+    end
 end
 
 local function MasqueUpdate( Addon, Group, SkinID, Gloss, Backdrop, Colors, Disabled )
     if Disabled then
+        -- Handle main display buttons
         for dispID, display in ipairs( ns.UI.Buttons ) do
             for btnID, button in ipairs( display ) do
                 button.__MSQ_NormalTexture:Hide()
                 button.Texture:SetAllPoints( button )
+            end
+        end
+        
+        -- Handle toggle status bar buttons
+        if Hekili.ToggleStatusBar then
+            -- Handle standard mode buttons
+            if Hekili.ToggleStatusBar.buttons then
+                for i = 1, 9 do
+                    local btn = Hekili.ToggleStatusBar.buttons[i]
+                    if btn and btn.__MSQ_NormalTexture then
+                        btn.__MSQ_NormalTexture:Hide()
+                        btn.icon:SetAllPoints( btn )
+                    end
+                end
+            end
+            
+            -- Handle minimalist mode buttons
+            if Hekili.ToggleStatusBar.miniButtons then
+                for i = 1, 3 do
+                    local btn = Hekili.ToggleStatusBar.miniButtons[i]
+                    if btn and btn.__MSQ_NormalTexture and btn.icon then
+                        btn.__MSQ_NormalTexture:Hide()
+                        btn.icon:SetAllPoints( btn )
+                    end
+                end
             end
         end
     end
@@ -2379,7 +2457,7 @@ do
             self.refreshTimer = self.refreshTimer + elapsed
         end
 
-        if Hekili.DB.profile.enabled and not Hekili.Pause then
+        if Hekili.DB and Hekili.DB.profile and Hekili.DB.profile.enabled and not Hekili.Pause then
             -- Set refresh rates to default values
             self.refreshRate = self.refreshRate or 0.25
             self.combatRate = self.combatRate or 0.2
@@ -2905,6 +2983,7 @@ function Hekili:BuildUI()
         if Masque then
             Masque:Register( addon, MasqueUpdate, self )
             MasqueGroup = Masque:Group( addon )
+            self.MasqueToggleGroup = Masque:Group( addon, "Toggle Status Bar" )
         end
     end
 
@@ -2953,6 +3032,94 @@ function Hekili:BuildUI()
     if MasqueGroup then
         MasqueGroup:ReSkin()
     end
+    
+    if self.MasqueToggleGroup then
+        self.MasqueToggleGroup:ReSkin()
+        -- Force button sizes after Masque reskin with aggressive approach
+        C_Timer.After(0.01, function()
+            if self.ToggleStatusBar then
+                local barSettings = self.DB.profile.toggleBar or {}
+                -- Resize standard buttons
+                if self.ToggleStatusBar.buttons then
+                    local buttonSize = barSettings.buttonSize or 32
+                    for i = 1, 9 do
+                        local btn = self.ToggleStatusBar.buttons[i]
+                        if btn then
+                            -- Use multiple methods to force size
+                            btn:SetSize( buttonSize, buttonSize )
+                            btn:SetWidth( buttonSize )
+                            btn:SetHeight( buttonSize )
+                            
+                            -- Clear any size constraints that Masque might have set
+                            btn:SetResizeBounds( 1, 1, 200, 200 )
+                            
+                            -- Ensure icon texture fills the button
+                            if btn.icon then
+                                btn.icon:SetAllPoints( btn )
+                            end
+                            
+                            -- Force update of Masque elements to match new size
+                            if not barSettings.disableMasque then
+                                -- Resize Masque background elements
+                                if btn.__MSQ_NormalTexture then btn.__MSQ_NormalTexture:SetAllPoints( btn ) end
+                                if btn.__MSQ_Border then btn.__MSQ_Border:SetAllPoints( btn ) end
+                                if btn.__MSQ_Background then btn.__MSQ_Background:SetAllPoints( btn ) end
+                                if btn.__MSQ_Highlight then btn.__MSQ_Highlight:SetAllPoints( btn ) end
+                                if btn.__MSQ_Pushed then btn.__MSQ_Pushed:SetAllPoints( btn ) end
+                                if btn.__MSQ_Disabled then btn.__MSQ_Disabled:SetAllPoints( btn ) end
+                                if btn.__MSQ_Flash then btn.__MSQ_Flash:SetAllPoints( btn ) end
+                                if btn.__MSQ_Gloss then btn.__MSQ_Gloss:SetAllPoints( btn ) end
+                                
+                                -- Re-add to Masque group to trigger resize
+                                if self.MasqueToggleGroup then
+                                    self.MasqueToggleGroup:AddButton( btn, { Icon = btn.icon } )
+                                end
+                            end
+                        end
+                    end
+                end
+                -- Resize minimalist buttons
+                if self.ToggleStatusBar.miniButtons then
+                    local indicatorSize = barSettings.minimalistSize or 12
+                    for i = 1, 3 do
+                        local btn = self.ToggleStatusBar.miniButtons[i]
+                        if btn then
+                            -- Use multiple methods to force size
+                            btn:SetSize( indicatorSize, indicatorSize )
+                            btn:SetWidth( indicatorSize )
+                            btn:SetHeight( indicatorSize )
+                            
+                            -- Clear any size constraints that Masque might have set
+                            btn:SetResizeBounds( 1, 1, 200, 200 )
+                            
+                            -- Ensure icon texture fills the button
+                            if btn.icon then
+                                btn.icon:SetAllPoints( btn )
+                            end
+                            
+                            -- Force update of Masque elements to match new size
+                            if not barSettings.disableMasque and btn.icon then
+                                -- Resize Masque background elements
+                                if btn.__MSQ_NormalTexture then btn.__MSQ_NormalTexture:SetAllPoints( btn ) end
+                                if btn.__MSQ_Border then btn.__MSQ_Border:SetAllPoints( btn ) end
+                                if btn.__MSQ_Background then btn.__MSQ_Background:SetAllPoints( btn ) end
+                                if btn.__MSQ_Highlight then btn.__MSQ_Highlight:SetAllPoints( btn ) end
+                                if btn.__MSQ_Pushed then btn.__MSQ_Pushed:SetAllPoints( btn ) end
+                                if btn.__MSQ_Disabled then btn.__MSQ_Disabled:SetAllPoints( btn ) end
+                                if btn.__MSQ_Flash then btn.__MSQ_Flash:SetAllPoints( btn ) end
+                                if btn.__MSQ_Gloss then btn.__MSQ_Gloss:SetAllPoints( btn ) end
+                                
+                                -- Re-add to Masque group to trigger resize
+                                if self.MasqueToggleGroup then
+                                    self.MasqueToggleGroup:AddButton( btn, { Icon = btn.icon } )
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
 
     -- Check for a display that has been removed.
     for display, buttons in ipairs(ns.UI.Buttons) do
@@ -2966,6 +3133,17 @@ function Hekili:BuildUI()
     if Hekili.Config then
         ns.StartConfiguration(true)
     end
+    
+    -- Update proxy frames for anchoring
+    self:UpdateTargetNameplateProxy()
+    self:EvaluateDisplayAnchors()
+    
+    -- Build the toggle status bar
+    self:BuildToggleStatusBar()
+    
+    -- Re-evaluate display anchors after toggle bar is built
+    -- This ensures toggle bar properly anchors to positioned displays
+    C_Timer.After( 0.1, function() self:EvaluateDisplayAnchors() end )
 end
 
 local T = ns.lib.Format.Tokens
@@ -3198,4 +3376,24 @@ function Hekili:SaveCoordinates()
     end
 
     self.DB.profile.notifications.x, self.DB.profile.notifications.y = select( 4, HekiliNotification:GetPoint() )
+    
+    -- Save toggle status bar coordinates
+    if self.ToggleStatusBar and self.DB.profile.toggleBar and self.DB.profile.toggleBar.enabled then
+        local x, y = select( 4, self.ToggleStatusBar:GetPoint() )
+        if x and y then
+            local displayMode = self.DB.profile.toggleBar.displayMode or "standard"
+            if displayMode == "minimalist" and self.DB.profile.toggleBar.minimalistAnchor == "screen" then
+                -- Save to minimalist coordinates for free positioning
+                self.DB.profile.toggleBar.minimalistX = x
+                self.DB.profile.toggleBar.minimalistY = y
+            else
+                -- Save to standard coordinates
+                self.DB.profile.toggleBar.x = x
+                self.DB.profile.toggleBar.y = y
+            end
+        end
+    end
 end
+
+-- Anchoring System Integration - now handled by DisplayAnchorUtils
+-- Functions are available via Hekili namespace for backward compatibility

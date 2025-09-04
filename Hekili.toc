@@ -87,7 +87,10 @@ TheWarWithin\WarriorProtection.lua
 Targets.lua
 Options\DevTools.lua
 Options\ChatCommands.lua
+Options\ToggleStatusBarOptions.lua
 Options\Options.lua
-UI.lua
+UI\DisplayAnchorUtils.lua
+UI\UI.lua
+UI\ToggleStatusBar.lua
 Scripts.lua
 Core.lua

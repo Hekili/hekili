@@ -579,8 +579,14 @@ do
                         displayPoint = "TOP",
                         anchorPoint = "BOTTOM",
 
+                        -- New anchor system defaults
+                        anchorTarget = "SCREEN",
+                        relativePoint = "CENTER",
+                        anchorX = 0,
+                        anchorY = 0,
+
                         x = 0,
-                        y = -225,
+                        y = -150,
 
                         numIcons = 3,
                         order = 1,
@@ -601,8 +607,15 @@ do
 
                         name = "AOE",
 
+                        -- Anchor system defaults
+                        anchorTarget = "PRIMARY",
+                        relativePoint = "BOTTOMLEFT",
+                        anchorPoint = "TOPLEFT",
+                        anchorX = 0,
+                        anchorY = 0,
+
                         x = 0,
-                        y = -170,
+                        y = -5,
 
                         numIcons = 3,
                         order = 2,
@@ -624,8 +637,15 @@ do
                         name = "Cooldowns",
                         filter = 'cooldowns',
 
+                        -- Anchor system defaults
+                        anchorTarget = "PRIMARY",
+                        relativePoint = "TOPLEFT",
+                        anchorPoint = "BOTTOMLEFT",
+                        anchorX = 0,
+                        anchorY = 0,
+
                         x = 0,
-                        y = -280,
+                        y = 5,
 
                         numIcons = 1,
                         order = 3,
@@ -647,8 +667,15 @@ do
                         name = "Defensives",
                         filter = 'defensives',
 
-                        x = -110,
-                        y = -225,
+                        -- Anchor system defaults
+                        anchorTarget = "PRIMARY",
+                        relativePoint = "LEFT",
+                        anchorPoint = "RIGHT",
+                        anchorX = 0,
+                        anchorY = 0,
+
+                        x = -5,
+                        y = 0,
 
                         numIcons = 1,
                         order = 4,
@@ -670,8 +697,15 @@ do
                         name = "Interrupts",
                         filter = 'interrupts',
 
-                        x = -55,
-                        y = -225,
+                        -- Anchor system defaults
+                        anchorTarget = "PRIMARY",
+                        relativePoint = "TOPLEFT",
+                        anchorPoint = "BOTTOMRIGHT",
+                        anchorX = 0,
+                        anchorY = 0,
+
+                        x = -5,
+                        y = 5,
 
                         numIcons = 1,
                         order = 5,
@@ -716,6 +750,121 @@ do
 
                 iconStore = {
                     hide = false,
+                },
+
+                toggleBar = {
+                    enabled = true,
+                    x = 0,
+                    y = 0,
+                    direction = "HORIZONTAL",
+                    style = "default",
+                    tooltipOutOfCombat = true,
+                    clickable = true,
+                    buttonSize = 28,
+                    spacing = 0,
+                    maxColumns = 9,
+                    maxRows = 1,
+                    anchor = "TOP",
+                    anchorTarget = "PRIMARY",
+                    anchorPoint = "BOTTOM",
+                    showLabels = true,
+                    labelPosition = "TOP",
+                    labelFont = "Friz Quadrata TT",
+                    labelFontSize = 10,
+                    labelFontColor = { r = 1, g = 1, b = 1, a = 1 },
+
+                    -- Minimalist mode defaults
+                    displayMode = "standard",
+                    minimalistAnchor = "primary",
+                    minimalistX = 0,
+                    minimalistY = 0,
+                    minimalistAnchorPoint = "BOTTOM",
+                    minimalistFromPoint = "TOP",
+                    minimalistPrimaryX = 0,
+                    minimalistPrimaryY = -5,
+                    minimalistStyle = "dots",
+                    minimalistSize = 30,
+                    minimalistSpacing = 10,
+                    minimalistLayout = "horizontal",
+                    minimalistAngle = 0,
+                    minimalistColorEnabled = { r = 1, g = 1, b = 1, a = 1 },
+                    minimalistColorDisabled = { r = 0.5, g = 0.5, b = 0.5, a = 1 },
+                    minimalistToggle1 = "cooldowns",
+                    minimalistToggle2 = "defensives",
+                    minimalistToggle3 = "interrupts",
+
+                    [1] = {
+                        toggle = "cooldowns",
+                        iconType = "texture",
+                        icon = 6352455,
+                        label = "CDs",
+                        enabled = true,
+                        order = 1
+                    },
+                    [2] = {
+                        toggle = "essences",
+                        iconType = "texture",
+                        icon = 135815,
+                        label = "mCDs",
+                        enabled = false,
+                        order = 2
+                    },
+                    [3] = {
+                        toggle = "defensives",
+                        iconType = "texture",
+                        icon = 134950,
+                        label = "Defs",
+                        enabled = true,
+                        order = 3
+                    },
+                    [4] = {
+                        toggle = "interrupts",
+                        iconType = "texture",
+                        icon = 132219,
+                        label = "Int",
+                        enabled = true,
+                        order = 4
+                    },
+                    [5] = {
+                        toggle = "potions",
+                        iconType = "texture",
+                        icon = 134813,
+                        label = "Pot",
+                        enabled = false,
+                        order = 5
+                    },
+                    [6] = {
+                        toggle = "funnel",
+                        iconType = "texture",
+                        icon = 1029585,
+                        label = "Fnl",
+                        enabled = false,
+                        order = 6
+                    },
+                    [7] = {
+                        toggle = "mode",
+                        iconType = "texture",
+                        icon = 132329,
+                        label = "Disp.",
+                        enabled = false,
+                        order = 7
+                    },
+                    [8] = {
+                        toggle = "custom1",
+                        iconType = "texture",
+                        icon = 132329,
+                        label = "Cstm1",
+                        enabled = false,
+                        order = 8
+                    },
+                    [9] = {
+                        toggle = "custom2",
+                        iconType = "texture",
+                        icon = 132329,
+                        label = "Cstm2",
+                        enabled = false,
+                        order = 9
+                    }
                 },
             },
         }
@@ -1447,53 +1596,12 @@ return end
                                 end,
                             },
 
-                            pos = {
+                            fallbackPosition = {
                                 type = "group",
+                                name = "Position When Not Anchored",
                                 inline = true,
-                                name = function( info ) rangeXY( info )
-return "Position" end,
-                                order = 10,
-
+                                order = 5,
                                 args = {
-                                    --[[
-                                    relativeTo = {
-                                        type = "select",
-                                        name = "Anchored To",
-                                        values = {
-                                            SCREEN = "Screen",
-                                            PERSONAL = "Personal Resource Display",
-                                            CUSTOM = "Custom"
-                                        },
-                                        order = 1,
-                                        width = 1.49,
-                                    },
-
-                                    customFrame = {
-                                        type = "input",
-                                        name = "Custom Frame",
-                                        desc = "Specify the name of the frame to which this display will be anchored.\n" ..
-                                                "If the frame does not exist, the display will not be shown.",
-                                        order = 1.1,
-                                        width = 1.49,
-                                        hidden = function() return data.relativeTo ~= "CUSTOM" end,
-                                    },
-
-                                    setParent = {
-                                        type = "toggle",
-                                        name = "Set Parent to Anchor",
-                                        desc = "If checked, the display will be shown/hidden when the anchor is shown/hidden.",
-                                        order = 3.9,
-                                        width = 1.49,
-                                        hidden = function() return data.relativeTo == "SCREEN" end,
-                                    },
-
-                                    preXY = {
-                                        type = "description",
-                                        name = " ",
-                                        width = "full",
-                                        order = 97
-                                    }, ]]
-
                                     x = {
                                         type = "range",
                                         name = "X",
@@ -1503,14 +1611,13 @@ return "Position" end,
                                         max = 512,
                                         step = 1,
 
-                                        order = 98,
+                                        order = 2,
                                         width = 1.49,
 
                                         disabled = function()
                                             return name == "Multi"
                                         end,
                                     },
-
                                     y = {
                                         type = "range",
                                         name = "Y",
@@ -1520,14 +1627,241 @@ return "Position" end,
                                         max = 384,
                                         step = 1,
 
-                                        order = 99,
+                                        order = 2.5,
                                         width = 1.49,
 
                                         disabled = function()
                                             return name == "Multi"
                                         end,
                                     },
-                                },
+                                }
+                            },
+
+                            anchorSettings = {
+                                type = "group",
+                                inline = true,
+                                name = "Anchor Settings",
+                                order = 6,
+                                args = {
+                                    anchorTarget = {
+                                        type = "select",
+                                        name = "Anchor To Frame",
+                                        order = 1,
+                                        width = 1.49,
+                                        values = function(info)
+                                            local name = info[2]
+                                            local values = {
+                                                SCREEN                   = "No Anchor",
+                                                COOLDOWN_ESSENTIALS      = "Blizz CD Manager: Essential Cooldowns",
+                                                COOLDOWN_UTILITY         = "Blizz CD Manager: Utility Cooldowns",
+                                                COOLDOWN_TRACKED_BUFFS   = "Blizz CD Manager: Tracked Buffs",
+                                                COOLDOWN_TRACKED_BARS    = "Blizz CD Manager: Tracked Bars",
+                                                TARGET                   = "Target Nameplate",
+                                            }
+
+                                            if name ~= "Primary" then
+                                                values.PRIMARY = "Hekili Primary Display"
+                                            end
+
+                                            return values
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            return Hekili.DB.profile.displays[name].anchorTarget
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[name]
+                                            display.anchorTarget = val
+
+                                            local frame = ns.UI.Displays[name]
+                                            if frame then
+                                                frame:ClearAllPoints()
+
+                                                if val == "SCREEN" then
+                                                    frame:SetParent(UIParent)
+                                                    frame:SetPoint("CENTER", UIParent, "CENTER", display.x or 0, display.y or 0)
+
+                                                    if frame.Backdrop then
+                                                        frame.Backdrop:SetParent(UIParent)
+                                                    end
+                                                else
+                                                    Hekili.TrySetAnchor(frame, display)
+                                                end
+                                            end
+
+                                            Hekili:SaveCoordinates()
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+
+                                    spacer2 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 2,
+                                    },
+                                    anchorFrame = {
+                                        type = "select",
+                                        name = "Attach To its",
+                                        desc = "Choose which part of the anchor target (e.g., Target Nameplate, etc.) this display should attach to.",
+                                        values = {
+                                            TOP = "Top",
+                                            TOPLEFT = "Top Left",
+                                            TOPRIGHT = "Top Right",
+                                            CENTER = "Center",
+                                            BOTTOM = "Bottom",
+                                            BOTTOMLEFT = "Bottom Left",
+                                            BOTTOMRIGHT = "Bottom Right",
+                                            LEFT = "Left",
+                                            RIGHT = "Right",
+                                        },
+                                        order = 3,
+                                        width = 1.49,
+                                        disabled = function(info)
+                                            local display = Hekili.DB.profile.displays[ info[2] ]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.relativePoint
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.relativePoint = val
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+                                    anchorPoint = {
+                                        type = "select",
+                                        name = "Using This Display's",
+                                        desc = "Choose which part of this display should attach to the selected anchor point.",
+                                        values = {
+                                            TOP = "Top",
+                                            TOPLEFT = "Top Left",
+                                            TOPRIGHT = "Top Right",
+                                            CENTER = "Center",
+                                            BOTTOM = "Bottom",
+                                            BOTTOMLEFT = "Bottom Left",
+                                            BOTTOMRIGHT = "Bottom Right",
+                                            LEFT = "Left",
+                                            RIGHT = "Right",
+                                        },
+                                        order = 4,
+                                        width = 1.49,
+                                        disabled = function(info)
+                                            local display = Hekili.DB.profile.displays[ info[2] ]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.anchorPoint
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.anchorPoint = val
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+                                    spacer3 = {
+                                        type = "description",
+                                        name = " ",
+                                        width = "full",
+                                        order = 5,
+                                    },
+                                    obeyAnchorScale = {
+                                        type = "toggle",
+                                        name = "Inherit Anchor's Scale (size)",
+                                        desc = "If enabled, the display will scale based on the anchor frame's scale (if possible).\n\nDisable to keep this display's scale independent.",
+                                        order = 6,
+                                        width = "full",
+                                        get = function(info)
+                                            local name = info[2]
+                                            return Hekili.DB.profile.displays[name].obeyAnchorScale ~= false
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            Hekili.DB.profile.displays[name].obeyAnchorScale = val
+                                            Hekili:BuildUI()
+                                        end,
+                                        disabled = function(info)
+                                            local name = info[2]
+                                            return Hekili.DB.profile.displays[name].anchorTarget == "SCREEN"
+                                        end,
+                                    },
+
+                                    anchorX = {
+                                        type = "range",
+                                        name = "X Offset",
+                                        min = -500, max = 500, step = 1,
+                                        order = 7,
+                                        width = 1.49,
+                                        disabled = function(info)
+                                            local display = Hekili.DB.profile.displays[ info[2] ]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.anchorX
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.anchorX = val
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+                                    anchorY = {
+                                        type = "range",
+                                        name = "Y Offset",
+                                        min = -500, max = 500, step = 1,
+                                        order = 7.5,
+                                        width = 1.49,
+                                        disabled = function(info)
+                                            local display = Hekili.DB.profile.displays[ info[2] ]
+                                            return display.anchorTarget == "SCREEN"
+                                        end,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            return display.anchorY
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[ name ]
+                                            display.anchorY = val
+                                            Hekili:BuildUI()
+                                        end
+                                    },
+                                    fallbackAlpha = {
+                                        type = "range",
+                                        name = "Fallback Alpha",
+                                        desc = "When the chosen anchor is not available (e.g., Target Nameplate hidden), set the transparency of the display.",
+                                        min = 0, max = 1, step = 0.01,
+                                        order = 8,
+                                        width = 1.49,
+                                        get = function(info)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[name]
+                                            return display.fallbackAlpha or 1
+                                        end,
+                                        set = function(info, val)
+                                            local name = info[2]
+                                            local display = Hekili.DB.profile.displays[name]
+                                            display.fallbackAlpha = val
+                                            Hekili:BuildUI()
+                                        end,
+                                        disabled = function(info)
+                                            local name = info[2]
+                                            return Hekili.DB.profile.displays[name].anchorTarget == "SCREEN"
+                                        end,
+                                    },
+                                }
                             },
 
                             primaryIcon = {
@@ -2082,6 +2416,7 @@ return "Position" end,
                                     }
                                 }
                             },
+
 
                             textStyle = {
                                 type = "group",
@@ -3074,6 +3409,10 @@ return "Position" end,
                     order = 10,
                 },
 
+
+                -- Import Toggle Status Bar options from separate module
+                toggleStatusBarBtn = ns.ToggleStatusBarOptions and ns.ToggleStatusBarOptions.GetOptionsTable().toggleStatusBarBtn or {},
+                toggleStatusBar = ns.ToggleStatusBarOptions and ns.ToggleStatusBarOptions.GetOptionsTable().toggleStatusBar or {},
 
                 nPanelHeader = {
                     type = "header",
@@ -10117,6 +10456,11 @@ do
         if WeakAuras and WeakAuras.ScanEvents then WeakAuras.ScanEvents( "HEKILI_TOGGLE", name, toggle.value ) end
         if ns.UI.Minimap then ns.UI.Minimap:RefreshDataText() end
         self:UpdateDisplayVisibility()
+        if self.DB.profile.toggleBar and self.DB.profile.toggleBar.enabled then
+            self:BuildToggleStatusBar()
+            -- Trigger animation on toggle bar buttons
+            self:TriggerToggleAnimation( name )
+        end
         self:ForceUpdate( "HEKILI_TOGGLE", true )
     end
 
