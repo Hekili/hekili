@@ -726,12 +726,12 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
         end
 
     elseif subtype == "SPELL_DAMAGE" then
-            local ability = class.abilities[ spellID ]
-            if not ability then return end
+        local ability = class.abilities[ spellID ]
+        if not ability then return end
 
-            if ( ability.key == "bloodthirst" or ability.key == "bloodbath" ) and state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
-                fresh_meat_actual[ destGUID ] = true
-            end
+        if ( ability.key == "bloodthirst" or ability.key == "bloodbath" ) and state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
+            fresh_meat_actual[ destGUID ] = true
+        end
     elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
         if spellID == 446035 then
             BSUP = ( subtype ~= "SPELL_AURA_REMOVED" ) and true or false
