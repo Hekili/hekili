@@ -158,7 +158,7 @@ actions.slayer_aoe+=/wrecking_throw
 actions.slayer_aoe+=/whirlwind
 actions.slayer_aoe+=/skullsplitter
 actions.slayer_aoe+=/slam
-actions.slayer_aoe+=/storm_bolt,if=buff.bladestorm.up
+actions.slayer_aoe+=/storm_bolt,if=buff.bladestorm.up,use_off_gcd=1
 
 actions.slayer_execute+=/sweeping_strikes,if=active_enemies=2
 actions.slayer_execute+=/rend,if=dot.rend.remains<=gcd&!talent.bloodletting
@@ -178,7 +178,7 @@ actions.slayer_execute+=/execute,if=rage>=40
 actions.slayer_execute+=/overpower
 actions.slayer_execute+=/execute
 actions.slayer_execute+=/wrecking_throw
-actions.slayer_execute+=/storm_bolt,if=buff.bladestorm.up
+actions.slayer_execute+=/storm_bolt,if=buff.bladestorm.up,use_off_gcd=1
 
 actions.slayer_st+=/rend,if=dot.rend.remains<=gcd
 actions.slayer_st+=/thunderous_roar
@@ -198,7 +198,7 @@ actions.slayer_st+=/rend,if=dot.rend.remains<=8
 actions.slayer_st+=/wrecking_throw
 actions.slayer_st+=/execute,if=!talent.juggernaut
 actions.slayer_st+=/slam
-actions.slayer_st+=/storm_bolt,if=buff.bladestorm.up
+actions.slayer_st+=/storm_bolt,if=buff.bladestorm.up,use_off_gcd=1
 
 actions.slayer_sweep+=/thunder_clap,if=!dot.rend.remains&!buff.sweeping_strikes.up
 actions.slayer_sweep+=/thunderous_roar
@@ -221,4 +221,4 @@ actions.slayer_sweep+=/whirlwind,if=talent.fervor_of_battle
 actions.slayer_sweep+=/execute,if=!talent.juggernaut
 actions.slayer_sweep+=/wrecking_throw,if=!buff.sweeping_strikes.up
 actions.slayer_sweep+=/slam
-actions.slayer_sweep+=/storm_bolt,if=buff.bladestorm.up
+actions.slayer_sweep+=/storm_bolt,if=buff.bladestorm.up,use_off_gcd=1
