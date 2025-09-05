@@ -1768,7 +1768,7 @@ spec:RegisterAbilities( {
         id = 107570,
         cast = 0,
         cooldown = function() return ( 30 + ( talent.storm_bolts.enabled and 10 or 0 ) ) * ( 1 - ( 0.05 * talent.honed_reflexes.rank ) ) end,
-        gcd = function() return buff.bladestorm.up and "off" or "spell" end,
+        gcd = function() return buff.bladestorm.up and talent.unrelenting_onslaught.enabled and "off" or "spell" end,
 
         startsCombat = true,
         texture = 613535,
