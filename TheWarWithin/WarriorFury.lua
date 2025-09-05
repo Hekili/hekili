@@ -694,7 +694,6 @@ local whirlwindConsumers = {
     [1715]   = true,    -- Hamstring
 }
 
-local lastWWHit = 0
 local trueWWStacks = 0
 local BSUP = false
 
@@ -715,6 +714,8 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
     if subtype == "SPELL_CAST_SUCCESS" then
         if whirlwindConsumers[ spellID ] and not BSUP then
             trueWWStacks = trueWWStacks - 1
+        elseif spellID == 190411 and state.talent.improved_whirlwind.enabled then
+            trueWWStacks = state.talent.meat_cleaver.enabled and 4 or 2
         end
         local ability = class.abilities[ spellID ]
 
@@ -725,21 +726,12 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
         end
 
     elseif subtype == "SPELL_DAMAGE" then
-        if spellID == 199667 or spellID == 44949 and state.talent.improve_whirlwind.enabled then
-            -- 199851 and 199852 also fire multiple times, but just use the above ones to reduce the amount of processing
-            local now = GetTime()
-            if now - lastWWHit > 0.5 then
-                lastWWHit = now
-                trueWWStacks = state.talent.meat_cleaver.enabled and 4 or 2
-            end
-        else
             local ability = class.abilities[ spellID ]
             if not ability then return end
 
             if ( ability.key == "bloodthirst" or ability.key == "bloodbath" ) and state.talent.fresh_meat.enabled and not fresh_meat_actual[ destGUID ] then
                 fresh_meat_actual[ destGUID ] = true
             end
-        end
     elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
         if spellID == 446035 then
             BSUP = ( subtype ~= "SPELL_AURA_REMOVED" ) and true or false
@@ -826,7 +818,12 @@ spec:RegisterHook( "reset_precast", function ()
             removeBuff( "whirlwind" )
         end
     else
-        if trueWWStacks > 0 then applyBuff( "whirlwind", nil, trueWWStacks ) end
+        if trueWWStacks > 0 then
+            applyBuff( "whirlwind", nil, trueWWStacks )
+        elseif action.whirlwind.time_since < gcd.max then
+            local stacks = spec.auras.whirlwind.max_stack
+            applyBuff( "whirlwind", nil, stacks )
+        end
     end
 
     if legendary.will_of_the_berserker.enabled and buff.recklessness.up then
