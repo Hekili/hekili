@@ -708,10 +708,6 @@ local RemoveFrenzy = setfenv( function()
     removeBuff( "frenzy" )
 end, state )
 
-local ExpireBladestorm = setfenv( function()
-    applyBuff( "merciless_bonegrinder" )
-end, state )
-
 spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, school, amount, interrupt, a, b, c, d, critical )
     if sourceGUID ~= state.GUID then return end
 
@@ -1011,9 +1007,6 @@ spec:RegisterAbilities( {
             applyBuff( "bladestorm" )
             setCooldown( "global_cooldown", class.auras.bladestorm.duration )
             if talent.blademasters_torment.enabled then applyBuff( "avatar", 4 ) end
-            if talent.merciless_bonegrinder.enabled then
-                state:QueueAuraExpiration( "bladestorm_merciless_bonegrinder", ExpireBladestorm, buff.bladestorm.expires )
-            end
             if talent.overwhelming_blades.enabled then applyDebuff( "target", "overwhelmed", nil, 10 ) end
 
             if talent.brutal_finish.enabled then applyBuff( "brutal_finish" ) end
