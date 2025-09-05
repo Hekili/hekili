@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/warrior_fury.simc
-## SimulationCraft Commit Sync: a54c75c
-## Date: 2025-08-17
+## SimulationCraft Commit Sync: 89266d4
+## Date: 2025-09-05
 
 actions.precombat+=/battle_shout
 actions.precombat+=/berserker_stance,toggle=on
@@ -86,7 +86,8 @@ actions.slayer+=/bloodthirst
 actions.slayer+=/thunderous_roar
 actions.slayer+=/wrecking_throw
 actions.slayer+=/whirlwind
-actions.slayer+=/storm_bolt,if=buff.bladestorm.up
+## [Syrif] - use_off_gcd isn't in SimC, but is needed for the addon to handle storm bolt while bladestorming
+actions.slayer+=/storm_bolt,if=buff.bladestorm.up,use_off_gcd=1
 
 actions.thane+=/recklessness
 actions.thane+=/avatar
