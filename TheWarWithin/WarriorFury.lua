@@ -696,6 +696,7 @@ local whirlwindConsumers = {
 
 local lastWWHit = 0
 local trueWWStacks = 0
+local BSUP = false
 
 local rageSpent = 0
 local gloryRage = 0
@@ -712,7 +713,7 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
     if sourceGUID ~= state.GUID then return end
 
     if subtype == "SPELL_CAST_SUCCESS" then
-        if whirlwindConsumers[ spellID ] then
+        if whirlwindConsumers[ spellID ] and not BSUP then
             trueWWStacks = trueWWStacks - 1
         end
         local ability = class.abilities[ spellID ]
@@ -740,6 +741,9 @@ spec:RegisterCombatLogEvent( function(  _, subtype, _, sourceGUID, sourceName, s
             end
         end
     elseif ( subtype == "SPELL_AURA_APPLIED" or subtype == "SPELL_AURA_REMOVED" or subtype == "SPELL_AURA_REFRESH" or subtype == "SPELL_AURA_APPLIED_DOSE" or subtype == "SPELL_AURA_REMOVED_DOSE" ) then
+        if spellID == 446035 then
+            BSUP = ( subtype ~= "SPELL_AURA_REMOVED" ) and true or false
+        end
         if state.talent.thunder_blast.enabled and spellID == 435615 then Hekili:ForceUpdate( "THUNDERBLAST_CHANGED", true ) end
         if state.talent.burst_of_power.enabled and spellID == 437121 then Hekili:ForceUpdate( "BURSTOFPOWER_CHANGED", true ) end
     end
