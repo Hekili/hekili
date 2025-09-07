@@ -1799,6 +1799,7 @@ spec:RegisterAbilities( {
 
     thunder_blast = {
         id = 435222,
+        known = 6343,
         flash = 6343,
         cast = 0,
         cooldown = 6,
@@ -1814,13 +1815,7 @@ spec:RegisterAbilities( {
         texture = 460957,
 
         handler = function ()
-            if ( talent.crashing_thunder.enabled ) then
-                if ( talent.improved_whirlwind.enabled ) then
-                    applyBuff ( "whirlwind", nil, talent.meat_cleaver.enabled and 4 or 2 )
-                end
-            end
-            applyDebuff( "target", "thunder_clap" )
-            active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
+            class.abilities.thunder_clap.handler()
             removeStack( "thunder_blast" )
             if set_bonus.tww3 >= 4 then removeBuff( "severe_thunder" ) end
         end,
