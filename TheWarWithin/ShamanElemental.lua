@@ -1231,6 +1231,8 @@ spec:RegisterCombatLogEvent( function( _, subtype, _,  sourceGUID, sourceName, _
 
             elseif FusionFire or FusionNature then
                 local ability = class.abilities[ spellID ]
+                if not ability then return end
+
                 local key = ability.key
 
                 if FusionFireSpells[ key ]   then FusionFire   = false end
