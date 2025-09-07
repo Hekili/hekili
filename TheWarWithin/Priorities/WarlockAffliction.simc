@@ -1,5 +1,5 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/warlock_affliction.simc
-## SimulationCraft Commit Sync: e599542
+## SimulationCraft Commit Sync: c259d86
 ## Date: 2025-08-12
 
 actions.precombat=fel_domination,if=time>0&!pet.alive
