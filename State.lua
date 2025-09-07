@@ -7624,7 +7624,7 @@ do
         if state.filter ~= "none" and state.filter ~= toggle and not ability[ state.filter ] then return true, "display" end
         if ability.item and not ability.bagItem and not state.equipped[ ability.item ] then return false, "not equipped" end
         if toggleSpell[ spell ] and toggle and toggle ~= "none" then
-            if not self.toggle[ toggle ] or ( profile.toggles[ tQoggle ].separate and state.filter ~= toggle and not spec.noFeignedCooldown ) then return true, format( "%s filtered", toggle ) end
+            if not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle and not spec.noFeignedCooldown ) then return true, format( "%s filtered", toggle ) end
         end
 
         return false
