@@ -833,9 +833,10 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Haste increased by $w1%
+    -- Note: Ret version is 8s (Prot version is 6s)
     undisputed_ruling = {
         id = 432629,
-        duration = 6,
+        duration = 8,
         max_stack = 1,
     },
     -- Talent: Holy Damage increased by $w1%.
