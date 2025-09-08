@@ -686,6 +686,7 @@ spec:RegisterAuras( {
     light_of_the_titans = {
         id = 378412,
         duration = 10,
+        tick_time = 2,
         type = "Magic",
         max_stack = 1
     },
