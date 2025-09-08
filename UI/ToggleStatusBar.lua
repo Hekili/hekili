@@ -37,6 +37,12 @@ function Hekili:BuildToggleStatusBar()
         end
         return
     end
+    
+    -- Show introduction popup if this is the first time enabling the toggle bar
+    if barSettings.enabled and not barSettings.hasSeenIntroduction then
+        self:ShowToggleBarIntroduction()
+        barSettings.hasSeenIntroduction = true
+    end
 
     -- Create or reuse the bar frame first
     local bar = self.ToggleStatusBar
@@ -178,7 +184,15 @@ function Hekili:BuildStandardToggleBar( bar )
     local enabledToggles = {}
     for i, btnData in ipairs( barSettings ) do
         if btnData.enabled ~= false then
-            table.insert( enabledToggles, { index = i, data = btnData } )
+            -- Special check for funnel toggle - only show if spec supports it
+            if i == 6 and btnData.toggle == "funnel" then
+                local currentSpec = state.spec and state.spec.id
+                if currentSpec and Hekili.DB.profile.specs[currentSpec] and Hekili.DB.profile.specs[currentSpec].canFunnel then
+                    table.insert( enabledToggles, { index = i, data = btnData } )
+                end
+            else
+                table.insert( enabledToggles, { index = i, data = btnData } )
+            end
         end
     end
 
@@ -232,9 +246,9 @@ function Hekili:BuildStandardToggleBar( bar )
             C_Timer.After( 0.1, function() self:BuildToggleStatusBar() end )
             return
         end
-        
+
         local anchored = Hekili.TrySetAnchor( bar, conf )
-        
+
         if not anchored then
             -- Fallback to screen positioning
             bar:SetPoint( "CENTER", UIParent, "CENTER", barSettings.x or 0, barSettings.y or -200 )
@@ -327,10 +341,35 @@ function Hekili:BuildStandardToggleBar( bar )
 
                 if showTooltip then
                     local toggleValue = Hekili:GetToggleState( btnData.toggle )
-                    local status = toggleValue and "On" or "Off"
+                    local status = toggleValue and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r"
+                    
+                    -- Get the display name (custom label or default toggle name)
+                    local displayName = btnData.label
+                    if not displayName then
+                        local toggleNames = {
+                            cooldowns = "Major Cooldowns",
+                            essences = "Minor Cooldowns", 
+                            defensives = "Defensives",
+                            interrupts = "Interrupts",
+                            potions = "Potions",
+                            funnel = "Funnel",
+                            mode = "Mode",
+                            custom1 = "Custom 1",
+                            custom2 = "Custom 2"
+                        }
+                        displayName = toggleNames[btnData.toggle] or btnData.toggle
+                    end
 
                     GameTooltip:SetOwner( self, "ANCHOR_TOPRIGHT" )
-                    GameTooltip:SetText( "Hekili " .. ( btnData.toggle or btnData.label ) .. " Toggle: " .. status )
+                    GameTooltip:SetText( displayName )
+                    
+                    -- Show status with click instruction if clickable
+                    if barSettings.clickable then
+                        GameTooltip:AddLine( status .. " - Click to toggle", 1, 1, 1 )
+                    else
+                        GameTooltip:AddLine( status, 1, 1, 1 )
+                    end
+                    
                     GameTooltip:Show()
                 end
             end )
@@ -505,6 +544,11 @@ function Hekili:BuildStandardToggleBar( bar )
         -- Position the button (size was already set after Masque)
         btn:ClearAllPoints()
         btn:SetPoint( "TOPLEFT", bar, "TOPLEFT", xPos, yPos )
+        
+        -- Always enable mouse interaction for tooltips, regardless of clickable setting
+        -- (OnClick handlers already check barSettings.clickable before executing)
+        btn:EnableMouse( true )
+        
         btn:Show()
     end
 
@@ -646,10 +690,43 @@ function Hekili:BuildMinimalistToggleBar( bar )
 
                     if showTooltip then
                         local toggleValue = Hekili:GetToggleState( self.toggleData.name )
-                        local status = toggleValue and "On" or "Off"
+                        local status = toggleValue and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r"
+                        
+                        -- Get the display name (check for custom label first)
+                        local displayName = nil
+                        for j = 1, 9 do
+                            local btnData = barSettings[j]
+                            if btnData and btnData.toggle == self.toggleData.name then
+                                displayName = btnData.label
+                                break
+                            end
+                        end
+                        
+                        if not displayName then
+                            local toggleNames = {
+                                cooldowns = "Major Cooldowns",
+                                essences = "Minor Cooldowns", 
+                                defensives = "Defensives",
+                                interrupts = "Interrupts",
+                                potions = "Potions",
+                                funnel = "Funnel",
+                                mode = "Mode",
+                                custom1 = "Custom 1",
+                                custom2 = "Custom 2"
+                            }
+                            displayName = toggleNames[self.toggleData.name] or self.toggleData.name
+                        end
 
                         GameTooltip:SetOwner( self, "ANCHOR_TOP" )
-                        GameTooltip:SetText( self.toggleData.data.label .. ": " .. status )
+                        GameTooltip:SetText( displayName )
+                        
+                        -- Show status with click instruction if clickable
+                        if barSettings.clickable then
+                            GameTooltip:AddLine( status .. " - Click to toggle", 1, 1, 1 )
+                        else
+                            GameTooltip:AddLine( status, 1, 1, 1 )
+                        end
+                        
                         GameTooltip:Show()
                     end
                 end
@@ -837,6 +914,10 @@ function Hekili:BuildMinimalistToggleBar( bar )
 
             btn:SetPoint( "CENTER", bar, "CENTER", xPos, yPos )
 
+            -- Always enable mouse interaction for tooltips, regardless of clickable setting
+            -- (OnClick handlers already check barSettings.clickable before executing)
+            btn:EnableMouse( true )
+
             btn:UpdateIndicator()
             btn:Show()
         else
@@ -936,4 +1017,77 @@ function Hekili:UpdateToggleBar()
             end
         end
     end
+end
+
+-- Show introduction popup for the toggle status bar
+function Hekili:ShowToggleBarIntroduction()
+    -- Create a simple frame for the introduction
+    local intro = CreateFrame( "Frame", nil, UIParent, "BackdropTemplate" )
+    intro:SetSize( 400, 250 )
+    intro:SetPoint( "CENTER", UIParent, "CENTER", 0, 100 )
+    intro:SetFrameStrata( "DIALOG" )
+    intro:SetFrameLevel( 100 )
+    
+    -- Set backdrop
+    intro:SetBackdrop( {
+        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        tile = true, tileSize = 32, edgeSize = 32,
+        insets = { left = 11, right = 12, top = 12, bottom = 11 }
+    } )
+    
+    -- Title
+    local title = intro:CreateFontString( nil, "OVERLAY", "GameFontNormalLarge" )
+    title:SetPoint( "TOP", intro, "TOP", 0, -20 )
+    title:SetText( "|cFFFFD100Hekili Toggle Status Bar|r" )
+    
+    -- Description
+    local desc = intro:CreateFontString( nil, "OVERLAY", "GameFontNormal" )
+    desc:SetPoint( "TOP", title, "BOTTOM", 0, -10 )
+    desc:SetWidth( 350 )
+    desc:SetJustifyH( "LEFT" )
+    desc:SetText( "Welcome to the Toggle Status Bar!\n\nThis feature provides quick visual access to your Hekili toggles. You can see at a glance which toggles are active and click them to enable/disable.\n\nFeatures:\n• Multiple display modes (Standard, Minimalist)\n• Customizable icons and labels\n• Grid layouts and anchoring options\n• Reactive animations when toggles change\n\nRight-click the bar to access settings." )
+    
+    -- Got it button
+    local button = CreateFrame( "Button", nil, intro, "UIPanelButtonTemplate" )
+    button:SetSize( 100, 25 )
+    button:SetPoint( "BOTTOM", intro, "BOTTOM", 0, 20 )
+    button:SetText( "Got it!" )
+    button:SetScript( "OnClick", function()
+        intro:Hide()
+    end )
+    
+    -- Don't show again checkbox
+    local checkbox = CreateFrame( "CheckButton", nil, intro, "UICheckButtonTemplate" )
+    checkbox:SetPoint( "BOTTOMLEFT", intro, "BOTTOMLEFT", 20, 50 )
+    checkbox:SetSize( 24, 24 )
+    checkbox:SetChecked( false )
+    
+    local checkLabel = checkbox:CreateFontString( nil, "OVERLAY", "GameFontNormal" )
+    checkLabel:SetPoint( "LEFT", checkbox, "RIGHT", 5, 0 )
+    checkLabel:SetText( "Don't show this again" )
+    
+    checkbox:SetScript( "OnClick", function( self )
+        if self:GetChecked() then
+            -- Mark as permanently seen
+            Hekili.DB.profile.toggleBar.neverShowIntroduction = true
+        else
+            Hekili.DB.profile.toggleBar.neverShowIntroduction = false
+        end
+    end )
+    
+    -- Check if we should skip showing this
+    if self.DB.profile.toggleBar.neverShowIntroduction then
+        intro:Hide()
+        return
+    end
+    
+    intro:Show()
+    
+    -- Auto-hide after 15 seconds
+    C_Timer.After( 15, function()
+        if intro and intro:IsShown() then
+            intro:Hide()
+        end
+    end )
 end

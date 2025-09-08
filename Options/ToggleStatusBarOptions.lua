@@ -3,10 +3,42 @@
 
 local addon, ns = ...
 local Hekili = _G[ addon ]
+local state = Hekili.State
 
 local ACD = LibStub( "AceConfigDialog-3.0" )
 
 local ToggleStatusBarOptions = {}
+
+-- Helper function to automatically determine label position based on display setup
+local function GetAutomaticLabelPosition()
+    local settings = Hekili.DB.profile.toggleBar
+    local displayMode = settings.displayMode or "standard"
+    local curveAngle = settings.minimalistAngle or 0
+    
+    if displayMode == "standard" then
+        local direction = settings.direction or "HORIZONTAL"
+        if direction == "VERTICAL" then
+            return "LEFT"
+        else -- HORIZONTAL
+            return "TOP"
+        end
+    else -- minimalist
+        local layout = settings.minimalistLayout or "horizontal"
+        if layout == "vertical" then
+            if curveAngle > 0 then
+                return "RIGHT"
+            else
+                return "LEFT"
+            end
+        else -- horizontal
+            if curveAngle < 0 then
+                return "BOTTOM"
+            else
+                return "TOP"
+            end
+        end
+    end
+end
 
 function ToggleStatusBarOptions.GetOptionsTable()
     return {
@@ -68,7 +100,12 @@ function ToggleStatusBarOptions.GetOptionsTable()
                             end,
                             set = function(info, value)
                                 Hekili.DB.profile.toggleBar.displayMode = value
+                                
+                                -- Automatically adjust label position
+                                Hekili.DB.profile.toggleBar.labelPosition = GetAutomaticLabelPosition()
+                                
                                 Hekili:BuildToggleStatusBar()
+                                LibStub("AceConfigRegistry-3.0"):NotifyChange("Hekili")
                             end,
                         },
                     },
@@ -78,6 +115,7 @@ function ToggleStatusBarOptions.GetOptionsTable()
                     type = "group",
                     name = "Standard Settings",
                     order = 10,
+                    hidden = function() return (Hekili.DB.profile.toggleBar.displayMode or "standard") ~= "standard" end,
                     args = {
                         toggleVisibility = {
                             type = "group",
@@ -104,7 +142,7 @@ function ToggleStatusBarOptions.GetOptionsTable()
                                 ["3"] = { type = "toggle", name = "Defensives", desc = "Show Defensives toggle", order = 3, width = 1.49 },
                                 ["4"] = { type = "toggle", name = "Interrupts", desc = "Show Interrupts toggle", order = 4, width = 1.49 },
                                 ["5"] = { type = "toggle", name = "Potions", desc = "Show Potions toggle", order = 5, width = 1.49 },
-                                ["6"] = { type = "toggle", name = "Funnel", desc = "Show Funnel toggle", order = 6, width = 1.49 },
+                                ["6"] = { type = "toggle", name = "Funnel", desc = "Show Funnel toggle (only available for specs that support funneling)", order = 6, width = 1.49, disabled = function() return not Hekili.DB.profile.specs[state.spec.id].canFunnel end },
                                 ["7"] = { type = "toggle", name = "Display Mode", desc = "Show Display Mode toggle", order = 7, width = 1.49 },
                                 ["8"] = { type = "toggle", name = "Custom 1", desc = "Show Custom 1 toggle", order = 8, width = 1.49 },
                                 ["9"] = { type = "toggle", name = "Custom 2", desc = "Show Custom 2 toggle", order = 9, width = 1.49 },
@@ -178,8 +216,28 @@ function ToggleStatusBarOptions.GetOptionsTable()
                                     width = 1.49,
                                     values = { HORIZONTAL = "Horizontal", VERTICAL = "Vertical" },
                                     set = function(info, value)
-                                        Hekili.DB.profile.toggleBar.direction = value
+                                        local settings = Hekili.DB.profile.toggleBar
+                                        local oldDirection = settings.direction or "HORIZONTAL"
+                                        
+                                        -- If direction is actually changing, swap rows and columns
+                                        if oldDirection ~= value then
+                                            local currentMaxColumns = settings.maxColumns or 9
+                                            local currentMaxRows = settings.maxRows or 1
+                                            
+                                            -- Swap the values
+                                            settings.maxColumns = currentMaxRows
+                                            settings.maxRows = currentMaxColumns
+                                        end
+                                        
+                                        settings.direction = value
+                                        
+                                        -- Automatically adjust label position
+                                        settings.labelPosition = GetAutomaticLabelPosition()
+                                        
                                         Hekili:BuildToggleStatusBar()
+                                        
+                                        -- Force refresh of the options UI to update slider displays
+                                        LibStub("AceConfigRegistry-3.0"):NotifyChange("Hekili")
                                     end
                                 },
                                 buttonSize = { type = "range", name = "Icon Size", desc = "Size of each toggle icon", min = 16, max = 64, step = 1, order = 2, width = 1.49 },
@@ -251,6 +309,7 @@ function ToggleStatusBarOptions.GetOptionsTable()
                     type = "group",
                     name = "Minimalist Settings",
                     order = 20,
+                    hidden = function() return (Hekili.DB.profile.toggleBar.displayMode or "standard") ~= "minimalist" end,
                     args = {
                         anchoring = {
                             type = "group",
@@ -356,7 +415,12 @@ function ToggleStatusBarOptions.GetOptionsTable()
                                     get = function() return Hekili.DB.profile.toggleBar.minimalistLayout or "horizontal" end,
                                     set = function(info, value)
                                         Hekili.DB.profile.toggleBar.minimalistLayout = value
+                                        
+                                        -- Automatically adjust label position
+                                        Hekili.DB.profile.toggleBar.labelPosition = GetAutomaticLabelPosition()
+                                        
                                         Hekili:BuildToggleStatusBar()
+                                        LibStub("AceConfigRegistry-3.0"):NotifyChange("Hekili")
                                     end,
                                 },
                                 minimalistAngle = {
@@ -371,6 +435,10 @@ function ToggleStatusBarOptions.GetOptionsTable()
                                     get = function() return Hekili.DB.profile.toggleBar.minimalistAngle or 0 end,
                                     set = function(info, value)
                                         Hekili.DB.profile.toggleBar.minimalistAngle = value
+                                        
+                                        -- Automatically adjust label position
+                                        Hekili.DB.profile.toggleBar.labelPosition = GetAutomaticLabelPosition()
+                                        
                                         Hekili:BuildToggleStatusBar()
                                     end,
                                 },
@@ -380,8 +448,8 @@ function ToggleStatusBarOptions.GetOptionsTable()
                                     desc = "Size of minimalist indicators",
                                     order = 3,
                                     width = 1.49,
-                                    min = 8,
-                                    max = 32,
+                                    min = 10,
+                                    max = 50,
                                     step = 1,
                                     get = function() return Hekili.DB.profile.toggleBar.minimalistSize or 12 end,
                                     set = function(info, value)
@@ -466,7 +534,19 @@ function ToggleStatusBarOptions.GetOptionsTable()
                     order = 40,
                     args = {
                         showLabels = { type = "toggle", name = "Show Labels", desc = "Display text labels for each toggle button", order = 1, width = 2.98 },
-                        labelPosition = { type = "select", name = "Label Position", desc = "Where to position the label relative to the icon", order = 2, width = 1.49, disabled = function() return not Hekili.DB.profile.toggleBar.showLabels end, values = { TOP = "Top", BOTTOM = "Bottom", LEFT = "Left", RIGHT = "Right" } },
+                        labelPosition = { 
+                            type = "select", 
+                            name = "Label Position", 
+                            desc = "Where to position the label relative to the icon (automatically adjusts based on display mode and orientation)", 
+                            order = 2, 
+                            width = 1.49, 
+                            disabled = function() return not Hekili.DB.profile.toggleBar.showLabels end, 
+                            values = { TOP = "Top", BOTTOM = "Bottom", LEFT = "Left", RIGHT = "Right" },
+                            set = function(info, value)
+                                Hekili.DB.profile.toggleBar.labelPosition = value
+                                Hekili:BuildToggleStatusBar()
+                            end
+                        },
                         labelFontSize = { type = "range", name = "Font Size", desc = "Size of the label text", min = 8, max = 20, step = 1, order = 3, width = 1.49, disabled = function() return not Hekili.DB.profile.toggleBar.showLabels end, set = function(info, value) Hekili.DB.profile.toggleBar.labelFontSize = value; Hekili:BuildToggleStatusBar() end },
 
                         customSettingsInfo = {
@@ -801,6 +881,7 @@ function ToggleStatusBarOptions.GetOptionsTable()
                             desc = "Custom label text for this toggle (applies to both modes)",
                             order = 21,
                             width = 1.49,
+                            hidden = function() return not Hekili.DB.profile.specs[state.spec.id].canFunnel end,
                             get = function() return Hekili.DB.profile.toggleBar[6] and Hekili.DB.profile.toggleBar[6].label or "" end,
                             set = function(info, value)
                                 if not Hekili.DB.profile.toggleBar[6] then Hekili.DB.profile.toggleBar[6] = {} end
@@ -828,6 +909,7 @@ function ToggleStatusBarOptions.GetOptionsTable()
                             desc = "Custom icon texture ID (numbers only, Standard mode only)",
                             order = 22,
                             width = 1.49,
+                            hidden = function() return not Hekili.DB.profile.specs[state.spec.id].canFunnel end,
                             validate = function(info, value)
                                 if value == "" then return true end
                                 local num = tonumber(value)

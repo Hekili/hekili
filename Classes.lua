@@ -4369,6 +4369,9 @@ function Hekili:SpecializationChanged()
     HekiliEngine.activeThread = nil
     self:UpdateDisplayVisibility()
     self:UpdateDamageDetectionForCLEU()
+    
+    -- Rebuild toggle status bar to update funnel button visibility based on new spec
+    self:BuildToggleStatusBar()
 end
 
 
