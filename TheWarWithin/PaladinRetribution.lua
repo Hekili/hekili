@@ -639,11 +639,6 @@ spec:RegisterAuras( {
         mechanic = "taunt",
         max_stack = 1
     },
-    inquisition = {
-        id = 84963,
-        duration = 15,
-        max_stack = 1,
-    },
     inquisitors_ire = {
         id = 403976,
         duration = 3600,
@@ -680,15 +675,6 @@ spec:RegisterAuras( {
         id = 196941,
         duration = 30,
         max_stack = 5
-    },
-    -- Healing for $w1 every $t1 sec.
-    -- https://wowhead.com/beta/spell=378412
-    light_of_the_titans = {
-        id = 378412,
-        duration = 10,
-        tick_time = 2,
-        type = "Magic",
-        max_stack = 1
     },
     lights_deliverance = {
         id = 433674,
@@ -832,7 +818,7 @@ spec:RegisterAuras( {
     truths_wake = {
         id = 403695,
         duration = 9.0,
-        tick_time = 3.0,
+        tick_time = function() return 3 * haste end,
         pandemic = true,
         max_stack = 1,
         copy = { 339376, 383351 }
@@ -884,13 +870,6 @@ spec:RegisterAuras( {
         id = 431462,
         duration = 5.0,
         max_stack = 1,
-    },
-    -- Talent: Auto attack speed increased and deals additional Holy damage.
-    -- https://wowhead.com/beta/spell=269571
-    zeal = {
-        id = 269571,
-        duration = 20,
-        max_stack = 2
     },
 
     paladin_aura = {
@@ -1781,6 +1760,9 @@ spec:RegisterAbilities( {
             end
 
             if talent.rising_sunlight.enabled then addStack( "rising_sunlight", nil, 2 ) end
+            if talent.for_whom_the_bell_tolls.enabled and state.spec.retribution then 
+                addStack( "for_whom_the_bell_tolls", nil, min( 5, true_active_enemies ) ) 
+            end
         end,
 
         copy = { 375576, 304971 }
@@ -2108,7 +2090,7 @@ spec:RegisterAbilities( {
             end
             if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", nil, 5 ) end
             if talent.virtuous_command.enabled or conduit.virtuous_command.enabled then applyBuff( "virtuous_command" ) end
-            if talent.zeal.enabled then applyBuff( "zeal", 20, 2 ) end
+            if talent.for_whom_the_bell_tolls.enabled then addStack( "for_whom_the_bell_tolls" ) end
         end,
 
         impact = function()
