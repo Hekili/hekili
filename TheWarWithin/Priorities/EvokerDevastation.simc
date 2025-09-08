@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/evoker_devastation.simc
 ## SimulationCraft Commit Sync: 2950571
-## Date: 2025-08-28
+## Date: 2025-09-03
 
 actions.precombat+=/variable,name=trinket_1_buffs,value=trinket.1.has_buff.intellect|trinket.1.has_buff.mastery|trinket.1.has_buff.versatility|trinket.1.has_buff.haste|trinket.1.has_buff.crit|trinket.1.is.mirror_of_fractured_tomorrows|trinket.1.is.signet_of_the_priory
 actions.precombat+=/variable,name=trinket_2_buffs,value=trinket.2.has_buff.intellect|trinket.2.has_buff.mastery|trinket.2.has_buff.versatility|trinket.2.has_buff.haste|trinket.2.has_buff.crit|trinket.2.is.mirror_of_fractured_tomorrows|trinket.2.is.signet_of_the_priory
@@ -120,7 +120,7 @@ actions.st+=/living_flame,if=set_bonus.tww3_4pc&cooldown.engulf.remains<=execute
 # Flap wings
 actions.st+=/hover,use_off_gcd=1,if=raid_event.movement.in<6&!buff.hover.up&gcd.remains>=0.5|talent.slipstream&gcd.remains>=0.5
 # Become a faster dragon (for one empower)
-actions.st+=/tip_the_scales,use_off_gcd=1,if=buff.dragonrage.up&cooldown.fire_breath.remains<=cooldown.eternity_surge.remains
+actions.st+=/tip_the_scales,use_off_gcd=1,if=buff.dragonrage.up&cooldown.fire_breath.remains<cooldown.eternity_surge.remains
 # Dont overcap with Vigor.
 actions.st+=/shattering_star,if=(!buff.essence_burst.at_max_stacks|!talent.arcane_vigor|talent.engulf)&(set_bonus.tww2_2pc|!talent.scorching_embers|!talent.engulf|dot.fire_breath_damage.ticking&dot.fire_breath_damage.rank=max_empower|(action.engulf.usable_in<?cooldown.fire_breath.remains_expected+4)>=15)
 # Engulf at R4 with Scorch.

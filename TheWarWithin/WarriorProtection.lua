@@ -1808,6 +1808,7 @@ spec:RegisterAbilities( {
 
     thunder_blast = {
         id = 435222,
+		known = 6343,
         flash = 6343,
         cast = 0,
         cooldown = function () return haste * ( ( buff.avatar.up and talent.unstoppable_force.enabled ) and 3 or 6 ) end,
@@ -1826,26 +1827,8 @@ spec:RegisterAbilities( {
         bind = "thunder_clap",
 
         handler = function ()
+			class.abilities.thunder_clap.handler()
             removeStack( "thunder_blast" )
-            applyDebuff( "target", "thunder_clap" )
-            active_dot.thunder_clap = max( active_dot.thunder_clap, active_enemies )
-
-            if ( talent.thunderlord.enabled or legendary.thunderlord.enabled ) and cooldown.demoralizing_shout.remains > 0 then
-                reduceCooldown( "demoralizing_shout", 1.5 * min( 3, active_enemies ) )
-            end
-
-            if talent.rend.enabled then
-                applyDebuff( "target", "rend" )
-                active_dot.rend = min( active_enemies, 5 )
-            end
-
-            if buff.violent_outburst.up then
-                class.abilities.ignore_pain.handler()
-                removeBuff( "violent_outburst" )
-            end
-
-            removeBuff( "best_served_cold" )
-
             if set_bonus.tww3 >= 4 then removeBuff( "severe_thunder" ) end
         end,
         copy = { 6343 }
