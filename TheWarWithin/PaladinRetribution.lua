@@ -2090,7 +2090,7 @@ spec:RegisterAbilities( {
             end
             if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", nil, 5 ) end
             if talent.virtuous_command.enabled or conduit.virtuous_command.enabled then applyBuff( "virtuous_command" ) end
-            if talent.for_whom_the_bell_tolls.enabled and buff.for_whom_the_bell_tolls.up then removeStack( "for_whom_the_bell_tolls" ) end
+            removeStack( "for_whom_the_bell_tolls" )
         end,
 
         impact = function()
