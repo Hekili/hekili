@@ -1685,7 +1685,7 @@ spec:RegisterAbilities( {
         spend = function ()
             if buff.divine_purpose.up then return 0 end
             if buff.empyrean_power.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 )
+            return 3
         end,
         spendType = "holy_power",
 
@@ -2111,7 +2111,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 )
+            return 3
         end,
         spendType = "holy_power",
 
@@ -2166,7 +2166,7 @@ spec:RegisterAbilities( {
         gcd = "spell",
         school = "holyfire",
 
-        spend = function() return talent.vanguard_of_justice.enabled and 4 or 3 end,
+        spend = function() return 3 end,
         spendType = "holy_power",
 
         talent = "radiant_decree",
@@ -2227,7 +2227,7 @@ spec:RegisterAbilities( {
 
         spend = function ()
             if buff.divine_purpose.up then return 0 end
-            return ( talent.vanguard_of_justice.enabled and 4 or 3 )
+            return 3
         end,
         spendType = "holy_power",
 
