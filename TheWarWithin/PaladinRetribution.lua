@@ -1761,7 +1761,7 @@ spec:RegisterAbilities( {
 
             if talent.rising_sunlight.enabled then addStack( "rising_sunlight", nil, 2 ) end
             if talent.for_whom_the_bell_tolls.enabled and state.spec.retribution then 
-                addStack( "for_whom_the_bell_tolls", nil, min( 5, true_active_enemies ) ) 
+                addStack( "for_whom_the_bell_tolls", nil, 3 ) 
             end
         end,
 
@@ -2090,7 +2090,7 @@ spec:RegisterAbilities( {
             end
             if talent.judgment_of_light.enabled then applyDebuff( "target", "judgment_of_light", nil, 5 ) end
             if talent.virtuous_command.enabled or conduit.virtuous_command.enabled then applyBuff( "virtuous_command" ) end
-            if talent.for_whom_the_bell_tolls.enabled then addStack( "for_whom_the_bell_tolls" ) end
+            if talent.for_whom_the_bell_tolls.enabled and buff.for_whom_the_bell_tolls.up then removeStack( "for_whom_the_bell_tolls" ) end
         end,
 
         impact = function()
