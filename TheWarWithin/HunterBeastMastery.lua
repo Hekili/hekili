@@ -1131,13 +1131,6 @@ spec:RegisterAuras( {
         duration = function() return spec.auras.call_of_the_wild.duration end,
         tick_time = 4,
         max_stack = 1,
-        --[[meta = {
-            tick_time_remains = function( wf )
-                if not wf.up then return 0 end
-                local elapsed = query_time - wf.applied
-                return 4 - ( elapsed % 4 )
-            end
-        }--]]
     },
     -- Wyvern's Cry You and your pet's damage is increased by $s1%. $s2 seconds remaining
     -- https://www.wowhead.com/spell=471881
