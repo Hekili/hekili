@@ -4230,10 +4230,11 @@ do
                 return t.remains / t.tick_time
 
             elseif k == "tick_time_remains" then
-                if t.remains == 0 then return 0 end
+                -- Match SimC behavior:  They return the max of a 64 bit integer ... 3600 is sufficient.
+                if t.remains == 0 then return 3600 end
                 if t.applied <= state.query_time and state.query_time < t.expires then
                     if not aura.tick_time then return t.remains end
-                    return aura.tick_time - ( ( query_time - t.applied ) % aura.tick_time )
+                    return aura.tick_time - ( ( state.query_time - t.applied ) % aura.tick_time )
                 end
                 return 0
 

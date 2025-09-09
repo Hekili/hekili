@@ -1791,6 +1791,7 @@ spec:RegisterPet( "treants",
 spec:RegisterTotem( "treants", 103822 )
 
 local TreantMoonfires = setfenv( function()
+    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - TreantMoonfires" ) end
     for i = 1, 3 do -- # of treants
         spec.abilities.moonfire.handler()
     end
@@ -2120,8 +2121,8 @@ spec:RegisterAbilities( {
             if talent.harmony_of_the_grove.enabled then applyBuff( "harmony_of_the_grove" ) end
             if talent.dream_surge.enabled then applyBuff( "dream_burst") end
             -- queue aura ticks +2, +8 3 moonfires, actually triggers the handler
-            state:QueueAuraEvent( "treant_moonfires", TreantMoonfires, query_time + 2, "AURA_TICK" )
-            state:QueueAuraEvent( "treant_moonfires", TreantMoonfires, query_time + 8, "AURA_TICK" )
+            state:QueueAuraEvent( "treant_moonfires", TreantMoonfires, query_time + 2, "AURA_PERIODIC" )
+            state:QueueAuraEvent( "treant_moonfires", TreantMoonfires, query_time + 8, "AURA_PERIODIC" )
         end,
     },
 

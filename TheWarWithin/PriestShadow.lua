@@ -1040,6 +1040,7 @@ local ExpireVoidform = setfenv( function()
 end, state )
 
 local PowerSurge = setfenv( function()
+    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - PowerSurge" ) end
     class.abilities.halo.handler()
 end, state )
 
@@ -1213,7 +1214,7 @@ spec:RegisterHook( "reset_precast", function ()
         for i = 1, final_tick do
             tick = tick + 5
             if tick > query_time and tick <= expires then
-                state:QueueAuraEvent( "create_additional_halo", PowerSurge, tick, "AURA_TICK" )
+                state:QueueAuraEvent( "create_additional_halo", PowerSurge, tick, "AURA_PERIODIC" )
             end
         end
     end
@@ -1543,7 +1544,7 @@ spec:RegisterAbilities( {
                     for i = 5, 10, 5 do
                         -- Queue the additional Halos, one every 5 seconds until expiry
                         -- Further halos beyond base duration from TWW3 set will be added during reset_precast
-                        state:QueueAuraEvent( "create_additional_halo", PowerSurge, query_time + i, "AURA_TICK" )
+                        state:QueueAuraEvent( "create_additional_halo", PowerSurge, query_time + i, "AURA_PERIODIC" )
                     end
                 end
                 if talent.manifested_power.enabled then addStack( "mind_flay_insanity" ) end
