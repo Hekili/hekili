@@ -1129,7 +1129,15 @@ spec:RegisterAuras( {
     withering_fire = {
         id = 466991,
         duration = function() return spec.auras.call_of_the_wild.duration end,
-        max_stack = 1
+        tick_time = 4,
+        max_stack = 1,
+        --[[meta = {
+            tick_time_remains = function( wf )
+                if not wf.up then return 0 end
+                local elapsed = query_time - wf.applied
+                return 4 - ( elapsed % 4 )
+            end
+        }--]]
     },
     -- Wyvern's Cry You and your pet's damage is increased by $s1%. $s2 seconds remaining
     -- https://www.wowhead.com/spell=471881
@@ -1299,9 +1307,13 @@ spec:RegisterHook( "spend", function( amt, resource )
 end )
 
 local CallOfTheWildCDR = setfenv( function()
+    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - CallOfTheWildCDR" ) end
     gainChargeTime( "kill_command", spec.abilities.kill_command.recharge/4)
     gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge/4)
-    if talent.withering_fire.enabled then applyBuff( "deathblow" ) end
+    if talent.withering_fire.enabled then
+        applyBuff( "deathblow" )
+        setCooldown( "kill_shot", 0 )
+    end
 end, state )
 
 local pack_leader_buff_cycle = {
@@ -1485,6 +1497,16 @@ spec:RegisterStateTable( "boar_charge", setmetatable( {
 
 spec:RegisterHook( "reset_precast", function()
 
+    if buff.withering_fire.up then
+        local remains = buff.withering_fire.tick_time_remains
+        if remains > 0 and remains < gcd.max then
+            applyBuff( "deathblow")
+            if Hekili.ActiveDebug then Hekili:Debug( "Applied virtual deathblow, tick incoming in: " .. remains ) end
+        else
+            if Hekili.ActiveDebug then Hekili:Debug( "next tick: " .. remains ) end
+        end
+    end
+
     if talent.howl_of_the_pack_leader.enabled then
         howl_summon.refresh_cycle()
         boar_charge.refresh_tracker()
@@ -1506,7 +1528,7 @@ spec:RegisterHook( "reset_precast", function()
         for i = 1, 5 do
             tick = tick + 4
             if tick > query_time and tick < expires then
-                state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, tick, "AURA_TICK" )
+                state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, tick, "AURA_PERIODIC" )
             end
         end
     end
@@ -1714,12 +1736,13 @@ spec:RegisterAbilities( {
             gainCharges( "barbed_shot", 1 )
             -- Queue the pet summons for CDR calculation
             for i = 4, 20, 4 do
-                state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + i, "AURA_TICK" )
+                state:QueueAuraEvent( "call_of_the_wild_cdr", CallOfTheWildCDR, query_time + i, "AURA_PERIODIC" )
             end
             if talent.bloody_frenzy.enabled then applyBuff( "beast_cleave", 20 ) end
             if talent.withering_fire.enabled then
                 applyBuff( "withering_fire" )
                 applyBuff( "deathblow" )
+                setCooldown( "kill_shot", 0 )
                 if set_bonus.tww2 >= 4 then
                     removeBuff( "blighted_quiver" )
                 end

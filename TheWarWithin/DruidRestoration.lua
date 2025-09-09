@@ -575,6 +575,7 @@ end )
 
 local TranquilityTickHandler = setfenv( function()
 
+    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - TranquilityTickHandler" ) end
     addStack( "tranquility_hot" )
     if talent.dreamstate.enabled then
         for ability, _ in pairs( class.abilities ) do
@@ -585,6 +586,7 @@ local TranquilityTickHandler = setfenv( function()
 end, state )
 
 local ComboPointPeriodic = setfenv( function()
+    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - ComboPointPeriodic" ) end
     gain( 1, "combo_points" )
 end, state )
 
@@ -604,7 +606,7 @@ spec:RegisterHook( "reset_precast", function ()
         for i = 1, 4 do
             tick = tick + tickInterval
             if tick > query_time and tick < expires then
-                state:QueueAuraEvent( "tranquility_tick", TranquilityTickHandler, tick, "AURA_TICK" )
+                state:QueueAuraEvent( "tranquility_tick", TranquilityTickHandler, tick, "AURA_PERIODIC" )
             end
         end
 
@@ -615,7 +617,7 @@ spec:RegisterHook( "reset_precast", function ()
         for i = 2, expires - query_time, 2 do
             tick = query_time + i
             if tick < expires then
-                state:QueueAuraEvent( "incarnation_combo_point_perodic", ComboPointPeriodic, tick, "AURA_TICK" )
+                state:QueueAuraEvent( "incarnation_combo_point_perodic", ComboPointPeriodic, tick, "AURA_PERIODIC" )
             end
         end
     end
@@ -625,12 +627,10 @@ spec:RegisterHook( "reset_precast", function ()
         for i = 10, expires - query_time, 10 do
             tick = query_time + i
             if tick < expires then
-                state:QueueAuraEvent( "tree_of_life_treant_spawn", TreantSpawnPeriodic, tick, "AURA_TICK" )
+                state:QueueAuraEvent( "tree_of_life_treant_spawn", TreantSpawnPeriodic, tick, "AURA_PERIODIC" )
             end
         end
     end
-
-
 
 end )
 
@@ -742,7 +742,7 @@ spec:RegisterAbilities( {
             if buff.incarnation.down then
                 applyBuff( "incarnation" )
                 if talent.cenarius_guidance.enabled then for i = 10, 30, 10 do
-                        state:QueueAuraEvent( "tree_of_life_treant_spawn", TreantSpawnPeriodic, queryTime + i , "AURA_TICK" )
+                        state:QueueAuraEvent( "tree_of_life_treant_spawn", TreantSpawnPeriodic, queryTime + i , "AURA_PERIODIC" )
                     end
                 end
             end
@@ -1191,7 +1191,7 @@ spec:RegisterAbilities( {
             for i = 1, 4 do
                 tickTime = tickTime + spec.auras.tranquility.tick_time
                 if tickTime <= query_time + spec.auras.tranquility.duration then
-                    state:QueueAuraEvent( "tranquility_tick", TranquilityTickHandler, tickTime, "AURA_TICK" )
+                    state:QueueAuraEvent( "tranquility_tick", TranquilityTickHandler, tickTime, "AURA_PERIODIC" )
                 end
             end
         end,

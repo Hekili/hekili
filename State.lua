@@ -4233,7 +4233,7 @@ do
                 if t.remains == 0 then return 0 end
                 if t.applied <= state.query_time and state.query_time < t.expires then
                     if not aura.tick_time then return t.remains end
-                    return aura.tick_time - ( ( query_time - t.applied ) % aura.tick_time )
+                    return aura.tick_time - ( ( state.query_time - t.applied ) % aura.tick_time )
                 end
                 return 0
 
