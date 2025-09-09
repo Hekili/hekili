@@ -591,6 +591,7 @@ local ComboPointPeriodic = setfenv( function()
 end, state )
 
 local TreantSpawnPeriodic = setfenv( function()
+    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - TreantSpawnPeriodic" ) end
     summonPet( "treants", 15 )
     addStack( "grove_guardians" ) -- Just for tracking.
     if talent.harmony_of_the_grove.enabled then addStack( "harmony_of_the_grove" ) end

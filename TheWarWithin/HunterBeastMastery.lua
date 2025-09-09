@@ -1492,7 +1492,7 @@ spec:RegisterHook( "reset_precast", function()
 
     if buff.withering_fire.up then
         local remains = buff.withering_fire.tick_time_remains
-        if remains > 0 and remains < gcd.max then
+        if remains > 0 and remains < gcd.remains then
             applyBuff( "deathblow")
             if Hekili.ActiveDebug then Hekili:Debug( "Applied virtual deathblow, tick incoming in: " .. remains ) end
         else
