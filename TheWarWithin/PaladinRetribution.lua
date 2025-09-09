@@ -1291,7 +1291,7 @@ spec:RegisterAbilities( {
     avenging_wrath = {
         id = 31884,
         cast = 0,
-        cooldown = 60,
+        cooldown = 120,
         gcd = "off",
         school = "holy",
 
