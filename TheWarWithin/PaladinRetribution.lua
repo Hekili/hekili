@@ -1011,12 +1011,6 @@ spec:RegisterHook( "spend", function( amt, resource )
     end
 end )
 
-spec:RegisterHook( "gain", function( amt, resource, overcap )
-    if amt > 0 and resource == "holy_power" and buff.blessing_of_dusk.up and talent.fading_light.enabled then
-        applyBuff( "fading_light" )
-    end
-end )
-
 spec:RegisterStateExpr( "time_to_hpg", function ()
     if talent.crusading_strikes.enabled then
         return max( gcd.remains, min( cooldown.judgment.true_remains, cooldown.blade_of_justice.true_remains, ( state:IsUsable( "hammer_of_wrath" ) and cooldown.hammer_of_wrath.true_remains or 999 ), action.wake_of_ashes.known and cooldown.wake_of_ashes.true_remains or 999, ( race.blood_elf and cooldown.arcane_torrent.true_remains or 999 ), ( action.divine_toll.known and cooldown.divine_toll.true_remains or 999 ) ) )
