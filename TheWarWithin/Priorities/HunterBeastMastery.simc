@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/hunter_beast_mastery.simc
 ## SimulationCraft Commit Sync: 5fb0f24
-## Date: 2025-08-26
+## Date: 2025-09-09
 
 actions.precombat+=/summon_pet
 # Determine the stronger trinket to sync with cooldowns. In descending priority: buff effects > damage effects, longer > shorter cooldowns, longer > shorter cast times. Special case to consider Mirror of Fractured Tomorrows weaker than other buff effects since its power is split between the dmg effect and the buff effect.
@@ -57,7 +57,8 @@ actions.drst+=/bestial_wrath,if=cooldown.call_of_the_wild.remains>20|!talent.cal
 actions.drst+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd
 actions.drst+=/bloodshed
 actions.drst+=/call_of_the_wild
-actions.drst+=/kill_command
+## [Syrif] - WIP APL by theorycrafters, solid DPS gain
+actions.drst+=/kill_command,if=buff.withering_fire.tick_time_remains>gcd
 actions.drst+=/barbed_shot,cycle_targets=1
 actions.drst+=/cobra_shot
 
