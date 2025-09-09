@@ -311,6 +311,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Attack speed reduced by $w3%.  Movement speed reduced by $w4%.
+    -- https://www.wowhead.com/spell=388012
     blessing_of_winter = {
         id = 388012,
         duration = 6,
