@@ -6508,93 +6508,98 @@ do
         local ability
         local curr_action = self.this_action
 
+        -- Check if this is a spell-related event that needs ability validation
         if e.type ~= "AURA_EXPIRATION" and e.type ~= "AURA_PERIODIC" then
             ability = class.abilities[ e.action ]
 
-            if not ability then
+            if ability then
+                self.this_action = action
+            elseif not e.func then
+                -- Only remove if no custom function and no known ability
                 state:RemoveEvent( e )
                 return
             end
-
-            self.this_action = action
         end
 
         if Hekili.ActiveDebug then Hekili:Debug( "\nHandling %s at %.2f (%s).", action, e.time, e.type ) end
 
-        if e.type == "CAST_FINISH" then
-            self.hardcast = true
-            local cooldown = ability.cooldown
+        -- Handle spell events only if we have a valid ability
+        if ability then
+            if e.type == "CAST_FINISH" then
+                self.hardcast = true
+                local cooldown = ability.cooldown
 
-            -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
-            -- if ability.charges and ability.charges > 1 and ability.recharge > 0 then
-            if ability.charges and ( ability.recharge or ability.cooldown ) > 0 then
-                self.spendCharges( action, 1 )
+                -- Put the action on cooldown. (It's slightly premature, but addresses CD resets like Echo of the Elements.)
+                -- if ability.charges and ability.charges > 1 and ability.recharge > 0 then
+                if ability.charges and ( ability.recharge or ability.cooldown ) > 0 then
+                    self.spendCharges( action, 1 )
 
-            elseif action ~= "global_cooldown" then
-                self.setCooldown( action, cooldown )
-            end
+                elseif action ~= "global_cooldown" then
+                    self.setCooldown( action, cooldown )
+                end
 
-            -- Spend resources.
-            ns.spendResources( action )
+                -- Spend resources.
+                ns.spendResources( action )
 
-            local wasCycling = self.IsCycling( nil, true )
-            local expires, minTTD, maxTTD, aura
+                local wasCycling = self.IsCycling( nil, true )
+                local expires, minTTD, maxTTD, aura
 
-            if wasCycling then
-                expires, minTTD, maxTTD, aura = self.GetCycleInfo()
-            end
+                if wasCycling then
+                    expires, minTTD, maxTTD, aura = self.GetCycleInfo()
+                end
 
-            if e.target and e.target ~= self.target.unit then
-                if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
-                self.SetupCycle( ability )
-            end
+                if e.target and e.target ~= self.target.unit then
+                    if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
+                    self.SetupCycle( ability )
+                end
 
-            -- Perform the action.
-            self:RunHandler( action )
-            self.hardcast = nil
-            self.whitelist = nil
-            self.removeBuff( "casting" ) -- TODO: Revisit for Casting while Casting scenarios; check Fire Mage.
+                -- Perform the action.
+                self:RunHandler( action )
+                self.hardcast = nil
+                self.whitelist = nil
+                self.removeBuff( "casting" ) -- TODO: Revisit for Casting while Casting scenarios; check Fire Mage.
 
-            if wasCycling then
-                self.SetCycleInfo( expires, minTTD, maxTTD, aura )
-            else
-                self.ClearCycle()
-            end
+                if wasCycling then
+                    self.SetCycleInfo( expires, minTTD, maxTTD, aura )
+                else
+                    self.ClearCycle()
+                end
 
-            self:SetWhitelist( nil )
+                self:SetWhitelist( nil )
 
-            if ability.item and not ( ability.essence or ability.no_icd ) then
-                self.putTrinketsOnCD( cooldown / 6 )
-            end
+                if ability.item and not ( ability.essence or ability.no_icd ) then
+                    self.putTrinketsOnCD( cooldown / 6 )
+                end
 
-        elseif e.type == "CHANNEL_TICK" then
-            if ability.tick then ability.tick() end
+            elseif e.type == "CHANNEL_TICK" then
+                if ability.tick then ability.tick() end
 
-        elseif e.type == "CHANNEL_FINISH" then
-            if ability.finish then ability.finish() end
-            self.whitelist = nil
-            self.removeBuff( "casting" )
+            elseif e.type == "CHANNEL_FINISH" then
+                if ability.finish then ability.finish() end
+                self.whitelist = nil
+                self.removeBuff( "casting" )
 
-        elseif e.type == "PROJECTILE_IMPACT" then
-            local wasCycling = self.IsCycling( nil, true )
-            local expires, minTTD, maxTTD, aura
+            elseif e.type == "PROJECTILE_IMPACT" then
+                local wasCycling = self.IsCycling( nil, true )
+                local expires, minTTD, maxTTD, aura
 
-            if wasCycling then
-                expires, minTTD, maxTTD, aura = self.GetCycleInfo()
-            end
+                if wasCycling then
+                    expires, minTTD, maxTTD, aura = self.GetCycleInfo()
+                end
 
-            if e.target and e.target ~= self.target.unit then
-                if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
-                self.SetupCycle( ability )
-            end
+                if e.target and e.target ~= self.target.unit then
+                    if Hekili.ActiveDebug then Hekili:Debug( "Using ability on a different target." ) end
+                    self.SetupCycle( ability )
+                end
 
-            if ability.impact then ability.impact( e.real ) end
-            self:StartCombat()
+                if ability.impact then ability.impact( e.real ) end
+                self:StartCombat()
 
-            if wasCycling then
-                self.SetCycleInfo( expires, minTTD, maxTTD, aura )
-            else
-                self.ClearCycle()
+                if wasCycling then
+                    self.SetCycleInfo( expires, minTTD, maxTTD, aura )
+                else
+                    self.ClearCycle()
+                end
             end
         end
 

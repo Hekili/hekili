@@ -1382,7 +1382,6 @@ local SinfulHysteriaHandler = setfenv( function ()
 end, state )
 
 local ComboPointPeriodic = setfenv( function()
-    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - ComboPointPeriodic" ) end
     gain( 1, "combo_points" )
 end, state )
 

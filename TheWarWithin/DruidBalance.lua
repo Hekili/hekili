@@ -1791,7 +1791,6 @@ spec:RegisterPet( "treants",
 spec:RegisterTotem( "treants", 103822 )
 
 local TreantMoonfires = setfenv( function()
-    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - TreantMoonfires" ) end
     for i = 1, 3 do -- # of treants
         spec.abilities.moonfire.handler()
     end

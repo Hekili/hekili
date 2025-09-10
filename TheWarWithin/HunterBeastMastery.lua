@@ -1300,7 +1300,6 @@ spec:RegisterHook( "spend", function( amt, resource )
 end )
 
 local CallOfTheWildCDR = setfenv( function()
-    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - CallOfTheWildCDR" ) end
     gainChargeTime( "kill_command", spec.abilities.kill_command.recharge/4)
     gainChargeTime( "barbed_shot", spec.abilities.barbed_shot.recharge/4)
     if talent.withering_fire.enabled then

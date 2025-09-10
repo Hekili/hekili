@@ -575,7 +575,6 @@ end )
 
 local TranquilityTickHandler = setfenv( function()
 
-    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - TranquilityTickHandler" ) end
     addStack( "tranquility_hot" )
     if talent.dreamstate.enabled then
         for ability, _ in pairs( class.abilities ) do
@@ -586,12 +585,10 @@ local TranquilityTickHandler = setfenv( function()
 end, state )
 
 local ComboPointPeriodic = setfenv( function()
-    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - ComboPointPeriodic" ) end
     gain( 1, "combo_points" )
 end, state )
 
 local TreantSpawnPeriodic = setfenv( function()
-    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - TreantSpawnPeriodic" ) end
     summonPet( "treants", 15 )
     addStack( "grove_guardians" ) -- Just for tracking.
     if talent.harmony_of_the_grove.enabled then addStack( "harmony_of_the_grove" ) end

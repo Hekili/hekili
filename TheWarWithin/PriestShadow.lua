@@ -1040,7 +1040,6 @@ local ExpireVoidform = setfenv( function()
 end, state )
 
 local PowerSurge = setfenv( function()
-    if Hekili.ActiveDebug then Hekili:Debug( "Running local spec function - PowerSurge" ) end
     class.abilities.halo.handler()
 end, state )
 
