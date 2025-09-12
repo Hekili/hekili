@@ -1572,6 +1572,9 @@ spec:RegisterStateFunction( "consume_maelstrom", function( cap, stormweaver )
     end
 
     removeStack( "maelstrom_weapon", stacks )
+
+    if pvptalent.stormweaver.enabled then addStack( "stormweaver", nil, stacks ) end
+
     if set_bonus.tier29_4pc > 0 then addStack( "fury_of_the_storm", nil, stacks ) end
 
     if hero_tree.stormbringer then
