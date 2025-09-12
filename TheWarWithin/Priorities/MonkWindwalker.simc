@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/monk_windwalker.simc
 ## SimulationCraft Commit Sync: 65d756b
-## Date: 2025-08-22
+## Date: 2025-09-12
 
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
 ## [Hekili] Implemented in MonkWindwalker.lua
@@ -13,7 +13,7 @@ actions.precombat+=/use_item,name=imperfect_ascendancy_serum
 ## actions+=/flying_serpent_kick,if=movement.distance>5
 actions+=/spear_hand_strike
 # Potion
-actions+=/potion,if=talent.invoke_xuen_the_white_tiger&pet.xuen_the_white_tiger.active&buff.storm_earth_and_fire.up
+actions+=/potion,if=buff.invoke_xuen_the_white_tiger.up&buff.storm_earth_and_fire.up
 actions+=/potion,if=!talent.invoke_xuen_the_white_tiger&buff.storm_earth_and_fire.up
 actions+=/potion,if=boss&fight_remains<=30
 
@@ -28,7 +28,7 @@ actions+=/variable,name=small_hotjs_active,value=buff.heart_of_the_jade_serpent_
 actions+=/variable,name=sef_condition,value=fight_remains>6&(cooldown.rising_sun_kick.remains|active_enemies>2|!talent.ordered_elements)&(buff.invoke_xuen_the_white_tiger.remains>15|(talent.celestial_conduit|!talent.last_emperors_capacitor)&buff.bloodlust.up&(cooldown.strike_of_the_windlord.remains<5|!talent.strike_of_the_windlord)&talent.sequenced_strikes|buff.invokers_delight.remains>15|(cooldown.strike_of_the_windlord.remains<5|!talent.strike_of_the_windlord)&cooldown.storm_earth_and_fire.full_recharge_time<cooldown.invoke_xuen_the_white_tiger.remains&cooldown.fists_of_fury.remains<5&(!talent.last_emperors_capacitor|talent.celestial_conduit)|talent.last_emperors_capacitor&buff.the_emperors_capacitor.stack>17&cooldown.invoke_xuen_the_white_tiger.remains>cooldown.storm_earth_and_fire.full_recharge_time)|boss&fight_remains<30&cooldown.invoke_xuen_the_white_tiger.remains>10&(cooldown.rising_sun_kick.remains|active_enemies>1)|buff.invokers_delight.remains>15&(cooldown.rising_sun_kick.remains|active_enemies>2|!talent.ordered_elements)|buff.bloodlust.up&(cooldown.rising_sun_kick.remains|active_enemies>2|!talent.ordered_elements)&talent.celestial_conduit&time>10
 ## [Hekili] Remove fight styles.
 ## actions+=/variable,name=xuen_condition,value=(fight_style.DungeonSlice&active_enemies=1&(time<10|talent.xuens_bond&talent.celestial_conduit)|!fight_style.dungeonslice|active_enemies>1)&cooldown.storm_earth_and_fire.ready&(target.time_to_die>14&!fight_style.dungeonroute|target.time_to_die>22)&(active_enemies>2|debuff.acclamation.up|!talent.ordered_elements&time<5)&(chi>2&talent.ordered_elements|chi>5|chi>3&energy<50|energy<50&active_enemies=1|prev.tiger_palm&!talent.ordered_elements&time<5)|fight_remains<30|fight_style.dungeonroute&talent.celestial_conduit&target.time_to_die>14
-actions+=/variable,name=xuen_condition,value=active_enemies=1&(time<10|talent.xuens_bond&talent.celestial_conduit)|active_enemies>1&cooldown.storm_earth_and_fire.ready&fight_remains>14&(active_enemies>2|debuff.acclamation.up|!talent.ordered_elements&time<5)&(chi>2&talent.ordered_elements|chi>5|chi>3&energy<50|energy<50&active_enemies=1|prev.tiger_palm&!talent.ordered_elements&time<5)|boss&fight_remains<30
+actions+=/variable,name=xuen_condition,value=active_enemies=1&(time<10|talent.xuens_bond&talent.celestial_conduit)|active_enemies>1&cooldown.storm_earth_and_fire.ready&fight_remains>14&(active_enemies>2|debuff.acclamation.up|!talent.ordered_elements&time<5)&(chi>2&talent.ordered_elements|chi>5|chi>3&energy<50|energy<50&active_enemies=1|prev.tiger_palm&!talent.ordered_elements&time<5)|time>50&(fight_remains>10&talent.xuens_bond|fight_remains>20)|buff.storm_earth_and_fire.remains>5|boss&fight_remains<30
 ## [Hekili] Fight styles (intentionally) not supported.
 ## actions+=/variable,name=xuen_dungeonslice_condition,value=active_enemies=1&(time<10|talent.xuens_bond&talent.celestial_conduit&target.time_to_die>14)|active_enemies>1&cooldown.storm_earth_and_fire.ready&target.time_to_die>14&(active_enemies>2|debuff.acclamation.up|!talent.ordered_elements&time<5)&((chi>2&!talent.ordered_elements|talent.ordered_elements|!talent.ordered_elements&energy<50)|talent.sequenced_strikes&talent.energy_burst&talent.revolving_whirl)|fight_remains<30|active_enemies>3&target.time_to_die>5|fight_style.dungeonslice&time>50&target.time_to_die>1&talent.xuens_bond
 ## actions+=/variable,name=xuen_dungeonroute_condition,value=cooldown.storm_earth_and_fire.ready&(active_enemies>1&cooldown.storm_earth_and_fire.ready&target.time_to_die>22&(active_enemies>2|debuff.acclamation.up|!talent.ordered_elements&time<5)&((chi>2&!talent.ordered_elements|talent.ordered_elements|!talent.ordered_elements&energy<50)|talent.sequenced_strikes&talent.energy_burst&talent.revolving_whirl)|fight_remains<30|active_enemies>3&target.time_to_die>15|time>50&(target.time_to_die>10&talent.xuens_bond|target.time_to_die>20))|buff.storm_earth_and_fire.remains>5
@@ -54,7 +54,7 @@ actions+=/arcane_pulse,if=buff.storm_earth_and_fire.down
 
 ## [Hekili] External PI not supported.
 ## Use <a href='https://www.wowhead.com/spell=10060/power-infusion'>Power Infusion</a> while <a href='https://www.wowhead.com/spell=123904/invoke-xuen-the-white-tiger'>Invoke Xuen, the White Tiger</a> is active.
-## actions.cooldowns=invoke_external_buff,name=power_infusion,if=pet.xuen_the_white_tiger.active&(!buff.bloodlust.up|buff.bloodlust.up&cooldown.strike_of_the_windlord.remains)
+## actions.cooldowns=invoke_external_buff,name=power_infusion,if=buff.invoke_xuen_the_white_tiger.up&(!buff.bloodlust.up|buff.bloodlust.up&cooldown.strike_of_the_windlord.remains)
 ## [Hekili] Fight style not really supported.
 ## actions.cooldowns+=/storm_earth_and_fire,cycle_targets=1,if=fight_style.dungeonroute&buff.invokers_delight.remains>15&(active_enemies>2|!talent.ordered_elements|cooldown.rising_sun_kick.remains)
 ## [Hekili] Remove fight style condition.
@@ -142,7 +142,7 @@ actions.default_cleave+=/slicing_winds,if=variable.small_hotjs_active|buff.heart
 ## [Hekili] -fight_style
 ## actions.default_cleave+=/celestial_conduit,if=buff.storm_earth_and_fire.up&debuff.gale_force.remains<5&cooldown.strike_of_the_windlord.remains&(!buff.heart_of_the_jade_serpent_cdr.up|debuff.gale_force.remains<5)&(talent.xuens_bond|!talent.xuens_bond&buff.invokers_delight.up)|fight_remains<15|fight_style.dungeonroute&buff.invokers_delight.up&cooldown.strike_of_the_windlord.remains&buff.storm_earth_and_fire.remains<8|fight_remains<10
 actions.default_cleave+=/celestial_conduit,if=buff.storm_earth_and_fire.up&debuff.gale_force.remains<5&cooldown.strike_of_the_windlord.remains&(!buff.heart_of_the_jade_serpent_cdr.up|debuff.gale_force.remains<5)&(talent.xuens_bond|!talent.xuens_bond&buff.invokers_delight.up)|boss&fight_remains<15|buff.invokers_delight.up&cooldown.strike_of_the_windlord.remains&buff.storm_earth_and_fire.remains<8
-actions.default_cleave+=/rising_sun_kick,cycle_targets=1,if=!pet.xuen_the_white_tiger.active&prev.tiger_palm&time<5|variable.small_hotjs_active&buff.pressure_point.up&cooldown.fists_of_fury.remains&(talent.glory_of_the_dawn|active_enemies<3)
+actions.default_cleave+=/rising_sun_kick,cycle_targets=1,if=buff.invoke_xuen_the_white_tiger.down&prev.tiger_palm&time<5|variable.small_hotjs_active&buff.pressure_point.up&cooldown.fists_of_fury.remains&(talent.glory_of_the_dawn|active_enemies<3)
 actions.default_cleave+=/fists_of_fury,cycle_targets=1,if=combo_strike&buff.heart_of_the_jade_serpent_cdr_celestial.up|variable.small_hotjs_active
 actions.default_cleave+=/whirling_dragon_punch,cycle_targets=1,if=buff.heart_of_the_jade_serpent_cdr_celestial.up
 actions.default_cleave+=/strike_of_the_windlord,cycle_targets=1,if=talent.gale_force&buff.invokers_delight.up&(buff.bloodlust.up|!buff.heart_of_the_jade_serpent_cdr_celestial.up)
@@ -200,7 +200,7 @@ actions.default_st+=/fists_of_fury,if=combo_strike&buff.heart_of_the_jade_serpen
 actions.default_st+=/spinning_crane_kick,if=buff.dance_of_chiji.stack=2&combo_strike&(!set_bonus.tww3_2pc|!buff.bloodlust.up)&!talent.flurry_strikes
 actions.default_st+=/tiger_palm,cycle_targets=1,if=(energy>55&talent.inner_peace|energy>60&!talent.inner_peace)&combo_strike&chi.max-chi>=2&buff.teachings_of_the_monastery.stack<buff.teachings_of_the_monastery.max_stack&(talent.energy_burst&!buff.bok_proc.up|!talent.energy_burst)&!buff.ordered_elements.up|(talent.energy_burst&!buff.bok_proc.up|!talent.energy_burst)&!buff.ordered_elements.up&!cooldown.fists_of_fury.remains&chi<3|(prev.strike_of_the_windlord|!buff.heart_of_the_jade_serpent_cdr_celestial.up)&combo_strike&chi.deficit>=2&!buff.ordered_elements.up
 actions.default_st+=/touch_of_death
-actions.default_st+=/rising_sun_kick,if=combo_strike&(!pet.xuen_the_white_tiger.active&prev.tiger_palm&time<5|buff.storm_earth_and_fire.up&talent.ordered_elements)
+actions.default_st+=/rising_sun_kick,if=combo_strike&(buff.invoke_xuen_the_white_tiger.down&prev.tiger_palm&time<5|buff.storm_earth_and_fire.up&talent.ordered_elements)
 actions.default_st+=/strike_of_the_windlord,if=!buff.heart_of_the_jade_serpent_cdr_celestial.up&talent.celestial_conduit&!buff.invokers_delight.up&!buff.heart_of_the_jade_serpent_cdr_celestial.up&cooldown.fists_of_fury.remains<5&cooldown.invoke_xuen_the_white_tiger.remains>15&(cooldown.slicing_winds.remains<23|!set_bonus.tww3_2pc)|boss&fight_remains<12
 actions.default_st+=/strike_of_the_windlord,if=talent.gale_force&cooldown.invoke_xuen_the_white_tiger.remains>10
 actions.default_st+=/strike_of_the_windlord,if=time>5&talent.flurry_strikes
@@ -255,14 +255,14 @@ actions.normal_opener=tiger_palm,if=chi<6&combo_strike
 actions.normal_opener+=/rising_sun_kick,if=talent.ordered_elements
 
 # Double on Use Stats
-actions.trinkets=use_item,slot=trinket1,if=trinket.1.has_use_buff&trinket.2.has_use_buff&pet.xuen_the_white_tiger.active&variable.invoke_xuen_count%%2|boss&fight_remains<20
-actions.trinkets+=/use_item,slot=trinket2,if=trinket.1.has_use_buff&trinket.2.has_use_buff&pet.xuen_the_white_tiger.active|boss&fight_remains<20
+actions.trinkets=use_item,slot=trinket1,if=trinket.1.has_use_buff&trinket.2.has_use_buff&buff.invoke_xuen_the_white_tiger.up&invoke_xuen_count%%2|boss&fight_remains<20
+actions.trinkets+=/use_item,slot=trinket2,if=trinket.1.has_use_buff&trinket.2.has_use_buff&buff.invoke_xuen_the_white_tiger.up|boss&fight_remains<20
 # Trinket 1 On use Stats
-actions.trinkets+=/use_item,slot=trinket1,if=trinket.1.has_use_buff&!trinket.2.has_use_buff&pet.xuen_the_white_tiger.active|boss&fight_remains<20
+actions.trinkets+=/use_item,slot=trinket1,if=trinket.1.has_use_buff&!trinket.2.has_use_buff&buff.invoke_xuen_the_white_tiger.up|boss&fight_remains<20
 actions.trinkets+=/use_item,slot=trinket2,if=trinket.1.has_use_buff&!trinket.2.has_use_buff&cooldown.invoke_xuen_the_white_tiger.remains>30|boss&fight_remains<20
 # Trinket 2 On use Stats
 actions.trinkets+=/use_item,slot=trinket1,if=!trinket.1.has_use_buff&trinket.2.has_use_buff&cooldown.invoke_xuen_the_white_tiger.remains>30|boss&fight_remains<20
-actions.trinkets+=/use_item,slot=trinket2,if=!trinket.1.has_use_buff&trinket.2.has_use_buff&pet.xuen_the_white_tiger.active|boss&fight_remains<20
+actions.trinkets+=/use_item,slot=trinket2,if=!trinket.1.has_use_buff&trinket.2.has_use_buff&buff.invoke_xuen_the_white_tiger.up|boss&fight_remains<20
 # No Stat on Use
 actions.trinkets+=/use_item,slot=trinket1,if=!trinket.1.has_use_buff&!trinket.2.has_use_buff
 actions.trinkets+=/use_item,slot=trinket2,if=!trinket.1.has_use_buff&!trinket.2.has_use_buff
