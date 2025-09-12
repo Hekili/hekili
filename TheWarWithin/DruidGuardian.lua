@@ -1208,14 +1208,6 @@ spec:RegisterAbilities( {
         toggle = "defensives",
         defensive = true,
 
-        usable = function ()
-            if role.tank then
-                if not tanking then return false, "player is not tanking right now"
-                elseif incoming_damage_3s == 0 then return false, "player has taken no damage in 3s" end
-            end
-            return true
-        end,
-
         handler = function ()
             applyBuff( "barkskin" )
 
@@ -1281,10 +1273,6 @@ spec:RegisterAbilities( {
         talent = "bristling_fur",
         startsCombat = false,
 
-        usable = function ()
-            if incoming_damage_3s < health.max * 0.1 then return false, "player has not taken 10% health in dmg in 3s" end
-            return true
-        end,
         handler = function ()
             applyBuff( "bristling_fur" )
         end,
@@ -2152,12 +2140,6 @@ spec:RegisterAbilities( {
 
         toggle = "defensives",
         defensive = true,
-
-        usable = function ()
-            if not tanking then return false, "player is not tanking right now"
-            elseif incoming_damage_3s == 0 then return false, "player has taken no damage in 3s" end
-            return true
-        end,
 
         handler = function ()
             applyBuff( "survival_instincts" )
