@@ -10,6 +10,8 @@ local class, state = Hekili.Class, Hekili.State
 local PTR = ns.PTR
 local spec = Hekili:NewSpecialization( 259 )
 
+ns.RogueUtils = ns.RogueUtils or {}
+
 ---- Local function declarations for increased performance
 -- Strings
 local strformat = string.format

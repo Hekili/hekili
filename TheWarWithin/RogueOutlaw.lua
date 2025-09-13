@@ -560,8 +560,6 @@ spec:RegisterAuras( {
     },
 } )
 
-
-
 local inStealth = false
 local exitedStealth = 0
 
@@ -663,7 +661,8 @@ spec:RegisterStateExpr( "rtb_buffs", function ()
     return buff.roll_the_bones.count
 end )
 
-spec:RegisterStateTable( "unseen_blade", setmetatable( {
+local unseenBladeMetaTable = setmetatable( {
+    -- use as unseen_blade.x
     -- Versions for modifying virtually, resynced with real data on reset_precast
     v_disorient_stacks = 0,
     last_blade_seen = 0,
@@ -733,7 +732,11 @@ spec:RegisterStateTable( "unseen_blade", setmetatable( {
             return ub.v_disorient_stacks
         end
     end
-} ) )
+} )
+
+spec:RegisterStateTable( "unseen_blade", unseenBladeMetaTable )
+
+ns.RogueUtils.unseen_blade = unseenBladeMetaTable
 
 spec:RegisterStateExpr( "rtb_primary_remains", function ()
     local baseTime = max( lastRoll or 0, action.roll_the_bones.lastCast or 0 )
