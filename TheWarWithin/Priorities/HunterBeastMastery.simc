@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/hunter_beast_mastery.simc
-## SimulationCraft Commit Sync: 5fb0f24
-## Date: 2025-09-09
+## SimulationCraft Commit Sync: f18680e
+## Date: 2025-09-12
 
 actions.precombat+=/summon_pet
 # Determine the stronger trinket to sync with cooldowns. In descending priority: buff effects > damage effects, longer > shorter cooldowns, longer > shorter cast times. Special case to consider Mirror of Fractured Tomorrows weaker than other buff effects since its power is split between the dmg effect and the buff effect.
@@ -40,6 +40,7 @@ actions.cleave+=/explosive_shot,if=talent.thundering_hooves
 actions.cleave+=/kill_command
 actions.cleave+=/cobra_shot,if=focus.time_to_max<gcd*2|buff.hogstrider.stack>3|!talent.multishot
 
+actions.drcleave+=/bestial_wrath,if=buff.call_of_the_wild.remains
 actions.drcleave+=/kill_shot
 actions.drcleave+=/bestial_wrath,if=cooldown.call_of_the_wild.remains>20|!talent.call_of_the_wild
 actions.drcleave+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd
@@ -53,14 +54,14 @@ actions.drcleave+=/cobra_shot,if=focus.time_to_max<gcd*2
 actions.drcleave+=/explosive_shot
 
 actions.drst+=/kill_shot
-actions.drst+=/bestial_wrath,if=cooldown.call_of_the_wild.remains>20|!talent.call_of_the_wild
-actions.drst+=/barbed_shot,cycle_targets=1,if=full_recharge_time<gcd
+actions.drst+=/bestial_wrath,if=cooldown.call_of_the_wild.remains>30|!talent.call_of_the_wild|fight_remains<cooldown.call_of_the_wild.remains
+actions.drst+=/barbed_shot,if=buff.thrill_of_the_hunt.remains<1.5*gcd
 actions.drst+=/bloodshed
 actions.drst+=/call_of_the_wild
-## [Syrif] - WIP APL by theorycrafters, solid DPS gain
-actions.drst+=/kill_command,if=buff.withering_fire.tick_time_remains>gcd
-actions.drst+=/barbed_shot,cycle_targets=1
-actions.drst+=/cobra_shot
+actions.drst+=/kill_command,if=buff.withering_fire.tick_time_remains>gcd&cooldown.black_arrow.remains>0.5
+actions.drst+=/kill_command,if=buff.withering_fire.down
+actions.drst+=/barbed_shot,cycle_targets=1,if=buff.withering_fire.tick_time_remains>0.5&cooldown.black_arrow.remains>0.5
+actions.drst+=/cobra_shot,if=buff.withering_fire.tick_time_remains>0.5&cooldown.black_arrow.remains>0.5
 
 ## [Syrif] - Modified to import better, and be more readable.
 ## actions.st=bestial_wrath,if=buff.howl_of_the_pack_leader_cooldown.remains-buff.lead_from_the_front.duration<buff.lead_from_the_front.duration%gcd*0.5|!set_bonus.tww3_4pc
