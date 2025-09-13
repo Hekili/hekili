@@ -199,16 +199,8 @@ spec:RegisterAuras( {
     amplification_core = {
         id = 456369,
         duration = 20.0,
-        max_stack = 1,
-    },
-    -- Talent: A percentage of damage or healing dealt is copied as healing to up to 3 nearby injured party or raid members.
-    -- https://wowhead.com/ptr-2/spell=108281
-    --[[ancestral_guidance = {
-        id = 108281,
-        duration = 10,
-        tick_time = 0.5,
         max_stack = 1
-    },--]]
+    },
     -- Health increased by $s1%.    If you die, the protection of the ancestors will allow you to return to life.
     -- https://wowhead.com/ptr-2/spell=207498
     ancestral_protection = {
@@ -258,7 +250,7 @@ spec:RegisterAuras( {
     counterstrike_totem = {
         id = 208997,
         duration = 15.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Increases nature damage dealt from your abilities by $s1%.
     -- https://wowhead.com/ptr-2/spell=224127
@@ -300,21 +292,21 @@ spec:RegisterAuras( {
         id = 335903,
         duration = 8,
         tick_time = 1,
-        max_stack = 1,
+        max_stack = 1
     },
     doom_winds_debuff = {
         id = 335904,
         duration = 60,
         tick_time = 1,
         max_stack = 1,
-        copy = "doom_winds_cd",
+        copy = "doom_winds_cd"
     },
     doom_winds = {
         alias = { "doom_winds_talent", "doom_winds_buff" },
         aliasMode = "first",
         aliasType = "buff",
         duration = 8,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Maximum health increased by $w3%.
     downpour = {
@@ -388,7 +380,7 @@ spec:RegisterAuras( {
         duration = 3.0,
         tick_time = 1.0,
         pandemic = true,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Movement speed increased by $w1%.
     electroshock = {
@@ -401,7 +393,7 @@ spec:RegisterAuras( {
         id = 462568,
         duration = 3.0,
         pandemic = true,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Cannot move while using Far Sight.
     -- https://wowhead.com/ptr-2/spell=6196
@@ -421,7 +413,7 @@ spec:RegisterAuras( {
         meta = {
             active = function( t ) return active_feral_spirits end,
         },
-        copy = 469328,
+        copy = 469328
     },
     -- Suffering $w2 Fire damage every $t2 sec.
     -- https://wowhead.com/ptr-2/spell=188389
@@ -457,7 +449,7 @@ spec:RegisterAuras( {
     converging_storms = {
         id = 198300,
         duration = 12,
-        max_stack = 6,
+        max_stack = 6
     },
     -- Increases movement speed by $?s382215[${$382216s1+$w2}][$w2]%.$?$w3!=0[  Less hindered by effects that reduce movement speed.][]
     -- https://wowhead.com/ptr-2/spell=2645
@@ -511,7 +503,7 @@ spec:RegisterAuras( {
     ice_strike_snare = {
         id = 342240,
         duration = 6,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Damage of your next Frost Shock increased by $s1%.
     -- https://wowhead.com/ptr-2/spell=384357
@@ -541,7 +533,7 @@ spec:RegisterAuras( {
         max_stack = 20,
         meta = {
             active = function( t ) return active_icy_edges end,
-        },
+        }
     },
     -- Fire damage inflicted every $t2 sec.
     -- https://wowhead.com/ptr-2/spell=118297
@@ -709,13 +701,13 @@ spec:RegisterAuras( {
     storm_swell = {
         id = 455089,
         duration = 6.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Your next Stormstrike deals $s1% additional damage as Nature damage.
     stormblast = {
         id = 470466,
         duration = 12,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Your next Lightning Bolt or Chain Lightning will deal $s2% increased damage and be instant cast.
     -- https://wowhead.com/ptr-2/spell=383009
@@ -732,6 +724,12 @@ spec:RegisterAuras( {
         duration = 12.0,
         max_stack = 1,
     },
+    -- PVP Talent
+    stormweaver = {
+        id = 410681,
+        duration = 30,
+        max_stack = 10
+    },
     -- Talent: Incapacitated.
     -- https://wowhead.com/ptr-2/spell=197214
     sundering = {
@@ -743,7 +741,7 @@ spec:RegisterAuras( {
     surging_currents = {
         id = 454376,
         duration = 30.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Talent: Tempest
     -- https://www.wowhead.com/spell=454015/tempest
@@ -772,14 +770,14 @@ spec:RegisterAuras( {
     tidecallers_guard = {
         id = 457496,
         duration = 3600.0,
-        max_stack = 1,
+        max_stack = 1
 
     },
     -- Healing and spell critical effect increased by $w1%.
     totem_of_wrath = {
         id = 208963,
         duration = 15.0,
-        max_stack = 1,
+        max_stack = 1
     },
     totemic_rebound = {
         id = 458269,
@@ -798,7 +796,7 @@ spec:RegisterAuras( {
     unlimited_power = {
         id = 454394,
         duration = 15.0,
-        max_stack = 1,
+        max_stack = 1
     },
     voltaic_blaze = {
         id = 470058,
@@ -809,7 +807,7 @@ spec:RegisterAuras( {
     water_walking = {
         id = 546,
         duration = 600.0,
-        max_stack = 1,
+        max_stack = 1
     },
     whirling_air = {
         id = 453409,
@@ -830,7 +828,7 @@ spec:RegisterAuras( {
     wind_barrier = {
         id = 457387,
         duration = 30.0,
-        max_stack = 1,
+        max_stack = 1
     },
     -- Movement speed increased by $w1%.
     wind_rush = {
@@ -840,10 +838,8 @@ spec:RegisterAuras( {
     },
     windfury_weapon = {
         duration = 3600,
-        max_stack = 1,
+        max_stack = 1
     },
-
-
     chains_of_devastation_cl = {
         id = 336736,
         duration = 20,
@@ -1561,7 +1557,14 @@ spec:RegisterGear({
     }
 } )
 
-spec:RegisterStateFunction( "consume_maelstrom", function( cap )
+spec:RegisterStateFunction( "consume_maelstrom", function( cap, stormweaver )
+
+    if stormweaver then
+        removeBuff( "stormweaver" )
+        -- Break out early if stormweaver effect
+        return
+    end
+
     local stacks = min( buff.maelstrom_weapon.stack, cap or ( talent.overflowing_maelstrom.enabled and 10 or 5 ) )
 
     if talent.hailstorm.enabled and stacks > buff.hailstorm.stack then
@@ -1569,6 +1572,9 @@ spec:RegisterStateFunction( "consume_maelstrom", function( cap )
     end
 
     removeStack( "maelstrom_weapon", stacks )
+
+    if pvptalent.stormweaver.enabled then addStack( "stormweaver", nil, stacks ) end
+
     if set_bonus.tier29_4pc > 0 then addStack( "fury_of_the_storm", nil, stacks ) end
 
     if hero_tree.stormbringer then
@@ -1606,12 +1612,10 @@ spec:RegisterStateFunction( "gain_maelstrom", function( stacks )
     addStack( "maelstrom_weapon", nil, stacks )
 end )
 
-spec:RegisterStateFunction( "maelstrom_mod", function( amount )
-    local mod = max( 0, 1 - ( 0.2 * buff.maelstrom_weapon.stack ) )
-    return mod * amount
+spec:RegisterStateFunction( "maelstrom_mod", function( amount, stormweaver )
+    local mod = stormweaver and buff.stormweaver.stack or buff.maelstrom_weapon.stack
+    return amount * max( 0, 1 - ( 0.2 * mod ) )
 end )
-
-
 
 spec:RegisterTotems( {
     skyfury_totem = {
@@ -1690,7 +1694,7 @@ spec:RegisterAbilities( {
             if buff.chains_of_devastation_ch.up then return 0 end
             if buff.natures_swiftness.up then return 0 end
             if buff.surging_currents.up then return 0 end
-            return 2.5 * ( 1 - 0.2 * min( 5, buff.maelstrom_weapon.stack ) )
+            return maelstrom_mod( 2.5, pvptalent.stormweaver.enabled ) * haste
         end,
         cooldown = 0,
         gcd = "spell",
@@ -1703,7 +1707,7 @@ spec:RegisterAbilities( {
         startsCombat = false,
 
         handler = function ()
-            consume_maelstrom()
+            consume_maelstrom( nil, pvptalent.stormweaver.enabled )
 
             removeBuff( "chains_of_devastation_ch" )
             if buff.natures_swiftness.up then removeBuff( "natures_swiftness" )
@@ -2349,19 +2353,19 @@ spec:RegisterAbilities( {
         cast = function ()
             if buff.natures_swiftness.up then return 0 end
             if buff.surging_currents.up then return 0 end
-            return maelstrom_mod( 1.5 ) * haste
+            return maelstrom_mod( 1.5, pvptalent.stormweaver.enabled ) * haste
         end,
         cooldown = 0,
         gcd = "spell",
         school = "nature",
 
-        spend = function () return ( buff.natures_swiftness.up or buff.surging_currents.up ) and 0 or maelstrom_mod( state.spec.enhancement and 0.08 or state.spec.elemental and 0.044 or state.spec.restoration and 0.044 ) end,
+        spend = function () return ( buff.natures_swiftness.up or buff.surging_currents.up ) and 0 or maelstrom_mod( 0.08 ) end,
         spendType = "mana",
 
         startsCombat = false,
 
         handler = function ()
-            consume_maelstrom()
+            consume_maelstrom( nil, pvptalent.stormweaver.enabled )
 
             if buff.natures_swiftness.up then removeBuff( "natures_swiftness" )
             elseif buff.surging_currents.up then removeBuff( "surging_currents" ) end
