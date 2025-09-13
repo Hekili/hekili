@@ -204,7 +204,7 @@ spec:RegisterPvpTalents( {
 -- Auras
 spec:RegisterAuras( {
     -- Damage taken reduced by $w1%.  The next attack that would otherwise kill you will instead bring you to $w2% of your maximum health.
-    -- https://wowhead.com/beta/spell=31850
+    -- https://www.wowhead.com/spell=31850
     ardent_defender = {
         id = 31850,
         duration = 8,
@@ -212,7 +212,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Silenced.
-    -- https://wowhead.com/beta/spell=31935
+    -- https://www.wowhead.com/spell=31935
     avengers_shield = {
         id = 31935,
         duration = 3,
@@ -220,14 +220,14 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Crusader Strike and Judgment cool down $w2% faster.$?a384376[    Judgment, Crusader Strike, and auto-attack damage increased by $s1%.][]    $w6 nearby allies will be healed for $w5% of the damage done.
-    -- https://wowhead.com/beta/spell=216331
+    -- https://www.wowhead.com/spell=216331
     avenging_crusader = {
         id = 216331,
         duration = 15,
         max_stack = 1
     },
     -- Talent: $?$w2>0&$w4>0[Damage, healing and critical strike chance increased by $w2%.]?$w4==0&$w2>0[Damage and healing increased by $w2%.]?$w2==0&$w4>0[Critical strike chance increased by $w4%.][]$?a53376[ ][]$?a53376&a137029[Holy Shock's cooldown reduced by $w6%.]?a53376&a137028[Judgment generates $53376s3 additional Holy Power.]?a53376[Each Holy Power spent deals $326731s1 Holy damage to nearby enemies.][]
-    -- https://wowhead.com/beta/spell=31884
+    -- https://www.wowhead.com/spell=31884
     avenging_wrath = {
         id = function() return talent.radiant_glory.enabled and 454351 or 31884 end,
         duration = function()
@@ -238,7 +238,7 @@ spec:RegisterAuras( {
         copy = { 31884, 454351 }
     },
     -- Will be healed for $w1 upon expiration.
-    -- https://wowhead.com/beta/spell=223306
+    -- https://www.wowhead.com/spell=223306
     bestow_faith = {
         id = 223306,
         duration = 5,
@@ -257,7 +257,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Damage and healing increased by $w1%$?s385129[, and Holy Power-spending abilities dealing $w4% additional increased damage and healing.][.]
-    -- https://wowhead.com/beta/spell=385127
+    -- https://www.wowhead.com/spell=385127
     blessing_of_dawn = {
         id = 385127,
         duration = 20,
@@ -271,7 +271,7 @@ spec:RegisterAuras( {
         copy = 337757
     },
     -- Talent: Immune to movement impairing effects. $?s199325[Movement speed increased by $199325m1%][]
-    -- https://wowhead.com/beta/spell=1044
+    -- https://www.wowhead.com/spell=1044
     blessing_of_freedom = {
         id = 1044,
         duration = 8,
@@ -279,7 +279,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Immune to Physical damage and harmful effects.
-    -- https://wowhead.com/beta/spell=1022
+    -- https://www.wowhead.com/spell=1022
     blessing_of_protection = {
         id = 1022,
         duration = 10,
@@ -288,7 +288,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: $?$w1>0[$w1% of damage taken is redirected to $@auracaster.][Taking ${$s1*$e1}% of damage taken by target ally.]
-    -- https://wowhead.com/beta/spell=6940
+    -- https://www.wowhead.com/spell=6940
     blessing_of_sacrifice = {
         id = 6940,
         duration = 12,
@@ -302,7 +302,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Immune to magical damage and harmful effects.
-    -- https://wowhead.com/beta/spell=204018
+    -- https://www.wowhead.com/spell=204018
     blessing_of_spellwarding = {
         id = 204018,
         duration = 10,
@@ -311,7 +311,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Attack speed reduced by $w3%.  Movement speed reduced by $w4%.
-    -- https://wowhead.com/beta/spell=388012
+    -- https://www.wowhead.com/spell=388012
     blessing_of_winter = {
         id = 388012,
         duration = 6,
@@ -320,7 +320,7 @@ spec:RegisterAuras( {
         copy = 328506
     },
     -- Talent:
-    -- https://wowhead.com/beta/spell=115750
+    -- https://www.wowhead.com/spell=115750
     blinding_light = {
         id = 115750,
         duration = 6,
@@ -328,7 +328,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Interrupt and Silence effects reduced by $w1%. $?s339124[Fear effects are reduced by $w4%.][]
-    -- https://wowhead.com/beta/spell=317920
+    -- https://www.wowhead.com/spell=317920
     concentration_aura = {
         id = 317920,
         duration = 3600,
@@ -340,7 +340,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=26573
+    -- https://www.wowhead.com/spell=26573
     consecration = {
         id = 26573,
         duration = 12,
@@ -384,7 +384,7 @@ spec:RegisterAuras( {
         copy = { 231895, 454373 }
     },
     -- Mounted speed increased by $w1%.$?$w5>0[  Incoming fear duration reduced by $w5%.][]
-    -- https://wowhead.com/beta/spell=32223
+    -- https://www.wowhead.com/spell=32223
     crusader_aura = {
         id = 32223,
         duration = 3600,
@@ -407,7 +407,7 @@ spec:RegisterAuras( {
         -- suns_avatar[431425] #0: { 'type': APPLY_AURA, 'subtype': ADD_PCT_MODIFIER, 'target': TARGET_UNIT_CASTER, 'modifies': BUFF_DURATION, }
     },
     -- Damage taken reduced by $w1%.
-    -- https://wowhead.com/beta/spell=465
+    -- https://www.wowhead.com/spell=465
     devotion_aura = {
         id = 465,
         duration = 3600,
@@ -434,7 +434,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Damage taken reduced by $w1%.
-    -- https://wowhead.com/beta/spell=403876
+    -- https://www.wowhead.com/spell=403876
     divine_protection = {
         id = 498,
         duration = 8,
@@ -453,7 +453,7 @@ spec:RegisterAuras( {
         copy = { 355455, 384029, 386730 }
     },
     -- Immune to all attacks and harmful effects.
-    -- https://wowhead.com/beta/spell=642
+    -- https://www.wowhead.com/spell=642
     divine_shield = {
         id = 642,
         duration = 8,
@@ -462,7 +462,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Increases ground speed by $s4%$?$w1<0[, and reduces damage taken by $w1%][].
-    -- https://wowhead.com/beta/spell=221883
+    -- https://www.wowhead.com/spell=221883
     divine_steed = {
         id = 221883,
         duration = function () return ( 4 + ( level > 40 and 2 or 0 ) + ( 2 * talent.unrelenting_charger.rank ) + pvptalent.steed_of_glory.rank ) * ( 1 + ( conduit.lights_barding.mod * 0.01 ) ) * ( talent.divine_spurs.enabled and 0.6 or 1 ) end,
@@ -500,7 +500,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Your next Divine Storm is free and deals $w1% additional damage.
-    -- https://wowhead.com/beta/spell=326733
+    -- https://www.wowhead.com/spell=326733
     empyrean_power = {
         id = 326733,
         duration = 15,
@@ -519,7 +519,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Talent: Sentenced to suffer $w1 Holy damage.
-    -- https://wowhead.com/beta/spell=343527
+    -- https://www.wowhead.com/spell=343527
     execution_sentence = {
         id = 343527,
         duration = function() return talent.executioners_will.enabled and 12 or 8 end,
@@ -527,7 +527,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Suffering $s1 damage every $t1 sec
-    -- https://wowhead.com/beta/spell=383208
+    -- https://www.wowhead.com/spell=383208
     exorcism = {
         id = 383208,
         duration = 12,
@@ -541,7 +541,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Talent: Deals $w1 damage over $d1.
-    -- https://wowhead.com/beta/spell=273481
+    -- https://www.wowhead.com/spell=273481
     expurgation = {
         id = 383346,
         duration = function () return set_bonus.tier31_2pc > 0 and 9 or 6 end,
@@ -551,7 +551,7 @@ spec:RegisterAuras( {
         copy = 344067
     },
     -- Talent: Counterattacking all melee attacks.
-    -- https://wowhead.com/beta/spell=205191
+    -- https://www.wowhead.com/spell=205191
     eye_for_an_eye = {
         id = 205191,
         duration = 10,
@@ -576,7 +576,7 @@ spec:RegisterAuras( {
         copy = 337228
     },
     -- Talent: Your next Holy Power spender costs $s2 less Holy Power.
-    -- https://wowhead.com/beta/spell=209785
+    -- https://www.wowhead.com/spell=209785
     fires_of_justice = {
         id = 209785,
         duration = 15,
@@ -601,7 +601,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Damaged or healed whenever the Paladin casts Holy Shock.
-    -- https://wowhead.com/beta/spell=287280
+    -- https://www.wowhead.com/spell=287280
     glimmer_of_light = {
         id = 287280,
         duration = 30,
@@ -609,7 +609,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Stunned.
-    -- https://wowhead.com/beta/spell=853
+    -- https://www.wowhead.com/spell=853
     hammer_of_justice = {
         id = 853,
         duration = 6,
@@ -623,7 +623,7 @@ spec:RegisterAuras( {
         max_stack = function() return 1 + set_bonus.tww3 >=4 and 1 or 0 end
     },
     -- Talent: Movement speed reduced by $w1%.
-    -- https://wowhead.com/beta/spell=183218
+    -- https://www.wowhead.com/spell=183218
     hand_of_hindrance = {
         id = 183218,
         duration = 10,
@@ -632,7 +632,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Taunted.
-    -- https://wowhead.com/beta/spell=62124
+    -- https://www.wowhead.com/spell=62124
     hand_of_reckoning = {
         id = 62124,
         duration = 3,
@@ -652,7 +652,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Taking $w1% increased damage from $@auracaster's next Holy Power ability.
-    -- https://wowhead.com/beta/spell=197277
+    -- https://www.wowhead.com/spell=197277
     judgment = {
         id = 197277,
         duration = 15,
@@ -670,7 +670,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Attackers are healed for $183811s1.
-    -- https://wowhead.com/beta/spell=196941
+    -- https://www.wowhead.com/spell=196941
     judgment_of_light = {
         id = 196941,
         duration = 30,
@@ -694,7 +694,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Talent: Movement speed reduced by $s2%.
-    -- https://wowhead.com/beta/spell=383469
+    -- https://www.wowhead.com/spell=383469
     radiant_decree = {
         id = 383469,
         duration = 5,
@@ -702,7 +702,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Burning with holy fire for $w1 Holy damage every $t1 sec.
-    -- https://wowhead.com/beta/spell=278145
+    -- https://www.wowhead.com/spell=278145
     radiant_incandescence = {
         id = 278145,
         duration = 3,
@@ -717,7 +717,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Talent: Haste increased by $w1%.
-    -- https://wowhead.com/beta/spell=383389
+    -- https://www.wowhead.com/spell=383389
     relentless_inquisitor = {
         id = 383389,
         duration = 12,
@@ -725,7 +725,7 @@ spec:RegisterAuras( {
         copy = 337315
     },
     -- Talent: Incapacitated.
-    -- https://wowhead.com/beta/spell=20066
+    -- https://www.wowhead.com/spell=20066
     repentance = {
         id = 20066,
         duration = 60,
@@ -734,7 +734,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- When any party or raid member within $a1 yards dies, you gain Avenging Wrath for $w1 sec.    When any party or raid member within $a1 yards takes more than $s3% of their health in damage, you gain Seraphim for $s4 sec. This cannot occur more than once every 30 sec.
-    -- https://wowhead.com/beta/spell=183435
+    -- https://www.wowhead.com/spell=183435
     retribution_aura = {
         id = 183435,
         duration = 3600,
@@ -772,7 +772,7 @@ spec:RegisterAuras( {
         max_stack = 1
     },
     -- Talent: Flash of Light cast time reduced by $w1%.  Flash of Light heals for $w2% more.
-    -- https://wowhead.com/beta/spell=114250
+    -- https://www.wowhead.com/spell=114250
     selfless_healer = {
         id = 114250,
         duration = 15,
@@ -785,7 +785,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Talent: Absorbs $w1 damage and deals damage when the barrier fades or is fully consumed.
-    -- https://wowhead.com/beta/spell=184662
+    -- https://www.wowhead.com/spell=184662
     shield_of_vengeance = {
         id = 184662,
         duration = 10,
@@ -800,7 +800,7 @@ spec:RegisterAuras( {
         max_stack = 10,
     },
     -- $?$w2>1[Absorbs the next ${$w2-1} damage.][Absorption exhausted.]  Refreshed to $w1 absorption every $t1 sec.
-    -- https://wowhead.com/beta/spell=337824
+    -- https://www.wowhead.com/spell=337824
     shock_barrier = {
         id = 337824,
         duration = 18,
@@ -824,7 +824,7 @@ spec:RegisterAuras( {
         copy = { 339376, 383351 }
     },
     -- Talent: Disoriented.
-    -- https://wowhead.com/beta/spell=10326
+    -- https://www.wowhead.com/spell=10326
     turn_evil = {
         id = 10326,
         duration = 40,
@@ -840,7 +840,7 @@ spec:RegisterAuras( {
         max_stack = 1,
     },
     -- Talent: Holy Damage increased by $w1%.
-    -- https://wowhead.com/beta/spell=383311
+    -- https://www.wowhead.com/spell=383311
     vanguards_momentum = {
         id = 383311,
         duration = 10,
@@ -854,7 +854,7 @@ spec:RegisterAuras( {
         copy = 339664
     },
     -- Talent: Movement speed reduced by $s2%.
-    -- https://wowhead.com/beta/spell=255937
+    -- https://www.wowhead.com/spell=255937
     wake_of_ashes = {
         id = 255937,
         duration = 5,
@@ -1008,12 +1008,6 @@ spec:RegisterHook( "spend", function( amt, resource )
             reduceCooldown( "blessing_of_spellwarding", 1 )
         end
         if buff.divine_hammer.up then buff.divine_hammer.expires = buff.divine_hammer.expires + ( amt * 0.3 ) end
-    end
-end )
-
-spec:RegisterHook( "gain", function( amt, resource, overcap )
-    if amt > 0 and resource == "holy_power" and buff.blessing_of_dusk.up and talent.fading_light.enabled then
-        applyBuff( "fading_light" )
     end
 end )
 
