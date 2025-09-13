@@ -1572,6 +1572,20 @@ all:RegisterAuras( {
         max_stack = 10
     },
 
+    -- Reshii Wraps massive tank absorb buff from Ethereal Protection.
+    ethereal_barricade = {
+        id = 1223614,
+        duration = 20,
+        max_stack = 1
+    },
+
+    -- Reshii Wraps tank absorb buff from Ethereal Protection.
+    ethereal_barrier = {
+        id = 1223612,
+        duration = 20,
+        max_stack = 1
+    },
+
     infuriated = {
         id = 1235879,
         duration = 3600,
