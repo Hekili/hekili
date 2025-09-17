@@ -14,7 +14,7 @@ actions+=/kick
 actions+=/variable,name=stealth,value=buff.shadow_dance.up|buff.stealth.up|buff.vanish.up
 ## [Syrif] -Replaced below variable with active_enemies
 ## actions+=/variable,name=targets,value=spell_targets.shuriken_storm
-actions+=/variable,name=skip_rupture,value=buff.shadow_dance.up|buff.darkest_night.up|active_enemies>=4&(!talent.replicating_shadows&talent.unseen_blade|raid_event.adds.up)
+actions+=/variable,name=skip_rupture,value=buff.shadow_dance.up|buff.darkest_night.up|active_enemies>=4&(!talent.replicating_shadows&talent.unseen_blade)
 actions+=/variable,name=maintenance,value=(dot.rupture.ticking|variable.skip_rupture)&(buff.slice_and_dice.up|active_enemies<=2)
 actions+=/variable,name=secret,value=buff.shadow_dance.up&!buff.darkest_night.up|(cooldown.flagellation.remains<60&cooldown.flagellation.remains>30&talent.death_perception&talent.unseen_blade)
 actions+=/variable,name=racial_sync,value=(buff.shadow_blades.up&buff.shadow_dance.up)|!talent.shadow_blades&buff.symbols_of_death.up|boss&fight_remains<20

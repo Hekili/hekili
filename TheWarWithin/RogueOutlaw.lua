@@ -306,7 +306,7 @@ spec:RegisterAuras( {
     },
     disorienting_strikes = {
         duration = 3600,
-        max_stack = 2
+        max_stack = 3
     },
     double_jeopardy = {
         duration = 3600,
@@ -560,8 +560,6 @@ spec:RegisterAuras( {
     },
 } )
 
-
-
 local inStealth = false
 local exitedStealth = 0
 
@@ -663,44 +661,82 @@ spec:RegisterStateExpr( "rtb_buffs", function ()
     return buff.roll_the_bones.count
 end )
 
-spec:RegisterStateExpr( "last_unseen_blade", function ()
-    return lastUnseenBlade
-end )
+local unseenBladeMetaTable = setmetatable( {
+    -- use as unseen_blade.x
+    -- Versions for modifying virtually, resynced with real data on reset_precast
+    v_disorient_stacks = 0,
+    last_blade_seen = 0,
 
-spec:RegisterStateExpr( "disorient_stacks", function ()
-    return disorientStacks
-end )
+    -- To call in SS/Ambush handlers
+    trigger = setfenv( function()
+        if unseen_blade.remaining > 0 then
+            -- Killing Spree bypasses get consumed before the ICD version
+            if unseen_blade.v_disorient_stacks > 0 then
+                unseen_blade.v_disorient_stacks = unseen_blade.v_disorient_stacks - 1
+            else
+                unseen_blade.last_blade_seen = query_time
+                applyDebuff( "player", "unseen_blade", 20 )
+            end
 
-spec:RegisterStateExpr( "unseen_blades_available", function ()
-    local count = 0
+            if buff.escalating_blade.stack < 4 then
+                addStack( "escalating_blade" )
+                if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ) end
+            end
+            applyDebuff( "target", "fazed" )
+        end
 
-    -- add 1 if the ICD is cooled down
-    if state.query_time - lastUnseenBlade >= 20 then count = count + 1 end
-
-    -- add the # of bypasses that are available
-    if disorientStacks > 0 then count = count + disorientStacks end
-
-    return count
-end )
-
-local TriggerUnseenBlade = setfenv( function( )
-    if unseen_blades_available > 0 then
-        -- Handle ICD vs bypass
-        if disorient_stacks > 0 then
-            disorient_stacks = disorient_stacks - 1
+        if unseen_blade.remaining > 0 then
+            applyBuff( "disorienting_strikes", 3600, unseen_blade.remaining )
         else
-            last_unseen_blade = query_time
-            applyDebuff( "player", "unseen_blade" )
+            removeBuff( "disorienting_strikes" )
+        end
+    end, state ),
+
+    -- reset_precast sync
+    sync = setfenv( function()
+        -- The local tracker variable in CLEU can go below 0 to avoid repeated operations, ceiling it here
+        unseen_blade.v_disorient_stacks = max( 0, disorientStacks )
+        unseen_blade.last_blade_seen = lastUnseenBlade
+
+        if unseen_blade.icd_ready then
+            removeDebuff( "player", "unseen_blade" )
+        else
+            applyDebuff( "player", "unseen_blade", unseen_blade.icd_remains )
         end
 
-        if buff.escalating_blade.stack < 4 then
-            addStack( "escalating_blade" )
-            if buff.escalating_blade.stack == 4 then applyBuff( "coup_de_grace" ) end
+        -- Fake buff for APL exposure
+        if unseen_blade.remaining > 0 then
+            applyBuff( "disorienting_strikes", 3600, unseen_blade.remaining )
+        else
+            removeBuff( "disorienting_strikes" )
         end
-        applyDebuff( "target", "fazed" )
-        unseen_blades_available = unseen_blades_available - 1
+
+        if Hekili.ActiveDebug then
+            Hekili:Debug( "UB-Status: unseen_blade.remaining=%d DS=%d  ICD=%.1f",
+              unseen_blade.remaining,
+              unseen_blade.disorient_stacks,
+              unseen_blade.icd_remains
+            )
+        end
+
+    end, state )
+}, {
+    __index = function( ub, k )
+        if k == "remaining" then
+            return ( ub.icd_ready and 1 or 0 ) + max( 0, ub.disorient_stacks )
+        elseif k == "icd_ready" then
+            return ub.icd_remains == 0
+        elseif k == "icd_remains" then
+            return max( 0, 20 - ( query_time - ub.last_blade_seen ) )
+        elseif k == "disorient_stacks" then
+            return ub.v_disorient_stacks
+        end
     end
-end, state )
+} )
+
+spec:RegisterStateTable( "unseen_blade", unseenBladeMetaTable )
+
+ns.RogueUtils.unseen_blade = unseenBladeMetaTable
 
 spec:RegisterStateExpr( "rtb_primary_remains", function ()
     local baseTime = max( lastRoll or 0, action.roll_the_bones.lastCast or 0 )
@@ -929,27 +965,7 @@ spec:RegisterHook( "reset_precast", function()
     class.abilities.apply_poison = class.abilities[ action.apply_poison_actual.next_poison ]
 
     if talent.unseen_blade.enabled then
-
-        -- Resync with real-data local variables first
-        last_unseen_blade = nil
-        disorient_stacks = nil
-
-        -- Sync unseen blade ICD with gamestate
-        local unseenBladeCD = 20 - ( query_time - last_unseen_blade )
-        if unseenBladeCD > 0 then
-            applyDebuff( "player", "unseen_blade", unseenBladeCD )
-        else
-            removeDebuff( "player", "unseen_blade" )
-        end
-
-        if Hekili.ActiveDebug then
-            Hekili:Debug( "UB-Status: unseen_blades_available=%d DS=%d  ICD=%.1f",
-              unseen_blades_available,
-              disorient_stacks or 0,
-              ( unseenBladeCD > 0 and unseenBladeCD or 0 )
-            )
-        end
-
+        unseen_blade.sync()
         if prev[1].coup_de_grace and buff.escalating_blade.at_max_stacks then
             if set_bonus.tww3 >= 4 then
                 local dur = 5 + ( gcd.max ) - ( query_time - action.coup_de_grace.lastCast )
@@ -958,7 +974,6 @@ spec:RegisterHook( "reset_precast", function()
                 applyBuff( "coup_de_grace", dur )
             end
         end
-
     end
 
     -- Debugging for Roll the Bones
@@ -1461,8 +1476,7 @@ spec:RegisterAbilities( {
             spend( combo_points.current, "combo_points" )
             removeStack( "supercharged_combo_points" )
             if talent.disorienting_strikes.enabled then
-                disorient_stacks = 2
-                unseen_blades_available = unseen_blades_available + 2
+                unseen_blade.v_disorient_stacks = 2
             end
             if talent.flawless_form.enabled then addStack( "flawless_form" ) end
         end,
@@ -1490,7 +1504,7 @@ spec:RegisterAbilities( {
             removeBuff( "deadshot" )
             removeBuff( "concealed_blunderbuss" ) -- Generating 2 extra combo points is purely a guess.
             removeBuff( "greenskins_wickers" )
-            
+
             if buff.opportunity.up then
                 removeStack( "opportunity" )
                 if set_bonus.tier29_4pc > 0 then applyBuff( "brutal_opportunist" ) end
@@ -1607,7 +1621,7 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( action.ambush.cp_gain, "combo_points" )
             if buff.audacity.up then removeBuff( "audacity" ) end
-            if talent.unseen_blade.enabled then TriggerUnseenBlade() end
+            if talent.unseen_blade.enabled then unseen_blade.trigger() end
 
         end,
 
@@ -1634,7 +1648,7 @@ spec:RegisterAbilities( {
         handler = function ()
             gain( action.sinister_strike.cp_gain, "combo_points" )
             removeStack( "snake_eyes" )
-            if talent.unseen_blade.enabled then TriggerUnseenBlade() end
+            if talent.unseen_blade.enabled then unseen_blade.trigger() end
             if talent.echoing_reprimand.enabled then removeBuff( "echoing_reprimand" ) end
 
         end,
