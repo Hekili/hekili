@@ -1155,6 +1155,13 @@ spec:RegisterAuras( {
         tick_time = 3,
         max_stack = 1
     },
+    -- Visceral Strength Your Strength is increased by $s1%. $s2 seconds remaining
+    -- https://www.wowhead.com/spell=461130
+    visceral_strength = {
+        id = 461130,
+        duration = 12,
+        max_stack = 1
+    },
     -- The touch of the spirit realm lingers....
     -- https://wowhead.com/beta/spell=97821
     voidtouched = {
@@ -1870,6 +1877,7 @@ spec:RegisterAbilities( {
                     gain( 10, "runic_power" )
                     gain( 0.25 * buff.bone_shield.stack, "health" )
                 end
+                if talent.visceral_strength.enabled then applyBuff( "visceral_strength" ) end
             end
 
             if legendary.phearomones.enabled and buff.death_and_decay.down then

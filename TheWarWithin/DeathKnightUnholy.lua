@@ -1015,10 +1015,11 @@ spec:RegisterAuras( {
     },
     -- Visceral Strength Your Strength is increased by $s1%. $s2 seconds remaining
     -- https://www.wowhead.com/spell=434159
-    visceral_strength_buff = {
+    visceral_strength = {
         id = 434159,
         duration = 5,
-        max_stack = 1
+        max_stack = 1,
+        copy = "visceral_strength_buff"
     },
     -- https://www.wowhead.com/spell=1234532
     visceral_strength_unholy = {
@@ -2040,6 +2041,7 @@ spec:RegisterAbilities( {
             if buff.sudden_doom.up then
                 PopWounds( 1 + ( 1 * pvptalent.doomburst.rank ) )
                 removeStack( "sudden_doom" )
+                if talent.visceral_strength.enabled then applyBuff( "visceral_strength" ) end
                 if talent.doomed_bidding.enabled then summonPet( "doomed_bidding_magus_coil", 6 ) end
                 if talent.rotten_touch.enabled then applyDebuff( "target", "rotten_touch" ) end
             end
@@ -2211,6 +2213,12 @@ spec:RegisterAbilities( {
 
         handler = function ()
             if talent.death_rot.enabled then applyDebuff( "target", "death_rot", nil, debuff.death_rot.stack + ( buff.sudden_doom.up and 2 or 1 ) ) end
+
+            if buff.sudden_doom.up then
+                removeStack( "sudden_doom" )
+                if talent.visceral_strength.enabled then applyBuff( "visceral_strength" ) end
+                if talent.doomed_bidding.enabled then summonPet( "doomed_bidding_magus_coil", 6 ) end
+            end
 
             if talent.eternal_agony.enabled then
                 if buff.dark_transformation.up then buff.dark_transformation.expires = buff.dark_transformation.expires + 1 end
