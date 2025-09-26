@@ -1679,6 +1679,13 @@ do
                 return
             end
 
+            if ns.Practice and ns.Practice:ShouldHideDisplays() then
+                self:SetAlpha( 0 )
+                self:Hide()
+                self.alpha = 0
+                return
+            end
+
             local preAlpha = self.alpha or 0
             local newAlpha = CalculateAlpha( self.id )
 
@@ -2190,6 +2197,10 @@ do
             specEnabled = false
         end
 
+        -- Check if practice mode should hide displays but force recommendations
+        local practiceForceRecs = ns.Practice and ns.Practice:ShouldForceRecommendations()
+        local practiceHideDisplays = ns.Practice and ns.Practice:ShouldHideDisplays()
+
         if profile.enabled and specEnabled then
             for i, display in pairs( profile.displays ) do
                 if display.enabled then
@@ -2212,6 +2223,18 @@ do
                     if dispActive[i] and displays[i] then
                         if not displays[i].Active then displays[i]:Activate() end
                         displays[i].NewRecommendations = true
+
+                        -- Hide display if practice mode requires it, but keep it active for recommendations
+                        if practiceHideDisplays then
+                            displays[i]:Hide()
+                        elseif displays[i]:IsShown() ~= true then
+                            displays[i]:Show()
+                        end
+                    elseif practiceForceRecs and displays[i] then
+                        -- Force activation for practice mode even if normally inactive
+                        if not displays[i].Active then displays[i]:Activate() end
+                        displays[i].NewRecommendations = true
+                        displays[i]:Hide() -- But keep it hidden
                     end
                 else
                     if displays[i] and displays[i].Active then

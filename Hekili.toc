@@ -91,3 +91,4 @@ Options\Options.lua
 UI.lua
 Scripts.lua
 Core.lua
+Practice.lua

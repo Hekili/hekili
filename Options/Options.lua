@@ -263,6 +263,15 @@ local displayTemplate = {
         fixedBrightness = false
     },
 
+    practice = {
+        enabled = false,
+        showReport = true,
+        hideDisplaysInCombat = true,
+        trackAllAbilities = true,
+        accuracyThreshold = 2.0, -- seconds tolerance for timing
+        reportDuration = 10, -- seconds to show report
+    },
+
     captions = {
         enabled = false,
         queued = false,
@@ -542,6 +551,12 @@ do
                         key = "",
                         value = false,
                         name = "Custom #2"
+                    },
+
+                    practice = {
+                        key = "ALT-SHIFT-B",
+                        value = false,
+                        name = "Practice Mode"
                     }
                 },
 
@@ -4159,6 +4174,7 @@ self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
                     toggles.potions = "Potions"
                     toggles.custom1 = "Custom 1"
                     toggles.custom2 = "Custom 2"
+                    toggles.practice = "Practice Mode"
 
                     return toggles
                 end,
@@ -4578,6 +4594,7 @@ found = true end
                     toggles.potions = "Potions"
                     toggles.custom1 = "Custom 1"
                     toggles.custom2 = "Custom 2"
+                    toggles.practice = "Practice Mode"
 
                     return toggles
                 end,
@@ -8289,6 +8306,30 @@ do
                                     order = 3
                                 }
                             }
+                        },
+
+                        practice = {
+                            type = "group",
+                            name = "Practice Mode",
+                            inline = true,
+                            order = 30.3,
+                            args = {
+                                key = {
+                                    type = "keybinding",
+                                    name = "Practice Mode",
+                                    desc = "Set a key to toggle practice mode. When enabled, shows rotation recommendations normally, but hides displays during combat and tracks accuracy.",
+                                    width = 1,
+                                    order = 1,
+                                },
+
+                                value = {
+                                    type = "toggle",
+                                    name = "Enable Practice Mode",
+                                    desc = "If checked, practice mode is active. Displays will show recommendations until combat starts, then track your accuracy.",
+                                    width = 2,
+                                    order = 2,
+                                },
+                            }
                         }
                     }
                 }
@@ -10088,6 +10129,12 @@ do
 
         elseif name == 'snapshot' then
             self:MakeSnapshot()
+            return
+
+        elseif name == 'practice' then
+            if ns.Practice then
+                ns.Practice:ToggleMode()
+            end
             return
 
         else
