@@ -574,6 +574,12 @@ do
             text = "Potions",
             func = function() Hekili:FireToggle( "potions" ); ns.UI.Minimap:RefreshDataText() end,
             checked = function () return Hekili.DB.profile.toggles.potions.value end,
+        },
+
+        {
+            text = "Trinkets",
+            func = function() Hekili:FireToggle( "trinkets" ); ns.UI.Minimap:RefreshDataText() end,
+            checked = function () return Hekili.DB.profile.toggles.trinkets.value end,
         }
     }
 

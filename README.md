@@ -34,6 +34,7 @@ Other features include:
 - Toggle controls for cooldowns, defensives, interrupts, potions:
   - You can manually control whether major abilities like 2-minute cooldowns are used by enabling or disabling toggle options.
   - These toggles can be bound to hotkeys or macros, giving you flexible control on a fight-by-fight basis.
+  - A dedicated Trinkets toggle lets you decide whether the addon should recommend on-use trinkets or leave them for manual use.
   - Rather than using the toggles, you can display these abilities in a dedicated Cooldowns display, allowing you to cast them manually when timing is ideal.
   - This system is especially powerful when paired with encounter knowledge — for example, holding cooldowns for a burn phase or add wave can result in substantial DPS gains.
 - Compatible with **ElvUI**, **Bartender**, and other UI mods

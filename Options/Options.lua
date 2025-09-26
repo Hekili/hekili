@@ -514,6 +514,12 @@ do
                         override = false,
                     },
 
+                    trinkets = {
+                        key = "",
+                        value = true,
+                        override = true,
+                    },
+
                     interrupts = {
                         key = "ALT-SHIFT-I",
                         value = true,
@@ -4156,6 +4162,7 @@ self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
                     toggles.essences = "Minor CDs"
                     toggles.defensives = "Defensives"
                     toggles.interrupts = "Interrupts"
+                    toggles.trinkets = "Trinkets"
                     toggles.potions = "Potions"
                     toggles.custom1 = "Custom 1"
                     toggles.custom2 = "Custom 2"
@@ -4291,6 +4298,7 @@ self:ForceUpdate( "SPEC_PACKAGE_CHANGED" )
                             toggles.essences = "Minor CDs"
                             toggles.defensives = "Defensives"
                             toggles.interrupts = "Interrupts"
+                            toggles.trinkets = "Trinkets"
                             toggles.potions = "Potions"
                             toggles.custom1 = "Custom 1"
                             toggles.custom2 = "Custom 2"
@@ -4575,6 +4583,7 @@ found = true end
                     toggles.essences = "Minor CDs"
                     toggles.defensives = "Defensives"
                     toggles.interrupts = "Interrupts"
+                    toggles.trinkets = "Trinkets"
                     toggles.potions = "Potions"
                     toggles.custom1 = "Custom 1"
                     toggles.custom2 = "Custom 2"
@@ -4691,6 +4700,7 @@ found = true end
                             toggles.essences = "Minor CDs"
                             toggles.defensives = "Defensives"
                             toggles.interrupts = "Interrupts"
+                            toggles.trinkets = "Trinkets"
                             toggles.potions = "Potions"
                             toggles.custom1 = "Custom 1"
                             toggles.custom2 = "Custom 2"
@@ -7789,6 +7799,51 @@ do
                             }
                         },
 
+                        trinkets = {
+                            type = "group",
+                            name = "",
+                            inline = true,
+                            order = 7.5,
+                            args = {
+                                key = {
+                                    type = "keybinding",
+                                    name = "Trinkets",
+                                    desc = "Set a key to toggle recommendations of on-use trinkets on or off.",
+                                    order = 1,
+                                },
+
+                                value = {
+                                    type = "toggle",
+                                    name = "Enable Trinkets",
+                                    desc = "If checked, on-use trinkets that require the |cFFFFD100Trinkets|r toggle can be recommended.",
+                                    width = 2,
+                                    order = 2,
+                                },
+
+                                trinketLineBreak = {
+                                    type = "description",
+                                    name = "",
+                                    width = "full",
+                                    order = 3.1,
+                                },
+
+                                trinketIndent = {
+                                    type = "description",
+                                    name = "",
+                                    width = 1,
+                                    order = 3.2,
+                                },
+
+                                override = {
+                                    type = "toggle",
+                                    name = "Auto-Enable when |cFFFFD100Major Cooldowns|r Active",
+                                    desc = "If checked, when |cFFFFD100Major Cooldowns|r are enabled (or auto-enabled), trinkets may be recommended even if the |cFFFFD100Trinkets|r toggle is unchecked.",
+                                    width = 2,
+                                    order = 4,
+                                },
+                            },
+                        },
+
                         funnel = {
                             type = "group",
                             name = "",
@@ -10026,6 +10081,9 @@ do
                 t[ k ] = name
             elseif k == "cooldowns" then
                 name = "Major Cooldowns"
+                t[ k ] = name
+            elseif k == "trinkets" then
+                name = "Trinkets"
                 t[ k ] = name
             end
 

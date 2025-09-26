@@ -748,6 +748,16 @@ do
         -- 3. Does it have an on-use?  (IsItemUsable)
         -- 4. ???
 
+        local function applyTrinketToggle( ability )
+            if not ability then return end
+
+            ability.isTrinket = true
+
+            if ability.toggle == nil or ability.toggle == "cooldowns" or ability.toggle == "default" then
+                ability.toggle = "trinkets"
+            end
+        end
+
         local T1 = GetInventoryItemID( "player", 13 )
 
         state.trinket.t1.__id = 0
@@ -777,6 +787,8 @@ do
 
                 local ability = class.abilities[ tSpell ]
 
+                applyTrinketToggle( ability )
+
                 state.trinket.t1.__has_use_damage = ability and ability.proc == "damage"
 
                 local aura = ability and class.auras[ ability.self_buff or spellID ]
@@ -798,6 +810,7 @@ do
             else
                 class.abilities.trinket1 = class.abilities.actual_trinket1
                 class.specs[ 0 ].abilities.trinket1 = class.abilities.actual_trinket1
+                applyTrinketToggle( class.abilities.trinket1 )
                 state.trinket.t1.cooldown = state.cooldown.null_cooldown
             end
 
@@ -833,6 +846,8 @@ do
 
                 local ability = class.abilities[ tSpell ]
 
+                applyTrinketToggle( ability )
+
                 state.trinket.t2.__has_use_damage = ability and ability.proc == "damage"
 
                 local aura = class.auras[ ability.self_buff or spellID ]
@@ -854,6 +869,7 @@ do
             else
                 class.abilities.trinket2 = class.abilities.actual_trinket2
                 class.specs[ 0 ].abilities.trinket2 = class.abilities.actual_trinket2
+                applyTrinketToggle( class.abilities.trinket2 )
                 state.trinket.t2.cooldown = state.cooldown.null_cooldown
             end
 
