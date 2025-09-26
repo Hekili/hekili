@@ -752,6 +752,7 @@ do
             if not ability then return end
 
             ability.isTrinket = true
+            ability.cooldowns = true
 
             if ability.toggle == nil or ability.toggle == "cooldowns" or ability.toggle == "default" then
                 ability.toggle = "trinkets"

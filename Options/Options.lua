@@ -517,7 +517,7 @@ do
                     trinkets = {
                         key = "",
                         value = true,
-                        override = false,
+                        override = true,
                     },
 
                     interrupts = {

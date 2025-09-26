@@ -7554,6 +7554,10 @@ do
             local toggle = option.toggle
             if not toggle or toggle == "default" then toggle = ability.toggle end
 
+            if toggle == "trinkets" and profile.toggles.cooldowns.separate and state.filter ~= "cooldowns" then
+                return true, "display"
+            end
+
             if ( toggle == "potion" or toggle == "essences" ) and profile.toggles[ toggle ].separate and not profile.toggles[ toggle ].value then toggle = "cooldowns" end
 
             if toggle and toggle ~= "none" and ( not self.toggle[ toggle ] or ( profile.toggles[ toggle ].separate and state.filter ~= toggle ) ) then return true, format( "toggle %s", toggle ) end
