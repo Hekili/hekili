@@ -342,7 +342,7 @@ local function UnitInPhase( unit )
     local reason = UnitPhaseReason( unit )
     local wm = not IsInInstance() and warmode
 
-    if reason == 4 and IsPlayerInTimerunningHeroicWorldTier() then return true end
+    if reason == 4 and timeRunningHwt then return true end
     if reason == 3 and chromieTime then return true end
     if reason == 2 and wm then return true end
     if reason == nil then return true end
