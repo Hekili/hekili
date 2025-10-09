@@ -318,11 +318,31 @@ do
     RegisterEvent( "PLAYER_ENTERING_WORLD", CheckWarMode )
 end
 
+-- Timerunning Hardmode
+local timeRunningHwt = false
+
+do
+    local IsPlayerInTimerunningHeroicWorldTier = C_PlayerInfo.IsPlayerInTimerunningHeroicWorldTier
+
+    local function UpdateTimerunning()
+        timeRunningHwt = IsPlayerInTimerunningHeroicWorldTier()
+    end
+
+    local function TimerunningCheck()
+        timeRunningHwt = IsPlayerInTimerunningHeroicWorldTier()
+        C_Timer.After( 2, UpdateTimerunning )
+    end
+
+    ns.TimerunningCheck = TimerunningCheck
+
+    RegisterEvent( "PLAYER_ENTERING_WORLD", TimerunningCheck )
+end
 
 local function UnitInPhase( unit )
     local reason = UnitPhaseReason( unit )
     local wm = not IsInInstance() and warmode
 
+    if reason == 4 and IsPlayerInTimerunningHeroicWorldTier() then return true end
     if reason == 3 and chromieTime then return true end
     if reason == 2 and wm then return true end
     if reason == nil then return true end
