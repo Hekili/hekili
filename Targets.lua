@@ -218,6 +218,8 @@ local enemyExclusions = {
     [151579] = true,              -- Operation: Mechagon - Shield Generator
     [219588] = true,              -- Cinderbrew Meadery - Yes Man (etc.),
     [165913] = true,              -- Halls of Atonement: Ghastly Parishioner
+    [240905] = 1231726,           -- Manaforge Omega: Forgeweaver Araz - Arcane Collectord immunity during P1
+    [233817] = 1231726,           -- Manaforge Omega: Forgeweaver Araz - Forgeweaver Araz immunity during Intermission
     [237763] = 1228284,           -- Manaforge Omega: Nexus King Salad Bar - Royal Ward immunity
     [245705] = true               -- Manaforge Omega: Dimensius - Voidwarden (one should be focussed/cleaved down off miniboss, no reason to full AoE)
 }
