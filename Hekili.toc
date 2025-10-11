@@ -1,5 +1,5 @@
 ## Interface: 110200
-## Version: @project-version@
+## Version: v11.2.0-1.0.1h
 ## Title: Hekili
 ## Author: Hekili
 ## IconTexture: Interface\AddOns\Hekili\Textures\LOGO-ORANGE.blp
@@ -26,6 +26,7 @@ TheBurningCrusade\Items.lua
 Wrath\Items.lua
 Cataclysm\Items.lua
 Legion\Items.lua
+LegionRemix\ArtifactAbilities.lua
 
 BfA\AzeritePowers.lua
 BfA\Essences.lua
