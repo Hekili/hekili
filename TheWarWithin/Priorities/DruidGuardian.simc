@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/druid_guardian.simc
-## SimulationCraft Commit Sync: e9cc3d7
-## Date: 2025-08-27
+## SimulationCraft Commit Sync: fdd9ea0
+## Date: 2025-08-28
 
 actions.precombat+=/mark_of_the_wild
 actions.precombat+=/variable,name=if_build,value=1,value_else=0,if=talent.thorns_of_iron.enabled&talent.ursocs_endurance.enabled
