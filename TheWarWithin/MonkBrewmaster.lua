@@ -2214,11 +2214,10 @@ spec:RegisterSetting( "purify_for_celestial", true, {
 
 spec:RegisterSetting( "purify_for_niuzao", true, {
     name = strformat( "%s: Maximize %s", Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ),
-        Hekili:GetSpellLinkWithTexture( spec.talents.improved_invoke_niuzao_the_black_ox[2] ) ),
-    desc = strformat( "If checked, %s may be recommended when %s is active if %s is talented.\n\n"
+        Hekili:GetSpellLinkWithTexture( spec.talents.invoke_niuzao_the_black_ox[2] ) ),
+    desc = strformat( "If checked, %s may be recommended when %s is active.\n\n"
         .. "This feature is used to maximize %s damage from your guardian.", Hekili:GetSpellLinkWithTexture( spec.abilities.purifying_brew.id ),
-        Hekili:GetSpellLinkWithTexture( spec.abilities.invoke_niuzao.id ), Hekili:GetSpellLinkWithTexture( spec.talents.improved_invoke_niuzao_the_black_ox[2] ),
-        Hekili:GetSpellLinkWithTexture( 227291 ) ),
+        Hekili:GetSpellLinkWithTexture( spec.abilities.invoke_niuzao.id ), Hekili:GetSpellLinkWithTexture( 227291 ) ),
     type = "toggle",
     width = "full"
 } )
