@@ -32,7 +32,7 @@ local GetSpellCooldown = function(spellID)
 end
 
 local GetSpellInfo = ns.GetUnpackedSpellInfo
-
+local TimerunningCheck = ns.TimerunningCheck
 local FindStringInInventoryItemTooltip = ns.FindStringInInventoryItemTooltip
 local ResetDisabledGearAndSpells = ns.ResetDisabledGearAndSpells
 local WipeCovenantCache = ns.WipeCovenantCache
@@ -1734,6 +1734,11 @@ local function CLEU_HANDLER( event, timestamp, subtype, hideCaster, sourceGUID, 
     local petSource = ( UnitExists( "pet" ) and sourceGUID == UnitGUID( "pet" ) )
     local amTarget  = ( destGUID   == state.GUID )
     local isSensePower = ( class.auras.sense_power_active and spellID == 361022 )
+
+    -- Check for Timerunning aura (1238465) on player
+    if ( amTarget or amSource ) and spellID == 1238465 and aura_events[ subtype ] then
+        TimerunningCheck()
+    end
 
     if not InCombatLockdown() and not ( amSource or petSource or amTarget ) then return end
 
