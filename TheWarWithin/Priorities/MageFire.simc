@@ -1,6 +1,6 @@
 ## Upstream: https://github.com/simulationcraft/simc/blob/thewarwithin/ActionPriorityLists/default/mage_fire.simc
-## SimulationCraft Commit Sync: 06cfdce
-## Date: 2025-08-05
+## SimulationCraft Commit Sync: 1a1f68b
+## Date: 2025-09-29
 
 actions.precombat=arcane_intellect
 actions.precombat+=/variable,name=cast_remains_time,value=0.2
@@ -8,7 +8,7 @@ actions.precombat+=/variable,name=pooling_time,value=15*gcd.max
 actions.precombat+=/variable,name=ff_combustion_flamestrike,if=talent.frostfire_bolt,value=100
 actions.precombat+=/variable,name=ff_filler_flamestrike,if=talent.frostfire_bolt,value=100
 actions.precombat+=/variable,name=sf_combustion_flamestrike,if=talent.spellfire_spheres,value=100-(50*talent.mark_of_the_firelord)-(44*talent.quickflame)
-actions.precombat+=/variable,name=sf_filler_flamestrike,if=talent.spellfire_spheres,value=100
+actions.precombat+=/variable,name=sf_filler_flamestrike,if=talent.spellfire_spheres,value=100-(50*talent.mark_of_the_firelord)-(42*talent.quickflame)
 actions.precombat+=/variable,name=treacherous_transmitter_precombat_cast,value=12,if=equipped.treacherous_transmitter
 actions.precombat+=/use_item,name=treacherous_transmitter
 # Whether a usable item used to buff Combustion is equipped.
