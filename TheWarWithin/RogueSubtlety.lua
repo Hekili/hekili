@@ -502,7 +502,6 @@ spec:RegisterCombatLogEvent( function( _, subtype, _, sourceGUID, sourceName, _,
 
         if spellID == 53 or spellID == 185438 then -- Backstab (53) or Shadowstrike (185438) consumes 1 Disorienting Strike stack.
             disorientStacks = disorientStacks - 1
-            return
         end
 
         if state.talent.danse_macabre.enabled then
