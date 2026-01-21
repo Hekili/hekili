@@ -1,3 +1,12 @@
+# Goodbye
+
+The Hekili Project on Retail WoW has ended with the launch of the Midnight prepatch, version 12.0, on January 20th 2026. The new direction with Blizzard's API makes it impossible to continue the addon in a way that would meet our design goals and quality standards.
+
+### From Syrif:
+Thank you for the last couple years, I've enjoyed the opportunity to learn from Hekili while helping out. I will remember the positive messages I've received from users over the years. I hope our users are able to continue to find ways to enjoy the game in Midnight and beyond.
+
+# Old Readme below
+
 # Hekili
 
 **Hekili** is a powerful, highly configurable **priority helper** for **World of Warcraft**. It supports **all 🗡️DPS and 🛡️Tank specializations**. ➕Healer specializations are supported with a focus on **DPS abilities**, great for solo content or downtime during PvE.
@@ -77,7 +86,7 @@ If something isn’t working:
 ### ❓ Other Support
 
 - Review the [**Wiki**](https://github.com/Hekili/hekili/wiki)
-- Ask questions in the [**Hekili Discord**](https://discord.gg/3cCTFxM)
+
 
 ---
 
