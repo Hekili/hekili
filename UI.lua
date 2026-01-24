@@ -290,6 +290,7 @@ function ns.StartConfiguration( external )
 
                 for id, btn in ipairs( ns.UI.Buttons[ i ] ) do
                     btn:EnableMouse( false )
+                    btn:SetMouseClickEnabled( false )
                 end
 
                 local left, right, top, bottom = v:GetPerimeterButtons()
@@ -429,9 +430,11 @@ function ns.StopConfiguration()
             display.Backdrop:Hide()
         end
 
+        mouseInteract = Hekili.Pause or Hekili.DB.profile.displays[ id ].iconTooltipStyle ~= "off"
         for i, btn in ipairs( display.Buttons ) do
             btn:EnableMouse( mouseInteract )
             btn:SetMovable( false )
+            btn:SetMouseClickEnabled( false )
         end
     end
 
@@ -2860,6 +2863,55 @@ do
         b:SetScript( "OnMouseDown", Button_OnMouseDown )
         b:SetScript( "OnMouseUp", Button_OnMouseUp )
 
+        local tooltipHoverButton = CreateFrame("Button", nil, b)
+        tooltipHoverButton:SetSize(15, 15)
+        tooltipHoverButton:SetPoint("TOPRIGHT", -2, -2)
+        tooltipHoverButton.texture = tooltipHoverButton:CreateTexture(nil, "ARTWORK")
+        tooltipHoverButton.texture:SetAllPoints()
+        tooltipHoverButton.texture:SetTexture("Interface\\Addons\\Hekili\\Textures\\Question.png")
+        tooltipHoverButton:Hide()
+        
+        tooltipHoverButton:SetScript( "OnEnter", function( self )
+            local H = Hekili
+            toolTipHovered = true
+            if b.Ability then
+                if b.Ability.item then
+                    GameTooltip:SetOwner(self)
+                    if conf.iconTooltipStyle == "tooltip" then
+                        GameTooltip:SetItemByID(b.Ability.item)
+                    elseif conf.iconTooltipStyle == "minimal" then
+                        if b.Ability.bagItem then
+                            GameTooltip:AddLine("Bag Item: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        else
+                            GameTooltip:AddLine("Equipped Item: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        end
+                    end
+                    GameTooltip:Show()
+                elseif b.Ability.id then
+                    GameTooltip:SetOwner(self)
+                    if conf.iconTooltipStyle == "tooltip" then
+                        GameTooltip:SetSpellByID(b.Ability.id)
+                    elseif conf.iconTooltipStyle == "minimal" then
+                        if FindSpellBookSlotBySpellID(b.Ability.id, false) then
+                            GameTooltip:AddLine("Player Spell: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        elseif FindSpellBookSlotBySpellID(b.Ability.id, true) then
+                            GameTooltip:AddLine("Pet Spell: " .. "|T" .. b.Image .. ":20:20:0:0|t" .. " " .. b.Ability.name, 1, 1, 1)
+                        end
+                    end
+                    GameTooltip:Show()
+                end
+            end
+        end )
+
+        tooltipHoverButton:SetScript( "OnLeave", function( self )
+            GameTooltip:Hide()
+            C_Timer.After(0.1, function()
+                if not b:IsMouseOver() then
+                    tooltipHoverButton:Hide()
+                end
+            end)        
+        end )
+
         b:SetScript( "OnEnter", function( self )
             local H = Hekili
 
@@ -2876,15 +2928,23 @@ do
             if ( H.Pause and d.HasRecommendations and b.Recommendation ) then
                 H:ShowDiagnosticTooltip( b.Recommendation )
             end
+            if ( conf.iconTooltipStyle ~= "off" ) then
+                tooltipHoverButton:Show()
+                tooltipHoverButton:SetMouseClickEnabled( false )
+            end
         end )
 
         b:SetScript( "OnLeave", function(self)
             HekiliTooltip:Hide()
+            if not tooltipHoverButton:IsMouseOver() then
+                tooltipHoverButton:Hide()
+            end
         end )
 
         Hekili:ProfileFrame( bName, b )
 
-        b:EnableMouse( false )
+        b:EnableMouse( conf.iconTooltipStyle ~= "off" )
+        b:SetMouseClickEnabled( false )
         b:SetMovable( false )
 
         return b

@@ -1621,6 +1621,20 @@ return "Position" end,
                                 },
                             },
 
+                            iconTooltipStyle = {
+                                type = "select",
+                                values = {
+                                    off = "Off",
+                                    minimal = "Minimal",
+                                    tooltip = "Tooltip",
+                                },
+                                name = "Display Action Info on Hover",
+                                desc = "Select what to display when hovering over recommended action icons.\n\n" ..
+                                       "Minimal will only show the action name.\n\n" ..
+                                       "Tooltip will show the full Blizzard tooltip for the action.",
+                                order = 100,
+                            },
+
                             queuedElvuiCooldown = {
                                 type = "toggle",
                                 name = "Apply ElvUI Cooldown Style to Queued Icons",
@@ -9962,10 +9976,11 @@ function Hekili:TogglePause( ... )
 
     local MouseInteract = self.Pause or self.Config
 
-    for _, group in pairs( ns.UI.Buttons ) do
+    for id, group in pairs( ns.UI.Buttons ) do
         for _, button in pairs( group ) do
             if button:IsShown() then
-                button:EnableMouse( MouseInteract )
+                button:EnableMouse( MouseInteract or Hekili.DB.profile.displays[ id ].iconTooltipStyle ~= "off" )
+                button:SetMouseClickEnabled( false )
             end
         end
     end
