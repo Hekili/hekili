@@ -197,6 +197,11 @@ function Hekili:OnEnable()
 
     ns.ReadKeybindings()
 
+    -- Initialize Practice mode
+    if ns.Practice then
+        ns.Practice:Initialize()
+    end
+
     self.PendingSpecializationChange = true
     self:ForceUpdate( "ADDON_ENABLED" )
 
@@ -1197,6 +1202,12 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                         slot.listName = listName
                                                         slot.action = actID
                                                         slot.actionName = state.this_action
+
+                                                        -- Track recommendation for practice mode
+                                                        if ns.Practice then
+                                                            ns.Practice:TrackRecommendation(state.this_action, GetTime() + state.delay)
+                                                        end
+
                                                         slot.actionID = -1 * item
 
                                                         slot.texture = select( 10, GetItemInfo( item ) )
@@ -1236,6 +1247,7 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             slot.listName = listName
                                                             slot.action = actID
                                                             slot.actionName = state.this_action
+
                                                             slot.actionID = ability.id
 
                                                             slot.caption = ability.caption or entry.caption
@@ -1392,6 +1404,36 @@ function Hekili:GetPredictionFromAPL( dispName, packName, listName, slot, action
                                                             slot.indicator = module.cycle()
                                                         end
                                                         Timer:Track( "Action Stored" )
+                                                    end
+                                                end
+
+                                                if ns.Practice and ns.Practice:IsActive() and slot.index == 1 then
+                                                    ns.Practice:DebugHook(
+                                                        "Core Slot1",
+                                                        string.format(
+                                                            "action=%s abilityKey=%s abilityID=%s delay=%.1f active=%s inCombat=%s",
+                                                            tostring(state.this_action),
+                                                            tostring(ability and ability.key),
+                                                            tostring(ability and ability.id),
+                                                            (state.delay or 0),
+                                                            tostring(ns.Practice:IsActive()),
+                                                            tostring(ns.Practice:IsInCombat())
+                                                        )
+                                                    )
+
+                                                    if state.this_action then
+                                                        local practiceAbility = ability or class.abilities[ state.this_action ]
+                                                        local practiceID = practiceAbility and practiceAbility.id or nil
+                                                        local practiceName = practiceAbility and practiceAbility.name or nil
+                                                        local practiceKey = practiceAbility and ( practiceAbility.key or practiceAbility.name ) or state.this_action
+
+                                                        if practiceKey and practiceKey ~= "wait" and practiceKey ~= "pool_resource" then
+                                                            ns.Practice:TrackRecommendation( practiceID, practiceName, GetTime() + state.delay, practiceKey )
+                                                        else
+                                                            ns.Practice:DebugHook("Core Slot1", "Skipped non-spell action" )
+                                                        end
+                                                    else
+                                                        ns.Practice:DebugHook("Core Slot1", "No state.this_action" )
                                                     end
                                                 end
 
@@ -1626,7 +1668,9 @@ function Hekili.Update()
 
         local checkstr = ""
 
-        if UI.Active and UI.alpha > 0 and rule( profile ) then
+        local practiceForce = ns.Practice and ns.Practice:ShouldForceRecommendations()
+
+        if UI.Active and ( UI.alpha > 0 or practiceForce ) and rule( profile ) then
             for i = #Stack, 1, -1 do tinsert( StackPool, tremove( Stack, i ) ) end
             for i = #Block, 1, -1 do tinsert( StackPool, tremove( Block, i ) ) end
 

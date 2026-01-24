@@ -48,7 +48,8 @@ function Hekili:CmdLine( input )
     -- Alias maps for argument substitutions
     local arg1Aliases = {
         prio        = "priority",
-        snap        = "snapshot"
+        snap        = "snapshot",
+        prac        = "practice"
     }
     local arg2Aliases = {
         cd          = "cooldowns",
@@ -90,6 +91,7 @@ function Hekili:CmdLine( input )
         recover  = function () self:HandleRecoverCommand() end,
         fix      = function () self:HandleFixCommand( args ) end,
         snapshot = function () self:MakeSnapshot() end,
+        practice = function () if ns.Practice then ns.Practice:ToggleMode() end end,
         skeleton = function () self:HandleSkeletonCommand( input ) end
     }
 
